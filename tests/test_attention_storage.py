@@ -452,7 +452,12 @@ def test_musicgen_nested_decoder_storage_uses_exact_constructed_scope():
     assert result.value == "split"
     assert any("config-scope construction" in item.detail
                for item in result.provenance)
-    assert any("forward's unconditional return" in item.detail
+    # U9 replaced the former return-spelling shortcut with an exact component
+    # occurrence plus its invoked repeated-container route.  Pin the actual
+    # proof boundaries, not the retired explanatory phrase.
+    assert any("exact invoked child" in item.detail
+               for item in result.provenance)
+    assert any("exact repeated-container invocation proof" in item.detail
                for item in result.provenance)
     assert any("uniquely unguarded" in item.detail
                for item in result.provenance)

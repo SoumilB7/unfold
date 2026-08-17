@@ -32,7 +32,9 @@ def _tiny_multimodal_cfg():
 @pytest.mark.parametrize(("model_type", "owner", "kind", "modalities"), [
     ("paligemma", "PaliGemmaModel", "placeholder_replace", ["vision"]),
     ("llava", "LlavaModel", "placeholder_replace", ["vision"]),
-    ("qwen2_vl", "Qwen2VLModel", "unified_multimodal_stream", ["vision", "video"]),
+    # Fusion proves replacement only.  Multi-axis position construction is an
+    # independent U9-E fact and upgrades this at projection time.
+    ("qwen2_vl", "Qwen2VLModel", "placeholder_replace", ["vision", "video"]),
     ("mllama", "MllamaModel", "cross_attention", ["vision"]),
     ("gemma4", "Gemma4Model", "placeholder_replace", ["vision", "video", "audio"]),
 ])
@@ -53,6 +55,25 @@ def test_paligemma_is_masked_scatter_not_family_prefix():
     assert fusion["operation"] == "scatter_soft_tokens_into_placeholder_slots"
     assert fusion["mechanism"]["operation"] == "masked_scatter"
     assert fusion["source_owner"] == "PaliGemmaModel"
+
+
+def test_qwen2vl_unified_stream_requires_the_independent_multiaxis_route():
+    transformers = pytest.importorskip("transformers")
+    from model_unfolder.evidence.multiaxis_position import (
+        multimodal_multiaxis_position_result,
+    )
+
+    cfg = transformers.AutoConfig.for_model("qwen2_vl").to_dict()
+    context = ParseContext.build(cfg)
+    base = fusion_evidence(cfg, parse_context=context)
+    position = multimodal_multiaxis_position_result(
+        context.program_index(), context.source_bundle)
+    assert base.kind == "placeholder_replace"
+    assert position.status == "resolved" and position.value
+
+    projected = unfold(cfg).to_ir()["extras"]["modalities"]["fusion"]
+    assert projected["kind"] == "unified_multimodal_stream"
+    assert projected["operation"] == "scatter_grid_tokens_into_placeholder_slots"
 
 
 def test_prefix_concat_requires_an_actual_concat_with_text_embeddings(tmp_path):

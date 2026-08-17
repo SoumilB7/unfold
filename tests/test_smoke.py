@@ -1247,7 +1247,10 @@ def test_gemma4_multimodal_fusion_render():
     assert ir["extras"]["modalities"]["inputs"]["vision"]["encoder"]["kind"] == "vision_encoder"
     assert ir["extras"]["modalities"]["inputs"]["audio"]["encoder"]["kind"] == "audio_encoder"
     assert ir["extras"]["modalities"]["inputs"]["audio"]["encoder"]["source_owner"] == "Gemma4AudioModel"
-    assert ir["extras"]["modalities"]["inputs"]["audio"]["tokens"]["ms_per_token"] == 40
+    # ``audio_ms_per_token`` belongs to Gemma4's external processor source,
+    # not its modeling source.  U9 intentionally withholds that preprocessing
+    # policy from the model diagram until a processor-source boundary exists.
+    assert "ms_per_token" not in ir["extras"]["modalities"]["inputs"]["audio"]["tokens"]
     assert ir["extras"]["modalities"]["fusion"]["kind"] == "placeholder_replace"
     assert ir["extras"]["modalities"]["fusion"]["mechanism"]["kind"] == "scatter_many"
 
@@ -1267,10 +1270,16 @@ def test_gemma4_multimodal_fusion_render():
     assert "BOA" in html
     assert "EOI" in html
     assert "EOA" in html
-    assert "&lt;image&gt; × 280" in html
-    assert "&lt;audio&gt; × 750" in html
-    assert "AUD × 750" in html
-    assert "280 × 1,536" in html
+    # Placeholder identity is source-proven by masked_scatter.  The declared
+    # token counts and width are not bound to that operation by modeling
+    # source, so they must not decorate the architectural route.
+    assert "&lt;image&gt;" in html
+    assert "&lt;audio&gt;" in html
+    assert "&lt;image&gt; × 280" not in html
+    assert "&lt;audio&gt; × 750" not in html
+    assert "AUD × 750" not in html
+    assert "40 ms/token" not in html
+    assert "280 × 1,536" not in html
     assert 'data-card-id="vision_path"' in html
     assert 'data-card-id="audio_path"' in html
     assert 'data-card-id="vision_pixels"' in html
@@ -1324,12 +1333,13 @@ def test_cross_attention_fusion_side_block_does_not_overlap_the_spine():
     assert vr < al, f"side block (right {vr}) overlaps the spine block (left {al})"
 
 
-def test_vision_position_fact_survives_without_fabricating_an_attention_mechanism():
-    """Position evidence and the drawn attention mechanism are independent.
+def test_vision_position_evidence_never_fabricates_an_attention_mechanism():
+    """Keep wrapper multi-axis evidence separate from tower-attention facts.
 
-    A learned table proves no RoPE.  Qwen2-VL's exact vision source proves
-    qk-rotation, but ``softmax`` alone does not prove MHA/GQA/MQA; the position
-    fact must survive on the block while the detailed graph remains opaque.
+    A learned table proves no RoPE.  Qwen2-VL proves its wrapper's multi-axis
+    position route, but its vision-attention application is not yet resolved by
+    the occurrence-exact U8 readers.  The former must not manufacture the
+    latter (or a detailed MHA/GQA/MQA drill).
     """
     from model_unfolder.renderers.html.metadata import _make_info
     from model_unfolder.renderers.html.block_views.registry import render_sub_block_detail
@@ -1354,7 +1364,9 @@ def test_vision_position_fact_survives_without_fabricating_an_attention_mechanis
     assert siglip_block["detail"]["attention"].get("rope") is not True
     assert "apply RoPE" not in siglip_svg, "SigLIP vision must NOT draw RoPE"
 
-    # multimodal-RoPE tower (Qwen2-VL grid stream) → RoPE present.
+    # Qwen2-VL's multi-axis route is wrapper/fusion evidence.  The old vision
+    # path inferred per-block RoPE from rotary-looking call spellings; U9
+    # intentionally removes that unsupported, name-derived claim.
     qwen = dict(model_type="qwen2_vl", num_hidden_layers=2, hidden_size=128,
                 num_attention_heads=8, num_key_value_heads=2, intermediate_size=256,
                 vocab_size=1000, image_token_id=4,
@@ -1362,31 +1374,37 @@ def test_vision_position_fact_survives_without_fabricating_an_attention_mechanis
                                "architectures": ["Qwen2VisionTransformerPretrainedModel"],
                                "depth": 2, "hidden_size": 128, "num_heads": 8,
                                "patch_size": 14, "in_channels": 3, "spatial_merge_size": 2})
-    qwen_block, qwen_svg = vision_attn(qwen)
-    qwen_fact = qwen_block["detail"]["attention"]
-    assert qwen_fact["rope"] is True
-    assert qwen_fact["position_kind"] == "rope"
-    assert qwen_fact["position_application"] == "qk_rotation"
-    assert qwen_fact["projection_mode"] == "fused_qkv"
-    assert qwen_fact["kind"] is None
-    assert "Attention mechanism unresolved" in qwen_svg
-    assert "apply RoPE" not in qwen_svg
+    qwen_diagram = unfold(qwen)
+    qwen_ir = qwen_diagram.to_ir()
+    qwen_modalities = qwen_ir["extras"]["modalities"]
+    qwen_encoder = qwen_modalities["inputs"]["vision"]["encoder"]
+    qwen_variant = qwen_encoder["variants"][0]
+    assert qwen_variant["position_kind"] is None
+    assert qwen_variant["position_application"] is None
+    assert qwen_encoder.get("position_encoding") is None
+    assert qwen_modalities["fusion"]["kind"] == "unified_multimodal_stream"
+    assert qwen_modalities["fusion"]["mechanism"][
+        "position_encoding"] == "multimodal_rope"
+
+    qwen_info = _make_info(qwen_ir)
+    assert not any(
+        str(block.get("id", "")).startswith("vision_enc")
+        and str(block.get("id", "")).endswith("_op_selfattn")
+        for block in qwen_info.get("blocks", {}).values()
+    )
 
     # The unresolved mechanism owns one namespaced, clickable opaque node.  A
     # source-proven position fact must not smuggle q_rope/k_rope leaves into
     # that graph before the exact attention mechanism is bound.
     from model_unfolder.block_schema import validate_click_coupling
-    from model_unfolder.preview import svg_views
-    qwen_html = unfold(qwen).to_html(standalone=True)
-    vision_svg = next(svg for label, svg in svg_views(qwen_html)
-                      if label.startswith("vision_enc") and label.endswith("_op_selfattn"))
+    qwen_html = qwen_diagram.to_html(standalone=True)
     for node_id in ("vision_enc_attn_q_rope", "vision_enc_attn_k_rope"):
-        assert f'data-id="{node_id}"' not in vision_svg
+        assert f'data-id="{node_id}"' not in qwen_html
         assert f'data-card-id="{node_id}"' not in qwen_html
     assert validate_click_coupling(qwen_html) == []
 
 
-def test_gemma4_video_token_does_not_create_grid_video_path():
+def test_gemma4_video_token_activates_only_the_source_supported_soft_video_path():
     cfg = _gemma4_e2b_vision_config()
     cfg.update({"video_token_id": 258884, "video_seq_length": 64})
 
@@ -1394,14 +1412,22 @@ def test_gemma4_video_token_does_not_create_grid_video_path():
     modalities = d.to_ir()["extras"]["modalities"]["inputs"]
     assert "vision" in modalities
     assert "audio" in modalities
-    assert "video" not in modalities
+    assert "video" in modalities
+    video = modalities["video"]
+    assert video["kind"] == "video_to_soft_tokens"
+    assert video["tokens"]["kind"] == "soft_video_tokens"
+    assert video["pipeline"][-1]["operation"] == "emit_soft_token_stream"
+    assert all("grid" not in str(value).lower() for value in (
+        video["kind"], video["tokens"]["kind"],
+        video["pipeline"][-1]["operation"],
+    ))
 
     html = d.to_html(standalone=True)
     assert "Video -&gt; grid" not in html
-    assert 'data-card-id="video_path"' not in html
+    assert 'data-card-id="video_path"' in html
 
 
-def test_qwen2_audio_sparse_text_config_is_completed():
+def test_qwen2_audio_sparse_text_config_keeps_only_source_bound_structure():
     d = unfold(QWEN2_AUDIO_SPARSE_CONFIG)
     ir = d.to_ir()
 
@@ -1426,7 +1452,10 @@ def test_qwen2_audio_sparse_text_config_is_completed():
         "decoder.attention.head_geometry"]["status"] == "class_default"
 
     audio = ir["extras"]["modalities"]["inputs"]["audio"]
-    assert audio["input"]["feature_size"] == 128
+    # ``feature_size`` is supplied only by class hydration in this sparse
+    # fixture.  The source-backed audio tower survives, but an unbound numeric
+    # input leaf must not be projected as checkpoint architecture.
+    assert "feature_size" not in audio["input"]
     assert audio["encoder"]["hidden_size"] == 1280
     assert audio["encoder"]["num_layers"] == 32
     assert audio["encoder"]["num_attention_heads"] == 20

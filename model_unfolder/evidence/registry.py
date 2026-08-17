@@ -1027,6 +1027,27 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         notes="U2-R5 pilot: source-proven projector out-width; routes are the "
               "sole projection authority.",
     ),
+    FactDefinition(
+        key="projector_in_features",
+        value_types=frozenset({"int"}),
+        allowed_statuses=frozenset({"code_and_config", "code_proven"}),
+        owner_patterns=frozenset({"root.vision", "root.video"}),
+        projections=frozenset({"json"}),
+        projection_routes=(
+            ProjectionRoute("root.vision", "projector_in_width", "card",
+                            "vision_projector", frozenset({"op"}),
+                            frozenset({("vision_projector",)}),
+                            frozenset({"renderers.html.block_views."
+                                       "declared_ops.build_declared_ops_view"})),
+            ProjectionRoute("root.video", "projector_in_width", "card",
+                            "video_projector", frozenset({"op"}),
+                            frozenset({("video_projector",)}),
+                            frozenset({"renderers.html.block_views."
+                                       "declared_ops.build_declared_ops_view"})),
+        ),
+        notes=("U9-G: source-proven projector input width; config provides "
+               "the operand only after the exact construction binds it."),
+    ),
 ])
 
 
@@ -1169,15 +1190,10 @@ class MigrationClaim:
 # * COR-4's source-authoritative projector out-width — the construction site
 #   proves ownership and the consumer CONSUMES the exact path into the
 #   ``projector_out_features`` fact on both the vision and video lanes.
-# * COR-5's encoder width — the winning spelling of the tower-width priority
-#   chain is consumed into the ``hidden_size`` fact, covering both the
-#   qwen2-vl shape (internal embed_dim beside a merger-out hidden_size) and
-#   the 2.5 shape (hidden_size IS the internal width, e.g. inside
-#   FLUX/Qwen-Image embedded encoders).  The same exact path may lawfully be
-#   declared by TWO mechanisms with different targets; a consumption into
-#   any target NOT declared here is drift and blocks.  Paths are exact under
-#   the canonical wrapper spelling; a witness under an alternate wrapper
-#   spelling extends these tuples.
+# U9 retires COR-5's former config-only encoder-width claims.  Exact modality
+# readers may bind those values as source operands, but U14 owns their typed
+# FactLedger/ProjectionReceipt migration.  Re-declaring the old claims here
+# would make dormant, unreceipted paths look migrated.
 MIGRATED_SCOPES: tuple[MigrationClaim, ...] = (
     MigrationClaim("root.vision", "projector_out_width", "COR-4", (
         ClaimBinding("vision_config.hidden_size",
@@ -1187,15 +1203,11 @@ MIGRATED_SCOPES: tuple[MigrationClaim, ...] = (
         ClaimBinding("vision_config.hidden_size",
                      ProjectionTarget("root.video", "projector_out_features")),
     )),
-    MigrationClaim("root.vision", "encoder_width", "COR-5", (
-        ClaimBinding("vision_config.embed_dim",
-                     ProjectionTarget("root.vision", "hidden_size")),
-        ClaimBinding("vision_config.vision_hidden_size",
-                     ProjectionTarget("root.vision", "hidden_size")),
-        ClaimBinding("vision_config.width",
-                     ProjectionTarget("root.vision", "hidden_size")),
+    MigrationClaim("root.vision", "projector_in_width", "U9-G", (
+        ClaimBinding("vision_config.vision_output_dim",
+                     ProjectionTarget("root.vision", "projector_in_features")),
         ClaimBinding("vision_config.hidden_size",
-                     ProjectionTarget("root.vision", "hidden_size")),
+                     ProjectionTarget("root.vision", "projector_in_features")),
     )),
 )
 

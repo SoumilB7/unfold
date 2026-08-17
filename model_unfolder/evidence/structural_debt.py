@@ -238,19 +238,19 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
     _extras("modalities", "root",
             "multimodal tower descriptors merged into extras via the "
             "dynamic-keyed _merge_extras loop",
-            "U9", f"writer_gone:{_TA}::_merge_extras:extras:<dynamic>",
+            "U14", f"writer_gone:{_TA}::_merge_extras:extras:<dynamic>",
             occurrence="vision/audio/video sub-configs + source-bundle "
                        "tower/projector/fusion evidence",
             module=_TA, symbol="_merge_extras", census="<dynamic>",
             consumer="model_unfolder/evidence/conformance.py::"
-                     "_check_vision_facts"),
+                     "_check_recursive_component_facts"),
     _extras("modalities.inputs", "root",
             "modality input-path payload authored by the multimodal builder",
-            "U9", f"writer_gone:{_MB}::multimodal_extras:extras:<dynamic>",
+            "U14", f"writer_gone:{_MB}::multimodal_extras:extras:<dynamic>",
             occurrence="vision/audio/video sub-configs",
             module=_MB, symbol="multimodal_extras", census="<dynamic>",
             consumer="model_unfolder/evidence/conformance.py::"
-                     "_check_vision_facts"),
+                     "_check_recursive_component_facts"),
     _extras("diffusion", "root",
             "UNet meta descriptor (channels/text-encoders/scheduler) as raw "
             "extras", "U11", "fact_registered:diffusion_meta",
@@ -286,12 +286,49 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "a declared conditioning limit",
             "U10", "fact_registered:denoiser_conditioning_limit"),
     _config("the composite conditioning encoder's attention geometry",
-            "root.conditioning", "num_heads",
-            "the checkpoint declares the encoder's head count, but the "
-            "embedded T5 source currently exposes rival encoder/decoder "
-            "stage occurrences; the canonical tower withholds the value "
-            "until U9 proves the exact conditioning-stage owner",
-            "U9", "fact_registered:conditioning_attention_geometry"),
+            "root.conditioning", "text_encoder.num_heads",
+            "U9 now proves the exact task-specific text-encoder occurrence "
+            "and projects its code-bound head geometry through the typed "
+            "component result.  The remaining debt is U14's FactLedger + "
+            "projection-receipt cutover for the modality extras surface; "
+            "until then this raw checkpoint operand remains visibly unread "
+            "rather than being falsely marked consumed by the old parser",
+            "U14", "fact_registered:conditioning_attention_geometry"),
+    # U9 proves the exact task-specific conditioning owner and source
+    # mechanisms.  These remaining checkpoint declarations are deliberately
+    # not copied into raw modality extras until U14 gives them owner-qualified
+    # facts and receipts.  Keep them visible as exact debt rather than either
+    # pretending U9 consumed them or failing the recursive unread audit.
+    _config("the conditioning encoder FFN width operand",
+            "root.conditioning", "text_encoder.d_ff",
+            "the exact conditioning FFN occurrence is source-qualified, but "
+            "U14 must bind and receipt its affine width before projection",
+            "U14", "fact_registered:conditioning_ffn_geometry"),
+    _config("the conditioning encoder activation alias",
+            "root.conditioning", "text_encoder.dense_act_fn",
+            "the checkpoint activation alias awaits U14's exact winning-path "
+            "fact and projection receipt",
+            "U14", "fact_registered:conditioning_ffn_activation"),
+    _config("the conditioning encoder FFN protocol declaration",
+            "root.conditioning", "text_encoder.feed_forward_proj",
+            "the source-qualified FFN protocol remains unprojected until U14 "
+            "owns its config operand as a typed fact",
+            "U14", "fact_registered:conditioning_ffn_protocol"),
+    _config("the conditioning encoder gated-activation declaration",
+            "root.conditioning", "text_encoder.is_gated_act",
+            "the checkpoint gate declaration cannot author a mechanism; U14 "
+            "must join it to the exact FFN occurrence and receipt the result",
+            "U14", "fact_registered:conditioning_ffn_gating"),
+    _config("the conditioning encoder repetition operand",
+            "root.conditioning", "text_encoder.num_layers",
+            "U9 proves the exact repeated stage; U14 must ledger and receipt "
+            "the checkpoint count operand on the modality projection",
+            "U14", "fact_registered:conditioning_tower_depth"),
+    _config("the conditioning token-embedding vocabulary operand",
+            "root.conditioning", "text_encoder.vocab_size",
+            "the declared vocabulary size awaits an exact embedding-owner "
+            "fact and U14 projection receipt",
+            "U14", "fact_registered:conditioning_vocab_size"),
     _config("the denoiser FFN activation dispatch",
             "root.denoiser", "activation_fn",
             "the activation operand is visible, but only an exact denoiser "
@@ -422,6 +459,57 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "projector_out_features), discharging the occurrence; it stays "
             "visible debt only for source-less grid towers",
             "U9", "fact_registered:hidden_size"),
+    # U9 moves recursive vision architecture from the config-authored shell to
+    # exact source readers.  These checkpoint values now enter only as operands
+    # of those readers, but the raw ``extras.modalities`` projection still has
+    # no FactLedger/ProjectionReceipt route.  Keep every occurrence visible and
+    # owner-exact until U14 performs that representation cutover; marking them
+    # merely "accessed" here would recreate the inspected-vs-consumed lie.
+    _config("the source-bound vision tower repetition operand",
+            "root.vision", "vision_config.depth",
+            "U9 proves the exact repeated vision stage and binds this depth "
+            "operand; U14 must ledger and receipt the modality projection",
+            "U14", "fact_registered:vision_tower_depth"),
+    _config("the source-bound vision hidden-width operands",
+            "root.vision", "vision_config.embed_dim",
+            "U9 binds this width to exact vision constructors; U14 must "
+            "ledger its owner-qualified projections",
+            "U14", "fact_registered:vision_hidden_geometry"),
+    _config("the source-bound vision FFN activation",
+            "root.vision", "vision_config.hidden_act",
+            "U9 proves the activation dispatch at the exact vision FFN; U14 "
+            "must ledger and receipt that mechanism operand",
+            "U14", "fact_registered:vision_ffn_activation"),
+    _config("the source-bound patch input-channel operand",
+            "root.vision", "vision_config.in_chans",
+            "U9 binds this spelling to the exact patch constructor; U14 must "
+            "ledger the patch-geometry projection",
+            "U14", "fact_registered:vision_patch_input_channels"),
+    _config("the source-bound vision FFN expansion operand",
+            "root.vision", "vision_config.mlp_ratio",
+            "U9 binds this ratio to the exact vision FFN construction; U14 "
+            "must ledger and receipt the derived width",
+            "U14", "fact_registered:vision_ffn_ratio"),
+    _config("the source-bound vision attention head count",
+            "root.vision", "vision_config.num_heads",
+            "U9 binds this count to the exact vision attention occurrence; "
+            "U14 must ledger and receipt its geometry",
+            "U14", "fact_registered:vision_attention_geometry"),
+    _config("the source-bound spatial patch-size operand",
+            "root.vision", "vision_config.patch_size",
+            "U9 binds this size to the exact patch constructor; U14 must "
+            "ledger and receipt the patch-geometry projection",
+            "U14", "fact_registered:vision_patch_geometry"),
+    _config("the source-bound spatial merge-size operand",
+            "root.vision", "vision_config.spatial_merge_size",
+            "U9 binds this size to the exact merger/position route; U14 must "
+            "ledger and receipt the owner-qualified projection",
+            "U14", "fact_registered:vision_projector_geometry"),
+    _config("the source-bound temporal patch-size operand",
+            "root.vision", "vision_config.temporal_patch_size",
+            "U9 binds this size to the exact 3D patch constructor; U14 must "
+            "ledger and receipt the temporal patch geometry",
+            "U14", "fact_registered:vision_temporal_patch_geometry"),
     _config("the latent scale chip (VAE-owned)",
             "root.denoiser", "scaling_factor",
             "pipeline-level latent-scale duplicate on the denoiser config "
@@ -614,13 +702,14 @@ _CONSUMER_DEBT_BASELINE = (
     ('model_unfolder/evidence/conformance.py', '<module>', 'conformance', 'backward_import', '58ce4a82144f8b64'),
     ('model_unfolder/evidence/conformance.py', '_as_mapping', 'conformance', 'raw_config', '06bfc54c63be216f'),
     ('model_unfolder/evidence/conformance.py', '_branch_inactive', 'conformance', 'raw_config', 'd0391b30cd356cd9'),
-    ('model_unfolder/evidence/conformance.py', '_check_audio_facts', 'conformance', 'raw_extras', '2dc8a1f8de49ea25'),
     ('model_unfolder/evidence/conformance.py', '_check_component_storage_facts', 'conformance', 'raw_extras', '261bebf740a7e89d'),
     ('model_unfolder/evidence/conformance.py', '_check_fusion_facts', 'conformance', 'raw_extras', '007defd60449a154'),
-    ('model_unfolder/evidence/conformance.py', '_check_projector_facts', 'conformance', 'raw_extras', 'bfb96c435232e9b2'),
+    ('model_unfolder/evidence/conformance.py', '_check_fusion_facts', 'conformance', 'backward_import', 'bc17002606a6c102'),
+    ('model_unfolder/evidence/conformance.py', '_check_projector_facts', 'conformance', 'raw_extras', '3382f12b04c4a08e'),
+    ('model_unfolder/evidence/conformance.py', '_check_recursive_component_facts', 'conformance', 'backward_import', 'bc17002606a6c102'),
+    ('model_unfolder/evidence/conformance.py', '_check_recursive_component_facts', 'conformance', 'raw_extras', 'abeededaa3def2a3'),
     ('model_unfolder/evidence/conformance.py', '_check_storage_facts', 'conformance', 'backward_import', 'b5c1d62f90035b94'),
     ('model_unfolder/evidence/conformance.py', '_check_storage_facts', 'conformance', 'raw_extras', '8309e956d0a3abbf'),
-    ('model_unfolder/evidence/conformance.py', '_check_vision_facts', 'conformance', 'raw_extras', 'abeededaa3def2a3'),
     ('model_unfolder/evidence/conformance.py', '_config_field_value', 'conformance', 'raw_config', 'f9c05d8e8878f612'),
     ('model_unfolder/evidence/conformance.py', '_constructor_envs', 'conformance', 'source_reopen', 'a821dd49ada1014e'),
     ('model_unfolder/evidence/conformance.py', '_drawn_fusion_routes', 'conformance', 'raw_extras', '342c661d01d15158'),
@@ -651,7 +740,7 @@ _CONSUMER_DEBT_BASELINE = (
     ('model_unfolder/expanded/sections.py', '_diffusion_io', 'json', 'raw_extras', '720bc5b7888319bc'),
     ('model_unfolder/expanded/sections.py', '_is_diffusion', 'json', 'raw_extras', '538efc70e7a2bf65'),
     ('model_unfolder/expanded/sections.py', 'build_dimensions', 'json', 'raw_extras', 'ab038e67ecaac4d6'),
-    ('model_unfolder/expanded/sections.py', 'build_io', 'json', 'raw_extras', '067eb5393d4cbecb'),
+    ('model_unfolder/expanded/sections.py', 'build_io', 'json', 'raw_extras', 'b99c4724e4ce0076'),
     ('model_unfolder/params.py', '_attn_params', 'params', 'spec_default', 'ee4e0ed83a8c6b3f'),
     ('model_unfolder/params.py', '_ffn_params', 'params', 'spec_default', '949c0c547ad432a2'),
     ('model_unfolder/renderers/html/block_views/declared_ops.py', 'build_declared_ops_view', 'renderer', 'raw_extras', 'ba8f51d3eafee8db'),
@@ -660,7 +749,7 @@ _CONSUMER_DEBT_BASELINE = (
     ('model_unfolder/renderers/html/block_views/modality_views/common.py', 'video_input', 'renderer', 'raw_extras', '658b78f2c8b074a7'),
     ('model_unfolder/renderers/html/block_views/modality_views/common.py', 'vision_input', 'renderer', 'raw_extras', 'aec51c4910a259ec'),
     ('model_unfolder/renderers/html/block_views/modality_views/conditioning.py', 'conditioning_input', 'renderer', 'raw_extras', '3fbbeba7773755e3'),
-    ('model_unfolder/renderers/html/block_views/modality_views/video.py', 'build_video_path_view', 'renderer', 'raw_extras', '9f0b39c9d9150f2d'),
+    ('model_unfolder/renderers/html/block_views/modality_views/video.py', 'build_video_path_view', 'renderer', 'raw_extras', 'de8ef3ebd9f7f11f'),
     ('model_unfolder/renderers/html/block_views/registry.py', 'render_view', 'renderer', 'raw_extras', 'f6568ea08cd6042b'),
     ('model_unfolder/renderers/html/block_views/unet.py', '_text_source_label', 'renderer', 'raw_extras', '94cf4b192dfe8dc8'),
     ('model_unfolder/renderers/html/block_views/unet.py', '_draw_text_conditioning', 'renderer', 'raw_extras', '4271fc2560fe3393'),
@@ -678,7 +767,7 @@ _CONSUMER_DEBT_BASELINE = (
     ('model_unfolder/renderers/html/metadata_modalities.py', '_fusion_children', 'renderer', 'raw_extras', 'b5786f19ba04bd6a'),
     ('model_unfolder/renderers/html/metadata_modalities.py', '_fusion_description', 'renderer', 'raw_extras', '3649e8c389d841d0'),
     ('model_unfolder/renderers/html/metadata_modalities.py', '_is_conditioning_fusion', 'renderer', 'raw_extras', '944dba77202a5d65'),
-    ('model_unfolder/renderers/html/metadata_modalities.py', '_multimodal_block_lookup', 'renderer', 'raw_extras', '09b28173badb0c5f'),
+    ('model_unfolder/renderers/html/metadata_modalities.py', '_multimodal_block_lookup', 'renderer', 'raw_extras', '3e2116805ecafa81'),
     ('model_unfolder/renderers/html/metadata_modalities.py', '_unified_fusion_children', 'renderer', 'raw_extras', '6d2771bda17006b0'),
     ('model_unfolder/renderers/html/metadata_modalities.py', '_vision_cell_cards', 'renderer', 'backward_import', '962109a2344e67b0'),
     ('model_unfolder/renderers/html/sections.py', '_diffusion_stats', 'renderer', 'raw_extras', 'da27bb4cf97df230'),

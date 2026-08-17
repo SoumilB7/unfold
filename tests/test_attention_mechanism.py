@@ -195,6 +195,29 @@ class Mixer:
 """
 
 
+def _equal_width_helper_reshaped_attention(*, bypass_value_shape=False):
+    value = "value" if bypass_value_shape else \
+        "self.shape_lane(self.c(x), 1, 1)"
+    return f"""
+class Mixer:
+    def __init__(self, config):
+        self.width = config.hidden
+        self.groups = config.query_groups
+        self.unit = self.width // self.groups
+        self.a = nn.Linear(self.width, self.width)
+        self.b = nn.Linear(self.width, self.width)
+        self.c = nn.Linear(self.width, self.width)
+    def shape_lane(self, tensor, seq, batch):
+        return tensor.view(batch, seq, self.groups, self.unit).transpose(1, 2)
+    def forward(self, x):
+        query = self.shape_lane(self.a(x), 1, 1)
+        key = self.shape_lane(self.b(x), 1, 1)
+        value = {value}
+        score = torch.matmul(query, key.transpose(-1, -2))
+        return torch.matmul(F.softmax(score, dim=-1), value)
+"""
+
+
 def _fused_grouped_attention(*, packed_width=None, value_width=None,
                              shape_value=True, local_section=True):
     packed_width = packed_width or \
@@ -481,6 +504,24 @@ def test_equal_width_lanes_bind_only_through_exact_head_reshape(tmp_path):
     assert result.value.protocol == "equal_heads"
     assert result.value.query_heads_path == ("query_groups",)
     assert result.value.key_value_heads_path == ("query_groups",)
+
+
+def test_equal_width_lanes_bind_through_one_exact_shape_helper(tmp_path):
+    index, _bundle, root, block = _pipeline(
+        tmp_path, _equal_width_helper_reshaped_attention())
+    result = attention_head_binding_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    assert result.value.protocol == "equal_heads"
+    assert result.value.query_heads_path == ("query_groups",)
+    assert result.value.key_value_heads_path == ("query_groups",)
+
+
+def test_shape_helper_cannot_launder_one_unshaped_lane(tmp_path):
+    index, _bundle, root, block = _pipeline(
+        tmp_path,
+        _equal_width_helper_reshaped_attention(bypass_value_shape=True))
+    result = attention_head_binding_at_block(index, root, block)
+    assert result.status == "failed"
 
 
 def test_attention_compute_descends_only_through_exact_invoked_owner(tmp_path):

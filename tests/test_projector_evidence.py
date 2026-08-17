@@ -39,7 +39,7 @@ def _select(cfg, path):
      ["norm", "reshape", "linear", "activation", "linear"]),
     ("mistral3", "Mistral3MultiModalProjector", "patch_merger",
      ["norm", "reshape", "reshape", "reshape", "reshape", "reshape",
-      "linear", "linear", "activation", "linear"]),
+      "concat", "linear", "linear", "activation", "linear"]),
     ("gemma4", "Gemma4MultimodalEmbedder", "linear_projector",
      ["norm", "linear"]),
     ("mllama", "Linear", "linear_projector", ["linear"]),
@@ -190,15 +190,17 @@ def test_idefics_connector_follows_factory_resampler_and_learned_queries():
     assert [(op.kind, op.label) for op in evidence.ops] == [
         ("linear", "Linear (gate)"),
         ("linear", "Linear (up)"),
-        ("activation", "gelu_pytorch_tanh"),
+        # The connector constructor passes text_config.hidden_act to this MLP.
+        # The retired reader incorrectly borrowed vision_config.hidden_act.
+        ("activation", cfg["text_config"]["hidden_act"]),
         ("elementwise", "Multiply"),
         ("linear", "Linear (out)"),
-        ("opaque", "Perceiver layer"),
+        ("opaque", "Repeated attention + gated FFN stage"),
         ("norm", "RMSNorm"),
     ]
     layer = evidence.ops[5]
     assert layer.repeat == cfg["perceiver_config"]["resampler_depth"]
-    assert "cross-attend" in layer.description and "MLP" in layer.description
+    assert "gated FFN" in layer.description
 
 
 def test_generic_projection_without_fusion_is_not_relabelled_multimodal(tmp_path):

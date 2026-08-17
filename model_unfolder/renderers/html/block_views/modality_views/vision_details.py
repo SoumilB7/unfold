@@ -52,7 +52,7 @@ def build_vision_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict)
     else:
         # Honest unknown: the source did not resolve a repeated block — no
         # standard ViT cell is invented.
-        spec["cell"] = [{"id": "vision_enc_op_unknown", "kind": "norm",
+        spec["cell"] = [{"id": "vision_enc_op_unknown", "kind": "opaque",
                          "label": "Code-defined vision block", "resolved": False}]
         spec["repeat"] = layers
     graph = tower_graph(spec)

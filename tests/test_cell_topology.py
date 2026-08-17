@@ -244,6 +244,20 @@ def test_equal_source_literal_scales_are_code_proven(tmp_path):
     assert result.value.residual_scale_spans
 
 
+def test_learned_gate_transform_preserves_topology_without_inventing_scale(
+        tmp_path):
+    source = _SCALED_SEQUENTIAL.replace(
+        "self.residual_multiplier", "self.gate.tanh()")
+    result = _read(
+        tmp_path, source,
+        cell_fields="self.gate = nn.Parameter(torch.ones(1))")
+    assert result.status == "resolved", result.failures
+    assert result.value.norm_placement == "pre"
+    assert result.value.residual_topology == "sequential"
+    assert result.value.residual_scale_path is None
+    assert result.value.residual_scale_value is None
+
+
 def test_rival_scale_operands_cannot_be_collapsed(tmp_path):
     source = _SCALED_SEQUENTIAL.replace(
         "attention_output * self.residual_multiplier",

@@ -1,8 +1,8 @@
 """Data containers for static model-code evidence.
 
-The evidence layer is intentionally separate from the config adapters.  Config
-parsing remains the source of dimensions and layer counts; code evidence is a
-second signal that can confirm topology or surface mismatches.
+Configuration may supply a numeric operand only after exact modeling code binds
+that value to an owning operation.  These records are therefore architectural
+authority, not a secondary hint layered over config-authored topology.
 """
 from __future__ import annotations
 
@@ -51,178 +51,6 @@ class SourceOp:
 
 
 @dataclass(frozen=True)
-class VisionLayerEvidence:
-    """Source-derived facts for one repeated vision encoder block variant."""
-
-    block_class: str
-    source_file: str
-    line: int | None
-    norm_kind: str
-    norm_placement: str
-    ffn_gated: bool
-    residual_gated: bool
-    #: activation applied to the residual gate when the block CALLS one around
-    #: the gate-mul (Gemma-3 vision: ``tanh``); None ⇒ evidence records only
-    #: that a learned gate exists — captions must not name an activation.
-    gate_activation: str | None = None
-    #: gate VALUES source: "conditioning" (computed by a producer, e.g. from
-    #: the timestep embedding) | "parameter" (learned static) | None (ungated).
-    gate_source: str | None = None
-    #: True when the block IS the standard two-sublayer cell (one attention +
-    #: at most one FFN, no in-block conv mixer) — a conformer is not, and must
-    #: never be projected as one.
-    standard_cell: bool = True
-    attention_class: str = ""
-    ffn_class: str = ""
-    projection_mode: str = "separate_qkv"
-    q_norm: bool = False
-    k_norm: bool = False
-    v_norm: bool = False
-    post_rope_scale: bool = False
-    position_kind: str = "unknown"
-    attention_kind: str = "unknown"
-    ffn_projection_mode: str = "split"
-    variant_key: str = ""
-    repeat_field: str = ""
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "block_class": self.block_class,
-            "source_file": self.source_file,
-            "line": self.line,
-            "norm_kind": self.norm_kind,
-            "norm_placement": self.norm_placement,
-            "ffn_gated": self.ffn_gated,
-            "residual_gated": self.residual_gated,
-            "gate_activation": self.gate_activation,
-            "standard_cell": self.standard_cell,
-            "gate_source": self.gate_source,
-            "attention_class": self.attention_class,
-            "ffn_class": self.ffn_class,
-            "projection_mode": self.projection_mode,
-            "q_norm": self.q_norm,
-            "k_norm": self.k_norm,
-            "v_norm": self.v_norm,
-            "post_rope_scale": self.post_rope_scale,
-            "position_kind": self.position_kind,
-            "attention_kind": self.attention_kind,
-            "ffn_projection_mode": self.ffn_projection_mode,
-            "variant_key": self.variant_key,
-            "repeat_field": self.repeat_field,
-        }
-
-
-@dataclass(frozen=True)
-class VisionTowerEvidence:
-    """Qualified evidence for a delegated vision tower."""
-
-    status: str
-    component: str = "vision_config"
-    owner_class: str = ""
-    source_file: str = ""
-    reason: str = ""
-    patch_ops: tuple[SourceOp, ...] = ()
-    position_kind: str = "unknown"
-    input_position_kind: str = "unknown"
-    variants: tuple[VisionLayerEvidence, ...] = ()
-    final_norm_kind: str = "unknown"
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "status": self.status,
-            "component": self.component,
-            "owner_class": self.owner_class,
-            "source_file": self.source_file,
-            "reason": self.reason,
-            "patch_ops": [op.to_dict() for op in self.patch_ops],
-            "position_kind": self.position_kind,
-            "input_position_kind": self.input_position_kind,
-            "variants": [variant.to_dict() for variant in self.variants],
-            "final_norm_kind": self.final_norm_kind,
-        }
-
-
-@dataclass(frozen=True)
-class AudioCallableEvidence:
-    """Exact operation graph for one callable reached by an audio tower."""
-
-    class_name: str
-    source_file: str
-    line: int | None
-    ops: tuple[SourceOp, ...] = ()
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "class_name": self.class_name,
-            "source_file": self.source_file,
-            "line": self.line,
-            "ops": [op.to_dict() for op in self.ops],
-        }
-
-
-@dataclass(frozen=True)
-class AudioLayerEvidence:
-    """Source-derived graph for one repeated audio encoder block."""
-
-    block_class: str
-    source_file: str
-    line: int | None
-    ops: tuple[SourceOp, ...] = ()
-    callables: tuple[AudioCallableEvidence, ...] = ()
-    repeat_field: str = ""
-    #: typed per-layer facts from the ONE shared reader
-    #: (:func:`~.vision.layer_facts_from_block`) — norm kind/placement, FFN
-    #: gating, gates, projection modes — so the audio tower rides the same
-    #: cell projector as every other tower.
-    layer_facts: dict[str, Any] = field(default_factory=dict)
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "block_class": self.block_class,
-            "source_file": self.source_file,
-            "line": self.line,
-            "ops": [op.to_dict() for op in self.ops],
-            "callables": [item.to_dict() for item in self.callables],
-            "repeat_field": self.repeat_field,
-            "layer_facts": dict(self.layer_facts),
-        }
-
-
-@dataclass(frozen=True)
-class AudioTowerEvidence:
-    """Qualified evidence for a delegated audio tower and its connector."""
-
-    status: str
-    component: str = "audio_config"
-    owner_class: str = ""
-    source_file: str = ""
-    reason: str = ""
-    frontend_ops: tuple[SourceOp, ...] = ()
-    position_kind: str = "unknown"
-    position_application: str = "unknown"
-    variants: tuple[AudioLayerEvidence, ...] = ()
-    post_ops: tuple[SourceOp, ...] = ()
-    projector_ops: tuple[SourceOp, ...] = ()
-    projector_class: str = ""
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "status": self.status,
-            "component": self.component,
-            "owner_class": self.owner_class,
-            "source_file": self.source_file,
-            "reason": self.reason,
-            "frontend_ops": [op.to_dict() for op in self.frontend_ops],
-            "position_kind": self.position_kind,
-            "position_application": self.position_application,
-            "variants": [variant.to_dict() for variant in self.variants],
-            "post_ops": [op.to_dict() for op in self.post_ops],
-            "projector_ops": [op.to_dict() for op in self.projector_ops],
-            "projector_class": self.projector_class,
-        }
-
-
-@dataclass(frozen=True)
 class ProjectorEvidence:
     """Ordered operations of the exact multimodal connector callable.
 
@@ -238,6 +66,7 @@ class ProjectorEvidence:
     """
 
     status: str
+    modalities: tuple[str, ...] = ()
     component: str = "root"
     owner_class: str = ""
     field_name: str = ""
@@ -257,7 +86,8 @@ class ProjectorEvidence:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "status": self.status, "component": self.component,
+            "status": self.status, "modalities": list(self.modalities),
+            "component": self.component,
             "owner_class": self.owner_class, "field_name": self.field_name,
             "projector_class": self.projector_class, "source_file": self.source_file,
             "line": self.line, "ops": [op.to_dict() for op in self.ops],

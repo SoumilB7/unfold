@@ -331,17 +331,17 @@ def test_priority_resolution_consumes_the_field_it_actually_found():
                    for e in ledger.events)
 
 
-def test_qwen2vl_vision_width_is_consumed_at_its_exact_path():
-    """The real witness: the tower width must be consumed at
-    ``vision_config.embed_dim`` — the path a claim binding joins on."""
+def test_qwen2vl_vision_width_stays_unconsumed_until_its_fact_route_exists():
+    """U9 proves the exact Qwen2-VL tower occurrence but intentionally does
+    not report ``vision_config.embed_dim`` as consumed: the raw modality
+    projection has no owner-qualified FactLedger/receipt route until U14.
+    The former config-only ``encoder_width`` claim is retired; this witness
+    must not pretend to consume it before the U14 fact route exists."""
     cfg = json.loads((_CORPUS / "qwen2-vl-7b-instruct.json").read_text())["config"]
     consumed = [e for e in _ledger_for(cfg).events
                 if e.intent == "consumed" and e.mechanism == "encoder_width"
                 and e.component == "root.vision"]
-    assert consumed, "the witness must consume a vision tower width"
-    assert all(e.config_path == "vision_config.embed_dim" for e in consumed), \
-        [e.config_path for e in consumed]
-    assert all(e.path_exact for e in consumed)
+    assert consumed == []
 
 
 # --------------------------------------------------------------------------

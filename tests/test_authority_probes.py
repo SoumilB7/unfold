@@ -603,11 +603,17 @@ def test_cor4_ce4_conflicting_wrappers_are_ambiguity_not_first_match():
             if e.intent == "ambiguous" and e.component == "root.vision"]
     assert rows and "vision_model_config" in rows[0].reason
 
-    # EQUAL rivals are redundant evidence: the path builds, facts unchanged.
+    # EQUAL rivals are redundant address evidence: the opaque path builds and
+    # is identical to the single-spelling result.  With no modeling source,
+    # the config width must not become an encoder/projector fact.
     redundant = dict(_NO_SOURCE_MM)
     redundant["vision_model_config"] = dict(_NO_SOURCE_MM["vision_config"])
     built = mu.unfold(redundant).to_ir()["extras"]["modalities"]["inputs"]
-    assert built["vision"]["encoder"]["hidden_size"] == 768
+    canonical = mu.unfold(_NO_SOURCE_MM).to_ir()[
+        "extras"]["modalities"]["inputs"]
+    assert built["vision"] == canonical["vision"]
+    assert "hidden_size" not in built["vision"]["encoder"]
+    assert "out_features" not in built["vision"]["projector"]
 
 
 def test_cor4_ce5_source_owned_width_beats_language_width():
@@ -639,25 +645,24 @@ def test_cor4_ce6_missing_source_leaves_width_and_mechanism_unknown():
 
 
 def test_cor4_ce7_audio_and_vision_sharing_a_leaf_never_cross_clear():
-    """§9.C.7: audio and vision towers both declaring ``hidden_size`` keep
-    separate owner-scoped rows — neither clears the other's debt."""
+    """§9.C.7: source-missing audio and vision towers may share a declared
+    ``hidden_size`` spelling, but neither declaration authors architecture and
+    neither can borrow the root language width.  The lower-level event-ledger
+    poisons separately pin owner/path-exact sibling accounting."""
     cfg = dict(_NO_SOURCE_MM)
     cfg["audio_config"] = {"hidden_size": 512, "num_hidden_layers": 2,
                            "num_attention_heads": 4}
     cfg["audio_token_index"] = 6
     with capture_events() as ledger:
         with owner_scope("root"):
-            mu.unfold(cfg).to_ir()
-    rows = {(e.component, e.config_path) for e in ledger.events
-            if e.canonical == "hidden_size" and e.present
-            and e.component in {"root.vision", "root.audio"}}
-    assert ("root.vision", "vision_config.hidden_size") in rows
-    assert ("root.audio", "audio_config.hidden_size") in rows
-    consumed_by = {}
-    for e in ledger.events:
-        if e.intent == "consumed" and e.canonical == "hidden_size" \
-                and e.component in {"root.vision", "root.audio"}:
-            consumed_by.setdefault(e.component, set()).add(e.config_path)
-    for owner, paths in consumed_by.items():
-        prefix = "vision_config." if owner == "root.vision" else "audio_config."
-        assert all(p.startswith(prefix) for p in paths), (owner, paths)
+            ir = mu.unfold(cfg).to_ir()
+    nested = [e for e in ledger.events
+              if e.canonical == "hidden_size" and e.present
+              and e.component in {"root.vision", "root.audio"}]
+    assert nested == []
+    inputs = ir["extras"]["modalities"]["inputs"]
+    assert set(inputs) >= {"vision", "audio"}
+    assert "hidden_size" not in inputs["vision"]["encoder"]
+    assert "hidden_size" not in inputs["audio"]["encoder"]
+    assert "out_features" not in inputs["vision"]["projector"]
+    assert "out_features" not in inputs["audio"]["projector"]

@@ -86,9 +86,9 @@ _CONSTRUCTION_OPERATIONS = {
 }
 
 _FUNCTION_OPERATIONS = {
-    "torch.cat": ("concatenate", "Concatenate tensors"),
-    "torch.concat": ("concatenate", "Concatenate tensors"),
-    "torch.concatenate": ("concatenate", "Concatenate tensors"),
+    "torch.cat": ("concat", "Concatenate tensors"),
+    "torch.concat": ("concat", "Concatenate tensors"),
+    "torch.concatenate": ("concat", "Concatenate tensors"),
     "torch.stack": ("stack", "Stack tensors"),
     "torch.split": ("split", "Split tensor"),
     "torch.chunk": ("split", "Chunk tensor"),
@@ -178,6 +178,11 @@ def read_projector_operation_chain(
         if resolved is None:
             continue
         op_items, op_spans, failure = resolved
+        elementwise = _reaching_input_elementwise(
+            index, forward, call, node.symbol)
+        if elementwise is not None:
+            operations.append(elementwise[0])
+            spans.append(elementwise[1])
         operations.extend(op_items)
         spans.extend(op_spans)
         if failure is not None:
@@ -431,7 +436,8 @@ def projector_operation_chain_in_graph(index, graph, occurrence, seen=()):
         if item is None:
             continue
         op_items, op_spans, failure = item
-        elementwise = _immediate_tensor_elementwise(call, node.symbol)
+        elementwise = _reaching_input_elementwise(
+            index, forward, call, node.symbol)
         if elementwise is not None:
             ops.append(elementwise[0]); spans.append(elementwise[1])
         ops.extend(op_items); spans.extend(op_spans)
@@ -471,6 +477,120 @@ def _immediate_tensor_elementwise(call, owner_symbol):
     return (SourceOp(
         "elementwise", label, owner_symbol.qualified_name,
         owner_symbol.source.canonical_path, tensor.span.line), tensor.span)
+
+
+def _reaching_input_elementwise(index, callable_symbol, call, owner_symbol):
+    """Observe numeric affine preprocessing on this operation's tensor input.
+
+    The immediate-expression case remains the narrow fast path.  The second
+    path follows exact, unguarded single-name assignments backwards from the
+    tensor argument to a formal input of the same callable.  This covers code
+    such as ``x = 2 * (x - .5); self.proj(x)`` without walking unrelated
+    arithmetic (shape calculations, position indices, or scalar metadata).
+
+    This is positive evidence only: rival/guarded bindings, cycles, opaque
+    expressions, or arithmetic not rooted in a real callable input produce no
+    operation rather than a guessed one.
+    """
+    immediate = _immediate_tensor_elementwise(call, owner_symbol)
+    if immediate is not None:
+        return immediate
+    record = index.callable_by_symbol(callable_symbol)
+    if record is None:
+        return None
+    formal_inputs = {
+        param.name for param in record.params if param.name not in {"self", "cls"}
+    }
+    if not formal_inputs:
+        return None
+    tensor = _operation_tensor_input(call)
+    found = _numeric_affine_reaching_input(
+        index, callable_symbol, tensor, call.span, formal_inputs, set())
+    if found is None or found.span is None:
+        return None
+    return (SourceOp(
+        "elementwise", "Normalize input", owner_symbol.qualified_name,
+        owner_symbol.source.canonical_path, found.span.line,
+        fn="affine"), found.span)
+
+
+def _operation_tensor_input(call):
+    selected = projector_call_lineage_inputs(call)
+    if selected:
+        return selected[0]
+    return call.args[0] if call.args else None
+
+
+def _numeric_affine_reaching_input(
+        index, callable_symbol, expression, cutoff, formal_inputs, visiting):
+    if expression is None:
+        return None
+    if expression.kind == "binop":
+        operators = tuple(_expression_operators(expression))
+        if operators and all(item in {"+", "-", "*", "/"}
+                             for item in operators) \
+                and _expression_has_numeric_literal(expression) \
+                and _expression_names(expression) & formal_inputs:
+            return expression
+        return None
+    if expression.kind == "name" and expression.name:
+        key = (expression.name, cutoff)
+        if key in visiting:
+            return None
+        bindings = tuple(
+            item for item in index.bindings_in(callable_symbol)
+            if not item.guard and item.span is not None
+            and _before(item.span, cutoff)
+            and any(_simple_target(target) == expression.name
+                    for target in item.targets))
+        if not bindings:
+            return None
+        binding = max(bindings, key=lambda item: _span_key(item.span))
+        return _numeric_affine_reaching_input(
+            index, callable_symbol, binding.value, binding.span,
+            formal_inputs, {*visiting, key})
+    if expression.kind == "call" and expression.children:
+        callee = expression.children[0]
+        receiver = (callee.children[0]
+                    if callee.kind == "attribute" and callee.children
+                    and not (callee.children[0].kind == "name"
+                             and callee.children[0].name == "self")
+                    else None)
+        inputs = ((receiver,) if receiver is not None else ()) \
+            + expression.children[1:2]
+        matches = tuple(filter(None, (
+            _numeric_affine_reaching_input(
+                index, callable_symbol, child, cutoff,
+                formal_inputs, visiting)
+            for child in inputs)))
+        return matches[0] if len(matches) == 1 else None
+    return None
+
+
+def _expression_operators(expression):
+    if expression.kind == "binop":
+        yield expression.operator
+    for child in expression.children:
+        if isinstance(child, ExprNode):
+            yield from _expression_operators(child)
+
+
+def _expression_has_numeric_literal(expression):
+    if expression.kind == "constant" \
+            and isinstance(expression.const_value, (int, float)) \
+            and not isinstance(expression.const_value, bool):
+        return True
+    return any(
+        _expression_has_numeric_literal(child)
+        for child in expression.children if isinstance(child, ExprNode))
+
+
+def _expression_names(expression):
+    out = {expression.name} if expression.kind == "name" and expression.name else set()
+    for child in expression.children:
+        if isinstance(child, ExprNode):
+            out.update(_expression_names(child))
+    return out
 
 
 def projector_call_operation_in_graph(index, graph, occurrence, call):

@@ -103,6 +103,7 @@ def decoder_learned_absolute_position_for_path(
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool,
+    config_selector=None,
 ) -> ReaderResult[LearnedAbsolutePositionEvidence]:
     """Resolve an exact decoder path, then read only its model-stage forward."""
     if not isinstance(index, ProgramIndex):
@@ -110,7 +111,8 @@ def decoder_learned_absolute_position_for_path(
     if not isinstance(bundle, SourceBundle):
         raise TypeError("learned-absolute evidence requires a SourceBundle")
     path = decoder_block_path_for_config(
-        index, bundle, config_path, allow_root_stage=allow_root_stage)
+        index, bundle, config_path, allow_root_stage=allow_root_stage,
+        config_selector=config_selector)
     if path.status != "resolved":
         return ReaderResult.failed(path.owner, (
             ReaderFailure(

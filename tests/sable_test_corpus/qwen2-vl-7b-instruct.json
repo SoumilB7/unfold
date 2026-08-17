@@ -2,7 +2,7 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
-    "config_accessed_unprojected": false,
+    "config_accessed_unprojected": true,
     "config_ambiguity": true,
     "config_audit_incomplete": true,
     "config_consumed_unreceipted": true,
@@ -168,6 +168,21 @@
   },
   "hash_signature": [
     "000c82b0a96adbbd92b9e185a2c6795b",
+    "154cfe6b7e797a1b5ecf7e4dc31b8509",
+    "536f77e2592b41352d119ad55c5d7060",
+    "83ec299d0868e4d562c8388bde97e88b",
+    "87be025f271c402c8d03d60efba9735a",
+    "a084abb5d4edf995ff1080d03ad7d93c",
+    "a82ae2d276e27f7f1f83e9804ab7cd45",
+    "af08169058fe7250a148c9db0b50a469",
+    "baa634dfcddee173bbf3a55bfc67a3b5",
+    "c514c819f533d468a8a54799bfa0bbaa",
+    "e7220fa964088846e1912959abfda3fc"
+  ],
+  "model": "Qwen2-VL-7B-Instruct",
+  "source": "local",
+  "superseded_hash_signature": [
+    "000c82b0a96adbbd92b9e185a2c6795b",
     "0119adc0a472b33e71e237cdd615e4bb",
     "0722d68e8b7714f0ad5c5d7b9946ea36",
     "24be8595cdbb6e1b93f81739b6428779",
@@ -181,26 +196,9 @@
     "b87789d90a5ef4f2300b571043c58d21",
     "c7679bca24724d3fd277f8c5dee25ce4"
   ],
-  "model": "Qwen2-VL-7B-Instruct",
-  "source": "local",
-  "superseded_hash_signature": [
-    "0119adc0a472b33e71e237cdd615e4bb",
-    "0722d68e8b7714f0ad5c5d7b9946ea36",
-    "24be8595cdbb6e1b93f81739b6428779",
-    "2c92800356c775ae2fb957d272c5ded4",
-    "2dc1b2e33ee6747674e0226823e47b7a",
-    "84b743adb93bf54453d4ebcafde42d70",
-    "8feba0fef952806b33085e05f5c761c6",
-    "9327b55799f361f2f0dfe1e1cf189236",
-    "a75be331e73a74cc100db97e6a2b752b",
-    "a9ee9abd46e65af2b59aa70d72e3a99b",
-    "ab6214cf558738ee52e00c7cd490e4a2",
-    "b87789d90a5ef4f2300b571043c58d21",
-    "c7679bca24724d3fd277f8c5dee25ce4"
-  ],
   "visual_evidence": {
     "gallery_dir": "galleries/qwen2-vl-7b-instruct",
     "manifest": true,
-    "png_count": 13
+    "png_count": 11
   }
 }

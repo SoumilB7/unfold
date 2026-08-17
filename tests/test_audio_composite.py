@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from model_unfolder import unfold, config_to_ir
 from model_unfolder.block_schema import validate_click_coupling
 from model_unfolder.evidence.context import ParseContext
+from model_unfolder.evidence.structural_debt import pending_projection_paths
 
 # facebook/musicgen-small config.json — the composite contract: bare slots
 # text_encoder / audio_encoder / decoder, each declaring its own model_type.
@@ -83,34 +84,39 @@ def test_musicgen_conditioning_tower_rides_the_universal_roundtrip():
     ir = config_to_ir(MUSICGEN_SMALL)
     cond = ir.extras["modalities"]["inputs"]["conditioning"]
     encoder = cond["encoder"]
-    assert encoder["model_type"] == "t5"
+    assert "model_type" not in encoder
+    assert encoder["source_component"] == "text_encoder"
+    assert encoder["source_owner"] == "T5Stack"
     assert encoder["hidden_size"] == 768 and encoder["num_layers"] == 12
-    # Deep tower through the ONE encoder round-trip (embedded ≡ standalone).
-    # T5Model exposes rival encoder/decoder stages here, so norm stays omitted
-    # until the stage address is proven.  The same owner ambiguity applies to
-    # the FFN: encoder and decoder are distinct occurrences, so a union across
-    # them cannot certify dense/ungated storage for the displayed encoder.
-    assert encoder["sub_model"]["groups"]
-    assert "norm" not in encoder
-    assert "gated" not in encoder
-    assert "activation" not in encoder
-    group_ffn = encoder["sub_model"]["groups"][0]["ffn"]
-    assert group_ffn["kind"] is None
-    assert group_ffn["gated"] is None
-    assert group_ffn["projection_mode"] is None
-    assert group_ffn["activation"] is None
-    # The flat card follows the same typed tower.  A raw config declaration
-    # cannot restore geometry the exact stage reader withheld.
-    assert "num_attention_heads" not in encoder
-    assert "intermediate_size" not in encoder
-    audit = ir.extras["config_audit"]
-    assert "text_encoder.num_heads" not in audit["unread"]
-    exact_debt = ir.extras["config_access"]["accessed_unconsumed_exact"]
-    assert any(row["component"] == "root.conditioning"
-               and row["path"] == "num_heads" for row in exact_debt)
+    # The task-specific AutoModelForTextEncoding source registry selects the
+    # exact T5EncoderModel occurrence (not the config's generic T5Model), so
+    # the encoder has one repeated stage rather than a false encoder+decoder
+    # union.  Mechanisms the exact block reader has not closed remain unknown.
+    assert len(encoder["variants"]) == 1
+    variant = encoder["variants"][0]
+    assert variant["repeat"] == 12
+    assert variant["attention_kind"] == "mha"
+    assert variant["ffn_gated"] is None
+    assert variant["norm_kind"] is None
+    assert encoder["num_attention_heads"] == 12
+    assert encoder["final_norm_kind"] == "rmsnorm"
+    assert encoder["position_encoding"] == {
+        "kind": "relative_bias", "application": "attention_side_input"}
+    # U9's ReaderResult is the architectural authority, but U14 still owns the
+    # FactLedger/receipt migration for the legacy modality-extras surface.  Do
+    # not let that later obligation disappear merely because unrelated parser
+    # reads make the compatibility ``unread`` view order-sensitive.
+    assert ("root.conditioning", "text_encoder.num_heads") \
+        in pending_projection_paths()
     # Width projection is shape-REQUIRED (768 -> 1024).
-    assert cond["projector"] == {"kind": "code_defined_projector",
-                                 "in_features": 768, "out_features": 1024}
+    projector = cond["projector"]
+    assert projector["kind"] == "linear_projector"
+    assert (projector["in_features"], projector["out_features"]) == (768, 1024)
+    assert projector["source_field"] == "enc_to_dec_proj"
+    assert projector["source_evidence"]["in_width_path"] \
+        == ["text_encoder", "d_model"]
+    assert projector["source_evidence"]["out_width_path"] \
+        == ["decoder", "hidden_size"]
     assert cond["tokens"]["kind"] == "cross_attention_states"
     assert ir.extras["modalities"]["fusion"]["kind"] == "cross_attention"
 

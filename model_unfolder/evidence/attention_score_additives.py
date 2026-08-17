@@ -304,7 +304,8 @@ def decoder_attention_score_additives_for_path(
             not isinstance(part, str) or not part for part in config_path):
         raise TypeError("config_path is tuple[str, ...]")
     candidates = decoder_block_candidates_for_config(
-        index, bundle, config_path, allow_root_stage=allow_root_stage)
+        index, bundle, config_path, allow_root_stage=allow_root_stage,
+        config_selector=config_selector)
     if candidates.status != "resolved":
         return candidates
     outcomes = tuple(attention_score_additives_at_block(

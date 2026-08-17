@@ -104,6 +104,7 @@ def decoder_cross_attention_all_layers_for_path(
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool,
+    config_selector=None,
 ) -> ReaderResult[CrossAttentionAllLayersEvidence]:
     """Prove the additive dual-attention shape at one selected decoder path."""
     if not isinstance(index, ProgramIndex):
@@ -116,7 +117,8 @@ def decoder_cross_attention_all_layers_for_path(
             not isinstance(part, str) or not part for part in config_path):
         raise TypeError("config_path is tuple[str, ...]")
     block = decoder_block_path_for_config(
-        index, bundle, config_path, allow_root_stage=allow_root_stage)
+        index, bundle, config_path, allow_root_stage=allow_root_stage,
+        config_selector=config_selector)
     if block.status != "resolved":
         return block
     root = block.value.component_root

@@ -210,7 +210,8 @@ def decoder_position_application_schedule_for_path(
     if not isinstance(bundle, SourceBundle):
         raise TypeError("position schedule requires a SourceBundle")
     block_result = decoder_block_path_for_config(
-        index, bundle, tuple(config_path), allow_root_stage=allow_root_stage)
+        index, bundle, tuple(config_path), allow_root_stage=allow_root_stage,
+        config_selector=config_selector)
     if block_result.status != "resolved":
         return _forward_failure(block_result, "decoder block address")
     block = block_result.value

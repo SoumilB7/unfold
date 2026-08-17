@@ -49,49 +49,48 @@ def test_ops_region_fails_loudly_on_a_typo():
         ops_region([{"kind": "linear", "from": "nope"}], rid="x")
 
 
-def test_mlp_projector_card_declares_its_ops():
-    """The pixtral case: the projector card embeds linear→act→linear, with the
-    chips and diagram derived from the same facts."""
+def test_source_proven_mlp_projector_card_declares_only_bound_ops():
+    """The Pixtral/LLaVA case keeps the exact source-proven
+    linear→activation→linear chain.  U9 deliberately withholds the former
+    config-authored input width and GELU spelling until their exact operands
+    receive owner-qualified fact/receipt routes."""
     assert "ops" in VIEW_REGISTRY
     html = unfold(PIXTRAL_STYLE).to_html(standalone=True)
     i = html.find('data-card-id="vision_projector"')
     seg = html[i:i + 4000]
     assert "MLP projector" in seg
-    assert "1,024 → 5,120" in seg                  # chip
-    assert "<svg" in seg and "in (1,024)" in seg   # declared-ops diagram
-    assert "GELU" in seg
+    assert "<svg" in seg
+    assert "Linear (in)" in seg and "Activation" in seg
+    assert "Linear (out)" in seg
+    assert "1,024 → 5,120" not in seg
+    assert "in (1,024)" not in seg
+    assert "GELU" not in seg
 
 
 def test_patch_merger_card_declares_its_ops():
     html = unfold(QWEN2VL_STYLE).to_html(standalone=True)
     i = html.find('data-card-id="vision_projector"')
     seg = html[i:i + 9000]
-    assert "Patch merger" in seg and "Reshape / merge patches" in seg
+    assert "Patch merger" in seg and "Reshape features" in seg
     assert "LayerNorm" in seg and "GELU" in seg and seg.count("Linear") >= 2
 
 
-def test_vision_patch_profiles_preserve_source_order_and_concrete_backend():
+def test_vision_frontends_preserve_exact_source_order_without_profile_invention():
     pixtral = unfold(PIXTRAL_STYLE).to_ir()["extras"]["modalities"]["inputs"]["vision"]
     qwen = unfold(QWEN2VL_STYLE).to_ir()["extras"]["modalities"]["inputs"]["vision"]
-    # Labels are humanized STRUCTURAL names (a raw torch class on a box was
-    # the Theme-L leak); the concrete backend survives as card provenance in
-    # the conv op's description, and consecutive tensor moves collapse into
-    # ONE regroup step whose description enumerates them in source order.
+    # U9 projects only operations on the exact active component route.  The
+    # former Pixtral patch/crop/join profile was hand-authored and is withheld;
+    # the exact observed wrapper route currently proves only axis insertion +
+    # RMSNorm.  Qwen's exact route proves reshape -> Conv3d -> reshape.
     pix_ops = pixtral["embedding"]["ops"]
-    # SEMANTIC reshapes (the variable-size image JOIN) stand alone — only the
-    # axis plumbing (flatten/transpose) folds into the regroup step.
     assert [op["label"] for op in pix_ops] == [
-        "Patch convolution", "Crop patches", "Regroup patch tokens",
-        "Join patch sequences", "RMSNorm"
+        "Add tensor axis", "RMSNorm"
     ]
-    assert "Conv2d" in (pix_ops[0].get("description") or "")
-    assert ("Flatten spatial grid → Transpose to tokens"
-            in (pix_ops[2].get("description") or ""))
     qwen_ops = qwen["embedding"]["ops"]
     assert [op["label"] for op in qwen_ops] == [
-        "Reshape patches", "Patch convolution", "Flatten tokens"
+        "Reshape features", "3D convolution", "Reshape features"
     ]
-    assert "Conv3d" in (qwen_ops[1].get("description") or "")
+    assert qwen_ops[1]["class_name"] == "Conv3d"
     for cfg in (PIXTRAL_STYLE, QWEN2VL_STYLE):
         html = unfold(cfg).to_html(standalone=True)
         assert "Linear / Conv2d" not in html
@@ -100,8 +99,10 @@ def test_vision_patch_profiles_preserve_source_order_and_concrete_backend():
 
 def test_pixtral_encoder_uses_rmsnorm_and_a_gated_vision_mlp():
     vision = unfold(PIXTRAL_STYLE).to_ir()["extras"]["modalities"]["inputs"]["vision"]
-    assert vision["encoder"]["norm_kind"] == "RMSNorm"
-    assert vision["encoder"]["ffn_gated"] is True
+    variants = vision["encoder"]["variants"]
+    assert len(variants) == 1
+    assert variants[0]["norm_kind"] == "rmsnorm"
+    assert variants[0]["ffn_gated"] is True
     html = unfold(PIXTRAL_STYLE).to_html(standalone=True)
     for node_id in ("vision_enc_ffn_gate_proj", "vision_enc_ffn_up_proj",
                     "vision_enc_ffn_multiply"):
@@ -109,29 +110,30 @@ def test_pixtral_encoder_uses_rmsnorm_and_a_gated_vision_mlp():
         assert f'data-card-id="{node_id}"' in html
 
 
-def test_mistral3_projector_includes_norm_patch_merge_and_two_linear_mlp():
+def test_mistral3_projector_preserves_its_exact_norm_reshape_and_mlp_chain():
     vision = unfold(MISTRAL3_STYLE).to_ir()["extras"]["modalities"]["inputs"]["vision"]
     projector = vision["projector"]
     assert "profile" not in projector
     assert projector["source_class"] == "Mistral3MultiModalProjector"
     assert [op.get("label") or op.get("fn") for op in projector["ops"]] == [
-        "RMSNorm", "Split image sequences", "Arrange spatial grid",
-        "Extract merge windows", "Flatten merge windows", "Join image sequences",
-        "Patch merge", "Linear (in)", "gelu", "Linear (out)"
+        "RMSNorm", "Reshape features", "Reorder tensor axes",
+        "Add tensor axis", "Reshape features", "Transpose tensor axes",
+        "Concatenate tensors", "Linear (in)", "Linear", "Activation",
+        "Linear (out)"
     ]
     html = unfold(MISTRAL3_STYLE).to_html(standalone=True)
     assert "Patch merger" in html
-    assert "Extract merge windows" in html and "RMSNorm" in html
+    assert "Reshape features" in html and "Concatenate tensors" in html
+    assert "RMSNorm" in html
 
 
 def test_qwen_video_path_reuses_the_same_conv3d_and_patch_merger_profiles():
     cfg = {**QWEN2VL_STYLE, "video_token_id": 151656}
     video = unfold(cfg).to_ir()["extras"]["modalities"]["inputs"]["video"]
-    # "Conv3d" (a raw torch class on a box) became the humanized structural
-    # label — the Theme-L leak fix; the video path still reuses the exact
-    # same three-op profile as the image path.
+    # The video path reuses the same exact source route as the image path;
+    # labels come from the canonical operation vocabulary.
     assert [op["label"] for op in video["embedding"]["ops"]] == [
-        "Reshape patches", "Patch convolution", "Flatten tokens"
+        "Reshape features", "3D convolution", "Reshape features"
     ]
     assert "profile" not in video["projector"]
     assert video["projector"]["source_class"] == "PatchMerger"

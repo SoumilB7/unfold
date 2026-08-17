@@ -208,9 +208,16 @@ def locals_before(index, callable_symbol, cutoff, evaluator):
 
 
 def construction_site(index, owner_symbol, site_id):
-    matches = tuple(
+    direct = tuple(
         item for item in index.construction_sites_of(owner_symbol)
         if item.site_id == site_id)
+    contained = tuple(
+        site
+        for container in index.containers
+        if container.owner == owner_symbol
+        for site in container.elements
+        if site.site_id == site_id)
+    matches = tuple(dict.fromkeys((*direct, *contained)))
     return matches[0] if len(matches) == 1 else None
 
 
@@ -221,19 +228,47 @@ def constructor_argument_env(index, graph, occurrence, document):
     occurrence, and this helper evaluates that occurrence's literal/config
     arguments.  It never selects a class or architectural role.
     """
+    return _constructor_argument_env(
+        index, graph, occurrence, document, frozenset())
+
+
+def _constructor_argument_env(index, graph, occurrence, document, visiting):
+    """Recursive implementation keyed by exact construction occurrence.
+
+    A constructor actual may itself be a formal of the parent occurrence (for
+    example ``Root(..., False) -> Stage(..., is_gated) -> Block(...,
+    is_gated)``).  Evaluating only the immediate site loses that distinction
+    and conflates two occurrences of the same stage class.  Walk the exact
+    occurrence chain instead; a cycle or any unaddressable/rival site remains
+    unknown.
+    """
+    if occurrence in visiting:
+        return None
     if not occurrence.sites:
         return {}
+    visiting = frozenset((*visiting, occurrence))
     owner = graph.node_for(occurrence)
-    parent = graph.node_for(type(occurrence)(
-        occurrence.root, occurrence.sites[:-1]))
+    parent_occurrence = type(occurrence)(
+        occurrence.root, occurrence.sites[:-1])
+    parent = graph.node_for(parent_occurrence)
     if owner is None or parent is None:
         return None
     site = construction_site(
         index, parent.symbol, occurrence.sites[-1])
-    if site is None or site.guard:
+    # A repeated container template is one exact symbolic construction site.
+    # Its comprehension/loop guard controls cardinality, not which constructor
+    # actual reaches the child: every emitted element receives the same actual.
+    # Conditional guards still make the occurrence's arguments unresolved.
+    if site is None or any(
+            step.kind not in {"comprehension", "for"}
+            for step in site.guard):
+        return None
+    parent_env = _constructor_argument_env(
+        index, graph, parent_occurrence, document, visiting)
+    if parent_env is None:
         return None
     parent_evaluator = ConfigExpressionEvaluator(
-        parent.config_bindings, document)
+        parent.config_bindings, document, parent_env)
     locals_before(
         index, site.enclosing_callable, site.span, parent_evaluator)
     init = index.callable_by_symbol(SymbolId(

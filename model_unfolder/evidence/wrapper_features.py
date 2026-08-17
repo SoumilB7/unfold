@@ -109,7 +109,7 @@ def wrapper_feature_selection_result(
         calls = index.calls_in(callable_symbol)
         for binding in bindings:
             call = _binding_call(binding, calls)
-            if call is None or not _requests_hidden_states(call):
+            if call is None or not _is_self_field_call(call):
                 continue
             child = resolve_construction_call_in_graph(
                 index, root.graph, occurrence, call)
@@ -158,11 +158,12 @@ def _binding_call(binding, calls):
     return matches[0] if len(matches) == 1 else None
 
 
-def _requests_hidden_states(call):
-    return any(
-        name == "output_hidden_states"
-        and value.kind == "constant" and value.const_value is True
-        for name, value in call.kwargs)
+def _is_self_field_call(call):
+    callee = call.callee
+    return bool(
+        callee.kind == "attribute" and len(callee.children) == 1
+        and callee.children[0].kind == "name"
+        and callee.children[0].name == "self" and callee.name)
 
 
 def _feature_operations(
@@ -191,8 +192,11 @@ def _feature_operations(
         proof = resolve_import_reference(
             index, callable_symbol.source, callable_symbol, call.callee)
         if proof is not None and proof.qualified_target in _CAT_PROTOCOLS \
-                and _names((*call.args, *(value for _name, value in call.kwargs))) \
-                & multi_names:
+                and any(_depends_on_selected(
+                    expression, multi_names, bindings, call.span,
+                    tuple(call.guard), frozenset())
+                    for expression in (
+                        *call.args, *(value for _name, value in call.kwargs))):
             operations.append(FeatureOperation(
                 "concatenate_selected_layers", call.span,
                 guard=tuple(call.guard)))
@@ -246,6 +250,59 @@ def _call_target_names(call, bindings):
             item.span == call.span for item in _expressions(binding.value))
         for name in _target_names(binding.targets)
     }
+
+
+def _depends_on_selected(expression, selected_names, bindings, cutoff,
+                         consumer_guard, seen):
+    """Exact local def-use from a selected hidden-state list to a consumer.
+
+    This deliberately interprets no operation names.  Calls, reshapes and
+    aliases are transparent expression containers; only source ordering and a
+    compatible guard path permit a reaching binding.
+    """
+    if not isinstance(expression, ExprNode):
+        return False
+    if expression.kind == "name" and expression.name:
+        if expression.name in selected_names:
+            return True
+        candidates = tuple(
+            binding for binding in bindings
+            if binding.value is not None and binding.span is not None
+            and _span_before(binding.span, cutoff)
+            and _guard_prefix(tuple(binding.guard), consumer_guard)
+            and expression.name in _target_names(binding.targets))
+        if not candidates:
+            return False
+        latest = max(candidates, key=lambda item: _span_key(item.span))
+        definition = (expression.name, latest.span)
+        if definition in seen:
+            return False
+        return _depends_on_selected(
+            latest.value, selected_names, bindings, latest.span,
+            tuple(latest.guard), frozenset((*seen, definition)))
+    return any(_depends_on_selected(
+        child, selected_names, bindings, cutoff, consumer_guard, seen)
+        for child in (
+            *expression.children,
+            *(value for _name, value in expression.keyword_children))
+        if isinstance(child, ExprNode))
+
+
+def _guard_prefix(prefix, path):
+    return len(prefix) <= len(path) and tuple(path[:len(prefix)]) == tuple(prefix)
+
+
+def _span_before(left, right):
+    # A name used inside the RHS of ``x = ...x...`` must not let that same
+    # assignment certify itself as its reaching definition.  Reassignments
+    # therefore require a strictly earlier producer span.  This is also the
+    # ordinary straight-line def/use law for the initial consumer call.
+    return left.source == right.source and _span_key(left) < _span_key(right)
+
+
+def _span_key(span):
+    return (span.line, span.col, span.end_line or span.line,
+            span.end_col or span.col)
 
 
 def _target_names(expressions):

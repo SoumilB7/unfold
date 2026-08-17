@@ -43,7 +43,7 @@ mechanism-driving rows need new interpretation code.
 | scope | claimed by | bindings (path -> target) | observed | target-matched |
 |---|---|---|---|---|
 | root.video/projector_out_width | COR-4 | vision_config.hidden_size -> root.video.projector_out_features | 2 | 1 |
-| root.vision/encoder_width | COR-5 | vision_config.embed_dim -> root.vision.hidden_size; vision_config.vision_hidden_size -> root.vision.hidden_size; vision_config.width -> root.vision.hidden_size; vision_config.hidden_size -> root.vision.hidden_size | 6 | 2 |
+| root.vision/projector_in_width | U9-G | vision_config.vision_output_dim -> root.vision.projector_in_features; vision_config.hidden_size -> root.vision.projector_in_features | 2 | 0 |
 | root.vision/projector_out_width | COR-4 | vision_config.hidden_size -> root.vision.projector_out_features | 2 | 1 |
 
 ## Owners with NO consumption at all (audit_incomplete)
@@ -61,7 +61,7 @@ that keeps the key host-independent, so a claim binding matches the same
 mechanism whether a model is parsed standalone or embedded in a pipeline.
 Prefix a row with its document to address the value in the witness file.
 
-## PENDING occurrences (dispositioned, exact debt rows): 23
+## PENDING occurrences (dispositioned, exact debt rows): 16
 
 Each row here is EXCUSED by one exact config_read StructuralDebt row
 (evidence/structural_debt.py): owner + exact path + U3-U14 unit +
@@ -73,21 +73,9 @@ standing UNCLASSIFIED reads, and never a family-wide excuse.
 
 `embedding_multiplier` (1w, U14), `logits_scaling` (1w, U14)
 
-### `root.conditioning` — 1 pending rows
-
-`num_heads` (1w, U9)
-
 ### `root.denoiser` — 14 pending rows
 
 `activation_fn` (4w, U10), `addition_embed_type` (1w, U11), `addition_time_embed_dim` (1w, U11), `attention_bias` (4w, U10), `block_out_channels` (1w, U11), `down_block_types` (1w, U11), `layers_per_block` (1w, U11), `mid_block_type` (1w, U11), `projection_class_embeddings_input_dim` (1w, U11), `qk_norm` (5w, U10), `rope_theta` (2w, U10), `transformer_layers_per_block` (1w, U11), `up_block_types` (1w, U11), `use_rotary_positional_embeddings` (1w, U10)
-
-### `root.text_encoder.vision` — 4 pending rows
-
-`num_hidden_layers` (1w, U9), `rope_scaling` (1w, U9), `text_config.num_hidden_layers` (1w, U9), `vision_config.in_channels` (1w, U9)
-
-### `root.vision` — 2 pending rows
-
-`text_config.num_hidden_layers` (1w, U9), `vision_config.in_channels` (1w, U9)
 
 ## Reads whose LOCATION is unknown: 0
 

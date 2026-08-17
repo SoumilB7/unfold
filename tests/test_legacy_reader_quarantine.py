@@ -26,11 +26,11 @@ def test_every_quarantined_reader_has_one_future_owner_and_deletion_condition():
 
 
 def test_every_evidence_parse_site_has_one_explicit_authority_class():
-    assert len(PARSE_AUTHORITY_SITES) == 27
-    assert len({row.site for row in PARSE_AUTHORITY_SITES}) == 27
+    assert len(PARSE_AUTHORITY_SITES) == 25
+    assert len({row.site for row in PARSE_AUTHORITY_SITES}) == 25
     legacy = [row for row in PARSE_AUTHORITY_SITES
               if row.category == "legacy_model_source"]
-    assert len(legacy) == 16
+    assert len(legacy) == 14
     assert all(row.deletion_unit and row.reason for row in legacy)
     assert {row.category for row in PARSE_AUTHORITY_SITES} == {
         "central_program_index",

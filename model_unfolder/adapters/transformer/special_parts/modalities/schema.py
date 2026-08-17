@@ -78,7 +78,7 @@ def tower_group_tags(variants: list[dict]) -> list[str]:
             "gated residuals": bool(v.get("residual_gated")),
             str(v.get("norm_kind") or ""): True,
             str(v.get("norm_placement") or ""): True,
-            "rope": "rope" in str(v.get("position_kind") or ""),
+            "rope": v.get("position_kind") == "rope",
         }
     all_facts = [facts(v) for v in variants]
     tags = []
@@ -93,22 +93,25 @@ def tower_group_tags(variants: list[dict]) -> list[str]:
 def tower_submodel_spec(encoder: dict, variants: list[dict], *, component: str = "") -> dict:
     """Project the typed vision evidence into the ONE sub-model spec shape.
 
-    Every field is a straight carry of an evidence/config fact — the group
+    Every architectural field is a straight carry of typed evidence — the group
     dialect is the contract, not a re-derivation: attention facts feed the
     canonical ``attention_region`` (uncached — a tower never decodes), FFN
     facts the canonical ``ffn_region``, ``norm_placement``/``residual_gate``
     the one cell projector.  A gate caption names its activation ONLY when
     the evidence recorded one (Gemma-3's ``tanh``); otherwise it stays the
     generic "learned gate" — never an inherited spelling."""
-    heads = encoder.get("num_attention_heads")
-    hidden = encoder.get("hidden_size")
-    head_dim = (hidden // heads) if heads and hidden and hidden % heads == 0 else None
     tags = tower_group_tags(variants)
     groups = []
     for i, variant in enumerate(variants):
+        heads = variant.get("num_attention_heads")
+        hidden = variant.get("hidden_size")
+        head_dim = variant.get("head_dim")
         gate = None
         position_kind = variant.get("position_kind")
-        rope_applied = position_kind == "rope"
+        position_application = variant.get("position_application")
+        rope_applied = (
+            position_kind == "rope"
+            and position_application == "qk_rotation")
         projection_mode = variant.get("projection_mode")
         if projection_mode == "separate_qkv":
             projection_mode = "split_qkv"
@@ -144,10 +147,7 @@ def tower_submodel_spec(encoder: dict, variants: list[dict], *, component: str =
                 if act else
                 "learned gate"
             )
-        groups.append({
-            "count": variant.get("repeat"),
-            "tag": tags[i],
-            "attention": {
+        attention = {
                 # "softmax" proves a kernel family, not MHA/GQA/MQA projection
                 # geometry.  Only an exact canonical kind may select a detailed
                 # attention region; otherwise the tower stays opaque.
@@ -171,13 +171,26 @@ def tower_submodel_spec(encoder: dict, variants: list[dict], *, component: str =
                 "q_norm": variant.get("q_norm"),
                 "k_norm": variant.get("k_norm"),
                 "v_norm": variant.get("v_norm"),
-            },
+            }
+        # An unknown KV count is absence of a claim, not a new serialized
+        # ``num_kv_heads: null`` structural field.  This also prevents U9's
+        # component projection from causing unrelated diffusion-refiner churn.
+        if variant.get("num_key_value_heads") is not None:
+            attention["num_kv_heads"] = variant["num_key_value_heads"]
+        groups.append({
+            "count": variant.get("repeat"),
+            "tag": tags[i],
+            "attention": attention,
             "ffn": {
                 "kind": ffn_kind,
                 "hidden": hidden,
                 "gated": ffn_gated if ffn_kind else None,
-                "activation": encoder.get("activation"),
-                "intermediate_size": encoder.get("intermediate_size"),
+                "activation": variant.get("activation"),
+                # U9 does not yet carry a source-bound affine operand for the
+                # exact FFN occurrence.  A component-level config width may
+                # differ between block variants, so it cannot be projected
+                # into an occurrence-specific drill.
+                "intermediate_size": None,
                 "projection_mode": ffn_projection_mode if ffn_kind else None,
                 "structure_status": "proven" if ffn_kind else "ambiguous",
             },
@@ -194,7 +207,7 @@ def tower_submodel_spec(encoder: dict, variants: list[dict], *, component: str =
         "component": component,
         "altitude": "tower",
         "layers": encoder.get("num_layers"),
-        "hidden": hidden,
+        "hidden": encoder.get("hidden_size"),
         "groups": groups,
         "evidence": {"position": None, "ffn": None},
         "sub_models": [],

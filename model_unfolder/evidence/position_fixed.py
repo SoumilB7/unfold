@@ -114,6 +114,7 @@ def decoder_fixed_absolute_position_for_path(
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool,
+    config_selector=None,
 ) -> ReaderResult[FixedAbsolutePositionEvidence]:
     if not isinstance(index, ProgramIndex):
         raise TypeError("fixed-absolute evidence requires a ProgramIndex")
@@ -121,7 +122,8 @@ def decoder_fixed_absolute_position_for_path(
         raise TypeError("fixed-absolute evidence requires a SourceBundle")
     path = decoder_block_path_for_config(
         index, bundle, tuple(config_path),
-        allow_root_stage=allow_root_stage)
+        allow_root_stage=allow_root_stage,
+        config_selector=config_selector)
     if path.status != "resolved":
         return ReaderResult.failed(path.owner, (ReaderFailure(
             "incomplete_graph", "the exact decoder path is unresolved"),))

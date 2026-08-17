@@ -44,7 +44,7 @@ class FusionExecutionObservation:
     owner: SymbolId
     callable_symbol: SymbolId
     evidence: FusionEvidence
-    consumer_expressions: tuple[ExprNode, ...]
+    consumer_routes: tuple[tuple[str, ExprNode], ...]
     operation_calls: tuple = ()
 
     def __post_init__(self):
@@ -55,14 +55,20 @@ class FusionExecutionObservation:
             raise TypeError("fusion execution observations carry exact symbols")
         if not isinstance(self.evidence, FusionEvidence):
             raise TypeError("fusion execution observations carry FusionEvidence")
-        if not self.consumer_expressions \
-                or any(not isinstance(item, ExprNode)
-                       for item in self.consumer_expressions):
-            raise ValueError("fusion execution observations carry exact consumers")
+        if not self.consumer_routes or any(
+                not modality or not isinstance(expression, ExprNode)
+                for modality, expression in self.consumer_routes):
+            raise ValueError(
+                "fusion execution observations carry exact modality consumers")
         if not self.operation_calls or any(
                 call.enclosing_callable != self.callable_symbol
                 for call in self.operation_calls):
             raise ValueError("fusion observations carry their exact operation calls")
+
+    @property
+    def consumer_expressions(self):
+        """Compatibility view; lineage consumes the qualified route instead."""
+        return tuple(expression for _modality, expression in self.consumer_routes)
 
 
 def fusion_evidence(
@@ -220,23 +226,25 @@ def _fusion_at_forward(index, occurrence, owner, forward):
             routes.append(FusionRouteEvidence(
                 modality, "masked_scatter", owner.source.canonical_path,
                 call.span.line if call.span else None))
-    grid_positions = _grid_position_relation(index, forward)
     if routes:
         routes = _unique_routes(routes)
         evidence = FusionEvidence(
             "proven", owner_class=owner.qualified_name,
             source_file=owner.source.canonical_path,
             line=_callable_line(index, forward),
-            kind=("unified_multimodal_stream" if grid_positions
-                  else "placeholder_replace"),
-            operation=("scatter_grid_tokens_into_placeholder_slots"
-                       if grid_positions
-                       else "scatter_soft_tokens_into_placeholder_slots"),
-            routes=tuple(routes), grid_positions=grid_positions)
+            # Placeholder replacement and multi-axis position construction are
+            # independent facts.  U9-E's exact position reader joins them at
+            # projection time; identifier vocabulary here cannot upgrade the
+            # fusion mechanism.
+            kind="placeholder_replace",
+            operation="scatter_soft_tokens_into_placeholder_slots",
+            routes=tuple(routes), grid_positions=False)
         consumers = tuple(
-            call.args[1] for call in calls
+            (modality, call.args[1]) for call in calls
             if _call_leaf(call.callee) == "masked_scatter"
-            and len(call.args) >= 2)
+            and len(call.args) >= 2
+            and (modality := _modality(
+                (*call.args, *(value for _, value in call.kwargs)))))
         fusion_calls = tuple(call for call in calls
                              if _call_leaf(call.callee) == "masked_scatter")
         return FusionExecutionObservation(
@@ -255,7 +263,7 @@ def _fusion_at_forward(index, occurrence, owner, forward):
         value = next(value for name, value in cross.kwargs
                      if name == "cross_attention_states")
         return FusionExecutionObservation(
-            occurrence, owner, forward, evidence, (value,), (cross,))
+            occurrence, owner, forward, evidence, (("vision", value),), (cross,))
 
     encoder = _keyword_route(index, forward, "encoder_hidden_states")
     if encoder and _owns_name(index, forward, "encoder_hidden_states"):
@@ -271,7 +279,8 @@ def _fusion_at_forward(index, occurrence, owner, forward):
         value = next(value for name, value in encoder.kwargs
                      if name == "encoder_hidden_states")
         return FusionExecutionObservation(
-            occurrence, owner, forward, evidence, (value,), (encoder,))
+            occurrence, owner, forward, evidence,
+            (("conditioning", value),), (encoder,))
 
     prefix = []
     for call in calls:
@@ -297,10 +306,13 @@ def _fusion_at_forward(index, occurrence, owner, forward):
             if _call_leaf(call.callee) not in {"cat", "concat", "concatenate"}:
                 continue
             for expression in call.args:
-                consumers.extend(
-                    expression.children
-                    if expression.kind in {"list", "tuple"}
-                    else (expression,))
+                items = (expression.children
+                         if expression.kind in {"list", "tuple"}
+                         else (expression,))
+                for item in items:
+                    modality = _modality((item,))
+                    if modality:
+                        consumers.append((modality, item))
         fusion_calls = tuple(call for call in calls
                              if _call_leaf(call.callee)
                              in {"cat", "concat", "concatenate"})
@@ -579,21 +591,6 @@ def _owns_name(index, forward, name):
     return any(
         name in _target_names(binding.targets)
         for binding in index.bindings_in(forward))
-
-
-def _grid_position_relation(index, forward):
-    names = _names(tuple(
-        expression
-        for call in index.calls_in(forward)
-        for expression in (call.callee, *call.args,
-                           *(value for _, value in call.kwargs))))
-    has_position = any(
-        "position" in name and "id" in name for name in names)
-    has_grid = any("grid" in name for name in names)
-    has_3d_call = any(
-        _call_leaf(call.callee) == "compute_3d_position_ids"
-        for call in index.calls_in(forward))
-    return has_3d_call or (has_grid and has_position)
 
 
 def _modality(expressions):

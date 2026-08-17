@@ -4,198 +4,15 @@ from __future__ import annotations
 import ast
 import functools
 from pathlib import Path
-from typing import Any
-
-from ..everchanging import load_conformance_transitive, load_constructor_classmethods
 from .ast_scanner import _call_name
 from .forward_ops import _method, _role_of, _self_field
-from .models import (
-    SourceBundle,
-    SourceOp,
-    VisionLayerEvidence,
-    VisionTowerEvidence,
-)
-from .sources import resolve_source_files
-from .transitive import CallableInfo, build_registry, transitive_closure
+from .models import SourceOp
+from .transitive import CallableInfo, transitive_closure
 
 
 _PATCH_FIELDS = ("patch", "embed", "conv")
 _POSITION_FIELDS = ("position", "pos_embed", "positional")
 _ROPE_MARKERS = ("rotary", "rope")
-
-
-def vision_tower_evidence(
-    target: Any,
-    *,
-    source: str = "local",
-    bundle: SourceBundle | None = None,
-    index=None,
-) -> VisionTowerEvidence:
-    """Resolve exact vision blocks and their source-derived architectural facts."""
-    from .conformance import (
-        _component_block_classes,
-        _component_source,
-        _domain_block_classes,
-    )
-
-    bundle = bundle or resolve_source_files(target, source=source)
-    if index is None:
-        # Standalone evidence calls still use the same immutable program
-        # representation.  Production passes ParseContext.program_index() so
-        # the SourceBundle is parsed only once.
-        from .program_index import build_program_index
-        index = build_program_index(bundle)
-    component, files = _component_source(bundle, "vision")
-    nested_vision = (target.get("vision_config") if isinstance(target, dict)
-                     else getattr(target, "vision_config", None))
-    root_fallback = nested_vision is not None and component == "root"
-    if not files:
-        return VisionTowerEvidence(
-            "oracle_missing", component=component,
-            reason="no qualified vision modeling source",
-        )
-
-    registry = build_registry(files, component=component)
-    architecture = (bundle.component_architectures or {}).get(component)
-    if root_fallback:
-        wrapper = ((bundle.component_architectures or {}).get("root")
-                   or bundle.architecture)
-        architecture = _assigned_component_class(
-            wrapper, "vision_config", registry,
-        )
-        if not architecture:
-            return VisionTowerEvidence(
-                "ambiguous", component=component, owner_class=wrapper or "",
-                source_file=str(files[0]),
-                reason="root wrapper does not prove the delegated vision class",
-            )
-    vocab = load_conformance_transitive()
-    blocks = _component_block_classes(registry, architecture)
-    if not root_fallback:
-        blocks = _domain_block_classes(blocks, "vision", vocab)
-    # Wrapper/model/projector classes may themselves contain an FFN. A repeated
-    # encoder cell necessarily performs both attention and FFN in its forward.
-    blocks = [name for name in blocks if name in registry
-              and {"attention", "ffn"} <= set(registry[name].op_kinds)]
-    if not blocks:
-        return VisionTowerEvidence(
-            "ambiguous", component=component, owner_class=architecture or "",
-            source_file=str(files[0]), reason="no exact repeated vision block resolved",
-        )
-
-    owner = _vision_owner(architecture, blocks, registry)
-    patch_ops = _patch_ops(owner, blocks, registry)
-    mechanism_root = _vision_mechanism_root(index, bundle, component)
-    variants: list[VisionLayerEvidence] = []
-    for block in sorted(blocks):
-        info = registry[block]
-        base = VisionLayerEvidence(
-            block_class=block,
-            source_file=info.source_file,
-            line=info.line,
-            **layer_facts_from_block(
-                block, registry, vocab,
-                attention_kind=_vision_attention_kind(
-                    index, mechanism_root, block, info.source_file),
-            ),
-        )
-        instances = _configured_block_instances(owner, block, registry)
-        if instances:
-            variants.extend(VisionLayerEvidence(
-                **{**base.__dict__,
-                   "residual_gated": base.residual_gated and gate is not False,
-                   "variant_key": key,
-                   "repeat_field": repeat_field}
-            ) for key, gate, repeat_field in instances)
-        else:
-            variants.append(base)
-
-    model_position = _model_position_kind(owner, registry)
-    has_rope = any(item.position_kind == "rope" for item in variants)
-    if model_position == "learned_absolute" and has_rope:
-        position_kind = "learned_absolute_plus_rope"
-    elif has_rope:
-        position_kind = "rope"
-    else:
-        position_kind = model_position
-
-    owner_info = registry.get(owner)
-    return VisionTowerEvidence(
-        "proven",
-        component=component,
-        owner_class=owner,
-        source_file=owner_info.source_file if owner_info else str(files[0]),
-        patch_ops=tuple(patch_ops),
-        position_kind=position_kind,
-        input_position_kind=model_position,
-        variants=tuple(variants),
-        final_norm_kind=_final_norm_kind(owner_info),
-    )
-
-
-def _assigned_component_class(
-    architecture: str | None,
-    config_field: str,
-    registry: dict[str, CallableInfo],
-) -> str:
-    """Resolve a delegated component from the wrapper's constructor dataflow.
-
-    This accepts only a concrete source class constructed with
-    ``config.<component>`` (directly or through ``Class._from_config``). Generic
-    ``AutoModel.from_config`` remains unresolved here: without a qualified
-    component config/source mapping, guessing among classes in the wrapper file
-    would recreate the family-name rail this function replaces.
-    """
-    if not architecture or architecture not in registry:
-        return ""
-    found: set[str] = set()
-    seen: set[str] = set()
-    queue = [architecture]
-    while queue:
-        name = queue.pop(0)
-        if name in seen or name not in registry:
-            continue
-        seen.add(name)
-        info = registry[name]
-        node = _class_node(info.source_file, name)
-        init = _method(node, "__init__") if node else None
-        for call in (item for item in ast.walk(init) if isinstance(item, ast.Call)) \
-                if init else ():
-            if not _call_reads_config_field(call, config_field):
-                continue
-            candidate = _constructed_class(call.func)
-            if candidate in registry:
-                found.add(candidate)
-        children = set(info.field_types.values())
-        for candidates in info.field_type_candidates.values():
-            children.update(candidates)
-        queue.extend(child for child in children if child in registry and child not in seen)
-    return next(iter(found)) if len(found) == 1 else ""
-
-
-def _call_reads_config_field(call: ast.Call, field: str) -> bool:
-    return any(
-        isinstance(item, ast.Attribute)
-        and item.attr == field
-        and isinstance(item.value, ast.Name)
-        and item.value.id == "config"
-        for arg in (*call.args, *(keyword.value for keyword in call.keywords))
-        for item in ast.walk(arg)
-    )
-
-
-def _constructed_class(func: ast.AST) -> str:
-    if isinstance(func, ast.Name):
-        return func.id
-    # Factory-classmethod vocabulary is shared with the AST extractor
-    # (everchanging/conformance/transitive.yaml) — one place knows the spellings.
-    if (isinstance(func, ast.Attribute)
-            and func.attr in load_constructor_classmethods()):
-        if isinstance(func.value, ast.Name):
-            return func.value.id
-        if isinstance(func.value, ast.Attribute):
-            return func.value.attr
-    return ""
 
 
 def layer_facts_from_block(block: str, registry: dict, vocab: dict,
@@ -1150,4 +967,4 @@ def _class_node(path: str, name: str) -> ast.ClassDef | None:
     return _parsed_classes(str(path)).get(name)
 
 
-__all__ = ["vision_tower_evidence"]
+__all__ = ["layer_facts_from_block"]

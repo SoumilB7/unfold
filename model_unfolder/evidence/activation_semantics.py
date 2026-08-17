@@ -10,6 +10,7 @@ from __future__ import annotations
 
 FUNCTIONAL_ACTIVATIONS = {
     "torch.nn.functional.gelu": "gelu",
+    "torch.nn.functional.glu": "glu",
     "torch.nn.functional.relu": "relu",
     "torch.nn.functional.silu": "silu",
 }

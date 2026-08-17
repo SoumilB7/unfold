@@ -64,6 +64,7 @@ def test_configish_spelling_without_component_output_use_proves_nothing(tmp_path
 
 def test_hidden_states_on_a_sibling_object_cannot_launder_the_child(tmp_path):
     result = _result(tmp_path, """
+        import torch
         class Result: pass
         class Tower:
             def forward(self, x, output_hidden_states=False): return Result()
@@ -75,6 +76,25 @@ def test_hidden_states_on_a_sibling_object_cannot_launder_the_child(tmp_path):
                 return chosen
     """)
     assert result.status == "failed"
+
+
+def test_exact_child_output_use_needs_no_redundant_request_flag(tmp_path):
+    result = _result(tmp_path, """
+        import torch
+        class Result: pass
+        class Tower:
+            def forward(self, x): return Result()
+        class Root:
+            def __init__(self): self.child = Tower()
+            def forward(self, x, selectors):
+                output = self.child(x)
+                chosen = [output.hidden_states[i] for i in selectors]
+                merged = torch.cat(chosen, dim=-1)
+                return merged
+    """)
+    assert result.status == "resolved", result.failures
+    assert {item.kind for item in result.value[0].operations} == {
+        "multi_layer_select", "concatenate_selected_layers"}
 
 
 def test_real_llava_keeps_conditional_single_multi_concat_and_drop_paths():
@@ -97,3 +117,19 @@ def test_real_llava_keeps_conditional_single_multi_concat_and_drop_paths():
     }
     assert any(item.guard for item in route.operations)
 
+
+def test_real_mllama_internal_encoder_output_proves_multi_layer_concat():
+    transformers = pytest.importorskip("transformers")
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.parser import _coerce
+
+    config = transformers.AutoConfig.for_model("mllama").to_dict()
+    context = ParseContext.build(_coerce(config))
+    result = wrapper_feature_selection_result(
+        context.program_index(), context.source_bundle)
+    assert result.status == "resolved", result.failures
+    route = next(item for item in result.value
+                 if item.callable_symbol.qualified_name.endswith(
+                     "MllamaVisionModel.forward"))
+    assert {item.kind for item in route.operations} >= {
+        "multi_layer_select", "concatenate_selected_layers"}

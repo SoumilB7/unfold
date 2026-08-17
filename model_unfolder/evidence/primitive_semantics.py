@@ -44,6 +44,11 @@ _PARTITION_PROTOCOLS = frozenset({"torch.split"})
 _REASSEMBLY_PROTOCOLS = frozenset({"torch.cat"})
 
 
+def external_primitive_kind(qualified_target: str) -> str | None:
+    """Return the closed semantic protocol for one exact external address."""
+    return _EXTERNAL_PRIMITIVES.get(qualified_target)
+
+
 def classify_primitive_call(
     index: ProgramIndex,
     resolution: ConstructionCallResolution,

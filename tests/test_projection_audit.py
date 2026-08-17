@@ -342,9 +342,11 @@ def test_cor5_poison_bare_funnel_read_in_claimed_scope_is_a_violation():
     assert lawful[0]["violations"] == []
 
 
-def test_cor5_real_claim_is_earned_on_the_multimodal_witness():
-    """The COR-4 projector-width claim holds on the source-present witness:
-    events observed, zero violations, and the claimed path actually consumed."""
+def test_cor5_projector_claim_is_earned_without_laundering_encoder_width():
+    """Qwen2-VL earns both projector-width claims from exact source-bound
+    consumption. Its tower ``embed_dim`` is deliberately not consumed until
+    U14 installs the modality FactLedger/receipt route, and the retired
+    encoder-width claim is absent rather than dormant."""
     import json
     import pathlib
 
@@ -353,11 +355,16 @@ def test_cor5_real_claim_is_earned_on_the_multimodal_witness():
     ir = mu.unfold(cfg).to_ir()
     ca = ir["extras"]["config_access"]
     rows = {row["scope"]: row for row in ca["migration_claims"]}
-    for scope in ("root.vision/projector_out_width", "root.video/projector_out_width",
-                  "root.vision/encoder_width"):
+    for scope in ("root.vision/projector_out_width",
+                  "root.video/projector_out_width"):
         assert rows[scope]["observed_events"] > 0
         assert rows[scope]["target_matches"] > 0, scope
         assert rows[scope]["violations"] == []
+    # U9 retired COR-5's config-only encoder-width claim.  The exact modality
+    # DTO may carry a width established by source, but U14 owns its typed fact
+    # and receipt cutover; a dormant migration claim must not pretend that
+    # cutover already happened.
+    assert "root.vision/encoder_width" not in rows
     assert "root.vision:hidden_size" in ca["consumed"]
     assert "root.video:hidden_size" in ca["consumed"]
 
@@ -646,13 +653,13 @@ def test_final_poison_unwitnessed_binding_fails_coverage(corpus_claim_rows):
         "root.vision.hidden_size[fact]"]
 
 
-def test_final_control_same_path_two_mechanisms_is_lawful():
-    """POSITIVE control for the one-path-two-mechanisms case at TOP LEVEL:
-    on qwen2-vl (grid) ``vision_config.hidden_size`` is consumed by the
-    PROJECTOR mechanism into projector_out_features; on a non-grid top-level
-    VLM the same path is consumed by the ENCODER-WIDTH mechanism into
-    hidden_size.  Both parses are violation-free — each consumption judged
-    strictly under its own mechanism's binding, never crossed."""
+def test_final_control_config_width_cannot_author_an_encoder_claim():
+    """The same config spelling can parameterize a proven projector, but a
+    source-less tower cannot turn it into an encoder architecture claim.
+
+    This pins the U9/U14 boundary: the former COR-5 config-only migration is
+    gone, while the exact Qwen projector binding remains independently lawful.
+    """
     from test_support.claim_witnesses import HIDDEN_SIZE_WITNESS
 
     rows_q = {r["scope"]: r for r in _claim_rows_of(_qwen2vl_cfg())}
@@ -660,15 +667,13 @@ def test_final_control_same_path_two_mechanisms_is_lawful():
                   if b["path"] == "vision_config.hidden_size")
     assert q_proj["target_matches"] > 0
     assert rows_q["root.vision/projector_out_width"]["violations"] == []
-    assert rows_q["root.vision/encoder_width"]["violations"] == []
+    assert "root.vision/encoder_width" not in rows_q
 
     rows_e = {r["scope"]: r for r in _claim_rows_of(HIDDEN_SIZE_WITNESS)}
-    e_enc = next(b for b in rows_e["root.vision/encoder_width"]["bindings"]
-                 if b["path"] == "vision_config.hidden_size")
     e_proj = next(b for b in rows_e["root.vision/projector_out_width"]["bindings"]
                   if b["path"] == "vision_config.hidden_size")
-    assert e_enc["target_matches"] > 0          # encoder width consumed it
-    assert e_proj["target_matches"] == 0        # projector mechanism silent
+    assert e_proj["target_matches"] == 0        # no source-bound projector
+    assert "root.vision/encoder_width" not in rows_e
     assert all(r["violations"] == [] for r in rows_e.values())
 
 
@@ -688,9 +693,10 @@ def test_final_negative_control_flux_qwen_image_author_no_top_level_vision():
             ("flux-2-dev", True), ("qwen-image", True)):
         cfg = json.loads((corpus / f"{slug}.json").read_text())["config"]
         rows = {r["scope"]: r for r in _claim_rows_of(cfg)}
-        # no top-level projector or encoder consumption is claimed
+        # no top-level projector consumption is claimed; the retired
+        # config-only encoder-width scope must not reappear.
         assert rows["root.vision/projector_out_width"]["target_matches"] == 0, slug
-        assert rows["root.vision/encoder_width"]["target_matches"] == 0, slug
+        assert "root.vision/encoder_width" not in rows, slug
         assert all(r["violations"] == [] for r in rows.values()), slug
         # the VLM text encoder's vision is namespaced under its slot, not root
         with capture_events() as led:
@@ -704,18 +710,15 @@ def test_final_negative_control_flux_qwen_image_author_no_top_level_vision():
                 slug, vision_owners)
 
 
-def test_final_positive_control_qwen2vl_encoder_and_projector():
-    """POSITIVE controls on the multimodal witness: the encoder mechanism
-    consumes ``embed_dim`` into the drawn tower width, the projector
-    mechanism consumes ``hidden_size`` into the drawn out_features (3584),
-    and both scopes are violation-free with mechanism-tagged events."""
+def test_final_qwen2vl_control_receipts_projector_and_withholds_encoder_width():
+    """The multimodal witness receipts both exact projector lanes while its
+    unreceipted encoder width has no migration claim and is not falsely
+    consumed. Qwen2-VL is the permanent U9/U14 boundary control."""
     cfg = _qwen2vl_cfg()
     ir = mu.unfold(cfg).to_ir()
     rows = {r["scope"]: r
             for r in ir["extras"]["config_access"]["migration_claims"]}
-    enc_embed = next(b for b in rows["root.vision/encoder_width"]["bindings"]
-                     if b["path"] == "vision_config.embed_dim")
-    assert enc_embed["target_matches"] > 0
+    assert "root.vision/encoder_width" not in rows
     for scope in ("root.vision/projector_out_width",
                   "root.video/projector_out_width"):
         hidden = next(b for b in rows[scope]["bindings"]

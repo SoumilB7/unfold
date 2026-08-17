@@ -17,7 +17,12 @@ from .attention import (
 )
 from .attention_child import AttentionChildEvidence, AttentionComputeProof
 from .affine import site_is_affine
-from .component_owner import OwnerOccurrenceId
+from .component_owner import (
+    ComponentRootResolution,
+    ConstructedComponentRoot,
+    OwnerOccurrenceId,
+    require_resolved_component_root,
+)
 from .construction_calls import ConstructionOccurrenceId
 from .decoder_block import decoder_block_path_for_config
 from .expression_eval import (
@@ -724,6 +729,7 @@ def decoder_attention_head_geometry_for_path(
     config_document,
     *,
     allow_root_stage: bool,
+    config_selector=None,
 ) -> ReaderResult[AttentionHeadGeometry]:
     """Evaluate the exact shared Q/K/V head-width factor."""
     if not isinstance(index, ProgramIndex):
@@ -731,28 +737,62 @@ def decoder_attention_head_geometry_for_path(
     if not isinstance(bundle, SourceBundle):
         raise TypeError("attention geometry requires a SourceBundle")
     block = decoder_block_path_for_config(
-        index, bundle, config_path, allow_root_stage=allow_root_stage)
+        index, bundle, config_path, allow_root_stage=allow_root_stage,
+        config_selector=config_selector)
     if block.status != "resolved":
         return block
     mechanism = decoder_attention_mechanism_for_path(
         index, bundle, config_path, allow_root_stage=allow_root_stage,
-        config_document=config_document)
+        config_document=config_document, config_selector=config_selector)
     if mechanism.status != "resolved":
         return mechanism
-    binding = mechanism.value
-    if not isinstance(binding, AttentionHeadBinding):
-        return ReaderResult.failed(mechanism.owner, (ReaderFailure(
-            "unsupported_syntax",
-            "this attention mechanism has no ordinary shared-factor proof"),),
-            provenance=mechanism.provenance)
-    graph = block.value.component_root.graph
+    result = attention_head_geometry_at_block(
+        index, block.value.component_root, block.value.block_occurrence,
+        mechanism.value, config_document, tuple(config_path))
+    if result.status != "resolved":
+        return result
+    return ReaderResult.resolved(
+        result.owner, result.value,
+        provenance=(*block.provenance, *mechanism.provenance,
+                    *result.provenance))
+
+
+def attention_head_geometry_at_block(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    block_occurrence: OwnerOccurrenceId,
+    binding: AttentionHeadBinding,
+    config_document,
+    config_path: tuple[str, ...],
+) -> ReaderResult[AttentionHeadGeometry]:
+    """Evaluate head width for one already-proven block-local binding.
+
+    This is the occurrence-qualified primitive used by recursive towers.  It
+    performs no block or mechanism selection: callers must supply the exact
+    block and its exact :class:`AttentionHeadBinding`.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("attention geometry requires a ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="attention_head_geometry_at_block")
+    if not isinstance(block_occurrence, OwnerOccurrenceId):
+        raise TypeError("attention geometry requires an exact block")
+    if not isinstance(binding, AttentionHeadBinding) \
+            or binding.block_occurrence != block_occurrence:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "out_of_owner",
+            "the supplied head binding does not belong to this exact block"),))
+    if not isinstance(config_path, tuple) or any(
+            not isinstance(part, str) or not part for part in config_path):
+        raise TypeError("config_path is tuple[str, ...]")
+    graph = root.graph
     node = graph.node_for(binding.attention_occurrence)
     if node is None:
-        return ReaderResult.failed(mechanism.owner, (ReaderFailure(
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "incomplete_graph", "the exact attention owner does not round-trip"),))
     document = scoped_document(config_document, config_path)
     if document is None:
-        return ReaderResult.failed(mechanism.owner, (ReaderFailure(
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "incomplete_graph", "the exact component config is unavailable"),))
     env = constructor_argument_env(
         index, graph, binding.attention_occurrence, document)
@@ -770,7 +810,7 @@ def decoder_attention_head_geometry_for_path(
     if any(site is None or construction_guard_state(
             index, graph, binding.attention_occurrence,
             site, document) is not True for site in sites):
-        return ReaderResult.failed(mechanism.owner, (ReaderFailure(
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "incomplete_graph", "the exact attention projection site is unresolved"),))
     cutoff = min((site.span for site in sites), key=_span_key)
     evaluator = ConfigExpressionEvaluator(
@@ -779,7 +819,7 @@ def decoder_attention_head_geometry_for_path(
     result = evaluator.expression(binding.common_factor)
     if result is None or not isinstance(result.value, int) \
             or isinstance(result.value, bool) or result.value <= 0:
-        return ReaderResult.failed(mechanism.owner, (ReaderFailure(
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "unsupported_syntax",
             "the exact shared Q/K/V factor is not evaluable"),))
     spans = tuple(dict.fromkeys((
@@ -787,21 +827,20 @@ def decoder_attention_head_geometry_for_path(
     premises = qualify_premises(unique_premises((
         *binding.selection_premises, *result.premises)), config_path)
     if premises is None:
-        return ReaderResult.failed(mechanism.owner, (ReaderFailure(
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "conflicting_evidence",
             "the exact head expression carries conflicting config premises"),))
     value = AttentionHeadGeometry(
         binding.attention_occurrence, node.symbol, result.value,
         premises, spans)
     return ReaderResult.resolved(
-        mechanism.owner, value,
-        provenance=(*block.provenance, *mechanism.provenance,
-                    ReaderProvenance(
-                        "code_and_config" if premises else "source",
-                        spans=spans,
-                        config_paths=tuple(path for path, _ in premises),
-                        detail=("the exact source-selected Q/K/V common factor "
-                                "evaluates through its exact owner construction"))))
+        block_occurrence, value,
+        provenance=(ReaderProvenance(
+            "code_and_config" if premises else "source",
+            spans=spans,
+            config_paths=tuple(path for path, _ in premises),
+            detail=("the exact source-selected Q/K/V common factor "
+                    "evaluates through its exact owner construction")),))
 
 
 def _span_key(span):
@@ -812,6 +851,7 @@ def _span_key(span):
 __all__ = [
     "AttentionGeometryApplication", "AttentionHeadGeometry",
     "AttentionLayerGeometry", "DecoderAttentionGeometrySchedule",
+    "attention_head_geometry_at_block",
     "decoder_attention_geometry_schedule_for_path",
     "decoder_attention_head_geometry_for_path",
 ]

@@ -288,6 +288,21 @@ def _transformers_supporting_files(family_dir: Path) -> tuple[str, ...]:
                 break
         if imported:
             paths.append(framework_config)
+    framework_auto = family_dir.parent / "auto" / "modeling_auto.py"
+    if framework_auto.is_file():
+        imported = False
+        for modeling in sorted(family_dir.glob("modeling*.py")):
+            try:
+                source = modeling.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue
+            if re.search(
+                    r"^\s*from\s+\.{2,}auto(?:\.modeling_auto)?\s+import\s+AutoModel",
+                    source, re.M):
+                imported = True
+                break
+        if imported:
+            paths.append(framework_auto)
     return tuple(str(path) for path in dict.fromkeys(paths))
 
 

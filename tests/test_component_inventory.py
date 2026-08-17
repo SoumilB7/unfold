@@ -43,6 +43,62 @@ def test_exact_constructed_component_is_active(tmp_path):
         "root", "vision_config"]
 
 
+def test_conditional_component_uses_exact_config_guard_as_address_only(tmp_path):
+    bundle, index = _bundle(tmp_path, """
+        class Tower:
+            def __init__(self, config): pass
+        class Wrapper:
+            def __init__(self, config):
+                self.tower = (Tower(config.vision_config)
+                              if config.vision_config is not None else None)
+    """)
+
+    def present(path):
+        return (True, {"hidden_size": 16}, "config_declared") \
+            if path == ("vision_config",) else (False, None, "")
+
+    entry = resolve_component_inventory(
+        index, bundle, config_selector=present).entry("vision_config")
+    assert entry.status == "active"
+    assert entry.component_root.installation_field == "tower"
+
+
+def test_conditional_component_never_guesses_without_guard_value(tmp_path):
+    bundle, index = _bundle(tmp_path, """
+        class Tower:
+            def __init__(self, config): pass
+        class Wrapper:
+            def __init__(self, config):
+                self.tower = (Tower(config.vision_config)
+                              if config.vision_config is not None else None)
+    """)
+    unresolved = resolve_component_inventory(index, bundle).entry("vision_config")
+    assert unresolved.status == "failed"
+    assert "guard" in unresolved.failure_detail
+
+    absent = resolve_component_inventory(
+        index, bundle,
+        config_selector=lambda _path: (True, None, "config_declared"),
+    ).entry("vision_config")
+    assert absent.status == "declared_unused"
+
+
+def test_same_config_helper_does_not_rival_declared_component_root(tmp_path):
+    bundle, index = _bundle(tmp_path, """
+        class Tower:
+            def __init__(self, config): pass
+        class Helper:
+            def __init__(self, config): pass
+        class Wrapper:
+            def __init__(self, config):
+                self.tower = Tower(config.vision_config)
+                self.helper = Helper(config.vision_config)
+    """)
+    entry = resolve_component_inventory(index, bundle).entry("vision_config")
+    assert entry.status == "active"
+    assert entry.component_root.graph.root.symbol.qualified_name == "Tower"
+
+
 def test_parse_context_memoizes_one_index_bound_inventory(tmp_path):
     bundle, _ = _bundle(tmp_path, """
         class Tower:

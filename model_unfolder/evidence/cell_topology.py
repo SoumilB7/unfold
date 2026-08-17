@@ -43,6 +43,7 @@ from .execution_flow import (
     InvocationNodeId,
     resolve_addressed_invocations,
 )
+from .expression_eval import constructor_argument_env
 from .program_index import (
     CallSiteId,
     GuardStep,
@@ -64,6 +65,31 @@ _TRANSPARENT_FUNCTION_PROTOCOLS = frozenset({
 
 
 @dataclass(frozen=True)
+class ResidualGateProof:
+    """One exact learned field transform scaling a branch contribution."""
+
+    field: str
+    activation: str | None
+    source: str
+    call_site: CallSiteId
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.field, str) or not self.field:
+            raise TypeError("a residual gate names one exact self field")
+        if self.activation not in {None, "tanh"}:
+            raise ValueError("residual-gate activation vocabulary is closed")
+        if self.source != "parameter":
+            raise ValueError("this proof describes a learned parameter gate")
+        if not isinstance(self.call_site, CallSiteId):
+            raise TypeError("a residual gate retains its exact transform call")
+        required = {self.call_site.span}
+        if not required <= set(self.spans) or any(
+                not isinstance(span, SourceSpan) for span in self.spans):
+            raise ValueError("residual-gate provenance retains its call span")
+
+
+@dataclass(frozen=True)
 class CellBranchProof:
     mechanism: str                 # attention/mixer | ordinary/routed FFN
     invocation: ExactBranchInvocation
@@ -74,6 +100,7 @@ class CellBranchProof:
     residual_scale_field: str | None
     residual_scale_value: int | float | None
     residual_scale_span: SourceSpan | None
+    residual_gate: ResidualGateProof | None
     spans: tuple[SourceSpan, ...]
 
     def __post_init__(self) -> None:
@@ -126,6 +153,14 @@ class CellBranchProof:
             raise ValueError("branch provenance retains invocation + merge")
         if any(not isinstance(span, SourceSpan) for span in self.spans):
             raise TypeError("branch spans are exact SourceSpan values")
+        if self.residual_gate is not None:
+            if not isinstance(self.residual_gate, ResidualGateProof):
+                raise TypeError("a branch gate is typed source evidence")
+            if self.residual_gate.call_site.enclosing_callable.source \
+                    != self.invocation.node.call_site.enclosing_callable.source:
+                raise ValueError("branch and residual gate share one source")
+            if not set(self.residual_gate.spans) <= set(self.spans):
+                raise ValueError("branch provenance contains its gate proof")
 
     @property
     def pre_norm(self) -> bool:
@@ -616,11 +651,13 @@ def decoder_cell_topology_for_path(
         raise TypeError("config_path is tuple[str, ...]")
 
     candidates = decoder_block_candidates_for_config(
-        index, bundle, config_path, allow_root_stage=allow_root_stage)
+        index, bundle, config_path, allow_root_stage=allow_root_stage,
+        config_selector=config_selector)
     if candidates.status != "resolved":
         return candidates
     gated_delta = decoder_gated_delta_geometry_for_path(
-        index, bundle, config_path, allow_root_stage=allow_root_stage)
+        index, bundle, config_path, allow_root_stage=allow_root_stage,
+        config_selector=config_selector)
     gated_delta_by_block = (
         {gated_delta.value.block_occurrence: gated_delta.value}
         if gated_delta.status == "resolved" else {})
@@ -690,6 +727,18 @@ def _cell_topology_at_block(
     effective_selector = constructor_normalized_config_selector(
         index, block, base_selector,
         config_prefix=tuple(getattr(root, "config_path", ()) or ()))
+    constructor_env = constructor_argument_env(
+        index, root.graph, block_occurrence, {})
+    # Only pure-code constructor actuals are admitted here.  A config-derived
+    # actual needs its own typed origin join; losing that source kind would let
+    # a config premise masquerade as code.  Literal arguments retain their
+    # exact occurrence-specific source spans and can lawfully decide fields
+    # such as ``self.is_gated`` in two constructions of the same block class.
+    parameter_values = {
+        name: NormalizedConfigValue(value.value, (), value.spans)
+        for name, value in (constructor_env or {}).items()
+        if not value.premises and value.spans
+    }
     mixers = [census.value.attention]
     if gated_delta is not None:
         addressed = tuple(
@@ -743,6 +792,27 @@ def _cell_topology_at_block(
         result = _evaluate_topology_case(
             index, census.value.flow.callable_symbol, mixer, ffn, norms,
             transparent_sites, active_guard, expansions)
+        # A source-only equation can be complete while still retaining a
+        # guarded choice between an unscaled and a gated contribution.  When
+        # this exact occurrence has pure-code constructor actuals, evaluate
+        # that path as well and retain its more precise branch proof only when
+        # it agrees with the already-proven topology.  This is what keeps two
+        # constructions of one shared block class (gated/ungated) distinct
+        # without allowing the constructor value to invent the cell shape.
+        if not isinstance(result, ReaderFailure) and parameter_values \
+                and not active_guard:
+            resolver = ExactConfigGuardResolver(
+                index, block,
+                effective_selector or (lambda _path: (False, None, "")),
+                config_prefix=tuple(getattr(root, "config_path", ()) or ()),
+                parameter_values=parameter_values)
+            selected_result = _evaluate_topology_case(
+                index, census.value.flow.callable_symbol, mixer, ffn, norms,
+                transparent_sites, active_guard, expansions,
+                guard_resolver=resolver)
+            if not isinstance(selected_result, ReaderFailure) \
+                    and selected_result[:2] == result[:2]:
+                result = selected_result
         # Preserve source-only proofs as the first authority.  A concrete
         # config path is consulted only when unresolved guarded assignments
         # prevent those equations from closing (for example, unguarded branch
@@ -750,10 +820,13 @@ def _cell_topology_at_block(
         # This prevents an unrelated training/debug guard from weakening an
         # otherwise source-invariant topology.
         if isinstance(result, ReaderFailure) \
-                and config_selector is not None and not active_guard:
+                and (config_selector is not None or parameter_values) \
+                and not active_guard:
             resolver = ExactConfigGuardResolver(
-                index, block, effective_selector,
-                config_prefix=tuple(getattr(root, "config_path", ()) or ()))
+                index, block,
+                effective_selector or (lambda _path: (False, None, "")),
+                config_prefix=tuple(getattr(root, "config_path", ()) or ()),
+                parameter_values=parameter_values)
             result = _evaluate_topology_case(
                 index, census.value.flow.callable_symbol, mixer, ffn, norms,
                 transparent_sites, active_guard, expansions,
@@ -1012,7 +1085,7 @@ def _evaluate_topology_case(
         if proof is not None:
             merges.append(proof)
     result = _classify_equations(
-        mixer, ffn, role_values, norms, tuple(merges), final_value,
+        index, mixer, ffn, role_values, norms, tuple(merges), final_value,
         final_span)
     if isinstance(result, ReaderFailure):
         return result
@@ -1497,7 +1570,7 @@ def _child_integrated_merge(index, branch, block_value, final_value):
         "child_integrated_add")
 
 
-def _classify_equations(attention, ffn, role_values, norms, merges,
+def _classify_equations(index, attention, ffn, role_values, norms, merges,
                         final_value, final_span):
     a_site = attention.node.call_site
     f_site = ffn.node.call_site
@@ -1566,9 +1639,9 @@ def _classify_equations(attention, ffn, role_values, norms, merges,
             "incomplete_graph", "no exact normalization boundary is proven")
 
     a_proof = _branch_proof(
-        attention, a_state, a_input, a_merge, norms)
+        index, attention, a_state, a_input, a_merge, norms)
     f_proof = _branch_proof(
-        ffn, f_state, f_input, f_merge, norms)
+        index, ffn, f_state, f_input, f_merge, norms)
     return placement, topology, a_proof, f_proof
 
 
@@ -1627,7 +1700,7 @@ def _post_norm_state(value, branch_site, norms):
     return None
 
 
-def _branch_proof(branch, state, input_value, merge, norms):
+def _branch_proof(index, branch, state, input_value, merge, norms):
     pre = _direct_norm_site(input_value, norms)
     pre_site = pre if isinstance(pre, CallSiteId) else None
     contribution = _branch_term(merge.value, branch.node.call_site)
@@ -1637,6 +1710,8 @@ def _branch_proof(branch, state, input_value, merge, norms):
             contribution, branch.node.call_site, norms)
     scale_field, scale_value, scale_span = _exact_residual_scale(
         contribution, branch.node.call_site)
+    residual_gate = _exact_residual_gate(
+        index, contribution, branch.node.call_site)
     norm_sites = tuple(
         item for item in (pre_site, post_site) if item is not None)
     spans = tuple(dict.fromkeys(
@@ -1644,11 +1719,56 @@ def _branch_proof(branch, state, input_value, merge, norms):
             *branch.spans,
             merge.span,
             scale_span,
+            *(residual_gate.spans if residual_gate is not None else ()),
             *(span for site in norm_sites for span in norms[site][2]),
         ) if isinstance(span, SourceSpan)))
     return CellBranchProof(
         branch.mechanism, branch, pre_site, post_site, merge.kind,
-        merge.span, scale_field, scale_value, scale_span, spans)
+        merge.span, scale_field, scale_value, scale_span, residual_gate, spans)
+
+
+def _exact_residual_gate(index, value, branch_site):
+    """Prove a learned ``self.<field>.<activation>()`` branch multiplier.
+
+    The residual equation has already isolated the exact mechanism
+    contribution.  This helper only classifies the independent multiplier
+    when its call-site expression is the closed learned-parameter shape.  An
+    arbitrary transform, tensor operand or unresolved call stays unknown.
+    """
+    value = _unwrap_reference(value) if value is not None else None
+    if value is None or value.kind != "mul" or len(value.children) != 2:
+        return None
+    branch_terms = tuple(
+        child for child in value.children if _contains_site(child, branch_site))
+    operands = tuple(
+        _unwrap_reference(child) for child in value.children
+        if not _contains_site(child, branch_site))
+    if len(branch_terms) != 1 or len(operands) != 1:
+        return None
+    operand = operands[0]
+    if operand.kind != "transform" or operand.call_site is None:
+        return None
+    matches = tuple(
+        call for call in index.calls_in(operand.call_site.enclosing_callable)
+        if CallSiteId.of(call) == operand.call_site)
+    if len(matches) != 1:
+        return None
+    call = matches[0]
+    callee = call.callee
+    if callee.kind != "attribute" or callee.name != "tanh" \
+            or len(callee.children) != 1:
+        return None
+    receiver = callee.children[0]
+    if receiver.kind != "attribute" or not receiver.name \
+            or len(receiver.children) != 1:
+        return None
+    base = receiver.children[0]
+    if base.kind != "name" or base.name != "self":
+        return None
+    spans = tuple(dict.fromkeys((call.span, receiver.span)))
+    return ResidualGateProof(
+        receiver.name, "tanh", "parameter", operand.call_site,
+        tuple(span for span in spans if isinstance(span, SourceSpan)))
 
 
 def _exact_residual_scale(value, branch_site):
@@ -1713,7 +1833,14 @@ def _post_norm_site(value, branch_site, norms):
 
 
 def _scaled_branch_child(value, branch_site):
-    """Unwrap only an exact branch × (self.field|numeric literal) operand."""
+    """Unwrap one exact branch multiplied by an independent operand.
+
+    The operand need not be a scalar literal: learned residual gates are often
+    written ``gate.tanh() * branch``.  This proves that the branch contribution
+    reaches the residual equation, but it does *not* prove a scalar value or a
+    config-bound scale.  :func:`_exact_residual_scale` remains deliberately
+    stricter and records only a direct self field or numeric literal.
+    """
     if value.kind != "mul" or len(value.children) != 2:
         return None
     branches = tuple(
@@ -1721,8 +1848,7 @@ def _scaled_branch_child(value, branch_site):
     operands = tuple(
         _unwrap_reference(child) for child in value.children
         if not _contains_site(child, branch_site))
-    if len(branches) != 1 or len(operands) != 1 \
-            or operands[0].kind not in {"self_field", "constant"}:
+    if len(branches) != 1 or len(operands) != 1:
         return None
     return branches[0]
 
@@ -1823,8 +1949,24 @@ def _span_key(span):
     return (span.line, span.col, span.end_line, span.end_col)
 
 
+def cell_topology_at_block(
+        index, root, block_occurrence, *, config_selector=None,
+        guard_config_selector=None):
+    """Read topology at one caller-addressed block occurrence.
+
+    This is the exact-owner form of ``decoder_cell_topology_for_path``.  It
+    performs no config-path or model-stage discovery and is therefore the
+    lawful consumer for components containing more than one repeated stage.
+    """
+    return _cell_topology_at_block(
+        index, root, block_occurrence,
+        config_selector=config_selector,
+        guard_config_selector=guard_config_selector)
+
+
 __all__ = [
     "CellBranchProof",
     "DecoderCellTopologyEvidence",
+    "cell_topology_at_block",
     "decoder_cell_topology_for_path",
 ]

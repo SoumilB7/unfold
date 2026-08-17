@@ -1060,6 +1060,18 @@ def _half_turn_protocol(index, symbol):
         and second.kind == "name" and second.name == first_name)
 
 
+def half_turn_rotation_protocol(index, symbol):
+    """Public semantic query for one exact indexed rotation callable.
+
+    The answer comes from the same algebraic split/negate/reassemble proof used
+    by the canonical U8 Q/K application reader.  Callers must independently
+    prove that this callable is on their exact tensor path.
+    """
+    if not isinstance(index, ProgramIndex) or not isinstance(symbol, SymbolId):
+        raise TypeError("half-turn protocol requires ProgramIndex + SymbolId")
+    return _half_turn_protocol(index, symbol)
+
+
 def _half_slice_side(expression, parameter):
     if expression.kind != "subscript" or len(expression.children) != 2:
         return None
@@ -1274,4 +1286,5 @@ def _forward_failure(result, boundary):
 __all__ = [
     "QKHalfTurnApplicationEvidence",
     "decoder_qk_half_turn_application_for_path",
+    "half_turn_rotation_protocol",
 ]

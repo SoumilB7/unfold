@@ -195,7 +195,8 @@ def _expression_root_name(expression):
 
 class ExactConfigGuardResolver:
     def __init__(self, index, owner_node, config_selector, *, config_prefix=(),
-                 parameter_values=None, framework_config_alias=None):
+                 parameter_values=None, framework_config_alias=None,
+                 nested_config_aliases=()):
         # Avoid the public ``index`` structural-spec spelling: this is a
         # private interpreter handle, not an IR/spec field or mutation sink.
         self._program_index = index
@@ -210,6 +211,23 @@ class ExactConfigGuardResolver:
                 raise ValueError("framework config alias belongs to the exact owner")
         self.framework_config_alias = framework_config_alias
         self.framework_alias_used = False
+        from .framework_config import FrameworkNestedConfigAlias
+        if not nested_config_aliases:
+            nested_config_aliases = tuple(
+                item for item in (
+                    getattr(config_selector, "nested_config_aliases", ()) or ())
+                if isinstance(item, FrameworkNestedConfigAlias)
+                and item.outer_occurrence == owner_node.occurrence)
+        if not isinstance(nested_config_aliases, tuple) or any(
+                not isinstance(item, FrameworkNestedConfigAlias)
+                or item.outer_occurrence != owner_node.occurrence
+                for item in nested_config_aliases):
+            raise TypeError(
+                "nested config aliases belong to this exact owner occurrence")
+        fields = tuple(item.installation_field for item in nested_config_aliases)
+        if len(fields) != len(set(fields)):
+            raise ValueError("nested config aliases are field-unique")
+        self.nested_config_aliases = nested_config_aliases
         parameter_values = parameter_values or {}
         if not isinstance(parameter_values, dict) or any(
                 not isinstance(name, str) or not name
@@ -273,6 +291,20 @@ class ExactConfigGuardResolver:
                     expression, self.framework_config_alias)
             self.framework_alias_used = self.framework_alias_used or (
                 path is not None or normalized_override is not None)
+        if path is None and self.nested_config_aliases:
+            from .framework_config import \
+                config_path_from_nested_framework_alias
+            matches = tuple(
+                candidate for alias in self.nested_config_aliases
+                for candidate in (
+                    config_path_from_nested_framework_alias(
+                        expression, alias, self.owner_node.occurrence),)
+                if candidate is not None)
+            if len(matches) == 1:
+                path = matches[0]
+            elif len(matches) > 1:
+                self.complete = False
+                return _UNKNOWN
         if normalized_override is not None:
             self.spans.append(normalized_override.span)
             return normalized_override.value
@@ -313,7 +345,14 @@ class ExactConfigGuardResolver:
             return expression.const_value
         if expression.kind == "name" \
                 and expression.name in self.parameter_values:
-            return self.parameter_values[expression.name]
+            selected = self.parameter_values[expression.name]
+            if isinstance(selected, NormalizedConfigValue):
+                self.paths.extend(
+                    path for path, _kind in selected.dependencies)
+                self.source_kinds.extend(selected.dependencies)
+                self.spans.extend(selected.spans)
+                return selected.value
+            return selected
         if expression.kind == "attribute" and _self_field(expression):
             field = expression.name
             key = ("field", field)

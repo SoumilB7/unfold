@@ -267,6 +267,24 @@ def decoder_block_candidates_at_root(
                             "invocation proof")),
                 ))
 
+        invoked_stage = _invoked_repeated_stage(index, root, owner, inventory)
+        if invoked_stage.status == "ambiguous":
+            return ReaderResult.ambiguous(
+                owner, invoked_stage.ambiguity,
+                provenance=(*delegated_provenance,
+                            *invoked_stage.provenance))
+        if invoked_stage.status == "resolved":
+            next_owner = invoked_stage.value
+            next_provenance = invoked_stage.provenance
+            if next_owner in visited:
+                return ReaderResult.failed(owner, (ReaderFailure(
+                    "incomplete_graph", "model-stage traversal cycle"),),
+                    provenance=tuple(delegated_provenance))
+            delegated_provenance.extend(next_provenance)
+            owner = next_owner
+            visited.add(owner)
+            continue
+
         from .delegated_stage import resolve_return_delegated_child
         delegated = resolve_return_delegated_child(index, root, owner)
         if delegated.status == "ambiguous":
@@ -339,16 +357,84 @@ def decoder_block_candidates_at_root(
         visited.add(owner)
 
 
+def _invoked_repeated_stage(index, root, owner, inventory):
+    """Resolve one exact invoked child that itself executes a repeated child.
+
+    This is the structural wrapper shape used by vision/audio frontends: the
+    component root executes patch/input work, invokes one nested encoder that
+    owns the repeated container, then performs output work.  No field/class
+    spelling or output proximity participates.  Multiple positive children
+    remain rivals and an unresolved constructed-child invocation blocks the
+    shortcut.
+    """
+    from .execution_flow import resolve_addressed_invocations
+    invocations = resolve_addressed_invocations(index, root, owner, inventory)
+    if invocations.status != "resolved":
+        return ReaderResult.failed(owner, (ReaderFailure(
+            "incomplete_graph", "the owner invocation census is unavailable"),))
+    node = root.graph.node_for(owner)
+    blocking = tuple(
+        item for item in invocations.unresolved
+        if (_self_call_field(item.call) in {
+            child.via_field for child in node.children
+        } or _self_call_field(item.call) in {
+            unresolved.field for unresolved in node.unresolved
+        })) if node is not None else ()
+    positives = []
+    ambiguous_sites = []
+    for invocation in invocations.addressed:
+        child = invocation.callee_owner_occurrence
+        child_inventory = resolve_container_inventory(index, root, child)
+        repeated = resolve_repeated_child_at_owner(
+            index, root, child, child_inventory)
+        if repeated.status == "resolved":
+            positives.append((child, invocation.call.span, repeated))
+        elif repeated.status == "ambiguous":
+            ambiguous_sites.extend(
+                proof.template.call.span for proof in repeated.rivals)
+    positives = list(dict.fromkeys(positives))
+    if blocking:
+        return ReaderResult.failed(owner, (ReaderFailure(
+            "incomplete_graph",
+            "an unresolved constructed-child invocation can rival the "
+            "repeated stage", blocking[0].call.span),))
+    if ambiguous_sites or len(positives) > 1:
+        sites = tuple(dict.fromkeys((
+            *ambiguous_sites, *(span for _child, span, _proof in positives))))
+        return ReaderResult.ambiguous(owner, Ambiguity(sites=sites))
+    if not positives:
+        return ReaderResult.absent(owner)
+    child, call_span, repeated = positives[0]
+    spans = tuple(dict.fromkeys((
+        call_span,
+        *(proof.template.call.span for proof in repeated.proofs))))
+    return ReaderResult.resolved(
+        owner, child, provenance=(ReaderProvenance(
+            "source", spans=spans,
+            detail="exact invoked child with one exact repeated-container path"),))
+
+
+def _self_call_field(call):
+    callee = getattr(call, "callee", None)
+    if callee is None or callee.kind != "attribute" or not callee.children:
+        return None
+    receiver = callee.children[0]
+    return callee.name if receiver.kind == "name" \
+        and receiver.name == "self" else None
+
+
 def decoder_block_path_for_config(
     index: ProgramIndex,
     bundle: SourceBundle,
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool,
+    config_selector=None,
 ) -> ReaderResult[DecoderBlockPath]:
     """Resolve one parser-selected config path to its exact decoder block."""
     candidates = decoder_block_candidates_for_config(
-        index, bundle, config_path, allow_root_stage=allow_root_stage)
+        index, bundle, config_path, allow_root_stage=allow_root_stage,
+        config_selector=config_selector)
     if candidates.status != "resolved":
         return candidates
     value = candidates.value
@@ -380,6 +466,7 @@ def decoder_block_candidates_for_config(
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool,
+    config_selector=None,
 ) -> ReaderResult[DecoderBlockCandidates]:
     """Resolve all exact repeated-child candidates for a selected config."""
     if not isinstance(index, ProgramIndex):
@@ -417,7 +504,8 @@ def decoder_block_candidates_for_config(
             index, outer, allow_root_stage=allow_root_stage)
 
     nested = resolve_config_constructed_root(
-        index, bundle, outer, config_path)
+        index, bundle, outer, config_path,
+        config_selector=config_selector)
     if nested.status == "ambiguous":
         sites = tuple(dict.fromkeys(
             span for candidate in nested.rivals for span in candidate.spans))

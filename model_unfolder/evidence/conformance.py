@@ -156,98 +156,60 @@ def check_model_conformance(
     return problems
 
 
-def _check_vision_facts(target, ir: dict, *, bundle: SourceBundle, source: str) -> list[ConformanceProblem]:
-    modalities = ((ir.get("extras") or {}).get("modalities") or {}).get("inputs") or {}
-    paths = [path for key, path in modalities.items()
-             if key in {"vision", "video"} and isinstance(path, dict)]
-    if not paths:
-        return []
-    from .vision import vision_tower_evidence
-    evidence = vision_tower_evidence(target, source=source, bundle=bundle)
-    view = f"{evidence.component}/vision"
-    if evidence.status in {"ambiguous", "oracle_missing"}:
-        return [ConformanceProblem("unresolved", "vision", view,
-                                   evidence.owner_class, evidence.source_file,
-                                   source_component=evidence.component)]
-    if evidence.status != "proven":
-        return []
-    out: list[ConformanceProblem] = []
-    for path in paths:
-        encoder = path.get("encoder") or {}
-        drawn_variants = encoder.get("variants") or []
-        expected = [variant.to_dict() for variant in evidence.variants]
-        checks = {
-            "position_kind": ((encoder.get("position_encoding") or {}).get("kind"),
-                              evidence.position_kind),
-            "input_position_kind": (encoder.get("input_position_kind"),
-                                    evidence.input_position_kind),
-            "final_norm_kind": (encoder.get("final_norm_kind"), evidence.final_norm_kind),
-            "variant_count": (len(drawn_variants), len(expected)),
-        }
-        for index, code_variant in enumerate(expected):
-            if index >= len(drawn_variants):
-                break
-            drawn = drawn_variants[index]
-            for field in ("block_class", "norm_kind", "norm_placement", "ffn_gated",
-                          "residual_gated", "projection_mode", "q_norm", "k_norm",
-                          "v_norm", "post_rope_scale", "position_kind",
-                          "attention_kind", "ffn_projection_mode"):
-                checks[f"variant[{index}].{field}"] = (drawn.get(field), code_variant.get(field))
-        exemplar = evidence.variants[0] if evidence.variants else None
-        for field, (drawn, code) in checks.items():
-            if drawn == code:
-                continue
-            out.append(ConformanceProblem(
-                "wrong_vision_fact", f"{field}: diagram={drawn!r}, code={code!r}", view,
-                getattr(exemplar, "block_class", evidence.owner_class),
-                getattr(exemplar, "source_file", evidence.source_file),
-                getattr(exemplar, "line", None), evidence.component,
-            ))
-    return out
-
-
 def _check_projector_facts(target, ir: dict, *, bundle: SourceBundle,
-                           source: str) -> list[ConformanceProblem]:
+                           source: str, program_index=None,
+                           parse_context=None) -> list[ConformanceProblem]:
     modalities = ((ir.get("extras") or {}).get("modalities") or {}).get("inputs") or {}
-    paths = [path for key, path in modalities.items()
-             if key in {"vision", "video"} and isinstance(path, dict)]
+    paths = [path for path in modalities.values() if isinstance(path, dict)]
     if not paths:
         return []
-    from .projector import projector_evidence
-    evidence = projector_evidence(target, source=source, bundle=bundle)
-    view = f"{evidence.component}/projector"
-    if evidence.status == "ambiguous":
+    from .projector import (
+        projector_result_for_context, projector_result_for_target,
+    )
+    result = (projector_result_for_context(
+                  parse_context, config_document=target)
+              if parse_context is not None else
+              projector_result_for_target(
+                  target, source=source, bundle=bundle, index=program_index))
+    if result.status == "ambiguous":
         return [ConformanceProblem(
-            "unresolved", "projector", view, evidence.owner_class,
-            evidence.source_file, source_component=evidence.component,
+            "unresolved", "projector", "root/projector",
+            source_component="root",
         )]
-    if evidence.status != "proven":
+    if result.status not in {"resolved", "incomplete"}:
         return []
 
-    expected_ops = [_projector_op_signature(op.to_dict()) for op in evidence.ops]
     out: list[ConformanceProblem] = []
-    for path_name, path in ((key, modalities.get(key)) for key in ("vision", "video")):
-        if not isinstance(path, dict):
-            continue
-        projector = path.get("projector") or {}
-        drawn_ops = [_projector_op_signature(op) for op in projector.get("ops") or []]
-        checks = {
-            "kind": (projector.get("kind"), evidence.kind),
-            "ops": (drawn_ops, expected_ops),
-            "learned_queries": (bool(projector.get("learned_queries")),
-                                evidence.learned_queries),
-            "source_class": (projector.get("source_class"), evidence.projector_class),
-            "source_field": (projector.get("source_field"), evidence.field_name),
-        }
-        for field, (drawn, code) in checks.items():
-            if drawn == code:
+    for evidence in result.value.projectors:
+        view = f"{evidence.component}/projector"
+        expected_ops = [
+            _projector_op_signature(op.to_dict()) for op in evidence.ops]
+        for path_name in evidence.modalities:
+            path = modalities.get(path_name)
+            if not isinstance(path, dict):
                 continue
-            out.append(ConformanceProblem(
-                "wrong_projector_fact",
-                f"{path_name}.{field}: diagram={drawn!r}, code={code!r}", view,
-                evidence.projector_class, evidence.source_file, evidence.line,
-                evidence.component,
-            ))
+            projector = path.get("projector") or {}
+            drawn_ops = [_projector_op_signature(op)
+                         for op in projector.get("ops") or []]
+            checks = {
+                "kind": (projector.get("kind"), evidence.kind),
+                "ops": (drawn_ops, expected_ops),
+                "learned_queries": (bool(projector.get("learned_queries")),
+                                    evidence.learned_queries),
+                "source_class": (projector.get("source_class"),
+                                 evidence.projector_class),
+                "source_field": (projector.get("source_field"),
+                                 evidence.field_name),
+            }
+            for field, (drawn, code) in checks.items():
+                if drawn == code:
+                    continue
+                out.append(ConformanceProblem(
+                    "wrong_projector_fact",
+                    f"{path_name}.{field}: diagram={drawn!r}, code={code!r}",
+                    view, evidence.projector_class, evidence.source_file,
+                    evidence.line, evidence.component,
+                ))
     return out
 
 
@@ -262,63 +224,125 @@ def _projector_op_signature(op: dict) -> tuple:
     )
 
 
-def _check_audio_facts(target, ir: dict, *, bundle: SourceBundle,
-                       source: str) -> list[ConformanceProblem]:
+def _check_recursive_component_facts(
+        target, ir, *, bundle, program_index=None, parse_context=None):
+    """Compare modality projections to the same recursive U9 tower result."""
     modalities = ((ir.get("extras") or {}).get("modalities") or {}).get("inputs") or {}
-    path = modalities.get("audio")
-    if not isinstance(path, dict):
+    if not modalities:
         return []
-    from .audio import audio_tower_evidence
-    evidence = audio_tower_evidence(target, source=source, bundle=bundle)
-    view = f"{evidence.component}/audio"
-    if evidence.status in {"ambiguous", "oracle_missing"}:
-        return [ConformanceProblem(
-            "unresolved", "audio", view, evidence.owner_class,
-            evidence.source_file, source_component=evidence.component,
-        )]
-    if evidence.status != "proven":
-        return []
-    encoder = path.get("encoder") or {}
-    projector = path.get("projector") or {}
-    drawn_variants = encoder.get("variants") or []
-    expected_variants = [item.to_dict() for item in evidence.variants]
-    signature = lambda values: [_projector_op_signature(op) for op in values or []]
-    checks = {
-        "source_owner": (encoder.get("source_owner"), evidence.owner_class),
-        "position.kind": ((encoder.get("position_encoding") or {}).get("kind"),
-                          evidence.position_kind),
-        "position.application": ((encoder.get("position_encoding") or {}).get("application"),
-                                 evidence.position_application),
-        "frontend_ops": (signature(encoder.get("frontend_ops")),
-                         signature(op.to_dict() for op in evidence.frontend_ops)),
-        "post_ops": (signature(encoder.get("post_ops")),
-                     signature(op.to_dict() for op in evidence.post_ops)),
-        "projector_ops": (signature(projector.get("ops")),
-                          signature(op.to_dict() for op in evidence.projector_ops)),
-        "variant_count": (len(drawn_variants), len(expected_variants)),
-    }
-    for index, expected in enumerate(expected_variants):
-        if index >= len(drawn_variants):
-            break
-        drawn = drawn_variants[index]
-        checks[f"variant[{index}].block_class"] = (
-            drawn.get("block_class"), expected.get("block_class"),
-        )
-        checks[f"variant[{index}].ops"] = (
-            signature(drawn.get("ops")), signature(expected.get("ops")),
-        )
+    from .component_tower import recursive_component_mechanisms
+    if parse_context is not None:
+        result = parse_context.reader_results.get(("root.recursive_components", ()))
+        if result is None:
+            document = target if isinstance(target, dict) else {}
+            result = recursive_component_mechanisms(
+                parse_context.program_index(), parse_context.source_bundle,
+                config_document=document,
+                config_selector=_exact_document_selector(document))
+    else:
+        if program_index is None:
+            from .program_index import build_program_index
+            program_index = build_program_index(bundle)
+        document = target if isinstance(target, dict) else {}
+        result = recursive_component_mechanisms(
+            program_index, bundle, config_document=document,
+            config_selector=_exact_document_selector(document))
+    towers_by_component = {}
+    for item in result.towers:
+        towers_by_component.setdefault(
+            item.component.component_key, []).append(item)
     out = []
-    exemplar = evidence.variants[0] if evidence.variants else None
-    for field, (drawn, code) in checks.items():
-        if drawn == code:
+    for modality, path in modalities.items():
+        if not isinstance(path, dict):
             continue
-        out.append(ConformanceProblem(
-            "wrong_audio_fact", f"{field}: diagram={drawn!r}, code={code!r}", view,
-            getattr(exemplar, "block_class", evidence.owner_class),
-            getattr(exemplar, "source_file", evidence.source_file),
-            getattr(exemplar, "line", None), evidence.component,
-        ))
+        encoder = path.get("encoder") or {}
+        towers = tuple(towers_by_component.get(
+            encoder.get("source_component"), ()))
+        if not towers:
+            continue
+        tower = towers[0]
+        kind = "wrong_audio_fact" if modality == "audio" else "wrong_vision_fact"
+        view = f"{tower.component.component_key}/{modality}"
+        owners = list(dict.fromkeys(
+            item.stage_symbol.qualified_name for item in towers))
+        positions = {
+            (item.position.kind, item.position.application) for item in towers}
+        position_kind, position_application = (
+            next(iter(positions)) if len(positions) == 1 else (None, None))
+        variant_records = tuple(
+            (item, variant_index, variant)
+            for item in towers
+            for variant_index, variant in enumerate(item.variants))
+        checks = {
+            "source_owner": (
+                encoder.get("source_owner"), owners[0] if len(towers) == 1 else None),
+            "source_owners": (
+                encoder.get("source_owners"), owners if len(towers) > 1 else None),
+            "position.kind": (
+                (encoder.get("position_encoding") or {}).get("kind"),
+                position_kind),
+            "position.application": (
+                (encoder.get("position_encoding") or {}).get("application"),
+                position_application),
+            "variant_count": (
+                len(encoder.get("variants") or ()), len(variant_records)),
+        }
+        drawn_variants = list(encoder.get("variants") or ())
+        for index, (variant_tower, variant_index, variant) in enumerate(
+                variant_records):
+            drawn = (drawn_variants[index]
+                     if index < len(drawn_variants) else {})
+            bound = variant.bound_attention
+            geometry = variant.attention_geometry
+            storage = variant.attention_storage
+            checks[f"variant[{index}].block_class"] = (
+                drawn.get("block_class"), variant.block_symbol.qualified_name)
+            checks[f"variant[{index}].attention_kind"] = (
+                drawn.get("attention_kind"),
+                bound.kind if bound is not None else None)
+            checks[f"variant[{index}].num_attention_heads"] = (
+                drawn.get("num_attention_heads"),
+                bound.num_heads if bound is not None else None)
+            checks[f"variant[{index}].num_key_value_heads"] = (
+                drawn.get("num_key_value_heads"),
+                bound.num_kv_heads if bound is not None else None)
+            checks[f"variant[{index}].head_dim"] = (
+                drawn.get("head_dim"),
+                geometry.head_dim if geometry is not None else None)
+            checks[f"variant[{index}].projection_mode"] = (
+                drawn.get("projection_mode"),
+                "split_qkv" if storage == "split" else storage)
+            checks[f"variant[{index}].position_kind"] = (
+                drawn.get("position_kind"),
+                variant_tower.position.kind_for(variant_index))
+            checks[f"variant[{index}].position_application"] = (
+                drawn.get("position_application"),
+                variant_tower.position.application_for(variant_index))
+            checks[f"variant[{index}].norm_kind"] = (
+                drawn.get("norm_kind"), variant.norm_kind)
+            checks[f"variant[{index}].ffn_gated"] = (
+                drawn.get("ffn_gated"),
+                variant.ffn.gated if variant.ffn is not None else None)
+        for field, (drawn, expected) in checks.items():
+            if drawn == expected:
+                continue
+            out.append(ConformanceProblem(
+                kind, f"{field}: diagram={drawn!r}, code={expected!r}",
+                view, tower.stage_symbol.qualified_name,
+                tower.stage_symbol.source.canonical_path,
+                source_component=tower.component.component_key))
     return out
+
+
+def _exact_document_selector(document):
+    def select(path):
+        node = document
+        for part in tuple(path):
+            if not isinstance(node, dict) or part not in node:
+                return False, None, ""
+            node = node[part]
+        return True, node, "config_declared"
+    return select
 
 
 def _check_fusion_facts(target, ir: dict, *, bundle: SourceBundle,
@@ -342,13 +366,39 @@ def _check_fusion_facts(target, ir: dict, *, bundle: SourceBundle,
     if evidence.status != "proven":
         return []
 
+    # Placeholder replacement and multi-axis position construction are two
+    # independent code facts.  The parser joins them only at projection time;
+    # conformance must perform the same join from the same typed readers rather
+    # than asking the fusion reader to infer position structure from names.
+    from .multiaxis_position import multimodal_multiaxis_position_result
+    if parse_context is not None:
+        multiaxis = parse_context.cached_reader_result(
+            "root.multiaxis_position", (),
+            lambda: multimodal_multiaxis_position_result(
+                parse_context.program_index(), parse_context.source_bundle))
+    else:
+        if program_index is None:
+            from .program_index import build_program_index
+            program_index = build_program_index(bundle)
+        multiaxis = multimodal_multiaxis_position_result(program_index, bundle)
+    has_multiaxis = bool(
+        multiaxis.status == "resolved" and multiaxis.value)
+    expected_kind = (
+        "unified_multimodal_stream"
+        if evidence.kind == "placeholder_replace" and has_multiaxis
+        else evidence.kind)
+    expected_operation = (
+        "scatter_grid_tokens_into_placeholder_slots"
+        if expected_kind == "unified_multimodal_stream"
+        else evidence.operation)
+
     expected_routes = tuple(
         (route.modality, route.operation) for route in evidence.routes
         if route.modality in inputs
     )
     checks = {
-        "kind": (fusion.get("kind"), evidence.kind),
-        "operation": (fusion.get("operation"), evidence.operation),
+        "kind": (fusion.get("kind"), expected_kind),
+        "operation": (fusion.get("operation"), expected_operation),
         "routes": (_drawn_fusion_routes(fusion), expected_routes),
         "source_owner": (fusion.get("source_owner"), evidence.owner_class),
     }
@@ -552,12 +602,15 @@ def check_fact_conformance(
             problems.append(ConformanceProblem(
                 "wrong_attention", "softmax", key,
                 code.class_name, code.source_file, code.forward_line, code.component))
-    problems.extend(_check_vision_facts(target, ir, bundle=bundle, source=source))
-    problems.extend(_check_projector_facts(target, ir, bundle=bundle, source=source))
+    problems.extend(_check_recursive_component_facts(
+        target, ir, bundle=bundle, program_index=program_index,
+        parse_context=parse_context))
+    problems.extend(_check_projector_facts(
+        target, ir, bundle=bundle, source=source,
+        program_index=program_index, parse_context=parse_context))
     problems.extend(_check_fusion_facts(
         target, ir, bundle=bundle, source=source,
         program_index=program_index, parse_context=parse_context))
-    problems.extend(_check_audio_facts(target, ir, bundle=bundle, source=source))
     return problems
 
 

@@ -34,8 +34,11 @@ from .special_parts.modalities import multimodal_extras
 from ...evidence.identity_roles import identity_address
 from ...evidence import config_access as _config_access
 from .special_parts.modalities.fusion import apply_fusion_evidence
-from .special_parts.modalities.vision import apply_projector_evidence, apply_vision_evidence
-from .special_parts.modalities.audio import apply_audio_evidence
+from .special_parts.modalities.vision import apply_projector_evidence
+from .special_parts.modalities.evidence_projection import (
+    apply_recursive_component_evidence,
+    apply_wrapper_feature_evidence,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -4264,52 +4267,54 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _owner_ns = getattr(context, "component_namespace", "root")
     modality_extras = multimodal_extras(cfg, text_cfg, hidden_size, namespace=_owner_ns)
     if modality_extras:
-        try:
-            from ...evidence.audio import audio_tower_evidence
-            modality_extras = apply_audio_evidence(
-                modality_extras,
-                audio_tower_evidence(cfg, bundle=context.source_bundle),
-            )
-        except Exception:
-            # Missing/ambiguous source keeps one honest opaque audio tower and
-            # connector.  It never revives the former family-labelled sketch.
-            pass
-        try:
-            from ...evidence.vision import vision_tower_evidence
-            modality_extras = apply_vision_evidence(
-                modality_extras,
-                vision_tower_evidence(
-                    cfg, bundle=context.source_bundle,
-                    index=context.program_index()),
-            )
-        except Exception:
-            # A failed source extractor must leave the path honestly generic;
-            # it is never permission to restore a family-derived structure.
-            pass
-        try:
-            from ...evidence.fusion import fusion_evidence
-            modality_extras = apply_fusion_evidence(
-                modality_extras,
-                fusion_evidence(
-                    cfg, parse_context=context),
-                cfg,
-                text_cfg,
-            )
-        except Exception:
-            # Fusion structure is wrapper-code evidence.  Failure must leave the
-            # base payload opaque, never revive a family/config guess.
-            pass
-        try:
-            from ...evidence.projector import projector_evidence
-            modality_extras = apply_projector_evidence(
-                modality_extras,
-                projector_evidence(cfg, bundle=context.source_bundle),
-                cfg, owner_namespace=_owner_ns,
-            )
-        except Exception:
-            # As with the tower extractor, failure leaves one honest generic
-            # connector.  Config dimensions survive; callable structure does not.
-            pass
+        def _u9_selector(path):
+            node = _evidence_config_document
+            for part in tuple(path):
+                if not isinstance(node, dict) or part not in node:
+                    return False, None, ""
+                node = node[part]
+            return True, node, "config_declared"
+
+        from ...evidence.component_tower import recursive_component_mechanisms
+        from ...evidence.fusion import fusion_evidence
+        from ...evidence.multiaxis_position import \
+            multimodal_multiaxis_position_result
+        from ...evidence.projector import projector_result_for_context
+        from ...evidence.wrapper_features import \
+            wrapper_feature_selection_result
+
+        _component_result = context.cached_reader_result(
+            "root.recursive_components", (),
+            lambda: recursive_component_mechanisms(
+                context.program_index(), context.source_bundle,
+                config_document=_evidence_config_document,
+                config_selector=_u9_selector))
+        _multiaxis_result = context.cached_reader_result(
+            "root.multiaxis_position", (),
+            lambda: multimodal_multiaxis_position_result(
+                context.program_index(), context.source_bundle))
+        _feature_result = context.cached_reader_result(
+            "root.wrapper_features", (),
+            lambda: wrapper_feature_selection_result(
+                context.program_index(), context.source_bundle))
+        modality_extras = apply_recursive_component_evidence(
+            modality_extras, _component_result)
+        modality_extras = apply_wrapper_feature_evidence(
+            modality_extras, _feature_result)
+        modality_extras = apply_fusion_evidence(
+            modality_extras,
+            fusion_evidence(cfg, parse_context=context),
+            cross_layers=sorted(cross_attn_layer_set),
+            multiaxis_result=_multiaxis_result,
+        )
+        modality_extras = apply_projector_evidence(
+            modality_extras,
+            projector_result_for_context(
+                context,
+                config_document=_evidence_config_document,
+                config_selector=_u9_selector),
+            cfg, owner_namespace=_owner_ns,
+        )
     # Multi-codebook token streams.  The config count is powerless until the
     # exact selected component proves BOTH the repeated embedding bank summed
     # at input and the repeated output-head bank stacked at output, and both

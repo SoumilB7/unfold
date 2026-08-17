@@ -226,11 +226,17 @@ def test_component_scoped_evidence_keeps_text_and_vision_oracles_separate():
     assert text_code.component == "text_config"
     assert Path(text_code.source_file).name == "modeling_gemma2.py"
 
-    from model_unfolder.evidence.vision import vision_tower_evidence
-    vision_evidence = vision_tower_evidence(cfg, bundle=bundle)
-    assert vision_evidence.status == "proven", "SigLIP vision tower did not resolve"
-    assert vision_evidence.component == "vision_config"
-    assert Path(vision_evidence.source_file).name == "modeling_siglip.py"
+    from model_unfolder.evidence.component_tower import \
+        recursive_component_mechanisms
+    from model_unfolder.evidence.program_index import build_program_index
+    mechanisms = recursive_component_mechanisms(
+        build_program_index(bundle), bundle, config_document=cfg,
+        config_selector=conf._exact_document_selector(cfg))
+    vision = [item for item in mechanisms.towers
+              if item.component.component_key == "vision_config"]
+    assert vision, "SigLIP vision tower did not resolve"
+    assert all(Path(item.stage_symbol.source.canonical_path).name
+               == "modeling_siglip.py" for item in vision)
 
 
 def test_shared_source_file_is_rooted_at_each_components_auto_model():

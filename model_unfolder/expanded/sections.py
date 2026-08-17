@@ -117,9 +117,15 @@ def build_io(raw: dict) -> dict[str, Any]:
             "trace": {"ir_path": "extras.render.model_blocks.position_add"},
         }
     if fusion:
+        fusion_output = fusion.get("output") or {}
+        fusion_resolved = fusion.get("kind") != "code_defined_fusion"
         out["stack_input"] = drop_none({
-            "kind":          (fusion.get("output") or {}).get("kind"),
-            "width":         (fusion.get("output") or {}).get("width") or hidden,
+            "kind":          fusion_output.get("kind"),
+            # The decoder width is a lawful operand only after wrapper source
+            # proves a concrete fusion mechanism.  An opaque declared lane
+            # cannot manufacture a hidden-width stack-input fact.
+            "width":         fusion_output.get("width") or (
+                hidden if fusion_resolved else None),
             "source":        "modalities.fusion",
             "trace":         {"ir_path": "extras.modalities.fusion"},
         })

@@ -24,7 +24,7 @@ from typing import Any, Callable, Optional
 from .accessors import nested
 from .audio import audio_path
 from .conditioning import conditioning_path, conditioning_slot_keys, declared_component
-from .detect import has_video_input, is_unified_grid_stream
+from .detect import has_video_input
 from .vision import video_path, vision_path
 
 PathBuilder = Callable[[Any, Any, Any, int], dict]
@@ -58,8 +58,13 @@ class ModalitySpec:
 
 
 def _vision_video_companion(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> Optional[dict]:
-    """Video rides on the vision tower when the model declares a grid stream."""
-    if has_video_input(cfg) and is_unified_grid_stream(cfg, vision_cfg):
+    """Expose a declared video input without classifying its mechanism.
+
+    A video token declaration is lawful address/input evidence.  Whether the
+    video follows a grid stream is decided later by the exact fusion and
+    multi-axis-position readers, never by the declaration itself.
+    """
+    if has_video_input(cfg):
         return {"video": video_path(cfg, vision_cfg, text_hidden_size)}
     return None
 

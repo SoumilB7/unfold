@@ -47,6 +47,29 @@ class Attention:
 """
 
 
+def _auto_registry_source(tmp_path, *, architecture="Model"):
+    """Minimal exact AutoModel registry proof for dispatch fixtures.
+
+    A bare ``AutoModel.from_config`` call is only an address syntax.  The
+    selected implementation becomes exact when the indexed official registry
+    maps the selected component's config-class key to one class.
+    """
+    path = tmp_path / "transformers" / "models" / "auto" / "modeling_auto.py"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(textwrap.dedent(f"""
+        from collections import OrderedDict
+        from .auto_factory import _LazyAutoMapping
+
+        CONFIG_MAPPING_NAMES = OrderedDict([("child_cfg", "ChildConfig")])
+        MODEL_MAPPING_NAMES = OrderedDict([("child_cfg", "{architecture}")])
+        MODEL_MAPPING = _LazyAutoMapping(CONFIG_MAPPING_NAMES, MODEL_MAPPING_NAMES)
+
+        class AutoModel:
+            _model_mapping = MODEL_MAPPING
+    """), encoding="utf-8")
+    return path
+
+
 def _reader(tmp_path, ffn_source, *, block_forward=None, extra=""):
     block_forward = block_forward or """
         x = self.attn(x)
@@ -383,14 +406,16 @@ class Wrapper:
 """
     child = tmp_path / "child.py"
     wrapper = tmp_path / "wrapper.py"
+    auto = _auto_registry_source(tmp_path)
     child.write_text(textwrap.dedent(child_source), encoding="utf-8")
     wrapper.write_text(textwrap.dedent(wrapper_source), encoding="utf-8")
     bundle = SourceBundle(
-        source="local", files=(str(wrapper), str(child)),
+        source="local", files=(str(wrapper), str(auto), str(child)),
         component_files={
-            "root": (str(wrapper),), "text": (str(child),)},
+            "root": (str(wrapper), str(auto)), "text": (str(child),)},
         component_architectures={
             "root": "Wrapper", "text": "Model"},
+        component_model_types={"text": "child_cfg"},
         architecture="Wrapper",
     )
     index = pi.build_program_index(bundle)

@@ -224,6 +224,8 @@ def resolve_config_constructed_root(
     bundle: SourceBundle,
     outer_root: ComponentRootResolution,
     config_path: ConfigPath,
+    *,
+    config_selector=None,
 ) -> ConfigConstructedRootResolution:
     """Resolve ``config_path`` under a config-only wrapper construction.
 
@@ -299,6 +301,8 @@ def resolve_config_constructed_root(
         if binding.owner == node.symbol
         and binding.value is not None
         and binding.value.span not in observed_constructor_spans
+        and not _binding_contains_observed_constructor(
+            binding, observed_constructor_spans)
         and _binding_installs_component(index, init.symbol, binding)
         and _expr_may_address_selected_path(
             binding.value, params, node.config_bindings, config_path)
@@ -319,10 +323,24 @@ def resolve_config_constructed_root(
     unresolved: list[str] = list(unresolved_prefixes)
     for (owner, owner_symbol, init, params, site,
          root_param, root_binding, local_path) in construction_sites:
+        selected, active_defaults = _construction_guard_selection(
+            index, init.symbol, site, params, node_bindings=(
+                next(graph_node.config_bindings
+                     for graph_node in outer_root.graph.walk()
+                     if graph_node.occurrence == owner)),
+            config_selector=config_selector)
+        if selected is False:
+            continue
+        if selected is None:
+            unresolved.append(
+                "the local construction guard is not exactly decidable from "
+                "its bound config occurrence")
+            continue
         built = _candidate_for_site(
             index, bundle, outer_root, owner, owner_symbol,
             init, params, site, config_path,
-            root_param, root_binding, local_path)
+            root_param, root_binding, local_path,
+            active_defaults=active_defaults)
         if isinstance(built, ConfigConstructedCandidate):
             candidates.append(built)
         elif built is not _NOT_COMPONENT_CLASS:
@@ -332,6 +350,20 @@ def resolve_config_constructed_root(
         return _failed(
             outer_root, config_path, "unresolved_config_construction",
             "; ".join(sorted(set(unresolved))))
+    # A resolved component architecture may choose between multiple exact
+    # consumers of the same config object only when that architecture is
+    # itself present in the candidate set.  This is an address join, not a
+    # mechanism classifier.  If HF reports only a pretrained base class (as
+    # MusicGen does), no exact candidate matches and the source candidates are
+    # left untouched rather than discarded.
+    declared_architecture = (
+        (getattr(bundle, "component_architectures", {}) or {}).get(
+            component_key))
+    architecture_candidates = tuple(
+        item for item in candidates
+        if item.component_symbol.qualified_name == declared_architecture)
+    if architecture_candidates:
+        candidates = list(architecture_candidates)
     if len(candidates) == 1:
         return ConfigConstructedRootResolution(
             "resolved", root_node.occurrence, config_path, component_key,
@@ -348,12 +380,9 @@ def _candidate_for_site(
         index, bundle, outer_root, construction_owner,
         construction_owner_symbol,
         init, params, site, config_path,
-        root_param, root_binding, local_path):
+        root_param, root_binding, local_path, *, active_defaults):
     if len(site.candidates) != 1:
         return "the local construction has zero or rival class candidates"
-    active_defaults = _default_active_parameters(site.guard, params)
-    if active_defaults is None:
-        return "the local construction guard is not proven active under config-only defaults"
     if site.target_kind == "field":
         installation_binding = None
         installation_field = site.target
@@ -381,16 +410,17 @@ def _candidate_for_site(
         installation_kind = "local_alias"
         installation_span = installation_binding.span
 
-    source_symbols = resolve_construction_candidate_symbols(index, site)
-    framework_proof_span = None
-    if not source_symbols:
-        dispatched = _framework_dispatched_component_symbol(
-            index, bundle, init.symbol, site, config_path)
-        if isinstance(dispatched, str):
-            return dispatched
-        if dispatched is None:
+    framework_proof_spans = ()
+    dispatched = _framework_dispatched_component_symbol(
+        index, bundle, init.symbol, site, config_path)
+    if isinstance(dispatched, str):
+        return dispatched
+    if dispatched is not None:
+        source_symbols, framework_proof_spans = (dispatched[0],), dispatched[1]
+    else:
+        source_symbols = resolve_construction_candidate_symbols(index, site)
+        if not source_symbols:
             return "the local construction class reference is unresolved"
-        source_symbols, framework_proof_span = (dispatched[0],), dispatched[1]
     source_identities = {
         (
             symbol.source.canonical_path,
@@ -424,10 +454,14 @@ def _candidate_for_site(
             for source_symbol in source_symbols)
     ))
     if not component_symbols:
-        # The component source address positively excludes this exact class.
-        # It may be an outer wrapper which forwards the selected config scope
-        # to a deeper, component-owned construction.  It is not an unresolved
-        # rival and must not block that deeper proof.
+        # A config document may feed several constructed helpers (Gemma 4 uses
+        # one audio config for both its audio tower and a multimodal embedder).
+        # When SourceBundle has an independently resolved component
+        # architecture, that exact address excludes sibling helpers.  When it
+        # does not (for example a nested text config whose exact `_from_config`
+        # construction is nevertheless resolved), the construction symbol is
+        # retained and competing consumers remain rival candidates upstream.
+        # Neither branch interprets the class spelling as mechanism evidence.
         return _NOT_COMPONENT_CLASS
     if len(component_symbols) != 1:
         return f"the source component has {len(component_symbols)} exact class matches"
@@ -435,7 +469,7 @@ def _candidate_for_site(
 
     component_graph = resolve_owner_graph(index, component_symbol)
     spans = tuple(dict.fromkeys((
-        site.span, installation_span, framework_proof_span)))
+        site.span, installation_span, *framework_proof_spans)))
     component_root = ConstructedComponentRoot(
         component_key=".".join(config_path),
         occurrence=component_graph.root.occurrence,
@@ -460,6 +494,107 @@ def _candidate_for_site(
         tuple(span for span in spans if isinstance(span, SourceSpan)))
 
 
+def _binding_contains_observed_constructor(binding, observed_spans):
+    """A conditional binding is covered when its constructor branch is indexed.
+
+    The binding span covers the whole ``A(...) if guard else None`` expression,
+    whereas the neutral construction record carries the exact call span.  The
+    old equality check therefore misclassified a fully observed conditional as
+    an unsupported hidden construction.
+    """
+    if binding.value is None:
+        return False
+    return any(
+        item.kind == "call" and item.span in observed_spans
+        for item in _expr_nodes(binding.value))
+
+
+def _expr_nodes(expression):
+    if expression is None:
+        return
+    yield expression
+    for child in expression.children:
+        yield from _expr_nodes(child)
+    for _name, child in expression.keyword_children:
+        yield from _expr_nodes(child)
+
+
+def _construction_guard_selection(
+        index, callable_symbol, site, params, *, node_bindings,
+        config_selector):
+    """Return (selected, defaulted-params) for one exact site guard.
+
+    This is address arbitration only.  A checkpoint value may choose the
+    source branch which constructs a component, but it never classifies that
+    component's mechanism.
+    """
+    if not site.guard:
+        return True, ()
+    defaults = []
+    for step in site.guard:
+        default = _guard_default_parameter(step, params)
+        if default is not None:
+            defaults.append(default)
+            continue
+        test = step.test
+        if step.kind == "else" and test is None:
+            test = _conditional_test_for_site(
+                index, callable_symbol, site)
+        value = _config_none_guard_value(
+            test, params, node_bindings, config_selector)
+        if value is None:
+            return None, ()
+        if step.kind == "else":
+            value = not value
+        if not value:
+            return False, ()
+    return True, tuple(dict.fromkeys(defaults))
+
+
+def _conditional_test_for_site(index, callable_symbol, site):
+    matches = []
+    for binding in index.bindings_in(callable_symbol):
+        value = binding.value
+        if value is None or value.kind != "ifexp" or len(value.children) != 3:
+            continue
+        if not any(
+                target.kind == "attribute" and target.name == site.target
+                for target in binding.targets):
+            continue
+        if any(item.span == site.constructor.span
+               for item in _expr_nodes(value.children[0])) \
+                or any(item.span == site.constructor.span
+                       for item in _expr_nodes(value.children[2])):
+            matches.append(value.children[1])
+    return matches[0] if len(matches) == 1 else None
+
+
+def _config_none_guard_value(test, params, bindings, selector):
+    if selector is None or test is None or test.kind != "compare" \
+            or test.operator not in {"is", "is not"} \
+            or len(test.children) != 2:
+        return None
+    left, right = test.children
+    if left.kind == "constant" and left.const_value is None:
+        left, right = right, left
+    if right.kind != "constant" or right.const_value is not None:
+        return None
+    raw = _expr_path(left)
+    if raw is None or raw[0] not in params:
+        return None
+    bound = tuple(item for item in bindings if item.parameter == raw[0])
+    if len(bound) != 1 or bound[0].resolved_prefix is None:
+        return None
+    path = (*bound[0].resolved_prefix, *raw[1])
+    selected = selector(path)
+    if not isinstance(selected, tuple) or len(selected) < 2 \
+            or not isinstance(selected[0], bool):
+        return None
+    present, value = selected[:2]
+    is_none = not present or value is None
+    return is_none if test.operator == "is" else not is_none
+
+
 def _framework_dispatched_component_symbol(
     index, bundle, enclosing_callable, site, config_path,
 ):
@@ -476,7 +611,8 @@ def _framework_dispatched_component_symbol(
         return None
     callee = constructor.children[0]
     proof = resolve_import_reference(
-        index, enclosing_callable.source, enclosing_callable, callee)
+        index, enclosing_callable.source, enclosing_callable, callee,
+        allow_guarded=True, reference_guard=site.guard)
     if proof is None:
         return None
     qualified = proof.qualified_target.lstrip(".")
@@ -503,13 +639,13 @@ def _framework_dispatched_component_symbol(
         return None
 
     component_key = ".".join(config_path)
-    architecture = (
-        getattr(bundle, "component_architectures", {}) or {}
+    registry_key = (
+        getattr(bundle, "component_model_types", {}) or {}
     ).get(component_key)
-    if not architecture:
+    if not registry_key:
         return (
-            "the framework-dispatched component has no declared source "
-            "architecture")
+            "the framework-dispatched component has no exact config-class "
+            "registry key")
     failures = tuple(
         failure for failure in index.parse_failures
         if failure.source.component_key == component_key)
@@ -517,15 +653,76 @@ def _framework_dispatched_component_symbol(
         return (
             "a component parse failure can hide a rival framework-dispatched "
             "class")
+    auto_classes = tuple(
+        record for record in index.classes
+        if record.symbol.source.component_key
+        == enclosing_callable.source.component_key
+        and record.symbol.qualified_name == parts[-2]
+        and record.symbol.source.canonical_path.endswith(
+            "/transformers/models/auto/modeling_auto.py"))
+    if len(auto_classes) != 1:
+        return (
+            "the exact AutoModel implementation source has "
+            f"{len(auto_classes)} matching class declarations")
+    auto_class = auto_classes[0]
+    mapping_refs = tuple(
+        item for item in auto_class.body_assigns
+        if item.attr == "_model_mapping" and item.value is not None
+        and item.value.kind == "name" and item.value.name)
+    if len(mapping_refs) != 1:
+        return "the exact AutoModel class has no unique literal mapping binding"
+    mapping_ref = mapping_refs[0]
+    mapping_assigns = tuple(
+        item for item in index.module_assignments
+        if item.symbol == SymbolId(
+            auto_class.symbol.source, mapping_ref.value.name)
+        and not item.guard)
+    if len(mapping_assigns) != 1:
+        return "the exact AutoModel mapping has no unique module assignment"
+    mapping_assign = mapping_assigns[0]
+    mapping_call = mapping_assign.value
+    if mapping_call.kind != "call" or len(mapping_call.children) < 3:
+        return "the exact AutoModel mapping is not a supported lazy-map call"
+    factory = resolve_import_reference(
+        index, auto_class.symbol.source, None, mapping_call.children[0])
+    if factory is None or factory.qualified_target not in {
+            ".auto_factory._LazyAutoMapping",
+            "transformers.models.auto.auto_factory._LazyAutoMapping"}:
+        return "the exact AutoModel mapping has no closed lazy-map constructor"
+    names_ref = mapping_call.children[2]
+    if names_ref.kind != "name" or not names_ref.name:
+        return "the exact AutoModel mapping names registry is dynamic"
+    registries = tuple(
+        item for item in index.dispatch_registries
+        if item.symbol == SymbolId(auto_class.symbol.source, names_ref.name))
+    if len(registries) != 1:
+        return "the exact AutoModel names registry is unavailable or rival"
+    registry = registries[0]
+    entries = tuple(
+        (key, value) for key, value in registry.entries
+        if key.kind == "constant" and key.const_value == registry_key
+        and value.kind == "constant" and isinstance(value.const_value, str))
+    if len(entries) != 1:
+        return (
+            "the exact AutoModel names registry has "
+            f"{len(entries)} entries for the selected config class")
+    key_expression, value_expression = entries[0]
+    architecture = value_expression.const_value
     matches = tuple(
         record.symbol for record in index.classes
         if record.symbol.source.component_key == component_key
         and record.symbol.qualified_name == architecture)
     if len(matches) != 1:
         return (
-            "the framework-dispatched component has "
-            f"{len(matches)} exact architecture declarations")
-    return matches[0], proof.binding.span
+            "the framework-selected component has "
+            f"{len(matches)} exact class declarations")
+    spans = tuple(dict.fromkeys((
+        proof.binding.span, auto_class.span, mapping_ref.span,
+        mapping_assign.span, factory.binding.span, registry.span,
+        key_expression.span, value_expression.span,
+    )))
+    return matches[0], tuple(
+        span for span in spans if isinstance(span, SourceSpan))
 
 
 def _init_callable(index, symbol):

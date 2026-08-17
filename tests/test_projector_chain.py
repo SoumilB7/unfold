@@ -74,6 +74,47 @@ def test_reassignment_trace_preserves_linear_activation_linear(tmp_path):
         "linear", "activation", "linear"]
 
 
+def test_numeric_affine_input_preprocessing_reaches_the_projection(tmp_path):
+    result = _chain(tmp_path, """
+        from torch.nn import Linear
+        class Root:
+            def __init__(self): self.out = Linear(4, 4)
+            def forward(self, pixels):
+                pixels = 2 * (pixels - 0.5)
+                return self.out(pixels)
+    """)
+    assert result.status == "resolved", result.failures
+    assert [op.kind for op in result.value.operations] == [
+        "elementwise", "linear"]
+    assert result.value.operations[0].fn == "affine"
+
+
+def test_numeric_shape_arithmetic_does_not_become_a_tensor_operation(tmp_path):
+    result = _chain(tmp_path, """
+        from torch.nn import Linear
+        class Root:
+            def __init__(self): self.out = Linear(4, 4)
+            def forward(self, x):
+                width = 2 * (x.shape[-1] - 1)
+                return self.out(x)
+    """)
+    assert result.status == "resolved", result.failures
+    assert [op.kind for op in result.value.operations] == ["linear"]
+
+
+def test_unconsumed_affine_input_decoy_does_not_enter_the_chain(tmp_path):
+    result = _chain(tmp_path, """
+        from torch.nn import Linear
+        class Root:
+            def __init__(self): self.out = Linear(4, 4)
+            def forward(self, x):
+                ignored = 2 * (x - 0.5)
+                return self.out(x)
+    """)
+    assert result.status == "resolved", result.failures
+    assert [op.kind for op in result.value.operations] == ["linear"]
+
+
 def test_shape_call_is_kept_only_on_the_return_path(tmp_path):
     result = _chain(tmp_path, """
         from torch.nn import LayerNorm, Linear
@@ -138,7 +179,7 @@ def test_exact_loop_append_value_path_is_a_symbolic_operation_template(tmp_path)
     """)
     assert result.status == "resolved"
     assert [op.kind for op in result.value.operations] == [
-        "reshape", "reshape", "concatenate", "linear"]
+        "reshape", "reshape", "concat", "linear"]
 
 
 def test_exact_frontend_primitives_are_code_classified(tmp_path):
@@ -168,7 +209,7 @@ def test_exact_functional_reduction_and_concat_are_not_config_inferences(
     """)
     assert result.status == "resolved", result.failures
     assert [op.kind for op in result.value.operations] == [
-        "pooling", "concatenate"]
+        "pooling", "concat"]
 
 
 def test_frontend_primitive_spelling_without_framework_binding_proves_nothing(

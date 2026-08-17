@@ -208,6 +208,7 @@ def decoder_attention_projection_storage_for_path(
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool = False,
+    config_selector=None,
 ) -> ReaderResult[str]:
     """Resolve attention storage for the exact config selected by the parser.
 
@@ -227,7 +228,8 @@ def decoder_attention_projection_storage_for_path(
         raise TypeError("config_path is tuple[str, ...]")
     block_path = decoder_block_path_for_config(
         index, bundle, config_path,
-        allow_root_stage=allow_root_stage)
+        allow_root_stage=allow_root_stage,
+        config_selector=config_selector)
     if block_path.status != "resolved":
         return block_path
     result = _attention_projection_storage_mode_for_block_path(
@@ -611,6 +613,7 @@ def projection_sources_reaching_calls(
 
 def producer_sources_reaching_expressions(
     index, callable_symbol, consumers, producer_calls, *,
+    producer_spans=None,
     method_resolver=None, initial_sources=None,
     preserve_local_tuple_lanes=False,
     include_guarded_bindings=True,
@@ -633,6 +636,9 @@ def producer_sources_reaching_expressions(
         for occurrence, call in producer_calls.items()
         if call.span is not None
     }
+    for occurrence, span in (producer_spans or {}).items():
+        if span is not None:
+            calls_by_span[span] = occurrence
     bindings = sorted(
         index.bindings_in(callable_symbol),
         key=lambda item: _span_sort_key(item.span))
@@ -1046,8 +1052,13 @@ def _expression_sources(expression, env, calls_by_span, dependencies):
         return frozenset(), False
     if expression.kind == "name":
         return env.get(expression.name, (frozenset(), False))
-    if expression.kind == "call" and expression.span in calls_by_span:
+    if expression.span in calls_by_span:
         occurrence = calls_by_span[expression.span]
+        if expression.kind != "call":
+            # Neutral producer spans allow a mechanism reader to seed an
+            # exact non-call value (for example ``self.table.weight``) without
+            # teaching this dataflow helper what that value means.
+            return frozenset((occurrence,)), False
         upstream: set[ConstructionOccurrenceId] = set()
         # The callee expression itself is address syntax; only the call's
         # arguments can carry an upstream projection value.

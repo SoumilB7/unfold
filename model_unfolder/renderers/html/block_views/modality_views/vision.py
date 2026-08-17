@@ -9,9 +9,7 @@ from .common import vision_input
 def build_vision_path_view(ir: dict, info: dict, mount_id: str, _block: dict) -> str:
     """Vision encoder -> projection/merger -> visual token stream.
 
-    Optional structural stages (image tiling, post-encoder token pooling) only
-    appear when the config declares them, so towers that differ structurally
-    render differently — e.g. mllama shows a tile split, gemma 4 a token pool.
+    Optional stages appear only when exact component operations prove them.
     """
     vision = vision_input(ir)
     tokens = vision.get("tokens") or {}
@@ -25,15 +23,22 @@ def build_vision_path_view(ir: dict, info: dict, mount_id: str, _block: dict) ->
     view.block("vision_pixels", "Image pixels", w=210, h=44)
     if tiling:
         view.block("vision_tiles", _tiling_label(tiling), w=240, h=54)
-    view.block("vision_patches", "Patch embedding", w=230, h=44)
-    view.block("vision_encoder", "Vision encoder", w=300, h=54)
+    view.block("vision_patches", (
+        "Patch embedding" if (vision.get("embedding") or {}).get("kind") == "patch_embedding"
+        else "Code-defined visual embedding"), w=230, h=44)
+    encoder = vision.get("encoder") or {}
+    view.block("vision_encoder", (
+        "Vision encoder" if encoder.get("source_owner")
+        else "Code-defined visual encoder"), w=300, h=54)
     if reduction:
         view.block("vision_token_reduce", _reduction_label(reduction), w=230, h=54)
-    view.block("vision_projector", _connector_label(projector, grid_vision), w=270, h=48)
+    view.block("vision_projector", _connector_label(projector), w=270, h=48)
     view.block(
         "visual_tokens",
         ["Projected image", "states"] if cross_attention_vision
-        else "Grid visual tokens" if grid_vision else "Soft visual tokens",
+        else "Grid visual tokens" if grid_vision
+        else "Soft visual tokens" if tokens.get("kind") == "soft_visual_tokens"
+        else "Code-defined visual output",
         w=290, h=48,
     )
     return view.render()
@@ -55,14 +60,14 @@ def _reduction_label(reduction: dict):
     return ["Token pool", f"{_fmt_int(k)}x{_fmt_int(k)}"] if k else "Token pool"
 
 
-def _connector_label(projector: dict, grid_vision: bool):
+def _connector_label(projector: dict):
     kind = projector.get("kind")
     if kind == "perceiver_resampler":
         n = projector.get("num_latents")
         return ["Perceiver", f"{_fmt_int(n)} latents"] if n else "Perceiver resampler"
-    if kind == "patch_merger" or grid_vision:
+    if kind == "patch_merger":
         return "Patch merger"
-    if kind and "mlp" in str(kind):
+    if kind == "mlp_projector":
         return "MLP projector"
     if kind in {"linear_projector", "linear"}:
         return "Linear"

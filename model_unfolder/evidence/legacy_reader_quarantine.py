@@ -24,7 +24,7 @@ _VALID_UNITS = frozenset({"U7", "U8", "U10", "U11"})
 LEGACY_READER_IMPLEMENTATION_FINGERPRINT = (
     "fa20fcd9f0d6620374b4ac24c9cd54f4fe7f46e5d6fe398271ffff548b0960dc")
 LEGACY_PARSE_CALLER_FINGERPRINT = (
-    "7de85c55c0429f80073781e8f4c673e9f8568d2740b377bd7e12614a2dd4ad14")
+    "340fb12fa03daba89094b34cd808fe5f7cb8d58ce19f6f8ed35b7f574e786dfb")
 
 
 @dataclass(frozen=True)
@@ -218,9 +218,6 @@ PARSE_AUTHORITY_SITES = (
     _parse("model_unfolder/evidence/ast_scanner.py", "scan_python_files",
            "legacy_model_source", "U14",
            "parallel class/config scan used by conformance and legacy adapters"),
-    _parse("model_unfolder/evidence/audio.py", "_class_node",
-           "legacy_model_source", "U9",
-           "audio evidence reparses its component source"),
     _parse("model_unfolder/evidence/conformance.py", "_constructor_envs",
            "legacy_model_source", "U14",
            "conformance-local constructor interpreter"),
@@ -254,15 +251,13 @@ PARSE_AUTHORITY_SITES = (
     _parse("model_unfolder/evidence/patterns.py",
            "diffusion_single_stream_fusion_from_files", "legacy_model_source",
            "U10", "diffusion stream interpreter"),
-    _parse("model_unfolder/evidence/projector.py", "_class_node",
-           "legacy_model_source", "U9",
-           "projector evidence reparses its component source"),
     _parse("model_unfolder/evidence/transitive.py", "_parse_file",
            "legacy_model_source", "U14",
            "parallel callable/transitive parser shared by conformance"),
     _parse("model_unfolder/evidence/vision.py", "_parsed_classes",
-           "legacy_model_source", "U9",
-           "vision evidence reparses its component source"),
+           "legacy_model_source", "U10",
+           "diffusion layer/stage compatibility readers still share this "
+           "legacy class-node cache; U9 vision authority is deleted"),
 )
 
 

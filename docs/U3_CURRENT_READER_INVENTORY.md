@@ -9,10 +9,10 @@ This is the current authority/deletion worklist. The older
 ## Summary
 
 - quarantined semantic readers: **17**
-- exact evidence-layer `ast.parse` sites: **27**
-- legacy model-source parse sites: **16**
+- exact evidence-layer `ast.parse` sites: **25**
+- legacy model-source parse sites: **14**
 - frozen reader/helper implementation digest: `fa20fcd9f0d6620374b4ac24c9cd54f4fe7f46e5d6fe398271ffff548b0960dc`
-- frozen legacy-parse caller digest: `7de85c55c0429f80073781e8f4c673e9f8568d2740b377bd7e12614a2dd4ad14`
+- frozen legacy-parse caller digest: `340fb12fa03daba89094b34cd808fe5f7cb8d58ce19f6f8ed35b7f574e786dfb`
 
 ## Authority classes
 
@@ -53,7 +53,6 @@ This is the current authority/deletion worklist. The older
 | `address_bootstrap` | `model_unfolder/evidence/sources.py::_architecture_from_config_class` | — | lawful retained authority |
 | `central_program_index` | `model_unfolder/evidence/program_index.py::_observe_source` | — | lawful retained authority |
 | `legacy_model_source` | `model_unfolder/evidence/ast_scanner.py::scan_python_files` | U14 | parallel class/config scan used by conformance and legacy adapters |
-| `legacy_model_source` | `model_unfolder/evidence/audio.py::_class_node` | U9 | audio evidence reparses its component source |
 | `legacy_model_source` | `model_unfolder/evidence/conformance.py::_constructor_envs` | U14 | conformance-local constructor interpreter |
 | `legacy_model_source` | `model_unfolder/evidence/conformance.py::_imported_model_files` | U14 | conformance-local import closure |
 | `legacy_model_source` | `model_unfolder/evidence/conformance.py::_init_helper_block_classes` | U14 | conformance-local helper/block scan |
@@ -65,9 +64,8 @@ This is the current authority/deletion worklist. The older
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::diffusion_gate_via_norm_from_files` | U10 | diffusion modulation interpreter |
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::diffusion_qk_norm_from_files` | U10 | diffusion normalization interpreter |
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::diffusion_single_stream_fusion_from_files` | U10 | diffusion stream interpreter |
-| `legacy_model_source` | `model_unfolder/evidence/projector.py::_class_node` | U9 | projector evidence reparses its component source |
 | `legacy_model_source` | `model_unfolder/evidence/transitive.py::_parse_file` | U14 | parallel callable/transitive parser shared by conformance |
-| `legacy_model_source` | `model_unfolder/evidence/vision.py::_parsed_classes` | U9 | vision evidence reparses its component source |
+| `legacy_model_source` | `model_unfolder/evidence/vision.py::_parsed_classes` | U10 | diffusion layer/stage compatibility readers still share this legacy class-node cache; U9 vision authority is deleted |
 | `repository_audit` | `model_unfolder/evidence/consumer_firewall.py::scan_consumer_source` | — | lawful retained authority |
 | `repository_audit` | `model_unfolder/evidence/identity_guard.py::scan_identity_source` | — | lawful retained authority |
 | `repository_audit` | `model_unfolder/evidence/legacy_reader_quarantine.py::_observed_callers` | — | lawful retained authority |

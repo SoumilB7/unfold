@@ -330,6 +330,7 @@ def _external_reference(index, site) -> ExternalReferenceProof | None:
 def resolve_import_reference(index, source, callable_symbol,
                              reference, *,
                              allow_guarded: bool = False,
+                             reference_guard: tuple = (),
                              ) -> ExternalReferenceProof | None:
     """Resolve one exact name/attribute reference through one unshadowed import.
 
@@ -342,6 +343,8 @@ def resolve_import_reference(index, source, callable_symbol,
         raise TypeError("resolve_import_reference requires an ExprNode")
     if not isinstance(allow_guarded, bool):
         raise TypeError("allow_guarded is an explicit evidence-policy flag")
+    if not isinstance(reference_guard, tuple):
+        raise TypeError("reference_guard is the exact lexical guard tuple")
     flattened = _flatten_reference(reference)
     if flattened is None:
         return None
@@ -349,7 +352,27 @@ def resolve_import_reference(index, source, callable_symbol,
     imports = tuple(
         item for item in index.imports
         if item.source == source and item.alias == root
-        and (allow_guarded or not item.guard))
+    )
+    local_imports = tuple(
+        item for item in imports
+        if item.enclosing_callable == callable_symbol
+    ) if callable_symbol is not None else ()
+    # A function-local import makes the name local for that entire callable.
+    # It therefore shadows a same-named module import even when the local
+    # statement is too late or on a different branch to prove this reference.
+    if local_imports:
+        imports = tuple(
+            item for item in local_imports
+            if _span_precedes(item.span, reference.span)
+            and (not item.guard or (
+                allow_guarded
+                and _guard_is_prefix(item.guard, reference_guard)))
+        )
+    else:
+        imports = tuple(
+            item for item in imports
+            if item.enclosing_callable is None
+            and (allow_guarded or not item.guard))
     if len(imports) != 1:
         return None
     # A later/conditional module rebinding or local binding makes the import
@@ -368,6 +391,17 @@ def resolve_import_reference(index, source, callable_symbol,
     binding = imports[0]
     target = ".".join((binding.target, *suffix))
     return ExternalReferenceProof(reference, binding, target)
+
+
+def _span_precedes(left, right) -> bool:
+    if left is None or right is None or left.source != right.source:
+        return False
+    return (left.end_line or left.line, left.end_col or left.col) <= \
+        (right.line, right.col)
+
+
+def _guard_is_prefix(prefix, full) -> bool:
+    return len(prefix) <= len(full) and tuple(full[:len(prefix)]) == tuple(prefix)
 
 
 def _flatten_reference(reference: ExprNode):

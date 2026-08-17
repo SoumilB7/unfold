@@ -184,6 +184,62 @@ def test_guarded_import_requires_an_explicit_positive_evidence_policy(tmp_path):
     assert proof.binding.guard[0].kind == "if"
 
 
+def test_guarded_local_import_resolves_only_on_its_exact_lexical_path(tmp_path):
+    source = """
+        class Root:
+            def forward(self, x, enabled):
+                if enabled:
+                    from pkg.fast import fast_kernel
+                    return fast_kernel(x)
+                return x
+    """
+    path = _write(tmp_path, source)
+    bundle = SourceBundle(
+        source="local", files=(path,), component_files={"root": (path,)},
+        component_architectures={"root": "Root"})
+    index = pi.build_program_index(bundle)
+    symbol = next(item.symbol for item in index.callables
+                  if item.symbol.qualified_name == "Root.forward")
+    call = next(item for item in index.calls_in(symbol)
+                if item.callee.kind == "name"
+                and item.callee.name == "fast_kernel")
+    assert resolve_import_reference(
+        index, symbol.source, symbol, call.callee,
+        allow_guarded=True) is None
+    proof = resolve_import_reference(
+        index, symbol.source, symbol, call.callee,
+        allow_guarded=True, reference_guard=call.guard)
+    assert proof is not None
+    assert proof.qualified_target == "pkg.fast.fast_kernel"
+    assert proof.binding.enclosing_callable == symbol
+    assert proof.binding.guard == call.guard
+
+
+def test_local_import_after_reference_shadows_module_but_cannot_prove_call(
+        tmp_path):
+    source = """
+        from pkg.module import fast_kernel
+        class Root:
+            def forward(self, x):
+                y = fast_kernel(x)
+                from pkg.local import fast_kernel
+                return y
+    """
+    path = _write(tmp_path, source)
+    bundle = SourceBundle(
+        source="local", files=(path,), component_files={"root": (path,)},
+        component_architectures={"root": "Root"})
+    index = pi.build_program_index(bundle)
+    symbol = next(item.symbol for item in index.callables
+                  if item.symbol.qualified_name == "Root.forward")
+    call = next(item for item in index.calls_in(symbol)
+                if item.callee.kind == "name"
+                and item.callee.name == "fast_kernel")
+    assert resolve_import_reference(
+        index, symbol.source, symbol, call.callee,
+        allow_guarded=True, reference_guard=call.guard) is None
+
+
 def test_two_construction_sites_for_one_field_are_ambiguous(tmp_path):
     source = _SOURCE.replace(
         "            self.norm = LayerNorm(config.hidden)",

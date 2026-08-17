@@ -332,6 +332,29 @@ def test_module_conditional_import_is_observed_with_its_exact_guard(tmp_path):
     assert record.guard[0].span.source == record.source
 
 
+def test_callable_local_import_retains_exact_scope_guard_and_order(tmp_path):
+    idx = _index(tmp_path, "modeling_local_import.py", """
+        class Block:
+            def forward(self, x, enabled):
+                if enabled:
+                    from pkg.fast import fast_kernel
+                    return fast_kernel(x)
+                return x
+    """)
+    record = next(item for item in idx.imports
+                  if item.alias == "fast_kernel")
+    assert record.target == "pkg.fast.fast_kernel"
+    assert record.enclosing_callable.qualified_name == "Block.forward"
+    assert len(record.guard) == 1
+    assert record.guard[0].kind == "if"
+    call = next(item for item in idx.calls_in(record.enclosing_callable)
+                if item.callee.kind == "name"
+                and item.callee.name == "fast_kernel")
+    assert (record.span.line, record.span.col) < \
+        (call.span.line, call.span.col)
+    assert record.guard == call.guard
+
+
 # --------------------------------------------------------------------------- #
 # Spec family 2 — helper methods (self-call fold edges)
 # --------------------------------------------------------------------------- #
@@ -1238,3 +1261,37 @@ def test_annotated_literal_registry_is_observed_without_interpretation(tmp_path)
     assert [(key.const_value, value.name)
             for key, value in record.entries] == [
         ("one", "first"), ("two", "second")]
+
+
+def test_module_assignment_and_ordered_dict_registry_are_observed_exactly(
+        tmp_path):
+    idx = _index(tmp_path, "ordered_registry.py", """
+        from collections import OrderedDict
+        NAMES = OrderedDict([
+            ("alpha", "AlphaModel"),
+            ("beta", "BetaModel"),
+        ])
+        MAPPING = Factory(OTHER, NAMES)
+    """)
+    assignments = {
+        item.symbol.qualified_name: item for item in idx.module_assignments}
+    assert assignments["MAPPING"].value.kind == "call"
+    assert assignments["MAPPING"].value.children[2].name == "NAMES"
+    registry = next(
+        item for item in idx.dispatch_registries
+        if item.symbol.qualified_name == "NAMES")
+    assert tuple((key.const_value, value.const_value)
+                 for key, value in registry.entries) == (
+                     ("alpha", "AlphaModel"),
+                     ("beta", "BetaModel"),
+                 )
+
+
+def test_same_spelled_unimported_ordered_dict_is_not_a_registry(tmp_path):
+    idx = _index(tmp_path, "fake_ordered_registry.py", """
+        def OrderedDict(value): return value
+        NAMES = OrderedDict([("alpha", "AlphaModel")])
+    """)
+    assert not idx.dispatch_registries
+    assert tuple(item.symbol.qualified_name
+                 for item in idx.module_assignments) == ("NAMES",)

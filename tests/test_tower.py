@@ -120,9 +120,8 @@ def test_parallel_circle_fanin_distributes_arrowheads_around_connector_edge():
     assert len(endpoints) == len(set(endpoints)), "two routes stack arrowheads at one connector point"
 
 
-def test_unknown_audio_encoder_opens_an_honest_tower():
-    """An encoder known only by depth/width/heads gets a norm-free cell — no
-    fabricated norm placement."""
+def test_unknown_audio_encoder_opens_one_opaque_tower_cell():
+    """Depth/width/head numbers do not prove an attention+FFN mechanism."""
     from model_unfolder.renderers.html.block_views.modality_views.audio import encoder_tower_spec
 
     spec = encoder_tower_spec(
@@ -130,8 +129,8 @@ def test_unknown_audio_encoder_opens_an_honest_tower():
     g = tower_graph(spec)
     assert g.groups[0].repeat == 12
     kinds = {n.id: n.kind for n in g.nodes}
-    assert kinds["enc_attn"] == "attention" and kinds["enc_ffn"] == "ffn"
-    assert "norm" not in set(kinds.values())
+    assert kinds["enc_opaque"] == "opaque"
+    assert not ({"attention", "ffn", "norm"} & set(kinds.values()))
     assert {"audio_encoder", "video_encoder"} <= set(VIEW_REGISTRY)
 
 

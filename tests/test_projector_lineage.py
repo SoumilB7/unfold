@@ -83,6 +83,25 @@ def test_exact_self_method_return_attribute_is_followed(tmp_path):
     assert result.value.candidates[0].field == "child"
 
 
+def test_fusion_helper_formal_binds_back_to_its_exact_caller_actual(tmp_path):
+    result = _result(tmp_path, """
+        from torch.nn import Linear, Sequential, GELU
+        class Root:
+            def __init__(self):
+                self.bridge = Linear(4, 4)
+                self.decoy = Sequential(Linear(4, 8), GELU(), Linear(8, 4))
+            def merge(self, inputs_embeds, image_hidden_states, mask):
+                return inputs_embeds.masked_scatter(mask, image_hidden_states)
+            def forward(self, inputs_embeds, image_features, mask):
+                ignored = self.decoy(inputs_embeds)
+                image_features = self.bridge(image_features)
+                return self.merge(inputs_embeds, image_features, mask)
+    """)
+    assert result.status == "resolved"
+    assert len(result.value.candidates) == 1
+    assert result.value.candidates[0].field == "bridge"
+
+
 def test_local_name_keeps_the_requested_self_method_result_attribute(tmp_path):
     result = _result(tmp_path, """
         from torch.nn import Linear
@@ -146,7 +165,7 @@ def test_constructed_child_return_attribute_excludes_sibling_output(tmp_path):
     assert result.value.candidates[0].field == "bridge"
 
 
-def test_two_terminal_mechanisms_do_not_silently_pick_one(tmp_path):
+def test_two_destination_specific_mechanisms_remain_separate(tmp_path):
     result = _result(tmp_path, """
         import torch
         from torch.nn import Linear, Sequential, GELU
@@ -165,6 +184,36 @@ def test_two_terminal_mechanisms_do_not_silently_pick_one(tmp_path):
                 video_features = self.b(video_features)
                 x = inputs_embeds.masked_scatter(mask, image_features)
                 return x.masked_scatter(mask, video_features)
+    """)
+    assert result.status == "resolved"
+    assert {
+        item.destination_modalities: tuple(op.kind for op in item.chain.operations)
+        for item in result.value.candidates
+    } == {
+        ("vision",): ("linear",),
+        ("video",): ("linear", "activation", "linear"),
+    }
+
+
+def test_two_terminal_mechanisms_for_one_destination_are_ambiguous(tmp_path):
+    result = _result(tmp_path, """
+        from torch.nn import Linear, Sequential, GELU
+        class A:
+            def __init__(self): self.out = Linear(4, 4)
+            def forward(self, x): return self.out(x)
+        class B:
+            def __init__(self):
+                self.out = Sequential(Linear(4, 8), GELU(), Linear(8, 4))
+            def forward(self, x): return self.out(x)
+        class Root:
+            def __init__(self):
+                self.a = A()
+                self.b = B()
+            def forward(self, inputs_embeds, image_features, mask):
+                image_features = self.a(image_features)
+                x = inputs_embeds.masked_scatter(mask, image_features)
+                image_features = self.b(image_features)
+                return x.masked_scatter(mask, image_features)
     """)
     assert result.status == "ambiguous"
     assert len(result.ambiguity.sites) == 2

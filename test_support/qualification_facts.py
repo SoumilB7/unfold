@@ -86,7 +86,14 @@ def _mtp_ir(directory: Path):
 def qualification_irs(directory: Path):
     """Return named IRs from exact production-parser frontier witnesses."""
     out = []
-    for model_type in ("gemma3n_text", "gemma4_text"):
+    # PaliGemma is the frontier witness for the source-bound projector input
+    # lane.  Its exact construction binds ``vision_config.hidden_size`` to the
+    # input of ``PaliGemmaMultiModalProjector``; parsing it therefore authors
+    # the registered ``projector_in_features`` fact through production code.
+    # Keep this here (rather than satisfying the registry with a hand-written
+    # fact row): the bidirectional registry gate must observe every definition
+    # from a real parser population.
+    for model_type in ("gemma3n_text", "gemma4_text", "paligemma"):
         document = AutoConfig.for_model(model_type).to_dict()
         context = ParseContext.build(document)
         out.append((f"qualification:{model_type}",

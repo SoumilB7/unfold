@@ -18,6 +18,31 @@ from model_unfolder.evidence.context import ParseContext
 from model_unfolder.evidence.models import SourceBundle
 
 
+def _auto_registry_source(tmp_path, *, architecture="Child"):
+    """The smallest exact Transformers AutoModel registry proof.
+
+    A bare ``AutoModel.from_config`` spelling is not class authority.  The
+    production resolver requires the official implementation address, its
+    literal lazy-map binding, and the checkpoint's exact config-class key.
+    Synthetic positive controls must therefore carry that same proof rather
+    than quietly reintroducing the old component-architecture shortcut.
+    """
+    path = tmp_path / "transformers" / "models" / "auto" / "modeling_auto.py"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(textwrap.dedent(f"""
+        from collections import OrderedDict
+        from .auto_factory import _LazyAutoMapping
+
+        CONFIG_MAPPING_NAMES = OrderedDict([("child_cfg", "ChildConfig")])
+        MODEL_MAPPING_NAMES = OrderedDict([("child_cfg", "{architecture}")])
+        MODEL_MAPPING = _LazyAutoMapping(CONFIG_MAPPING_NAMES, MODEL_MAPPING_NAMES)
+
+        class AutoModel:
+            _model_mapping = MODEL_MAPPING
+    """), encoding="utf-8")
+    return path
+
+
 def _pipeline(tmp_path, body: str, *, include_child_component=True):
     path = tmp_path / "model.py"
     path.write_text(textwrap.dedent(body), encoding="utf-8")
@@ -271,7 +296,7 @@ def test_non_none_injected_default_cannot_activate_guard(tmp_path):
         index, bundle, root, ("child",))
     assert result.status == "failed"
     assert result.failure_kind == "unresolved_config_construction"
-    assert "guard is not proven active" in result.failure_detail
+    assert "guard is not exactly decidable" in result.failure_detail
 
 
 def test_dynamic_factory_candidate_is_failed_never_guessed(tmp_path):
@@ -504,6 +529,26 @@ def test_real_musicgen_decoder_scope_resolves_from_code_not_identity():
         == "MusicgenForCausalLM._from_config(config.decoder)"
 
 
+def test_real_musicgen_auto_dispatch_uses_the_exact_framework_registry():
+    cfg = json.loads(
+        (Path("tests/sable_test_corpus") / "musicgen-small.json").read_text()
+    )["config"]
+    context = ParseContext.build(cfg)
+    index = context.program_index()
+    root = resolve_component_root(index, context.source_bundle, "root")
+    text = resolve_config_constructed_root(
+        index, context.source_bundle, root, ("text_encoder",))
+    audio = resolve_config_constructed_root(
+        index, context.source_bundle, root, ("audio_encoder",))
+    assert text.status == audio.status == "resolved"
+    assert text.candidate.component_symbol.qualified_name == "T5EncoderModel"
+    assert audio.candidate.component_symbol.qualified_name == "EncodecModel"
+    # The config's generic architecture is T5Model; the exact task-specific
+    # AutoModelForTextEncoding registry is the runtime authority instead.
+    assert context.source_bundle.component_architectures["text_encoder"] \
+        == "T5Model"
+
+
 def test_real_qwen2_vl_text_scope_resolves_at_reachable_direct_field():
     cfg = json.loads(
         (Path("tests/sable_test_corpus")
@@ -532,21 +577,26 @@ def test_real_qwen2_vl_text_scope_resolves_at_reachable_direct_field():
 
 
 def test_transformers_auto_model_from_config_joins_declared_component(tmp_path):
+    auto_path = _auto_registry_source(tmp_path)
     path = tmp_path / "model.py"
     path.write_text(textwrap.dedent("""
         from transformers.models.auto.modeling_auto import AutoModel
-
-        class Child:
-            def __init__(self, config): pass
 
         class Wrapper:
             def __init__(self, config):
                 self.slot = AutoModel.from_config(config.child)
     """), encoding="utf-8")
+    child_path = tmp_path / "modeling_child.py"
+    child_path.write_text(textwrap.dedent("""
+        class Child:
+            def __init__(self, config): pass
+    """), encoding="utf-8")
     bundle = SourceBundle(
-        source="local", files=(str(path),),
-        component_files={"root": (str(path),), "child": (str(path),)},
+        source="local", files=(str(path), str(auto_path), str(child_path)),
+        component_files={
+            "root": (str(path), str(auto_path)), "child": (str(child_path),)},
         component_architectures={"root": "Wrapper", "child": "Child"},
+        component_model_types={"child": "child_cfg"},
         architecture="Wrapper",
     )
     index = pi.build_program_index(bundle)
@@ -558,6 +608,105 @@ def test_transformers_auto_model_from_config_joins_declared_component(tmp_path):
     assert result.candidate.installation_field == "slot"
     assert result.candidate.construction_site.constructor.source_segment \
         == "AutoModel.from_config(config.child)"
+
+
+def test_exact_direct_construction_resolves_when_component_map_has_no_architecture(
+        tmp_path):
+    path = tmp_path / "model.py"
+    path.write_text(textwrap.dedent("""
+        class Child:
+            def __init__(self, config): pass
+        class Wrapper:
+            def __init__(self, config):
+                self.slot = Child(config.child)
+    """), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),), "child": (str(path),)},
+        component_architectures={"root": "Wrapper"}, architecture="Wrapper")
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    result = resolve_config_constructed_root(
+        index, bundle, root, ("child",))
+    assert result.status == "resolved", result.failure_detail
+    assert result.candidate.component_symbol.qualified_name == "Child"
+
+
+def test_missing_component_architecture_keeps_two_config_consumers_as_rivals(
+        tmp_path):
+    path = tmp_path / "model.py"
+    path.write_text(textwrap.dedent("""
+        class First:
+            def __init__(self, config): pass
+        class Second:
+            def __init__(self, config): pass
+        class Wrapper:
+            def __init__(self, config):
+                self.first = First(config.child)
+                self.second = Second(config.child)
+    """), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),), "child": (str(path),)},
+        component_architectures={"root": "Wrapper"}, architecture="Wrapper")
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    result = resolve_config_constructed_root(
+        index, bundle, root, ("child",))
+    assert result.status == "ambiguous"
+    assert {item.component_symbol.qualified_name for item in result.rivals} \
+        == {"First", "Second"}
+
+
+def test_declared_component_architecture_selects_only_an_exact_candidate(
+        tmp_path):
+    path = tmp_path / "model.py"
+    path.write_text(textwrap.dedent("""
+        class Tower:
+            def __init__(self, config): pass
+        class Connector:
+            def __init__(self, config): pass
+        class Wrapper:
+            def __init__(self, config):
+                self.tower = Tower(config.child)
+                self.connector = Connector(config.child)
+    """), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),), "child": (str(path),)},
+        component_architectures={"root": "Wrapper", "child": "Tower"},
+        architecture="Wrapper")
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    result = resolve_config_constructed_root(
+        index, bundle, root, ("child",))
+    assert result.status == "resolved"
+    assert result.candidate.component_symbol.qualified_name == "Tower"
+
+
+def test_non_candidate_component_architecture_cannot_hide_exact_source(
+        tmp_path):
+    path = tmp_path / "model.py"
+    path.write_text(textwrap.dedent("""
+        class Concrete:
+            def __init__(self, config): pass
+        class PretrainedBase: pass
+        class Wrapper:
+            def __init__(self, config):
+                self.child = Concrete(config.child)
+    """), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),), "child": (str(path),)},
+        component_architectures={
+            "root": "Wrapper", "child": "PretrainedBase"},
+        architecture="Wrapper")
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    result = resolve_config_constructed_root(
+        index, bundle, root, ("child",))
+    assert result.status == "resolved"
+    assert result.candidate.component_symbol.qualified_name == "Concrete"
 
 
 def test_unrelated_from_config_factory_cannot_claim_framework_dispatch(tmp_path):
@@ -634,10 +783,13 @@ def test_relative_auto_dispatch_requires_the_exact_transformers_package_path(
             def __init__(self, config):
                 self.slot = AutoModel.from_config(config.child)
     """), encoding="utf-8")
+    auto_path = _auto_registry_source(tmp_path)
     bundle = SourceBundle(
-        source="local", files=(str(path),),
-        component_files={"root": (str(path),), "child": (str(path),)},
+        source="local", files=(str(path), str(auto_path)),
+        component_files={
+            "root": (str(path), str(auto_path)), "child": (str(path),)},
         component_architectures={"root": "Wrapper", "child": "Child"},
+        component_model_types={"child": "child_cfg"},
         architecture="Wrapper",
     )
     index = pi.build_program_index(bundle)

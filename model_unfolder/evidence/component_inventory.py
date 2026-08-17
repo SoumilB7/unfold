@@ -111,6 +111,8 @@ class ComponentOwnerInventory:
 def resolve_component_inventory(
     index: ProgramIndex,
     bundle: SourceBundle,
+    *,
+    config_selector=None,
 ) -> ComponentOwnerInventory:
     """Classify every non-pipeline source component through exact ownership.
 
@@ -149,7 +151,8 @@ def resolve_component_inventory(
                     "cannot be proven"),
             ))
             continue
-        result = resolve_config_constructed_root(index, bundle, root, path)
+        result = resolve_config_constructed_root(
+            index, bundle, root, path, config_selector=config_selector)
         if result.status == "resolved":
             entries.append(ComponentOwnerEntry(
                 component_key, path, architecture, "active",

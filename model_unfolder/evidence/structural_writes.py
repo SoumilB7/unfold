@@ -673,10 +673,14 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'spec', 'FFNSpec'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'spec', 'ModelIR'),
     ('model_unfolder/evidence/config_access.py', 'emit', 'ledger', '<dynamic>'),
-    ('model_unfolder/evidence/conformance.py', '_check_audio_facts', 'conformance', '_check_audio_facts:expected_variants'),
+    # U9-G: parser and conformance project the same typed fusion evidence.  The
+    # expected kind/operation are the exact source result joined with the
+    # independent multi-axis fact; these pins authorize the checker, not a
+    # renderer/parser architecture writer.
+    ('model_unfolder/evidence/conformance.py', '_check_fusion_facts', 'conformance', '_check_fusion_facts:expected_kind'),
+    ('model_unfolder/evidence/conformance.py', '_check_fusion_facts', 'conformance', '_check_fusion_facts:expected_operation'),
     ('model_unfolder/evidence/conformance.py', '_check_fusion_facts', 'conformance', '_check_fusion_facts:expected_routes'),
     ('model_unfolder/evidence/conformance.py', '_check_projector_facts', 'conformance', '_check_projector_facts:expected_ops'),
-    ('model_unfolder/evidence/conformance.py', '_check_vision_facts', 'conformance', '_check_vision_facts:expected'),
     ('model_unfolder/expanded/attention.py', '_cache', 'expanded', 'kind:kv'),
     ('model_unfolder/expanded/attention.py', '_cache', 'expanded', 'kind:latent_kv'),
     ('model_unfolder/expanded/attention.py', '_cache', 'expanded', 'kind:none'),
@@ -1013,8 +1017,9 @@ _STRUCTURAL_WRITERS_MULTI = {
     ('model_unfolder/renderers/html/block_views/modality_views/audio.py', '_ops_to_blocks', 'card', 'kind'): 2,
     ('model_unfolder/renderers/html/block_views/modality_views/audio.py', '_source_audio_tower_spec', 'card', 'id'): 4,
     ('model_unfolder/renderers/html/block_views/modality_views/audio.py', '_source_audio_tower_spec', 'card', 'kind'): 2,
-    ('model_unfolder/renderers/html/block_views/modality_views/audio.py', 'encoder_tower_spec', 'card', 'id'): 7,
-    ('model_unfolder/renderers/html/block_views/modality_views/audio.py', 'encoder_tower_spec', 'card', 'kind'): 3,
+    # U9-G removed four config-authored fallback cards.  Pin the smaller exact
+    # canonical projection so the deleted writers cannot grow back.
+    ('model_unfolder/renderers/html/block_views/modality_views/audio.py', 'encoder_tower_spec', 'card', 'id'): 3,
     ('model_unfolder/renderers/html/block_views/modality_views/vision_details.py', 'build_vision_encoder_view', 'card', 'id'): 5,
     ('model_unfolder/renderers/html/block_views/modality_views/vision_details.py', 'build_vision_encoder_view', 'card', 'kind'): 4,
     ('model_unfolder/renderers/html/block_views/refiner.py', 'build_refiner_tower_view', 'card', 'id'): 3,

@@ -61,6 +61,13 @@ _PROTOCOLS = (
         "transformers.modeling_utils.PreTrainedModel", "config"),
 )
 _PROTOCOL_BY_TARGET = {item.qualified_target: item for item in _PROTOCOLS}
+# Exact framework mixins whose constructor contract is deliberately empty.
+# These entries affect only Python address resolution for ``super().__init__``;
+# they do not classify a model or any architectural mechanism.
+_NON_CONFIG_INIT_MIXIN_PROTOCOLS = frozenset({
+    "...generation.GenerationMixin",
+    "transformers.generation.GenerationMixin",
+})
 
 
 @dataclass(frozen=True)
@@ -122,6 +129,45 @@ class FrameworkConfigAlias:
         if None in required or not required <= set(self.spans) \
                 or any(not isinstance(span, SourceSpan) for span in self.spans):
             raise ValueError("framework config provenance retains every address edge")
+
+
+@dataclass(frozen=True)
+class FrameworkNestedConfigAlias:
+    """One outer ``self.<child>.config`` path backed by exact ownership.
+
+    The installation field is merely an address.  The child component's exact
+    construction binds it to ``config_path``; its FrameworkConfigAlias proves
+    that the child stores that constructor input under ``stored_field``.
+    """
+
+    component_root: ConstructedComponentRoot
+    child_alias: FrameworkConfigAlias
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.component_root, ConstructedComponentRoot) \
+                or not isinstance(self.child_alias, FrameworkConfigAlias):
+            raise TypeError("a nested config alias carries typed address proofs")
+        if self.child_alias.owner_occurrence != self.component_root.occurrence \
+                or self.child_alias.owner_symbol \
+                != self.component_root.graph.root.symbol:
+            raise ValueError("the config alias belongs to the constructed child")
+        if self.child_alias.config_binding.resolved_prefix != () \
+                or not self.component_root.installation_field \
+                or not self.component_root.config_path:
+            raise ValueError(
+                "a nested alias stores the exact constructed component config")
+
+    @property
+    def outer_occurrence(self) -> OwnerOccurrenceId:
+        return self.component_root.outer_root
+
+    @property
+    def installation_field(self) -> str:
+        return self.component_root.installation_field
+
+    @property
+    def config_path(self) -> tuple[str, ...]:
+        return self.component_root.config_path
 
 
 @dataclass(frozen=True)
@@ -291,6 +337,89 @@ class FrameworkConfigClass:
 
 
 @dataclass(frozen=True)
+class FrameworkConfigAttributeAlias:
+    """One literal config-class ``attribute_map`` address edge."""
+
+    config_class: FrameworkConfigClass
+    requested_name: str
+    declared_name: str
+    assignment: ClassBodyAssign
+    key_expression: ExprNode
+    value_expression: ExprNode
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.config_class, FrameworkConfigClass) \
+                or not self.requested_name or not self.declared_name:
+            raise ValueError("a config attribute alias has exact non-empty names")
+        if not isinstance(self.assignment, ClassBodyAssign) \
+                or self.assignment.attr != "attribute_map" \
+                or self.assignment.value is None \
+                or self.assignment.value.kind != "dict":
+            raise ValueError("a config attribute alias cites its exact literal map")
+        if self.key_expression.const_value != self.requested_name \
+                or self.value_expression.const_value != self.declared_name:
+            raise ValueError("the alias names come from exact literal entries")
+        required = {
+            self.assignment.span, self.key_expression.span,
+            self.value_expression.span, *self.config_class.spans,
+        }
+        if None in required or not required <= set(self.spans) \
+                or any(not isinstance(span, SourceSpan) for span in self.spans):
+            raise ValueError("attribute alias provenance retains class + map entry")
+
+
+@dataclass(frozen=True)
+class FrameworkNestedConfigAddress:
+    """Exact checkpoint address semantics for one installed child config.
+
+    ``FrameworkNestedConfigAlias`` proves where the child config document is
+    installed.  ``attribute_aliases`` optionally proves how the concrete HF
+    config class translates a code-facing attribute (for example
+    ``hidden_size``) to the checkpoint spelling it actually stores (for
+    example ``d_model``).  This remains an address boundary: it assigns no
+    architectural meaning to either spelling.
+    """
+
+    nested_alias: FrameworkNestedConfigAlias
+    attribute_aliases: tuple[FrameworkConfigAttributeAlias, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.nested_alias, FrameworkNestedConfigAlias) \
+                or any(not isinstance(item, FrameworkConfigAttributeAlias)
+                       for item in self.attribute_aliases):
+            raise TypeError("a nested config address carries typed evidence")
+        if any(item.config_class.alias != self.nested_alias.child_alias
+               for item in self.attribute_aliases):
+            raise ValueError("attribute aliases belong to the exact child config")
+        requested = tuple(item.requested_name for item in self.attribute_aliases)
+        if len(requested) != len(set(requested)):
+            raise ValueError("nested config address aliases are unique")
+
+    def path_for(
+        self,
+        expression: ExprNode,
+        owner_occurrence: OwnerOccurrenceId,
+    ) -> tuple[str, ...] | None:
+        """Return the exact checkpoint path consumed by one source expression."""
+        path = config_path_from_nested_framework_alias(
+            expression, self.nested_alias, owner_occurrence)
+        if path is None:
+            return None
+        relative = path[len(self.nested_alias.config_path):]
+        if len(relative) != 1:
+            return path
+        matches = tuple(
+            item for item in self.attribute_aliases
+            if item.requested_name == relative[0])
+        if not matches:
+            return path
+        if len(matches) != 1:
+            return None
+        return (*self.nested_alias.config_path, matches[0].declared_name)
+
+
+@dataclass(frozen=True)
 class FrameworkConfigClassDefault:
     """One exact own-class literal supplying an omitted source-bound field."""
 
@@ -412,6 +541,28 @@ def framework_config_alias(
         provenance=(ReaderProvenance(
             "source", spans=spans,
             detail="exact super constructor binds framework-stored config field"),))
+
+
+def framework_nested_config_alias(
+    index: ProgramIndex,
+    component_root: ConstructedComponentRoot,
+) -> ReaderResult[FrameworkNestedConfigAlias]:
+    """Bind an installed child field to its exact stored config document."""
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("nested framework config evidence needs a ProgramIndex")
+    if not isinstance(component_root, ConstructedComponentRoot):
+        raise TypeError("nested framework config evidence needs a constructed root")
+    result = framework_config_alias(
+        index, component_root, component_root.occurrence)
+    if result.status != "resolved":
+        return ReaderResult.failed(
+            component_root.outer_root,
+            result.failures or (ReaderFailure(
+                "incomplete_graph",
+                f"child config alias is {result.status}"),))
+    value = FrameworkNestedConfigAlias(component_root, result.value)
+    return ReaderResult.resolved(
+        component_root.outer_root, value, provenance=result.provenance)
 
 
 def framework_config_child_relay(
@@ -673,6 +824,104 @@ def framework_config_class(
             detail="exact constructor annotation reaches indexed config class"),))
 
 
+def framework_config_attribute_aliases(
+    index: ProgramIndex,
+    config_class: FrameworkConfigClass,
+) -> ReaderResult[tuple[FrameworkConfigAttributeAlias, ...]]:
+    """Read the exact config class's own literal ``attribute_map`` entries."""
+    if not isinstance(index, ProgramIndex) \
+            or not isinstance(config_class, FrameworkConfigClass):
+        raise TypeError("config attribute aliases need ProgramIndex + class proof")
+    record = index.class_by_symbol(config_class.config_class)
+    if record is None:
+        return _failed(config_class.alias.owner_occurrence, "out_of_owner",
+                       "the exact config class is absent from the index")
+    assignments = tuple(
+        item for item in record.body_assigns
+        if item.attr == "attribute_map" and item.value is not None)
+    if not assignments:
+        return ReaderResult.absent(config_class.alias.owner_occurrence)
+    if len(assignments) != 1 or assignments[0].value.kind != "dict":
+        return _failed(
+            config_class.alias.owner_occurrence, "unsupported_syntax",
+            "the config attribute map is not one exact literal dict")
+    assignment = assignments[0]
+    expression = assignment.value
+    keys = expression.children
+    values = tuple(value for _ordinal, value in expression.keyword_children)
+    if len(keys) != len(values) or any(
+            key.kind != "constant" or not isinstance(key.const_value, str)
+            or value.kind != "constant"
+            or not isinstance(value.const_value, str)
+            or not key.const_value or not value.const_value
+            for key, value in zip(keys, values)):
+        return _failed(
+            config_class.alias.owner_occurrence, "unsupported_syntax",
+            "the config attribute map contains a non-literal entry")
+    aliases = tuple(
+        FrameworkConfigAttributeAlias(
+            config_class, key.const_value, value.const_value,
+            assignment, key, value,
+            tuple(dict.fromkeys((
+                *config_class.spans, assignment.span,
+                key.span, value.span,
+            ))))
+        for key, value in zip(keys, values))
+    if len({item.requested_name for item in aliases}) != len(aliases):
+        return _failed(
+            config_class.alias.owner_occurrence, "conflict",
+            "the config attribute map repeats a requested spelling")
+    spans = tuple(dict.fromkeys(
+        span for item in aliases for span in item.spans))
+    return ReaderResult.resolved(
+        config_class.alias.owner_occurrence, aliases,
+        provenance=(ReaderProvenance(
+            "source", spans=spans,
+            detail="exact config-class literal attribute aliases"),))
+
+
+def framework_nested_config_address(
+    index: ProgramIndex,
+    component_root: ConstructedComponentRoot,
+) -> ReaderResult[FrameworkNestedConfigAddress]:
+    """Close one installed child config path through its concrete config class.
+
+    This stricter companion to :func:`framework_nested_config_alias` is used
+    when a consumer must publish a checkpoint path, rather than merely select
+    a runtime guard.  If the concrete config class or its ``attribute_map`` is
+    not exactly readable, no checkpoint spelling is published.
+    """
+    nested = framework_nested_config_alias(index, component_root)
+    if nested.status != "resolved":
+        return ReaderResult.failed(
+            component_root.outer_root,
+            nested.failures or (ReaderFailure(
+                "incomplete_graph", "nested config storage is unresolved"),))
+    config_class = framework_config_class(index, nested.value.child_alias)
+    if config_class.status != "resolved":
+        return ReaderResult.failed(
+            component_root.outer_root,
+            config_class.failures or (ReaderFailure(
+                "incomplete_graph", "nested config class is unresolved"),))
+    aliases = framework_config_attribute_aliases(index, config_class.value)
+    if aliases.status == "failed":
+        return ReaderResult.failed(component_root.outer_root, aliases.failures)
+    if aliases.status == "ambiguous":
+        return ReaderResult.ambiguous(
+            component_root.outer_root, aliases.ambiguity)
+    values = aliases.value if aliases.status == "resolved" else ()
+    value = FrameworkNestedConfigAddress(nested.value, tuple(values))
+    spans = tuple(dict.fromkeys((
+        *nested.value.child_alias.spans,
+        *(span for item in values for span in item.spans),
+    )))
+    return ReaderResult.resolved(
+        component_root.outer_root, value,
+        provenance=(ReaderProvenance(
+            "source", spans=spans,
+            detail="installed child config has an exact checkpoint address"),))
+
+
 def framework_config_class_default(
     index: ProgramIndex,
     config_class: FrameworkConfigClass,
@@ -803,6 +1052,26 @@ def config_path_from_framework_alias(
     return ((*config_prefix, *resolved) if resolved is not None else None)
 
 
+def config_path_from_nested_framework_alias(
+    expression: ExprNode,
+    alias: FrameworkNestedConfigAlias,
+    owner_occurrence: OwnerOccurrenceId,
+) -> tuple[str, ...] | None:
+    """Resolve ``self.<installed child>.<stored config>.<path>`` exactly."""
+    if not isinstance(expression, ExprNode) \
+            or not isinstance(alias, FrameworkNestedConfigAlias) \
+            or not isinstance(owner_occurrence, OwnerOccurrenceId):
+        raise TypeError("nested config path resolution is typed")
+    if alias.outer_occurrence != owner_occurrence:
+        return None
+    chain = _attribute_chain(expression)
+    expected = (
+        "self", alias.installation_field, alias.child_alias.stored_field)
+    if len(chain) <= len(expected) or tuple(chain[:len(expected)]) != expected:
+        return None
+    return (*alias.config_path, *chain[len(expected):])
+
+
 def config_override_from_framework_alias(
     expression: ExprNode,
     alias: FrameworkConfigAlias | None,
@@ -838,10 +1107,23 @@ def _single_base_protocol(index, owner):
         seen.add(current)
         symbols.append(current)
         record = index.class_by_symbol(current)
-        if record is None or len(record.bases) != 1:
+        if record is None or not record.bases:
             return ReaderFailure(
                 "incomplete_graph",
-                "framework config proof requires one exact base at every local hop")
+                "framework config proof requires an exact base at every local hop")
+        # A trailing framework mixin can participate in the concrete class MRO
+        # without intercepting config initialization only through this closed
+        # protocol.  Unknown/local/same-spelled mixins remain blocking.  The
+        # first base is still the sole config-storage chain being followed.
+        for trailing in record.bases[1:]:
+            proof = resolve_import_reference(
+                index, current.source, None, trailing)
+            if proof is None \
+                    or proof.qualified_target \
+                    not in _NON_CONFIG_INIT_MIXIN_PROTOCOLS:
+                return ReaderFailure(
+                    "incomplete_graph",
+                    "a trailing base can intercept framework config storage")
         if not first and index.callable_by_symbol(SymbolId(
                 current.source,
                 f"{current.qualified_name}.__init__")) is not None:
@@ -1010,18 +1292,25 @@ def _failed(owner, kind, detail):
 __all__ = [
     "FrameworkConfigStorageProtocol",
     "FrameworkConfigAlias",
+    "FrameworkNestedConfigAlias",
     "FrameworkConfigChildRelay",
     "FrameworkFactoryConfigBinding",
     "FrameworkConfigClass",
+    "FrameworkConfigAttributeAlias",
+    "FrameworkNestedConfigAddress",
     "FrameworkConfigClassDefault",
     "FrameworkConfigDefaultValue",
     "framework_config_alias",
+    "framework_nested_config_alias",
     "framework_config_child_relay",
     "framework_factory_config_binding",
     "framework_factory_config_binding_in_graph",
     "framework_config_class",
+    "framework_config_attribute_aliases",
+    "framework_nested_config_address",
     "framework_config_class_default",
     "framework_config_default_selector",
     "config_path_from_framework_alias",
+    "config_path_from_nested_framework_alias",
     "config_override_from_framework_alias",
 ]

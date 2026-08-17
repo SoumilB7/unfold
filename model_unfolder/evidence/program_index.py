@@ -430,6 +430,7 @@ class ImportRecord:
     target: str                  # dotted module or module.symbol imported
     span: SourceSpan
     guard: tuple = ()            # tuple[GuardStep] for module-scope conditional imports
+    enclosing_callable: SymbolId | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.source, SourceId):
@@ -440,6 +441,11 @@ class ImportRecord:
             raise ValueError("an import carries an exact same-source span")
         if any(not isinstance(step, GuardStep) for step in self.guard):
             raise TypeError("an import guard is a tuple of GuardStep values")
+        if self.enclosing_callable is not None:
+            if not isinstance(self.enclosing_callable, SymbolId) \
+                    or self.enclosing_callable.source != self.source:
+                raise TypeError(
+                    "a local import is qualified by its exact callable")
 
 
 @dataclass(frozen=True)
@@ -481,6 +487,31 @@ class DispatchRegistryRecord:
     symbol: SymbolId             # module-level registry name
     entries: tuple = ()          # tuple[(ExprNode key, ExprNode value)]
     span: SourceSpan | None = None
+
+
+@dataclass(frozen=True)
+class ModuleAssignmentRecord:
+    """One exact module-level assignment and its structural expression.
+
+    This is neutral binding/dataflow evidence.  It does not interpret the
+    assigned value; readers may follow it only through exact ``SymbolId``
+    addresses and typed expression structure.
+    """
+
+    symbol: SymbolId
+    value: ExprNode
+    span: SourceSpan
+    guard: tuple = ()
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.symbol, SymbolId) \
+                or not isinstance(self.value, ExprNode) \
+                or not isinstance(self.span, SourceSpan):
+            raise TypeError("a module assignment carries typed exact evidence")
+        if self.symbol.source != self.span.source:
+            raise ValueError("module assignment symbol and span share one source")
+        if any(not isinstance(step, GuardStep) for step in self.guard):
+            raise TypeError("a module assignment guard is typed")
 
 
 # --------------------------------------------------------------------------- #
@@ -943,6 +974,7 @@ __all__ = [
     # classes / imports / registries
     "ClassBodyAssign", "ClassRecord", "ImportRecord",
     "ModuleBindingObservation", "DispatchRegistryRecord",
+    "ModuleAssignmentRecord",
     # construction occurrences
     "ChildCandidate", "ConstructionSite", "FieldAssignRecord",
     "ContainerElementsRecord",
@@ -1301,6 +1333,7 @@ class _SourceWalker:
         self.sites: list = []
         self.containers: list = []
         self.registries: list = []
+        self.module_assignments: list = []
         self.calls: list = []
         self.attrs: list = []
         self.configs: list = []
@@ -1366,11 +1399,12 @@ class _SourceWalker:
                         node.orelse, scope=scope,
                         guard=(*guard, alternative))
             elif isinstance(node, (ast.Assign, ast.AnnAssign)) and scope == "":
+                self._record_module_assignment(node, guard)
                 self._maybe_registry(node)
 
     # -- imports / registries ---------------------------------------------- #
 
-    def _record_import(self, node, guard=()) -> None:
+    def _record_import(self, node, guard=(), *, enclosing_callable=None) -> None:
         span = self._span(node)
         if isinstance(node, ast.Import):
             for alias in node.names:
@@ -1378,7 +1412,9 @@ class _SourceWalker:
                 if not guard:
                     self._import_aliases[local] = alias.name
                 self.imports.append(
-                    ImportRecord(self.sid, local, alias.name, span, guard))
+                    ImportRecord(
+                        self.sid, local, alias.name, span, guard,
+                        enclosing_callable))
         else:  # ImportFrom
             module = node.module or ""
             level = "." * (node.level or 0)
@@ -1389,20 +1425,36 @@ class _SourceWalker:
                 if not guard:
                     self._import_aliases[local] = target
                 self.imports.append(
-                    ImportRecord(self.sid, local, target, span, guard))
+                    ImportRecord(
+                        self.sid, local, target, span, guard,
+                        enclosing_callable))
 
     def _maybe_registry(self, node: ast.Assign | ast.AnnAssign) -> None:
         target = (
             node.targets[0]
             if isinstance(node, ast.Assign) and len(node.targets) == 1
             else node.target if isinstance(node, ast.AnnAssign) else None)
-        if not isinstance(target, ast.Name) \
-                or not isinstance(node.value, ast.Dict):
+        if not isinstance(target, ast.Name):
+            return
+        pairs = None
+        if isinstance(node.value, ast.Dict):
+            pairs = tuple(zip(node.value.keys, node.value.values))
+        elif isinstance(node.value, ast.Call) \
+                and isinstance(node.value.func, ast.Name) \
+                and self._import_aliases.get(node.value.func.id) \
+                == "collections.OrderedDict" \
+                and len(node.value.args) == 1 and not node.value.keywords \
+                and isinstance(node.value.args[0], (ast.List, ast.Tuple)):
+            entries = node.value.args[0].elts
+            if all(isinstance(item, (ast.List, ast.Tuple))
+                   and len(item.elts) == 2 for item in entries):
+                pairs = tuple((item.elts[0], item.elts[1]) for item in entries)
+        if pairs is None:
             return
         name = target.id
         entries = []
         values = []
-        for k, v in zip(node.value.keys, node.value.values):
+        for k, v in pairs:
             key_expr = self._expr(k) if k is not None else ExprNode("unsupported")
             val_expr = self._expr(v)
             entries.append((key_expr, val_expr))
@@ -1410,6 +1462,20 @@ class _SourceWalker:
         self._registry_values[name] = tuple(values)
         self.registries.append(DispatchRegistryRecord(
             SymbolId(self.sid, name), tuple(entries), self._span(node)))
+
+    def _record_module_assignment(
+        self, node: ast.Assign | ast.AnnAssign, guard: tuple,
+    ) -> None:
+        target = (
+            node.targets[0]
+            if isinstance(node, ast.Assign) and len(node.targets) == 1
+            else node.target if isinstance(node, ast.AnnAssign) else None)
+        value = node.value
+        if not isinstance(target, ast.Name) or value is None:
+            return
+        self.module_assignments.append(ModuleAssignmentRecord(
+            SymbolId(self.sid, target.id), self._expr(value),
+            self._span(node), guard))
 
     # -- classes / callables ----------------------------------------------- #
 
@@ -1519,6 +1585,14 @@ class _SourceWalker:
             return
         if isinstance(stmt, ast.ClassDef):
             self._class(stmt, scope=scan.enclosing.qualified_name)
+            return
+        if isinstance(stmt, (ast.Import, ast.ImportFrom)):
+            # Local imports are real lexical bindings.  Retain their exact
+            # callable, guard and source position so a later address reader
+            # can prove a guarded factory reference without treating the
+            # familiar local spelling as evidence.
+            self._record_import(
+                stmt, guard, enclosing_callable=scan.enclosing)
             return
         if isinstance(stmt, (ast.Assign, ast.AnnAssign)):
             self._assign(stmt, guard, scan)
@@ -2424,6 +2498,7 @@ class ProgramIndex:
     construction_sites: tuple = ()
     containers: tuple = ()
     dispatch_registries: tuple = ()
+    module_assignments: tuple = ()
     calls: tuple = ()
     attribute_accesses: tuple = ()
     config_paths: tuple = ()
@@ -2635,6 +2710,7 @@ _WALKER_RECORDS = (
     ("sites", "sites"),
     ("containers", "containers"),
     ("registries", "registries"),
+    ("module_assignments", "module_assignments"),
     ("calls", "calls"),
     ("attrs", "attrs"),
     ("configs", "configs"),
@@ -2765,7 +2841,8 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
     out = {k: [] for k in (
         "modules", "imports", "module_bindings", "classes", "callables", "identifiers",
         "field_assigns", "sites",
-        "containers", "registries", "calls", "attrs", "configs", "controls",
+        "containers", "registries", "module_assignments", "calls", "attrs",
+        "configs", "controls",
         "dataflow", "unsupported",
         "bindings", "loops", "comprehensions", "returns", "transfers",
         "unsupported_exec")}
@@ -2830,6 +2907,7 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
         construction_sites=tuple(out["sites"]),
         containers=tuple(out["containers"]),
         dispatch_registries=tuple(out["registries"]),
+        module_assignments=tuple(out["module_assignments"]),
         calls=tuple(out["calls"]),
         attribute_accesses=tuple(out["attrs"]),
         config_paths=tuple(out["configs"]),

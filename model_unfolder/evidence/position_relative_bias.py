@@ -222,7 +222,8 @@ def decoder_relative_position_bias_for_path(
         raise TypeError("relative-position evidence requires a SourceBundle")
     candidates = decoder_block_candidates_for_config(
         index, bundle, tuple(config_path),
-        allow_root_stage=allow_root_stage)
+        allow_root_stage=allow_root_stage,
+        config_selector=config_selector)
     if candidates.status != "resolved":
         return candidates
     additives = decoder_attention_score_additives_for_path(

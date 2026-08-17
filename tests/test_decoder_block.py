@@ -256,6 +256,85 @@ class Wrapper:
             occurrences=candidates.value.occurrences[:1])
 
 
+def test_unique_invoked_child_with_repeated_storage_is_the_stage(tmp_path):
+    source = """
+from torch import nn
+class Stem:
+    def __init__(self, config): self.proj = nn.Linear(4, 4)
+    def forward(self, x): return self.proj(x)
+class Block:
+    def __init__(self, config): pass
+    def forward(self, x): return x
+class Encoder:
+    def __init__(self, config):
+        self.layers = nn.ModuleList([Block(config) for _ in range(config.layers)])
+    def forward(self, x):
+        for layer in self.layers: x = layer(x)
+        return x
+class Pool:
+    def __init__(self, config): pass
+    def forward(self, x): return x
+class Wrapper:
+    def __init__(self, config):
+        self.stem = Stem(config)
+        self.encoder = Encoder(config)
+        self.pool = Pool(config)
+    def forward(self, x):
+        x = self.stem(x)
+        x = self.encoder(x)
+        x = self.pool(x)
+        return {"last_hidden_state": x}
+"""
+    path = tmp_path / "invoked_stage.py"
+    path.write_text(source, encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),), architecture="Wrapper",
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Wrapper"})
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    result = decoder_block_path_at_root(index, root, allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    stage = root.graph.node_for(result.value.stage_occurrence)
+    assert stage.symbol.qualified_name == "Encoder"
+    assert root.graph.node_for(
+        result.value.block_occurrence).symbol.qualified_name == "Block"
+
+
+def test_two_invoked_children_with_repeated_storage_remain_rivals(tmp_path):
+    source = """
+from torch import nn
+class Block:
+    def __init__(self, config): pass
+    def forward(self, x): return x
+class Stack:
+    def __init__(self, config):
+        self.layers = nn.ModuleList([Block(config) for _ in range(config.layers)])
+    def forward(self, x):
+        for layer in self.layers: x = layer(x)
+        return x
+class Wrapper:
+    def __init__(self, config):
+        self.left = Stack(config)
+        self.right = Stack(config)
+    def forward(self, x):
+        x = self.left(x)
+        x = self.right(x)
+        return {"last_hidden_state": x}
+"""
+    path = tmp_path / "invoked_rivals.py"
+    path.write_text(source, encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),), architecture="Wrapper",
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Wrapper"})
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    result = decoder_block_path_at_root(index, root, allow_root_stage=True)
+    assert result.status == "ambiguous"
+    assert len(result.ambiguity.sites) == 2
+
+
 def test_unconstructed_config_path_never_falls_back_to_root_decoder():
     result = _path("qwen2-vl-7b-instruct", ("does_not_exist",))
     assert result.status in {"absent", "failed"}

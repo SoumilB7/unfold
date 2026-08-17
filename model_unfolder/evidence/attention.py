@@ -1754,6 +1754,7 @@ def decoder_attention_mechanism_for_path(
     *,
     allow_root_stage: bool,
     config_document=None,
+    config_selector=None,
 ) -> ReaderResult[
         AttentionHeadBinding | LatentAttentionBinding
         | MultiQueryAttentionBinding
@@ -1768,7 +1769,8 @@ def decoder_attention_mechanism_for_path(
         raise TypeError("config_path is tuple[str, ...]")
     block = decoder_block_path_for_config(
         index, bundle, config_path,
-        allow_root_stage=allow_root_stage)
+        allow_root_stage=allow_root_stage,
+        config_selector=config_selector)
     if block.status != "resolved":
         return block
     head = attention_head_binding_at_block(
@@ -1786,7 +1788,8 @@ def decoder_attention_mechanism_for_path(
             decoder_cross_attention_all_layers_for_path
         dual = decoder_cross_attention_all_layers_for_path(
             index, bundle, config_path,
-            allow_root_stage=allow_root_stage)
+            allow_root_stage=allow_root_stage,
+            config_selector=config_selector)
         if dual.status == "resolved" \
                 and dual.value.block_occurrence \
                 == block.value.block_occurrence:
@@ -1833,6 +1836,7 @@ def decoder_gated_delta_geometry_for_path(
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool,
+    config_selector=None,
 ) -> ReaderResult[GatedDeltaGeometryBinding]:
     """Bind one exact decoder's recurrent-mixer geometry to config paths."""
     if not isinstance(index, ProgramIndex):
@@ -1844,7 +1848,8 @@ def decoder_gated_delta_geometry_for_path(
         raise TypeError("config_path is tuple[str, ...]")
     block = decoder_block_path_for_config(
         index, bundle, config_path,
-        allow_root_stage=allow_root_stage)
+        allow_root_stage=allow_root_stage,
+        config_selector=config_selector)
     if block.status != "resolved":
         return block
     root = block.value.component_root
@@ -2531,7 +2536,9 @@ def _projection_head_reshape_chain(
         shaped[source] = call
         common_nodes.extend(dimension_nodes)
     if frozenset(shaped) != projection_ids:
-        return None
+        return _projection_helper_head_reshape_chain(
+            index, node, storage, projection_calls,
+            count_field, dim_field)
 
     shape_producers = {
         ("head_shape", source): call for source, call in shaped.items()
@@ -2564,6 +2571,116 @@ def _projection_head_reshape_chain(
             common.span,
         ) if isinstance(span, SourceSpan)))
     return common, spans
+
+
+def _projection_helper_head_reshape_chain(
+        index, node, storage, projection_calls, count_field, dim_field):
+    """Prove equal Q/K/V heads through one exact bound shape helper.
+
+    Whisper-style attention writes ``self._shape(self.q_proj(x), ...)`` for
+    each lane and places the ``view(..., self.num_heads, self.head_dim)`` in
+    that helper.  The helper name is never a protocol: the three exact calls,
+    their producer partition, the helper's shape relation, and the return
+    dataflow jointly prove the same relation as an inline reshape.
+    """
+    forward = SymbolId(
+        node.symbol.source, f"{node.symbol.qualified_name}.forward")
+    projection_ids = frozenset(projection_calls)
+    helper_candidates = {}
+    for call in index.calls_in(forward):
+        if call.span is None or call.callee.kind != "attribute" \
+                or not call.callee.name or not call.callee.children \
+                or _self_field(call.callee) is None:
+            continue
+        helper = SymbolId(
+            node.symbol.source,
+            f"{node.symbol.qualified_name}.{call.callee.name}")
+        if index.callable_by_symbol(helper) is None:
+            continue
+        sources, _widths, _dependencies, uncertain = \
+            producer_sources_reaching_expressions(
+                index, forward,
+                ((call.span, (*call.args,
+                              *(value for _name, value in call.kwargs))),),
+                projection_calls)
+        if uncertain or len(sources) != 1:
+            continue
+        source = next(iter(sources))
+        if source not in projection_ids:
+            continue
+        helper_candidates.setdefault(helper, []).append((source, call))
+
+    matches = []
+    for helper, carried in helper_candidates.items():
+        by_source = {}
+        duplicate = False
+        for source, call in carried:
+            if source in by_source:
+                duplicate = True
+                break
+            by_source[source] = call
+        if duplicate or frozenset(by_source) != projection_ids:
+            continue
+        shape_calls = tuple(
+            call for call in index.calls_in(helper)
+            if call.span is not None and call.callee.kind == "attribute"
+            and call.callee.name in {"view", "reshape"}
+            and any(_self_field(argument) == count_field
+                    for argument in call.args)
+            and any(_self_field(argument) == dim_field
+                    for argument in call.args))
+        if len(shape_calls) != 1:
+            continue
+        shape_call = shape_calls[0]
+        returns = tuple(
+            item for item in index.return_observations_in(helper)
+            if item.value is not None and item.span is not None)
+        if len(returns) != 1:
+            continue
+        shape_key = ("helper_head_shape", shape_call.span)
+        sources, _widths, dependencies, uncertain = \
+            producer_sources_reaching_expressions(
+                index, helper,
+                ((returns[0].span, (returns[0].value,)),),
+                {shape_key: shape_call})
+        if uncertain or shape_key not in _dependency_closure(
+                sources, dependencies):
+            continue
+
+        shape_producers = {
+            ("helper_shape_call", source): call
+            for source, call in by_source.items()
+        }
+        consumers = tuple(
+            (call.span, (*call.args,
+                         *(value for _name, value in call.kwargs)))
+            for call in (
+                storage.compute_entry, *storage.attention.compute.input_calls)
+            if call.enclosing_callable == forward and call.span is not None)
+        if not consumers:
+            continue
+        sources, _widths, dependencies, _uncertain = \
+            producer_sources_reaching_expressions(
+                index, forward, consumers, shape_producers)
+        closure = _dependency_closure(sources, dependencies)
+        if not frozenset(shape_producers).issubset(closure):
+            continue
+        dim_expr = ExprNode(
+            "attribute", name=dim_field,
+            children=(ExprNode("name", name="self"),),
+            span=shape_call.span)
+        spans = tuple(dict.fromkeys(
+            span for span in (
+                *(call.span for call in by_source.values()),
+                shape_call.span, returns[0].span,
+                *(span for span, _expressions in consumers),
+            ) if isinstance(span, SourceSpan)))
+        matches.append((dim_expr, spans))
+    distinct = {
+        (_expr_key(common), spans): (common, spans)
+        for common, spans in matches
+    }
+    return next(iter(distinct.values())) if len(distinct) == 1 else None
 
 
 def _resolved_expression_field_nodes(

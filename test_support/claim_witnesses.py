@@ -1,19 +1,15 @@
-"""Synthetic binding witnesses for the migration-claim corpus gate.
+"""Source-qualified binding witnesses for the migration-claim corpus gate.
 
-Fifth directive: corpus coverage is BINDING-level — every declared
-path-to-target binding needs a real or synthetic witness.  The real corpus
-exercises ``vision_config.embed_dim`` (qwen2-vl) and
-``vision_config.hidden_size`` (qwen2-vl projector; FLUX/Qwen-Image embedded
-encoders), but no shipped witness spells its tower width
-``vision_hidden_size`` or ``width``.  These minimal configs make those
-spellings the WINNING encoder-width read (the priority chain consumes the
-winner at build time, no modeling source required), so the bindings are
-witnessed rather than removed.
-
-These are verification artifacts: consumed by the claims-coverage gate and
-poisons only, never parsed as product fixtures.
+These are verification artifacts consumed by the claims-coverage gate and
+poisons only, never product fixtures.  A config value cannot qualify itself:
+each positive witness below carries real HF source that binds the value to a
+projector operand.
 """
 from __future__ import annotations
+
+from copy import deepcopy
+
+from . import MLLAMA_VISION_TINY_CONFIG
 
 
 def _base(vision_cfg: dict) -> dict:
@@ -27,26 +23,9 @@ def _base(vision_cfg: dict) -> dict:
     }
 
 
-# ``vision_hidden_size`` wins the (non-grid) chain: hidden_size absent.
-VISION_HIDDEN_SIZE_WITNESS = _base({
-    "vision_hidden_size": 96,
-    "num_hidden_layers": 2, "num_attention_heads": 4,
-    "image_size": 224, "patch_size": 14,
-})
-
-# ``width`` wins: hidden_size AND vision_hidden_size absent.
-WIDTH_WITNESS = _base({
-    "width": 80,
-    "num_hidden_layers": 2, "num_attention_heads": 4,
-    "image_size": 224, "patch_size": 14,
-})
-
-# ``hidden_size`` wins the NON-GRID encoder chain — the 2.5-shape at TOP level
-# (hidden_size IS the internal vision width; embed_dim absent, no grid stream).
-# This binding used to be "witnessed" only by flux's mistral3 text encoder, but
-# that is a SUB-component (root.text_encoder.vision), never the pipeline's
-# top-level root.vision; a genuine top-level VLM of this shape is the correct
-# witness.
+# Negative U9/U14 boundary control: the checkpoint declares a plausible tower
+# width, but supplies no source that proves what consumes it.  It must remain
+# opaque and must never enter the positive claim-witness population.
 HIDDEN_SIZE_WITNESS = _base({
     "hidden_size": 112,
     "num_hidden_layers": 2, "num_attention_heads": 4,
@@ -54,10 +33,25 @@ HIDDEN_SIZE_WITNESS = _base({
 })
 
 CLAIM_SYNTHETIC_WITNESSES: dict[str, dict] = {
-    "synthetic-vision-hidden-size": VISION_HIDDEN_SIZE_WITNESS,
-    "synthetic-width": WIDTH_WITNESS,
-    "synthetic-encoder-hidden-size": HIDDEN_SIZE_WITNESS,
+    # U9-G projector-input claims need real source because the config value is
+    # powerless until an exact construction binds it to the input lane.
+    "synthetic-projector-in-mllama": deepcopy(MLLAMA_VISION_TINY_CONFIG),
+    "synthetic-projector-in-paligemma": {
+        "architectures": ["PaliGemmaForConditionalGeneration"],
+        "model_type": "paligemma", "image_token_index": 256000,
+        "vision_config": {
+            "model_type": "siglip_vision_model", "hidden_size": 1152,
+            "projection_dim": 2048, "num_hidden_layers": 2,
+            "num_attention_heads": 16, "intermediate_size": 4304,
+            "image_size": 224, "patch_size": 14,
+        },
+        "text_config": {
+            "model_type": "gemma", "vocab_size": 257216,
+            "hidden_size": 2048, "intermediate_size": 16384,
+            "num_hidden_layers": 2, "num_attention_heads": 8,
+            "num_key_value_heads": 1,
+        },
+    },
 }
 
-__all__ = ["CLAIM_SYNTHETIC_WITNESSES", "VISION_HIDDEN_SIZE_WITNESS",
-           "WIDTH_WITNESS", "HIDDEN_SIZE_WITNESS"]
+__all__ = ["CLAIM_SYNTHETIC_WITNESSES", "HIDDEN_SIZE_WITNESS"]

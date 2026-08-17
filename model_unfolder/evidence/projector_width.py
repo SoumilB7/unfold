@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from .component_owner import OwnerGraph
 from .construction_calls import resolve_import_reference
 from .framework_config import framework_factory_config_binding_in_graph
+from .framework_config import FrameworkNestedConfigAddress
 from .program_index import ConstructionSite, ExprNode, ProgramIndex, SymbolId
 from .projector_lineage import ProjectorProducerCandidate
 
@@ -48,11 +49,17 @@ def projector_width_evidence(
     index: ProgramIndex,
     graph: OwnerGraph,
     candidate: ProjectorProducerCandidate,
+    *,
+    nested_config_addresses: tuple[FrameworkNestedConfigAddress, ...] = (),
 ) -> ProjectorWidthEvidence:
     if not isinstance(index, ProgramIndex) or not isinstance(graph, OwnerGraph):
         raise TypeError("projector widths require ProgramIndex + OwnerGraph")
     if not isinstance(candidate, ProjectorProducerCandidate):
         raise TypeError("projector widths require a proven producer candidate")
+    if not isinstance(nested_config_addresses, tuple) or any(
+            not isinstance(item, FrameworkNestedConfigAddress)
+            for item in nested_config_addresses):
+        raise TypeError("projector widths require typed nested config addresses")
     sites = _affine_sites(index, graph, candidate)
     if not sites:
         missing = WidthOperand("unavailable")
@@ -64,13 +71,17 @@ def projector_width_evidence(
     if first_operands is None or last_operands is None:
         missing = WidthOperand("unavailable")
         return ProjectorWidthEvidence(missing, missing)
-    first_env = _constructor_env(index, graph, first_node.occurrence, {})
-    last_env = _constructor_env(index, graph, last_node.occurrence, {})
+    first_env = _constructor_env(
+        index, graph, first_node.occurrence, {}, nested_config_addresses)
+    last_env = _constructor_env(
+        index, graph, last_node.occurrence, {}, nested_config_addresses)
     return ProjectorWidthEvidence(
         _resolve_operand(index, first_node, first_site,
-                         first_operands[0], first_env, set()),
+                         first_operands[0], first_env, set(),
+                         nested_config_addresses),
         _resolve_operand(index, last_node, last_site,
-                         last_operands[1], last_env, set()),
+                         last_operands[1], last_env, set(),
+                         nested_config_addresses),
     )
 
 
@@ -143,7 +154,9 @@ def _linear_operands(index, site):
     return (incoming, outgoing) if incoming is not None and outgoing is not None else None
 
 
-def _constructor_env(index, graph, occurrence, visiting):
+def _constructor_env(
+    index, graph, occurrence, visiting, nested_config_addresses=(),
+):
     if occurrence in visiting:
         return {}
     node = graph.node_for(occurrence)
@@ -190,31 +203,38 @@ def _constructor_env(index, graph, occurrence, visiting):
     if init is None:
         return {}
     parent_env = _constructor_env(
-        index, graph, parent.occurrence, {*visiting, occurrence})
+        index, graph, parent.occurrence, {*visiting, occurrence},
+        nested_config_addresses)
     params = tuple(item for item in init.params
                    if item.name != "self" and item.kind not in {"vararg", "kwarg"})
     positional = tuple(item for item in params
                        if item.kind in {"positional", "posonly"})
     for param, expression in zip(positional, site.args):
         resolved = _resolve_operand(
-            index, parent, site, expression, parent_env, set())
+            index, parent, site, expression, parent_env, set(),
+            nested_config_addresses)
         if resolved.source != "unavailable" or param.name not in env:
             env[param.name] = resolved
     by_name = {item.name: item for item in params}
     for name, expression in site.kwargs:
         if name in by_name:
             resolved = _resolve_operand(
-                index, parent, site, expression, parent_env, set())
+                index, parent, site, expression, parent_env, set(),
+                nested_config_addresses)
             if resolved.source != "unavailable" or name not in env:
                 env[name] = resolved
     for param in params:
         if param.name not in env and param.has_default:
             env[param.name] = _resolve_operand(
-                index, node, site, param.default, {}, set())
+                index, node, site, param.default, {}, set(),
+                nested_config_addresses)
     return env
 
 
-def _resolve_operand(index, node, site, expression, env, visiting):
+def _resolve_operand(
+    index, node, site, expression, env, visiting,
+    nested_config_addresses=(),
+):
     if expression is None:
         return WidthOperand("unavailable")
     key = (expression.kind, expression.name, expression.span)
@@ -223,7 +243,8 @@ def _resolve_operand(index, node, site, expression, env, visiting):
     if expression.kind == "constant" and isinstance(expression.const_value, int) \
             and not isinstance(expression.const_value, bool):
         return WidthOperand("code_bound", value=expression.const_value)
-    path = _config_path(node, expression, env)
+    path = _config_path(
+        node, expression, env, nested_config_addresses)
     if path is not None:
         return WidthOperand("config_bound", path=path)
     if expression.kind == "name" and expression.name:
@@ -238,7 +259,8 @@ def _resolve_operand(index, node, site, expression, env, visiting):
         if bindings:
             selected = sorted(bindings, key=lambda item: _span_key(item.span))[-1]
             return _resolve_operand(
-                index, node, site, selected.value, env, {*visiting, key})
+                index, node, site, selected.value, env, {*visiting, key},
+                nested_config_addresses)
     if expression.kind == "attribute" and expression.children \
             and expression.children[0].kind == "name" \
             and expression.children[0].name == "self":
@@ -250,10 +272,13 @@ def _resolve_operand(index, node, site, expression, env, visiting):
         if assigns:
             selected = sorted(assigns, key=lambda item: _span_key(item.span))[-1]
             return _resolve_operand(
-                index, node, site, selected.value, env, {*visiting, key})
+                index, node, site, selected.value, env, {*visiting, key},
+                nested_config_addresses)
     if expression.kind in {"binop", "unaryop"}:
         operands = tuple(
-            _resolve_operand(index, node, site, child, env, {*visiting, key})
+            _resolve_operand(
+                index, node, site, child, env, {*visiting, key},
+                nested_config_addresses)
             for child in expression.children
             if isinstance(child, ExprNode))
         if not operands or all(item.source == "unavailable" for item in operands):
@@ -271,7 +296,15 @@ def _resolve_operand(index, node, site, expression, env, visiting):
     return WidthOperand("unavailable")
 
 
-def _config_path(node, expression, env):
+def _config_path(node, expression, env, nested_config_addresses=()):
+    nested = tuple(dict.fromkeys(
+        path for address in nested_config_addresses
+        for path in (address.path_for(expression, node.occurrence),)
+        if path is not None))
+    if len(nested) == 1:
+        return nested[0]
+    if nested:
+        return None
     segments = []
     current = expression
     while current.kind == "attribute" and len(current.children) == 1:
