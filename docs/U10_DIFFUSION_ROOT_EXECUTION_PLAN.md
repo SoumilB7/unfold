@@ -250,15 +250,15 @@ file union, run source regexes, or create another cache.
 The exact Python names may change once implementation begins, but the separation
 of responsibilities below may not.
 
-### 6.1 `DiffusionRootTopology`
+### 6.1 `DiffusionRootTopology` (U10-A positive boundary)
 
 Evidence module: `model_unfolder/evidence/diffusion_root.py`
 
 Required fields:
 
-- status: `resolved | absent | ambiguous | failed`;
+- `ReaderResult` status: `incomplete | ambiguous | failed` in U10-A;
 - component root occurrence and exact source symbol;
-- topology: `transformer_stack | u_shaped | hybrid | unknown`;
+- strongest positive candidate: `repeated_stack | u_shaped`;
 - exact construction/call evidence that supports the topology;
 - every rival root/topology candidate with spans;
 - typed unsupported/failure evidence;
@@ -266,14 +266,19 @@ Required fields:
 
 Rules:
 
-- a transformer stack requires a constructed repeated block container and a
-  source-visible execution/use relation;
-- a U-shape requires constructed down/mid/up stage relations, not config block
-  lists or a class substring;
-- `hybrid` is legal only when both topologies are positively executed in one
-  root; unresolved rival candidates are `ambiguous`, never `hybrid`;
-- `resolved` requires a non-unknown topology; `unknown` is presentation wording
-  for an absent/ambiguous/failed evidence result, not a resolved mechanism;
+- a repeated-stack candidate requires an exact root-owned container loop and an
+  exact call through its loop-bound element; it is not yet a Transformer claim;
+- a U-shape candidate requires two such stages plus an exact positive bypass
+  route from an earlier invocation into a later one, not config block lists or
+  a class/field substring;
+- U10-A returns positive candidates as `incomplete`: U3 supplies conservative
+  local relations but no whole-callable CFG coverage certificate, so observing
+  one route cannot prove no additional route exists;
+- a proved U-route plus an independent repeated stack is `ambiguous` in U10-A,
+  never silently collapsed to either candidate; later stream/companion units
+  may type an intentional hybrid only with exact ownership;
+- U10-C may strengthen `repeated_stack` to a Transformer stack only when the
+  exact element occurrence carries canonical attention/FFN evidence;
 - source missing/unparseable is `failed`, not a config fallback;
 - the result consumes a resolved component root and cannot bypass D0.
 
@@ -695,7 +700,7 @@ U10 is DONE only after the pushed committed tree reproduces the receipt.
 | nonstandard joint/KV route | PRX or available equivalent | exact K/V concat relation |
 | plain/weakly conditioned DiT | available plain DiT/AuraFlow counterexample | no fabricated text rail or AdaLN |
 | non-softmax mixer | available U6 diffusion control | opaque/correct mechanism, never MHA fallback |
-| U-shaped root handoff | SDXL | exact `u_shaped` classification; unchanged U11 compatibility handoff |
+| U-shaped root handoff | SDXL | exact positive `u_shaped` route; unchanged U11 compatibility handoff |
 | source missing/partial | synthetic + corpus fixture | opaque root/block, config values remain declarations only |
 | companion denoiser | Wan/Qwen-image available fixture | candidate presence separate from equivalence proof |
 
@@ -929,7 +934,7 @@ Final achieved output:
 | Unit | Status | Exit artifact |
 |---|---|---|
 | U10-0 | DONE | U9 commit `705f497`; tree `460aee5a374eb04034aea82624fd416cc7489710`; 3,327 collected; 29 witnesses; 14 U10 debt rows; 12 legacy readers; diffusion parser broad-exception baseline 17; exhaustive receipt `/private/tmp/model-unfolder-verification/256d238edd` fingerprint-identical |
-| U10-A | ACTIVE | exact root topology evidence; observation-only shadow publication, no renderer delta |
+| U10-A | IMPLEMENTED — COMMITTED-TREE RECEIPT PENDING | `evidence/diffusion_root.py`: exact repeated-container execution and exact bypass-route U-shape proof; parser shadow publication only; 23 synthetic poisons + 15 real witnesses green; no IR/renderer consumer |
 | U10-B | NOT STARTED | occurrence-exact stack inventory |
 | U10-C | NOT STARTED | exact U6/U7/U8 block fact composition |
 | U10-D | NOT STARTED | stream + conditioning graph |
@@ -960,3 +965,46 @@ This baseline is a worklist, not a target to preserve. Counts may only shrink
 or move to a later explicitly-owned unit with a machine-checked reason. U10-A
 must first publish exact root-topology evidence in shadow mode and explain every
 old/new witness disagreement before any parser or renderer authority changes.
+
+### U10-A qualification matrix (2026-08-18)
+
+U10-A deliberately publishes `repeated_stack`, not `transformer_stack`. A loop
+over a module container proves repeated execution; it does not prove that the
+element implements attention. U10-C may strengthen that shape only after the
+exact block occurrence passes canonical U6/U7/U8 mechanism readers.
+
+The U-shape proof is stronger and fully local: an earlier repeated invocation
+returns at least two values; one is accumulated as a bypass, a later binding
+derives from that accumulator, and a later repeated invocation consumes the
+derived bypass alongside the carried value. No name (`UNet`, `down`, `up`,
+`skip`) participates in the predicate. Both positive candidates remain typed
+`incomplete` because this substrate does not claim whole-forward coverage.
+
+| Witness | Legacy branch | U10-A result | Exact repeated stages |
+|---|---:|---:|---:|
+| AuraFlow | DiT | `incomplete / repeated_stack` | 2 |
+| CogVideoX | DiT | `incomplete / repeated_stack` | 1 |
+| FLUX.2 | DiT | `incomplete / repeated_stack` | 2 |
+| FluxTransformer2DModel | DiT | `incomplete / repeated_stack` | 2 |
+| HunyuanVideo | DiT | `incomplete / repeated_stack` | 2 |
+| LTX-Video | DiT | `incomplete / repeated_stack` | 1 |
+| Lumina Image 2 | DiT | `incomplete / repeated_stack` | 3 |
+| Mochi | DiT | `incomplete / repeated_stack` | 1 |
+| PixArt Sigma | DiT | `incomplete / repeated_stack` | 1 |
+| PRX Pixel | DiT | `incomplete / repeated_stack` | 1 |
+| Qwen-Image | DiT | `incomplete / repeated_stack` | 1 |
+| Sana | DiT | `incomplete / repeated_stack` | 1 |
+| Stable Diffusion 3.5 | DiT | `incomplete / repeated_stack` | 1 |
+| Stable Diffusion XL | U-Net | `incomplete / u_shaped` | 2 |
+| Wan 2.2 | DiT | `incomplete / repeated_stack` | 1 |
+
+All 15 results are unpatched source results. The 23 synthetic controls additionally
+pin misleading class names, config-only stage lists, renamed classes/fields/
+locals, no invocation, no bypass, an unconsumed bypass, same-class duplicate
+elements, helper construction, guarded constructor rivals, imported aliases,
+broken sibling source, missing source, same config path with different source,
+and a U-shaped route plus an independent repeated stack (typed ambiguity).
+
+Shadow publication is cached under
+`("root.denoiser.topology", ())` on the call-local `ParseContext`. No ModelIR,
+card, expanded JSON, parameter, conformance or renderer code reads it in U10-A.

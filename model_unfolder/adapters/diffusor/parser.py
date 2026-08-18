@@ -755,6 +755,25 @@ def _fact_chip(label: str, value) -> str:
 ROOT_COMPONENT = "root.denoiser"
 
 
+def _shadow_diffusion_root_topology(context):
+    """Publish U10-A evidence call-locally without changing parser authority.
+
+    The result is deliberately absent from ModelIR and every renderer surface.
+    U10-A compares it with the legacy branch over the whole corpus before a
+    later unit is allowed to consume it.
+    """
+    def _read():
+        from ...evidence.component_owner import resolve_component_root
+        from ...evidence.diffusion_root import read_diffusion_root_topology
+        index = context.program_index()
+        root = resolve_component_root(
+            index, context.source_bundle, "root")
+        return read_diffusion_root_topology(index, root)
+
+    return context.cached_reader_result(
+        "root.denoiser.topology", (), _read)
+
+
 @_config_access.owner_scoped("root.denoiser")
 def parse(cfg: Any, context=None) -> ModelIR:
     # U1 (§20.4.3): a diffusion parse's ROOT config IS the denoiser's config —
@@ -768,6 +787,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
     notes: list[str] = []      # by-design advisories → neutral ⓘ (not a deficiency)
     cls = _g(cfg, "_class_name") or "diffusion"
     arch_name = architecture_name(cfg, cls)
+
+    # U10-A shadow publication only.  No branch below reads this result yet.
+    _shadow_diffusion_root_topology(context)
 
     # UNet denoisers (SD1.5/SD2/SDXL/Kandinsky) are a different shape — a conv
     # U-net, not a transformer stack — so they get their own structure + view.
