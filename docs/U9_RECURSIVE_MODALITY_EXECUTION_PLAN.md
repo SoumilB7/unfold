@@ -82,15 +82,15 @@ operation that consumes it.
 | U9-C1 | DONE | `c54abc8`: explicit-owner return-path operation reader for exact affine, norm, registered activation and Sequential operations; it does not select a projector. |
 | U9-C2 | DONE | `77ee915`: exact fusion-operand producer lineage, occurrence-qualified width operands and guarded-constructor provenance. The counterexample matrix covers PaliGemma, LLaVA, Qwen2-VL, Mistral-3, Gemma-4 and Mllama; shape/device/index metadata and helper calls cannot launder sibling producers. The U9-D1 correction restores Qwen2-VL's factory-forwarded `vision_config.hidden_size` through the closed framework-address protocol. |
 | U9-D1 | DONE | `150c0c9`: exact returned-local output descent plus recursive repeated-stage composition. Idefics2 proves, from one connector occurrence, its affine prefix, Perceiver repetition/count path, exact attention, gated FFN, block/final RMS norms and source-ordered elementwise multiply. No class/field/model spelling selects the mechanism. |
-| U9-C | CUTOVER IMPLEMENTED — ACCEPTANCE PENDING | The parser and conformance now consume the exact ordinary/repeated-projector inventory. Widths enter only through source-bound projector operands; config mismatch cannot create a connector. The unreachable legacy projector AST implementation has been deleted. Final status waits for the U9-H artifact/full receipt. |
+| U9-C | DONE | `705f497`: the parser and conformance consume the exact ordinary/repeated-projector inventory. Widths enter only through source-bound projector operands; config mismatch cannot create a connector. The unreachable legacy projector AST implementation is deleted. |
 | U9-D2 | DONE | `ee81c46`: component-neutral recursive tower inventory partitions every active nested component, retains the exact U3 candidate census, and reuses U6 attention, U7 FFN/norm/cell and U8 position `ReaderResult`s without collapsing failures. Qwen2-VL permanently pins gated text versus dense vision siblings, exact component paths and the honest boundary that unresolved vision attention/ordinary position evidence cannot become MHA/RoPE. |
 | U9-E0 | DONE | `6f88847`: the shared exact operation reader recognizes framework-bound convolution, pooling, pixel shuffle/unshuffle, embedding, resize, concatenate, stack and split/chunk primitives. Same-spelled local classes cannot author those operations. |
 | U9-E1 | DONE | `5f77a7a`: positive local def-use routes join exact operation-bearing calls to caller-supplied repeated-stage templates. The reader makes no completeness/absence claim; Qwen2-VL proves a real Conv3d frontend route while retaining its unresolved competing invocation. |
 | U9-E2a | DONE | `650df2b`: multi-axis position construction requires an exact fused wrapper, exact `position_ids` child-input binding, return-dependent helper chain and framework-bound stack of at least three axes. Real Qwen2-VL and complete helper/local renaming controls pass; a positionish name, uncalled helper or overwritten result proves nothing. |
 | U9-E2b | DONE | `a8fe557`: wrapper feature selection is projected only from exact def-use operations. Config-declared layer/strategy fields cannot author selection. Preprocessing tiling remains deliberately outside model-code authority until an external-processor source boundary exists. |
-| U9-F | IMPLEMENTED — ACCEPTANCE PENDING | Config builders now emit opaque address-only vision/audio/video/conditioning lanes. The atomic overlay installs only recursive component, wrapper-feature, fusion and projector evidence. Unknown/source-missing paths retain navigation but no MHA/dense/RoPE/projector/token-route story. |
-| U9-G | IMPLEMENTED — ACCEPTANCE PENDING | Renderer and expanded JSON consume canonical modality facts. Removed head-dimension arithmetic, scalar patch-grid synthesis, grid-route→patch-merger inference, unknown-projector relabelling and config-derived summary-cell defaults. Conformance joins the same component/fusion/projector results and checks every exact stage/variant. |
-| U9-H | APPROVED + RE-BLESSED — FINAL COMMITTED-TREE RECEIPT PENDING | Soumil approved the finite §8 honesty delta. All 29 witnesses passed the guarded mechanical/oracle/gallery/reproduction path; the canonical baseline and expected manifest were rebuilt independently. Focused U9 215p, authority 90p and preservation 52p are green. Remaining: explicitly stage the reviewed U9 tree/artifacts, commit, run the detached-worktree exhaustive coordinator on that commit, record the receipt and push. |
+| U9-F | DONE | `705f497`: config builders emit opaque address-only vision/audio/video/conditioning lanes. The atomic overlay installs only recursive component, wrapper-feature, fusion and projector evidence. Unknown/source-missing paths retain navigation but no MHA/dense/RoPE/projector/token-route story. |
+| U9-G | DONE | `705f497`: renderer and expanded JSON consume canonical modality facts. Head-dimension arithmetic, scalar patch-grid synthesis, grid-route→patch-merger inference, unknown-projector relabelling and config-derived summary-cell defaults are removed. Conformance joins the same component/fusion/projector results and checks every exact stage/variant. |
+| U9-H | DONE | `705f497`; exhaustive receipt `/private/tmp/model-unfolder-verification/256d238edd`: 3,327 collected; 317 focused; 44 U2 authority; 52 preservation; full 3,311 passed, 14 skipped, 2 expected xfailed; every lane fingerprint-identical. The approved 29-witness artifact transition is committed. |
 
 ## 7. Current cutover laws (binding for U9-H)
 
@@ -247,3 +247,31 @@ Working-tree receipts after that correction:
 These are pre-commit receipts. U9 remains open until the explicitly staged
 commit passes the detached-worktree exhaustive coordinator with identical
 source and external-artifact fingerprints.
+
+## 10. Final committed-tree closure (2026-08-18)
+
+The explicitly staged U9 tree was committed as `705f497` and verified from the
+committed tree. The exhaustive coordinator produced:
+
+- static authority checks: **PASS** across 99 changed production Python files;
+- collection: **3,327 tests**;
+- U2 authority gate: **44 passed**;
+- U9 focused/consumer matrix: **317 passed**;
+- 29-witness preservation: **52 passed**, zero structural or pixel drift from
+  the approved re-blessed baseline;
+- exhaustive suite: **3,311 passed, 14 skipped, 2 expected xfailed**;
+- source and artifact fingerprint: **identical before and after every lane**.
+
+The final full-suite audit corrected three stale tests rather than weakening
+production evidence:
+
+1. Qwen2-VL's exact multi-axis RoPE claim belongs to the proved fused-wrapper
+   route; unresolved ordinary vision-tower position evidence remains unknown.
+2. Gemma-4's checkpoint video token activates the source-proved soft-video
+   placeholder lane, not a fabricated grid-video path.
+3. Qwen2-Audio keeps its exact source-backed encoder/projector structure while
+   class-hydrated, unbound input geometry remains absent.
+
+U9 is therefore **DONE**. Any later modality change must preserve these
+owner-qualified facts and may not restore a config, class-name, sibling-union,
+or renderer-default mechanism path.
