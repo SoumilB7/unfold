@@ -50,8 +50,12 @@ class CallArgumentBinding:
         if not isinstance(self.callee_symbol, SymbolId) \
                 or not isinstance(self.callee_callable, SymbolId):
             raise TypeError("an argument binding carries exact callee symbols")
-        if self.callee_symbol.source != self.callee_occurrence.root.source \
-                or self.callee_callable.source != self.callee_symbol.source \
+        # ``callee_occurrence.root`` identifies the COMPONENT root; an exact
+        # child may lawfully be defined in another indexed source file.  The
+        # enclosing CallBindingResolution closes occurrence -> graph node ->
+        # ``callee_symbol``.  Here the callable must close against that CHILD
+        # symbol, never against the wrapper file.
+        if self.callee_callable.source != self.callee_symbol.source \
                 or self.callee_callable.qualified_name \
                 != f"{self.callee_symbol.qualified_name}.forward":
             raise ValueError("callee callable is the exact occurrence class forward")

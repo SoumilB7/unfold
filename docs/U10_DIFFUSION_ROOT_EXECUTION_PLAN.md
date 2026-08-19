@@ -1,6 +1,6 @@
 # U10 — Diffusion Root, Stack, Stream, and Conditioning Execution Plan
 
-Status: **ACTIVE — U10-A DONE; U10-B occurrence-exact stack inventory next**
+Status: **ACTIVE — U10-A DONE; U10-B implemented, committed-tree receipt pending**
 
 Authority: this document is the binding execution plan for U10. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §20.13 without changing the master
@@ -935,7 +935,7 @@ Final achieved output:
 |---|---|---|
 | U10-0 | DONE | U9 commit `705f497`; tree `460aee5a374eb04034aea82624fd416cc7489710`; 3,327 collected; 29 witnesses; 14 U10 debt rows; 12 legacy readers; diffusion parser broad-exception baseline 17; exhaustive receipt `/private/tmp/model-unfolder-verification/256d238edd` fingerprint-identical |
 | U10-A | DONE | commit `92200e1`; `evidence/diffusion_root.py`: exact repeated-container execution and exact bypass-route U-shape proof; parser shadow publication only; 23 synthetic poisons + 15 real witnesses; no IR/renderer consumer; committed-tree receipt `/private/tmp/model-unfolder-verification/0f1c9e9080` fingerprint-identical |
-| U10-B | ACTIVE | occurrence-exact stack inventory over the existing D0/B2/owner-graph rails; replace the responsibility of the whole-file `secondary_stacks_from_files` reader without adding another parallel detector |
+| U10-B | IMPLEMENTED — COMMITTED-TREE RECEIPT PENDING | `evidence/diffusion_stack.py`: occurrence-exact container/block/call inventory over D0/B2/owner-graph rails; 25 synthetic poisons + 15 real witnesses green; legacy semantic consumer intentionally retained until U10-C/F covers it |
 | U10-C | NOT STARTED | exact U6/U7/U8 block fact composition |
 | U10-D | NOT STARTED | stream + conditioning graph |
 | U10-E | NOT STARTED | bookends + temporal + companions |
@@ -1025,3 +1025,48 @@ card, expanded JSON, parameter, conformance or renderer code reads it in U10-A.
 This closes U10-A only. Its typed result remains shadow evidence and deliberately
 stays `incomplete` for positive routes because the U3 substrate does not prove
 whole-forward coverage. U10-B is now the active unit.
+
+### U10-B qualification matrix (2026-08-19)
+
+U10-B carries one exact container construction address, one exact symbolic block
+occurrence and every exact invocation/binding. It never expands a symbolic count
+into fabricated layers, and it never derives `main`, `secondary`, `refiner`,
+`text`, `latent` or any block mechanism from names or config. Positive results
+remain `incomplete` because U3 has no whole-forward coverage certificate.
+
+| Witness | Exact stack occurrences | Typed unresolved candidates |
+|---|---:|---:|
+| AuraFlow | 2 | 0 |
+| CogVideoX | 1 | 0 |
+| FLUX.2 | 2 | 0 |
+| FluxTransformer2DModel | 2 | 2 |
+| HunyuanVideo | 1 | 2 |
+| LTX-Video | 1 | 0 |
+| Lumina Image 2 | 3 | 7 |
+| Mochi | 1 | 4 |
+| PixArt Sigma | 0 | 1 |
+| PRX Pixel | 1 | 1 |
+| Qwen-Image | 1 | 3 |
+| Sana | 1 | 2 |
+| Stable Diffusion 3.5 | 0 | 1 |
+| Stable Diffusion XL | 0 | 4 |
+| Wan 2.2 | 1 | 1 |
+
+The zero-positive rows are not omissions: PixArt and SD3 expose a root stack
+whose element class is external/unresolved in the current source bundle; SDXL's
+down/up factory alternatives belong to U11. Their exact fields, calls and source
+spans remain typed unresolved evidence. Hunyuan's nested token-refiner resolves,
+while its root dual/single containers preserve real config-guarded class rivals.
+Lumina's three containers reuse one block class but remain three graph occurrences.
+
+One neutral substrate defect was corrected: `CallArgumentBinding` used to require
+an imported child class to share the root wrapper's source file. Exact graph
+occurrences lawfully cross source files, so closure now checks the child callable
+against the child symbol; the enclosing `CallBindingResolution` still proves the
+occurrence-to-graph-node join. The imported-alias poison pins this boundary.
+
+The legacy `secondary_stacks_from_files` reader remains quarantined and active.
+U10-B does not yet provide block semantics, norm/FFN facts or projection, so
+deleting the old semantic consumer here would be premature. U10-C must consume
+the exact positive occurrences; U10-F/G may delete the old path only after its
+remaining responsibilities are covered or explicitly unresolved.
