@@ -51,6 +51,10 @@ _SDPA_PROTOCOLS = frozenset({
     "...modeling_flash_attention_utils._flash_attention_forward",
     "transformers.modeling_flash_attention_utils._flash_attention_forward",
 })
+_ATTENTION_DISPATCH_PROTOCOLS = frozenset({
+    "..attention_dispatch.dispatch_attention_fn",
+    "diffusers.models.attention_dispatch.dispatch_attention_fn",
+})
 _SOFTMAX_PROTOCOLS = frozenset({
     "torch.nn.functional.softmax",
     "torch.softmax",
@@ -93,7 +97,7 @@ class AttentionComputeProof:
             raise ValueError("attention input calls are unique")
         if self.protocol not in {
                 "scaled_dot_product_attention", "dot_softmax",
-                "branch_exhaustive"}:
+                "branch_exhaustive", "attention_dispatch"}:
             raise ValueError(f"unknown attention-compute protocol {self.protocol!r}")
         if not self.spans or any(not isinstance(span, SourceSpan)
                                  for span in self.spans):
@@ -488,16 +492,27 @@ def _attention_compute_proof(
                 index, callable_symbol):
             if not guard:
                 dot_spans.extend(_matmul_spans(expression))
-        if sdpa_spans:
+        dispatch_calls = []
+        dispatch_spans = []
+        for call in calls:
+            if call.guard:
+                continue
+            target, spans = _exact_call_target(index, call)
+            if target in _ATTENTION_DISPATCH_PROTOCOLS:
+                dispatch_calls.append(call)
+                dispatch_spans.extend(spans)
+        if sdpa_spans or dispatch_spans:
+            selected_calls = sdpa_calls or dispatch_calls
             selected_entry = candidate_entry or min(
-                sdpa_calls, key=lambda item: item.lexical_order)
+                selected_calls, key=lambda item: item.lexical_order)
             spans = tuple(dict.fromkeys(
-                (selected_entry.span, *sdpa_spans)))
+                (selected_entry.span, *sdpa_spans, *dispatch_spans)))
             input_calls = ((selected_entry,) if candidate_entry is not None
-                           else tuple(sdpa_calls))
+                           else tuple(selected_calls))
             return AttentionComputeProof(
                 child_symbol, callable_symbol, selected_entry, input_calls,
-                "scaled_dot_product_attention",
+                ("scaled_dot_product_attention" if sdpa_spans
+                 else "attention_dispatch"),
                 spans)
         if softmax_spans and dot_spans:
             protocol_calls = (*softmax_calls, *dot_calls)
@@ -914,11 +929,19 @@ def _reachable_compute_callables(
     index: ProgramIndex,
     child_symbol: SymbolId,
 ) -> tuple[tuple[SymbolId, CallObservation | None], ...]:
-    forward = SymbolId(
-        child_symbol.source, f"{child_symbol.qualified_name}.forward")
-    if index.callable_by_symbol(forward) is None:
+    # Ordinary nn.Module implementations expose ``forward``.  Callable
+    # strategy/processor objects expose ``__call__`` directly.  Prefer an
+    # explicit forward when both exist; fall back to __call__ only when the
+    # class itself defines no indexed forward.  This is a Python execution
+    # address, not a class-name or framework-family classification.
+    entries = tuple(
+        candidate for method in ("forward", "__call__")
+        if index.callable_by_symbol((candidate := SymbolId(
+            child_symbol.source,
+            f"{child_symbol.qualified_name}.{method}"))) is not None)
+    if not entries:
         return ()
-    queue = [(forward, None)]
+    queue = [(entries[0], None)]
     seen: set[SymbolId] = set()
     out: list[tuple[SymbolId, CallObservation | None]] = []
     while queue:

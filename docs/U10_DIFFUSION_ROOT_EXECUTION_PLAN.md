@@ -1,6 +1,6 @@
 # U10 — Diffusion Root, Stack, Stream, and Conditioning Execution Plan
 
-Status: **ACTIVE — U10-A DONE; U10-B implemented, committed-tree receipt pending**
+Status: **ACTIVE — U10-A/B DONE; U10-C under committed-tree verification**
 
 Authority: this document is the binding execution plan for U10. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §20.13 without changing the master
@@ -936,7 +936,7 @@ Final achieved output:
 | U10-0 | DONE | U9 commit `705f497`; tree `460aee5a374eb04034aea82624fd416cc7489710`; 3,327 collected; 29 witnesses; 14 U10 debt rows; 12 legacy readers; diffusion parser broad-exception baseline 17; exhaustive receipt `/private/tmp/model-unfolder-verification/256d238edd` fingerprint-identical |
 | U10-A | DONE | commit `92200e1`; `evidence/diffusion_root.py`: exact repeated-container execution and exact bypass-route U-shape proof; parser shadow publication only; 23 synthetic poisons + 15 real witnesses; no IR/renderer consumer; committed-tree receipt `/private/tmp/model-unfolder-verification/0f1c9e9080` fingerprint-identical |
 | U10-B | DONE | commit `98f1e96`; `evidence/diffusion_stack.py`: occurrence-exact container/block/call inventory over D0/B2/owner-graph rails; 25 synthetic poisons + 15 real witnesses; legacy semantic consumer intentionally retained until U10-C/F covers it; committed-tree receipt `/private/tmp/model-unfolder-verification/93a35b676f` fingerprint-identical |
-| U10-C | ACTIVE | exact U6/U7/U8 block fact composition; shadow facts only until old/new comparisons and honesty deltas are explicit |
+| U10-C | ACTIVE | occurrence-exact U6/U7/U8 composition implemented in shadow mode; 32 synthetic controls + 15-witness matrix green in focused runs; full committed-tree receipt still required |
 | U10-D | NOT STARTED | stream + conditioning graph |
 | U10-E | NOT STARTED | bookends + temporal + companions |
 | U10-F | NOT STARTED | typed projection + config-author dismantling |
@@ -1089,3 +1089,73 @@ shadow-only: it does not assign stack roles, infer block mechanisms, expand a
 symbolic layer count, or drive a renderer. U10-C is now active and must compose
 canonical U6/U7/U8 facts independently for each exact positive block occurrence
 while keeping every unresolved candidate opaque.
+
+### U10-C qualification matrix and honesty deltas (2026-08-19)
+
+U10-C composes already-proven U6/U7/U8 readers at each exact U10-B block
+occurrence. It adds one altitude-neutral attention execution boundary for the
+normal Diffusers container/processor protocol: an exact framework `Attention`
+constructor is a positive attention lane; an indexed source container using the
+exact framework processor mixin is positive only when its exact injected/default
+processor proves attention compute. Exact `attention_dispatch` import calls are
+also a closed framework primitive protocol. Class names, field names, processor
+suffixes and model families never participate.
+
+The parser publishes this inventory call-locally in shadow mode and deliberately
+passes no raw config document or selector. Therefore a config-guarded constructor
+remains ambiguous until U10-F joins the exact U1 operand. The reader also remains
+globally `incomplete`: U3 proves positive local relations, not whole-forward
+coverage.
+
+The source-only stack/block pair is held in a bounded process cache keyed by the
+immutable ProgramIndex and resolved D0 root. This is a performance cache only:
+the key includes source content fingerprints and component ownership, a same-path
+source edit misses the cache, and every ParseContext still exposes its own
+call-local result. It prevents name-blind/corpus gates from recomputing identical
+source evidence for different checkpoint dictionaries without letting config
+participate in the answer.
+
+| Witness | Positive stacks | Proven attention lanes | Observed compute protocol | Honest unresolved reason |
+|---|---:|---:|---|---|
+| AuraFlow | 2 | 2 | framework container | finer Q/K/storage facts are inside the external container |
+| CogVideoX | 1 | 1 | framework container | finer Q/K/storage facts are inside the external container |
+| FLUX.2 | 2 | 2 | attention dispatch | source does not prove every finer lane fact at this altitude |
+| FluxTransformer2DModel | 2 | 2 | attention dispatch | 2 upstream U10-B candidates remain opaque |
+| HunyuanVideo | 1 | 1 | framework container | root dual/single guarded rivals stay opaque; refiner is exact |
+| LTX-Video | 1 | 2 | attention dispatch | two invocation lanes retained separately |
+| Lumina Image 2 | 3 | 6 | scaled-dot-product attention | two lanes at each of three exact occurrences; never class-unioned |
+| Mochi | 1 | 0 | — | exact external processor implementation is outside the indexed bundle |
+| PixArt Sigma | 0 | 0 | — | U10-B external block candidate remains opaque |
+| PRX Pixel | 1 | 1 | attention dispatch | 1 upstream U10-B candidate remains opaque |
+| Qwen-Image | 1 | 1 | attention dispatch | 3 upstream U10-B candidates remain opaque |
+| Sana | 1 | 0 | — | one unguarded and one config-guarded framework lane make the source-only census ambiguous; U10-F owns the operand join |
+| Stable Diffusion 3.5 | 0 | 0 | — | U10-B external block candidate remains opaque |
+| Stable Diffusion XL | 0 | 0 | — | U-shaped factory alternatives belong to U11 |
+| Wan 2.2 | 1 | 2 | attention dispatch | two invocation lanes retained separately |
+
+#### Old/new comparison
+
+The legacy diagrams remain byte-identical in U10-C; no new fact is a renderer or
+IR authority yet. Where the legacy card was already source-supported, the shadow
+inventory now supplies an exact block occurrence and exact call. Where legacy
+output depended on a config/default/whole-file answer, U10-C does **not** copy it:
+
+- self/cross/joint roles are withheld until U10-D proves dataflow;
+- internal head geometry, Q/K norm, projection storage and position use are not
+  inferred from an external framework container;
+- ordinary dense/gated FFNs resolve only from exact two/three-projection local
+  dataflow; Conv-GLU and opaque FFNs remain unknown rather than inheriting the
+  legacy class-construction label;
+- plain LayerNorm/RMSNorm facts do not turn a modulated sibling into AdaLN;
+- a positive half-turn application is retained as application evidence, while
+  model-stage learned positions, no observed position, and config-declared but
+  unused RoPE never become block rotation;
+- repeated uses of the same block class remain distinct occurrences, including
+  separately guarded container constructions.
+
+Mochi is a named substrate debt, not a family exception: its exact imported
+implementation address is retained as `external_unavailable`. A future neutral
+external-import-closure unit may index that source with provenance. U10-C must
+not infer its semantics from the `MochiAttention` spelling. Sana is different:
+the source is present, but the exact constructor guard needs the checkpoint
+operand, so U10-F—not an import crawler—owns its resolution.

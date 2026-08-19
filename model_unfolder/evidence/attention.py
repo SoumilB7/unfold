@@ -1122,6 +1122,38 @@ def attention_score_scaling_at_block(
         provenance=tuple(dict.fromkeys(provenance)))
 
 
+def attention_score_scaling_for_child(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    block_occurrence: OwnerOccurrenceId,
+    child: AttentionChildEvidence,
+) -> ReaderResult[AttentionScoreScalingBinding]:
+    """Prove score scaling for one already-addressed attention lane.
+
+    Multi-attention diffusion blocks must keep self/cross/joint lanes separate.
+    This boundary performs no child selection and delegates to the same U6
+    proof used by :func:`attention_score_scaling_at_block`.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("attention score scaling requires a ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="attention_score_scaling_for_child")
+    if not isinstance(block_occurrence, OwnerOccurrenceId) \
+            or not isinstance(child, AttentionChildEvidence):
+        raise TypeError("score scaling requires an exact block and child")
+    if child.block_occurrence != block_occurrence \
+            or root.graph.node_for(child.child_occurrence) is None \
+            or root.graph.node_for(child.compute_occurrence) is None:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "out_of_owner",
+            "the supplied attention lane does not belong to this block"),))
+    return _score_scaling_for_attention_child(
+        index, root, block_occurrence, child,
+        provenance=(ReaderProvenance(
+            "source", spans=child.compute.spans,
+            detail="caller supplied one exact positive attention lane"),))
+
+
 def _score_scaling_for_attention_child(
         index, root, block_occurrence, child, *, provenance=()):
     proof = child.compute
@@ -5276,6 +5308,7 @@ __all__ = [
     "attention_head_binding_at_block",
     "attention_logit_softcap_at_block",
     "attention_qkv_clip_at_block",
+    "attention_score_scaling_for_child",
     "attention_score_scaling_at_block",
     "bind_attention_mechanism",
     "latent_attention_binding_at_block",

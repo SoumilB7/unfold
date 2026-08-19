@@ -19,12 +19,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .attention_child import attention_child_evidence
+from .attention_child import AttentionChildEvidence, attention_child_evidence
 from .attention_operands import (
     AttentionQKOperandsEvidence,
     attention_qk_operands_evidence,
 )
-from .component_owner import OwnerOccurrenceId
+from .component_owner import OwnerOccurrenceId, require_resolved_component_root
 from .config_guard import ExactConfigGuardResolver
 from .construction_calls import (
     resolve_import_reference,
@@ -170,12 +170,37 @@ def decoder_qk_half_turn_application_for_path(
         index, root, block.value.block_occurrence)
     if attention.status != "resolved":
         return _forward_failure(attention, "attention child address")
-    operands = attention_qk_operands_evidence(
-        index, root, attention.value)
+    return qk_half_turn_application_at_attention(
+        index, root, attention.value,
+        config_selector=config_selector,
+        constructor_parameter_values=constructor_parameter_values)
+
+
+def qk_half_turn_application_at_attention(
+        index: ProgramIndex, root, child: AttentionChildEvidence, *,
+        config_selector=None, constructor_parameter_values=None,
+) -> ReaderResult[QKHalfTurnApplicationEvidence]:
+    """Prove one exact attention lane's positive Q/K rotation application.
+
+    This occurrence-qualified form performs no decoder-path or attention-child
+    selection.  It deliberately proves only the application protocol; factor
+    origin, geometry and schedule remain separate U8 facts.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("half-turn application requires a ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="qk_half_turn_application_at_attention")
+    if not isinstance(child, AttentionChildEvidence):
+        raise TypeError("half-turn application requires an exact attention child")
+    if root.graph.node_for(child.block_occurrence) is None \
+            or root.graph.node_for(child.compute_occurrence) is None:
+        return ReaderResult.failed(child.compute_occurrence, (ReaderFailure(
+            "out_of_owner", "the attention lane does not round-trip"),))
+    operands = attention_qk_operands_evidence(index, root, child)
     if operands.status != "resolved":
         return _forward_failure(operands, "attention score operands")
     return _rotary_at_attention(
-        index, root, attention.value, operands.value,
+        index, root, child, operands.value,
         config_selector=config_selector,
         constructor_parameter_values=constructor_parameter_values)
 
@@ -1287,4 +1312,5 @@ __all__ = [
     "QKHalfTurnApplicationEvidence",
     "decoder_qk_half_turn_application_for_path",
     "half_turn_rotation_protocol",
+    "qk_half_turn_application_at_attention",
 ]

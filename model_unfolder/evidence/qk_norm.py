@@ -29,6 +29,7 @@ from .construction_calls import (
     resolve_construction_call,
     resolve_import_reference,
 )
+from .component_owner import require_resolved_component_root
 from .decoder_block import decoder_block_path_for_config
 from .models import SourceBundle
 from .primitive_semantics import classify_primitive_call
@@ -136,15 +137,30 @@ def decoder_qk_norm_evidence_for_path(
         index, root, block.value.block_occurrence)
     if child.status != "resolved":
         return _forward_failure(child, "attention child address")
-    return _qk_norm_at_attention(index, root, child.value)
+    return qk_norm_evidence_at_attention(index, root, child.value)
 
 
-def _qk_norm_at_attention(
+def qk_norm_evidence_at_attention(
     index: ProgramIndex,
     root,
     child: AttentionChildEvidence,
 ) -> ReaderResult[QKNormCodeEvidence]:
+    """Prove Q/K normalization for one already-addressed attention lane.
+
+    The caller owns lane selection.  This is the same positive U7 proof used
+    by the decoder-path wrapper and makes no model, field or block-role guess.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("Q/K norm evidence requires a ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="qk_norm_evidence_at_attention")
+    if not isinstance(child, AttentionChildEvidence):
+        raise TypeError("Q/K norm evidence requires an exact attention child")
     owner = child.compute_occurrence
+    if root.graph.node_for(child.block_occurrence) is None \
+            or root.graph.node_for(owner) is None:
+        return ReaderResult.failed(owner, (ReaderFailure(
+            "out_of_owner", "the attention lane does not round-trip"),))
     storage = attention_projection_storage_for_child_evidence(
         index, root, child.block_occurrence, child)
     if storage.status != "resolved":
@@ -826,4 +842,5 @@ __all__ = [
     "QKNormCodeEvidence",
     "QKNormGateAtom",
     "decoder_qk_norm_evidence_for_path",
+    "qk_norm_evidence_at_attention",
 ]

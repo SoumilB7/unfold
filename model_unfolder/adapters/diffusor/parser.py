@@ -23,6 +23,7 @@ not matched here.
 """
 from __future__ import annotations
 
+from functools import lru_cache
 from typing import Any
 
 from ...everchanging import (
@@ -755,6 +756,17 @@ def _fact_chip(label: str, value) -> str:
 ROOT_COMPONENT = "root.denoiser"
 
 
+def _shadow_diffusion_root_resolution(context):
+    """One call-local D0 root shared by every U10 shadow reader."""
+    def _read():
+        from ...evidence.component_owner import resolve_component_root
+        return resolve_component_root(
+            context.program_index(), context.source_bundle, "root")
+
+    return context.cached_reader_result(
+        "root.denoiser.component_root", (), _read)
+
+
 def _shadow_diffusion_root_topology(context):
     """Publish U10-A evidence call-locally without changing parser authority.
 
@@ -763,15 +775,69 @@ def _shadow_diffusion_root_topology(context):
     later unit is allowed to consume it.
     """
     def _read():
-        from ...evidence.component_owner import resolve_component_root
         from ...evidence.diffusion_root import read_diffusion_root_topology
         index = context.program_index()
-        root = resolve_component_root(
-            index, context.source_bundle, "root")
+        root = _shadow_diffusion_root_resolution(context)
         return read_diffusion_root_topology(index, root)
 
     return context.cached_reader_result(
         "root.denoiser.topology", (), _read)
+
+
+@lru_cache(maxsize=64)
+def _source_only_diffusion_stack_and_blocks(index, root):
+    """Memoize immutable source-only U10 evidence across parse contexts.
+
+    Corpus/name-blind gates parse the same exact source repeatedly with
+    different checkpoint dictionaries. U10-C deliberately consumes no config,
+    so recomputing this immutable result is pure waste. ProgramIndex identity
+    includes every content fingerprint and component address; a source edit or
+    ownership change is therefore a different cache key and cannot reuse stale
+    evidence. This mirrors ProgramIndex's bounded source-observation cache and
+    grants no global architectural authority.
+    """
+    from ...evidence.diffusion_block import read_diffusion_block_facts
+    from ...evidence.diffusion_stack import read_diffusion_stack_inventory
+    from ...evidence.reader_result import ReaderResult
+
+    stacks = read_diffusion_stack_inventory(index, root)
+    if not root.address_resolved:
+        # The exact reader deliberately rejects an unresolved D0 root: direct
+        # callers must not pretend they supplied an address.  This parser hook
+        # is only a shadow publisher, however, and source-less/ambiguous legacy
+        # parses are valid inputs.  Preserve U10-B's typed failure in the U10-C
+        # channel instead of converting missing evidence into an exception or
+        # into conventional block facts.
+        blocks = ReaderResult.failed(
+            stacks.owner, stacks.failures, provenance=stacks.provenance)
+        return stacks, blocks
+    return stacks, read_diffusion_block_facts(index, root, stacks)
+
+
+def _shadow_diffusion_block_facts(context):
+    """Publish U10-B/C evidence without granting parser/render authority."""
+    index = context.program_index()
+    root = _shadow_diffusion_root_resolution(context)
+
+    def _pair():
+        return _source_only_diffusion_stack_and_blocks(index, root)
+
+    pair = context.cached_reader_result(
+        "root.denoiser.source_only_stack_and_blocks", (), _pair)
+
+    def _stacks():
+        return pair[0]
+
+    context.cached_reader_result(
+        "root.denoiser.stacks", (), _stacks)
+
+    def _blocks():
+        # U10-C deliberately supplies no raw-config selector.  Exact config
+        # operands remain paths/unknowns until U10-F joins them through U1.
+        return pair[1]
+
+    return context.cached_reader_result(
+        "root.denoiser.blocks", (), _blocks)
 
 
 @_config_access.owner_scoped("root.denoiser")
@@ -790,6 +856,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
 
     # U10-A shadow publication only.  No branch below reads this result yet.
     _shadow_diffusion_root_topology(context)
+    # U10-B/C shadow publication only.  Exact stack/block facts are cached for
+    # conformance comparison but cannot author ModelIR or renderer structure.
+    _shadow_diffusion_block_facts(context)
 
     # UNet denoisers (SD1.5/SD2/SDXL/Kandinsky) are a different shape — a conv
     # U-net, not a transformer stack — so they get their own structure + view.
