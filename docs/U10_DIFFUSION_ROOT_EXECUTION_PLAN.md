@@ -1,6 +1,6 @@
 # U10 — Diffusion Root, Stack, Stream, and Conditioning Execution Plan
 
-Status: **ACTIVE — U10-0 baseline frozen; U10-A exact root-topology boundary next**
+Status: **ACTIVE — U10-A DONE; U10-B occurrence-exact stack inventory next**
 
 Authority: this document is the binding execution plan for U10. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §20.13 without changing the master
@@ -934,8 +934,8 @@ Final achieved output:
 | Unit | Status | Exit artifact |
 |---|---|---|
 | U10-0 | DONE | U9 commit `705f497`; tree `460aee5a374eb04034aea82624fd416cc7489710`; 3,327 collected; 29 witnesses; 14 U10 debt rows; 12 legacy readers; diffusion parser broad-exception baseline 17; exhaustive receipt `/private/tmp/model-unfolder-verification/256d238edd` fingerprint-identical |
-| U10-A | IMPLEMENTED — COMMITTED-TREE RECEIPT PENDING | `evidence/diffusion_root.py`: exact repeated-container execution and exact bypass-route U-shape proof; parser shadow publication only; 23 synthetic poisons + 15 real witnesses green; no IR/renderer consumer |
-| U10-B | NOT STARTED | occurrence-exact stack inventory |
+| U10-A | DONE | commit `92200e1`; `evidence/diffusion_root.py`: exact repeated-container execution and exact bypass-route U-shape proof; parser shadow publication only; 23 synthetic poisons + 15 real witnesses; no IR/renderer consumer; committed-tree receipt `/private/tmp/model-unfolder-verification/0f1c9e9080` fingerprint-identical |
+| U10-B | ACTIVE | occurrence-exact stack inventory over the existing D0/B2/owner-graph rails; replace the responsibility of the whole-file `secondary_stacks_from_files` reader without adding another parallel detector |
 | U10-C | NOT STARTED | exact U6/U7/U8 block fact composition |
 | U10-D | NOT STARTED | stream + conditioning graph |
 | U10-E | NOT STARTED | bookends + temporal + companions |
@@ -1008,3 +1008,20 @@ and a U-shaped route plus an independent repeated stack (typed ambiguity).
 Shadow publication is cached under
 `("root.denoiser.topology", ())` on the call-local `ParseContext`. No ModelIR,
 card, expanded JSON, parameter, conformance or renderer code reads it in U10-A.
+
+### U10-A committed-tree receipt (2026-08-19)
+
+- commit: `92200e1fbcd578a878ff51c7cb54395bf9b50123`;
+- static: pass, 3 changed Python files;
+- collection: **3,365** tests;
+- focused U10/diffusion/owner substrate: **428 passed**;
+- affected U2 authority gates: **44 passed**;
+- preservation: **52 passed**, zero structural or pixel drift across all 29
+  witnesses;
+- exhaustive: **3,349 passed / 14 skipped / 2 expected xfailed**;
+- every isolated lane fingerprint before/after: **identical**;
+- receipt logs: `/private/tmp/model-unfolder-verification/0f1c9e9080`.
+
+This closes U10-A only. Its typed result remains shadow evidence and deliberately
+stays `incomplete` for positive routes because the U3 substrate does not prove
+whole-forward coverage. U10-B is now the active unit.
