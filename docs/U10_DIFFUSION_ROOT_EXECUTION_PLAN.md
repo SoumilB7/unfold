@@ -1,6 +1,6 @@
 # U10 — Diffusion Root, Stack, Stream, and Conditioning Execution Plan
 
-Status: **ACTIVE — U10-A/B DONE; U10-C under committed-tree verification**
+Status: **ACTIVE — U10-A/B/C DONE; U10-D next**
 
 Authority: this document is the binding execution plan for U10. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §20.13 without changing the master
@@ -936,8 +936,8 @@ Final achieved output:
 | U10-0 | DONE | U9 commit `705f497`; tree `460aee5a374eb04034aea82624fd416cc7489710`; 3,327 collected; 29 witnesses; 14 U10 debt rows; 12 legacy readers; diffusion parser broad-exception baseline 17; exhaustive receipt `/private/tmp/model-unfolder-verification/256d238edd` fingerprint-identical |
 | U10-A | DONE | commit `92200e1`; `evidence/diffusion_root.py`: exact repeated-container execution and exact bypass-route U-shape proof; parser shadow publication only; 23 synthetic poisons + 15 real witnesses; no IR/renderer consumer; committed-tree receipt `/private/tmp/model-unfolder-verification/0f1c9e9080` fingerprint-identical |
 | U10-B | DONE | commit `98f1e96`; `evidence/diffusion_stack.py`: occurrence-exact container/block/call inventory over D0/B2/owner-graph rails; 25 synthetic poisons + 15 real witnesses; legacy semantic consumer intentionally retained until U10-C/F covers it; committed-tree receipt `/private/tmp/model-unfolder-verification/93a35b676f` fingerprint-identical |
-| U10-C | ACTIVE | occurrence-exact U6/U7/U8 composition implemented in shadow mode; 32 synthetic controls + 15-witness matrix green in focused runs; full committed-tree receipt still required |
-| U10-D | NOT STARTED | stream + conditioning graph |
+| U10-C | DONE | commit `ee836b0`; occurrence-exact U6/U7/U8 composition in shadow mode; 33 synthetic controls + 15 real witnesses; 3,453 collected; 307 focused + 44 authority + 52 preservation + exhaustive 3,341 passed / 14 skipped / 2 xfailed; zero drift; interrupted coordinator transparently resumed in its intact committed worktree; receipt `/private/tmp/model-unfolder-verification/bb2795cf7c/continuation_receipt.md` |
+| U10-D | ACTIVE | stream + conditioning graph |
 | U10-E | NOT STARTED | bookends + temporal + companions |
 | U10-F | NOT STARTED | typed projection + config-author dismantling |
 | U10-G | NOT STARTED | legacy deletion + later-unit handoffs |
@@ -1159,3 +1159,25 @@ external-import-closure unit may index that source with provenance. U10-C must
 not infer its semantics from the `MochiAttention` spelling. Sana is different:
 the source is present, but the exact constructor guard needs the checkpoint
 operand, so U10-F—not an import crawler—owns its resolution.
+
+#### U10-C committed-tree receipt
+
+The first committed-tree attempt exposed a real shadow-boundary defect: a
+source-less or unresolved D0 root was passed into the strict direct U10-C reader,
+which correctly rejected it, but the parser shadow hook leaked that rejection as
+an exception. The correction keeps the direct reader strict and converts the
+shadow publication to the typed U10-B `missing_source`/conflict failure. The two
+legacy regressions and a permanent source-less control pass; both affected legacy
+files then passed in full (188 tests).
+
+Final commit `ee836b0` passed static checks, collection (3,453), focused (307),
+all 44 U2 authority checks, and all 52 preservation checks with zero structural
+or pixel drift. The user interrupted the coordinator after preservation had
+finished while the exhaustive lane was still running. Its clean detached
+`ee836b0` worktree was retained; the exhaustive partition was resumed there and
+passed 3,341 tests with 14 expected skips and 2 expected xfails. Tree fingerprint
+`e39be8bc6a4197e131186b7a8a84d836fce1c80ed25ab12b71be426a6e43ecec`
+and artifact fingerprint
+`c6d07cc930511fbe4a00cdfc97757222c052200fc2b999ef18c8aa414253abb6`
+were identical before/after. The transparent composite receipt is
+`/private/tmp/model-unfolder-verification/bb2795cf7c/continuation_receipt.md`.
