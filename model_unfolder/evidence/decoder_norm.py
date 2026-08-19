@@ -12,13 +12,16 @@ an unsupported implementation is not a negative fact.
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
+
+from .component_owner import OwnerOccurrenceId
 from .construction_calls import resolve_construction_call
 from .container_inventory import resolve_container_inventory
 from .decoder_block import decoder_block_candidates_for_config
 from .execution_flow import resolve_addressed_invocations
 from .models import SourceBundle
 from .primitive_semantics import classify_primitive_call
-from .program_index import ProgramIndex, SourceSpan
+from .program_index import CallObservation, ProgramIndex, SourceSpan
 from .reader_result import (
     Ambiguity,
     ReaderFailure,
@@ -28,6 +31,42 @@ from .reader_result import (
 
 
 _NORMS = frozenset({"layernorm", "rmsnorm"})
+
+
+@dataclass(frozen=True)
+class NormInvocationEvidence:
+    """One exact owner invocation positively classified as a norm primitive."""
+
+    owner: OwnerOccurrenceId
+    call: CallObservation
+    kind: str
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self):
+        if not isinstance(self.owner, OwnerOccurrenceId) \
+                or not isinstance(self.call, CallObservation):
+            raise TypeError("norm invocation evidence is exact owner/call evidence")
+        if self.kind not in _NORMS:
+            raise ValueError("norm invocation kind is canonical and closed")
+        if self.call.span not in self.spans \
+                or any(not isinstance(item, SourceSpan) for item in self.spans):
+            raise ValueError("norm invocation provenance includes its exact call")
+
+
+@dataclass(frozen=True)
+class NormInvocationCensus:
+    owner: OwnerOccurrenceId
+    candidates: tuple[NormInvocationEvidence, ...]
+
+    def __post_init__(self):
+        if not isinstance(self.owner, OwnerOccurrenceId) or not self.candidates:
+            raise ValueError("a norm census is non-empty and owner-qualified")
+        if any(not isinstance(item, NormInvocationEvidence)
+               or item.owner != self.owner for item in self.candidates):
+            raise ValueError("every norm invocation belongs to the exact owner")
+        calls = tuple(item.call for item in self.candidates)
+        if len(calls) != len(set(calls)):
+            raise ValueError("norm invocation calls are unique")
 
 
 def decoder_norm_kind_for_path(
@@ -98,12 +137,12 @@ def decoder_norm_kind_for_path(
         ))
 
 
-def norm_kind_at_owner(index, root, owner):
-    """Classify norm invocations on one exact resolved owner occurrence.
+def norm_invocations_at_owner(index, root, owner):
+    """Return every positively classified norm invocation at one exact owner.
 
-    Decoder-path selection remains in :func:`decoder_norm_kind_for_path`;
-    recursive modality readers may reuse this positive mechanism boundary only
-    after separately proving their exact owner occurrence.
+    This is positive call-level evidence, not a closed-world census.  It exists
+    so consumers that need application topology (for example U10 gate-in-norm)
+    never reverse-engineer an invocation from a block-level kind.
     """
     inventory = resolve_container_inventory(index, root, owner)
     invocations = resolve_addressed_invocations(
@@ -138,29 +177,55 @@ def norm_kind_at_owner(index, root, owner):
         primitive = classify_primitive_call(index, construction)
         if primitive.status != "resolved" or primitive.value not in _NORMS:
             continue
-        classified.append((invocation, primitive))
+        spans = tuple(dict.fromkeys((
+            invocation.call.span,
+            *invocation.provenance_spans,
+            *(span for origin in primitive.provenance for span in origin.spans),
+        )))
+        classified.append(NormInvocationEvidence(
+            owner, invocation.call, primitive.value, spans))
 
     if not classified:
         return ReaderResult.failed(owner, (ReaderFailure(
             "incomplete_graph",
             "no exact decoder-block invocation proves a "
             "normalization primitive"),))
-    values = {primitive.value for _, primitive in classified}
+    census = NormInvocationCensus(owner, tuple(classified))
+    spans = tuple(dict.fromkeys(
+        span for item in census.candidates for span in item.spans))
+    return ReaderResult.incomplete(
+        owner, census,
+        failures=(ReaderFailure(
+            "incomplete_graph",
+            "positive norm calls do not prove absence of opaque calls"),),
+        provenance=(ReaderProvenance(
+            "source", spans=spans,
+            detail="exact positively classified norm invocations"),))
+
+
+def norm_kind_at_owner(index, root, owner):
+    """Classify norm invocations on one exact resolved owner occurrence.
+
+    Decoder-path selection remains in :func:`decoder_norm_kind_for_path`;
+    recursive modality readers may reuse this positive mechanism boundary only
+    after separately proving their exact owner occurrence.  The aggregate is
+    derived from :func:`norm_invocations_at_owner`, the one call-level source.
+    """
+    census = norm_invocations_at_owner(index, root, owner)
+    if not census.has_value:
+        return census
+    classified = census.value.candidates
+    values = {item.kind for item in classified}
     if len(values) > 1:
         return ReaderResult.ambiguous(
             owner,
             Ambiguity(sites=tuple(sorted(
-                {invocation.call.span for invocation, _ in classified},
+                {item.call.span for item in classified},
                 key=_span_key))))
 
     value = next(iter(values))
-    spans = []
-    for invocation, primitive in classified:
-        spans.extend(invocation.provenance_spans)
-        for origin in primitive.provenance:
-            spans.extend(origin.spans)
     exact_spans = tuple(dict.fromkeys(
-        span for span in spans if isinstance(span, SourceSpan)))
+        span for item in classified for span in item.spans))
     return ReaderResult.resolved(
         owner, value,
         provenance=(ReaderProvenance(
@@ -182,4 +247,8 @@ def _span_key(span):
     )
 
 
-__all__ = ["decoder_norm_kind_for_path", "norm_kind_at_owner"]
+__all__ = [
+    "NormInvocationEvidence", "NormInvocationCensus",
+    "decoder_norm_kind_for_path", "norm_invocations_at_owner",
+    "norm_kind_at_owner",
+]

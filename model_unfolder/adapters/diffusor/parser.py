@@ -840,6 +840,55 @@ def _shadow_diffusion_block_facts(context):
         "root.denoiser.blocks", (), _blocks)
 
 
+@lru_cache(maxsize=64)
+def _source_only_diffusion_stream_and_conditioning(index, root):
+    """Compose immutable U10-D shadow evidence from the U10-C cache.
+
+    The direct U10-D readers remain strict about a resolved D0 address.  This
+    parser publisher converts source-less legacy inputs into the same typed
+    unknown carried by U10-B/C; it never lets a shadow-only reader reject an
+    otherwise valid legacy parse or invent a conventional stream topology.
+    """
+    from ...evidence.diffusion_conditioning import (
+        read_diffusion_conditioning_graph,
+    )
+    from ...evidence.diffusion_stream import read_diffusion_stream_graph
+    from ...evidence.reader_result import ReaderResult
+
+    _stacks, blocks = _source_only_diffusion_stack_and_blocks(index, root)
+    if not root.address_resolved or not blocks.has_value:
+        streams = ReaderResult.failed(
+            blocks.owner, blocks.failures, provenance=blocks.provenance)
+        conditioning = ReaderResult.failed(
+            streams.owner, streams.failures, provenance=streams.provenance)
+        return streams, conditioning
+    streams = read_diffusion_stream_graph(index, root, blocks)
+    conditioning = read_diffusion_conditioning_graph(index, root, streams)
+    return streams, conditioning
+
+
+def _shadow_diffusion_stream_and_conditioning(context):
+    """Publish U10-D locally; no parser/IR/renderer consumer exists yet."""
+    index = context.program_index()
+    root = _shadow_diffusion_root_resolution(context)
+
+    def _pair():
+        return _source_only_diffusion_stream_and_conditioning(index, root)
+
+    pair = context.cached_reader_result(
+        "root.denoiser.source_only_stream_and_conditioning", (), _pair)
+
+    def _streams():
+        return pair[0]
+
+    def _conditioning():
+        return pair[1]
+
+    context.cached_reader_result("root.denoiser.streams", (), _streams)
+    return context.cached_reader_result(
+        "root.denoiser.conditioning", (), _conditioning)
+
+
 @_config_access.owner_scoped("root.denoiser")
 def parse(cfg: Any, context=None) -> ModelIR:
     # U1 (§20.4.3): a diffusion parse's ROOT config IS the denoiser's config —
@@ -859,6 +908,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # U10-B/C shadow publication only.  Exact stack/block facts are cached for
     # conformance comparison but cannot author ModelIR or renderer structure.
     _shadow_diffusion_block_facts(context)
+    # U10-D shadow publication only.  These local relations do not yet select
+    # any legacy conditioning/card/renderer branch.
+    _shadow_diffusion_stream_and_conditioning(context)
 
     # UNet denoisers (SD1.5/SD2/SDXL/Kandinsky) are a different shape — a conv
     # U-net, not a transformer stack — so they get their own structure + view.
