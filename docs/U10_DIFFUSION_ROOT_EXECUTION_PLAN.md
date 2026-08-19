@@ -935,8 +935,8 @@ Final achieved output:
 |---|---|---|
 | U10-0 | DONE | U9 commit `705f497`; tree `460aee5a374eb04034aea82624fd416cc7489710`; 3,327 collected; 29 witnesses; 14 U10 debt rows; 12 legacy readers; diffusion parser broad-exception baseline 17; exhaustive receipt `/private/tmp/model-unfolder-verification/256d238edd` fingerprint-identical |
 | U10-A | DONE | commit `92200e1`; `evidence/diffusion_root.py`: exact repeated-container execution and exact bypass-route U-shape proof; parser shadow publication only; 23 synthetic poisons + 15 real witnesses; no IR/renderer consumer; committed-tree receipt `/private/tmp/model-unfolder-verification/0f1c9e9080` fingerprint-identical |
-| U10-B | IMPLEMENTED — COMMITTED-TREE RECEIPT PENDING | `evidence/diffusion_stack.py`: occurrence-exact container/block/call inventory over D0/B2/owner-graph rails; 25 synthetic poisons + 15 real witnesses green; legacy semantic consumer intentionally retained until U10-C/F covers it |
-| U10-C | NOT STARTED | exact U6/U7/U8 block fact composition |
+| U10-B | DONE | commit `98f1e96`; `evidence/diffusion_stack.py`: occurrence-exact container/block/call inventory over D0/B2/owner-graph rails; 25 synthetic poisons + 15 real witnesses; legacy semantic consumer intentionally retained until U10-C/F covers it; committed-tree receipt `/private/tmp/model-unfolder-verification/93a35b676f` fingerprint-identical |
+| U10-C | ACTIVE | exact U6/U7/U8 block fact composition; shadow facts only until old/new comparisons and honesty deltas are explicit |
 | U10-D | NOT STARTED | stream + conditioning graph |
 | U10-E | NOT STARTED | bookends + temporal + companions |
 | U10-F | NOT STARTED | typed projection + config-author dismantling |
@@ -1070,3 +1070,22 @@ U10-B does not yet provide block semantics, norm/FFN facts or projection, so
 deleting the old semantic consumer here would be premature. U10-C must consume
 the exact positive occurrences; U10-F/G may delete the old path only after its
 remaining responsibilities are covered or explicitly unresolved.
+
+### U10-B committed-tree receipt (2026-08-19)
+
+- commit: `98f1e9647695848625e35f83c41e14e342a6dea9`;
+- static: pass, 3 changed Python files;
+- collection: **3,405** tests;
+- focused U10/diffusion/owner/execution substrate: **447 passed**;
+- affected U2 authority gates: **44 passed**;
+- preservation: **52 passed**, zero structural or pixel drift across all 29
+  witnesses;
+- exhaustive: **3,389 passed / 14 skipped / 2 expected xfailed**;
+- every isolated lane fingerprint before/after: **identical**;
+- receipt logs: `/private/tmp/model-unfolder-verification/93a35b676f`.
+
+This closes U10-B only. The inventory remains occurrence-exact, symbolic and
+shadow-only: it does not assign stack roles, infer block mechanisms, expand a
+symbolic layer count, or drive a renderer. U10-C is now active and must compose
+canonical U6/U7/U8 facts independently for each exact positive block occurrence
+while keeping every unresolved candidate opaque.
