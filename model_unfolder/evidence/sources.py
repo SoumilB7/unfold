@@ -544,13 +544,25 @@ def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
                 for sub_key, value in (enc_bundle.component_architectures or {}).items():
                     key = enc_name if sub_key == "root" else f"{enc_name}.{sub_key}"
                     component_architectures[key] = value
+            companion_components: list[str] = []
+            for slot, _companion_cfg, companion_arch in \
+                    _pipeline_companion_denoiser_components(target):
+                companion_path = _diffusers_class_file(companion_arch)
+                if companion_path is None:
+                    continue
+                companion_components.append(slot)
+                component_files[slot] = (companion_path,)
+                component_architectures[slot] = companion_arch
+                if companion_path not in files:
+                    files.append(companion_path)
             return SourceBundle(source="local", files=tuple(files),
                                 architecture=cls, model_id=model_id,
                                 component_files=component_files,
                                 supporting_files=supporting_files,
                                 component_model_types=component_model_types,
                                 component_architectures=component_architectures,
-                                pipeline_components=tuple(pipeline_components))
+                                pipeline_components=tuple(pipeline_components),
+                                companion_components=tuple(companion_components))
     return SourceBundle(
         source="local", architecture=cls, model_id=model_id,
         warnings=(f"No installed diffusers modeling file defines {cls!r}.",),
@@ -574,6 +586,19 @@ def _pipeline_text_encoder_components(target: Any):
         model_type = _own_model_type(cfg)
         if model_type or _architecture(cfg) or _string_value(cfg, "_class_name"):
             yield str(name), cfg, model_type or ""
+
+
+def _pipeline_companion_denoiser_components(target: Any):
+    """Yield exact loader-established companion denoiser addresses only."""
+    raw = _get_value(target, "_companion_denoiser_configs")
+    if not isinstance(raw, dict):
+        return
+    for slot, cfg in sorted(raw.items()):
+        if not isinstance(slot, str) or not slot or not isinstance(cfg, dict):
+            continue
+        architecture = _architecture(cfg) or _string_value(cfg, "_class_name")
+        if architecture:
+            yield slot, cfg, architecture
 
 
 def _direct_transformers_family_dir(models_root: Path, model_type: str) -> str | None:

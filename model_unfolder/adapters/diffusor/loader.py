@@ -110,6 +110,23 @@ def load_diffusion_config_by_id(model_id: str, token: Any = None) -> dict | None
     if enc_cfgs:
         cfg.setdefault("_text_encoder_configs", enc_cfgs)
 
+    # An additional pipeline entry with the exact same component declaration as
+    # the selected denoiser is a companion ADDRESS. Fetch its own config; do not
+    # infer that its instantiated structure is equal merely from this address.
+    primary_decl = index.get(denoiser_key)
+    companion_cfgs: dict[str, Any] = {}
+    if isinstance(primary_decl, (list, tuple)):
+        for key, declaration in index.items():
+            if key == denoiser_key or not isinstance(declaration, (list, tuple)) \
+                    or tuple(declaration) != tuple(primary_decl):
+                continue
+            companion = _download_json(
+                hf_hub_download, model_id, "config.json", token, subfolder=key)
+            if isinstance(companion, dict):
+                companion_cfgs[str(key)] = companion
+    if companion_cfgs:
+        cfg.setdefault("_companion_denoiser_configs", companion_cfgs)
+
     cfg.setdefault("_pipeline_class_name", index.get("_class_name"))
     cfg.setdefault("_name_or_path", model_id)
     # The repo id IS the model tag the user typed — used for the display name

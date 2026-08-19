@@ -175,6 +175,10 @@ class SourceBundle:
     # domain-based pick ("the text component") must never select them for the
     # root's own views (the denoiser block is not a Mistral layer).
     pipeline_components: tuple[str, ...] = ()
+    # Additional pipeline denoiser candidates established at the address
+    # boundary. Presence is not an equivalence claim; U10-E resolves and
+    # compares every candidate independently.
+    companion_components: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)

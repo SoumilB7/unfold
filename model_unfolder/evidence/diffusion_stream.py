@@ -460,6 +460,16 @@ def _local_lineage(index: ProgramIndex, callable_record,
         calls, tuple(transparent_calls))
 
 
+# U10-E reuses the exact same callable-local reaching-definition semantics for
+# root bookends.  Keep the implementation private to this module, but publish a
+# deliberately narrow constructor instead of allowing the bookend reader to
+# fork another lineage engine.  The returned object remains observation-only:
+# it reads frozen ProgramIndex records and never opens source or config.
+def local_lineage_at_callable(index: ProgramIndex, callable_record,
+                              transparent_calls=()) -> _LocalLineage:
+    return _local_lineage(index, callable_record, transparent_calls)
+
+
 @dataclass(frozen=True)
 class StreamRoot:
     """One exact block formal with a local, source-proven role."""
@@ -1097,5 +1107,5 @@ __all__ = [
     "AttentionStreamRelation", "FFNStreamRelation",
     "UnresolvedStreamRelation",
     "DiffusionBlockStreamGraph", "DiffusionStreamInventory",
-    "read_diffusion_stream_graph",
+    "read_diffusion_stream_graph", "local_lineage_at_callable",
 ]

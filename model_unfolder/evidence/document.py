@@ -346,6 +346,7 @@ LOADER_STAMPS = frozenset({
     "_repo_id",                # the model tag the user typed (parser/loader)
     "_pipeline_class_name",    # read off the pipeline index by the loader
     "_text_encoder_configs",   # component configs the loader FETCHED
+    "_companion_denoiser_configs",  # exact companion address envelopes
     "_vae_config",
     "_scheduler_config",
 })

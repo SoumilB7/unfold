@@ -889,6 +889,49 @@ def _shadow_diffusion_stream_and_conditioning(context):
         "root.denoiser.conditioning", (), _conditioning)
 
 
+@lru_cache(maxsize=64)
+def _source_only_diffusion_bookends(index, root):
+    """Compose U10-E from the exact U10-B/D source-only bundle."""
+    from ...evidence.diffusion_bookends import read_diffusion_bookends
+    from ...evidence.reader_result import ReaderFailure, ReaderResult
+
+    stacks, _blocks = _source_only_diffusion_stack_and_blocks(index, root)
+    streams, conditioning = _source_only_diffusion_stream_and_conditioning(
+        index, root)
+    if not root.address_resolved or not all(
+            item.has_value for item in (stacks, streams, conditioning)):
+        failures = tuple(failure for item in (stacks, streams, conditioning)
+                         for failure in item.failures)
+        return ReaderResult.failed(
+            getattr(stacks, "owner", None), failures or (
+                ReaderFailure("missing_source", "U10-E dependencies unavailable"),))
+    return read_diffusion_bookends(
+        index, root, stacks, streams, conditioning)
+
+
+def _shadow_diffusion_bookends(context):
+    """Publish source-only U10-E bookends; legacy output cannot consume them."""
+    index = context.program_index()
+    root = _shadow_diffusion_root_resolution(context)
+
+    def _read():
+        return _source_only_diffusion_bookends(index, root)
+
+    return context.cached_reader_result(
+        "root.denoiser.bookends", (), _read)
+
+
+def _shadow_diffusion_companions(context):
+    """Publish independently-resolved U10-E companion comparisons."""
+    def _read():
+        from ...evidence.diffusion_companion import read_diffusion_companions
+        return read_diffusion_companions(
+            context.program_index(), context.source_bundle)
+
+    return context.cached_reader_result(
+        "root.denoiser.companions", (), _read)
+
+
 @_config_access.owner_scoped("root.denoiser")
 def parse(cfg: Any, context=None) -> ModelIR:
     # U1 (§20.4.3): a diffusion parse's ROOT config IS the denoiser's config —
@@ -911,6 +954,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # U10-D shadow publication only.  These local relations do not yet select
     # any legacy conditioning/card/renderer branch.
     _shadow_diffusion_stream_and_conditioning(context)
+    # U10-E shadow publication only.  Exact source operations are kept separate
+    # from the still-live config-authored patch/video/companion presentation.
+    _shadow_diffusion_bookends(context)
+    _shadow_diffusion_companions(context)
 
     # UNet denoisers (SD1.5/SD2/SDXL/Kandinsky) are a different shape — a conv
     # U-net, not a transformer stack — so they get their own structure + view.
