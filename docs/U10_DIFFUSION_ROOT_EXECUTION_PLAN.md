@@ -1,6 +1,6 @@
 # U10 — Diffusion Root, Stack, Stream, and Conditioning Execution Plan
 
-Status: **ACTIVE — U10-A/B/C DONE; U10-D next**
+Status: **ACTIVE — U10-A/B/C/D DONE; U10-E next**
 
 Authority: this document is the binding execution plan for U10. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §20.13 without changing the master
@@ -321,42 +321,53 @@ other.
 
 Evidence module: `model_unfolder/evidence/diffusion_stream.py`
 
-Node kinds are mechanism-neutral execution facts:
+U10-D is a **block-local positive boundary**, not a global modality classifier.
+It starts from each exact U10-C block occurrence and retains:
 
-- exact input/output parameter;
-- exact attention/FFN/norm/projector/modulation call site;
-- exact concat/stack/add/multiply/split operation;
-- exact repeated stack invocation;
-- exact condition/context/timestep/guidance source;
-- unresolved operation/relation.
+- exact block formals and exact stack-call actuals;
+- exact guarded return routes;
+- exact U10-C attention and FFN call sites;
+- exact imported concat calls;
+- exact canonical norm invocations;
+- U7 residual topology only when that exact block already proves it;
+- unresolved attention/FFN/conditioning rows.
 
-Edges cite producer and consumer spans and are classified only as:
+Its role vocabulary is deliberately local:
 
-- proven unconditional;
-- proven conditional with guard path;
-- unresolved.
+- `state`: an exact formal positively carried to an exact block return;
+- `context`: an exact non-returned formal supplying the proven K/V side of an
+  attention lane;
+- `auxiliary`: an exact non-returned formal entering an explicit joined input;
+- `conditioning`: a non-stream formal reaching an exact norm/gate application.
 
-Derived topology terms (`dual_stream`, `single_stream`, `concat_joint`,
-`kv_join`, `cross_attention`, `parallel`, `sequential`) are permitted only as
-typed interpretations of a sufficient set of graph relations. Each term needs
-its own counterexample and must retain the underlying graph proof.
+`single_state`, `contextual_single_state`, `dual_state`, and `joined_inputs`
+describe only those local relations. They do **not** mean latent, image, text,
+timestep, or guidance. Those global names require the root bookend proof in
+U10-E. A numeric dependency is not a state identity, an explicit join is not
+automatically a two-state join, and an attention/FFN call is classified only
+when its output positively reaches an exact return.
 
-No unproven relation is labelled “unordered,” “not present,” or “sequential.”
+No unproven relation is labelled “unordered,” “not present,” “sequential,”
+`kv_join`, or a modality. The open U3 substrate keeps every aggregate
+`incomplete` even when individual local relations are positively proven.
 
 ### 6.5 `DenoiserConditioningEvidence`
 
 Evidence module: `model_unfolder/evidence/diffusion_conditioning.py`
 
-Carries independent, tri-state facts for:
+U10-D carries exact block-local applications only:
 
-- timestep embedding reaching a block;
-- adaptive norm shift/scale;
-- output gates and whether a gate is a multiplication or folded into a norm;
-- encoded-token route to self/joint/cross attention;
-- pooled conditioning route;
-- pre-stack projection/addition/concatenation;
-- guidance route;
-- exact conditioning projector chain and bound dimensions.
+- a non-stream formal entering an exact norm before a proven attention lane
+  (`norm_modulation`);
+- a non-stream-derived value multiplying an exact attention/FFN result that
+  positively reaches a return (`bare_gate`);
+- a non-stream-derived gate entering an exact canonical norm with the exact
+  attention/FFN result, where the norm reaches a return (`gate_in_norm`).
+
+Timestep/guidance naming, encoded-token routes, pooled conditioning,
+pre-stack projectors/fusion, and bound projector dimensions belong to U10-E's
+root bookend graph. This separation prevents a block parameter spelling from
+authoring a global modality role.
 
 The existence of `joint_attention_dim`, `cross_attention_dim`,
 `encoder_hid_dim_type`, `addition_embed_type`, or a text-encoder component is
@@ -539,10 +550,12 @@ Primary files:
 
 Actions:
 
-1. Build exact positive local relations among latent, context/text, timestep,
-   guidance, attention, FFN, projector, join, gate, and output sites.
-2. Interpret dual/single, concat, KV-join, cross-attention, parallel, and
-   sequential only from sufficient graph proofs.
+1. Build exact positive block-local relations among returned state slots,
+   K/V-side context, explicit joined inputs, canonical attention/FFN/norm calls,
+   gates, and returns.
+2. Interpret local single/dual/contextual/joined-input relations only from
+   sufficient exact graph proofs. Defer global latent/text/timestep/guidance,
+   KV-join, projector, and bookend names to U10-E.
 3. Publish unresolved relations when U3 cannot prove order or coverage.
 4. Distinguish bare gate multiplication from gate-in-norm execution.
 5. Keep config enum/dimension values unconsumed until their exact source branch
@@ -550,13 +563,14 @@ Actions:
 
 Required controls:
 
-- Flux dual and single stacks;
-- SD3-style dual-stream MMDiT;
-- HunyuanVideo heterogeneous stacks;
-- CogVideoX/Mochi joined sequence;
-- Wan/PixArt/Sana/LTX cross-attention;
-- AuraFlow sequential joined stream;
-- PRX-style KV join;
+- Flux dual/single exact block occurrences without family transfer;
+- SD3-style external/opaque MMDiT remaining typed unknown;
+- HunyuanVideo heterogeneous stacks without sibling inheritance;
+- CogVideoX dual attention kept distinct from its separate join/split FFN path;
+- Wan/PixArt/Sana external or ambiguous lanes remaining typed unknown while LTX
+  proves only its exact local self/contextual lanes;
+- AuraFlow's exact per-call local relations without a global sequential claim;
+- PRX's outer contextual single-state lane without inventing an inner KV join;
 - plain self-attention DiT;
 - no-AdaLN block;
 - two candidate context routes;
@@ -937,8 +951,8 @@ Final achieved output:
 | U10-A | DONE | commit `92200e1`; `evidence/diffusion_root.py`: exact repeated-container execution and exact bypass-route U-shape proof; parser shadow publication only; 23 synthetic poisons + 15 real witnesses; no IR/renderer consumer; committed-tree receipt `/private/tmp/model-unfolder-verification/0f1c9e9080` fingerprint-identical |
 | U10-B | DONE | commit `98f1e96`; `evidence/diffusion_stack.py`: occurrence-exact container/block/call inventory over D0/B2/owner-graph rails; 25 synthetic poisons + 15 real witnesses; legacy semantic consumer intentionally retained until U10-C/F covers it; committed-tree receipt `/private/tmp/model-unfolder-verification/93a35b676f` fingerprint-identical |
 | U10-C | DONE | commit `ee836b0`; occurrence-exact U6/U7/U8 composition in shadow mode; 33 synthetic controls + 15 real witnesses; 3,453 collected; 307 focused + 44 authority + 52 preservation + exhaustive 3,341 passed / 14 skipped / 2 xfailed; zero drift; interrupted coordinator transparently resumed in its intact committed worktree; receipt `/private/tmp/model-unfolder-verification/bb2795cf7c/continuation_receipt.md` |
-| U10-D | ACTIVE | stream + conditioning graph |
-| U10-E | NOT STARTED | bookends + temporal + companions |
+| U10-D | DONE | commit `14fee0c`; exact block-local stream/conditioning graph; 39 synthetic/real controls in the two new test files; 3,492 collected; 324 focused + 44 authority + 52 preservation + exhaustive 3,380 passed / 14 skipped / 2 xfailed; zero drift; receipt `/private/tmp/model-unfolder-verification/8eddcda6a0` fingerprint-identical |
+| U10-E | NEXT | bookends + temporal + companions |
 | U10-F | NOT STARTED | typed projection + config-author dismantling |
 | U10-G | NOT STARTED | legacy deletion + later-unit handoffs |
 | U10-H | NOT STARTED | artifact approval + committed-tree closure |
@@ -1181,3 +1195,87 @@ and artifact fingerprint
 `c6d07cc930511fbe4a00cdfc97757222c052200fc2b999ef18c8aa414253abb6`
 were identical before/after. The transparent composite receipt is
 `/private/tmp/model-unfolder-verification/bb2795cf7c/continuation_receipt.md`.
+
+### U10-D implementation boundary and qualification matrix (2026-08-19)
+
+U10-D implements the corrected block-local contract in §§6.4–6.5. It does not
+name modalities and does not project into the legacy IR. The parser publishes
+two call-local shadow results only:
+
+- `root.denoiser.streams` — exact block formals, returns, U10-C attention/FFN
+  calls, canonical norm calls, explicit imported joins, local relations, and
+  unresolved rows;
+- `root.denoiser.conditioning` — exact norm modulation, bare multiplication
+  gates, gate-in-norm applications, and unresolved branch rows.
+
+The implementation strengthened one canonical U7 boundary rather than
+reverse-engineering norm call sites inside U10: `norm_invocations_at_owner`
+publishes every positively classified exact norm invocation, and the existing
+`norm_kind_at_owner` aggregate derives from that call-level census. Thus norm
+kind and norm application topology share one source.
+
+The lineage helper is callable-local and consumes only immutable ProgramIndex
+observations. It is not a second source parser, cache, or CFG. It preserves
+guarded rivals as unresolved; exact imported `torch.cat`/`concat` calls are the
+only join protocol; every classified attention/FFN result must positively reach
+an exact return. State identity is kept separate from arbitrary numeric
+dependence: timestep/modulation inputs cannot become state streams merely
+because they influence a returned tensor.
+
+| Witness | Attention local relations | Unresolved attention | FFN local relations | Unresolved FFN | Exact conditioning applications |
+|---|---|---:|---|---:|---|
+| AuraFlow | dual + single | 0 | three single-state calls | 0 | 3 attention gates + 1 FFN gate |
+| CogVideoX | dual | 0 | — | 0 | 2 attention gates on the two returned branches |
+| FLUX.2 | dual | 1 | — | 2 | 3 attention gates + 2 FFN gates; rival/guarded routes remain unresolved |
+| FluxTransformer2DModel | joined inputs | 1 | — | 0 | — |
+| HunyuanVideo | single | 0 | — | 0 | 1 attention gate |
+| LTX-Video | single + contextual single | 0 | — | 0 | 1 attention gate |
+| Lumina Image 2 | — | 6 | — | 0 | — |
+| Mochi | — | 0 | — | 0 | —; U10-C implementation remains external |
+| PixArt Sigma | — | 0 | — | 0 | —; no positive U10-C block row |
+| PRX Pixel | contextual single | 0 | — | 0 | 1 attention gate |
+| Qwen-Image | — | 1 | — | 0 | —; an opaque helper leaves two rival non-stream gate roots |
+| Sana | — | 0 | — | 0 | —; U10-C source-only constructor remains ambiguous |
+| Stable Diffusion 3.5 | — | 0 | — | 0 | —; no positive U10-C block row |
+| Stable Diffusion XL | — | 0 | — | 0 | —; U11 owns the U-shaped cells |
+| Wan 2.2 | — | 2 | — | 0 | — |
+
+These are source outcomes, not coverage targets. Important honesty deltas are
+intentional:
+
+- One FluxTransformer block proves an explicit joined-input route through the
+  later split/return; its other lane and all Lumina lanes remain unresolved.
+  An invoked lane is not a stream relation unless its result reaches a return.
+- CogVideoX proves dual-state attention. Its separate FFN join/split path is not
+  collapsed into the attention relation.
+- PRX proves only the outer contextual lane. An inner KV join would require the
+  exact inner attention implementation; the class/model is not used as a proxy.
+- Mochi/PixArt/SD3 and other external/ambiguous implementations stay opaque.
+- An explicit concat is called `joined_inputs`, not `joined_state`: a
+  non-returned input does not become a second state merely by being joined.
+- One call may have several exact gate applications; the inventory retains each
+  application occurrence instead of collapsing them by branch call.
+
+Permanent controls include full formal/class/field renaming, same config shape
+with different source, dimension/text/guidance decoys, discarded attention and
+discarded gated branches, guarded rival definitions, direct-return gates,
+multi-output multi-gate calls, transparent state-preserving transforms,
+state-slot reassignment, explicit joins, foreign-index refusal, source-missing
+parser publication, DTO forgery, and the 15-witness matrix above.
+
+#### U10-D committed-tree receipt
+
+- commit: `14fee0cdc794a0be8b855910f7174b05f8abfb0c`;
+- static: pass, 6 changed Python files;
+- collection: **3,492** tests;
+- focused U10-D + canonical norm/code evidence: **324 passed**;
+- affected U2 authority gates: **44 passed**;
+- preservation: **52 passed**, zero structural or pixel drift across all 29
+  witnesses;
+- exhaustive: **3,380 passed / 14 skipped / 2 expected xfailed**;
+- every isolated lane fingerprint before/after: **identical**;
+- receipt logs: `/private/tmp/model-unfolder-verification/8eddcda6a0`.
+
+This closes U10-D. Its results remain shadow evidence and are not yet renderer
+or IR authority. U10-E is now active and owns exact root bookends, global
+modality naming, temporal-operation proof, and companion denoiser evidence.
