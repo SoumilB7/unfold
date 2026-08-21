@@ -1,6 +1,6 @@
 # U10 — Diffusion Root, Stack, Stream, and Conditioning Execution Plan
 
-Status: **ACTIVE — U10-A/B/C/D DONE; U10-E next**
+Status: **ACTIVE — U10-A/B/C/D/E DONE; U10-F next**
 
 Authority: this document is the binding execution plan for U10. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §20.13 without changing the master
@@ -597,7 +597,9 @@ Actions:
 1. Resolve root input/patch/embed/timestep/guidance/output operations.
 2. Replace `_temporal_axis` fallback with separate facts:
    `declared_temporal_geometry` and `proven_temporal_operations`.
-3. A video/temporal label or 3-D operation is emitted only from the latter.
+3. A temporal-mechanism label or 3-D operation is emitted only from the latter.
+   A global output-domain label (`Frames`/`Image`/`Waveform`) additionally
+   requires U12 codec/output evidence and is not decided by U10 alone.
 4. Resolve companion denoisers independently and compare typed structures.
 5. Keep source-missing companions unresolved and source-missing temporal config
    geometry-only.
@@ -952,8 +954,8 @@ Final achieved output:
 | U10-B | DONE | commit `98f1e96`; `evidence/diffusion_stack.py`: occurrence-exact container/block/call inventory over D0/B2/owner-graph rails; 25 synthetic poisons + 15 real witnesses; legacy semantic consumer intentionally retained until U10-C/F covers it; committed-tree receipt `/private/tmp/model-unfolder-verification/93a35b676f` fingerprint-identical |
 | U10-C | DONE | commit `ee836b0`; occurrence-exact U6/U7/U8 composition in shadow mode; 33 synthetic controls + 15 real witnesses; 3,453 collected; 307 focused + 44 authority + 52 preservation + exhaustive 3,341 passed / 14 skipped / 2 xfailed; zero drift; interrupted coordinator transparently resumed in its intact committed worktree; receipt `/private/tmp/model-unfolder-verification/bb2795cf7c/continuation_receipt.md` |
 | U10-D | DONE | commit `14fee0c`; exact block-local stream/conditioning graph; 39 synthetic/real controls in the two new test files; 3,492 collected; 324 focused + 44 authority + 52 preservation + exhaustive 3,380 passed / 14 skipped / 2 xfailed; zero drift; receipt `/private/tmp/model-unfolder-verification/8eddcda6a0` fingerprint-identical |
-| U10-E | NEXT | bookends + temporal + companions |
-| U10-F | NOT STARTED | typed projection + config-author dismantling |
+| U10-E | DONE | commit `a379cf0`; source-only bookends + geometry/mechanism separation + independently resolved companions; 3,535 collected; 350 focused + 44 authority + 52 preservation + exhaustive 3,423 passed / 14 skipped / 2 xfailed; zero drift; receipt `/private/tmp/model-unfolder-verification/e3b70ca7b0` fingerprint-identical |
+| U10-F | NEXT | typed projection + config-author dismantling |
 | U10-G | NOT STARTED | legacy deletion + later-unit handoffs |
 | U10-H | NOT STARTED | artifact approval + committed-tree closure |
 
@@ -1277,5 +1279,118 @@ parser publication, DTO forgery, and the 15-witness matrix above.
 - receipt logs: `/private/tmp/model-unfolder-verification/8eddcda6a0`.
 
 This closes U10-D. Its results remain shadow evidence and are not yet renderer
-or IR authority. U10-E is now active and owns exact root bookends, global
-modality naming, temporal-operation proof, and companion denoiser evidence.
+or IR authority. U10-E is now active and owns exact root bookends,
+temporal-operation proof, and companion denoiser evidence. Global output-domain
+naming remains U12 codec/VAE work: even a proven temporal denoiser operation is
+not by itself proof that the decoded output is a video.
+
+### U10-E implementation record
+
+U10-E adds two shadow-only source boundaries. Neither is a production drawing
+authority before U10-F moves all consumers together.
+
+`evidence/diffusion_bookends.py` starts from the exact U10-B stack executions
+and U10-D state/conditioning formals. It uses the shared U10-D local-lineage
+engine and the shared U9 operation classifier to retain positive operations on
+three separately typed routes: root state input, root conditioning input, and
+root state output. It does not reopen source, parse another AST, search sibling
+classes, or accept raw config.
+
+The temporal split is deliberately stronger than the initial draft:
+
+- `temporal_operations` contains only a positive temporal/3-D mechanism. The
+  current closed kind is `three_dimensional_convolution`.
+- `tensor_geometry` contains source-observed rank/shape only. A five-axis
+  reshape is `rank_five_shape`; it is **not** temporal computation and cannot
+  authorize a video label.
+- A three-entry patch tuple, `num_frames`, or any other temporal config field
+  cannot enter the source reader at all.
+- A nested/folded reshape cannot borrow the outer invocation's five arguments;
+  the observed rank and registered operation must cite the same exact call.
+
+This is the source half of action E.2. The old `_temporal_axis` fallback and its
+declared temporal geometry remain live compatibility code until U10-F creates
+the typed config-side geometry fact and cuts every IR/card/renderer consumer in
+one reviewed change. Therefore U10-E does **not** claim that production output
+has already stopped consulting the legacy fallback. Deleting it in E would
+either lose declared geometry or make a shadow reader a partial production
+authority before receipts exist.
+
+`evidence/diffusion_companion.py` consumes only exact companion component
+addresses retained by `SourceBundle`. The loader establishes an additional
+address only when a pipeline entry has the exact same framework component
+declaration as the selected denoiser, then fetches that slot's own config. Each
+address gets its own D0 owner graph and its own U10-A/B/C/D/E profile. Slot
+spelling and equal dimensions never participate in comparison. Duplicate/root
+addresses are typed conflicts.
+
+The strongest comparison available in E is intentionally limited:
+
+- identical content fingerprint and class-body address ->
+  `same_source_contract`, not instantiated architecture equality;
+- equal positive typed signatures across different sources ->
+  `matching_partial_evidence`, still not equality;
+- differing positive signatures -> `different_positive_evidence`;
+- missing or incomplete source -> `unresolved`.
+
+`architecture_equivalent` is always unknown in E. U10-F may strengthen it only
+after every deciding config operand is exactly bound to the source branch it
+selects.
+
+#### U10-E real-witness lower-bound matrix
+
+The following `(state input, state output, conditioning input, temporal op)`
+counts are pinned from the frozen corpus. They are observations, not coverage
+targets:
+
+| Witness | Counts |
+|---|---:|
+| AuraFlow | 7, 0, 0, 0 |
+| CogVideoX | 0, 0, 0, 0 |
+| FLUX.2 | 2, 3, 3, 0 |
+| FluxTransformer2DModel | 1, 2, 0, 0 |
+| HunyuanVideo | 0, 0, 0, 0 |
+| LTX-Video | 1, 2, 3, 0 |
+| Lumina | 0, 0, 0, 0 |
+| Mochi | 0, 1, 0, 0 |
+| PixArt | 0, 0, 0, 0 |
+| PRX | 1, 1, 1, 0 |
+| Qwen-Image | 0, 1, 0, 0 |
+| Sana | 0, 2, 0, 0 |
+| SD3.5 | 0, 0, 0, 0 |
+| SDXL | 0, 0, 0, 0 |
+| Wan 2.2 | 0, 1, 0, 0 |
+
+Zero temporal operations is honest: current real temporal implementations hide
+their decisive work behind helper/control-flow routes the positive local-flow
+substrate cannot yet close. Synthetic exact-source controls prove Conv3D and
+rank-five separation, while real models remain unknown rather than inheriting
+the legacy config-based video claim. The frozen configs also do not retain a
+real fetched companion slot; loader/source-bundle controls exercise the exact
+by-ID address path without patching a model witness.
+
+Permanent controls cover unused input/output/conditioning projections, output
+calls that do not reach the return, full class/field/local renaming, cross-root
+dependency laundering, source-missing publication, rank-four versus rank-five
+shape, geometry-to-temporal forgery, Conv3D without temporal config, temporal
+config unable to enter the source API, same-source versus equal-partial versus
+different companion profiles, missing companion source, slot rename, duplicate
+addresses, and independently constructed owner graphs.
+
+#### U10-E committed-tree receipt
+
+- commit: `a379cf0cca79660d3933e06238a3f9690c60b772`;
+- static: pass, 10 changed Python files;
+- collection: **3,535** tests;
+- focused diffusion/bookend/companion/stream/conditioning: **350 passed**;
+- affected U2 authority gates: **44 passed**;
+- preservation: **52 passed**, zero structural or pixel drift across all 29
+  witnesses;
+- exhaustive: **3,423 passed / 14 skipped / 2 expected xfailed**;
+- every isolated lane tree fingerprint and artifact fingerprint before/after:
+  **identical**;
+- receipt logs: `/private/tmp/model-unfolder-verification/e3b70ca7b0`.
+
+This closes the U10-E source boundary. Its cache entries remain shadow evidence:
+U10-F is the one reviewed production cutover for typed declared geometry,
+projection DTOs, config-author deletion, and passive consumers.
