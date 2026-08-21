@@ -932,6 +932,29 @@ def _shadow_diffusion_companions(context):
         "root.denoiser.companions", (), _read)
 
 
+def _shadow_diffusion_source_projection(context):
+    """Publish the closed U10-F1 projection without granting IR authority.
+
+    The projection receives only the already-cached canonical U10 results.  It
+    cannot read ``cfg`` and no production branch below consumes it; F2 owns the
+    exact PreparedDocument operand join and F3 owns the atomic output cutover.
+    """
+    def _read():
+        from .schema import project_diffusion_source
+
+        topology = _shadow_diffusion_root_topology(context)
+        blocks = _shadow_diffusion_block_facts(context)
+        conditioning = _shadow_diffusion_stream_and_conditioning(context)
+        streams = context.reader_results[("root.denoiser.streams", ())]
+        bookends = _shadow_diffusion_bookends(context)
+        companions = _shadow_diffusion_companions(context)
+        return project_diffusion_source(
+            topology, blocks, streams, conditioning, bookends, companions)
+
+    return context.cached_reader_result(
+        "root.denoiser.source_projection", (), _read)
+
+
 @_config_access.owner_scoped("root.denoiser")
 def parse(cfg: Any, context=None) -> ModelIR:
     # U1 (§20.4.3): a diffusion parse's ROOT config IS the denoiser's config —
@@ -958,6 +981,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # from the still-live config-authored patch/video/companion presentation.
     _shadow_diffusion_bookends(context)
     _shadow_diffusion_companions(context)
+    # U10-F1 shadow-only: one closed projection over A/B/C/D/E.  This result is
+    # deliberately not passed to any legacy parser, IR, renderer or params path.
+    _shadow_diffusion_source_projection(context)
 
     # UNet denoisers (SD1.5/SD2/SDXL/Kandinsky) are a different shape — a conv
     # U-net, not a transformer stack — so they get their own structure + view.
