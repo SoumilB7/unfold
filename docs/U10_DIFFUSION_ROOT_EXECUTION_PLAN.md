@@ -1,6 +1,6 @@
 # U10 — Diffusion Root, Stack, Stream, and Conditioning Execution Plan
 
-Status: **ACTIVE — U10-A/B/C/D/E DONE; U10-F next**
+Status: **ACTIVE — U10-A/B/C/D/E/F1 DONE; U10-F2 active**
 
 Authority: this document is the binding execution plan for U10. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §20.13 without changing the master
@@ -639,6 +639,52 @@ Actions:
    templates. Keep only separately audited syntax/display entries.
 7. Add projection receipts for every migrated structural surface.
 
+#### Binding cut order inside U10-F
+
+U10-F is one production migration, but it must land through four independently
+reviewable cuts.  A later cut may not be started by silently weakening an
+earlier cut's laws.
+
+**U10-F1 — closed source projection (shadow-only).**  Add the typed projection
+schema and assemble it exclusively from the canonical U10-A/B/C/D/E values.
+The schema is not a second mechanism classifier: every normalized property is
+computed from, and construction-time checked against, the exact evidence object
+it carries.  It keeps exact stack/block/lane occurrences separate, preserves
+unresolved stacks and branches, and keeps tensor rank separate from temporal
+operations.  It consumes no raw config and has no parser, IR, renderer, params,
+receipt, debt, or artifact authority.
+
+**U10-F2 — exact operand binding (still shadow-only).**  Re-run the canonical
+readers with the root `PreparedDocument` and the U1 exact selector.  A config
+value may enter the projection only when source evidence names its exact path
+and owning occurrence.  The same shadow selection must create an exact
+owner/path/reader **binding** event, never a consumption: bind proves which
+operand source code reads, while consume is reserved for F3 when a production
+fact actually uses it.  Equal-head versus grouped-KV source protocols may
+become a diagram kind only after their exact checkpoint operands are joined;
+field presence, aliases, dimensions, and conventional defaults remain
+powerless.
+
+**U10-F3 — atomic production cutover.**  Move parser, IR, renderer, expanded
+JSON, parameters, Sable, and conformance to the same typed projection in one
+reviewed cut.  Unknown remains opaque.  This cut is expected to create honesty
+deltas where legacy config/family fallbacks drew unsupported detail; every
+delta is inspected before blessing.  No passive consumer may reopen source,
+read raw config, or infer a mechanism from a projection label.  Each projected
+config operand transitions from F2's exact binding to one owner-qualified
+consumption here; F3 may not consume a path absent from the typed binding table.
+
+**U10-F4 — authority deletion and closure.**  Delete every legacy/YAML author
+made redundant by F3, disposition each remaining `config_facts.yaml` row, add
+owner-qualified registry routes and real-consumer receipts, shrink structural
+debt in the same commit, and make renderer/params raw-config or source reads
+blocking.  Compatibility code cannot remain as a fallback behind the new DTO.
+
+F1/F2 are allowed to be pixel-identical shadow foundations.  F3/F4 are not
+complete merely because tests pass: the old authority must actually be removed,
+all changed artifacts must be inspected, and preservation witnesses outside the
+intended honesty delta must remain byte-identical.
+
 The cutover must not introduce renderer conditionals keyed by a model/class,
 fact label, or config field.
 
@@ -955,7 +1001,7 @@ Final achieved output:
 | U10-C | DONE | commit `ee836b0`; occurrence-exact U6/U7/U8 composition in shadow mode; 33 synthetic controls + 15 real witnesses; 3,453 collected; 307 focused + 44 authority + 52 preservation + exhaustive 3,341 passed / 14 skipped / 2 xfailed; zero drift; interrupted coordinator transparently resumed in its intact committed worktree; receipt `/private/tmp/model-unfolder-verification/bb2795cf7c/continuation_receipt.md` |
 | U10-D | DONE | commit `14fee0c`; exact block-local stream/conditioning graph; 39 synthetic/real controls in the two new test files; 3,492 collected; 324 focused + 44 authority + 52 preservation + exhaustive 3,380 passed / 14 skipped / 2 xfailed; zero drift; receipt `/private/tmp/model-unfolder-verification/8eddcda6a0` fingerprint-identical |
 | U10-E | DONE | commit `a379cf0`; source-only bookends + geometry/mechanism separation + independently resolved companions; 3,535 collected; 350 focused + 44 authority + 52 preservation + exhaustive 3,423 passed / 14 skipped / 2 xfailed; zero drift; receipt `/private/tmp/model-unfolder-verification/e3b70ca7b0` fingerprint-identical |
-| U10-F | NEXT | typed projection + config-author dismantling |
+| U10-F | ACTIVE | F1 commit `e12c568`: closed source-only projection; F2 exact checkpoint-operand binding active; F3/F4 production cutover and authority deletion pending |
 | U10-G | NOT STARTED | legacy deletion + later-unit handoffs |
 | U10-H | NOT STARTED | artifact approval + committed-tree closure |
 
@@ -1394,3 +1440,102 @@ addresses, and independently constructed owner graphs.
 This closes the U10-E source boundary. Its cache entries remain shadow evidence:
 U10-F is the one reviewed production cutover for typed declared geometry,
 projection DTOs, config-author deletion, and passive consumers.
+
+### U10-F1 implementation record
+
+U10-F1 adds `adapters/diffusor/schema.py`, a closed passive projection over the
+canonical U10-A/B/C/D/E evidence graph.  It does not reopen source or read
+config.  Each projected block, attention lane, FFN, stream relation,
+conditioning application, bookend, and companion relation construction-time
+checks against the exact evidence object it retains.  Source protocols remain
+below final diagram vocabulary: equal heads and grouped KV are not promoted to
+MHA/GQA/MQA without checkpoint operands, and rank-five geometry remains
+separate from temporal computation.
+
+The source projection is cached call-locally by the diffusion parser but has no
+IR, renderer, expanded-JSON, parameter, receipt, conformance, or structural-debt
+authority.  A name-blind frontier control exposed an initial cache-boundary bug:
+the projection had required Python object identity between equal immutable
+evidence reconstructed in separate bounded caches.  The repaired closure joins
+by the complete frozen evidence value and still checks every exact occurrence;
+it neither accepts a weaker key nor loses cross-cache determinism.
+
+#### U10-F1 committed-tree receipt
+
+- commit: `e12c568d53ac95412903a26ccb922697b5d2bfb4`;
+- static: pass, three changed Python files;
+- collection: **3,548** tests;
+- focused U10/F1: **400 passed**;
+- affected U2 authority gates: **44 passed**;
+- preservation: **52 passed**, zero structural or pixel drift across all 29
+  witnesses;
+- exhaustive: **3,436 passed / 14 skipped / 2 expected xfailed**;
+- every isolated lane tree and artifact fingerprint before/after: **identical**;
+- receipt logs: `/private/tmp/model-unfolder-verification/ae1df4a393`.
+
+F1 is therefore DONE.  F2 is the next shadow boundary and may bind only exact
+checkpoint-declared operands retained by the source evidence.  Class defaults,
+aliases not named by source, familiar dimensions, and missing operands remain
+unbound; F2 emits no consumption and cannot change a production diagram.
+
+### U10-F2 implementation record (under verification)
+
+F2 adds `evidence/config_registration.py` and
+`adapters/diffusor/config_binding.py`.  The former is a closed framework
+address protocol for the exact imported Diffusers `register_to_config`
+decorator: it maps ordinary root-constructor parameters to same-key checkpoint
+paths but reads no value and assigns no architectural meaning.  A local or
+multiply-bound function with the same spelling cannot activate the protocol.
+The latter rebuilds the occurrence graph with those exact root address
+bindings, re-runs the canonical U10 readers, and partitions every retained
+config dependency into a bound checkpoint occurrence or a typed unresolved
+operand.  Each row carries the exact source occurrence, decisive spans,
+owner/fact/reader target and exact config path.
+
+This framework-address step was required by a real negative control.  The
+first F2 implementation was green synthetically but bound **zero** operands on
+all fifteen Diffusers witnesses: the synthetic fixture passed one `config`
+object, whereas real Diffusers roots use registered scalar constructor
+parameters.  D0 correctly refused to guess a config path for those many
+parameters.  The repair recognizes the imported framework execution protocol,
+not a model/class/parameter spelling; a local same-name decorator remains
+powerless.  A second real seam then showed repeated counts are retained as a
+normalized expression such as `range(num_layers)`.  F2 now walks that frozen
+expression tree and joins only identifier occurrences with one exact
+owner-graph config binding; it never searches diagnostic source text or
+interprets `range` by name.
+
+The fifteen-witness matrix now yields the following exact bound-row counts:
+
+| witness | projected blocks | bound operands |
+|---|---:|---:|
+| AuraFlow | 2 | 0 |
+| CogVideoX | 1 | 1 |
+| FLUX.2 | 2 | 2 |
+| FluxTransformer2DModel | 2 | 2 |
+| HunyuanVideo | 1 | 1 |
+| LTX-Video | 1 | 1 |
+| Lumina Image 2 | 3 | 3 |
+| Mochi | 1 | 1 |
+| PixArt Sigma | 0 | 0 |
+| PRX Pixel | 1 | 1 |
+| Qwen-Image | 1 | 1 |
+| Sana | 1 | 1 |
+| Stable Diffusion 3.5 | 0 | 0 |
+| Stable Diffusion XL | 0 | 0 |
+| Wan 2.2 | 1 | 1 |
+
+The real positive rows are currently exact symbolic stack-count operands.  The
+internal head/FFN operands remain unavailable for framework attention
+containers whose implementation source is not in the component bundle; F2
+does not borrow their conventional Diffusers semantics.  Synthetic exact-source
+controls prove the full nested scalar route through query/KV head operands.
+Zero-row witnesses are retained as negative controls, not treated as success
+by vacuity.
+
+F2 deliberately has no production parser call site.  Activating it in shadow
+mode would create real bound-but-unconsumed U1 events and make the blocking
+standing-debt net red for bookkeeping rather than architecture.  F3 must add
+the call and convert each used row to one owner-qualified consumption in the
+same atomic production cut.  No pending-debt or hidden ledger exception is
+introduced to bridge the two phases.
