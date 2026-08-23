@@ -1,6 +1,6 @@
 # U10 — Diffusion Root, Stack, Stream, and Conditioning Execution Plan
 
-Status: **ACTIVE — U10-A/B/C/D/E/F1 DONE; U10-F2 active**
+Status: **ACTIVE — U10-A/B/C/D/E/F1/F2 DONE; U10-F3 active**
 
 Authority: this document is the binding execution plan for U10. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §20.13 without changing the master
@@ -1001,7 +1001,7 @@ Final achieved output:
 | U10-C | DONE | commit `ee836b0`; occurrence-exact U6/U7/U8 composition in shadow mode; 33 synthetic controls + 15 real witnesses; 3,453 collected; 307 focused + 44 authority + 52 preservation + exhaustive 3,341 passed / 14 skipped / 2 xfailed; zero drift; interrupted coordinator transparently resumed in its intact committed worktree; receipt `/private/tmp/model-unfolder-verification/bb2795cf7c/continuation_receipt.md` |
 | U10-D | DONE | commit `14fee0c`; exact block-local stream/conditioning graph; 39 synthetic/real controls in the two new test files; 3,492 collected; 324 focused + 44 authority + 52 preservation + exhaustive 3,380 passed / 14 skipped / 2 xfailed; zero drift; receipt `/private/tmp/model-unfolder-verification/8eddcda6a0` fingerprint-identical |
 | U10-E | DONE | commit `a379cf0`; source-only bookends + geometry/mechanism separation + independently resolved companions; 3,535 collected; 350 focused + 44 authority + 52 preservation + exhaustive 3,423 passed / 14 skipped / 2 xfailed; zero drift; receipt `/private/tmp/model-unfolder-verification/e3b70ca7b0` fingerprint-identical |
-| U10-F | ACTIVE | F1 commit `e12c568`: closed source-only projection; F2 exact checkpoint-operand binding active; F3/F4 production cutover and authority deletion pending |
+| U10-F | ACTIVE | F1 commit `e12c568`: closed source-only projection; F2 commit `5b65c20`: exact checkpoint-operand binding; F3/F4 production cutover and authority deletion pending |
 | U10-G | NOT STARTED | legacy deletion + later-unit handoffs |
 | U10-H | NOT STARTED | artifact approval + committed-tree closure |
 
@@ -1478,7 +1478,7 @@ checkpoint-declared operands retained by the source evidence.  Class defaults,
 aliases not named by source, familiar dimensions, and missing operands remain
 unbound; F2 emits no consumption and cannot change a production diagram.
 
-### U10-F2 implementation record (under verification)
+### U10-F2 implementation record
 
 F2 adds `evidence/config_registration.py` and
 `adapters/diffusor/config_binding.py`.  The former is a closed framework
@@ -1539,3 +1539,21 @@ standing-debt net red for bookkeeping rather than architecture.  F3 must add
 the call and convert each used row to one owner-qualified consumption in the
 same atomic production cut.  No pending-debt or hidden ledger exception is
 introduced to bridge the two phases.
+
+#### U10-F2 committed-tree receipt
+
+- commit: `5b65c20ea4dac50832be6bccc23267b30cfc6e5f`;
+- static: pass, four changed Python files;
+- collection: **3,583** tests;
+- focused F2/U10: **309 passed**;
+- affected U2 authority gates: **44 passed**;
+- preservation: **52 passed**, zero structural or pixel drift across all 29
+  witnesses;
+- exhaustive lane: **3,471 passed / 14 skipped / 2 expected xfailed**;
+- all lane tree and external-artifact fingerprints before/after: **identical**;
+- receipt logs: `/private/tmp/model-unfolder-verification/9675296510`.
+
+F2 is therefore DONE.  F3 is the first production-authority cut: it must
+activate this boundary and consume only its typed operand rows atomically with
+the parser/IR/consumer migration.  No F2 shadow event is left running in
+production before that cut.
