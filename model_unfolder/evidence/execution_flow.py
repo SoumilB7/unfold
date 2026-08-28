@@ -1115,22 +1115,41 @@ def _is_prefix(short, longer) -> bool:
     return len(short) <= len(longer) and tuple(short) == tuple(longer)[:len(short)]
 
 
+def execution_taint_reason(index, callable_symbol, call) -> str | None:
+    """Why one exact call cannot support positive execution evidence.
+
+    This is deliberately a small shared observation rule, not a CFG claim.
+    Calls inside a region the index marks unsupported, or after an unguarded
+    straight-line return, remain observed call sites but cannot be promoted to
+    proven execution/dataflow by a domain reader.
+    """
+    if call not in index.calls_in(callable_symbol):
+        raise ValueError("execution taint requires an exact indexed call")
+    if call.span is None:
+        return "missing_call_span"
+    unsupported = tuple(
+        item.span for item in index.unsupported_execution_in(callable_symbol)
+        if item.span is not None)
+    if any(_within(call.span, span) for span in unsupported):
+        return "unsupported_execution_region"
+    straight_returns = tuple(
+        item.span for item in index.return_observations_in(callable_symbol)
+        if not item.guard and item.span is not None)
+    call_start = (call.span.line, call.span.col)
+    if any((item.end_line or item.line, item.end_col or item.col) < call_start
+           for item in straight_returns):
+        return "unreachable_after_return"
+    return None
+
+
 def _tainted_keys(index, callable_symbol) -> set:
-    """Call sites whose edges may never be globally proven: inside an unsupported
-    region, or unreachable after a straight-line (unguarded) return."""
-    tainted: set = set()
-    unsupported = [u.span for u in index.unsupported_execution_in(callable_symbol) if u.span]
-    straight_returns = [r.span for r in index.return_observations_in(callable_symbol)
-                        if not r.guard and r.span]
-    unreachable_line = min((r.line for r in straight_returns), default=None)
-    for c in index.calls_in(callable_symbol):
-        if c.span is None:
-            continue
-        if any(_within(c.span, u) for u in unsupported):
-            tainted.add(_key(c.span))
-        elif unreachable_line is not None and c.span.line > unreachable_line:
-            tainted.add(_key(c.span))
-    return tainted
+    """Call sites whose edges may never be globally proven."""
+    return {
+        _key(call.span)
+        for call in index.calls_in(callable_symbol)
+        if call.span is not None
+        and execution_taint_reason(index, callable_symbol, call) is not None
+    }
 
 
 
@@ -1173,5 +1192,6 @@ __all__ = [
     "HappensBeforeEdge",
     "UnresolvedRelation",
     "ExecutionFlowResolution",
+    "execution_taint_reason",
     "resolve_execution_flow",
 ]

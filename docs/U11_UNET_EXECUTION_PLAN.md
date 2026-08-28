@@ -1,7 +1,7 @@
 # U11 — Source-Derived U-Net Stage and Cell Execution Plan
 
 Status: **ACTIVE — U11-A1 and U11-B DONE; U11-C exact partial stage-execution
-graph next**
+graph IMPLEMENTED, VERIFYING**
 
 Authority: this document is the binding execution plan for U11. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §§16.5 and 20.14 without weakening
@@ -310,6 +310,23 @@ assumptions.
 Exit: one typed `UNetStageGraph` carries proven nodes/edges plus unresolved
 relations. Source-missing and unsupported control flow stay partial/opaque.
 
+Implementation boundary: U11-C is the root-stage graph, not a claim that the
+whole callable or every child cell has been interpreted. It may publish only:
+
+- the exact repeated call occurrences already proved by U10;
+- exact root-owned constructed-field call occurrences inside the U10
+  inter-loop address interval, retaining each guard and call site separately;
+- the one positive U10 skip-dataflow edge; and
+- typed unresolved relations for every unproved ordering/construction/coverage
+  claim.
+
+Textual position is only an address filter. A call inside an unsupported region
+or after an unguarded return cannot become a stage node. The boundary remains
+partial/open even when no known gap is observed. Child-cell execution,
+operation roles, joins, conditioning semantics and sampler mechanisms remain
+owned by U11-D/E/F; U11-C retains their raw addressed call evidence but cannot
+name them early.
+
 ### U11-D — exact ResNet and temporal cells
 
 Goal: replace the universal `_unet_resnet_ops(...)` template.
@@ -509,7 +526,7 @@ Stop and report before proceeding if:
 | U11-A1 demand-driven source address | DONE | `51d016e`; 15 exact-boundary controls including real installed SDXL `get_down_block`; committed-tree coordinator: focused 297, U2 authority 44, preservation 52, full 3,510 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-A2 legacy closure cutover | PENDING | lands with the U11-B/E consumers; deletes `_augment_diffusion_files` only after exact coverage |
 | U11-B stage construction | DONE | `0e5f71a`; exact U10 container→producer→append relation; exact U11-A1 factory expansion; all guarded returned class candidates preserved; 19 synthetic/closure controls + real installed SDXL; committed-tree coordinator: focused 269, U2 authority 44, preservation 52, full 3,530 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
-| U11-C execution/skip DAG | PENDING | — |
+| U11-C execution/skip DAG | IMPLEMENTED, VERIFYING | exact repeated-stage nodes; exact guarded inter-loop constructed-call occurrences; one U10 skip edge; unsupported/unreachable calls and all non-proven order remain typed unresolved; real SDXL retains both guarded direct invocations without using `mid_block` semantics |
 | U11-D ResNet/temporal cells | PENDING | — |
 | U11-E attention/transformer/FFN | PENDING | — |
 | U11-F sampler/bookend/conditioning | PENDING | — |

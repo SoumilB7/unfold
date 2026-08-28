@@ -43,6 +43,7 @@ from .program_index import (
     ConfigPathObservation,
     ConstructionSite,
     ExprNode,
+    FieldAssignRecord,
     GuardStep,
     ProgramIndex,
     ReturnObservation,
@@ -334,6 +335,144 @@ class UNetStageConstructionInventory:
                     raise ValueError("every candidate site belongs to indexed construction evidence")
 
 
+@dataclass(frozen=True)
+class DirectFieldConstruction:
+    """One exact ``self.<field> = constructor(...)`` address.
+
+    The field is supplied by a later execution reader from a positively observed
+    invocation.  This DTO never decides that a field is a mid/bookend/conditioner
+    from its spelling.
+    """
+
+    owner: OwnerOccurrenceId
+    field_assign: FieldAssignRecord
+    producer_call: CallObservation
+    config_paths: tuple[ConfigPathObservation, ...]
+    candidates: tuple[StageClassCandidate, ...]
+    issues: tuple[StageConstructionIssue, ...]
+
+    def __post_init__(self) -> None:
+        if self.field_assign.owner != self.owner.root:
+            raise ValueError("a direct-field construction belongs to the exact root")
+        if self.field_assign.value.kind != "call" \
+                or not _same_span(self.field_assign.value.span,
+                                  self.producer_call.span):
+            raise ValueError("the exact field assignment contains the producer call")
+        if self.producer_call.enclosing_callable != \
+                self.field_assign.enclosing_callable:
+            raise ValueError("field assignment and call share one callable")
+        if any(path.enclosing_callable != self.producer_call.enclosing_callable
+               or not _within(path.span, self.producer_call.span)
+               for path in self.config_paths):
+            raise ValueError("direct-field config paths occur inside the call")
+        if not self.candidates and not self.issues:
+            raise ValueError("a direct-field construction carries evidence or uncertainty")
+
+    @property
+    def field(self) -> str:
+        return self.field_assign.field
+
+
+@dataclass(frozen=True)
+class DirectFieldInvocationAddress:
+    """One field address derived from exact calls inside a U10 inter-loop span.
+
+    Requiring this proof object prevents callers from supplying a familiar field
+    spelling and laundering it into construction evidence.
+    """
+
+    owner: OwnerOccurrenceId
+    field: str
+    calls: tuple[CallObservation, ...]
+    earlier_stage: RepeatedRootStage
+    later_stage: RepeatedRootStage
+
+    def __post_init__(self) -> None:
+        if not self.field or not self.calls:
+            raise ValueError("an invocation address carries field + exact calls")
+        if self.earlier_stage.owner != self.owner \
+                or self.later_stage.owner != self.owner \
+                or self.earlier_stage.loop.span is None \
+                or self.later_stage.loop.span is None:
+            raise ValueError("the invocation interval belongs to exact U10 stages")
+        callable_symbol = self.earlier_stage.loop.enclosing_callable
+        if self.later_stage.loop.enclosing_callable != callable_symbol \
+                or self.earlier_stage == self.later_stage:
+            raise ValueError("the invocation interval has two stages in one callable")
+        lower = (self.earlier_stage.loop.span.end_line
+                 or self.earlier_stage.loop.span.line,
+                 self.earlier_stage.loop.span.end_col
+                 or self.earlier_stage.loop.span.col)
+        upper = (self.later_stage.loop.span.line,
+                 self.later_stage.loop.span.col)
+        for call in self.calls:
+            if not isinstance(call, CallObservation) or call.span is None \
+                    or _self_field(call.callee) != self.field \
+                    or call.owner != self.owner.root \
+                    or call.enclosing_callable != callable_symbol \
+                    or call.span.source != callable_symbol.source \
+                    or not lower < (call.span.line, call.span.col) < upper:
+                raise ValueError("every call is the exact field inside the U10 interval")
+        points = tuple((call.span.line, call.span.col) for call in self.calls)
+        if points != tuple(sorted(points)) or len(set(points)) != len(points):
+            raise ValueError("invocation addresses retain strict source order")
+
+
+@dataclass(frozen=True)
+class UnresolvedDirectFieldConstruction:
+    """A matching field assignment whose constructor is not exactly callable."""
+
+    owner: OwnerOccurrenceId
+    field_assign: FieldAssignRecord
+    issue: StageConstructionIssue
+
+    def __post_init__(self) -> None:
+        if self.field_assign.owner != self.owner.root:
+            raise ValueError("unresolved direct field belongs to the exact root")
+        if not isinstance(self.issue, StageConstructionIssue):
+            raise TypeError("unresolved direct field carries a typed issue")
+
+
+@dataclass(frozen=True)
+class DirectFieldConstructionInventory:
+    """All assignments to one exact field selected by positive execution evidence."""
+
+    owner: OwnerOccurrenceId
+    address: DirectFieldInvocationAddress
+    constructions: tuple[DirectFieldConstruction, ...]
+    unresolved: tuple[UnresolvedDirectFieldConstruction, ...]
+    index: ProgramIndex
+
+    def __post_init__(self) -> None:
+        if self.address.owner != self.owner \
+                or self.index.class_by_symbol(self.owner.root) is None:
+            raise ValueError("a direct-field inventory has an indexed owner + field")
+        if not (self.constructions or self.unresolved):
+            raise ValueError("a direct-field inventory carries at least one assignment")
+        if any(call not in self.index.calls_in(call.enclosing_callable)
+               for call in self.address.calls):
+            raise ValueError("the invocation address belongs to the carried index")
+        if any(item.owner != self.owner or item.field != self.field
+               for item in self.constructions):
+            raise ValueError("every construction targets the requested owner + field")
+        if any(item.owner != self.owner
+               or item.field_assign.field != self.field
+               for item in self.unresolved):
+            raise ValueError("every unresolved row targets the requested owner + field")
+        for item in self.constructions:
+            if item.field_assign not in self.index.field_assigns_of(self.owner.root) \
+                    or item.producer_call not in self.index.calls_in(
+                        item.producer_call.enclosing_callable):
+                raise ValueError("direct-field evidence belongs to the carried index")
+            for candidate in item.candidates:
+                if self.index.class_by_symbol(candidate.symbol) is None:
+                    raise ValueError("direct-field candidates belong to the carried index")
+
+    @property
+    def field(self) -> str:
+        return self.address.field
+
+
 def _factory_candidates(
         index: ProgramIndex,
         bundle: SourceBundle,
@@ -576,12 +715,95 @@ def read_unet_stage_construction(
             detail="exact U10 container→producer→factory-return construction evidence"),))
 
 
+def read_direct_field_construction(
+        index: ProgramIndex,
+        bundle: SourceBundle,
+        root_resolution: ComponentRootResolution,
+        address: DirectFieldInvocationAddress,
+        ) -> ReaderResult[DirectFieldConstructionInventory]:
+    """Expand one field already selected by positive execution evidence.
+
+    A spelling is not accepted. U11-C supplies a closed invocation-address
+    object derived from exact direct ``self.<field>(...)`` calls between the U10
+    repeated sides.
+    """
+    if not isinstance(index, ProgramIndex) or not isinstance(bundle, SourceBundle):
+        raise TypeError("direct-field construction requires ProgramIndex + bundle")
+    root_resolution = require_resolved_component_root(
+        root_resolution, caller="read_direct_field_construction")
+    if not isinstance(root_resolution, ComponentRootResolution) \
+            or not isinstance(address, DirectFieldInvocationAddress):
+        raise TypeError("direct-field construction requires D0 + invocation address")
+    owner = root_resolution.occurrence
+    if address.owner != owner:
+        return ReaderResult.failed(owner, (ReaderFailure(
+            "out_of_owner", "the invocation address belongs to another root"),))
+    node = root_resolution.graph.node_for(owner)
+    if node is None or index.class_by_symbol(node.symbol) is None:
+        return ReaderResult.failed(owner, (ReaderFailure(
+            "out_of_owner", "the exact root is not in this ProgramIndex"),))
+    all_assignments = tuple(item for item in index.field_assigns_of(node.symbol)
+                            if item.field == address.field)
+    if not all_assignments:
+        return ReaderResult.absent(owner)
+    init_symbol = SymbolId(
+        node.symbol.source, f"{node.symbol.qualified_name}.__init__")
+    assignments = tuple(item for item in all_assignments
+                        if item.enclosing_callable == init_symbol)
+    if not assignments:
+        return ReaderResult.failed(owner, (ReaderFailure(
+            "incomplete_graph",
+            "the invoked field is assigned only outside the exact root constructor"),))
+
+    expanded = index
+    constructions = []
+    unresolved = []
+    for assignment in assignments:
+        producer = _call_for_expr(
+            expanded, assignment.enclosing_callable, assignment.value)
+        if producer is None:
+            unresolved.append(UnresolvedDirectFieldConstruction(
+                owner, assignment, StageConstructionIssue(
+                    "dynamic_constructor",
+                    "the selected field assignment is not one exact constructor call",
+                    assignment.span)))
+            continue
+        candidates, issues, expanded = _factory_candidates(
+            expanded, bundle, root_resolution.component_key, producer)
+        constructions.append(DirectFieldConstruction(
+            owner, assignment, producer,
+            _config_paths_inside(expanded, producer), candidates, issues))
+    inventory = DirectFieldConstructionInventory(
+        owner, address, tuple(constructions), tuple(unresolved), expanded)
+    spans = tuple(dict.fromkeys((
+        *(item.producer_call.span for item in constructions
+          if item.producer_call.span is not None),
+        *(item.field_assign.span for item in unresolved
+          if item.field_assign.span is not None),
+        *(candidate.span for item in constructions
+          for candidate in item.candidates),
+    )))
+    return ReaderResult.incomplete(
+        owner, inventory,
+        failures=(ReaderFailure(
+            "incomplete_graph",
+            "positive field-construction evidence; whole-callable coverage is open"),),
+        provenance=(ReaderProvenance(
+            "source", spans=spans,
+            detail="exact execution-selected field construction evidence"),))
+
+
 __all__ = [
     "ISSUE_KINDS",
+    "DirectFieldConstruction",
+    "DirectFieldConstructionInventory",
+    "DirectFieldInvocationAddress",
     "RepeatedStageConstruction",
     "StageClassCandidate",
     "StageConstructionIssue",
     "UNetStageConstructionInventory",
+    "UnresolvedDirectFieldConstruction",
     "UnresolvedStageConstruction",
     "read_unet_stage_construction",
+    "read_direct_field_construction",
 ]
