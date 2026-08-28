@@ -1,7 +1,7 @@
 # U10 — Diffusion Root, Stack, Stream, and Conditioning Execution Plan
 
-Status: **ACTIVE — U10-A/B/C/D/E/F1/F2 DONE; F3/F4/G implemented locally;
-U10-H artifacts approved and rebuilt; committed-tree closure pending**
+Status: **DONE — source-derived diffusion root/stack/stream authority landed,
+approved artifacts rebuilt, and committed-tree closure reproduced**
 
 Authority: this document is the binding execution plan for U10. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §20.13 without changing the master
@@ -1002,9 +1002,9 @@ Final achieved output:
 | U10-C | DONE | commit `ee836b0`; occurrence-exact U6/U7/U8 composition in shadow mode; 33 synthetic controls + 15 real witnesses; 3,453 collected; 307 focused + 44 authority + 52 preservation + exhaustive 3,341 passed / 14 skipped / 2 xfailed; zero drift; interrupted coordinator transparently resumed in its intact committed worktree; receipt `/private/tmp/model-unfolder-verification/bb2795cf7c/continuation_receipt.md` |
 | U10-D | DONE | commit `14fee0c`; exact block-local stream/conditioning graph; 39 synthetic/real controls in the two new test files; 3,492 collected; 324 focused + 44 authority + 52 preservation + exhaustive 3,380 passed / 14 skipped / 2 xfailed; zero drift; receipt `/private/tmp/model-unfolder-verification/8eddcda6a0` fingerprint-identical |
 | U10-E | DONE | commit `a379cf0`; source-only bookends + geometry/mechanism separation + independently resolved companions; 3,535 collected; 350 focused + 44 authority + 52 preservation + exhaustive 3,423 passed / 14 skipped / 2 xfailed; zero drift; receipt `/private/tmp/model-unfolder-verification/e3b70ca7b0` fingerprint-identical |
-| U10-F | ACTIVE — IMPLEMENTED, UNBLESSED | F1 commit `e12c568`: closed source-only projection; F2 commit `5b65c20`: exact checkpoint-operand binding; local F3/F4 cut parser/IR/render/expanded/Sable to `DiffusionIRProjection`, add owner-qualified facts/receipts, and delete the generic config author; artifact approval and committed-tree receipt still required |
-| U10-G | ACTIVE — IMPLEMENTED, UNCOMMITTED | all U10 legacy semantic readers and their parser wrappers deleted; `config_facts.yaml`, `evidence/stacks.py`, and the obsolete refiner renderer deleted; exactly five raw readers remain and are U11-owned; U10 structural debt is zero |
-| U10-H | ACTIVE — COMMITTED-TREE GATE | focused semantic lanes green (82 stream/binding, 141 diffusion/unknown-safety, 131 authority/debt, 122 qualification + 2 expected xfails); Soumil approved the exact 29-witness honesty/geometry/external-KV delta on 2026-08-28; 28 changed galleries were guarded-reblessed after reproducing the reviewed occurrence-order hashes, SDXL's byte-identical gallery was not rewritten, and all 29 canonical baselines + expected manifest were rebuilt; explicit commit, full coordinator receipt and push remain |
+| U10-F | DONE | F1 commit `e12c568`: closed source-only projection; F2 commit `5b65c20`: exact checkpoint-operand binding; closure commit `7ade5cf` cuts parser/IR/render/expanded/Sable to `DiffusionIRProjection`, adds owner-qualified facts/receipts, and deletes the generic config author |
+| U10-G | DONE | commit `7ade5cf`: all U10 legacy semantic readers and their parser wrappers deleted; `config_facts.yaml`, `evidence/stacks.py`, and the obsolete refiner renderer deleted; exactly five raw readers remain and are U11-owned; U10 structural debt is zero |
+| U10-H | DONE | Soumil approved the exact 29-witness honesty/geometry/external-KV delta on 2026-08-28; 28 changed galleries reproduced reviewed occurrence-order hashes before guarded re-bless, SDXL's byte-identical gallery was not rewritten, and all 29 baselines + expected manifest were rebuilt; committed-tree receipt `5564c3881a`: 3,607 collected, 391 focused, 44 U2 authority, 52 preservation, full 3,495 passed / 14 skipped / 2 expected xfailed, every lane fingerprint identical |
 
 Do not change a row to DONE from focused tests alone. Record the commit and full
 receipt beside each completed row.
@@ -1654,10 +1654,12 @@ F4/G authority deletion is also present locally:
   SDXL's 29 rendered views remain byte-identical despite its ledger/IR audit
   movement.
 
-These units remain **not DONE** until the last reproducibility proof.  Soumil
-approved the exact delta on 2026-08-28.  The 28 changed gallery locks now match
-their reviewed occurrence-order hashes, SDXL's byte-identical gallery remained
-untouched, and the 29 canonical baselines plus expected manifest were rebuilt.
-U10-H now requires only the explicitly staged commit, one committed-tree
-coordinator receipt on an unchanged fingerprint, the durable receipt update,
-and push.
+Soumil approved the exact delta on 2026-08-28.  The 28 changed gallery locks
+match their reviewed occurrence-order hashes, SDXL's byte-identical gallery
+remained untouched, and the 29 canonical baselines plus expected manifest were
+rebuilt.  Closure commit `7ade5cf87a14af4ebb7cf6d8951f9ea3013ce1bf`
+then reproduced from detached worktrees: static clean over 63 changed Python
+files; 3,607 tests collected; 391 focused, 44 U2-authority and 52 preservation
+tests passed; exhaustive result 3,495 passed / 14 skipped / 2 expected xfailed;
+every lane source/artifact fingerprint identical.  Receipt:
+`/private/tmp/model-unfolder-verification/5564c3881a`.  U10 is **DONE**.
