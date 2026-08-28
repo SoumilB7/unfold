@@ -1,7 +1,7 @@
 # U11 — Source-Derived U-Net Stage and Cell Execution Plan
 
 Status: **ACTIVE — U11-A1 demand-driven source-address boundary DONE; U11-B
-exact stage-construction inventory next**
+exact repeated-stage construction inventory implemented, verification pending**
 
 Authority: this document is the binding execution plan for U11. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §§16.5 and 20.14 without weakening
@@ -261,8 +261,8 @@ Implementation is split deliberately:
 
 ### U11-B — exact stage construction inventory
 
-Goal: identify every constructed down/mid/up candidate without assigning a
-mechanism from its name.
+Goal: identify every constructed candidate that feeds the exact repeated
+containers proved by U10, without assigning a mechanism from its name.
 
 Build closed DTOs for:
 
@@ -278,6 +278,13 @@ Factory string tokens are address operands only. `get_down_block("X")` may
 resolve the exact branch/class selected by `"X"`; the token `"X"` cannot prove
 what that class does. A comprehension remains one symbolic template, not N
 fabricated occurrences.
+
+A direct root field is not a mid/bottleneck stage merely because of its field
+or factory spelling. U11-C must first prove that the exact constructed field is
+invoked between the two repeated sides. Only that positively selected address
+is expanded as the direct stage candidate. This sequencing is intentional: it
+prevents `mid_block`, `get_mid_block`, or any renamed equivalent from becoming
+semantic evidence.
 
 Exit: exact stage candidates are resolved/ambiguous/incomplete/failed with no
 config values consumed and no structural output changed.
@@ -501,7 +508,7 @@ Stop and report before proceeding if:
 | reconnaissance | DONE | U10 handoff, compatibility interpreter, five readers, debt and SDXL source-boundary gap verified |
 | U11-A1 demand-driven source address | DONE | `51d016e`; 15 exact-boundary controls including real installed SDXL `get_down_block`; committed-tree coordinator: focused 297, U2 authority 44, preservation 52, full 3,510 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-A2 legacy closure cutover | PENDING | lands with the U11-B/E consumers; deletes `_augment_diffusion_files` only after exact coverage |
-| U11-B stage construction | PENDING | — |
+| U11-B stage construction | IMPLEMENTED, VERIFYING | exact U10 container→producer→append relation; exact U11-A1 factory expansion; all guarded returned class candidates preserved; 19 synthetic/closure controls + real installed SDXL; no consumer/output change |
 | U11-C execution/skip DAG | PENDING | — |
 | U11-D ResNet/temporal cells | PENDING | — |
 | U11-E attention/transformer/FFN | PENDING | — |
