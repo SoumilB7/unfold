@@ -1,7 +1,7 @@
 # U11 — Source-Derived U-Net Stage and Cell Execution Plan
 
-Status: **ACTIVE — U11-A1 demand-driven source-address boundary DONE; U11-B
-exact repeated-stage construction inventory implemented, verification pending**
+Status: **ACTIVE — U11-A1 and U11-B DONE; U11-C exact partial stage-execution
+graph next**
 
 Authority: this document is the binding execution plan for U11. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §§16.5 and 20.14 without weakening
@@ -508,7 +508,7 @@ Stop and report before proceeding if:
 | reconnaissance | DONE | U10 handoff, compatibility interpreter, five readers, debt and SDXL source-boundary gap verified |
 | U11-A1 demand-driven source address | DONE | `51d016e`; 15 exact-boundary controls including real installed SDXL `get_down_block`; committed-tree coordinator: focused 297, U2 authority 44, preservation 52, full 3,510 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-A2 legacy closure cutover | PENDING | lands with the U11-B/E consumers; deletes `_augment_diffusion_files` only after exact coverage |
-| U11-B stage construction | IMPLEMENTED, VERIFYING | exact U10 container→producer→append relation; exact U11-A1 factory expansion; all guarded returned class candidates preserved; 19 synthetic/closure controls + real installed SDXL; no consumer/output change |
+| U11-B stage construction | DONE | `0e5f71a`; exact U10 container→producer→append relation; exact U11-A1 factory expansion; all guarded returned class candidates preserved; 19 synthetic/closure controls + real installed SDXL; committed-tree coordinator: focused 269, U2 authority 44, preservation 52, full 3,530 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-C execution/skip DAG | PENDING | — |
 | U11-D ResNet/temporal cells | PENDING | — |
 | U11-E attention/transformer/FFN | PENDING | — |
@@ -535,3 +535,18 @@ worktrees by `scripts/verify_commit.py`:
 - every lane's complete-tree fingerprint was identical before and after.
 
 Logs: `/private/tmp/model-unfolder-verification/3954fc72d0`.
+
+### U11-B committed-tree receipt
+
+Commit `0e5f71abab7da44ec7afd2b55717f105c47889d7` was verified from isolated
+worktrees by `scripts/verify_commit.py`:
+
+- static: PASS, two changed production Python files clean;
+- collection: 3,642 tests;
+- focused owner/import/container/topology/construction lane: 269 passed;
+- affected U2 authority lane: 44 passed;
+- preservation lane: 52 passed with zero structural/pixel drift;
+- full suite: 3,530 passed, 14 skipped, 2 expected xfails; and
+- every lane's complete-tree fingerprint was identical before and after.
+
+Logs: `/private/tmp/model-unfolder-verification/2324e8e02a`.
