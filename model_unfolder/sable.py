@@ -410,11 +410,18 @@ def sable(model_or_id, *, token=None, source: str = "local",
     # run Net 2 (occurrence -> target -> receipt) and reverse-fabrication.  Both
     # are computed here where the render log and the parse obligations meet.
     from .evidence.receipts import (
-        join_obligation_receipts, fabrication_findings,
+        join_obligation_receipts, fabrication_findings, stamp_context,
     )
     from .evidence.registry import MIGRATED_SCOPES
     _receipts = [r for event in render_log
                  for r in getattr(event, "receipts", ()) or ()]
+    # U10-F4: spec-surface receipts are emitted inside the actual typed-spec
+    # projector, not by an HTML renderer pretending it drew a hidden field.
+    # Admit only receipts on this exact parse context, then stamp them with the
+    # same audit-context token used by the join.  A receipt from another parse
+    # is unreachable here and cannot clear this model's obligations.
+    _receipts.extend(stamp_context(
+        tuple(context.projection_receipts), render_context.context_token))
     _obligations = (((ir.get("extras") or {}).get("config_access") or {})
                     .get("projection_obligations") or [])
     # U2-R5: the EXPECTED hash originates from the typed FACT (fact_provenance)
@@ -446,14 +453,15 @@ def sable(model_or_id, *, token=None, source: str = "local",
         SableCheck("no_dotted_arrows", validate_no_dotted_arrows(html)),
         SableCheck("no_dotted_boundaries", validate_no_dotted_boundaries(html)),
         # BLOCKING since 2026-07-04 (owned-field backlog reached zero): every
-        # present config field is parsed, chipped via config_facts.yaml, or
-        # consciously declared silent/no-op/ignored — an unread field now
-        # blocks a bless like any structural failure.
+        # A present structural declaration must be bound to a typed fact,
+        # classified as exact owner/path debt, or explicitly scoped-ignored.
+        # A vocabulary table may never clear this gate or author a chip.
         SableCheck(
             "config_field_audit",
             [
-                f"unread config field {path!r} — parse it, add YAML vocabulary, "
-                "or classify it as intentionally ignored"
+                f"unread config field {path!r} — bind it to exact source-backed "
+                "evidence, register exact owner/path debt, or scoped-ignore it "
+                "with a non-architectural reason"
                 for path in ((ir.get("extras") or {}).get("config_audit") or {}).get("unread", [])
             ],
         ),

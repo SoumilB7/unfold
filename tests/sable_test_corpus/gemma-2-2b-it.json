@@ -111,21 +111,21 @@
   },
   "hash_signature": [
     "52a8b14de9f77cc647e93c81572bd05a",
-    "ad65dcc0eb8019c60488a1fa42ea30e3",
+    "68570bcb6435c2ea2b437552619c855b",
     "c04b54df771bbdda0357c0ef633b605f",
-    "e51c61fe6418d772df908d059bb4c6e5",
+    "c7c4603b4cac6cce53cac6c02d226a49",
     "f12b759bd573766ee21a6222955d5da4",
     "fd558c6a0149d500c4ada2c99d9703a7"
   ],
   "model": "gemma-2-2b-it",
   "source": "local",
   "superseded_hash_signature": [
-    "1f338351f4623b5cd89efcc863e49588",
     "52a8b14de9f77cc647e93c81572bd05a",
-    "5cbe251f2d1479a3e8fb0a9e88a4041f",
-    "9f66c02dfa6b746039c4593f588d0fc5",
     "ad65dcc0eb8019c60488a1fa42ea30e3",
-    "e51c61fe6418d772df908d059bb4c6e5"
+    "c04b54df771bbdda0357c0ef633b605f",
+    "e51c61fe6418d772df908d059bb4c6e5",
+    "f12b759bd573766ee21a6222955d5da4",
+    "fd558c6a0149d500c4ada2c99d9703a7"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/gemma-2-2b-it",

@@ -116,14 +116,14 @@
     "069fdfe1cc0759670a1717944c1c8071",
     "12b1bdce7140cb545f7989138979cbfe",
     "b4bd3816cdf9f112b262e9982bb785b0",
-    "f9c16fdd17c8ff0fe852745adbfee5ad"
+    "c8e5aa1a15542c375c24f3617591d104"
   ],
   "model": "Qwen3-8B",
   "source": "local",
   "superseded_hash_signature": [
+    "069fdfe1cc0759670a1717944c1c8071",
     "12b1bdce7140cb545f7989138979cbfe",
-    "41811790be9b767cca73c728dc262951",
-    "9f8549df9150cd0b80187967a0a06c9d",
+    "b4bd3816cdf9f112b262e9982bb785b0",
     "f9c16fdd17c8ff0fe852745adbfee5ad"
   ],
   "visual_evidence": {

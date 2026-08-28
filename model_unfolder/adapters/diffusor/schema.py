@@ -149,6 +149,21 @@ class DiffusionAttentionProjection:
     def conditioning_kinds(self) -> tuple[str, ...]:
         return tuple(item.kind for item in self.conditioning)
 
+    @property
+    def runtime_active(self) -> bool | None:
+        """Whether this exact construction executes the source lane.
+
+        Only a guard proven false for this construction returns ``False``.
+        Other unresolved lanes remain ``None`` and therefore continue to block
+        downstream cardinality instead of disappearing as if they were absent.
+        """
+        if self.stream_relation is not None:
+            return True
+        if self.unresolved_stream is not None \
+                and self.unresolved_stream.state == "inactive_guard":
+            return False
+        return None
+
 
 @dataclass(frozen=True)
 class DiffusionFFNProjection:

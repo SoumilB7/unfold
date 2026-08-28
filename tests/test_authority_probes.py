@@ -417,6 +417,26 @@ def test_audit_incomplete_names_unmigrated_owners():
     assert "root.scheduler" in check2.findings, check2.findings
 
 
+def test_zero_consumption_owner_with_exact_debt_is_not_vacuously_incomplete():
+    """U10-F4: an opaque denoiser may consume no config operand when source
+    proves none. A non-empty exact pending census is an honest classification,
+    while its rows remain visible and do not become architecture."""
+    import json
+    import pathlib
+
+    import model_unfolder as mu
+
+    corpus = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
+    cfg = json.loads(
+        (corpus / "pixart-sigma-xl-2-1024-ms.json").read_text())["config"]
+    ir = mu.unfold(cfg).to_ir()
+    access = ir["extras"]["config_access"]
+    assert "root.denoiser" not in access.get("audit_incomplete", [])
+    audit = ir["extras"]["config_audit"]
+    assert audit.get("pending_classification")
+    assert "attention_head_dim" in audit["pending_classification"]
+
+
 # --------------------------------------------------------------------------- #
 # COR-3 (§8) — unknown-safety at EVERY depth (permanent guards)
 # --------------------------------------------------------------------------- #
@@ -457,9 +477,14 @@ def test_cor3_conflicting_heads_never_fabricate_geometry():
 
 
 def test_cor3_activation_rivals_author_nothing_and_block():
-    """§8.C.3: hidden_act=gelu vs act_fn=silu — ONE ambiguity, no retry, the
-    render is byte-identical to control (only code evidence draws), Sable
-    blocks."""
+    """Unused activation spellings author nothing and remain visible.
+
+    FLUX's exact denoiser source reads neither ``hidden_act`` nor ``act_fn``.
+    After the generic config-fact author was deleted, those fields are not
+    rival aliases for a real operand: both are unread declarations.  They must
+    leave the render byte-identical and block through the field-audit rail,
+    never be upgraded into a fabricated ambiguity or FFN mechanism.
+    """
     import sys
     sys.path.insert(0, str(pathlib.Path(mu.__file__).parent.parent))
     from model_unfolder.sable import sable
@@ -472,8 +497,11 @@ def test_cor3_activation_rivals_author_nothing_and_block():
     assert actual["structural_sha256"] == control["structural_sha256"]
     rep = sable(conflicted, render_images=False)
     assert not rep.mechanical_passed
-    amb = next(c for c in rep.checks if c.name == "config_ambiguity")
-    assert any("hidden_act" in f for f in amb.findings)
+    audit = next(c for c in rep.checks if c.name == "config_field_audit")
+    assert any("hidden_act" in f for f in audit.findings)
+    assert any("act_fn" in f for f in audit.findings)
+    ambiguity = next(c for c in rep.checks if c.name == "config_ambiguity")
+    assert ambiguity.passed
 
 
 def test_cor3_equal_aliases_preserve_current_output_exactly():

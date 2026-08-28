@@ -75,7 +75,7 @@
     "vocab_size": 32000
   },
   "hash_signature": [
-    "0906417b9411abb79f795df485b1719c",
+    "4015be3286774c4c736600061e47ed51",
     "41a47e30c51924971a62bf1ce94346ba",
     "d3314cccdb744f3767be47b560187b9c",
     "e52c423d42c8caa434948f640344f933"
@@ -84,9 +84,9 @@
   "source": "local",
   "superseded_hash_signature": [
     "0906417b9411abb79f795df485b1719c",
-    "54315394778ef9776664c58ee5c7c8e3",
+    "41a47e30c51924971a62bf1ce94346ba",
     "d3314cccdb744f3767be47b560187b9c",
-    "f9efab61a8945442d1424055ccda9741"
+    "e52c423d42c8caa434948f640344f933"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/llama-7b",

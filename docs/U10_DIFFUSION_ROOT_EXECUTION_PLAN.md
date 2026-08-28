@@ -1,6 +1,7 @@
 # U10 — Diffusion Root, Stack, Stream, and Conditioning Execution Plan
 
-Status: **ACTIVE — U10-A/B/C/D/E/F1/F2 DONE; U10-F3 active**
+Status: **ACTIVE — U10-A/B/C/D/E/F1/F2 DONE; F3/F4/G implemented locally;
+U10-H artifacts approved and rebuilt; committed-tree closure pending**
 
 Authority: this document is the binding execution plan for U10. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §20.13 without changing the master
@@ -1001,9 +1002,9 @@ Final achieved output:
 | U10-C | DONE | commit `ee836b0`; occurrence-exact U6/U7/U8 composition in shadow mode; 33 synthetic controls + 15 real witnesses; 3,453 collected; 307 focused + 44 authority + 52 preservation + exhaustive 3,341 passed / 14 skipped / 2 xfailed; zero drift; interrupted coordinator transparently resumed in its intact committed worktree; receipt `/private/tmp/model-unfolder-verification/bb2795cf7c/continuation_receipt.md` |
 | U10-D | DONE | commit `14fee0c`; exact block-local stream/conditioning graph; 39 synthetic/real controls in the two new test files; 3,492 collected; 324 focused + 44 authority + 52 preservation + exhaustive 3,380 passed / 14 skipped / 2 xfailed; zero drift; receipt `/private/tmp/model-unfolder-verification/8eddcda6a0` fingerprint-identical |
 | U10-E | DONE | commit `a379cf0`; source-only bookends + geometry/mechanism separation + independently resolved companions; 3,535 collected; 350 focused + 44 authority + 52 preservation + exhaustive 3,423 passed / 14 skipped / 2 xfailed; zero drift; receipt `/private/tmp/model-unfolder-verification/e3b70ca7b0` fingerprint-identical |
-| U10-F | ACTIVE | F1 commit `e12c568`: closed source-only projection; F2 commit `5b65c20`: exact checkpoint-operand binding; F3/F4 production cutover and authority deletion pending |
-| U10-G | NOT STARTED | legacy deletion + later-unit handoffs |
-| U10-H | NOT STARTED | artifact approval + committed-tree closure |
+| U10-F | ACTIVE — IMPLEMENTED, UNBLESSED | F1 commit `e12c568`: closed source-only projection; F2 commit `5b65c20`: exact checkpoint-operand binding; local F3/F4 cut parser/IR/render/expanded/Sable to `DiffusionIRProjection`, add owner-qualified facts/receipts, and delete the generic config author; artifact approval and committed-tree receipt still required |
+| U10-G | ACTIVE — IMPLEMENTED, UNCOMMITTED | all U10 legacy semantic readers and their parser wrappers deleted; `config_facts.yaml`, `evidence/stacks.py`, and the obsolete refiner renderer deleted; exactly five raw readers remain and are U11-owned; U10 structural debt is zero |
+| U10-H | ACTIVE — COMMITTED-TREE GATE | focused semantic lanes green (82 stream/binding, 141 diffusion/unknown-safety, 131 authority/debt, 122 qualification + 2 expected xfails); Soumil approved the exact 29-witness honesty/geometry/external-KV delta on 2026-08-28; 28 changed galleries were guarded-reblessed after reproducing the reviewed occurrence-order hashes, SDXL's byte-identical gallery was not rewritten, and all 29 canonical baselines + expected manifest were rebuilt; explicit commit, full coordinator receipt and push remain |
 
 Do not change a row to DONE from focused tests alone. Record the commit and full
 receipt beside each completed row.
@@ -1557,3 +1558,106 @@ F2 is therefore DONE.  F3 is the first production-authority cut: it must
 activate this boundary and consume only its typed operand rows atomically with
 the parser/IR/consumer migration.  No F2 shadow event is left running in
 production before that cut.
+
+### U10-F3/F4/G local implementation record — awaiting artifact approval
+
+The working tree now performs the atomic production cut through
+`adapters/diffusor/projection_ir.py`.  It is the sole U10 bridge from the bound
+source graph to layer templates, bookend blocks, registered facts and projection
+receipts.  Parser, renderer, expanded JSON, Sable and conformance consume that
+projection or the resulting typed IR; none reopens source or raw config to
+reconstruct a denoiser mechanism.  Exact checkpoint operands are consumed only
+through their F2 owner/path rows.
+
+F4/G authority deletion is also present locally:
+
+- the generic `everchanging/diffusor/config_facts.yaml` author is deleted;
+- `evidence/stacks.py` and all U10-owned whole-file semantic readers are
+  deleted, together with their parser wrappers;
+- `dit_class_markers`, `norm_type_kind`, `stack_lane_params`,
+  `temporal_config_fields`, and other U10 structural identity vocabulary no
+  longer drive production structure;
+- the obsolete diffusion refiner renderer is deleted;
+- U10 `StructuralDebt` is zero and the legacy-reader quarantine reports zero
+  U10 rows;
+- exactly five raw diffusion readers remain, all assigned to U11's UNet
+  internals (`unet_mid_block_present`, stage attention/cell/temporal readers,
+  and transformer-FFN activation at a UNet cell).
+
+#### Real counterexamples found during F3/F4
+
+1. **Framework defaults are not source absence.**  A minimal AuraFlow config
+   still resolves 4+32 layers because the installed Diffusers constructor
+   supplies exact registered defaults.  A genuinely uninstalled transformer
+   remains opaque.  The old test incorrectly expected both cases to be zero.
+2. **A proven operation does not imply a proven mechanism.**  Sana source and
+   its exact constructor/config guard prove self- and cross-attention
+   applications plus the external context route, while the internal attention
+   kind remains unknown.  The diagram now draws those applications and keeps
+   both mechanisms opaque.
+3. **Class-wide guarded calls are not runtime lane cardinality.**  Lumina reuses
+   one block class for three exact construction occurrences.  Each class body
+   contains two guarded attention calls, but each constructor literal activates
+   one.  `UnresolvedStreamRelation.state` now distinguishes a source-proven
+   inactive guard from an unresolved runtime lane.  F3 excludes only the former;
+   any other unresolved rival still blocks materialization.  The real result is
+   three templates with counts 2+2+26 and one active single-state lane each.
+4. **Cross-domain preservation caught a graph/card coupling defect.**  MusicGen
+   remains a transformer/composite model, but its already-proven cross-attention
+   drill now carries the exact external encoded-prompt K/V source node and card.
+   The shared renderer had briefly made every secondary input static, which
+   removed legitimate ALiBi/position drills and would also have made this real
+   K/V card unreachable.  The final rule is symmetric and card-driven: a
+   secondary input is clickable iff the enclosing block has child cards.  An
+   opaque cross-attention still gets the external-source card because placement
+   and K/V provenance are known independently of the inner mixer; it does not
+   gain fabricated Q/K/V or softmax internals.  Permanent controls pin the
+   clickable and leaf-static cases, the same-spec card, Sana's opaque positive
+   rail, and MusicGen's real rendering/coupling path.  Bloom's attention and FFN
+   views are byte-identical to HEAD after this correction; its structural IR is
+   also byte-identical.
+5. **Parameter incompleteness remains visible, not solved by convention.**
+   HunyuanVideo and CogVideoX can have exact depth/width while unresolved
+   attention/FFN terms leave the current estimate incomplete (displayed with
+   its assumptions).  Completing those formulas belongs to U14; U10 does not
+   invent terms to avoid a zero subtotal.
+6. **Honest labels exposed a generic sizing bug.**  Several truthful unresolved
+   labels are longer than the old fixed boxes, and the pre-existing Bloom
+   ``Feed-forward (FFN)`` label already overflowed its nominal box.  The shared
+   block-layout rule now grows any single- or multi-line box to fit its actual
+   label and treats an explicit width as a floor, never as permission to shrink
+   below the node-kind minimum.  Representative Llama, DeepSeek-V3, Granite,
+   Qwen2-VL, Gemma-2 and GPT-OSS architecture galleries were inspected; no
+   collision, clipping or architectural change was found.  Their only visual
+   delta is this generic geometry correction.
+
+#### Local pre-approval receipt
+
+- targeted guarded-lane/F3 controls: **6 passed**;
+- stream + bound-operand/F3 lane: **82 passed**;
+- diffusion + unknown-safety + cross-surface lane: **141 passed**;
+- projection/receipt/debt/identity/quarantine lane: **131 passed**;
+- fact/qualification/authority/Sable lane: **122 passed, 2 expected xfailed**;
+- the sole failure is `test_sable_regression_corpus`, at the deliberately
+  unblessed AuraFlow artifact delta;
+- `git diff --check` and changed-file `pyflakes` are clean;
+- representative galleries inspected: AuraFlow, HunyuanVideo, Sana, Lumina,
+  CogVideoX, FLUX, FluxTransformer, LTX, Mochi, PixArt, PRX, Qwen-Image,
+  SD3.5, SDXL, Wan and MusicGen; all inspected layouts are unclipped and their
+  opaque/detail boundaries match the typed evidence.
+- final 29-witness delta regenerated after the secondary-input correction at
+  `/private/tmp/u10-preservation-delta.json`: all 29 have expected evidence/
+  metadata movement from the closed fact/receipt inventory; all 15 diffusion
+  witnesses have their intended U10 honesty projection; the 14 transformer or
+  composite controls retain their mechanisms, with inspected view movement
+  limited to generic label geometry plus MusicGen's exact external-K/V card;
+  SDXL's 29 rendered views remain byte-identical despite its ledger/IR audit
+  movement.
+
+These units remain **not DONE** until the last reproducibility proof.  Soumil
+approved the exact delta on 2026-08-28.  The 28 changed gallery locks now match
+their reviewed occurrence-order hashes, SDXL's byte-identical gallery remained
+untouched, and the 29 canonical baselines plus expected manifest were rebuilt.
+U10-H now requires only the explicitly staged commit, one committed-tree
+coordinator receipt on an unchanged fingerprint, the durable receipt update,
+and push.

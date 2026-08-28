@@ -133,33 +133,62 @@ def test_real_transformer_head_geometry_keeps_its_known_gqa_kind():
     assert _layer_kinds("qwen3-8b") == {"gqa"}
 
 
-def test_real_code_proven_special_diffusion_attention_is_preserved():
-    assert _layer_kinds("sana-1600m-1024px-diffusers") == {"linear"}
+def test_config_selected_sana_lane_projects_only_positive_relations():
+    """Sana's applications come from its selected occurrence, not a file vote.
 
-
-def test_real_cross_attention_existence_does_not_fabricate_its_mechanism():
+    Exact constructor/config binding selects the guarded block branch.  Source
+    then proves the self/context applications, while their internal attention
+    and FFN mechanisms remain unknown and therefore opaque.
+    """
     ir = _corpus_ir("sana-1600m-1024px-diffusers")
-    cross = next(
-        block
-        for block in ir["layers"][0]["blocks"]
-        if block.get("id") == "cross_attn"
-    )
-    assert cross["detail"]["attention"]["cross_attention"] is True
-    assert cross["detail"]["attention"]["cross_kv_source"] == "encoded text prompt"
-    assert cross["detail"]["attention"]["kind"] is None
-    assert cross["label"] == [
-        "Cross-Attention",
-        "(unresolved)",
+    assert _layer_kinds("sana-1600m-1024px-diffusers") == {None}
+    assert {
+        tuple(block.get("kind") for block in layer.get("blocks", ()))
+        for layer in ir["layers"]
+    } == {("block", "attention", "gate_mul", "attention", "norm", "ffn")}
+    attention_blocks = [
+        block for block in ir["layers"][0]["blocks"]
+        if block["kind"] == "attention"
     ]
-    assert cross["title"] == "Cross-attention mechanism unresolved"
-    assert "mechanism unresolved" in cross["facts"]
+    assert [block["id"] for block in attention_blocks] == ["attn", "cross_attn"]
+    assert all(block["detail"]["attention"]["kind"] is None
+               for block in attention_blocks)
+    assert [child["id"] for child in attention_blocks[0]["children"]] == [
+        "opaque_mixer",
+    ]
+    assert [child["id"] for child in attention_blocks[1]["children"]] == [
+        "opaque_mixer", "cross_attention_states",
+    ]
+    assert all(block["children"][0]["resolved"] is False
+               for block in attention_blocks)
+    # The cross-attention placement/source is exact even though its inner
+    # mechanism is opaque, so the external input keeps its own truthful card.
+    assert "external context" in (
+        attention_blocks[1]["children"][1]["description"])
+
+
+def test_source_proven_sana_cross_attention_keeps_mechanism_unknown():
+    ir = _corpus_ir("sana-1600m-1024px-diffusers")
+    layer = ir["layers"][0]
+    assert layer["attention"]["kind"] is None
+    assert layer["attention"]["cross_attention"] is False
+    assert layer["cross_attention"]["cross_attention"] is True
+    assert layer["cross_attention"]["cross_kv_source"] == "external context"
+    assert layer["cross_attention"]["kind"] is None
+    assert [block["id"] for block in layer["blocks"]] == [
+        "cross_attention_states", "attn", "attn_condition_gate_0",
+        "cross_attn", "wiring_unresolved", "ffn",
+    ]
 
 
 def test_real_unproven_diffusion_attention_no_longer_defaults_to_mha():
     for slug in ("flux-2-dev", "stable-diffusion-3-5-large"):
         kinds = _layer_kinds(slug)
         assert "mha" not in kinds
-        assert kinds == {None}
+        # A source-proven count may materialize opaque layers (Flux); an
+        # unresolved root count may materialize none (SD3).  Neither case is a
+        # license to manufacture an attention mechanism.
+        assert kinds in ({None}, set())
 
 
 def test_expanded_unknown_attention_keeps_geometry_without_qkv_or_sdpa():

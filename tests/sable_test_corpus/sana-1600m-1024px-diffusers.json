@@ -2,7 +2,7 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
-    "config_accessed_unprojected": false,
+    "config_accessed_unprojected": true,
     "config_ambiguity": true,
     "config_audit_incomplete": true,
     "config_consumed_unreceipted": true,
@@ -274,6 +274,22 @@
     ]
   },
   "hash_signature": [
+    "1c1bb3f942a941091573a63d28df04aa",
+    "2e7f2f09ae70365c0149d48dac399f3f",
+    "44214a47b62afb95cf44b9c9a99c6eae",
+    "4b28977d7e010f52eeee1f027e6c7d0e",
+    "6b3eea43201fd9ed8bf6789264e853e1",
+    "6f3ff3d93134f0e32a666f32805babb4",
+    "88c41725caee80b8095553dd7841b6fd",
+    "8a360c4f1e446063bd592a6f7c329e78",
+    "8a4def6a3fe0f334e2b21a1a7bc1dc7d",
+    "a2dd49449d9b57dd41f5f488d286a55a",
+    "b74fdbf963bc0fe63f5964d2018e6e8e",
+    "d052e6ffcbec38cae3c36dd0b0dd66ec"
+  ],
+  "model": "Sana_1600M_1024px_diffusers",
+  "source": "local",
+  "superseded_hash_signature": [
     "44214a47b62afb95cf44b9c9a99c6eae",
     "53d8ea59b2c5e3a6f828d93744984a65",
     "6b3eea43201fd9ed8bf6789264e853e1",
@@ -288,26 +304,9 @@
     "bfad087b7f6e85ae065ca31e113cc472",
     "c3b47dc7cf4b0422fe0b553c1dbe768b"
   ],
-  "model": "Sana_1600M_1024px_diffusers",
-  "source": "local",
-  "superseded_hash_signature": [
-    "2fec9901d8af11da0a967db5820faefd",
-    "42f2abd963cf2f7046986695b4f83fb5",
-    "44214a47b62afb95cf44b9c9a99c6eae",
-    "53d8ea59b2c5e3a6f828d93744984a65",
-    "681d9d054af0b959441cf678fde4cf77",
-    "6f3ff3d93134f0e32a666f32805babb4",
-    "7b8543951da5d030f7fcbd979cd40049",
-    "7fa8ba3824ca9c1245b42b4764f65232",
-    "8a360c4f1e446063bd592a6f7c329e78",
-    "a9e394c91eee1b190650d2ee86697573",
-    "b268ddb98d302b36f13866c181a485eb",
-    "bfad087b7f6e85ae065ca31e113cc472",
-    "c3b47dc7cf4b0422fe0b553c1dbe768b"
-  ],
   "visual_evidence": {
     "gallery_dir": "galleries/sana-1600m-1024px-diffusers",
     "manifest": true,
-    "png_count": 13
+    "png_count": 12
   }
 }

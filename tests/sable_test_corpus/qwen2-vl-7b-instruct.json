@@ -171,11 +171,11 @@
     "154cfe6b7e797a1b5ecf7e4dc31b8509",
     "536f77e2592b41352d119ad55c5d7060",
     "83ec299d0868e4d562c8388bde97e88b",
-    "87be025f271c402c8d03d60efba9735a",
     "a084abb5d4edf995ff1080d03ad7d93c",
     "a82ae2d276e27f7f1f83e9804ab7cd45",
     "af08169058fe7250a148c9db0b50a469",
     "baa634dfcddee173bbf3a55bfc67a3b5",
+    "c01c8a92cec3e0d22006d1b2f5456bba",
     "c514c819f533d468a8a54799bfa0bbaa",
     "e7220fa964088846e1912959abfda3fc"
   ],
@@ -183,18 +183,16 @@
   "source": "local",
   "superseded_hash_signature": [
     "000c82b0a96adbbd92b9e185a2c6795b",
-    "0119adc0a472b33e71e237cdd615e4bb",
-    "0722d68e8b7714f0ad5c5d7b9946ea36",
-    "24be8595cdbb6e1b93f81739b6428779",
-    "2dc1b2e33ee6747674e0226823e47b7a",
+    "154cfe6b7e797a1b5ecf7e4dc31b8509",
     "536f77e2592b41352d119ad55c5d7060",
-    "84b743adb93bf54453d4ebcafde42d70",
+    "83ec299d0868e4d562c8388bde97e88b",
     "87be025f271c402c8d03d60efba9735a",
-    "9327b55799f361f2f0dfe1e1cf189236",
+    "a084abb5d4edf995ff1080d03ad7d93c",
     "a82ae2d276e27f7f1f83e9804ab7cd45",
-    "a9ee9abd46e65af2b59aa70d72e3a99b",
-    "b87789d90a5ef4f2300b571043c58d21",
-    "c7679bca24724d3fd277f8c5dee25ce4"
+    "af08169058fe7250a148c9db0b50a469",
+    "baa634dfcddee173bbf3a55bfc67a3b5",
+    "c514c819f533d468a8a54799bfa0bbaa",
+    "e7220fa964088846e1912959abfda3fc"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/qwen2-vl-7b-instruct",

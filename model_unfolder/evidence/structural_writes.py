@@ -26,7 +26,7 @@ Two gates, both blocking (the tests are the exit criteria — no separate doc):
 
 Legacy debt is not a bare allowlist: every raw ``extras`` structural leaf has
 one EXACT row in the StructuralDebt register (``evidence/structural_debt.py``,
-U2-R6) carrying owner, writer, consumer, U3–U14 migration unit and a checkable
+U2-R6) carrying owner, writer, consumer, U3–U15 migration unit and a checkable
 deletion condition — driven to zero as each raw write becomes a registered
 fact or a scoped non-architectural extra.
 """
@@ -196,7 +196,7 @@ STRUCTURAL_SURFACE: frozenset[tuple[str, str]] = frozenset(
 
 # U2-R6: ``LegacyExtrasWrite``/``LEGACY_EXTRAS`` are REPLACED by per-target
 # extras rows in the ONE StructuralDebt register (evidence/structural_debt.py)
-# — one EXACT row per (writer, target), U3–U14 units, checkable deletion
+# — one EXACT row per (writer, target), U3–U15 units, checkable deletion
 # conditions, and blocking writer/consumer/stale/growth gates.  A top-level
 # key excuses nothing below it: every nested census target carries its own row.
 
@@ -634,19 +634,24 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
      'multimodal_extras', 'extras', '<dynamic>'),
     ('model_unfolder/adapters/diffusor/parser.py', '_parse_unet_model', 'extras', 'render'),
     ('model_unfolder/adapters/diffusor/parser.py', '_parse_unet_model', 'extras', 'unet'),
-    ('model_unfolder/adapters/diffusor/parser.py', 'parse', 'extras', 'render'),
     ('model_unfolder/adapters/transformer/assembly.py', 'decoder_extras', 'extras', 'render'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'softcap'),
     # U2-R5 (reviewed): the pilot's typed-fact author — the projector
     # out-width consumption records projector_out_features (code_and_config).
     ('model_unfolder/adapters/transformer/special_parts/modalities/vision.py', '_record_projector_fact', 'ledger', '<dynamic>'),
-    ('model_unfolder/adapters/diffusor/parser.py', '_dit_attention', 'spec', 'AttentionSpec'),
-    ('model_unfolder/adapters/diffusor/parser.py', '_dit_ffn', 'spec', 'FFNSpec'),
     ('model_unfolder/adapters/diffusor/parser.py', '_parse_unet_model', 'extras', 'diffusion'),
     ('model_unfolder/adapters/diffusor/parser.py', '_parse_unet_model', 'spec', 'ModelIR'),
-    ('model_unfolder/adapters/diffusor/parser.py', 'parse', 'extras', 'diffusion'),
-    ('model_unfolder/adapters/diffusor/parser.py', 'parse', 'spec', 'ModelIR'),
-    ('model_unfolder/adapters/diffusor/parser.py', 'parse', 'spec_mutation', 'blocks'),
+    # U10-F4: the exact source/config projection records registered typed
+    # facts.  The dynamic key is lawful only through FactLedger.record_typed;
+    # the registry validator closes its owner/key/status/value surface.
+    ('model_unfolder/adapters/diffusor/projection_ir.py', 'finish',
+     'ledger', '<dynamic>'),
+    # U10-F4: source-only stream relations have no config-consumption row, so
+    # their exact projector records the registered code_proven fact here. The
+    # registry closes owner/key/status/value and every projected surface emits
+    # a route-validated receipt.
+    ('model_unfolder/adapters/diffusor/projection_ir.py', 'project_code_fact',
+     'ledger', '<dynamic>'),
     ('model_unfolder/adapters/diffusor/unet.py', '_code_attn_card', 'spec', 'AttentionSpec'),
     ('model_unfolder/adapters/diffusor/unet.py', '_simple_cross_card', 'spec', 'AttentionSpec'),
     ('model_unfolder/adapters/diffusor/unet.py', '_unet_transformer_subblocks', 'spec', 'AttentionSpec'),
@@ -688,6 +693,7 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
     ('model_unfolder/expanded/ffn.py', '_operation_graph', 'expanded', 'kind:dense'),
     ('model_unfolder/expanded/sections.py', '_diffusion_io', 'expanded', 'kind:noise_prediction'),
     ('model_unfolder/expanded/sections.py', '_diffusion_io', 'expanded', 'kind:noisy_latent'),
+    ('model_unfolder/expanded/sections.py', '_projected_diffusion_io', 'expanded', 'kind:denoiser_state'),
     ('model_unfolder/expanded/sections.py', 'build_io', 'expanded', 'kind:position_ids'),
     ('model_unfolder/expanded/sections.py', 'build_io', 'expanded', 'kind:token_ids'),
     ('model_unfolder/expanded/stack.py', 'build_stack', 'expanded', 'kind:decoder_only'),
@@ -943,6 +949,25 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
     ('model_unfolder/params.py', 'estimate_params', 'params',
      'estimate_params:append'),
     ('model_unfolder/parser.py', 'config_to_ir', 'ledger', '<dynamic>'),
+    # U10-F3: the exact source/config projection is the new production author.
+    # These are pinned consciously at the atomic cutover; F4 deletes the old
+    # diffusion parser authors and shrinks this baseline again.
+    ('model_unfolder/adapters/diffusor/parser.py', '_parse_projected_denoiser',
+     'extras', 'render'),
+    ('model_unfolder/adapters/diffusor/parser.py', '_parse_projected_denoiser',
+     'spec', 'ModelIR'),
+    ('model_unfolder/adapters/diffusor/projection_ir.py', '_attention_spec',
+     'spec', 'AttentionSpec'),
+    ('model_unfolder/adapters/diffusor/projection_ir.py', '_gated_delta_spec',
+     'spec', 'AttentionSpec'),
+    ('model_unfolder/adapters/diffusor/projection_ir.py', 'project_diffusion_ir',
+     'spec', 'AttentionSpec'),
+    ('model_unfolder/adapters/diffusor/projection_ir.py', '_ffn_spec',
+     'spec', 'FFNSpec'),
+    ('model_unfolder/adapters/diffusor/projection_ir.py', 'layers',
+     'spec', 'LayerSpec'),
+    ('model_unfolder/adapters/diffusor/projection_ir.py', 'layers',
+     'spec_mutation', 'blocks'),
     ('model_unfolder/renderers/html/block_views/attention.py', '_apply_presentation', 'spec_mutation', 'kind'),
     ('model_unfolder/renderers/html/block_views/mixture_of_experts.py', 'build_moe_expert_view', 'card', 'kind'),
     # U4-F: the MTP drill projects each canonical child id/kind verbatim.  The
@@ -962,8 +987,6 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
     ('model_unfolder/renderers/html/block_views/modality_views/audio.py', 'encoder_tower_spec', 'card', 'kind'),
     ('model_unfolder/renderers/html/block_views/modality_views/vision_details.py', 'build_vision_encoder_view', 'card', 'id'),
     ('model_unfolder/renderers/html/block_views/modality_views/vision_details.py', 'build_vision_encoder_view', 'card', 'kind'),
-    ('model_unfolder/renderers/html/block_views/refiner.py', 'build_refiner_tower_view', 'card', 'id'),
-    ('model_unfolder/renderers/html/block_views/refiner.py', 'build_refiner_tower_view', 'card', 'kind'),
     ('model_unfolder/renderers/html/block_views/text_encoder.py', 'build_text_encoder_view', 'card', 'id'),
     ('model_unfolder/renderers/html/block_views/text_encoder.py', 'build_text_encoder_view', 'card', 'kind'),
     ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_resnet_view', 'card', 'id'),
@@ -992,8 +1015,10 @@ STRUCTURAL_WRITERS: frozenset = frozenset(
 # Every other pinned key has count 1.  Growth = live count > pinned count,
 # so a SECOND write of one target in one symbol is caught, not only a new key.
 _STRUCTURAL_WRITERS_MULTI = {
-    ('model_unfolder/adapters/diffusor/parser.py', '_dit_ffn', 'spec', 'FFNSpec'): 4,
-    ('model_unfolder/adapters/diffusor/parser.py', 'parse', 'spec_mutation', 'blocks'): 5,
+    ('model_unfolder/expanded/sections.py', '_projected_diffusion_io',
+     'expanded', 'kind:denoiser_state'): 2,
+    ('model_unfolder/adapters/diffusor/projection_ir.py', '_ffn_spec',
+     'spec', 'FFNSpec'): 2,
     ('model_unfolder/adapters/diffusor/unet.py', '_code_attn_card', 'spec', 'AttentionSpec'): 2,
     ('model_unfolder/adapters/diffusor/unet.py', '_unet_transformer_subblocks', 'spec', 'AttentionSpec'): 2,
     ('model_unfolder/adapters/diffusor/unet.py', '_unet_transformer_subblocks', 'spec', 'FFNSpec'): 2,
@@ -1022,7 +1047,6 @@ _STRUCTURAL_WRITERS_MULTI = {
     ('model_unfolder/renderers/html/block_views/modality_views/audio.py', 'encoder_tower_spec', 'card', 'id'): 3,
     ('model_unfolder/renderers/html/block_views/modality_views/vision_details.py', 'build_vision_encoder_view', 'card', 'id'): 5,
     ('model_unfolder/renderers/html/block_views/modality_views/vision_details.py', 'build_vision_encoder_view', 'card', 'kind'): 4,
-    ('model_unfolder/renderers/html/block_views/refiner.py', 'build_refiner_tower_view', 'card', 'id'): 3,
     ('model_unfolder/renderers/html/block_views/text_encoder.py', 'build_text_encoder_view', 'card', 'id'): 4,
     ('model_unfolder/renderers/html/block_views/text_encoder.py', 'build_text_encoder_view', 'card', 'kind'): 2,
     ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_resnet_view', 'card', 'id'): 11,

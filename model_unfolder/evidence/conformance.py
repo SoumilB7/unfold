@@ -470,6 +470,12 @@ def check_wiring_conformance(
         code = resolve_view_code(family, view, spec, forward_ops, cmap, architecture)
         if code is None:
             continue                    # op-conformance already flags 'unresolved'
+        # An explicitly opaque cell makes no internal wiring claim. Requiring a
+        # side rail here would turn source incompleteness into fabricated
+        # architecture, exactly what the opaque projection exists to prevent.
+        if any(block.get("kind") == "opaque"
+               for block in (spec.get("blocks") or [])):
+            continue
         params = " ".join(sorted(code.forward_params)).lower()
         drawn = _drawn_side_input_roles(spec, stage_role)
         # FABRICATED: a rail the block's forward() can't receive.
@@ -484,8 +490,10 @@ def check_wiring_conformance(
         # single-stream join, shown once) — a DROPPED text conditioning (PRX before
         # its fix). Text only: timestep always conditions and is drawn universally.
         text_subs = role_params.get("text") or []
+        typed_stream_unknown = _typed_stream_relation_unknown(spec)
         if (text_subs and "text" not in drawn and not _text_in_sequence(spec)
                 and any(s in params for s in text_subs)
+                and not typed_stream_unknown
                 and _config_field_value(target, "add_cross_attention") is not False):
             problems.append(ConformanceProblem(
                 "missing_input", "text", key,
@@ -591,10 +599,18 @@ def check_fact_conformance(
                     "missing_position", "rope", key,
                     code.class_name, code.source_file, code.forward_line, code.component))
 
-        # Attention algorithm: the drawn KIND vs a *LinearAttn* processor in __init__.
-        diagram_linear = attn.get("kind") == "linear"
+        # Attention algorithm: compare only two positively asserted mechanisms.
+        # ``None`` is U10's explicit unknown, not an implicit softmax default.
+        # Treating every non-linear value as softmax made an opaque Sana cell
+        # fail conformance for an architecture it did not draw.  Conversely, an
+        # explicit MHA/GQA/MQA/MLA claim still conflicts with a code-linear
+        # implementation, and an explicit linear claim still conflicts with a
+        # code-softmax implementation.
+        diagram_kind = attn.get("kind")
+        diagram_linear = diagram_kind == "linear"
+        diagram_softmax = diagram_kind in {"mha", "gqa", "mqa", "mla"}
         code_linear = any(m in r for r in code.init_class_refs for m in linear_subs)
-        if code_linear and not diagram_linear:
+        if code_linear and diagram_softmax:
             problems.append(ConformanceProblem(
                 "wrong_attention", "linear", key,
                 code.class_name, code.source_file, code.forward_line, code.component))
@@ -1607,10 +1623,17 @@ def _diff_composite(family, view_key, drawn, block_sets, vocab, ab) -> list[Conf
 
 
 def _text_in_sequence(spec: dict) -> bool:
-    """True when the diagram shows text as part of the JOINED sequence (a
-    concat-joint / single-stream join, shown once via the stack caption) rather
-    than a per-block rail — so a forward that takes text is NOT 'missing' it."""
+    """True when exact stream evidence represents the text-bearing state.
+
+    A joined-input lane carries text in one concatenated sequence; a dual-state
+    lane carries it as the second returned state.  Both are positive machine
+    relations, not label inference, so neither requires a duplicate side rail.
+    """
     variant = (spec.get("attention") or {}).get("variant") or {}
+    if variant.get("stream_relation") in {"joined_inputs", "dual_state"}:
+        return True
+    if variant.get("joined_sequence") is True:
+        return True
     if variant.get("stack_note"):
         return True
     tag = str(variant.get("tag") or "").lower()
@@ -1778,11 +1801,27 @@ def diff_conformance(diagram: frozenset[str], code: ForwardOps,
     # The rule is dataflow-neutral and identity-free.  Missing attention, FFN,
     # linear, concat, etc. still fail, and an absent field grants no waiver.
     typed_unknown_omissions: set[str] = set()
+    whole_cell_abstraction = False
     if isinstance(spec, dict):
         if spec.get("norm_placement") == "unknown":
             typed_unknown_omissions.add("norm")
         if spec.get("residual_topology") == "unknown":
             typed_unknown_omissions.update({"gate_mul", "residual_add"})
+        # U10-F3 can prove a repeated cell occurrence and its count while the
+        # exact source graph still cannot close every internal branch.  That is
+        # represented by one *specific* typed opaque cell, never by an empty
+        # block list or an arbitrary opaque sibling.  It is a declared
+        # abstraction of the complete cell: conformance must not demand guessed
+        # attention/FFN boxes merely to mirror the forward's coarse op set.
+        blocks = spec.get("blocks") or []
+        whole_cell_abstraction = (
+            not diagram
+            and len(blocks) == 1
+            and blocks[0].get("id") == "cell_structure_unresolved"
+            and blocks[0].get("kind") == "opaque"
+            and blocks[0].get("role") == "opaque"
+            and blocks[0].get("resolved") is False
+        )
 
     def _prob(kind: str, op: str) -> ConformanceProblem:
         return ConformanceProblem(
@@ -1792,7 +1831,8 @@ def diff_conformance(diagram: frozenset[str], code: ForwardOps,
 
     # code -> diagram: missing
     for op in sorted(cset):
-        if op in diagram or op in omit or op in typed_unknown_omissions:
+        if (whole_cell_abstraction or op in diagram or op in omit
+                or op in typed_unknown_omissions):
             continue
         if any(op in composite.get(drawn, ()) for drawn in diagram):   # subsumed by a drawn composite
             continue
@@ -1821,6 +1861,11 @@ def classify_group(spec: dict) -> str:
     wrong code). The variant tag is set from the conditioning topology, so it
     stays correct even when the drawing is wrong."""
     variant = (spec.get("attention") or {}).get("variant") or {}
+    # U10-F4: the source projector publishes a machine relation.  A joined
+    # input sequence is the single-stream view even when its presentation tag
+    # changes; conformance must not rediscover architecture from prose.
+    if variant.get("stream_relation") == "joined_inputs":
+        return "single_stream"
     tag = str(variant.get("tag") or variant.get("short") or "").lower()
     return "single_stream" if "single-stream" in tag or "single stream" in tag else "block"
 
@@ -1920,6 +1965,18 @@ def _branch_inactive(gateset: frozenset[str], cfg) -> bool:
         if value is not None and not value:
             return True
     return False
+
+
+def _typed_stream_relation_unknown(spec: dict) -> bool:
+    """Whether U10 explicitly withheld the lane's state/context relation.
+
+    Presence of the machine field distinguishes a typed unknown from an older
+    view that simply never published stream evidence.  The legacy parameter-
+    presence conformance rail may not strengthen the former into a text input.
+    """
+    variant = (spec.get("attention") or {}).get("variant") or {}
+    return ("stream_relation" in variant
+            and variant.get("stream_relation") is None)
 
 
 def _config_field_value(cfg, key: str):

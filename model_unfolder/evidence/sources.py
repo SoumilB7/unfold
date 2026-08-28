@@ -419,19 +419,35 @@ def _transformers_family_dir(models_root: Path, model_type: str) -> str | None:
     return _direct_transformers_family_dir(models_root, model_type)
 
 
-def _looks_like_diffusion_class(cls: str) -> bool:
-    """Whether ``cls`` names a diffusion denoiser — by the GENERAL marker vocabulary
-    (everchanging ``dit_class_markers`` + UNet), never a hand-picked substring. The
-    old narrow ``"Transformer"/"UNet"`` gate missed ``HunyuanDiT2DModel`` /
-    ``LuminaNextDiT2DModel`` (they carry "DiT", not "Transformer"), wrongly reporting
-    their installed source as MISSING and silently skipping conformance + the
-    code-derived FFN. Reuses the same markers the diffusor adapter detects on."""
-    from ..everchanging import load_diffusion_typing
-    markers = tuple(load_diffusion_typing().get("dit_class_markers") or ()) + ("UNet", "Transformer")
-    return any(m in cls for m in markers)
-
-
 from functools import lru_cache
+
+
+@lru_cache(maxsize=64)
+def _installed_diffusers_model_class_file(arch: str) -> str | None:
+    """Resolve one declared class to its exact installed Diffusers model file.
+
+    This is address evidence, not a class-name classifier: every spelling is
+    treated identically and succeeds only when an exact class definition exists
+    under the installed library's ``models/`` tree.
+    """
+    if not isinstance(arch, str) or not arch:
+        return None
+    try:
+        import diffusers
+    except (ImportError, ValueError):
+        return None
+    models_root = Path(diffusers.__file__).resolve().parent / "models"
+    if not models_root.exists():
+        return None
+    pat = re.compile(rf"^class {re.escape(arch)}\b", re.M)
+    for path in sorted(models_root.rglob("*.py")):
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        if pat.search(text):
+            return str(path)
+    return None
 
 
 @lru_cache(maxsize=64)
@@ -447,10 +463,12 @@ def _diffusers_class_file(arch: str) -> str | None:
         # the diffusers address channel is unavailable, not that parsing the
         # already-loaded transformer config should fail.
         return None
-    import re
+    model_file = _installed_diffusers_model_class_file(arch)
+    if model_file is not None:
+        return model_file
     root = Path(diffusers.__file__).resolve().parent
     pat = re.compile(rf"^class {re.escape(arch)}\b", re.M)
-    for sub in ("models", "pipelines"):
+    for sub in ("pipelines",):
         base = root / sub
         if not base.exists():
             continue
@@ -494,24 +512,16 @@ def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
     Returns ``None`` when the target isn't a diffusion class or diffusers is
     absent (so the caller falls back to the transformers bundle)."""
     cls = _string_value(target, "_class_name")
-    if not cls or not _looks_like_diffusion_class(cls):
+    class_file = _installed_diffusers_model_class_file(cls)
+    if class_file is None:
         return None
-    try:
-        import diffusers
-    except ImportError:
-        return None
-    import re
-    models_root = Path(diffusers.__file__).resolve().parent / "models"
-    if not models_root.exists():
-        return None
-    pat = re.compile(rf"^class {re.escape(cls)}\b", re.M)
     model_id = _model_id(target)
-    for f in sorted(models_root.rglob("*.py")):
+    for f in (Path(class_file),):
         try:
             text = f.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError):
             continue
-        if pat.search(text):
+        if re.search(rf"^class {re.escape(cls)}\b", text, re.M):
             component_files = {"root": (str(f),)}
             supporting_files: dict[str, tuple[str, ...]] = {}
             component_model_types: dict = {}

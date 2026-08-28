@@ -49,7 +49,7 @@ def test_code_and_config_and_derived_are_also_covered():
 def test_code_fact_citing_declared_class_table_is_flagged():
     # A code-proven fact must not be decided by reading a class-marker table
     # (those tables lawfully decide only config_declared facts).
-    for table in ("dit_class_markers", "scheduler_flow_matching_markers",
+    for table in ("scheduler_flow_matching_markers",
                   "drill_class_markers"):
         assert scan_fact_provenance_identity(_prov("code_proven", table)), table
 

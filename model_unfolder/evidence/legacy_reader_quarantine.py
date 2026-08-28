@@ -15,16 +15,16 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-_VALID_UNITS = frozenset({"U7", "U8", "U10", "U11"})
+_VALID_UNITS = frozenset({"U7", "U8", "U11"})
 
 # Line-insensitive AST/content pins.  They freeze the registered reader bodies
 # plus their same-module helper closure, and the exact callers of every legacy
 # model-source parse authority.  A future owning unit updates/shrinks these only
 # in the same commit that deletes or migrates the old authority.
 LEGACY_READER_IMPLEMENTATION_FINGERPRINT = (
-    "fa20fcd9f0d6620374b4ac24c9cd54f4fe7f46e5d6fe398271ffff548b0960dc")
+    "7fb2348bdd23d66a087f2932fc6d504c135fe644cf2e231961d9ba0740cbbadd")
 LEGACY_PARSE_CALLER_FINGERPRINT = (
-    "340fb12fa03daba89094b34cd808fe5f7cb8d58ce19f6f8ed35b7f574e786dfb")
+    "8e2aae516112895c20accde56062dfd7862712af46f0c5cbe47469793bcc4fe9")
 
 
 @dataclass(frozen=True)
@@ -43,7 +43,7 @@ class LegacySemanticReader:
         if not self.symbol.endswith("_from_files"):
             raise ValueError("legacy reader symbols retain their exact debt spelling")
         if self.migration_unit not in _VALID_UNITS:
-            raise ValueError("legacy readers are assigned to U7/U8/U10/U11")
+            raise ValueError("legacy readers are assigned to U7/U8/U11")
         if not self.reason or not self.deletion_condition:
             raise ValueError("legacy reader debt needs reason + deletion condition")
         if tuple(sorted(set(self.callers))) != self.callers:
@@ -97,68 +97,6 @@ def _row(symbol: str, unit: str, reason: str, *, module: str = "patterns.py",
 
 
 LEGACY_SEMANTIC_READERS = (
-    _row("attention_score_scaling_from_files", "U10",
-         "whole-file diffusion-attention score-scaling interpretation",
-         callers=(
-             "model_unfolder/adapters/diffusor/parser.py:_code_scores_scaled",
-         )),
-    _row("denoiser_block_timestep_conditioning_from_files", "U10",
-         "diffusion block conditioning interpretation",
-         callers=(
-             "model_unfolder/adapters/diffusor/parser.py:_code_block_conditioning",
-         )),
-    _row("diffusion_attn_kind_from_files", "U10",
-         "diffusion attention mechanism interpretation",
-         callers=(
-             "model_unfolder/adapters/diffusor/parser.py:_code_attn_kind",
-         )),
-    _row("diffusion_axes_dims_rope_from_files", "U10",
-         "diffusion positional axes interpretation",
-         callers=(
-             "model_unfolder/adapters/diffusor/parser.py:_code_axes_dims_rope",
-         )),
-    _row("diffusion_cross_qk_norm_from_files", "U10",
-         "diffusion cross-attention QK norm interpretation",
-         callers=(
-             "model_unfolder/adapters/diffusor/parser.py:_code_cross_qk_norm",
-         )),
-    _row("diffusion_ffn_activation_from_files", "U10",
-         "diffusion FFN activation interpretation",
-         callers=(
-             "model_unfolder/adapters/diffusor/parser.py:_code_ffn_activation",
-         )),
-    _row("diffusion_ffn_kind_from_files", "U10",
-         "diffusion FFN mechanism interpretation",
-         callers=(
-             "model_unfolder/adapters/diffusor/parser.py:_code_ffn_kind",
-         )),
-    _row("diffusion_gate_via_norm_from_files", "U10",
-         "diffusion modulation/gating interpretation",
-         callers=(
-             "model_unfolder/adapters/diffusor/parser.py:_code_gate_via_norm",
-         )),
-    _row("diffusion_qk_norm_from_files", "U10",
-         "diffusion self-attention QK norm interpretation",
-         callers=(
-             "model_unfolder/adapters/diffusor/parser.py:_code_qk_norm",
-         )),
-    _row("diffusion_rope_from_files", "U10",
-         "diffusion positional mechanism interpretation",
-         callers=(
-             "model_unfolder/adapters/diffusor/parser.py:_code_has_rope",
-         )),
-    _row("diffusion_single_stream_fusion_from_files", "U10",
-         "diffusion stream/fusion interpretation",
-         callers=(
-             "model_unfolder/adapters/diffusor/parser.py:_code_single_fusion",
-         )),
-    _row("secondary_stacks_from_files", "U10",
-         "diffusion repeated-stack topology interpretation", module="stacks.py",
-         callers=(
-             "model_unfolder/adapters/diffusor/parser.py:_code_block_norm_placement",
-             "model_unfolder/adapters/diffusor/parser.py:_code_norm_kind",
-             "model_unfolder/adapters/diffusor/parser.py:_secondary_stack_specs",
-         )),
     _row("unet_code_attention_placement_from_files", "U11",
          "UNet attention placement interpretation",
          callers=(
@@ -234,28 +172,13 @@ PARSE_AUTHORITY_SITES = (
            "legacy_model_source", "U14",
            "parallel forward-op parser shared by legacy facts/conformance"),
     _parse("model_unfolder/evidence/patterns.py", "_parse_defs",
-           "legacy_model_source", "U10",
-           "diffusion-only semantic parser retained for the U10 migration"),
-    _parse("model_unfolder/evidence/patterns.py",
-           "attention_score_scaling_from_files", "legacy_model_source", "U10",
-           "whole-file diffusion score-scaling interpreter"),
-    _parse("model_unfolder/evidence/patterns.py",
-           "diffusion_axes_dims_rope_from_files", "legacy_model_source", "U10",
-           "diffusion positional interpreter"),
-    _parse("model_unfolder/evidence/patterns.py",
-           "diffusion_gate_via_norm_from_files", "legacy_model_source", "U10",
-           "diffusion modulation interpreter"),
-    _parse("model_unfolder/evidence/patterns.py",
-           "diffusion_qk_norm_from_files", "legacy_model_source", "U10",
-           "diffusion normalization interpreter"),
-    _parse("model_unfolder/evidence/patterns.py",
-           "diffusion_single_stream_fusion_from_files", "legacy_model_source",
-           "U10", "diffusion stream interpreter"),
+           "legacy_model_source", "U11",
+           "UNet compatibility parser retained for U11"),
     _parse("model_unfolder/evidence/transitive.py", "_parse_file",
            "legacy_model_source", "U14",
            "parallel callable/transitive parser shared by conformance"),
     _parse("model_unfolder/evidence/vision.py", "_parsed_classes",
-           "legacy_model_source", "U10",
+           "legacy_model_source", "U14",
            "diffusion layer/stage compatibility readers still share this "
            "legacy class-node cache; U9 vision authority is deleted"),
 )

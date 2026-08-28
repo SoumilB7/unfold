@@ -116,6 +116,21 @@
   },
   "hash_signature": [
     "0d62405c9f25c10421e350c162c03419",
+    "2d40684da4d9cf65c1e52ec90ef37e4d",
+    "3416a5f46d9e75c633e7fd6735b98016",
+    "416d725caccdd424f1705abacf2d35ee",
+    "8885e3fd637c1ca9929d34e303ca0d79",
+    "957109c7d03856fac96f612ceb3694e8",
+    "987f778581b3af9ef0a802b9c788612f",
+    "ca026191feecce8406387cba4e5995c9",
+    "dabf1599258da7e9cac35423b6af665a",
+    "f81f29a8d6da195b64df83582a7b82ee",
+    "fe7dbad6aaa0ecd58090855148c95349"
+  ],
+  "model": "DeepSeek-V3",
+  "source": "local",
+  "superseded_hash_signature": [
+    "0d62405c9f25c10421e350c162c03419",
     "3416a5f46d9e75c633e7fd6735b98016",
     "416d725caccdd424f1705abacf2d35ee",
     "5e7b622f9453aafac2442c6d149f86f6",
@@ -125,23 +140,6 @@
     "98dad7754afa6047accccffd74d6126f",
     "dabf1599258da7e9cac35423b6af665a",
     "f81f29a8d6da195b64df83582a7b82ee",
-    "fe7dbad6aaa0ecd58090855148c95349"
-  ],
-  "model": "DeepSeek-V3",
-  "source": "local",
-  "superseded_hash_signature": [
-    "09ceda54b5652830f503bb2a5347b278",
-    "0d62405c9f25c10421e350c162c03419",
-    "3416a5f46d9e75c633e7fd6735b98016",
-    "3b2e2a1c5eec997efd21fd334030ed2d",
-    "8885e3fd637c1ca9929d34e303ca0d79",
-    "957109c7d03856fac96f612ceb3694e8",
-    "987f778581b3af9ef0a802b9c788612f",
-    "b159235cab64de0806d6b426017577f2",
-    "dabf1599258da7e9cac35423b6af665a",
-    "ea7158eb2356a1c6cf872a6ae505127b",
-    "f81f29a8d6da195b64df83582a7b82ee",
-    "f8f70d1dd609fed38c9731f318ca3cf1",
     "fe7dbad6aaa0ecd58090855148c95349"
   ],
   "visual_evidence": {

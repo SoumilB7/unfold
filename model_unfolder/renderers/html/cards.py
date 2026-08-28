@@ -12,21 +12,29 @@ _VIEWBOX_RE = re.compile(r'viewBox="0 0 ([0-9.]+) ([0-9.]+)"')
 def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
     """Cards-only HTML for the L2 inspect panel."""
     dominant = info.get("dominant")
-    if not dominant:
-        return _hint_card(
-            "default",
-            "No repeated layer structure is available to inspect",
-        )
-
-    panels: list[str] = [_hint_card("default", "Click a block above to inspect it")]
-    spec = dominant["spec"]
-    layer_blocks = spec.get("blocks") or []
+    panels: list[str] = [_hint_card(
+        "default",
+        ("Click a block above to inspect it" if dominant else
+         "No repeated layer structure is available; inspect the proven model boundaries"),
+    )]
 
     for node_id in ("tok_text", "embed", "embed_norm", "join_concat",
                     "position_ids", "position_embed", "position_add"):
         if node_id not in info.get("blocks", {}):
             continue
         panels.append(_simple_card(node_id, *_meta(info, node_id)))
+
+    # With no materialized layer, the model-level entry/output boundary cards
+    # are still real and clickable.  Return them without inventing any layer
+    # cards; the adapter-authored opaque body is static by construction.
+    if not dominant:
+        for node_id in ("final_rms", "lm_head"):
+            if node_id in info.get("blocks", {}):
+                panels.append(_simple_card(node_id, *_meta(info, node_id)))
+        return "".join(panels)
+
+    spec = dominant["spec"]
+    layer_blocks = spec.get("blocks") or []
 
     for node_id in ("vision_path", "video_path", "audio_path", "conditioning_path", "fusion"):
         block = info.get("blocks", {}).get(node_id)

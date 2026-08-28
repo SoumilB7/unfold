@@ -1,22 +1,18 @@
-# 17 DISTINCT diagram views (architecture + every drill, to the leaves)
-# 18 baked svgs total — 1 identical per-layer-group copies collapsed
-# 63 description-only leaf cards skipped (no diagram)
+# 13 DISTINCT diagram views (architecture + every drill, to the leaves)
+# 14 baked svgs total — 1 identical per-layer-group copies collapsed
+# 54 description-only leaf cards skipped (no diagram)
 # amber border = clickable block (opens a card); no border = static port/glyph
 
 00__architecture.png
 01__encoder_0.png
-02__text_projection.png
-03__denoiser.png
-04__scheduler.png
-05__vae_decode.png
-06__attn.png
-07__cross_attn.png
-08__ffn.png
-09__encoder_0_g0_op_selfattn.png
-10__encoder_0_g0_op_ffn.png   (+1 identical copies collapsed)
-11__encoder_0_g1_op_selfattn.png
-12__vae_decoder_block_4.png
-13__vae_decoder_block_3.png
-14__vae_decoder_block_2.png
-15__vae_decoder_block_1.png
-16__architecture__1.png
+02__denoiser.png
+03__scheduler.png
+04__vae_decode.png
+05__encoder_0_g0_op_selfattn.png
+06__encoder_0_g0_op_ffn.png   (+1 identical copies collapsed)
+07__encoder_0_g1_op_selfattn.png
+08__vae_decoder_block_4.png
+09__vae_decoder_block_3.png
+10__vae_decoder_block_2.png
+11__vae_decoder_block_1.png
+12__architecture__1.png

@@ -226,8 +226,11 @@ def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
         if op.id == primary:
             label = f"in ({_dims_text(op.out_features)})" if op.out_features else "in"
             return Node(op.id, "port", label, static=True, meta=dict(op.meta))
-        # A secondary input (cross-attention's text / image states) is drawn as a
-        # solid block like everything else — not the light accent bookend.
+        # A secondary input (cross-attention's text / image states, positional
+        # side input, and similar exact rails) is drawn as a solid block.  Its
+        # clickability follows the canonical card census just like every other
+        # node: an explanatory card is a real target even when the source is a
+        # terminal rather than another operation graph.
         return Node(op.id, "embedding", op.label, w=250, h=46, static=static)
     if op.kind == "linear":
         return Node(op.id, "linear", op.label or "Linear", static=static,

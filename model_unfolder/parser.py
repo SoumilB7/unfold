@@ -241,10 +241,36 @@ def config_to_ir(
     # occurrences publish; an owner with NO consumed census cannot pass as
     # empty-clean and is named in the explicitly-staged ``audit_incomplete``
     # condition instead (empty data is not clean data).
+    _gated_unconsumed = _access_ledger.accessed_but_unconsumed()
     _all_owners = {e.component for e in _access_ledger.events if e.present}
     _owners_with_consumed = {owner for owner, _ in _access_ledger.consumed()}
-    _audit_incomplete = sorted(_all_owners - _owners_with_consumed)
-    _gated_unconsumed = _access_ledger.accessed_but_unconsumed()
+    _unconsumed_occurrences = _access_ledger.unconsumed_occurrences()
+    _unlocated_owners = {
+        component for component, _leaf
+        in _access_ledger.unresolved_path_occurrences()
+    }
+    _pending_owner_paths: dict[str, set[str]] = {}
+    for _path in (*pending_projection, *pending_classification):
+        _pending_owner_paths.setdefault(
+            _unread_path_owner(_path), set()).add(_path)
+    _declared_pending_owners = set()
+    _all_pending = _pending_exact | _pending_cls
+    for _owner in _all_owners - _owners_with_consumed:
+        _rows = [row for row in _unconsumed_occurrences
+                 if row.component_path == _owner]
+        # Zero consumption is not vacuous when the owner has a non-empty,
+        # occurrence-exact census and EVERY row is explicitly assigned debt.
+        # An ignored-only owner, an unlocated read, or one unregistered row
+        # remains audit_incomplete. This is classification, not success: the
+        # rows stay visible under pending_projection/pending_classification.
+        _declared_paths = _pending_owner_paths.get(_owner, set())
+        if (_rows or _declared_paths) and _owner not in _unlocated_owners and all(
+                _pending_matches_unread(
+                    _owner, row.config_path, _all_pending)
+                for row in _rows):
+            _declared_pending_owners.add(_owner)
+    _audit_incomplete = sorted(
+        _all_owners - _owners_with_consumed - _declared_pending_owners)
     # COR-5 (§10), fourth vet: migration claims are SOURCE-TO-TARGET bound —
     # Net 1 BLOCKS each claimed exact (owner, mechanism) scope immediately.
     # Within a claimed scope every present read must carry an exact path and
@@ -271,7 +297,7 @@ def config_to_ir(
         "accessed_unconsumed_exact": [
             {"component": k.component_path, "path": k.config_path,
              "spelling": k.actual_spelling, "canonical": k.canonical_field}
-            for k in _access_ledger.unconsumed_occurrences()],
+            for k in _unconsumed_occurrences],
         # U2.2a: owner -> the document those paths are relative to.  A path is
         # document-relative so a claim binding matches identically standalone or
         # embedded; without this the row names a leaf nobody can locate, and no
@@ -394,6 +420,17 @@ def _ensure_parsable(ir: ModelIR, ref: Any) -> None:
     # A UNet diffusion denoiser has no flat transformer-layer stack — its
     # structure lives in extras["unet"] and is drawn by the UNet view.
     if (ir.extras or {}).get("unet"):
+        return
+    # U10-F3: an exact diffusion source boundary may honestly prove that the
+    # root stack is unresolved (or that only a nested auxiliary stack is
+    # addressable). Its opaque denoiser shell is a usable diagram and must not
+    # be coerced back into fabricated transformer layers merely to satisfy this
+    # decoder-era invariant.
+    render = (ir.extras or {}).get("render") or {}
+    if not (ir.extras or {}).get("unet") \
+            and render.get("family") == "diffusion" \
+            and render.get("model_blocks") \
+            and isinstance(render.get("opaque_layer_block"), dict):
         return
     label = ref if isinstance(ref, str) else (
         (ref.get("model_type") if isinstance(ref, dict) else None) or "the config"

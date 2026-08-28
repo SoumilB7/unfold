@@ -272,7 +272,7 @@ def test_raw_write_census_excludes_audit_ledger_infrastructure():
 # §16.4 Part B / U2-R6: the structured legacy register is REPLACED by the ONE
 # StructuralDebt register (``evidence/structural_debt.py``) — every raw
 # ir.extras structural write has one EXACT row carrying owner, writer,
-# consumer, U3–U14 unit and a checkable deletion condition.  The runtime gate
+# consumer, U3–U15 unit and a checkable deletion condition.  The runtime gate
 # below uses that register as the baseline (the full StructuralWrite census —
 # static + poisons — lives in ``test_structural_writes.py``).
 

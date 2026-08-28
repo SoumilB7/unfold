@@ -22,7 +22,7 @@ _CALL = re.compile(r"\.consume\(")
 # its one ``self.consume(...)`` inside ``consume_decision`` is the sanctioned
 # implementation, not a structural-reader debt.
 _RAW_CONSUME_DEBT = {
-    "adapters/diffusor/parser.py": 2,
+    "adapters/diffusor/parser.py": 1,
     "adapters/transformer/parser.py": 2,
     "adapters/transformer/special_parts/modalities/vision.py": 2,
 }

@@ -152,20 +152,20 @@
   },
   "hash_signature": [
     "3fd382a6ac9b031836483d6014522a09",
-    "4e119bd062120dc002fa38b310baed45",
     "71456442dff6a47c6b1fbfa9db9e1f0d",
-    "a9d70cb5948adfa32ff4583669102d12",
+    "88688a1cd544bed199bf6e020abf197f",
     "c52f680f106cdb07f7b8a9e0a97907ef",
+    "c63ea70af3eb63a6c01e757802851151",
     "f833c45d1b7e9fa29156cf20fb4edff2"
   ],
   "model": "Qwen3.5-27B text component",
   "source": "local",
   "superseded_hash_signature": [
-    "00818a9cc88b43a59371d901502efdd9",
-    "0ebe6773cb674eb590128a6deefe6abc",
-    "4ac1aa0fd03816ba07e799dbbaf19eca",
+    "3fd382a6ac9b031836483d6014522a09",
+    "4e119bd062120dc002fa38b310baed45",
     "71456442dff6a47c6b1fbfa9db9e1f0d",
     "a9d70cb5948adfa32ff4583669102d12",
+    "c52f680f106cdb07f7b8a9e0a97907ef",
     "f833c45d1b7e9fa29156cf20fb4edff2"
   ],
   "visual_evidence": {

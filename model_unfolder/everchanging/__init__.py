@@ -153,35 +153,19 @@ def load_diffusion_aliases() -> dict[str, list[str]]:
     return load("diffusor", "aliases")
 
 
-def load_diffusion_config_facts() -> dict[str, list[dict]]:
-    """Declared config FACT fields (``diffusor/config_facts.yaml``): per-stage
-    buckets of ``{field, label, noop?, silent?}`` rows.  Every present field is
-    READ (ownership audit) and non-noop, non-silent values become card chips."""
-    data = load("diffusor", "config_facts")
-    return {bucket: [row for row in (rows or []) if isinstance(row, dict) and row.get("field")]
-            for bucket, rows in (data or {}).items()}
-
-
 def load_diffusion_typing() -> dict[str, list[str]]:
     """APPROVED diffusion block typing (``diffusor/typing.yaml``): ``stages``
     (blessed diffusion_stage values), ``block_ids`` (reused transformer-layer
-    ids), ``part_kinds`` (compound detail-view regions),
-    ``dit_class_markers`` (detection substrings), and ``scheduler_display``
-    ("Class=Display" name overrides)."""
+    ids), ``part_kinds`` (compound detail-view regions), and
+    ``scheduler_display`` ("Class=Display" name overrides)."""
     data = load("diffusor", "typing")
     return {
         "stages": data.get("stages") or [],
         "block_ids": data.get("block_ids") or [],
         "part_kinds": data.get("part_kinds") or [],
-        "dit_class_markers": data.get("dit_class_markers") or [],
         "scheduler_display": data.get("scheduler_display") or [],
         "scheduler_flow_matching_markers": data.get("scheduler_flow_matching_markers") or [],
-        "norm_type_kind": data.get("norm_type_kind") or [],
-        "temporal_forward_markers": data.get("temporal_forward_markers") or [],
-        "stack_lane_params": data.get("stack_lane_params") or [],
-        "temporal_config_fields": data.get("temporal_config_fields") or [],
-        "companion_denoiser_fields": data.get("companion_denoiser_fields") or [],
-        "audio_vae_fields": data.get("audio_vae_fields") or [],
+        "unet_temporal_forward_markers": data.get("unet_temporal_forward_markers") or [],
     }
 
 
@@ -191,11 +175,12 @@ def load_diffusion_text_encoders() -> dict[str, str]:
     return {k: v for k, v in load("diffusor", "text_encoders").items() if isinstance(v, str)}
 
 
-def load_diffusion_conditioning() -> dict[str, dict]:
-    """Conditioning-MODALITY vocabulary (``diffusor/conditioning.yaml``): the
-    declared ``encoder_hid_dim_type`` / ``addition_embed_type`` enum values mapped
-    to their {modality, kv_label / add_label, projector} story.  An unmapped value
-    falls to honest-unknown, never to text."""
+def load_unet_conditioning() -> dict[str, dict]:
+    """U11-only UNet conditioning display vocabulary.
+
+    The U10 source projector never consumes this table; it remains quarantined
+    behind the positively proven U-shaped compatibility handoff.
+    """
     data = load("diffusor", "conditioning")
     return {
         "encoder_hid_dim_type": data.get("encoder_hid_dim_type") or {},
@@ -466,5 +451,5 @@ __all__ = [
     "load_diffusion_aliases",
     "load_diffusion_typing",
     "load_diffusion_text_encoders",
-    "load_diffusion_conditioning",
+    "load_unet_conditioning",
 ]

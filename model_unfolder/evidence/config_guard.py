@@ -237,6 +237,7 @@ class ExactConfigGuardResolver:
         self.paths = []
         self.spans = []
         self.source_kinds = []
+        self.source_values = []
         self.complete = True
 
     def enabled(self, guard, callable_symbol):
@@ -311,9 +312,14 @@ class ExactConfigGuardResolver:
         if path is not None:
             selected = self.config_selector(path)
             from .framework_config import FrameworkConfigDefaultValue
-            if isinstance(selected, FrameworkConfigDefaultValue):
+            from .config_registration import RegisteredConstructorDefaultValue
+            if isinstance(selected, (
+                    FrameworkConfigDefaultValue,
+                    RegisteredConstructorDefaultValue)):
                 self.paths.append(path)
                 self.source_kinds.append((path, "class_default"))
+                self.source_values.append(
+                    (path, "class_default", selected.value))
                 self.spans.extend(selected.spans)
                 return selected.value
             if isinstance(selected, NormalizedConfigValue):
@@ -338,6 +344,7 @@ class ExactConfigGuardResolver:
                 return _UNKNOWN
             self.paths.append(path)
             self.source_kinds.append((path, source_kind))
+            self.source_values.append((path, source_kind, value))
             if expression.span is not None:
                 self.spans.append(expression.span)
             return value

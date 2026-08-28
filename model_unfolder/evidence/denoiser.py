@@ -8,11 +8,11 @@ the exact owner's observations from the one program index.  It never reopens a
 file, never calls ``ast.parse``, never inspects ``source_segment``, and never
 searches a sibling class or component.
 
-The temporal marker vocabulary (``temporal_forward_markers``, default
-``num_frames``) is code-shape vocabulary in ``everchanging``: it may NOMINATE the
+The U11 compatibility marker vocabulary (``unet_temporal_forward_markers``,
+default ``num_frames``) is code-shape vocabulary in ``everchanging``: it may NOMINATE the
 temporal-axis source symbol within the exact forward; it does not select the
-owner (the owner is already resolved).  Its later semantic replacement belongs to
-U10.
+owner (the owner is already resolved).  U10's source-projected denoisers do not
+consume it; its remaining UNet replacement belongs to U11.
 
 Result laws (U3-D1):
   * ``resolved(True)`` only with an exact marker name observed in the owner's
@@ -31,7 +31,8 @@ from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
 
 def _temporal_markers() -> tuple[str, ...]:
     from ..everchanging import load_diffusion_typing
-    markers = load_diffusion_typing().get("temporal_forward_markers") or ["num_frames"]
+    markers = (load_diffusion_typing().get("unet_temporal_forward_markers")
+               or ["num_frames"])
     return tuple(str(m).lower() for m in markers)
 
 

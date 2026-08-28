@@ -1,4 +1,9 @@
-# Diffusion conditioning MODALITY vocabulary.
+# U11 compatibility-only UNet conditioning display vocabulary.
+#
+# This file is quarantined behind a positively source-proven U-shaped root. It
+# is not used by the U10 denoiser projector and cannot select a DiT/MMDiT
+# topology. U11 must replace these declared enum stories with component/code
+# evidence or delete them; new structural rows are forbidden.
 #
 # A denoiser's conditioning story is DECLARED by two config enums on the UNet /
 # denoiser: `encoder_hid_dim_type` (what the cross-attention keys/values are, and

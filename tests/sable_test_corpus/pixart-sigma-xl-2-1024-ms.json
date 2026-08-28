@@ -2,7 +2,7 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
-    "config_accessed_unprojected": false,
+    "config_accessed_unprojected": true,
     "config_ambiguity": true,
     "config_audit_incomplete": true,
     "config_consumed_unreceipted": true,
@@ -186,6 +186,23 @@
   "hash_signature": [
     "1e6e37015517da680f7d22555b019a11",
     "22e659b90c632ec031fd95f36399ee49",
+    "3beb7e8dd3a1413548860328bb44ec02",
+    "47dfb1b7a4e47f1dd756a38b96fc174a",
+    "7b5219bb6f6212f9422861177d522259",
+    "7cbe2600c93fa5f5550e1b4d4ae9c060",
+    "84a309d94a660ce256cfb12d10edd16f",
+    "9680b5f576b615bc5ee7a1dabc19b8ac",
+    "9f198a62053f6939aaa6682f5757e736",
+    "b27da72d8797da4f23c882340fe81c3f",
+    "b31abab691626c72dde789ac736cc3b0",
+    "ce4276f46dba476afde22a503130a082",
+    "f8c0f6c893ff6bc3aa7f3e8490d60356"
+  ],
+  "model": "PixArt-Sigma-XL-2-1024-MS",
+  "source": "local",
+  "superseded_hash_signature": [
+    "1e6e37015517da680f7d22555b019a11",
+    "22e659b90c632ec031fd95f36399ee49",
     "2a162cebd1b107837d9340dd96af2a56",
     "3beb7e8dd3a1413548860328bb44ec02",
     "4aba2ecfbdf02367e04c9dc1739143e3",
@@ -202,29 +219,9 @@
     "c5cc5eee15e31c66f7795620d62aae28",
     "f8c0f6c893ff6bc3aa7f3e8490d60356"
   ],
-  "model": "PixArt-Sigma-XL-2-1024-MS",
-  "source": "local",
-  "superseded_hash_signature": [
-    "1e6e37015517da680f7d22555b019a11",
-    "22e659b90c632ec031fd95f36399ee49",
-    "2a162cebd1b107837d9340dd96af2a56",
-    "3beb7e8dd3a1413548860328bb44ec02",
-    "4aba2ecfbdf02367e04c9dc1739143e3",
-    "60aa81ee2e8b34e9dd6e540e00bb8b65",
-    "7b5219bb6f6212f9422861177d522259",
-    "9123288ffb8512f9c3f1d71719e41833",
-    "98b551a864d0cf05de9cdc1f9a12919e",
-    "9f198a62053f6939aaa6682f5757e736",
-    "b27da72d8797da4f23c882340fe81c3f",
-    "b31abab691626c72dde789ac736cc3b0",
-    "b38dcb2f6c9289cc9b810d9bbdfa6610",
-    "c14d2bb319a4941f8ed14b35f374c206",
-    "e366724fd4f25161cb2c4d14aef76c92",
-    "f8c0f6c893ff6bc3aa7f3e8490d60356"
-  ],
   "visual_evidence": {
     "gallery_dir": "galleries/pixart-sigma-xl-2-1024-ms",
     "manifest": true,
-    "png_count": 17
+    "png_count": 13
   }
 }

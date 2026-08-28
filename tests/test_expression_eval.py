@@ -3,8 +3,14 @@ from __future__ import annotations
 
 import textwrap
 
-from model_unfolder.evidence.component_owner import resolve_component_root
-from model_unfolder.evidence.expression_eval import constructor_argument_env
+from model_unfolder.evidence.component_owner import (
+    resolve_component_root,
+    resolve_owner_graph,
+)
+from model_unfolder.evidence.expression_eval import (
+    ConfigExpressionEvaluator,
+    constructor_argument_env,
+)
 from model_unfolder.evidence.models import SourceBundle
 from model_unfolder.evidence.program_index import build_program_index
 
@@ -75,3 +81,37 @@ def test_same_class_occurrences_do_not_launder_constructor_arguments(
             {"first": 3, "second": 9})["switch"].value
         for node in blocks)
     assert values == [3, 9]
+
+
+def test_missing_runtime_actual_falls_through_to_exact_config_binding(tmp_path):
+    """A symbolic occurrence may lack an evaluable runtime argument.
+
+    That absence must not hide an independently exact OwnerGraph config-path
+    binding for the same formal.  Conversely, an explicit runtime value still
+    wins over the document binding for its exact occurrence.
+    """
+    index, base_graph = _graph(tmp_path, """
+        class Root:
+            def __init__(self, enabled):
+                if enabled:
+                    self.active = True
+    """)
+    symbol = base_graph.root.symbol
+    graph = resolve_owner_graph(
+        index, symbol, root_param_prefixes={"enabled": ("enabled",)})
+    node = graph.root
+    control = next(item for item in index.controls
+                   if item.enclosing_callable.qualified_name == "Root.__init__")
+
+    from_binding = ConfigExpressionEvaluator(
+        node.config_bindings, {"enabled": True}, env={})
+    assert from_binding.expression(control.controlling).value is True
+    assert from_binding.expression(control.controlling).premises == (
+        (("enabled",), True),)
+
+    from_actual = ConfigExpressionEvaluator(
+        node.config_bindings, {"enabled": True},
+        env={"enabled": ConfigExpressionEvaluator(
+            node.config_bindings, {"enabled": False}, env={})
+             .expression(control.controlling)})
+    assert from_actual.expression(control.controlling).value is False

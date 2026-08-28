@@ -94,6 +94,33 @@ class RegisteredConstructorConfig:
         return dict(self.parameter_paths)
 
 
+@dataclass(frozen=True)
+class RegisteredConstructorDefaultValue:
+    """One omitted registered parameter supplied by its exact code default."""
+
+    value: object
+    path: tuple[str, ...]
+    parameter: ParamRecord
+    registration: RegisteredConstructorConfig
+
+    def __post_init__(self):
+        if len(self.path) != 1 or self.path[0] != self.parameter.name \
+                or self.parameter not in self.registration.parameters \
+                or not self.parameter.has_default \
+                or self.parameter.default is None \
+                or self.parameter.default.kind != "constant" \
+                or self.value != self.parameter.default.const_value:
+            raise ValueError("a registered default closes one literal parameter")
+
+    @property
+    def spans(self):
+        return tuple(dict.fromkeys(span for span in (
+            self.registration.constructor.span,
+            self.registration.decorator.span,
+            self.parameter.default.span,
+        ) if span is not None))
+
+
 def read_registered_constructor_config(
         index: ProgramIndex,
         root: ComponentRootResolution,
@@ -183,5 +210,6 @@ def read_registered_constructor_config(
 
 __all__ = [
     "RegisteredConstructorConfig",
+    "RegisteredConstructorDefaultValue",
     "read_registered_constructor_config",
 ]

@@ -21,12 +21,27 @@ def _is_diffusion(raw: dict) -> bool:
     return ((raw.get("extras") or {}).get("render") or {}).get("family") == "diffusion"
 
 
+def _is_projected_diffusion(raw: dict) -> bool:
+    """The source-projected denoiser path, identified by structure only."""
+    extras = raw.get("extras") or {}
+    return _is_diffusion(raw) and "unet" not in extras
+
+
 def build_dimensions(raw: dict) -> dict[str, Any]:
     # A denoiser has no token vocabulary and no tied LM head — those IR fields
     # exist only to keep the param estimate honest and must NOT leak here as if
     # the model had word embeddings.  Report the DiT's latent geometry instead.
     if _is_diffusion(raw):
-        diff = (raw.get("extras") or {}).get("diffusion") or {}
+        extras = raw.get("extras") or {}
+        if _is_projected_diffusion(raw):
+            # ModelIR uses zero as the legacy parameter-estimator sentinel.  In
+            # expanded architecture JSON it would falsely mean a proven
+            # zero-width denoiser, so omit it unless F3 projected a real width.
+            hidden = raw.get("hidden_size")
+            if hidden == 0:
+                hidden = None
+            return drop_none({"hidden_size": hidden})
+        diff = extras.get("diffusion") or {}
         return drop_none({
             "hidden_size": raw.get("hidden_size"),
             "in_channels": diff.get("in_channels"),
@@ -166,6 +181,11 @@ def _diffusion_io(raw: dict) -> dict[str, Any]:
     the hidden width, the stack runs, then it is unpatchified back to a
     noise/velocity prediction in latent space.  No vocabulary, no LM head — the
     same bookend nodes the LLM path traces, told honestly for a DiT."""
+    if _is_projected_diffusion(raw):
+        return _projected_diffusion_io(raw)
+
+    # U11 compatibility handoff: the legacy UNet surface is intentionally not
+    # dismantled by U10.  Its replacement is owned by the later U11 unit.
     hidden = raw.get("hidden_size")
     diff = (raw.get("extras") or {}).get("diffusion") or {}
     ch = diff.get("in_channels")
@@ -201,6 +221,51 @@ def _diffusion_io(raw: dict) -> dict[str, Any]:
             "in_features": hidden,
             "trace":       {"ir_path": "extras.render.model_blocks.lm_head"},
         }),
+    }
+
+
+def _projected_diffusion_io(raw: dict) -> dict[str, Any]:
+    """U10-F3 machine I/O from the same adapter-authored boundary DTO.
+
+    No label is interpreted here.  The structured ``detail.operations`` list
+    is copied only when its owning block is explicitly resolved; otherwise the
+    boundary remains an explicit unknown.  Output media domain is deliberately
+    absent because U12, not the denoiser source, owns that fact.
+    """
+    render = ((raw.get("extras") or {}).get("render") or {})
+    blocks = {
+        block.get("id"): block
+        for block in render.get("model_blocks") or ()
+        if isinstance(block, dict) and block.get("id")
+    }
+
+    def transform(node_id: str, trace: str) -> dict[str, Any]:
+        block = blocks.get(node_id) or {}
+        operations = tuple((block.get("detail") or {}).get("operations") or ())
+        if block.get("resolved") is True and operations:
+            return {
+                "operations": list(operations),
+                "trace": {"ir_path": trace},
+            }
+        return {
+            "status": "unresolved",
+            "trace": {"ir_path": trace},
+        }
+
+    return {
+        "input": {
+            "kind": "denoiser_state",
+            "trace": {"ir_path": "extras.render.model_blocks.tok_text"},
+        },
+        "input_transform": transform(
+            "embed", "extras.render.model_blocks.embed"),
+        "output_transform": transform(
+            "final_rms", "extras.render.model_blocks.final_rms"),
+        "output": {
+            "kind": "denoiser_state",
+            "domain": None,
+            "trace": {"ir_path": "extras.render.model_blocks.lm_head"},
+        },
     }
 
 

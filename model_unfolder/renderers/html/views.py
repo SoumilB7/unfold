@@ -60,21 +60,26 @@ def _block_layout(block: dict) -> tuple[dict, float, float, int]:
 
     The top-level architecture renderer predates :class:`graph.Node`, so it
     cannot inherit that engine's automatic multi-line sizing.  Apply the same
-    principle here: explicit dimensions win, nominal kind dimensions are the
-    floor, and a list-valued truth-bearing label grows the box.  This is purely
-    presentation geometry; no model or mechanism identity participates.
+    principle here: explicit and nominal kind dimensions are both floors, and
+    every truth-bearing label (single- or multi-line) may grow the box.  This is
+    purely presentation geometry; no model or mechanism identity participates.
     """
     layout = _KIND_LAYOUT.get(block.get("kind")) or _KIND_LAYOUT["opaque"]
     font = block.get("font") or layout.get("font", 16)
-    width = block.get("w") or layout["w"]
-    height = block.get("h") or layout["h"]
+    width = max(layout["w"], block.get("w") or 0)
+    height = max(layout["h"], block.get("h") or 0)
     label = block.get("label")
-    if isinstance(label, (list, tuple)) and label:
+    lines = (
+        tuple(str(line) for line in label)
+        if isinstance(label, (list, tuple)) else
+        (str(label),) if isinstance(label, str) and label else ())
+    if lines:
         # The handwritten SVG font is wider than a monospace estimate; 0.8 is
         # the measured safe bound for the standing "storage unresolved" label.
-        widest = max(len(str(line)) for line in label)
+        widest = max(len(line) for line in lines)
         width = max(width, widest * (font + 5) * 0.8 + 32)
-        height = max(height, 24 + len(label) * (font + 7))
+        if len(lines) > 1:
+            height = max(height, 24 + len(lines) * (font + 7))
     return layout, width, height, font
 
 
@@ -118,9 +123,23 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     space while compact decoder-only models keep the same vocabulary.
     """
     is_diffusion = _is_diffusion_architecture(ir)
-    spec = info["dominant"]["spec"]
+    dominant = info.get("dominant")
+    if dominant is not None:
+        spec = dominant["spec"]
+    else:
+        # Source-faithful diffusion parsing may honestly produce no
+        # materialized root layers.  In that case the adapter must explicitly
+        # author the opaque body; the renderer is forbidden from filling the
+        # gap with a conventional transformer layer.
+        opaque = (((ir.get("extras") or {}).get("render") or {}).get(
+            "opaque_layer_block"))
+        if not isinstance(opaque, dict):
+            raise ValueError(
+                "an architecture without materialized layers requires an "
+                "explicit opaque_layer_block")
+        spec = {"blocks": [opaque]}
     layer_blocks = list(spec.get("blocks") or [])
-    group_indices = (info.get("dominant") or {}).get("indices")
+    group_indices = (dominant or {}).get("indices")
     repeat_n = len(group_indices) if group_indices else len(ir.get("layers", []))
     repeated_region = repeat_n != 1
 
@@ -329,21 +348,30 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
             stack_input = join
             entry_chain.append(join)
     final_block = canonical_blocks.get("final_rms")
+    final_label = _block_label(
+        info, "final_rms", ["Pre-head path", "unresolved"])
+    final_layout_input = {
+        **(final_block if isinstance(final_block, dict) else {}),
+        "label": final_label,
+        "w": max(180, (final_block or {}).get("w") or 0),
+        "h": max(36, (final_block or {}).get("h") or 0),
+        "font": (final_block or {}).get("font") or 16,
+    }
+    _layout, final_w, final_h, final_font = _block_layout(
+        final_layout_input)
+    final_bottom = inner_y - 24
+    final_top = final_bottom - final_h
     final_rms = _rect_block(
         parts,
         info,
         shadow_id,
         "final_rms",
-        cx - 90,
-        140 + mtp_pad,
-        180,
-        36,
-        _block_label(
-            info,
-            "final_rms",
-            ["Pre-head path", "unresolved"],
-        ),
-        font_size=16,
+        cx - final_w / 2,
+        final_top,
+        final_w,
+        final_h,
+        final_label,
+        font_size=final_font,
         # The fixed scaffold keeps an explicit pre-head stage visible, but only
         # a canonical block may make that stage solid/resolved.  An absent card
         # must never fall back to the historical "Final RMSNorm" assertion.
@@ -354,16 +382,27 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
             )
         ),
     )
+    head_block = canonical_blocks.get("lm_head")
+    head_label = _block_label(
+        info, "lm_head", "Output stage unresolved")
+    head_layout_input = {
+        **(head_block if isinstance(head_block, dict) else {}),
+        "label": head_label,
+        "w": max(260, (head_block or {}).get("w") or 0),
+        "h": max(44, (head_block or {}).get("h") or 0),
+        "font": (head_block or {}).get("font") or 17,
+    }
+    _layout, head_w, head_h, head_font = _block_layout(head_layout_input)
+    head_top = final_top - 26 - head_h
     lm_head = _rect_block(parts, info, shadow_id, "lm_head",
-                          cx - 130, 70 + mtp_pad, 260, 44,
-                          _block_label(
-                              info, "lm_head", "Output stage unresolved"),
-                          font_size=17,
+                          cx - head_w / 2, head_top, head_w, head_h,
+                          head_label,
+                          font_size=head_font,
                           resolved=(
-                              canonical_blocks.get("lm_head") is not None
+                              head_block is not None
                               and _is_resolved_diffusion_block(
                                   is_diffusion, info, "lm_head",
-                                  canonical_blocks.get("lm_head"),
+                                  head_block,
                               )
                           ))
 
@@ -494,7 +533,10 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     # group's layer count — not the global total — to stay consistent with its
     # own toggle pill ("L3–L60 · 58×"). Falls back to the total when no group
     # indices are available (single homogeneous stack ⇒ identical anyway).
-    if repeated_region:
+    # Zero materialized layers means the repeated body is unresolved, not that
+    # the architecture repeats zero times. Keep the honest opaque region above
+    # but never turn absence of a proven count into a misleading ``x 0`` claim.
+    if repeat_n > 1:
         parts.append(_svg_tag("rect", {
             "x": inner_x + inner_w - 78, "y": inner_y + 12,
             "width": 66, "height": 26, "rx": 13, "ry": 13,
@@ -510,7 +552,7 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     # one stack plays several roles (e.g. a shared encoder/decoder), right-aligned
     # to the badge so it reads as a footnote to the repeat count.
     repeat_note = ((ir.get("extras") or {}).get("render") or {}).get("repeat_note")
-    if repeat_note and repeated_region:
+    if repeat_note and repeat_n > 1:
         note_y = inner_y + 50
         for line in (repeat_note if isinstance(repeat_note, list) else [repeat_note]):
             parts.append(_svg_text(

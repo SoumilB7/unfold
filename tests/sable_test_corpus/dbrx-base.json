@@ -57,19 +57,19 @@
     "172dd903895de84a46acdd979242decc",
     "457c6853dedb78425e5c85c2cc171b63",
     "7c73b6aeef876249dabbc347060d78fb",
-    "f31ea267a8c776864a17dd46d264e548",
+    "9bdbcf5d2def935a5841d12f719e4acd",
     "feac69d7eb366a819fdf3a98fef2ddc7",
     "ff13ffe154dd7f96056aadbbcdf40c13"
   ],
   "model": "dbrx-base",
   "source": "local",
   "superseded_hash_signature": [
-    "083538c47d74c4dfefb4def6b6550ab5",
     "172dd903895de84a46acdd979242decc",
     "457c6853dedb78425e5c85c2cc171b63",
     "7c73b6aeef876249dabbc347060d78fb",
-    "85a5fba096a233a4134bc56c0cd1b3eb",
-    "f31ea267a8c776864a17dd46d264e548"
+    "f31ea267a8c776864a17dd46d264e548",
+    "feac69d7eb366a819fdf3a98fef2ddc7",
+    "ff13ffe154dd7f96056aadbbcdf40c13"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/dbrx-base",

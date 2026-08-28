@@ -4,7 +4,7 @@ Replaces the four separate registers (``LEGACY_EXTRAS``,
 ``DRAWN_UNLEDGERED_DEBT``, ``PENDING_PROJECTION_DEBT``,
 ``PENDING_CONFIG_CLASSIFICATION``) with a single exact schema.  A debt row is
 not an allowlist entry: it names the WRITER (module + symbol + sink + target),
-the CONSUMER that still needs the raw form, the U3–U14 unit that migrates it,
+the CONSUMER that still needs the raw form, the U3–U15 unit that migrates it,
 and a deletion condition a machine can evaluate — so "stale" and "growth" are
 blocking gates, not judgment calls, and deleting/migrating a writer must
 shrink the register in the same commit.
@@ -35,8 +35,10 @@ from pathlib import Path
 # --------------------------------------------------------------------------- #
 # Closed vocabularies
 # --------------------------------------------------------------------------- #
-# U3–U14 only (§R6: "Every row must be assigned to U3–U14 or deleted now").
-MIGRATION_UNITS = frozenset(f"U{i}" for i in range(3, 15))
+# The current master plan runs through U15.  The original U2 register ended at
+# U14; extending this closed vocabulary is required so U15's final semantic-
+# config deletion work is named honestly instead of being mislabeled as U14.
+MIGRATION_UNITS = frozenset(f"U{i}" for i in range(3, 16))
 
 # The census sink kinds, plus the two debt families that are not raw-write
 # sinks: a leaf the renderer draws without a ledger fact ("drawn_leaf" — the
@@ -106,7 +108,7 @@ class StructuralDebt:
     structural_target: str         # EXACT target — never a family prefix
     reason: str                    # why the raw form still exists
     last_consumer: str             # '<module>::<symbol>' that still reads it
-    migration_unit: str            # U3–U14 (H7/H8/UNASSIGNED are rejected)
+    migration_unit: str            # U3–U15 (H7/H8/UNASSIGNED are rejected)
     deletion_condition: str        # closed-DSL predicate (see module docstring)
     census_target: str | None = None  # census key when the write site is
     #   dynamically keyed ('<dynamic>'/'<update>') — the row stays EXACT about
@@ -124,7 +126,7 @@ class StructuralDebt:
         if self.migration_unit not in MIGRATION_UNITS:
             raise ValueError(
                 f"{self.sink_kind}:{self.structural_target}: migration_unit "
-                f"{self.migration_unit!r} is not U3–U14 — H-era units, "
+                f"{self.migration_unit!r} is not U3–U15 — H-era units, "
                 f"'scoped' and UNASSIGNED block U2 (§R6)")
         if "::" not in self.last_consumer:
             raise ValueError(
@@ -151,7 +153,7 @@ class StructuralDebt:
 
 # --------------------------------------------------------------------------- #
 # The register — every row EXACT (owner + writer + sink + target + consumer +
-# U3–U14 unit + checkable deletion condition).  Replaces LEGACY_EXTRAS,
+# U3–U15 unit + checkable deletion condition).  Replaces LEGACY_EXTRAS,
 # DRAWN_UNLEDGERED_DEBT, PENDING_PROJECTION_DEBT and
 # PENDING_CONFIG_CLASSIFICATION (U2-R6; row content from the reviewed
 # writer/consumer audit in z-docs/07-current-state/r6-debt-rows.md).
@@ -206,12 +208,12 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             occurrence="text_cfg final_logit_softcapping"),
     _extras("block_diffusion", "root",
             "block-diffusion canvas descriptor as raw extras",
-            "U10", "fact_registered:block_diffusion_canvas",
+            "U14", "fact_registered:block_diffusion_canvas",
             occurrence="cfg canvas_length",
             consumer="model_unfolder/renderers/html/views_diffusion.py::"
                      "_build_block_diffusion_view"),
     _extras("block_diffusion.canvas_length", "root",
-            "canvas length as a raw extras leaf", "U10",
+            "canvas length as a raw extras leaf", "U14",
             "fact_registered:block_diffusion_canvas",
             consumer="model_unfolder/renderers/html/views_diffusion.py::"
                      "_build_block_diffusion_view"),
@@ -229,12 +231,13 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             module=_DP, symbol="_parse_unet_model",
             consumer="model_unfolder/renderers/html/sections.py::"
                      "_stats_banner"),
-    _extras("render", "root",
-            "DiT-side render-spec author (same PRESENTATION debt)",
-            "U5", "no_writer:extras:render",
-            module=_DP, symbol="parse",
-            consumer="model_unfolder/renderers/html/sections.py::"
-                     "_stats_banner"),
+    _extras("render", "root.denoiser",
+            "U10-F3 source-projected render DTO; presentation remains a raw "
+            "extras transport until the U14 renderer boundary is typed",
+            "U14", "no_writer:extras:render",
+            occurrence="U10 source projection + U11/U12/U13 handoffs",
+            module=_DP, symbol="_parse_projected_denoiser",
+            consumer="model_unfolder/renderers/html/metadata.py::_block_lookup"),
     _extras("modalities", "root",
             "multimodal tower descriptors merged into extras via the "
             "dynamic-keyed _merge_extras loop",
@@ -259,15 +262,6 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             module=_DP, symbol="_parse_unet_model",
             consumer="model_unfolder/renderers/html/sections.py::"
                      "_diffusion_stats"),
-    _extras("diffusion", "root",
-            "DiT/MMDiT meta descriptor (stream counts/dims/text-encoders/"
-            "scheduler) as raw extras", "U10",
-            "fact_registered:diffusion_meta",
-            occurrence="denoiser config stream/dim fields + pipeline "
-                       "text_encoders/scheduler",
-            module=_DP, symbol="parse",
-            consumer="model_unfolder/renderers/html/sections.py::"
-                     "_diffusion_stats"),
     _extras("unet", "root",
             "full UNet block-structure descriptor as raw extras",
             "U11", "fact_registered:unet_blocks",
@@ -284,7 +278,7 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "root.denoiser", "max_sequence_length",
             "max text-token sequence the denoiser conditions on (Mochi) — "
             "a declared conditioning limit",
-            "U10", "fact_registered:denoiser_conditioning_limit"),
+            "U15", "classified:max_sequence_length"),
     _config("the composite conditioning encoder's attention geometry",
             "root.conditioning", "text_encoder.num_heads",
             "U9 now proves the exact task-specific text-encoder occurrence "
@@ -333,7 +327,7 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "root.denoiser", "activation_fn",
             "the activation operand is visible, but only an exact denoiser "
             "constructor dispatch may project it as FFN mechanism evidence",
-            "U10", "fact_registered:dit_ffn_activation_binding"),
+            "U15", "classified:activation_fn"),
     _config("the VAE-decoder ResNet cells' activation chip",
             "root.vae", "_vae_config.act_fn",
             "the VAE decoder's convolution activation (video VAEs) — a "
@@ -430,21 +424,21 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
     _config("the denoiser projection-bias fact", "root.denoiser",
             "attention_bias",
             "declaration awaits exact denoiser projection-construction binding",
-            "U10", "fact_registered:denoiser_attention_bias"),
+            "U15", "classified:attention_bias"),
     _config("the denoiser Q/K-normalization fact", "root.denoiser",
             "qk_norm",
             "declaration awaits exact denoiser Q/K norm execution binding",
-            "U10", "fact_registered:qk_norm"),
+            "U15", "classified:qk_norm"),
     _config("the denoiser rotary-application fact", "root.denoiser",
             "use_rotary_positional_embeddings",
             "declaration awaits exact denoiser positional call binding; "
             "it cannot independently author Q/K rotation",
-            "U10", "fact_registered:position_kind"),
+            "U15", "classified:use_rotary_positional_embeddings"),
     _config("the denoiser rotary-geometry fact", "root.denoiser",
             "rope_theta",
             "numeric rotary operand awaits the denoiser-owned positional "
             "application and geometry proof in U10",
-            "U10", "fact_registered:denoiser_rope_parameters"),
+            "U15", "classified:rope_theta"),
     _config("the UNet ResNet-cell norm chip",
             "root.denoiser", "norm_num_groups",
             "GroupNorm group count declared on UNet/legacy-DiT denoisers — "
@@ -618,30 +612,97 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "projection_class_embeddings_input_dim",
             "render-only added-conditioning block today",
             "U11", "fact_registered:unet_added_conditioning"),
+    # U10-F4 deleted the generic present-field -> chip author.  These UNet
+    # declarations were previously made to look "handled" only because that
+    # author read them; none currently has a source-bound structural consumer.
+    # Keep them as exact U11 occurrences instead of restoring the read or
+    # silently treating the field spelling as architecture.
+    _config("the added-conditioning attention head count", "root.denoiser",
+            "addition_embed_type_num_heads",
+            "the checkpoint declaration needs the exact U11 added-conditioning "
+            "constructor before it can parameterize a drawn mechanism",
+            "U11", "fact_registered:unet_added_conditioning"),
+    _config("the denoiser input-centering operation", "root.denoiser",
+            "center_input_sample",
+            "field presence cannot create the input arithmetic; U11 must bind "
+            "the exact root-forward branch",
+            "U11", "fact_registered:unet_input_centering"),
+    _config("the class-conditioning concatenation", "root.denoiser",
+            "class_embeddings_concat",
+            "U11 must prove where the class embedding joins the state",
+            "U11", "fact_registered:unet_class_conditioning"),
+    _config("the input-convolution kernel", "root.denoiser",
+            "conv_in_kernel",
+            "numeric declaration awaits the exact U11 input-convolution owner",
+            "U11", "fact_registered:unet_input_projection"),
+    _config("the output-convolution kernel", "root.denoiser",
+            "conv_out_kernel",
+            "numeric declaration awaits the exact U11 output-convolution owner",
+            "U11", "fact_registered:unet_output_projection"),
+    _config("the downsampling padding", "root.denoiser",
+            "downsample_padding",
+            "numeric declaration awaits the exact U11 downsampler occurrence",
+            "U11", "fact_registered:unet_downsampling"),
+    _config("the dual-cross-attention selector", "root.denoiser",
+            "dual_cross_attention",
+            "a boolean declaration cannot prove the constructed attention path",
+            "U11", "fact_registered:unet_attention"),
+    _config("the mid-block residual scale", "root.denoiser",
+            "mid_block_scale_factor",
+            "the scale must bind to the exact U11 mid-block residual expression",
+            "U11", "fact_registered:unet_residual_topology"),
+    _config("the ResNet output residual scale", "root.denoiser",
+            "resnet_out_scale_factor",
+            "the scale must bind to the exact U11 ResNet residual expression",
+            "U11", "fact_registered:unet_residual_topology"),
+    _config("the time-activation skip branch", "root.denoiser",
+            "resnet_skip_time_act",
+            "U11 must prove the exact ResNet timestep-conditioning dataflow",
+            "U11", "fact_registered:unet_time_conditioning"),
+    _config("the ResNet time scale/shift mechanism", "root.denoiser",
+            "resnet_time_scale_shift",
+            "the enum cannot select modulation until U11 binds its source branch",
+            "U11", "fact_registered:unet_time_conditioning"),
+    _config("the timestep-condition projection width", "root.denoiser",
+            "time_cond_proj_dim",
+            "numeric declaration awaits the exact U11 condition projector",
+            "U11", "fact_registered:unet_time_conditioning"),
+    _config("the timestep-embedding activation", "root.denoiser",
+            "time_embedding_act_fn",
+            "activation spelling awaits the exact U11 embedding operation",
+            "U11", "fact_registered:unet_time_embedding"),
+    _config("the timestep-embedding mechanism", "root.denoiser",
+            "time_embedding_type",
+            "the enum cannot create an embedding graph without U11 source proof",
+            "U11", "fact_registered:unet_time_embedding"),
+    _config("the timestep post-activation", "root.denoiser",
+            "timestep_post_act",
+            "activation spelling awaits the exact U11 post-embedding operation",
+            "U11", "fact_registered:unet_time_embedding"),
     _config("the conditioning card's max-text-tokens chip (CogVideoX "
             "spelling)", "root.denoiser", "max_text_seq_length",
             "declared conditioning limit — the same mechanism as the "
             "max_sequence_length row; chip-only today",
-            "U10", "fact_registered:denoiser_conditioning_limit"),
+            "U15", "classified:max_text_seq_length"),
     _config("the DiT FFN inner-width derivation", "root.denoiser",
             "ffn_dim_multiplier",
             "Lumina-family inner width = round(2/3*4h; multiple_of, "
             "ffn_dim_multiplier); chip-only today while the drawn width "
             "stays unknown until the derivation is registered",
-            "U10", "fact_registered:ffn_width_derived"),
+            "U15", "classified:ffn_dim_multiplier"),
     _config("the DiT FFN inner-width derivation (rounding quantum)",
             "root.denoiser", "multiple_of",
             "pairs with ffn_dim_multiplier",
-            "U10", "fact_registered:ffn_width_derived"),
+            "U15", "classified:multiple_of"),
     _config("the cross-attention sublayer's own head geometry",
             "root.denoiser", "num_cross_attention_heads",
             "Sana declares distinct cross heads; the drawn cross-attn "
             "sublayer reuses the SELF spec today (chip only)",
-            "U10", "fact_registered:cross_attention_geometry"),
+            "U15", "classified:num_cross_attention_heads"),
     _config("the cross-attention sublayer's own head geometry (head width)",
             "root.denoiser", "cross_attention_head_dim",
             "pairs with num_cross_attention_heads",
-            "U10", "fact_registered:cross_attention_geometry"),
+            "U15", "classified:cross_attention_head_dim"),
     # ---- vision residue: reads whose consuming form awaits the named
     # ---- vision facts (per-occurrence, exact paths) ----------------------- #
     _config("the vision tower position table (raw spelling probe)",
@@ -688,6 +749,78 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "class-serialized copy the parse never reads (the root-level "
             "occurrence is the consumed decoderness read)",
             "U9", "classified:vision_config.is_encoder_decoder"),
+)
+
+# U10-F4 made the source/config projector the sole denoiser author.  The old
+# config-driven cards had silently counted every familiar declaration as
+# "handled" even when no source occurrence established what it meant.  These
+# exact checkpoint paths are the honest carry-forward exposed by deleting that
+# author.  They create no architecture and excuse no sibling/path: U15 must
+# classify each exact owner/path occurrence after its source-bound use is
+# known, or remove the read.  The
+# VAE paths are independently owned U12 component work.
+_DIFFUSION_SOURCE_CLOSURE_PATHS = (
+    "added_kv_proj_dim", "attention_head_dim", "attention_out_bias",
+    "attention_type", "axes_dim", "axes_dim_rope", "axes_dims_rope",
+    "axes_lens", "bottleneck_size", "boundary_ratio", "cap_feat_dim",
+    "caption_channels", "caption_projection_dim", "context_in_dim",
+    "cross_attn_norm", "cross_attention_dim", "default_sample_size",
+    "double_self_attention", "eps", "ffn_dim", "flip_sin_to_cos",
+    "freq_dim", "freq_shift", "guidance_embeds", "hidden_size",
+    "image_dim", "in_channels", "interpolation_scale",
+    "joint_attention_dim", "mlp_ratio", "norm_elementwise_affine",
+    "norm_type", "num_attention_heads", "num_embeds_ada_norm",
+    "num_heads", "num_kv_heads", "num_layers", "num_mmdit_layers",
+    "num_single_dit_layers", "num_single_layers", "only_cross_attention",
+    "out_channels", "patch_size", "patch_size_t", "pooled_projection_dim",
+    "pos_embed_max_size", "pos_embed_seq_len", "resolution_embeds",
+    "rope_axes_dim", "rope_max_seq_len", "sample_frames", "sample_height",
+    "sample_size", "sample_width", "scheduler",
+    "spatial_interpolation_scale", "temporal_compression_ratio",
+    "temporal_interpolation_scale", "text_dim", "text_embed_dim", "theta",
+    "time_embed_dim", "time_factor", "time_max_period",
+    "timestep_activation_fn", "timestep_guidance_channels",
+    "upcast_attention", "use_additional_conditions",
+    "use_linear_projection",
+)
+_VAE_SOURCE_CLOSURE_PATHS = (
+    "_vae_config.add_attention_block", "_vae_config.attn_scales",
+    "_vae_config.batch_norm_eps", "_vae_config.batch_norm_momentum",
+    "_vae_config.decoder_act_fns", "_vae_config.decoder_block_types",
+    "_vae_config.decoder_causal", "_vae_config.decoder_layers_per_block",
+    "_vae_config.decoder_norm_types", "_vae_config.decoder_qkv_multiscales",
+    "_vae_config.downsample_block_type",
+    "_vae_config.encoder_block_out_channels",
+    "_vae_config.encoder_block_types", "_vae_config.encoder_causal",
+    "_vae_config.encoder_layers_per_block",
+    "_vae_config.encoder_qkv_multiscales",
+    "_vae_config.invert_scale_latents", "_vae_config.resnet_norm_eps",
+    "_vae_config.sample_size", "_vae_config.spatial_compression_ratio",
+    "_vae_config.spatial_expansions", "_vae_config.spatio_temporal_scaling",
+    "_vae_config.temperal_downsample", "_vae_config.temporal_expansions",
+    "_vae_config.upsample_block_type",
+)
+
+_already_registered_config_paths = frozenset(
+    (row.owner, row.source_occurrence) for row in STRUCTURAL_DEBT
+    if row.sink_kind == "config_read")
+STRUCTURAL_DEBT += tuple(
+    _config(
+        "an exact denoiser source/config operand", "root.denoiser", path,
+        "the config-driven denoiser author is deleted; this checkpoint value "
+        "cannot project until an exact U10 source occurrence retains its path",
+        "U15", f"classified:{path}")
+    for path in _DIFFUSION_SOURCE_CLOSURE_PATHS
+    if ("root.denoiser", path) not in _already_registered_config_paths
+)
+STRUCTURAL_DEBT += tuple(
+    _config(
+        "an exact VAE component operand", "root.vae", path,
+        "the generic config-fact chip is not denoiser authority; U12 must bind "
+        "this exact VAE occurrence to its component source graph",
+        "U12", f"classified:{path}")
+    for path in _VAE_SOURCE_CLOSURE_PATHS
+    if ("root.vae", path) not in _already_registered_config_paths
 )
 
 
@@ -738,6 +871,8 @@ _CONSUMER_DEBT_BASELINE = (
     ('model_unfolder/expanded/modalities.py', '_normalise_fusion', 'json', 'raw_extras', 'dc4c7690e4e88477'),
     ('model_unfolder/expanded/pathways.py', 'build_external_pathways', 'json', 'raw_extras', '8b89b379fd823424'),
     ('model_unfolder/expanded/sections.py', '_diffusion_io', 'json', 'raw_extras', '720bc5b7888319bc'),
+    ('model_unfolder/expanded/sections.py', '_is_projected_diffusion', 'json', 'raw_extras', '8048b69bd5b33a4e'),
+    ('model_unfolder/expanded/sections.py', '_projected_diffusion_io', 'json', 'raw_extras', '8309e956d0a3abbf'),
     ('model_unfolder/expanded/sections.py', '_is_diffusion', 'json', 'raw_extras', '538efc70e7a2bf65'),
     ('model_unfolder/expanded/sections.py', 'build_dimensions', 'json', 'raw_extras', 'ab038e67ecaac4d6'),
     ('model_unfolder/expanded/sections.py', 'build_io', 'json', 'raw_extras', 'b99c4724e4ce0076'),
@@ -772,14 +907,14 @@ _CONSUMER_DEBT_BASELINE = (
     ('model_unfolder/renderers/html/metadata_modalities.py', '_vision_cell_cards', 'renderer', 'backward_import', '962109a2344e67b0'),
     ('model_unfolder/renderers/html/sections.py', '_diffusion_stats', 'renderer', 'raw_extras', 'da27bb4cf97df230'),
     ('model_unfolder/renderers/html/sections.py', '_stats_banner', 'renderer', 'raw_extras', '538efc70e7a2bf65'),
-    ('model_unfolder/renderers/html/views.py', '_build_architecture_view', 'renderer', 'raw_extras', '8b5136957d2d757c'),
+    ('model_unfolder/renderers/html/views.py', '_build_architecture_view', 'renderer', 'raw_extras', '933be75c6d3a7af4'),
     ('model_unfolder/renderers/html/views.py', '_is_diffusion_architecture', 'renderer', 'raw_extras', '538efc70e7a2bf65'),
     ('model_unfolder/renderers/html/views_diffusion.py', '_build_block_diffusion_loop_cards', 'renderer', 'raw_extras', '261bebf740a7e89d'),
     ('model_unfolder/renderers/html/views_diffusion.py', '_build_block_diffusion_view', 'renderer', 'raw_extras', '1c3216f252696602'),
     ('model_unfolder/renderers/html/views_diffusion.py', '_build_loop_cards', 'renderer', 'raw_extras', '1daab3bea1a4e581'),
     ('model_unfolder/renderers/html/views_diffusion.py', '_build_loop_descendant_levels', 'renderer', 'raw_extras', '261bebf740a7e89d'),
-    ('model_unfolder/renderers/html/views_diffusion.py', '_build_loop_view', 'renderer', 'raw_extras', 'b6d427b43e3e45aa'),
-    ('model_unfolder/renderers/html/views_diffusion.py', 'render_diffusion_fragment', 'renderer', 'raw_extras', '2a9f26e37a501e39'),
+    ('model_unfolder/renderers/html/views_diffusion.py', '_build_loop_view', 'renderer', 'raw_extras', '07d25d5749cfe49b'),
+    ('model_unfolder/renderers/html/views_diffusion.py', 'render_diffusion_fragment', 'renderer', 'raw_extras', '45077a51a50d7e69'),
 )
 
 _CONSUMER_REASONS = {

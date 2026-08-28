@@ -2,7 +2,7 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
-    "config_accessed_unprojected": false,
+    "config_accessed_unprojected": true,
     "config_ambiguity": true,
     "config_audit_incomplete": true,
     "config_consumed_unreceipted": true,
@@ -187,6 +187,19 @@
   "hash_signature": [
     "32311456673ecb212665b6daec31244b",
     "40353f89e3ee2ed8274ea740b2639aad",
+    "84f18c811f524ad4554b856d60f3cf76",
+    "9680b5f576b615bc5ee7a1dabc19b8ac",
+    "a231bff4bbec60dcefc2418d24e752c5",
+    "bd5ea055d875f294bdc01cc849dfa287",
+    "d7d9354966f4495a28c380d90a280dd3",
+    "da3c244d153e062cc3c85270c44ab8fe",
+    "e015a4816724ea7a885f7c7b4a522040"
+  ],
+  "model": "mochi-1-preview",
+  "source": "local",
+  "superseded_hash_signature": [
+    "32311456673ecb212665b6daec31244b",
+    "40353f89e3ee2ed8274ea740b2639aad",
     "572b368ac83429343bfde6f10c750426",
     "6f06108c5914d914f7642adcb76747ba",
     "84f18c811f524ad4554b856d60f3cf76",
@@ -197,23 +210,9 @@
     "c5cc5eee15e31c66f7795620d62aae28",
     "d7d9354966f4495a28c380d90a280dd3"
   ],
-  "model": "mochi-1-preview",
-  "source": "local",
-  "superseded_hash_signature": [
-    "40353f89e3ee2ed8274ea740b2639aad",
-    "572b368ac83429343bfde6f10c750426",
-    "6f06108c5914d914f7642adcb76747ba",
-    "7ecbceb14ff9f655dd984ee36fccc010",
-    "84f18c811f524ad4554b856d60f3cf76",
-    "8cad9b052b856579e665c84c9a487ae9",
-    "8f49f25a13561f80d292dce2504feaad",
-    "98b551a864d0cf05de9cdc1f9a12919e",
-    "bd5ea055d875f294bdc01cc849dfa287",
-    "d7d9354966f4495a28c380d90a280dd3"
-  ],
   "visual_evidence": {
     "gallery_dir": "galleries/mochi-1-preview",
     "manifest": true,
-    "png_count": 11
+    "png_count": 9
   }
 }

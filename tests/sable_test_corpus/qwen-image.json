@@ -280,6 +280,23 @@
     ]
   },
   "hash_signature": [
+    "3130960a49a7b5755a03df71c863676c",
+    "4b43fdd076d4dd5d6a6b852d96353ec3",
+    "5287cc8501c929c34e6d0b43d7731cf3",
+    "7971836ffdbcd94804b0c77b9f555d67",
+    "7f41627be6aa078212fb696cf99a7cc6",
+    "8b2186f92c2513348ed190b47cc83a68",
+    "bb58470aeb416484a80788857c79da0f",
+    "bca741a288ebc432209718d9d589178d",
+    "bdd81d368bf59ce20a6ac9cd400f917d",
+    "bffeb36bdbcb899a9b7c4cb2ff4ab759",
+    "c42470bb064f1f176b6efece5ccc2353",
+    "ce1353b7fc7865ce338424217feebd28",
+    "e8dcb9875790ae898ed6b47b4d76810c"
+  ],
+  "model": "Qwen-Image",
+  "source": "local",
+  "superseded_hash_signature": [
     "1e58438e40005161df8d5109c200f77a",
     "3130960a49a7b5755a03df71c863676c",
     "44ef61e7b4ed7f37e080a5a9d28eb7b9",
@@ -295,27 +312,9 @@
     "c42470bb064f1f176b6efece5ccc2353",
     "eeff7084747029722a3e5f82c1da7799"
   ],
-  "model": "Qwen-Image",
-  "source": "local",
-  "superseded_hash_signature": [
-    "1aece150f1048be9348e7398823a1e9a",
-    "1e58438e40005161df8d5109c200f77a",
-    "2319a133deadaba917c889b26f29aca1",
-    "3130960a49a7b5755a03df71c863676c",
-    "44ef61e7b4ed7f37e080a5a9d28eb7b9",
-    "49617433d6f0a04076ce7bf0a0a3ef6e",
-    "4b43fdd076d4dd5d6a6b852d96353ec3",
-    "5287cc8501c929c34e6d0b43d7731cf3",
-    "54024ddad247e1e0cb8a94e7100a5070",
-    "7971836ffdbcd94804b0c77b9f555d67",
-    "a85265a7ec2cb379fee3cc2c5693bf37",
-    "bb58470aeb416484a80788857c79da0f",
-    "bca741a288ebc432209718d9d589178d",
-    "c42470bb064f1f176b6efece5ccc2353"
-  ],
   "visual_evidence": {
     "gallery_dir": "galleries/qwen-image",
     "manifest": true,
-    "png_count": 14
+    "png_count": 13
   }
 }

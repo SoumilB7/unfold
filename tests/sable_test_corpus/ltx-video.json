@@ -2,7 +2,7 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
-    "config_accessed_unprojected": false,
+    "config_accessed_unprojected": true,
     "config_ambiguity": true,
     "config_audit_incomplete": true,
     "config_consumed_unreceipted": true,
@@ -166,6 +166,22 @@
     ]
   },
   "hash_signature": [
+    "079f49a78fa589f8e182a44fa19c6ac9",
+    "2358e47255259136523f02cab857a2fc",
+    "338d0536b4433a96e8e20d6000bc8913",
+    "501c7849f8eb19ace44a57d41c2e4a91",
+    "5f269504119783f495b5ab23b6862694",
+    "827b139178897fdcaae879dd731d7a7c",
+    "93a6224dc92aa853f3ca6b5d28eef821",
+    "9680b5f576b615bc5ee7a1dabc19b8ac",
+    "abfe3905ea9858c63efcfe9845fb21ef",
+    "adb36f996d31ed0043c1747d45e4a049",
+    "ba3983a841063a93922f6df9b89ed562",
+    "d799f67f993f85b7f13a4c1687f5ac9c"
+  ],
+  "model": "LTX-Video",
+  "source": "local",
+  "superseded_hash_signature": [
     "2358e47255259136523f02cab857a2fc",
     "338d0536b4433a96e8e20d6000bc8913",
     "501c7849f8eb19ace44a57d41c2e4a91",
@@ -180,25 +196,9 @@
     "cc98e5ee25cc3d56c6d03dc11428f75d",
     "f7a05b6da2a5c9fc1824403377cf4fd4"
   ],
-  "model": "LTX-Video",
-  "source": "local",
-  "superseded_hash_signature": [
-    "2358e47255259136523f02cab857a2fc",
-    "338d0536b4433a96e8e20d6000bc8913",
-    "46880c97e67236c4c227b44f2960e984",
-    "501c7849f8eb19ace44a57d41c2e4a91",
-    "71cbc046ab19eaa80eafa3db7884f34a",
-    "827b139178897fdcaae879dd731d7a7c",
-    "82bd731ba8edda860149b28d88ae9145",
-    "98b551a864d0cf05de9cdc1f9a12919e",
-    "ba3983a841063a93922f6df9b89ed562",
-    "bd56357e9127c33322064c9b9401ec96",
-    "cc98e5ee25cc3d56c6d03dc11428f75d",
-    "f7a05b6da2a5c9fc1824403377cf4fd4"
-  ],
   "visual_evidence": {
     "gallery_dir": "galleries/ltx-video",
     "manifest": true,
-    "png_count": 13
+    "png_count": 12
   }
 }

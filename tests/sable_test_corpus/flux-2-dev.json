@@ -2,7 +2,7 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
-    "config_accessed_unprojected": false,
+    "config_accessed_unprojected": true,
     "config_ambiguity": true,
     "config_audit_incomplete": true,
     "config_consumed_unreceipted": true,
@@ -237,22 +237,22 @@
     ]
   },
   "hash_signature": [
-    "085f0835d6b93b7ca9c2760f40f5188f",
     "09100bb2c03d93e81e3cfbb0adf9b8e5",
     "0c4d54d74dbaf9faa10d2c86b62152ab",
     "17c4013edb73ab284de6a7fe44a96ff1",
     "1d4bfd5ea6a35d7a8d8b7cab02306d63",
-    "2151c03853d290e19096cdfed43cea97",
-    "279814c981d32a1c4c43b88ca7444007",
     "2a2dd9aa80c5b81de5969cadfcb98e30",
+    "2ddd715e8b65531f304b9153475225d7",
+    "7aae638a87e842508ee10e0762b1cd3e",
+    "7f603e777da042c858de0b3e5be83467",
     "82f6890df2f04dbf9a21995ab1fe2599",
     "8c34ab04eded9602ef9bc1449606e686",
+    "915f743f155e2fffe09f215eac102e3f",
     "920615e9b0555b9d140a982b5b2c93c7",
     "a759406e5f5eb86007274717b92c59a5",
     "b28b57af7a35527bb97d9eae2fdf5ffb",
-    "b4a3c049d9e85b787fdf58d9f19e1941",
     "e60e4f00008fdd1f3e9bb1582c0ad6a5",
-    "f28738dea24d92ddc813b65bcae7f2f8"
+    "f9e174412a64197f5fc2fe2012f1762c"
   ],
   "model": "FLUX.2-dev",
   "source": "local",
@@ -271,8 +271,8 @@
     "a759406e5f5eb86007274717b92c59a5",
     "b28b57af7a35527bb97d9eae2fdf5ffb",
     "b4a3c049d9e85b787fdf58d9f19e1941",
-    "c49b417cc25419fb61bae87432c1bcf0",
-    "e60e4f00008fdd1f3e9bb1582c0ad6a5"
+    "e60e4f00008fdd1f3e9bb1582c0ad6a5",
+    "f28738dea24d92ddc813b65bcae7f2f8"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/flux-2-dev",

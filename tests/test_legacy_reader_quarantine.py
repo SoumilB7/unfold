@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_legacy_semantic_reader_quarantine_is_exact_and_cannot_grow():
-    assert len(LEGACY_SEMANTIC_READERS) == 17
+    assert len(LEGACY_SEMANTIC_READERS) == 5
     assert legacy_reader_quarantine_problems(ROOT) == ()
 
 
@@ -26,11 +26,11 @@ def test_every_quarantined_reader_has_one_future_owner_and_deletion_condition():
 
 
 def test_every_evidence_parse_site_has_one_explicit_authority_class():
-    assert len(PARSE_AUTHORITY_SITES) == 25
-    assert len({row.site for row in PARSE_AUTHORITY_SITES}) == 25
+    assert len(PARSE_AUTHORITY_SITES) == 20
+    assert len({row.site for row in PARSE_AUTHORITY_SITES}) == 20
     legacy = [row for row in PARSE_AUTHORITY_SITES
               if row.category == "legacy_model_source"]
-    assert len(legacy) == 14
+    assert len(legacy) == 9
     assert all(row.deletion_unit and row.reason for row in legacy)
     assert {row.category for row in PARSE_AUTHORITY_SITES} == {
         "central_program_index",
@@ -79,15 +79,15 @@ def test_poison_new_caller_of_existing_reader_is_blocking(tmp_path):
     evidence.mkdir(parents=True)
     adapter.mkdir(parents=True)
     (evidence / "patterns.py").write_text(
-        "def attention_score_scaling_from_files(files): return None\n",
+        "def unet_mid_block_present_from_files(files): return None\n",
         encoding="utf-8")
     (adapter / "poison.py").write_text(
         "def new_consumer(files):\n"
-        "    return attention_score_scaling_from_files(files)\n",
+        "    return unet_mid_block_present_from_files(files)\n",
         encoding="utf-8")
     problems = legacy_reader_quarantine_problems(tmp_path)
     assert any(
-        item.startswith("attention_score_scaling_from_files caller drift:")
+        item.startswith("unet_mid_block_present_from_files caller drift:")
         and "model_unfolder/adapters/poison.py:new_consumer" in item
         for item in problems)
 
@@ -98,21 +98,21 @@ def test_poison_qualified_or_aliased_reader_call_is_blocking(tmp_path):
     evidence.mkdir(parents=True)
     adapter.mkdir(parents=True)
     (evidence / "patterns.py").write_text(
-        "def attention_score_scaling_from_files(files): return None\n",
+        "def unet_mid_block_present_from_files(files): return None\n",
         encoding="utf-8")
     (adapter / "poison.py").write_text(
         "from model_unfolder.evidence.patterns import "
-        "attention_score_scaling_from_files as hidden_reader\n"
+        "unet_mid_block_present_from_files as hidden_reader\n"
         "import model_unfolder.evidence.patterns as patterns\n"
         "def aliased(files):\n"
         "    return hidden_reader(files)\n"
         "def qualified(files):\n"
-        "    return patterns.attention_score_scaling_from_files(files)\n",
+        "    return patterns.unet_mid_block_present_from_files(files)\n",
         encoding="utf-8")
     problems = legacy_reader_quarantine_problems(tmp_path)
     caller_problem = next(
         item for item in problems
-        if item.startswith("attention_score_scaling_from_files caller drift:"))
+        if item.startswith("unet_mid_block_present_from_files caller drift:"))
     assert "model_unfolder/adapters/poison.py:aliased" in caller_problem
     assert "model_unfolder/adapters/poison.py:qualified" in caller_problem
 
@@ -122,13 +122,13 @@ def test_poison_moving_reader_into_class_scope_is_blocking(tmp_path):
     evidence.mkdir(parents=True)
     (evidence / "patterns.py").write_text(
         "class Hidden:\n"
-        "    def attention_score_scaling_from_files(self, files):\n"
+        "    def unet_mid_block_present_from_files(self, files):\n"
         "        return None\n",
         encoding="utf-8")
     problems = legacy_reader_quarantine_problems(tmp_path)
     assert any(
-        item.startswith("attention_score_scaling_from_files definition drift:")
-        and "Hidden.attention_score_scaling_from_files" in item
+        item.startswith("unet_mid_block_present_from_files definition drift:")
+        and "Hidden.unet_mid_block_present_from_files" in item
         for item in problems)
 
 
@@ -152,7 +152,7 @@ def test_poison_reader_body_change_is_blocking(tmp_path):
     evidence = tmp_path / "model_unfolder" / "evidence"
     evidence.mkdir(parents=True)
     (evidence / "patterns.py").write_text(
-        "def attention_score_scaling_from_files(files):\n"
+        "def unet_mid_block_present_from_files(files):\n"
         "    return 'changed semantic answer'\n",
         encoding="utf-8")
     problems = legacy_reader_quarantine_problems(tmp_path)

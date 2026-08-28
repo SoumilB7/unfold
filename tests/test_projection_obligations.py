@@ -60,6 +60,26 @@ def test_every_drawn_leaf_is_registered_or_pinned_debt():
         f"owner-carrying debt row (fabrication): {fabricated}")
 
 
+def test_u10_diffusion_drawn_pairs_are_owner_qualified():
+    """The diffusion facts projected by the architecture/layer-map surfaces
+    participate in the same owner-exact reverse-fabrication law as decoder
+    facts.  In particular, stack-variant evidence belongs to its exact stack
+    occurrence rather than a bare ``stacks`` family or sibling occurrence.
+    """
+    expected = {
+        ("root.denoiser.stacks[i]", "diffusion_stack_depth"),
+        ("root.denoiser.stacks[i]", "diffusion_stack_variant"),
+        ("root.denoiser.stacks[i].cell", "diffusion_cell_topology"),
+        ("root.denoiser.stacks[i].ffn", "diffusion_ffn_mechanism"),
+        ("root.denoiser.stacks[i].attention[i]",
+         "diffusion_attention_head_protocol"),
+        ("root.denoiser", "diffusion_root_topology"),
+    }
+    assert expected <= DRAWN_PAIRS
+    assert all(drawn_leaf_is_lawful(owner, leaf)
+               for owner, leaf in expected)
+
+
 def test_poison_sibling_owner_debt_cannot_authorize_a_drawing():
     """Owner A holds unledgered debt for leaf X; owner B drawing X must FAIL.
     The poison supplies its own debt: a retired production debt row must not be
@@ -110,7 +130,7 @@ def test_every_registry_drawable_fact_is_actually_drawn():
 
 def test_drawn_unledgered_debt_is_fully_qualified():
     """§16.6 / U2-R6: every unledgered drawn leaf is an exact drawn_leaf row
-    (owner/writer/consumer/U3–U14 unit/checkable deletion condition enforced by
+    (owner/writer/consumer/U3–U15 unit/checkable deletion condition enforced by
     the StructuralDebt constructor); each is actually drawn (not stale)."""
     for name in _DEBT_NAMES:
         assert name in _ALL_DRAWN, \

@@ -18,6 +18,7 @@ from .attention_lane import FrameworkAttentionLaneEvidence
 from .call_arguments import bind_addressed_invocation
 from .component_owner import ComponentRootResolution, OwnerOccurrenceId
 from .construction_calls import resolve_import_reference
+from .config_guard import ExactConfigGuardResolver, NormalizedConfigValue
 from .cross_attention_replacement import attention_input_lineage_for_child
 from .decoder_norm import NormInvocationEvidence, norm_invocations_at_owner
 from .diffusion_block import DiffusionBlockFactInventory, DiffusionBlockFacts
@@ -32,6 +33,7 @@ from .program_index import (
     SourceSpan,
     SymbolId,
 )
+from .expression_eval import constructor_argument_env
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
 
 
@@ -311,13 +313,28 @@ class _LocalLineage:
                 matching = tuple(
                     (binding, item) for binding, item in definitions
                     if _guard_prefix(binding.guard, guard))
-                if not matching:
-                    return None
-                selected, selected_value = matching[-1]
-                candidates = ((selected, selected_value), *(
-                    (binding, item) for binding, item in definitions
-                    if not _guard_prefix(binding.guard, guard)
-                    and _before(selected.span, binding.span)))
+                if matching:
+                    selected, selected_value = matching[-1]
+                    candidates = ((selected, selected_value), *(
+                        (binding, item) for binding, item in definitions
+                        if not _guard_prefix(binding.guard, guard)
+                        and _before(selected.span, binding.span)))
+                else:
+                    if expression.name in self.formals:
+                        # A guarded-only reassignment of an input formal is not
+                        # exhaustive: the untouched path still reaches this
+                        # use from the original formal and cannot contain the
+                        # guarded producer.  Treating the observed guarded
+                        # writes as the whole path set laundered arbitrary
+                        # runtime conditions into unconditional relations.
+                        return False
+                    # A use outside guarded definitions has no single reaching
+                    # value.  It may still have a sound *positive* dependency
+                    # when every observed definition reaches the same exact
+                    # target (for example tuple-unpacking two possible arities
+                    # of one attention result).  One rival definition that
+                    # does not reach the target prevents the proof.
+                    candidates = definitions
                 states = tuple(self.reaches_span(
                     item, binding.span, target, binding.guard, seen | {key})
                     for binding, item in candidates)
@@ -371,23 +388,39 @@ class _LocalLineage:
                     return _Lineage(
                         frozenset((expression.name,)),
                         spans=(expression.span,))
-                # A formal remains the same stream when every possible prior
-                # write positively retains that formal (residual adds, clips,
-                # guarded transforms).  Other operands are numeric/contextual
-                # dependencies, not additional state identities.
-                candidates = tuple(
-                    self.trace(value, binding.span, binding.guard,
-                               seen | {key})
-                    for binding, value in definitions)
-                if all(not item.unresolved
-                       and expression.name in item.roots
-                       for item in candidates):
+                # Inspect the definitions that can actually reach this use,
+                # not every historical write to the same spelling.  A later
+                # unconditional residual can restore the original carrier
+                # after an intermediate FFN overwrote the local variable.
+                matching = tuple(
+                    (binding, value) for binding, value in definitions
+                    if _guard_prefix(binding.guard, guard))
+                if matching:
+                    selected = matching[-1]
+                    candidates = (selected, *(
+                        (binding, value) for binding, value in definitions
+                        if not _guard_prefix(binding.guard, guard)
+                        and _before(selected[0].span, binding.span)))
+                else:
+                    # With guarded writes only, the untouched path retains the
+                    # input formal.  Every observed guarded alternative must
+                    # also retain it before the positive proof is sound.
+                    candidates = definitions
+                # Other operands are numeric/contextual dependencies, not
+                # additional state identities.  Do not use ``trace`` as the
+                # predicate: an unresolved *other* operand does not make
+                # ``state = state + delta`` cease to be a state carrier.
+                retained = tuple(
+                    self._retains_state_formal(
+                        value, expression.name, binding.span, binding.guard,
+                        seen | {key})
+                    for binding, value in candidates)
+                if retained and all(item is True for item in retained):
                     return _Lineage(
                         frozenset((expression.name,)),
                         spans=tuple(dict.fromkeys((
                             expression.span,
-                            *(binding.span for binding, _ in definitions),
-                            *(span for item in candidates for span in item.spans),
+                            *(binding.span for binding, _ in candidates),
                         ))))
                 value, unresolved = self.definition(
                     expression.name, before, guard)
@@ -423,6 +456,14 @@ class _LocalLineage:
                 return self.state_carriers(
                     actual, expression.span, guard, seen).merge(
                         _Lineage(spans=(expression.span,)))
+            observed = next((item for item in self.calls
+                             if item.span == expression.span), None)
+            if observed is not None and self._is_join(observed):
+                # A framework concat is the one opaque call whose result is
+                # itself an exact multi-stream carrier: its protocol defines
+                # that relationship.  Reuse ``trace`` so the same call is also
+                # retained as explicit join provenance.
+                return self.trace(expression, before, guard, seen)
             # A bound tensor method preserves the receiver's state identity;
             # arbitrary call arguments do not manufacture state streams.
             if expression.children:
@@ -439,6 +480,121 @@ class _LocalLineage:
         return _Lineage(spans=(expression.span,)).merge(*(
             self.state_carriers(child, before, guard, seen)
             for child in children))
+
+    def _retains_state_formal(
+            self, expression: ExprNode | None, formal: str,
+            before: SourceSpan, guard: tuple = (),
+            seen=frozenset()) -> bool | None:
+        """Prove that an expression retains one exact formal state carrier.
+
+        ``True`` is positive preservation evidence.  ``False`` means the
+        observed expression does not carry the formal.  ``None`` means rival
+        reaching definitions prevent a sound answer.  Opaque calls are a hard
+        boundary: their arguments are numeric inputs, not proof that their
+        result preserves a state identity.
+        """
+        if expression is None or expression.span is None:
+            return None if expression is not None else False
+        if expression.kind == "constant":
+            return False
+        if expression.kind == "name":
+            if expression.name == "self":
+                return False
+            key = ("retains", expression.name, formal, before, guard)
+            if key in seen:
+                return None
+            if expression.name == formal:
+                definitions = self.definitions(formal, before)
+                if not definitions:
+                    return True
+                matching = tuple(
+                    (binding, value) for binding, value in definitions
+                    if _guard_prefix(binding.guard, guard))
+                if matching:
+                    selected = matching[-1]
+                    candidates = (selected, *(
+                        (binding, value) for binding, value in definitions
+                        if not _guard_prefix(binding.guard, guard)
+                        and _before(selected[0].span, binding.span)))
+                else:
+                    candidates = definitions
+                states = tuple(self._retains_state_formal(
+                    value, formal, binding.span, binding.guard, seen | {key})
+                    for binding, value in candidates)
+                if states and all(item is True for item in states):
+                    return True
+                return None if None in states else False
+            value, unresolved = self.definition(
+                expression.name, before, guard)
+            if unresolved:
+                return None
+            if value is None:
+                return False
+            return self._retains_state_formal(
+                value, formal, value.span or before, guard, seen | {key})
+        if expression.kind == "call":
+            call = next((item for item in self.transparent_calls
+                         if item.span == expression.span), None)
+            if call is not None:
+                actual = call.args[0] if call.args else next(
+                    (value for name, value in call.kwargs if name != "**"),
+                    None)
+                return self._retains_state_formal(
+                    actual, formal, expression.span, guard, seen)
+            observed = next((item for item in self.calls
+                             if item.span == expression.span), None)
+            if observed is not None and self._is_join(observed):
+                joined = self.trace(expression, before, guard, seen)
+                if formal in joined.roots:
+                    return True
+                return None if joined.unresolved else False
+            if expression.children:
+                callee = expression.children[0]
+                if callee.kind == "attribute" and callee.children:
+                    receiver = callee.children[0]
+                    if not (receiver.kind == "name"
+                            and receiver.name == "self"):
+                        return self._retains_state_formal(
+                            receiver, formal, expression.span, guard, seen)
+            return False
+        if expression.kind == "attribute" and expression.children \
+                and expression.children[0].kind == "name" \
+                and expression.children[0].name == "self":
+            return False
+        children = (expression.children[:1]
+                    if expression.kind == "subscript" else expression.children)
+        states = tuple(self._retains_state_formal(
+            child, formal, before, guard, seen) for child in children)
+        if True in states:
+            return True
+        return None if None in states else False
+
+    def ffn_slot_carriers(self, expression: ExprNode | None,
+                          before: SourceSpan,
+                          guard: tuple = ()) -> _Lineage:
+        """Associate an FFN input with an exact returned formal slot.
+
+        FFN lane association is intentionally weaker than returned-tensor
+        identity.  A callable may repeatedly transform the *same Python formal
+        slot* through an unclassified normalization before feeding its FFN.
+        When the exact input expression is that formal slot and its numeric
+        lineage still positively contains the same formal, the FFN belongs to
+        that lane.  A replacement whose lineage no longer contains the formal
+        is refused.  This uses occurrence identity, never a field/class/name
+        vocabulary.
+        """
+        carriers = self.state_carriers(expression, before, guard)
+        if carriers.roots and not carriers.unresolved:
+            return carriers
+        if expression is None or expression.kind != "name" \
+                or expression.name not in self.formals:
+            return carriers
+        traced = self.trace(expression, before, guard)
+        if traced.unresolved or expression.name not in traced.roots:
+            return carriers
+        return _Lineage(
+            frozenset((expression.name,)),
+            spans=tuple(dict.fromkeys((expression.span, *traced.spans))))
 
     def _is_join(self, call: CallObservation) -> bool:
         proof = resolve_import_reference(
@@ -635,12 +791,15 @@ class UnresolvedStreamRelation:
     lane_call: CallObservation
     reason: str
     spans: tuple[SourceSpan, ...]
+    state: str = "unresolved"
 
     def __post_init__(self):
         if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
                 or not isinstance(self.lane_call, CallObservation) \
                 or not self.reason:
             raise TypeError("an unresolved lane retains exact evidence and reason")
+        if self.state not in {"unresolved", "inactive_guard"}:
+            raise ValueError("unresolved-lane state vocabulary is closed")
         if self.lane_call.span not in self.spans:
             raise ValueError("unresolved-lane provenance includes its call")
 
@@ -797,6 +956,101 @@ def _lane_operands(index, root, lane, lineage):
     return q, k, ()
 
 
+def _self_field_expression(expression, field):
+    return bool(
+        expression is not None
+        and expression.kind == "attribute"
+        and expression.name == field
+        and len(expression.children) == 1
+        and expression.children[0].kind == "name"
+        and expression.children[0].name == "self")
+
+
+def _positive_lane_field_guard(root, lane):
+    """Whether a lane's only runtime guard tests its proven field's presence.
+
+    The positive lane census already carries the exact construction occurrence.
+    This helper closes only the corresponding ``self.<field> is not None``
+    execution path.  An arbitrary runtime/config predicate never inherits that
+    proof and remains unresolved.
+    """
+    call = lane.child.invocation.call
+    if not call.guard:
+        return False
+    if isinstance(lane.child, FrameworkAttentionLaneEvidence):
+        field = lane.child.construction.target
+    else:
+        node = root.graph.node_for(lane.block_occurrence)
+        matches = tuple(
+            child.via_field for child in (node.children if node else ())
+            if child.occurrence == lane.child.child_occurrence
+            and root.graph.node_for(child.occurrence) is child)
+        if len(matches) != 1:
+            return False
+        field = matches[0]
+    if len(call.guard) != 1 or not field:
+        return False
+    step = call.guard[0]
+    test = step.test
+    if step.kind not in {"if", "elif"} or test is None \
+            or test.kind != "compare" or test.operator != "is not" \
+            or len(test.children) != 2:
+        return False
+    left, right = test.children
+    return (
+        _self_field_expression(left, field)
+        and right.kind == "constant" and right.const_value is None) or (
+        _self_field_expression(right, field)
+        and left.kind == "constant" and left.const_value is None)
+
+
+def _occurrence_parameter_values(index, root, occurrence):
+    """Pure-code constructor values for one exact occurrence, or ``None``."""
+    values = constructor_argument_env(index, root.graph, occurrence, {})
+    if values is None:
+        return None
+    return {
+        name: NormalizedConfigValue(value.value, (), value.spans)
+        for name, value in values.items()
+        if not value.premises and value.spans
+    }
+
+
+def _occurrence_guard_selection(
+        index, root, occurrence, guard, callable_symbol,
+        parameter_values=None):
+    """Evaluate a guarded call for one exact constructed block occurrence.
+
+    Two occurrences of the same block class may pass different literal
+    constructor arguments into an instance field used by ``forward``.  The
+    class-level call census therefore cannot select a branch by itself.  This
+    helper uses the canonical occurrence-chain argument evaluator and the
+    closed guard evaluator to make that selection only when pure source code
+    proves it.  Config-derived arguments are deliberately excluded here; F1's
+    stream reader has no config-evidence channel and may not relabel one as
+    code.
+
+    Returns ``(True|False|None, spans)``.  ``None`` is honest uncertainty, not
+    a false branch.
+    """
+    if not guard:
+        return True, ()
+    node = root.graph.node_for(occurrence)
+    if node is None:
+        return None, ()
+    if parameter_values is None:
+        parameter_values = _occurrence_parameter_values(
+            index, root, occurrence)
+    if parameter_values is None:
+        return None, ()
+    resolver = ExactConfigGuardResolver(
+        index, node, lambda _path: (False, None, ""),
+        parameter_values=parameter_values)
+    selected = resolver.enabled(guard, callable_symbol)
+    return selected, tuple(dict.fromkeys((
+        *(step.span for step in guard), *resolver.spans)))
+
+
 def _block_graph(index, root, block):
     occurrence = block.stack.block_occurrence
     forward = _forward(index, block.stack.block_symbol)
@@ -817,6 +1071,23 @@ def _block_graph(index, root, block):
                         if norm_result.has_value else ())
     lineage = _local_lineage(
         index, forward, tuple(item.call for item in norm_invocations))
+    # Remove only definitions proven inactive for THIS construction
+    # occurrence.  This is essential for shared classes whose constructor
+    # literal selects one of two forward branches: an inactive sibling write
+    # must not masquerade as a reaching-definition rival, while an unresolved
+    # runtime guard remains in the lineage and continues to block proof.
+    parameter_values = _occurrence_parameter_values(index, root, occurrence)
+    if parameter_values is not None:
+        active_bindings = []
+        for binding in lineage.bindings:
+            selected, _spans = _occurrence_guard_selection(
+                index, root, occurrence, binding.guard, forward.symbol,
+                parameter_values)
+            if selected is not False:
+                active_bindings.append(binding)
+        lineage = _LocalLineage(
+            lineage.index, lineage.callable, lineage.formals,
+            tuple(active_bindings), lineage.calls, lineage.transparent_calls)
     formal_order = tuple(item.name for item in forward.params if item.name != "self")
     returns = []
     for item in index.return_observations_in(forward.symbol):
@@ -832,6 +1103,16 @@ def _block_graph(index, root, block):
     auxiliary_names = set()
     for lane in block.attention_lanes:
         call = lane.child.invocation.call
+        guard_selected, guard_spans = _occurrence_guard_selection(
+            index, root, occurrence, call.guard, forward.symbol,
+            parameter_values)
+        if guard_selected is False:
+            unresolved.append(UnresolvedStreamRelation(
+                occurrence, call,
+                "the exact block occurrence selects the rival forward branch",
+                tuple(dict.fromkeys((call.span, *guard_spans))),
+                state="inactive_guard"))
+            continue
         primary, context, failures = _lane_operands(index, root, lane, lineage)
         if primary is None:
             unresolved.append(UnresolvedStreamRelation(
@@ -930,7 +1211,10 @@ def _block_graph(index, root, block):
             and set(state) <= set(item.state_formals)
             and lineage.reaches_span(
                 item.observation.value, item.observation.span,
-                call.span, item.observation.guard) is True)
+                call.span,
+                (call.guard if guard_selected is True
+                 or _positive_lane_field_guard(root, lane)
+                 else item.observation.guard)) is True)
         if not route_rows:
             unresolved.append(UnresolvedStreamRelation(
                 occurrence, call,
@@ -942,6 +1226,7 @@ def _block_graph(index, root, block):
             *primary_carriers.spans, *context_carriers.spans,
             *(span for item in route_rows for span in item.lineage_spans),
             *(span for item in joins for span in item.spans),
+            *guard_spans,
         )))
         relations.append(AttentionStreamRelation(
             occurrence, call, kind, state, context_roots, auxiliary_roots,
@@ -959,7 +1244,7 @@ def _block_graph(index, root, block):
                 (call.span,)))
             continue
         traced = lineage.trace(primary, call.span, call.guard)
-        carriers = lineage.state_carriers(primary, call.span, call.guard)
+        carriers = lineage.ffn_slot_carriers(primary, call.span, call.guard)
         states = tuple(name for name in formal_order
                        if name in carriers.roots and name in returned)
         joins = []

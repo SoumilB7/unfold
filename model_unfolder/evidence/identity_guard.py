@@ -76,7 +76,7 @@ _CODE_SHAPE_MARKER_TABLES = frozenset({
 #   ``architectures[0]`` declares the modeling file). Reading the declaration
 #   is reading the config, not looking up per-model facts.
 _DECLARED_COMPONENT_TABLES = frozenset({
-    "dit_class_markers", "scheduler_flow_matching_markers",
+    "scheduler_flow_matching_markers",
 })
 # * DECLARED-ROLE suffixes interpret the config's own ``architectures[]`` task
 #   declaration (causal-LM / conditional-generation wrapper).  This is NOT
@@ -189,8 +189,6 @@ _LAWFUL_TABLES: tuple[LawfulTable, ...] = (
     # ModuleList/Sequential/ModuleDict, whose ELEMENTS are the real per-slot
     # construction sites; framework-universal, not a per-model identity.
     LawfulTable("model_unfolder/everchanging/evidence/program_index_vocab.yaml", "container_classes", "code_shape", _PROGRAM_INDEX_READERS, "019993b3d2835b86"),
-    # declared-component: reads a diffusers config's OWN _class_name declaration.
-    LawfulTable("model_unfolder/everchanging/diffusor/typing.yaml", "dit_class_markers", "declared_component", _DIFFUSOR_READERS, "047ffe4c3b4247f6"),
     LawfulTable("model_unfolder/everchanging/diffusor/typing.yaml", "scheduler_flow_matching_markers", "declared_component", _DIFFUSOR_READERS, "9b9b539456201c6e"),
     # declared-role: reads the config's OWN architectures[] task declaration.
     LawfulTable("model_unfolder/everchanging/transformer/decoderness.yaml", "causal_lm_suffixes", "declared_role", _DECODERNESS_READERS, "17ceb3cfa506b47c"),

@@ -27,8 +27,16 @@ def test_semantic_layer_schedule_vocabulary_is_not_an_authority():
 def test_diffusor_vocab_loads():
     assert "num_layers" in ec.load_diffusion_aliases()
     typing = ec.load_diffusion_typing()
-    assert typing["stages"] and typing["block_ids"] and typing["part_kinds"] and typing["dit_class_markers"]
+    assert typing["stages"] and typing["block_ids"] and typing["part_kinds"]
+    assert "dit_class_markers" not in typing
+    assert "temporal_forward_markers" not in typing
+    assert typing["unet_temporal_forward_markers"] == ["num_frames"]
     assert ec.load_diffusion_text_encoders().get("CLIPTextModel") == "CLIP"
+
+
+def test_u10_generic_conditioning_loader_is_retired():
+    assert not hasattr(ec, "load_diffusion_conditioning")
+    assert ec.load_unet_conditioning()["encoder_hid_dim_type"]
 
 
 def test_transformer_stage_taxonomy_is_exhaustive():

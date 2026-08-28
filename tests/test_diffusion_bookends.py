@@ -99,6 +99,26 @@ def test_exact_input_output_and_conditioning_routes_are_separate(tmp_path):
                 ("state_output", ("conv3d",)),
             ]
     assert len({item.call.span for item in rows}) == 3
+    assert [
+        (item.role,
+         tuple((dimension.operation_kind, dimension.dimension_role,
+                dimension.expression.source_segment)
+               for dimension in item.dimension_operands))
+        for item in rows
+    ] == [
+        ("conditioning_input", (
+            ("linear", "input_width", "config.width"),
+            ("linear", "output_width", "config.width"),
+        )),
+        ("state_input", (
+            ("conv3d", "input_channels", "config.in_channels"),
+            ("conv3d", "output_channels", "config.width"),
+        )),
+        ("state_output", (
+            ("conv3d", "input_channels", "config.width"),
+            ("conv3d", "output_channels", "config.out_channels"),
+        )),
+    ]
 
 
 def test_conv3d_is_source_proven_3d_not_a_config_video_claim(tmp_path):
@@ -291,20 +311,20 @@ def _real_bookend_counts(witness):
 
 @pytest.mark.parametrize("witness,expected", [
     ("auraflow-v0-3", (7, 0, 0, 0)),
-    ("cogvideox-5b", (0, 0, 0, 0)),
-    ("flux-2-dev", (2, 3, 3, 0)),
-    ("fluxtransformer2dmodel", (1, 2, 0, 0)),
+    ("cogvideox-5b", (0, 2, 0, 0)),
+    ("flux-2-dev", (5, 3, 3, 0)),
+    ("fluxtransformer2dmodel", (3, 2, 0, 0)),
     ("hunyuanvideo", (0, 0, 0, 0)),
-    ("ltx-video", (1, 2, 3, 0)),
-    ("lumina-image-2-0", (0, 0, 0, 0)),
-    ("mochi-1-preview", (0, 1, 0, 0)),
+    ("ltx-video", (1, 2, 4, 0)),
+    ("lumina-image-2-0", (5, 0, 0, 0)),
+    ("mochi-1-preview", (3, 1, 0, 0)),
     ("pixart-sigma-xl-2-1024-ms", (0, 0, 0, 0)),
-    ("prxpixel-t2i", (1, 1, 1, 0)),
-    ("qwen-image", (0, 1, 0, 0)),
+    ("prxpixel-t2i", (1, 1, 2, 0)),
+    ("qwen-image", (2, 1, 0, 0)),
     ("sana-1600m-1024px-diffusers", (0, 2, 0, 0)),
     ("stable-diffusion-3-5-large", (0, 0, 0, 0)),
     ("stable-diffusion-xl-base-1-0", (0, 0, 0, 0)),
-    ("wan2-2-t2v-a14b-diffusers", (0, 1, 0, 0)),
+    ("wan2-2-t2v-a14b-diffusers", (3, 1, 0, 1)),
 ])
 def test_real_diffusion_bookend_matrix_is_an_honest_lower_bound(
         witness, expected):

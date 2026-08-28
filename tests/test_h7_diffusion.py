@@ -14,7 +14,7 @@ each subsequent diffusion family migration has a ready contract to satisfy.
 from __future__ import annotations
 
 from model_unfolder.evidence.structural_debt import (
-    STRUCTURAL_DEBT, pending_projection_paths)
+    STRUCTURAL_DEBT, pending_classification_paths, pending_projection_paths)
 from test_support import FLUX, metamorphic
 
 # the exact reads procedure 2 removed (§16.5) — the debt must cover all three
@@ -26,13 +26,19 @@ def test_pending_projection_debt_covers_the_three_removed_reads():
     moved it into the ONE StructuralDebt register: the original 3 removed reads
     stay covered, and the 8 fields whose U1 config-authored rows were deleted
     are now visible owner-exact debt."""
-    pairs = pending_projection_paths()
-    covered = {path.rsplit(".", 1)[-1] for _, path in pairs}
+    projection_pairs = pending_projection_paths()
+    classification_pairs = pending_classification_paths()
+    covered = {path.rsplit(".", 1)[-1]
+               for _, path in (*projection_pairs, *classification_pairs)}
     assert covered >= _REMOVED_READS, covered
     assert {"in_channels", "patch_size", "norm_num_groups",
             "scaling_factor"} <= covered
-    assert ("root.vae", "_vae_config.in_channels") in pairs
-    assert ("root.denoiser", "norm_num_groups") in pairs
+    assert ("root.vae", "_vae_config.in_channels") in projection_pairs
+    assert ("root.denoiser", "norm_num_groups") in projection_pairs
+    # U10 deleted the generic config-fact author. The denoiser-side declarations
+    # now remain exact U15 classification debt rather than pretending a future
+    # projection already exists.
+    assert ("root.denoiser", "max_sequence_length") in classification_pairs
 
 
 def test_pending_projection_debt_is_fully_qualified():
@@ -111,13 +117,15 @@ def test_diffusion_consumed_census_is_non_empty_and_exact():
     consumed = [e for e in ledger.events if e.intent == "consumed"]
     assert consumed, "diffusion consumed census is EMPTY"
     owners = {e.fact_owner for e in consumed}
-    assert "root.denoiser.stack" in owners
-    assert "root.denoiser.attention" in owners
+    assert "root.denoiser.stacks[0]" in owners
+    assert "root.denoiser.stacks[1]" in owners
     assert "root.vae.geometry" in owners, owners
+    assert "root.denoiser.stack" not in owners
+    assert "root.denoiser.attention" not in owners
     # exact keys ride along
     keys = {(e.fact_owner, e.fact_key) for e in consumed}
-    assert ("root.denoiser.stack", "num_layers") in keys
-    assert ("root.denoiser.attention", "num_heads") in keys
+    assert ("root.denoiser.stacks[0]", "diffusion_stack_depth") in keys
+    assert ("root.denoiser.stacks[1]", "diffusion_stack_depth") in keys
     # and the VAE events carry the exact container path
     vae_paths = {
         e.config_path for e in consumed if e.fact_owner == "root.vae.geometry"
@@ -126,14 +134,15 @@ def test_diffusion_consumed_census_is_non_empty_and_exact():
 
 
 def test_conflicting_diffusion_aliases_block_not_default():
-    """§10.6.3: rival head-count spellings are a typed blocking ambiguity."""
+    """A familiar but source-unused head spelling stays powerless and visible."""
     from model_unfolder.sable import sable
 
     cfg = {**FLUX, "n_heads": 16}   # FLUX declares num_attention_heads=24
     rep = sable(cfg, render_images=False)
     amb = next(c for c in rep.checks if c.name == "config_ambiguity")
-    assert amb.blocking and amb.findings, amb.findings
-    assert any("num_attention_heads" in f for f in amb.findings)
+    assert amb.blocking and not amb.findings
+    audit = next(c for c in rep.checks if c.name == "config_field_audit")
+    assert any("n_heads" in f for f in audit.findings)
     assert not rep.mechanical_passed
 
 
@@ -156,14 +165,13 @@ def test_absent_head_geometry_stays_unknown_not_zero_as_known():
             assert not row.get("value"), f"fabricated geometry claim: {key}={row}"
 
 
-def test_config_facts_yaml_cannot_grow_structural_rows():
-    """§10.6.5 poison: the (bucket, field) surface is PINNED — a new row fails
-    this census until it lands with a registered fact/receipt (Law F).  The
-    U1-added rows are gone; the pre-existing legacy table only shrinks."""
-    from model_unfolder.everchanging import load_diffusion_config_facts
 
-    table = load_diffusion_config_facts()
-    pairs = {(bucket, row["field"]) for bucket, rows in table.items() for row in rows}
-    FROZEN = {('conditioning', 'max_text_seq_length'), ('conditioning', 'resolution_embeds'), ('denoiser', 'added_kv_proj_dim'), ('denoiser', 'addition_embed_type_num_heads'), ('denoiser', 'attention_out_bias'), ('denoiser', 'attention_type'), ('denoiser', 'axes_lens'), ('denoiser', 'bottleneck_size'), ('denoiser', 'boundary_ratio'), ('denoiser', 'center_input_sample'), ('denoiser', 'class_embeddings_concat'), ('denoiser', 'conv_in_kernel'), ('denoiser', 'conv_out_kernel'), ('denoiser', 'cross_attention_head_dim'), ('denoiser', 'cross_attention_input_dim'), ('denoiser', 'double_self_attention'), ('denoiser', 'downsample_padding'), ('denoiser', 'dual_cross_attention'), ('denoiser', 'encoder_hid_dim'), ('denoiser', 'encoder_hid_dim_type'), ('denoiser', 'eps'), ('denoiser', 'ffn_dim_multiplier'), ('denoiser', 'global_states_input_dim'), ('denoiser', 'image_dim'), ('denoiser', 'mid_block_scale_factor'), ('denoiser', 'multiple_of'), ('denoiser', 'num_cross_attention_heads'), ('denoiser', 'num_embeds_ada_norm'), ('denoiser', 'num_refiner_layers'), ('denoiser', 'only_cross_attention'), ('denoiser', 'pos_embed_seq_len'), ('denoiser', 'resnet_out_scale_factor'), ('denoiser', 'resnet_skip_time_act'), ('denoiser', 'resnet_time_scale_shift'), ('denoiser', 'rope_max_seq_len'), ('denoiser', 'spatial_interpolation_scale'), ('denoiser', 'temporal_interpolation_scale'), ('denoiser', 'theta'), ('denoiser', 'upcast_attention'), ('denoiser', 'use_additional_conditions'), ('denoiser', 'use_linear_projection'), ('latent', 'default_sample_size'), ('latent', 'sample_size'), ('timestep', 'condition_dim'), ('timestep', 'flip_sin_to_cos'), ('timestep', 'freq_dim'), ('timestep', 'freq_shift'), ('timestep', 'guidance_embeds_scale'), ('timestep', 'time_cond_proj_dim'), ('timestep', 'time_embed_dim'), ('timestep', 'time_embedding_act_fn'), ('timestep', 'time_embedding_type'), ('timestep', 'time_factor'), ('timestep', 'time_max_period'), ('timestep', 'time_proj_dim'), ('timestep', 'timestep_activation_fn'), ('timestep', 'timestep_guidance_channels'), ('timestep', 'timestep_post_act'), ('vae', 'add_attention_block'), ('vae', 'attn_scales'), ('vae', 'batch_norm_eps'), ('vae', 'batch_norm_momentum'), ('vae', 'decoder_act_fns'), ('vae', 'decoder_block_types'), ('vae', 'decoder_causal'), ('vae', 'decoder_layers_per_block'), ('vae', 'decoder_norm_types'), ('vae', 'decoder_qkv_multiscales'), ('vae', 'downsample_block_type'), ('vae', 'encoder_block_out_channels'), ('vae', 'encoder_block_types'), ('vae', 'encoder_causal'), ('vae', 'encoder_layers_per_block'), ('vae', 'encoder_qkv_multiscales'), ('vae', 'invert_scale_latents'), ('vae', 'resnet_norm_eps'), ('vae', 'sample_size'), ('vae', 'spatial_compression_ratio'), ('vae', 'spatial_expansions'), ('vae', 'spatio_temporal_scaling'), ('vae', 'temperal_downsample'), ('vae', 'temporal_expansions'), ('vae', 'upsample_block_type')}
-    grown = pairs - FROZEN
-    assert not grown, f"config_facts.yaml grew structural rows without a registered fact: {sorted(grown)}"
+def test_generic_config_fact_chip_author_is_gone():
+    """U10-F4: field presence cannot author architecture or clear the audit
+    through YAML. Exact facts/debt are the only structural routes."""
+    from pathlib import Path
+    import model_unfolder.everchanging as everchanging
+
+    assert not hasattr(everchanging, "load_diffusion_config_facts")
+    root = Path(everchanging.__file__).parent
+    assert not (root / "diffusor" / "config_facts.yaml").exists()

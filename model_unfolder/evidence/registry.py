@@ -153,6 +153,18 @@ def _layer_map_route(owner: str, mechanism: str) -> ProjectionRoute:
     )
 
 
+def _diffusion_spec_route(owner: str, mechanism: str,
+                          fact_key: str) -> ProjectionRoute:
+    """U10-F4's exact bound-operand → typed-spec projection route."""
+    return ProjectionRoute(
+        owner, mechanism, "spec", fact_key, frozenset({"field"}),
+        frozenset({(fact_key,)}),
+        frozenset({
+            "adapters.diffusor.projection_ir.project_diffusion_ir",
+        }),
+    )
+
+
 @dataclass(frozen=True)
 class FactDefinition:
     """The closed-world contract for one structural fact name."""
@@ -237,6 +249,246 @@ def _definition_map(definitions) -> dict[str, FactDefinition]:
 # authority would let a leaf disagree with the schedule that owns it.
 # ---------------------------------------------------------------------------
 REGISTRY: dict[str, FactDefinition] = _definition_map([
+    FactDefinition(
+        key="diffusion_root_topology",
+        value_types=frozenset({"str"}),
+        allowed_statuses=frozenset({"code_proven"}),
+        owner_patterns=frozenset({"root.denoiser"}),
+        projections=frozenset({"json"}),
+        projection_routes=(_diffusion_spec_route(
+            "root.denoiser", "diffusion_root_topology",
+            "diffusion_root_topology"),),
+        unknown_policy="omit",
+        notes=("U10-F4: exact root execution proves repeated-stack or U-shaped "
+               "topology; config/class identity cannot select it"),
+    ),
+    FactDefinition(
+        key="diffusion_bookend_operations",
+        value_types=frozenset({"dict"}),
+        allowed_statuses=frozenset({"code_proven"}),
+        owner_patterns=frozenset({"root.denoiser"}),
+        projections=frozenset({"json"}),
+        projection_routes=(ProjectionRoute(
+            "root.denoiser", "diffusion_bookend_operations", "block",
+            "denoiser_bookends", frozenset({"field"}),
+            frozenset({("embed", "final_rms")}),
+            frozenset({
+                "adapters.diffusor.blocks.diffusion_projected_model_blocks",
+            })),),
+        unknown_policy="omit",
+        notes=("U10-F4: exact root-to-stack and stack-to-return operation "
+               "routes; conventional patchify/output projections are forbidden"),
+    ),
+    FactDefinition(
+        key="diffusion_bookend_geometry",
+        value_types=frozenset({"tuple"}),
+        allowed_statuses=frozenset({"code_and_config"}),
+        owner_patterns=frozenset({"root.denoiser"}),
+        projections=frozenset({"json"}),
+        projection_routes=(
+            _diffusion_spec_route(
+                "root.denoiser", "diffusion_bookend_geometry",
+                "diffusion_bookend_geometry"),
+            ProjectionRoute(
+                "root.denoiser", "diffusion_bookend_geometry", "block",
+                "denoiser_bookend_geometry", frozenset({"field"}),
+                frozenset({
+                    ("embed",), ("final_rms",),
+                    ("embed", "final_rms"),
+                }),
+                frozenset({
+                    "adapters.diffusor.blocks."
+                    "diffusion_projected_model_blocks",
+                })),
+        ),
+        unknown_policy="omit",
+        notes=("U10-F4: exact framework constructor dimensions joined to "
+               "their checkpoint-declared operands; names alone are powerless"),
+    ),
+    FactDefinition(
+        key="diffusion_norm_mechanism",
+        value_types=frozenset({"str"}),
+        allowed_statuses=frozenset({"code_proven"}),
+        owner_patterns=frozenset({"root.denoiser.stacks[i].cell"}),
+        projections=frozenset({"json"}),
+        projection_routes=(_diffusion_spec_route(
+            "root.denoiser.stacks[i].cell", "diffusion_norm_mechanism",
+            "diffusion_norm_mechanism"),),
+        unknown_policy="omit",
+        notes="U10-F4: exact block-owned norm primitive; no family vote",
+    ),
+    FactDefinition(
+        key="diffusion_conditioning_applications",
+        value_types=frozenset({"dict"}),
+        allowed_statuses=frozenset({"code_proven"}),
+        owner_patterns=frozenset({"root.denoiser.stacks[i].cell"}),
+        projections=frozenset({"json"}),
+        projection_routes=(_diffusion_spec_route(
+            "root.denoiser.stacks[i].cell",
+            "diffusion_conditioning_applications",
+            "diffusion_conditioning_applications"),),
+        unknown_policy="omit",
+        notes=("U10-F4: exact branch-local modulation/gating applications; "
+               "conditioning declarations alone are powerless"),
+    ),
+    FactDefinition(
+        key="diffusion_stack_depth",
+        value_types=frozenset({"int", "NoneType"}),
+        allowed_statuses=frozenset({"code_and_config"}),
+        owner_patterns=frozenset({"root.denoiser.stacks[i]"}),
+        projections=frozenset({"json"}),
+        projection_routes=(
+            _diffusion_spec_route(
+                "root.denoiser.stacks[i]", "diffusion_root_stack_depth",
+                "diffusion_stack_depth"),
+            _diffusion_spec_route(
+                "root.denoiser.stacks[i]", "diffusion_nested_stack_depth",
+                "diffusion_stack_depth"),
+        ),
+        unknown_policy="omit",
+        notes=("U10-F4: an exact source container/count expression binds one "
+               "checkpoint operand; the typed layer template is the consumer"),
+    ),
+    FactDefinition(
+        key="diffusion_stack_variant",
+        value_types=frozenset({"dict"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default"}),
+        owner_patterns=frozenset({"root.denoiser.stacks[i]"}),
+        projections=frozenset({"json"}),
+        projection_routes=(_diffusion_spec_route(
+            "root.denoiser.stacks[i]", "diffusion_stack_variant",
+            "diffusion_stack_variant"),),
+        unknown_policy="omit",
+        notes=("U10-F4: an exact guarded container rival is selected only by "
+               "checkpoint evidence or an imported framework protocol's "
+               "literal constructor default"),
+    ),
+    FactDefinition(
+        key="diffusion_attention_head_protocol",
+        value_types=frozenset({"dict"}),
+        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
+        owner_patterns=frozenset({"root.denoiser.stacks[i].attention[i]"}),
+        projections=frozenset({"json"}),
+        projection_routes=(_diffusion_spec_route(
+            "root.denoiser.stacks[i].attention[i]",
+            "diffusion_attention_head_protocol",
+            "diffusion_attention_head_protocol"),),
+        unknown_policy="omit",
+    ),
+    FactDefinition(
+        key="diffusion_attention_head_dim",
+        value_types=frozenset({"int", "NoneType"}),
+        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
+        owner_patterns=frozenset({"root.denoiser.stacks[i].attention[i]"}),
+        projections=frozenset({"json"}),
+        projection_routes=(_diffusion_spec_route(
+            "root.denoiser.stacks[i].attention[i]",
+            "diffusion_attention_head_geometry",
+            "diffusion_attention_head_dim"),),
+        unknown_policy="omit",
+    ),
+    FactDefinition(
+        key="diffusion_attention_score_scaling",
+        value_types=frozenset({"bool", "NoneType"}),
+        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
+        owner_patterns=frozenset({"root.denoiser.stacks[i].attention[i]"}),
+        projections=frozenset({"json"}),
+        projection_routes=(_diffusion_spec_route(
+            "root.denoiser.stacks[i].attention[i]",
+            "diffusion_attention_score_scaling",
+            "diffusion_attention_score_scaling"),),
+        unknown_policy="omit",
+    ),
+    FactDefinition(
+        key="diffusion_attention_qk_norm",
+        value_types=frozenset({"bool", "NoneType"}),
+        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
+        owner_patterns=frozenset({"root.denoiser.stacks[i].attention[i]"}),
+        projections=frozenset({"json"}),
+        projection_routes=(_diffusion_spec_route(
+            "root.denoiser.stacks[i].attention[i]",
+            "diffusion_attention_qk_norm",
+            "diffusion_attention_qk_norm"),),
+        unknown_policy="omit",
+        negative_requires_complete=True,
+    ),
+    FactDefinition(
+        key="diffusion_attention_position_application",
+        value_types=frozenset({"dict"}),
+        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
+        owner_patterns=frozenset({"root.denoiser.stacks[i].attention[i]"}),
+        projections=frozenset({"json"}),
+        projection_routes=(_diffusion_spec_route(
+            "root.denoiser.stacks[i].attention[i]",
+            "diffusion_attention_position_application",
+            "diffusion_attention_position_application"),),
+        unknown_policy="omit",
+    ),
+    FactDefinition(
+        key="diffusion_gated_delta_geometry",
+        value_types=frozenset({"dict"}),
+        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
+        owner_patterns=frozenset({"root.denoiser.stacks[i].mixers[i]"}),
+        projections=frozenset({"json"}),
+        projection_routes=(_diffusion_spec_route(
+            "root.denoiser.stacks[i].mixers[i]",
+            "diffusion_gated_delta_geometry",
+            "diffusion_gated_delta_geometry"),),
+        unknown_policy="omit",
+    ),
+    FactDefinition(
+        key="diffusion_ffn_mechanism",
+        value_types=frozenset({"dict"}),
+        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
+        owner_patterns=frozenset({"root.denoiser.stacks[i].ffn"}),
+        projections=frozenset({"json"}),
+        projection_routes=(
+            _diffusion_spec_route(
+                "root.denoiser.stacks[i].ffn", "diffusion_ffn_mechanism",
+                "diffusion_ffn_mechanism"),
+            _diffusion_spec_route(
+                "root.denoiser.stacks[i].ffn", "diffusion_ffn_activation",
+                "diffusion_ffn_mechanism"),
+        ),
+        unknown_policy="omit",
+    ),
+    FactDefinition(
+        key="diffusion_cell_topology",
+        value_types=frozenset({"dict"}),
+        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
+        owner_patterns=frozenset({"root.denoiser.stacks[i].cell"}),
+        projections=frozenset({"json"}),
+        projection_routes=(_diffusion_spec_route(
+            "root.denoiser.stacks[i].cell", "diffusion_cell_topology",
+            "diffusion_cell_topology"),),
+        unknown_policy="omit",
+    ),
+    FactDefinition(
+        key="diffusion_stream_relation",
+        value_types=frozenset({"str"}),
+        allowed_statuses=frozenset({"code_proven"}),
+        owner_patterns=frozenset({"root.denoiser.stacks[i].attention[i]"}),
+        projections=frozenset({"json"}),
+        projection_routes=(
+            ProjectionRoute(
+                "root.denoiser.stacks[i].attention[i]",
+                "diffusion_stream_relation", "spec", "variant",
+                frozenset({"field"}), frozenset({("stream_relation",)}),
+                frozenset({
+                    "adapters.diffusor.projection_ir.project_diffusion_ir"})),
+            ProjectionRoute(
+                "root.denoiser.stacks[i].attention[i]",
+                "diffusion_stream_relation", "spec", "blocks",
+                frozenset({"field"}),
+                frozenset({("attention_input_join",)}),
+                frozenset({
+                    "adapters.diffusor.projection_ir.project_diffusion_ir"})),
+        ),
+        unknown_policy="omit",
+        notes=("U10-F4: exact stream execution projects its machine relation; "
+               "a joined-input relation additionally projects the concat op."),
+    ),
     FactDefinition(
         key="activation",
         value_types=frozenset({"str", "NoneType"}),
@@ -1058,7 +1310,7 @@ def fact_definition(fact_name: str) -> FactDefinition | None:
 # U2-R6: ``DrawnUnledgeredFact``/``DRAWN_UNLEDGERED_DEBT`` are REPLACED by
 # drawn_leaf rows in the ONE StructuralDebt register
 # (evidence/structural_debt.py) — same exclusive-or law, now with a writer,
-# a consumer, a U3–U14 unit and a checkable deletion condition per leaf
+# a consumer, a U3–U15 unit and a checkable deletion condition per leaf
 # (``drawn_unledgered_names()`` is the lawful-drawn join).
 
 
@@ -1125,7 +1377,7 @@ def validate_typed_write(fact) -> list[str]:
 # U2-R6: ``PendingProjectionFact``/``PENDING_PROJECTION_DEBT`` are REPLACED by
 # config_read rows in the ONE StructuralDebt register — every field preserved
 # (owner, exact path, reason, projection target as structural_target) plus a
-# writer, a consumer, a U3–U14 unit and a checkable deletion condition
+# writer, a consumer, a U3–U15 unit and a checkable deletion condition
 # (``pending_projection_paths()`` is the parser's exact-only excusal join).
 # U2-R5: ``ProjectionPolicy`` is DELETED.  FactDefinition.projection_routes is
 # the SOLE projection-route authority — a claim binds a source occurrence to a

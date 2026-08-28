@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 from copy import deepcopy
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 import pytest
 
@@ -100,7 +101,10 @@ def test_render_events_carry_block_path_component_and_variant():
     attn = next(event for event in events
                 if event.view == "attn" and event.component == "root")
     assert attn.block_path == ("attn",)
-    assert "MM-DiT" in attn.variant
+    # Variant identity is the structural block signature.  A family/display
+    # title such as "MM-DiT" must not be the identity key.
+    assert "attention" in attn.variant
+    assert "MM-DiT" not in attn.variant
     assert attn.source_owner == "FluxTransformer2DModel"
     assert attn.drawn_ops == frozenset({"opaque", "port"})
     # The supporting text encoders now bake their OWN canonical attention drills,
@@ -207,8 +211,8 @@ def test_config_access_capture_survives_nested_reset_and_reports_dotted_paths():
 
 def test_config_field_audit_is_blocking():
     """Promoted 2026-07-04 (owned-field backlog reached zero): an unread config
-    switch now FAILS the mechanical pass — a new field must be parsed, chipped
-    via config_facts.yaml, or consciously declared ignored."""
+    switch now FAILS the mechanical pass — a new field must be source-bound,
+    registered as exact owner/path debt, or consciously scoped-ignored."""
     cfg = {**LLAMA, "brand_new_architecture_switch": True}
     report = sable(cfg, render_images=False)
     audit = next(c for c in report.checks if c.name == "config_field_audit")
@@ -252,6 +256,13 @@ def test_wiring_conformance_clean_on_corpus(name, cfg):
     """Every conditioning rail the diffusion diagrams draw maps to a real forward
     argument (FLUX/PixArt blocks all take temb + encoder_hidden_states)."""
     ir = mu.unfold(cfg).to_ir()
+    if name == "FLUX":
+        relations = {
+            (layer.get("attention") or {}).get("variant", {}).get(
+                "stream_relation")
+            for layer in ir["layers"]
+        }
+        assert relations & {"dual_state", "joined_inputs"}
     assert [p.message for p in check_wiring_conformance(cfg, ir)] == []
 
 
@@ -276,11 +287,18 @@ def test_wiring_conformance_flags_missing_text_rail():
     This is the direction that caught PRX (text K/V concatenated, drawn as plain
     self-attention)."""
     ir = mu.unfold(FLUX).to_ir()
-    for L in ir["layers"]:                       # strip the rail from a dual-stream layer
-        tag = str((L.get("attention") or {}).get("variant", {}).get("tag") or "").lower()
-        if "dual-stream" in tag:
-            L["blocks"] = [b for b in L["blocks"] if b.get("id") != "text_cond"]
-            break
+    L = ir["layers"][0]
+    variant = (L.get("attention") or {}).get("variant", {})
+    # Forge a positive single-state relation while withholding both lawful
+    # text representations.  ``None`` is now the explicit typed abstention and
+    # must remain exempt; ``single_state`` is the positive claim this poison is
+    # meant to attack.
+    variant["stream_relation"] = "single_state"
+    variant["joined_sequence"] = False
+    variant["tag"] = "block negative control"
+    L["blocks"] = [{
+        "id": "attn", "role": "attention", "kind": "attention",
+    }]
     probs = check_wiring_conformance(FLUX, ir)
     assert any(p.kind == "missing_input" and p.op == "text" for p in probs), \
         [p.message for p in probs]
@@ -395,6 +413,32 @@ def test_fact_conformance_flags_wrong_attention_kind():
         (L.get("attention") or {})["kind"] = "linear"
     probs = check_fact_conformance(FLUX, ir)
     assert any(p.kind == "wrong_attention" for p in probs), [p.message for p in probs]
+
+
+def test_fact_conformance_does_not_call_opaque_attention_softmax():
+    """Unknown is abstention, not a hidden softmax architecture claim.
+
+    Sana's exact U10 occurrence is currently ambiguous and therefore opaque.
+    The old class-marker net still knows that some source class constructs a
+    linear processor, but it may only reject an explicit softmax drawing; it
+    cannot convert the opaque projection into one.
+    """
+    fixture = (Path(__file__).parent / "sable_test_corpus" /
+               "sana-1600m-1024px-diffusers.json")
+    cfg = json.loads(fixture.read_text())["config"]
+    ir = mu.unfold(cfg).to_ir()
+    assert {(layer.get("attention") or {}).get("kind")
+            for layer in ir["layers"]} == {None}
+    assert not [problem for problem in check_fact_conformance(cfg, ir)
+                if problem.kind == "wrong_attention"]
+
+    # The net remains anti-vacuous: explicitly asserting ordinary softmax for
+    # the same code-linear source is still a mismatch.
+    tampered = deepcopy(ir)
+    for layer in tampered["layers"]:
+        layer["attention"]["kind"] = "mha"
+    assert any(problem.kind == "wrong_attention" and problem.op == "linear"
+               for problem in check_fact_conformance(cfg, tampered))
 
 
 # --------------------------------------------------------------------------- #

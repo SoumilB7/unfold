@@ -8,11 +8,11 @@ This is the current authority/deletion worklist. The older
 
 ## Summary
 
-- quarantined semantic readers: **17**
-- exact evidence-layer `ast.parse` sites: **25**
-- legacy model-source parse sites: **14**
-- frozen reader/helper implementation digest: `fa20fcd9f0d6620374b4ac24c9cd54f4fe7f46e5d6fe398271ffff548b0960dc`
-- frozen legacy-parse caller digest: `340fb12fa03daba89094b34cd808fe5f7cb8d58ce19f6f8ed35b7f574e786dfb`
+- quarantined semantic readers: **5**
+- exact evidence-layer `ast.parse` sites: **20**
+- legacy model-source parse sites: **9**
+- frozen reader/helper implementation digest: `7fb2348bdd23d66a087f2932fc6d504c135fe644cf2e231961d9ba0740cbbadd`
+- frozen legacy-parse caller digest: `8e2aae516112895c20accde56062dfd7862712af46f0c5cbe47469793bcc4fe9`
 
 ## Authority classes
 
@@ -28,18 +28,6 @@ This is the current authority/deletion worklist. The older
 
 | Future unit | Definition | Exact production callers | Reason | Deletion condition |
 |---|---|---|---|---|
-| U10 | `model_unfolder/evidence/patterns.py::attention_score_scaling_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_scores_scaled` | whole-file diffusion-attention score-scaling interpretation | U10 registers the exact owner-qualified fact and deletes attention_score_scaling_from_files |
-| U10 | `model_unfolder/evidence/patterns.py::denoiser_block_timestep_conditioning_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_block_conditioning` | diffusion block conditioning interpretation | U10 registers the exact owner-qualified fact and deletes denoiser_block_timestep_conditioning_from_files |
-| U10 | `model_unfolder/evidence/patterns.py::diffusion_attn_kind_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_attn_kind` | diffusion attention mechanism interpretation | U10 registers the exact owner-qualified fact and deletes diffusion_attn_kind_from_files |
-| U10 | `model_unfolder/evidence/patterns.py::diffusion_axes_dims_rope_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_axes_dims_rope` | diffusion positional axes interpretation | U10 registers the exact owner-qualified fact and deletes diffusion_axes_dims_rope_from_files |
-| U10 | `model_unfolder/evidence/patterns.py::diffusion_cross_qk_norm_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_cross_qk_norm` | diffusion cross-attention QK norm interpretation | U10 registers the exact owner-qualified fact and deletes diffusion_cross_qk_norm_from_files |
-| U10 | `model_unfolder/evidence/patterns.py::diffusion_ffn_activation_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_ffn_activation` | diffusion FFN activation interpretation | U10 registers the exact owner-qualified fact and deletes diffusion_ffn_activation_from_files |
-| U10 | `model_unfolder/evidence/patterns.py::diffusion_ffn_kind_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_ffn_kind` | diffusion FFN mechanism interpretation | U10 registers the exact owner-qualified fact and deletes diffusion_ffn_kind_from_files |
-| U10 | `model_unfolder/evidence/patterns.py::diffusion_gate_via_norm_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_gate_via_norm` | diffusion modulation/gating interpretation | U10 registers the exact owner-qualified fact and deletes diffusion_gate_via_norm_from_files |
-| U10 | `model_unfolder/evidence/patterns.py::diffusion_qk_norm_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_qk_norm` | diffusion self-attention QK norm interpretation | U10 registers the exact owner-qualified fact and deletes diffusion_qk_norm_from_files |
-| U10 | `model_unfolder/evidence/patterns.py::diffusion_rope_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_has_rope` | diffusion positional mechanism interpretation | U10 registers the exact owner-qualified fact and deletes diffusion_rope_from_files |
-| U10 | `model_unfolder/evidence/patterns.py::diffusion_single_stream_fusion_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_single_fusion` | diffusion stream/fusion interpretation | U10 registers the exact owner-qualified fact and deletes diffusion_single_stream_fusion_from_files |
-| U10 | `model_unfolder/evidence/stacks.py::secondary_stacks_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_block_norm_placement`<br>`model_unfolder/adapters/diffusor/parser.py:_code_norm_kind`<br>`model_unfolder/adapters/diffusor/parser.py:_secondary_stack_specs` | diffusion repeated-stack topology interpretation | U10 registers the exact owner-qualified fact and deletes secondary_stacks_from_files |
 | U11 | `model_unfolder/evidence/patterns.py::unet_code_attention_placement_from_files` | `model_unfolder/adapters/diffusor/parser.py:_parse_unet_model` | UNet attention placement interpretation | U11 registers the exact owner-qualified fact and deletes unet_code_attention_placement_from_files |
 | U11 | `model_unfolder/evidence/patterns.py::unet_mid_block_present_from_files` | `model_unfolder/adapters/diffusor/parser.py:_parse_unet_model` | UNet mid-stage topology interpretation | U11 registers the exact owner-qualified fact and deletes unet_mid_block_present_from_files |
 | U11 | `model_unfolder/evidence/patterns.py::unet_stage_attn_cell_from_files` | `model_unfolder/adapters/diffusor/parser.py:_parse_unet_model` | UNet stage attention-cell interpretation | U11 registers the exact owner-qualified fact and deletes unet_stage_attn_cell_from_files |
@@ -58,14 +46,9 @@ This is the current authority/deletion worklist. The older
 | `legacy_model_source` | `model_unfolder/evidence/conformance.py::_init_helper_block_classes` | U14 | conformance-local helper/block scan |
 | `legacy_model_source` | `model_unfolder/evidence/conformance.py::_selected_init_refs` | U14 | conformance-local constructor selection |
 | `legacy_model_source` | `model_unfolder/evidence/forward_ops.py::_parse_file` | U14 | parallel forward-op parser shared by legacy facts/conformance |
-| `legacy_model_source` | `model_unfolder/evidence/patterns.py::_parse_defs` | U10 | diffusion-only semantic parser retained for the U10 migration |
-| `legacy_model_source` | `model_unfolder/evidence/patterns.py::attention_score_scaling_from_files` | U10 | whole-file diffusion score-scaling interpreter |
-| `legacy_model_source` | `model_unfolder/evidence/patterns.py::diffusion_axes_dims_rope_from_files` | U10 | diffusion positional interpreter |
-| `legacy_model_source` | `model_unfolder/evidence/patterns.py::diffusion_gate_via_norm_from_files` | U10 | diffusion modulation interpreter |
-| `legacy_model_source` | `model_unfolder/evidence/patterns.py::diffusion_qk_norm_from_files` | U10 | diffusion normalization interpreter |
-| `legacy_model_source` | `model_unfolder/evidence/patterns.py::diffusion_single_stream_fusion_from_files` | U10 | diffusion stream interpreter |
+| `legacy_model_source` | `model_unfolder/evidence/patterns.py::_parse_defs` | U11 | UNet compatibility parser retained for U11 |
 | `legacy_model_source` | `model_unfolder/evidence/transitive.py::_parse_file` | U14 | parallel callable/transitive parser shared by conformance |
-| `legacy_model_source` | `model_unfolder/evidence/vision.py::_parsed_classes` | U10 | diffusion layer/stage compatibility readers still share this legacy class-node cache; U9 vision authority is deleted |
+| `legacy_model_source` | `model_unfolder/evidence/vision.py::_parsed_classes` | U14 | diffusion layer/stage compatibility readers still share this legacy class-node cache; U9 vision authority is deleted |
 | `repository_audit` | `model_unfolder/evidence/consumer_firewall.py::scan_consumer_source` | — | lawful retained authority |
 | `repository_audit` | `model_unfolder/evidence/identity_guard.py::scan_identity_source` | — | lawful retained authority |
 | `repository_audit` | `model_unfolder/evidence/legacy_reader_quarantine.py::_observed_callers` | — | lawful retained authority |

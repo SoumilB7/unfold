@@ -94,29 +94,6 @@ part_kinds:
   - resnet_cell
   - sample_step
 
-# `_class_name` substrings that mark a diffusion-transformer backbone (detection).
-dit_class_markers:
-  - Transformer2DModel
-  - Transformer2D
-  - Transformer3DModel        # video DiTs: CogVideoX/Mochi/LTX/HunyuanVideo/Wan/Allegro
-  - Transformer3D
-  - DiTTransformer
-  - DiT
-
-# Diffusion `norm_type` -> base norm kind, matched as a substring of the config's
-# norm_type (diffusers states it in the transformer config). AdaLN variants
-# (ada_norm / ada_norm_single / ada_norm_zero / ada_layer_norm / ...) are LayerNorm
-# based — the AdaLN modulates a (usually non-affine) LayerNorm — so they resolve to
-# `layernorm`; `rms_norm` to `rmsnorm`. The AdaLN modulation itself is shown by the
-# timestep-conditioning wiring, not invented into the norm's type.
-norm_type_kind:
-  - "rms_norm=rmsnorm"
-  - "ada_norm=layernorm"
-  - "ada_layer_norm=layernorm"
-  - "layer_norm=layernorm"
-  - "fp32_layer_norm=layernorm"
-  - "group_norm=groupnorm"
-
 # Scheduler class -> display name, for names CamelCase splitting can't get
 # right (acronym runs). "Class=Display" pairs; bare class name sans the
 # Scheduler/DiscreteScheduler suffix.
@@ -140,39 +117,9 @@ scheduler_flow_matching_markers:
 # --- temporal-axis evidence (video DiT detection) -----------------------------
 # The denoiser is a VIDEO model iff its own code processes a frames axis: the
 # root class's forward() carries these identifiers (all diffusers video
-# transformers unpack/receive num_frames; no image transformer does).  Config
-# corroboration when source is unreadable: the temporal field spellings below,
-# or a 3-sequence patch_size.  NEVER a class-name substring (eradication I-10).
-temporal_forward_markers: [num_frames]
-temporal_config_fields: [sample_frames, num_frames, temporal_compression_ratio, temporal_interpolation_scale, patch_size_t, temporal_patch_size]
-
-# VAE-scope fields that declare an AUDIO latent domain (oobleck audio_channels/
-# sampling_rate) - no 2D image VAE declares either; evidence for the 1-D latent axis.
-audio_vae_fields: [audio_channels, sampling_rate]
-
-# Which DENOISER forward argument a secondary stack refines — the lane the
-# refiner block is drawn on.  The names are diffusers' own forward-signature
-# conventions (the stack detector reports the RAW name; this maps it to a
-# drawn lane).  "name=lane"; lane ∈ text | latent.
-stack_lane_params:
-  - encoder_hidden_states=text
-  - caption_feats=text
-  - cap_feats=text
-  - context=text
-  - txt=text
-  - hidden_states=latent
-  - latents=latent
-  - x=latent
-  - img=latent
-
-# Pipeline-index keys that declare a COMPANION denoiser beside the rendered
-# one — same architecture, not drawn separately, but its existence must be
-# SAID (silently dropping the twin misrepresents the checkpoint).  "key=kind";
-# kind names the note flavour:
-#   cfg_twin       — a classifier-free-guidance twin (Ideogram-4's
-#                    unconditional_transformer);
-#   expert_switch  — a second expert swapped in mid-schedule (Wan 2.2 A14B's
-#                    transformer_2, switched at boundary_ratio).
-companion_denoiser_fields:
-  - unconditional_transformer=cfg_twin
-  - transformer_2=expert_switch
+# transformers unpack/receive num_frames; no image transformer does). Config
+# field spellings are deliberately absent: declared geometry cannot substitute
+# for execution evidence. NEVER a class-name substring (eradication I-10).
+# U11 compatibility only. The U10 source projector does not consume this
+# vocabulary; U11 must replace it when the legacy UNet interpreter is removed.
+unet_temporal_forward_markers: [num_frames]

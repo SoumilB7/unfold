@@ -54,7 +54,13 @@ def render_diffusion_fragment(ir: dict, mount_id: str, include_font_import: bool
     # the U-shape drawn in the denoiser card, so the DiT layer-map / per-layer
     # card machinery is skipped.
     is_unet = bool((ir.get("extras") or {}).get("unet"))
-    info = _make_info(ir) if ir.get("layers") else _stub_info()
+    render = (ir.get("extras") or {}).get("render") or {}
+    # A source-projected denoiser with zero materialized layers still owns
+    # exact model-level boundary blocks.  Build their metadata while preserving
+    # the historical UNet stub path (the UNet has its own dedicated view).
+    info = (_make_info(ir)
+            if ir.get("layers") or (not is_unet and render.get("opaque_layer_block"))
+            else _stub_info())
 
     loop_svg = _build_loop_view(ir, info, mount_id)
     # Descendant levels below the loop blocks: [0] = VAE decoder stages, [1] =
@@ -300,9 +306,6 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
         # flag that its place isn't decided yet (block_schema.DIFFUSION_STAGES).
         return _is_resolved_diffusion_block(True, info, bid, blocks.get(bid))
 
-    diffusion = (ir.get("extras") or {}).get("diffusion") or {}
-    scheduler = diffusion.get("scheduler")
-
     # ------------------------------------------------------------------
     # Layout: ONE latent spine (Noise -> junction -> Denoiser -> VAE ->
     # Image), the recursion drawn as a literal circuit (Denoiser -ε̂->
@@ -327,8 +330,7 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
     # unambiguous; a junction is not.
     buf_w, buf_h = 116, 40
     buf_x, buf_y = cx - buf_w / 2, den_y + den_h + 24
-    buf_cy, buf_bottom = buf_y + buf_h / 2, buf_y + buf_h
-    rail_y = buf_cy                     # the z_{t-1} return rail meets the cell
+    buf_bottom = buf_y + buf_h
 
     # --- The loop frame: the SAME solid cell frame + white repeat pill the
     # engine draws for "× N layers" — one visual language for "this part runs
@@ -398,7 +400,7 @@ def _place_conditioning(parts, info, shadow_id, label, resolved, blocks, pos):
         entries += [("text_context", label("text_context", "Context assembly"))]
     if enc_ids:
         entries += [(bid, label(bid, "Encoder")) for bid in enc_ids]
-    else:
+    elif "text_encoder" in blocks:
         entries += [("text_encoder", label("text_encoder", ["Text prompt", "→ encoder"]))]
 
     den = pos["denoiser"]

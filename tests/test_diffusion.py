@@ -25,29 +25,33 @@ def test_diffusor_matches_dit_not_transformer():
     # The catch-all transformer adapter still matches everything (by design).
     assert transformer.matches(FLUX) is True
 
+    # A framework-protocol spelling may route to the diffusion adapter as an
+    # ADDRESS, but cannot author any denoiser structure without source proof.
+    # This closes the dangerous fallthrough into the catch-all token adapter.
+    fabricated = {**FLUX, "_class_name": "FabricatedDiTTransformer2DModel"}
+    assert diffusor.matches(fabricated) is True
+    fabricated_ir = config_to_ir(fabricated)
+    assert fabricated_ir.layers == []
+    assert fabricated_ir.extras["render"]["opaque_layer_block"]["resolved"] is False
+
 
 def test_flux_layer_count_and_geometry():
     ir = config_to_ir(FLUX)
-    # 19 double-stream (joint) + 38 single-stream blocks.
+    # The exact source contains two root stack occurrences with checkpoint-bound
+    # counts (19 + 38).  Width/head geometry does not have the same closed
+    # constructor binding, so raw config arithmetic must not fill it in.
     assert ir.num_layers == 57
-    # hidden = num_attention_heads x attention_head_dim.
-    assert ir.hidden_size == 24 * 128 == 3072
+    assert ir.hidden_size == 0
     # No token vocabulary in a denoiser.
     assert ir.vocab_size == 0
-    # Geometry and the full mask are known independently.  U4-A deliberately
-    # refuses to turn the legacy "not linear" result into an MHA mechanism.
+    # The dispatch call proves an attention-like lane but not its concrete
+    # compute/mask/head protocol; no conventional full-MHA fact is invented.
     attn = ir.layers[0].attention
     assert attn.kind is None
-    assert attn.num_kv_heads == attn.num_heads == 24
-    assert attn.mask == "full"
-    assert attn.rope_dim == 16 + 56 + 56   # axes_dims_rope sum to head_dim
-    # Flux declares no activation_fn in config, but its model class fixes it
-    # (FeedForward gelu-approximate, non-gated) — surfaced from class_defaults and
-    # MARKED code-derived, never guessed (see test_flux_ffn_activation_is_code_derived_gelu).
-    assert ir.layers[0].ffn.gated is False
-    assert ir.layers[0].ffn.activation == "gelu-approximate"
-    assert ir.layers[0].ffn.activation_from_class is True
-    assert ir.layers[0].ffn.activation_assumed is False
+    assert attn.num_kv_heads is attn.num_heads is None
+    assert attn.mask == "unknown"
+    assert attn.rope_dim is None
+    assert ir.layers[0].ffn.kind is None
 
 
 def test_diffusion_render_spec_theme():
@@ -70,10 +74,41 @@ def test_diffusion_renders_in_the_green_llm_theme():
 def test_denoiser_skeleton_is_drawn():
     diagram = unfold(FLUX)
     html = diagram.to_html(standalone=True)
-    for label in ("Noisy latent", "Patchify", "Output projection", "Unpatchify", "VAE decode"):
+    for label in ("Denoiser state", "Input op: linear", "Output op: linear", "VAE decode"):
         assert label in html, f"skeleton stage {label!r} not drawn"
-    assert "AdaLN-Out" not in html
-    assert "-&gt; noise eps" not in html
+    for fabricated in ("Patchify", "Unpatchify", "AdaLN-Out", "-&gt; noise eps"):
+        assert fabricated not in html
+
+
+def test_source_projected_bookend_labels_stay_bounded_without_losing_detail():
+    """The diagram label is compact; the card retains the exact operation list."""
+    from model_unfolder.adapters.diffusor.blocks import _operation_block_label
+
+    assert _operation_block_label("Input", []) == "Input unresolved"
+    assert _operation_block_label("Input", ["linear"]) == "Input op: linear"
+    assert _operation_block_label(
+        "Output", ["concat", "linear", "reshape"]
+    ) == "Output operations"
+
+
+def test_zero_materialized_layers_never_claim_zero_repetitions():
+    """An unresolved count is absence of proof, not a source-proven ``x 0``."""
+    from model_unfolder.renderers.html.views import _build_architecture_view
+
+    raw = {
+        "layers": [],
+        "extras": {"render": {
+            "family": "diffusion",
+            "opaque_layer_block": {
+                "id": "opaque", "kind": "opaque", "role": "opaque",
+                "label": "Structure unresolved", "resolved": False,
+            },
+            "model_blocks": [],
+        }},
+    }
+    svg = _build_architecture_view(raw, {"dominant": None, "blocks": {}}, "uf-u10")
+    assert "Structure unresolved" in svg
+    assert "x 0" not in svg and "× 0" not in svg
 
 
 def test_diffusion_model_blocks_are_typed():
@@ -83,17 +118,11 @@ def test_diffusion_model_blocks_are_typed():
         for block in ir.extras["render"]["model_blocks"]
     }
     assert blocks["tok_text"]["diffusion_stage"] == "latent_input"
-    assert blocks["embed"]["diffusion_stage"] == "patchify"
+    assert blocks["embed"]["diffusion_stage"] == "input_projection"
     assert blocks["final_rms"]["diffusion_stage"] == "output_projection"
-    assert blocks["lm_head"]["diffusion_stage"] == "unpatchify"
-
-    side_blocks = {
-        block["id"]: block
-        for block in ir.layers[0].blocks
-        if block.get("lane")
-    }
-    assert side_blocks["adaln_cond"]["diffusion_stage"] == "timestep_conditioning"
-    assert side_blocks["text_cond"]["diffusion_stage"] == "text_conditioning"
+    assert blocks["lm_head"]["diffusion_stage"] == "denoiser_output"
+    assert blocks["embed"]["detail"]["operations"] == ["linear"]
+    assert blocks["final_rms"]["detail"]["operations"] == ["linear"]
 
 
 def test_diffusion_name_from_model_tag_and_stats():
@@ -104,7 +133,9 @@ def test_diffusion_name_from_model_tag_and_stats():
     assert ir.name == "FLUX.1-dev"           # not "transformer" / the component path
     html = unfold(cfg).to_html(standalone=True)
     assert "TIMESTEPS" in html and "1,000" in html
-    assert "LATENT" in html and "64 ch" in html
+    # U13 still owns the scheduler display.  The denoiser's raw in_channels is
+    # not an exact state-geometry proof, so the former LATENT/64ch cell is gone.
+    assert "LATENT" in html and "64 ch" not in html
     assert "VOCAB" not in html and "CONTEXT" not in html
     # Transformers keep Vocab / Context.
     assert "VOCAB" in unfold(LLAMA).to_html(standalone=True)
@@ -128,26 +159,20 @@ def test_loop_blocks_are_typed_with_approved_stages():
 
 
 def test_pixart_caption_projection_is_explicit_and_code_shaped():
-    """caption_channels is not an alias for caption_projection_dim: PixArt owns
-    a real Linear -> GELU -> Linear operation between text encoding and x-attn."""
+    """A caption dimension cannot manufacture PixArt's projection mechanism.
+
+    This config-only fixture has no exact source owner, so the former
+    Linear→GELU→Linear card and its denoiser edge must disappear together.
+    """
     d = unfold(PIXART)
     render = d.ir.extras["render"]
     blocks = {b["id"]: b for b in render["loop_blocks"]}
-    projection = blocks["text_projection"]
-    assert projection["diffusion_stage"] == "text_projection"
-    assert [op["kind"] for op in projection["detail"]["ops"]] == [
-        "linear", "activation", "linear"
-    ]
-    assert projection["detail"]["ops"][0]["in"] == 4096
-    assert projection["detail"]["ops"][0]["out"] == 16 * 72
+    assert "text_projection" not in blocks
     edges = {(e["from"], e["to"]) for e in render["loop_edges"]}
-    assert ("text_encoder", "text_projection") in edges
-    assert ("text_projection", "denoiser") in edges
     assert ("text_encoder", "denoiser") not in edges
     html = d.to_html(standalone=True)
-    assert 'data-id="text_projection"' in html
-    assert 'data-card-id="text_projection"' in html
-    assert "PixArtAlphaTextProjection" in html
+    assert 'data-id="text_projection"' not in html
+    assert "PixArtAlphaTextProjection" not in html
 
 
 def test_norm_elementwise_affine_config_cannot_author_a_norm_claim():
@@ -158,15 +183,9 @@ def test_norm_elementwise_affine_config_cannot_author_a_norm_claim():
     """
     left = config_to_ir({**PIXART, "norm_elementwise_affine": False})
     right = config_to_ir({**PIXART, "norm_elementwise_affine": True})
-    assert left.layers[0].signature() == right.layers[0].signature()
+    assert left.layers == right.layers == []
     for ir in (left, right):
-        norms = [b for b in ir.layers[0].blocks if b.get("kind") == "norm"]
-        assert norms
-        assert all("affine" not in str(b.get("label", "")).lower() for b in norms)
-        assert all(
-            not any("affine" in str(fact).lower() for fact in b.get("facts", []))
-            for b in norms
-        )
+        assert ir.extras["render"]["opaque_layer_block"]["resolved"] is False
         assert not any(
             item.endswith(":norm_elementwise_affine")
             for item in ir.extras["config_access"]["accessed_unconsumed"]
@@ -236,17 +255,16 @@ def test_main_view_is_the_sampling_loop():
 
 
 def test_dit_layers_typed_correctly_not_as_llm():
-    """The DiT blocks must NOT inherit LLM defaults: attention is full/bidirectional
-    (not causal) with RoPE (not NoPE), and the two streams are named distinctly."""
+    """Diffusion layers inherit neither LLM nor conventional DiT defaults."""
     html = unfold(FLUX).to_html(standalone=True)
     assert "NoPE" not in html             # Flux uses axial RoPE, not NoPE
     assert "causal" not in html.lower()   # DiT attention is bidirectional
-    assert "Joint Attn" in html
-    assert "MM-DiT" in html               # double-stream named
-    assert "single-stream" in html        # single-stream named
+    assert "MM-DiT" not in html
+    assert "single-stream" not in html
+    assert "Joined-input attention" in html
     ir = config_to_ir(FLUX)
     a0 = ir.layers[0].attention
-    assert a0.mask == "full" and a0.no_rope is False
+    assert a0.mask == "unknown" and a0.no_rope is False
 
 
 def test_denoiser_drills_into_the_dit_stack():
@@ -493,53 +511,27 @@ def test_flux_splits_double_and_single_stream_groups():
 
 
 def test_flux_single_stream_block_has_no_text_rail_and_clean_labels():
-    """Option-1 single-stream depiction: text + image are joined into ONE sequence
-    ONCE before the stack, so the block takes no per-block text rail — only the
-    timestep (AdaLN) conditions it.  A per-block text rail was both a
-    cross-attention-like misread AND a line forced to cross the parallel MLP
-    branch (it landed on attention's far port through the MLP box).
+    """Each stack receives only its positively proven stream relation.
 
-    The op-conformance net checks op-KINDS, not side-input wiring or labels, so
-    these facts need their own pin:
-    * a single-stream layer carries adaln_cond but NOT text_cond;
-    * a dual-stream layer STILL carries text_cond (joint attn genuinely mixes the
-      two streams there — the suppression must be single-stream-only);
-    * neither attention label double-wraps its tag in parens
-      ("(MM-DiT (dual-stream))" regressed to "(dual-stream)");
-    * the single-stream variant declares the one-time-join stack caption (and the
-      dual one does NOT);
-    * the fused output projection is disambiguated from the model-level bookend.
+    FLUX's first block returns two state roots and its second joins the inputs.
+    Neither label comes from the old family split, and neither invents a
+    text/AdaLN side rail.
     """
     ir = config_to_ir(FLUX)
-
-    def _is_single(layer):
-        return "single-stream" in str(
-            (layer.attention.variant or {}).get("tag") or "").lower()
-
-    single = next(L for L in ir.layers if _is_single(L))
-    dual = next(L for L in ir.layers if not _is_single(L))
-
-    single_side = {b["id"] for b in single.blocks if b.get("lane")}
-    dual_side = {b["id"] for b in dual.blocks if b.get("lane")}
-    assert "adaln_cond" in single_side and "text_cond" not in single_side
-    assert "text_cond" in dual_side          # dual keeps its (correct) text input
-
-    assert single.attention.variant["label"] == ["Joint Attention", "(single-stream)"]
-    assert dual.attention.variant["label"] == ["Joint Attention", "(dual-stream)"]
-    for L in (single, dual):                 # no nested parens in the block label
-        suffix = L.attention.variant["label"][1]
-        assert suffix.count("(") == 1 and suffix.count(")") == 1
-
-    assert single.attention.variant.get("stack_note")      # join surfaced (single only)
-    assert not dual.attention.variant.get("stack_note")
-
-    proj = next(b for b in single.blocks if b.get("id") == "ss_proj")
-    assert proj["label"] == "Fused projection"             # != model-level "Output projection"
-
-    # The caption renders in the single-stream variant's architecture SVG, and no
-    # "Text tokens conditioning" rail is drawn for that variant.
+    assert {layer.attention.variant["tag"] for layer in ir.layers} == {
+        "two returned states", "explicit join",
+    }
+    joined = next(layer for layer in ir.layers
+                  if layer.attention.variant["tag"] == "explicit join")
+    dual = next(layer for layer in ir.layers
+                if layer.attention.variant["tag"] == "two returned states")
+    assert joined.attention.variant["label"] == ["Joined-input attention"]
+    assert dual.attention.variant["label"] == ["Dual-state attention"]
+    for layer in (joined, dual):
+        assert not {"text_cond", "adaln_cond"} & {
+            block["id"] for block in layer.blocks if block.get("lane")}
     html = unfold(FLUX).to_html(standalone=True)
-    assert "joined once before this stack" in html
+    assert "Joined-input attention" in html
 
 
 @pytest.mark.parametrize("cfg", [FLUX, PIXART])
@@ -595,8 +587,13 @@ def test_unet_does_not_fabricate_cross_attention_mid_when_undeclared():
     unet = parse_unet(kand)
     assert unet["mid"].get("attn") is False               # NO fabricated cross-attn mid
     assert unet["declares_block_types"] is False
+    # U10 routing is stricter than the quarantined U11 interpreter: because the
+    # current source proof does not close Kandinsky's append/pop skip route, the
+    # config signature cannot route production into that interpreter.
     ir = config_to_ir(kand)
-    assert any("attention placement is defined in the model code" in w for w in ir.warnings)
+    assert "unet" not in ir.extras
+    assert ir.extras["render"]["family"] == "diffusion"
+    assert ir.extras["render"]["opaque_layer_block"]["resolved"] is False
 
 
 def test_sdxl_unet_conditioning_is_honest():
@@ -673,16 +670,13 @@ def test_kandinsky3_mid_block_dropped_from_source_evidence():
         "scheduler": ["diffusers", "DDPMScheduler"],
     }
     ir = config_to_ir(kand3)
-    u = ir.extras["unet"]
-    # Source-proven: the class builds no mid block.
-    assert u.get("mid_present") is False
-    assert u.get("mid_dropped") is True
-    assert u.get("mid") == {}
+    assert "unet" not in ir.extras
+    assert ir.extras["render"]["family"] == "diffusion"
     html = unfold(kand3).to_html(standalone=True)
     assert "Mid stage" not in html
     assert "unet_mid" not in html
     assert "Declared by mid_block_type" not in html
-    assert any("no mid block" in w for w in ir.warnings)
+    assert "Denoiser internals" in html or "Repeated denoiser" in html
 
 
 def test_kandinsky3_attention_placement_read_from_code():
@@ -697,16 +691,13 @@ def test_kandinsky3_attention_placement_read_from_code():
         "scheduler": ["diffusers", "DDPMScheduler"],
     }
     ir = config_to_ir(kand3)
-    u = ir.extras["unet"]
-    assert u.get("code_attention_placement") is True
-    # Level 0 has no attention; levels 1-3 do (add_cross_attention = F,T,T,T).
-    assert [s.get("attn") for s in u["down"]] == [False, True, True, True]
-    assert all(s.get("attn_kind") == "code_defined" for s in u["down"] if s.get("attn"))
+    assert "unet" not in ir.extras
     html = unfold(kand3).to_html(standalone=True)
-    assert "code-PLACED" in html or "code-defined" in html
-    # placement is code-proven; the cell internals stay honest-unknown (not GEGLU).
-    assert "unresolved" in html
-    assert "Transformer block" not in html          # no fabricated Transformer2D
+    # The old U11 interpreter's per-level result is not allowed to leak through
+    # a config-authoritative route before the root skip topology is proven.
+    assert "code-PLACED" not in html
+    assert "Transformer block" not in html
+    assert "structure unresolved" in html
 
 
 def test_vq_decoder_labelled_from_config_declared_vq():
@@ -900,28 +891,46 @@ def test_unet_custom_stage_is_visible_but_unapproved():
     assert "CustomMagicDown" in html
 
 
-def test_dit_dialect_field_aliases():
-    """DiT variants with different field spellings parse correctly:
-    AuraFlow's num_mmdit_layers/num_single_dit_layers, and Hunyuan-DiT declaring
-    hidden_size directly (no per-head attention_head_dim)."""
+def test_dit_dialect_field_aliases_require_exact_source_bindings():
+    """Familiar DiT fields supply operands only after source binds their role."""
+    source_missing = config_to_ir({
+        "_class_name": "UninstalledCustomTransformer2DModel",
+        "num_mmdit_layers": 4, "num_single_dit_layers": 32,
+        "attention_head_dim": 256, "num_attention_heads": 8,
+        "joint_attention_dim": 2048, "in_channels": 4,
+    })
+    assert source_missing.num_layers == 0
+    assert source_missing.hidden_size == 0
+    assert source_missing.extras["render"]["opaque_layer_block"]["resolved"] \
+        is False
+
     aura = config_to_ir({
         "_class_name": "AuraFlowTransformer2DModel", "num_mmdit_layers": 4,
         "num_single_dit_layers": 32, "attention_head_dim": 256,
         "num_attention_heads": 8, "joint_attention_dim": 2048, "in_channels": 4,
     })
-    assert aura.num_layers == 36 and aura.hidden_size == 8 * 256
+    # Installed source proves two exact repeated containers and binds only
+    # their count operands.  The familiar width-like fields still cannot
+    # author a hidden width without an exact source use.
+    assert aura.num_layers == 36 and aura.hidden_size == 0
 
     hunyuan = config_to_ir({
         "_class_name": "HunyuanDiT2DModel", "num_layers": 40,
         "num_attention_heads": 16, "hidden_size": 1408, "cross_attention_dim": 1024,
     })
-    assert hunyuan.num_layers == 40 and hunyuan.hidden_size == 1408
+    # Installed source closes Hunyuan's exact repeated container and its bound
+    # num_layers operand as the same general rule used for Aura.
+    assert hunyuan.num_layers == 40 and hunyuan.hidden_size == 0
+    assert all(layer.attention.mask == "unknown" for layer in hunyuan.layers)
 
 
 def test_pixart_single_stream_only():
     ir = config_to_ir(PIXART)
-    assert ir.num_layers == 28
-    assert ir.hidden_size == 16 * 72
+    # This local fixture has no exact source bundle. Neither the layer count nor
+    # its supposed stream kind may be reconstructed from raw config fields.
+    assert ir.num_layers == 0
+    assert ir.hidden_size == 0
+    assert ir.extras["render"]["opaque_layer_block"]["resolved"] is False
 
 
 # --- Diffusion auto-depth harness: recursive denoiser conformance ------------
@@ -1017,7 +1026,12 @@ def test_diffusion_loader_merges_pipeline_and_denoiser(tmp_path, monkeypatch):
     ir = config_to_ir(merged)
     assert ir.num_layers == 57
     assert ir.extras["render"]["theme"] == "teal"
-    assert ir.extras["diffusion"]["text_encoders"] == ["CLIP", "T5"]
+    loop_ids = {block["id"] for block in ir.extras["render"]["loop_blocks"]}
+    assert {"encoder_0", "encoder_1"} <= loop_ids
+    assert not any(
+        edge["from"] in {"encoder_0", "encoder_1"}
+        and edge["to"] == "denoiser"
+        for edge in ir.extras["render"]["loop_edges"])
 
 
 def test_diffusion_loader_returns_none_for_non_diffusion(tmp_path, monkeypatch):
@@ -1067,17 +1081,12 @@ def test_dit_norm_kind_is_code_authoritative_and_wiring_stays_independent():
         {**PIXART, "norm_type": "rms_norm"},
         {k: v for k, v in PIXART.items() if k not in ("norm_type", "norm_eps")},
     ]
-    layers = [unfold(cfg).ir.layers[0] for cfg in variants]
-    assert all(layer.norm_kind == "layernorm" for layer in layers)
-    assert all(layer.norm_placement == "unknown" for layer in layers)
-    assert all(layer.residual_topology == "unknown" for layer in layers)
-    assert len({layer.signature() for layer in layers}) == 1
-    for layer in layers:
-        by = {b["id"]: b for b in layer.blocks}
-        assert by["wiring_unresolved"]["label"] == [
-            "LayerNorm", "wiring unresolved",
-        ]
-        assert {"rms1", "rms2", "add1", "add2", "xattn_norm", "add_xattn"}.isdisjoint(by)
+    diagrams = [unfold(cfg).ir for cfg in variants]
+    assert all(ir.layers == [] for ir in diagrams)
+    assert all(ir.extras["render"]["opaque_layer_block"]["resolved"] is False
+               for ir in diagrams)
+    assert all("rms_norm" not in str(ir.extras["render"]).lower()
+               for ir in diagrams)
 
 
 def test_clickable_highlight_is_image_only():
@@ -1096,8 +1105,11 @@ def test_clickable_highlight_is_image_only():
 
 def test_inspect_code_resolves_diffusion_norm_from_diffusers_source():
     """When the config is silent on the norm type (FLUX & most DiTs), `inspect_code`
-    reads it from the diffusers BLOCK class (AdaLayerNormZero → LayerNorm), tier-2 —
-    so the norm card stops saying 'Normalization' and is marked code-derived.
+    reads it from the diffusers BLOCK class (AdaLayerNormZero → LayerNorm), tier-2,
+    so the typed layer retains that independently proven norm kind.  The first
+    FLUX cell preserves its independently proven attention beside an opaque
+    FFN and one wiring-unresolved marker; an unknown branch must not erase a
+    proven sibling or manufacture norm placement.
     Since C4 the resolution is ALWAYS-ON in the diffusor adapter (root-scoped
     class evidence) — it no longer hides behind the inspect_code flag, so the
     plain unfold resolves too whenever the source is installed."""
@@ -1113,63 +1125,26 @@ def test_inspect_code_resolves_diffusion_norm_from_diffusers_source():
     assert layer.norm_placement == "unknown"
     assert layer.residual_topology == "unknown"
     by = {b["id"]: b for b in layer.blocks}
-    assert by["wiring_unresolved"]["label"] == [
-        "LayerNorm", "wiring unresolved",
-    ]
-    assert {"rms1", "rms2", "add1", "add2"}.isdisjoint(by)
+    assert tuple(by) == ("attn", "wiring_unresolved", "ffn")
+    assert by["wiring_unresolved"]["resolved"] is False
+    assert by["ffn"]["detail"]["ffn"]["kind"] is None
 
 
 def test_cross_attn_dit_preserves_mechanisms_without_inventing_wiring():
-    """Cross-attention DiTs (PixArt/Sana/Wan/video) have THREE sublayers —
-    self-attn, cross-attn(to text), and FFN.  They remain independently visible
-    when the owner-bound placement/residual reader abstains; a config spelling
-    cannot fill that gap. MM-DiT (joint) has no separate cross-attention
-    sublayer."""
+    """A config-only cross-attention dialect cannot author three sublayers."""
     d = unfold(PIXART)
-    ids = [b["id"] for b in d.ir.layers[0].blocks]
-    # The three mechanisms survive independently.  Source abstention on norm
-    # placement/residual taps withholds only their wiring.
-    assert all(op in ids for op in ("attn", "cross_attn", "ffn", "wiring_unresolved"))
-    assert all(op not in ids for op in (
-        "rms1", "rms2", "add1", "add2", "xattn_norm", "add_xattn",
-    ))
-    # A bare config flag cannot author the missing pre-norm or residual.
+    assert d.ir.layers == []
     with_norm_diagram = unfold({**PIXART, "cross_attn_norm": True})
-    with_norm = [
-        b["id"]
-        for b in with_norm_diagram.ir.layers[0].blocks
-    ]
-    assert with_norm == ids
+    assert with_norm_diagram.ir.layers == []
     assert not any(
         item.endswith(":cross_attn_norm")
         for item in with_norm_diagram.ir.extras[
             "config_access"]["accessed_unconsumed"]
     )
-    cross = next(b for b in d.ir.layers[0].blocks if b["id"] == "cross_attn")
-    # The cross-attn drill is the CANONICAL attention view, hybridised with the input
-    # change (cross_attention spec: image Q, encoded-text K/V, non-cached) — no bespoke fork.
-    assert cross.get("view") == "attention" and cross.get("diffusion_stage") == "cross_attention"
-    xattn = cross["detail"]["attention"]
-    assert xattn["cross_attention"] is True
-    # The cross-attention role and text input remain known, but an unproven
-    # mechanism must not manufacture Q/K/V or scaled-score internals.
-    cross_ids = {c["id"] for c in cross["children"]}
-    assert xattn["node_prefix"] == "x_" and "x_cross_attention_states" in cross_ids
-    assert {"x_q_proj", "x_k_proj", "x_scaled_scores", "x_o_proj"}.isdisjoint(cross_ids)
-    assert "opaque_mixer" in cross_ids
-    # The self-attention role remains separate and is equally honest.
-    self_attn = next(b for b in d.ir.layers[0].blocks if b["id"] == "attn")
-    self_ids = {c["id"] for c in self_attn["children"]}
-    assert {"q_proj", "k_proj", "scaled_scores", "o_proj"}.isdisjoint(self_ids)
-    assert "opaque_mixer" in self_ids
     html = d.to_html(standalone=True)
-    assert "Encoded text" in html
-    assert "Attention mechanism unresolved" in html
+    assert "Cross-Attention" not in html
+    assert "Repeated denoiser" in html and "structure unresolved" in html
     assert validate_click_coupling(html) == []
-
-    # MM-DiT (joint_attention_dim) must NOT grow a cross-attention sublayer.
-    mmdit_ids = [b["id"] for b in unfold(FLUX).ir.layers[0].blocks]
-    assert "cross_attn" not in mmdit_ids
 
 
 def test_video_dit_detected_and_honest():
@@ -1178,25 +1153,23 @@ def test_video_dit_detected_and_honest():
     d = unfold(WAN_STYLE)
     ir = d.to_ir()
     assert (ir["extras"].get("render") or {}).get("family") == "diffusion"
-    assert ir["hidden_size"] == 1536                      # dim spelling
-    assert ir["layers"][0]["ffn"]["intermediate_size"] == 8960   # ffn_dim
+    assert ir["hidden_size"] == 0
+    assert len(ir["layers"]) == 30
+    assert all(layer["attention"]["kind"] is None for layer in ir["layers"])
     html = d.to_html(standalone=True)
-    # cross-attn DiT: a SEPARATE cross-attention sublayer (self → cross → FFN), not MM-DiT
-    assert "Cross-Attention" in html
-    assert "Cross-attention mechanism unresolved" in html
-    block_ids = [b["id"] for b in d.ir.layers[0].blocks]
-    assert "cross_attn" in block_ids
-    assert "add_xattn" not in block_ids
+    # Adapter routing remains correct, but raw dim/ffn/video fields cannot fill
+    # an absent source boundary.
+    assert "Cross-Attention" not in html
     assert "MM-DiT" not in html
-    assert ">Frames<" in html                             # video output, not "Image"
+    assert ">Frames<" not in html
+    assert "Output domain unresolved" in html
     assert validate_click_coupling(html) == []
 
 
 def test_concat_joint_video_dit_is_not_called_dual_stream():
-    """text_embed_dim-style joint sequences (CogVideoX/Mochi) share Q/K/V —
-    'joint', honestly, but never the dual-stream MM-DiT claim."""
+    """A text_embed_dim spelling proves neither joint nor dual-stream attention."""
     html = unfold(COGVIDEO_STYLE).to_html(standalone=True)
-    assert "Joint attention — concatenated text + latent sequence" in html
+    assert "Joint attention — concatenated text + latent sequence" not in html
     assert "MM-DiT" not in html
 
 
@@ -1214,13 +1187,10 @@ def test_moe_dit_counts_do_not_manufacture_a_router():
            "num_routed_experts": 4, "num_activated_experts": 2,
            "joint_attention_dim": 4096}
     ir = unfold(cfg).to_ir()
-    ffn = ir["layers"][0]["ffn"]
-    assert ffn["kind"] is None
-    assert ffn["num_experts"] == 4 and ffn["num_experts_per_tok"] == 2
-    assert not any(
-        block.get("view") == "moe"
-        for block in ir["layers"][0]["blocks"]
-    )
+    assert len(ir["layers"]) == 4
+    assert all(layer["ffn"]["kind"] is None for layer in ir["layers"])
+    assert "num_experts" not in str(ir["extras"]["render"])
+    assert "Mixture of Experts" not in unfold(cfg).to_html(standalone=True)
 
 
 def test_non_kl_vae_stays_honest():
@@ -1271,24 +1241,24 @@ def test_vae_decoder_upsample_matches_diffusers_placement():
 
 
 def test_swiglu_video_dit_ffn_is_gated():
-    """Mochi declares activation_fn swiglu — the FFN is gated, drawn with the
-    gate path, not a plain MLP."""
+    """A swiglu config token cannot manufacture a gated FFN without source."""
     cfg = dict(COGVIDEO_STYLE, _class_name="MochiTransformer3DModel",
                activation_fn="swiglu")
-    ffn = unfold(cfg).to_ir()["layers"][0]["ffn"]
-    assert ffn["gated"] is True
+    ir = unfold(cfg).to_ir()
+    assert len(ir["layers"]) == 42
+    assert all(layer["ffn"]["gated"] is None for layer in ir["layers"])
+    assert "SwiGLU" not in unfold(cfg).to_html(standalone=True)
 
 
 def test_video_latent_shape_uses_declared_temporal_geometry():
-    """CogVideoX declares sample_frames + temporal_compression_ratio: the z_T
-    shape gains the frames axis ((49-1)/4+1 = 13 latent frames).  Models that
-    declare nothing temporal keep the plain channel note — never invented."""
+    """Raw temporal geometry cannot define the denoiser or output state shape."""
     cfg = dict(COGVIDEO_STYLE, sample_height=60, sample_width=90,
                sample_frames=49, temporal_compression_ratio=4)
     html = unfold(cfg).to_html(standalone=True)
-    assert "16 × 13 × 30 × 45" in html
+    assert "16 × 13 × 30 × 45" not in html
+    assert "Output domain unresolved" in html
     html_wan = unfold(WAN_STYLE).to_html(standalone=True)
-    assert "shape [16 channels]" in html_wan
+    assert "shape [16 channels]" not in html_wan
 
 
 def test_scheduler_step_renders_a_clean_combine_not_floating_ops():
@@ -1372,28 +1342,6 @@ def test_sampling_loop_json_matches_html_nodes():
     assert {s["at"] for s in j["splitters"]} == {"denoiser", "prompt"}
 
 
-def test_text_cond_rail_requires_attention_text_signal():
-    """The text->attention K/V side-rail must be drawn ONLY when the config says
-    attention consumes text (a joint/cross/text-embed dim or a stream split) — a
-    text *encoder* alone must not draw it (it may condition purely via AdaLN, as
-    in a plain class-conditional DiT). Pins the FAIL-1 fix for Ideogram4-style
-    DiTs whose conditioning is an LLM feature with no attention-text dim."""
-    from model_unfolder.adapters.diffusor.parser import _conditioning_side_blocks
-
-    ids = lambda blks: {b["id"] for b in blks}
-    # With no source proof of per-block conditioning, no AdaLN rail is drawn.
-    plain = _conditioning_side_blocks(text_in_attention=False, pooled_in_adaln=False,
-                                      guidance=False)
-    assert ids(plain) == set()
-
-    # Positive source proof creates AdaLN; the independently proven
-    # attention-text route creates text_cond.
-    joint = _conditioning_side_blocks(text_in_attention=True, pooled_in_adaln=True,
-                                      guidance=False, block_conditioning=True)
-    assert ids(joint) == {"adaln_cond", "text_cond"}
-    assert "pooled text" in joint[0]["description"]
-
-
 def test_diffusion_json_does_not_leak_llm_io_fields():
     """A denoiser has no token vocabulary or LM head; the expanded JSON's
     dimensions + io must not leak vocab_size / tie_word_embeddings / token_ids /
@@ -1402,12 +1350,13 @@ def test_diffusion_json_does_not_leak_llm_io_fields():
     j = unfold(FLUX).to_json()
     dims = j["dimensions"]
     assert "vocab_size" not in dims and "tie_word_embeddings" not in dims
-    assert "in_channels" in dims and "hidden_size" in dims
+    assert "in_channels" not in dims and "hidden_size" not in dims
 
     io = j["io"]
-    assert io["input"]["kind"] == "noisy_latent"
+    assert io["input"]["kind"] == "denoiser_state"
     assert "token_embedding" not in io and "lm_head" not in io
-    assert io["output"]["kind"] == "noise_prediction"
+    assert io["output"]["kind"] == "denoiser_state"
+    assert io["output"]["domain"] is None
 
     # A real LLM still reports the token fields — the branch is diffusion-only.
     ld = unfold(LLAMA).to_json()
@@ -1424,63 +1373,55 @@ def test_dit_ffn_undeclared_structure_is_honest_not_fabricated():
     code-derived case — see ``test_flux_ffn_activation_is_code_derived_gelu``.)
     Pins WEAK-3 / honest-unknown.  A real LLM (declares its activation) is
     unaffected."""
-    f = unfold(IDEO_STYLE).to_json()["layer_groups"][0]["ffn"]
-    assert f.get("activation") is None          # no fabricated default
-    assert f.get("gated") is None               # gating undeclared
-    assert f.get("structure_declared") is False
-    assert f.get("activation_assumed") is None
-    assert not f.get("activation_from_class")   # not code-derived either — truly unknown
-    # The FFN block's card says exactly that — never a fabricated GELU shape.
-    import re
-    html = unfold(IDEO_STYLE).to_html(standalone=True)
-    m = re.search(r'data-card-id="ffn"[^>]*>.*?uf-card-desc">(.*?)</div>', html, re.S)
-    assert m and "Feed-forward mechanism unresolved" in m.group(1)
-    assert "GELU" not in m.group(1)   # activation is unknown → never fabricated
+    diagram = unfold(IDEO_STYLE)
+    assert diagram.to_json()["layer_groups"] == []
+    assert diagram.ir.extras["render"]["opaque_layer_block"]["resolved"] is False
+    html = diagram.to_html(standalone=True)
+    assert "GELU" not in html
     # LLAMA declares its activation — gating/activation are real facts, not flagged.
     lf = unfold(LLAMA).to_json()["layer_groups"][0]["ffn"]
     assert lf["activation"] == "silu" and lf["activation_assumed"] is None
     assert lf["gated"] is True
 
 
-def test_flux_ffn_activation_is_code_derived_but_storage_stays_opaque():
-    """Flux declares no FFN activation in config, but its model class fixes it
-    (``FeedForward(activation_fn="gelu-approximate")`` / ``nn.GELU(approximate=
-    "tanh")`` after proj_mlp, both mult=4, NON-gated).  We surface that from
-    ``class_defaults.yaml`` — MARKED code-derived — so the FFN drill is informative
-    (Linear → GELU → Linear) AND consistent with the single-stream MLP lane,
-    instead of a pale opaque box.  This is the inverse of the honest-unknown pin
-    above: a fact we CAN cite to the model class is surfaced, never fabricated
-    silently.  In diffusers the activation_fn name fully specifies the FFN, so the
-    non-gated shape is derived from it (a "*glu" name would mark it gated)."""
-    import re
+def test_flux_stream_and_ffn_proofs_remain_independent():
+    """Independent source proofs must neither erase nor launder each other.
+
+    FLUX's exact joined-stack FFN occurrence proves a dense GELU path.  Its
+    dual-stack return relation is also exact, but that stack's FFN mechanism is
+    not closed by the current evidence and therefore remains unknown.  No
+    config spelling or class-default table bridges the missing proof.
+    """
     ir = config_to_ir(FLUX)
 
-    def _is_single(L):
-        return "single-stream" in str((L.attention.variant or {}).get("tag") or "").lower()
-
-    for L in (next(x for x in ir.layers if _is_single(x)),
-              next(x for x in ir.layers if not _is_single(x))):
-        assert L.ffn.activation == "gelu-approximate"
-        assert L.ffn.gated is False                 # derived from the non-glu name
-        assert L.ffn.activation_from_class is True   # code-derived, marked
+    joined = next(x for x in ir.layers
+                  if x.attention.variant.get("tag") == "explicit join")
+    dual = next(x for x in ir.layers
+                if x.attention.variant.get("tag") == "two returned states")
+    assert joined.ffn.activation == "gelu"
+    assert joined.ffn.gated is False
+    assert joined.ffn.activation_from_class is True
+    # The first stack's dual-state RETURN relation is now proven, but that does
+    # not launder its still-unresolved FFN storage/activation.  Independent
+    # evidence axes strengthen independently.
+    assert dual.ffn.kind is None
+    assert dual.ffn.activation is None
+    assert dual.ffn.gated is None
 
     # JSON parity keeps the known activation/gating. Projection storage is a
-    # separate U10 fact, so the drill stays opaque rather than inventing three
-    # stored modules from an activation spelling.
-    fj = unfold(FLUX).to_json()["layer_groups"][0]["ffn"]
-    assert fj.get("activation") == "gelu-approximate"
-    assert fj.get("activation_from_class") is True and fj.get("gated") is False
-    dual = next(L for L in ir.layers if not _is_single(L))
-    ffn_block = next(b for b in dual.blocks if b.get("id") == "ffn")
-    assert [c["id"] for c in ffn_block["children"]] == ["block"]
-    assert "storage unresolved" in ffn_block["children"][0]["title"].lower()
+    # separate U10 fact. The joined stack proves dense GELU; the dual stack's
+    # FFN remains opaque even though its stream relation is now exact.
+    groups = unfold(FLUX).to_json()["layer_groups"]
+    assert any(group["ffn"].get("activation") == "gelu"
+               and group["ffn"].get("gated") is False for group in groups)
+    assert [block["id"] for block in dual.blocks] == [
+        "attn", "wiring_unresolved", "ffn"]
+    assert next(block for block in dual.blocks
+                if block["id"] == "ffn")["detail"]["ffn"]["kind"] is None
 
     html = unfold(FLUX).to_html(standalone=True)
-    # No activation child is drawn while storage is unresolved. The separate
-    # single-stream lane may still report the independently known activation.
-    assert 'data-card-id="activation"' not in html
-    ss = re.search(r'data-card-id="ss_mlp"[^>]*>.*?uf-card-desc">(.*?)</div>', html, re.S)
-    assert ss and "code-derived" in ss.group(1) and "GELU" in ss.group(1)
+    # Only the exact joined stack renders GELU; the dual stack stays opaque.
+    assert "GELU" in html
 
 
 # Ideogram-4-style DiT: custom class, LLM-feature conditioning, an AdaLN dim, a
@@ -1502,27 +1443,11 @@ def test_ideogram_style_dit_captures_declared_facts():
     and (FAIL-1) no text->attention rail appears without an attention-text
     signal."""
     ir = config_to_ir(IDEO_STYLE)
-    diff = (ir.extras or {}).get("diffusion") or {}
-    assert diff["adaln_dim"] == 512 and diff["llm_features_dim"] == 53248
-    # The CFG twin is advisory: it lives in notes, never in warnings, so a
-    # faithful parse isn't mislabelled "⚠ partial config".
-    assert any("unconditional_transformer" in n for n in ir.notes)
-    assert not any("unconditional_transformer" in w for w in ir.warnings)
-
-    side = {b["id"]: b for b in ir.layers[0].blocks if b.get("lane")}
-    assert "text_cond" not in side                       # no attention-text dim
-    assert "adaln_cond" not in side                      # no source-bound block proof
-    # WEAK-3: no invented activation and no invented gating.
-    assert ir.layers[0].ffn.activation_assumed is False
-    assert ir.layers[0].ffn.gated is None
-    # Norm kind is not declared (only a bare norm_eps) — don't assert RMS/Layer.
-    assert ir.layers[0].norm_kind == "unknown"
-    # FAIL-1/GAP-4: llm_features_dim is recognized as PRE-BLOCK text fusion, so
-    # the attention description says text is fused before the stack — never the
-    # wrong "class / timestep enters only through AdaLN".
-    desc = ir.layers[0].attention.variant["desc"]
-    assert "fused once before the stack" in desc
-    assert "class / timestep) enters only" not in desc
+    assert ir.layers == []
+    assert "diffusion" not in ir.extras
+    assert ir.extras["render"]["opaque_layer_block"]["resolved"] is False
+    assert "adaln_dim" not in str(ir.extras["render"])
+    assert "llm_features_dim" not in str(ir.extras["render"])
 
 
 def test_unet_view_shows_text_conditioning_rail():
@@ -1719,10 +1644,12 @@ def test_unet_hero_denoiser_labeled_unet_not_dit():
     loop_svg = re.search(r"<svg.*?</svg>", seg, re.S).group(0)
     texts = re.findall(r"<text[^>]*>(.*?)</text>", loop_svg)
     assert "U-Net" in texts and "DiT Denoiser" not in texts
-    # A real DiT still reads DiT.
+    # The non-U-shaped source is known to be a denoiser, but U10 deliberately
+    # does not infer the narrower DiT family label from config/class identity.
     fseg = unfold(FLUX).to_html(standalone=True)
     fsvg = re.search(r"<svg.*?</svg>", fseg[fseg.index("SAMPLING LOOP"):], re.S).group(0)
-    assert "DiT Denoiser" in re.findall(r"<text[^>]*>(.*?)</text>", fsvg)
+    ftexts = re.findall(r"<text[^>]*>(.*?)</text>", fsvg)
+    assert "Diffusion denoiser" in ftexts and "DiT Denoiser" not in ftexts
 
 
 def test_unet_view_stages_clickable_carded_and_clean():

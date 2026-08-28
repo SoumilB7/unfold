@@ -64,7 +64,7 @@ def test_structural_debt_register_is_lawful_and_exact():
 
 
 def test_structural_debt_units_are_u3_to_u14_by_construction():
-    """The H7/H8/'scoped' vocabulary is DEAD — rows carry U3–U14 only, and the
+    """The H7/H8/'scoped' vocabulary is DEAD — rows carry U3–U15 only, and the
     constructor (not this test) is the enforcement; here we pin that the live
     register is non-empty and every row parses its checkable condition."""
     from model_unfolder.evidence.structural_debt import (

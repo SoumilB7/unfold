@@ -59,11 +59,11 @@ def _write(tmp_path, source):
 
 
 def _read(tmp_path, block, *, mixer=CROSS_MIXER, root_args="x, context",
-          block_args="x, context"):
+          block_args="x, context", block_ctor="Block(config)"):
     source = PREFIX + mixer + block + f"""
 class Root:
     def __init__(self, config):
-        self.units = nn.ModuleList([Block(config) for _ in range(config.layers)])
+        self.units = nn.ModuleList([{block_ctor} for _ in range(config.layers)])
     def forward(self, {root_args}):
         for unit in self.units:
             x = unit({block_args})
@@ -101,6 +101,80 @@ class Block:
         ("x", "state"), ("context", "context")]
 
 
+def test_proven_lane_field_presence_closes_its_conditional_return_route(
+        tmp_path):
+    result, _blocks, _root, _index = _read(tmp_path, """
+class Block:
+    def __init__(self, config): self.mix = Mixer(config)
+    def forward(self, x, context):
+        if self.mix is not None:
+            mixed = self.mix(x, context)
+            x = x + mixed
+        return x
+""")
+    row = result.require_value().blocks[0]
+    assert len(row.relations) == 1
+    assert row.relations[0].kind == "contextual_single_state"
+    assert not row.unresolved
+
+
+def test_unrelated_runtime_guard_cannot_borrow_lane_construction_proof(
+        tmp_path):
+    result, _blocks, _root, _index = _read(
+        tmp_path, """
+class Block:
+    def __init__(self, config): self.mix = Mixer(config)
+    def forward(self, x, context, enabled):
+        if enabled:
+            mixed = self.mix(x, context)
+            x = x + mixed
+        return x
+""", root_args="x, context, enabled",
+        block_args="x, context, enabled")
+    row = result.require_value().blocks[0]
+    assert not row.relations
+    assert row.unresolved
+
+
+@pytest.mark.parametrize(("selected", "guard_kind"), (
+    (True, "if"), (False, "else"),
+))
+def test_literal_constructor_argument_selects_branch_per_exact_occurrence(
+        tmp_path, selected, guard_kind):
+    """A shared block class may execute a different branch per construction.
+
+    Selection comes from the exact construction site's literal argument through
+    ``self.modulation = modulation``.  It is not a class-wide choice, and the
+    inactive call remains present as typed unresolved evidence rather than
+    disappearing from the call census.
+    """
+    result, _blocks, _root, _index = _read(
+        tmp_path, """
+class Block:
+    def __init__(self, config, modulation):
+        self.modulation = modulation
+        self.mix = Mixer(config)
+    def forward(self, x, context):
+        if self.modulation:
+            mixed = self.mix(x, context)
+            x = x + mixed
+        else:
+            mixed = self.mix(x, context)
+            x = x + mixed
+        return x
+""", block_ctor=f"Block(config, {selected!r})")
+    row = result.require_value().blocks[0]
+    assert len(row.relations) == 1
+    assert row.relations[0].kind == "contextual_single_state"
+    assert row.relations[0].lane_call.guard[0].kind == guard_kind
+    assert len(row.unresolved) == 1
+    assert row.unresolved[0].state == "inactive_guard"
+    assert "selects the rival forward branch" in row.unresolved[0].reason
+
+    with pytest.raises(ValueError, match="state vocabulary is closed"):
+        replace(row.unresolved[0], state="probably_inactive")
+
+
 def test_two_returned_roots_make_an_exact_dual_state_lane(tmp_path):
     result, _blocks, _root, _index = _read(tmp_path, """
 class Block:
@@ -135,6 +209,26 @@ class Block:
     assert relation.auxiliary_formals == ("right",)
     assert not hasattr(relation, "execution_complete")
     assert not hasattr(relation, "modality")
+
+
+def test_concat_then_split_keeps_exact_joined_stream_identity(tmp_path):
+    result, _blocks, _root, _index = _read(
+        tmp_path, """
+class Block:
+    def __init__(self, config): self.mix = Mixer(config)
+    def forward(self, left, right):
+        joined = torch.cat([left, right], dim=1)
+        joined = joined + self.mix(joined)
+        left, right = joined[:, :1], joined[:, 1:]
+        return left, right
+""", mixer=SELF_MIXER, root_args="left, right",
+        block_args="left, right")
+    row = result.require_value().blocks[0]
+    assert not row.returns[0].unresolved
+    relation = row.relations[0]
+    assert relation.kind == "joined_inputs"
+    assert relation.state_formals == ("left", "right")
+    assert relation.joins[0].input_formals == ("left", "right")
 
 
 def test_self_lane_with_decoy_dimension_and_unused_text_is_single_state(tmp_path):
@@ -222,6 +316,129 @@ class Block:
     row = result.require_value().blocks[0]
     assert row.relations[0].kind == "single_state"
     assert not row.returns[0].unresolved
+
+
+def test_conditional_opaque_delta_does_not_erase_exact_residual_states(tmp_path):
+    result, _blocks, _root, _index = _read(tmp_path, """
+class Block:
+    def __init__(self, config): self.mix = Mixer(config)
+    def forward(self, left, right, choose):
+        outputs = self.mix(left, right)
+        if choose:
+            left_delta, right_delta = outputs
+        else:
+            left_delta, right_delta, unused = outputs
+        left = left + left_delta
+        right = right + right_delta
+        if choose:
+            right = right.clip(-1, 1)
+        return right, left
+""", root_args="left, right, choose",
+        block_args="left, right, choose")
+    row = result.require_value().blocks[0]
+    assert not row.returns[0].unresolved
+    assert row.relations[0].kind == "dual_state"
+    assert row.relations[0].state_formals == ("left", "right")
+
+
+def test_opaque_call_and_real_replacement_do_not_claim_state_preservation(
+        tmp_path):
+    opaque, *_ = _read(
+        tmp_path, """
+class Block:
+    def __init__(self, config): self.mix = Mixer(config)
+    def replace(self, value): return value
+    def forward(self, state, context):
+        mixed = self.mix(state, context)
+        state = self.replace(state)
+        return state
+""")
+    opaque_row = opaque.require_value().blocks[0]
+    assert opaque_row.returns[0].unresolved
+    assert not opaque_row.relations
+
+    replaced, *_ = _read(
+        tmp_path, """
+class Block:
+    def __init__(self, config): self.mix = Mixer(config)
+    def forward(self, state, replacement):
+        mixed = self.mix(state, replacement)
+        state = replacement
+        return state
+""", root_args="state, replacement",
+        block_args="state, replacement")
+    replaced_row = replaced.require_value().blocks[0]
+    assert not replaced_row.relations
+    assert [item.formal.name for item in replaced_row.roots
+            if item.role == "state"] == ["replacement"]
+
+
+def test_mixed_guarded_return_sources_do_not_launder_attention_dependency(
+        tmp_path):
+    result, *_ = _read(tmp_path, """
+class Block:
+    def __init__(self, config): self.mix = Mixer(config)
+    def forward(self, state, context, choose):
+        mixed = self.mix(state, context)
+        if choose:
+            delta = mixed
+        else:
+            delta = context
+        state = state + delta
+        return state
+""", root_args="state, context, choose",
+        block_args="state, context, choose")
+    row = result.require_value().blocks[0]
+    assert not row.relations
+    assert row.unresolved[0].reason == (
+        "no exact return route carries the classified state roots")
+
+
+def test_ffn_formal_slot_requires_positive_same_formal_lineage(tmp_path):
+    preserved, *_ = _read(
+        tmp_path, """
+class Feed:
+    def __init__(self, config):
+        self.up = nn.Linear(config.width, config.width * 4)
+        self.down = nn.Linear(config.width * 4, config.width)
+    def forward(self, value): return self.down(F.gelu(self.up(value)))
+class Block:
+    def __init__(self, config):
+        self.mix = Mixer(config)
+        self.ff = Feed(config)
+    def normalize(self, value): return value
+    def forward(self, state, context):
+        residual = state
+        state = self.normalize(state + self.mix(state, context))
+        delta = self.ff(state)
+        state = residual + delta
+        return state
+""")
+    preserved_row = preserved.require_value().blocks[0]
+    assert preserved_row.ffn_relations[0].kind == "single_state"
+    assert preserved_row.ffn_relations[0].state_formals == ("state",)
+
+    replaced, *_ = _read(
+        tmp_path, """
+class Feed:
+    def __init__(self, config):
+        self.up = nn.Linear(config.width, config.width * 4)
+        self.down = nn.Linear(config.width * 4, config.width)
+    def forward(self, value): return self.down(F.gelu(self.up(value)))
+class Block:
+    def __init__(self, config):
+        self.mix = Mixer(config)
+        self.ff = Feed(config)
+    def forward(self, state, context):
+        residual = state
+        state = context
+        delta = self.ff(state)
+        state = residual + delta
+        return state
+""")
+    replaced_row = replaced.require_value().blocks[0]
+    assert not replaced_row.ffn_relations
+    assert len(replaced_row.unresolved_ffns) == 1
 
 
 def test_source_rename_preserves_relation_while_source_change_does_not(tmp_path):
@@ -320,12 +537,13 @@ def test_parser_shadow_preserves_source_missing_as_typed_unknown():
      (("bare_gate", "attention"), ("bare_gate", "attention"),
       ("bare_gate", "ffn"), ("bare_gate", "ffn"),
       ("bare_gate", "attention"))),
-    ("fluxtransformer2dmodel", ("joined_inputs",), 1, (), 0, ()),
+    ("fluxtransformer2dmodel", ("dual_state", "joined_inputs"), 0,
+     (), 0, ()),
     ("hunyuanvideo", ("single_state",), 0, (), 0,
      (("bare_gate", "attention"),)),
     ("ltx-video", ("single_state", "contextual_single_state"), 0,
      (), 0, (("bare_gate", "attention"),)),
-    ("lumina-image-2-0", (), 6, (), 0, ()),
+    ("lumina-image-2-0", ("single_state",) * 3, 3, (), 0, ()),
     ("mochi-1-preview", (), 0, (), 0, ()),
     ("pixart-sigma-xl-2-1024-ms", (), 0, (), 0, ()),
     ("prxpixel-t2i", ("contextual_single_state",), 0, (), 0,

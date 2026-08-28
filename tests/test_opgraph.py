@@ -234,6 +234,13 @@ def test_cross_attention_kv_lanes_take_a_side_source():
     srcs = {tuple(lane.ids): lane.src for lane in lanes}
     assert srcs[("q_proj",)] is None                          # Q taps decoder hidden
     assert srcs[("k_proj",)] == srcs[("v_proj",)] == "cross_attention_states"
+    # Secondary inputs follow the SAME card-census contract as ordinary ops:
+    # the attention view passes clickable=True only when child cards exist.
+    # A real external-K/V card therefore makes this terminal a drill target,
+    # while a leaf attention view keeps the identical node static.
+    assert g.by_id()["cross_attention_states"].static is False
+    leaf = region_to_graph(r, clickable=False)
+    assert leaf.by_id()["cross_attention_states"].static is True
 
 
 def test_mla_indexer_is_additive_and_keeps_the_v_lane_off_the_spine():

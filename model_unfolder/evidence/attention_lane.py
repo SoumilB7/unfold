@@ -14,8 +14,10 @@ Two proofs are accepted:
 
 An injected processor is retained only when its constructor resolves to an
 indexed class whose exact ``forward``/``__call__`` proves attention compute.
-The framework container alone proves an attention lane, but never its processor
-math, projection storage, head geometry, position scheme, or stream role.
+The framework container alone proves an attention lane.  Its closed public API
+may additionally expose exact ``heads``/``kv_heads``/``dim_head`` operands;
+those prove numeric geometry only, never processor math, projection storage,
+position scheme, masks, or stream role.
 """
 from __future__ import annotations
 
@@ -105,6 +107,39 @@ class InjectedAttentionProcessorEvidence:
 
 
 @dataclass(frozen=True)
+class FrameworkAttentionGeometryEvidence:
+    """Exact public-API geometry operands of one framework attention lane.
+
+    This proves only the meanings assigned by the addressed framework
+    constructor arguments (``heads``, optional ``kv_heads``, ``dim_head``).
+    It does not prove projection storage, score math, masks, or the default
+    value of an omitted ``kv_heads`` argument.
+    """
+
+    block_occurrence: OwnerOccurrenceId
+    construction: ConstructionSite
+    query_heads: ExprNode
+    key_value_heads: ExprNode | None
+    head_dim: ExprNode
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self):
+        if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
+                or not isinstance(self.construction, ConstructionSite):
+            raise TypeError("framework geometry retains exact block/construction")
+        expressions = tuple(item for item in (
+            self.query_heads, self.key_value_heads, self.head_dim)
+            if item is not None)
+        if any(not isinstance(item, ExprNode) or item.kind != "name"
+               or not item.name or item.span is None for item in expressions):
+            raise ValueError("framework geometry operands are exact parameter names")
+        required = {self.construction.span, *(item.span for item in expressions)}
+        if None in required or not required <= set(self.spans) \
+                or any(not isinstance(span, SourceSpan) for span in self.spans):
+            raise ValueError("framework geometry provenance closes every operand")
+
+
+@dataclass(frozen=True)
 class FrameworkAttentionLaneEvidence:
     """One block invocation proven by an exact attention-container protocol."""
 
@@ -115,6 +150,7 @@ class FrameworkAttentionLaneEvidence:
     external_reference: ExternalReferenceProof | None
     child_symbol: SymbolId | None
     processor: InjectedAttentionProcessorEvidence | None
+    geometry: FrameworkAttentionGeometryEvidence | None
     spans: tuple[SourceSpan, ...]
 
     def __post_init__(self):
@@ -156,12 +192,19 @@ class FrameworkAttentionLaneEvidence:
                 and not isinstance(
                     self.processor, InjectedAttentionProcessorEvidence):
             raise TypeError("optional processor evidence is typed")
+        if self.geometry is not None and (
+                not isinstance(self.geometry, FrameworkAttentionGeometryEvidence)
+                or self.geometry.block_occurrence != self.block_occurrence
+                or self.geometry.construction != self.construction):
+            raise ValueError("optional framework geometry closes this exact lane")
         required = {
             self.invocation.call.span, self.construction.span,
             *((self.external_reference.binding.span,)
               if self.external_reference is not None else ()),
             *((*self.processor.spans,)
               if self.processor is not None else ()),
+            *((*self.geometry.spans,)
+              if self.geometry is not None else ()),
         }
         if None in required or not required <= set(self.spans) \
                 or any(not isinstance(span, SourceSpan) for span in self.spans):
@@ -382,9 +425,31 @@ def _framework_candidate(index, root, invocation):
             invocation.call.span, site.span, reference.binding.span,
             *(processor.spans if processor is not None else ()),
         )))
+        by_keyword = {}
+        for name, value in site.kwargs:
+            by_keyword.setdefault(name, []).append(value)
+        heads = tuple(by_keyword.get("heads", ()))
+        kv_heads = tuple(by_keyword.get("kv_heads", ()))
+        dim_head = tuple(by_keyword.get("dim_head", ()))
+        geometry = None
+        if len(heads) == len(dim_head) == 1 \
+                and len(kv_heads) <= 1 \
+                and heads[0].kind == dim_head[0].kind == "name" \
+                and (not kv_heads or kv_heads[0].kind == "name"):
+            geometry_spans = tuple(dict.fromkeys(
+                span for span in (
+                    site.span, heads[0].span,
+                    *(item.span for item in kv_heads), dim_head[0].span)
+                if isinstance(span, SourceSpan)))
+            geometry = FrameworkAttentionGeometryEvidence(
+                invocation.caller_occurrence, site, heads[0],
+                kv_heads[0] if kv_heads else None, dim_head[0],
+                geometry_spans)
+        spans = tuple(dict.fromkeys((*spans, *(
+            geometry.spans if geometry is not None else ()))))
         return FrameworkAttentionLaneEvidence(
             invocation.caller_occurrence, invocation, site,
-            "framework_container", reference, None, processor,
+            "framework_container", reference, None, processor, geometry,
             tuple(span for span in spans if isinstance(span, SourceSpan)))
 
     site, child_symbol = _site_for_addressed(index, root, invocation)
@@ -402,7 +467,7 @@ def _framework_candidate(index, root, invocation):
     )))
     return FrameworkAttentionLaneEvidence(
         invocation.caller_occurrence, invocation, site,
-        "source_mixin_delegate", None, child_symbol, processor,
+        "source_mixin_delegate", None, child_symbol, processor, None,
         tuple(span for span in spans if isinstance(span, SourceSpan)))
 
 
@@ -536,6 +601,7 @@ __all__ = [
     "AttentionLaneCensus",
     "AttentionLaneEvidence",
     "FrameworkAttentionLaneEvidence",
+    "FrameworkAttentionGeometryEvidence",
     "InjectedAttentionProcessorEvidence",
     "attention_lane_positive_census",
 ]

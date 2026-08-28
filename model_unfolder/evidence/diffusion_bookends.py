@@ -29,6 +29,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .component_owner import ComponentRootResolution, OwnerOccurrenceId
+from .construction_calls import (
+    resolve_construction_call_in_graph,
+    resolve_import_reference,
+)
 from .diffusion_conditioning import DiffusionConditioningInventory
 from .diffusion_stack import DiffusionStackInventory, StackExecution
 from .diffusion_stream import (
@@ -43,6 +47,12 @@ from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
 _ROLES = frozenset({"state_input", "state_output", "conditioning_input"})
 _TEMPORAL_KINDS = frozenset({"three_dimensional_convolution"})
 _GEOMETRY_KINDS = frozenset({"rank_five_shape"})
+_DIMENSION_PROTOCOLS = {
+    "torch.nn.Linear": ("input_width", "output_width"),
+    "torch.nn.Conv1d": ("input_channels", "output_channels"),
+    "torch.nn.Conv2d": ("input_channels", "output_channels"),
+    "torch.nn.Conv3d": ("input_channels", "output_channels"),
+}
 
 
 def _span_key(span: SourceSpan) -> tuple:
@@ -136,6 +146,35 @@ def _literal_axis_count(call: CallObservation) -> int | None:
 
 
 @dataclass(frozen=True)
+class BookendDimensionOperand:
+    """One exact framework-constructor dimension expression.
+
+    This is source evidence only.  The expression may later bind to a
+    checkpoint occurrence in F2; no value is read or inferred here.
+    """
+
+    slot: str
+    operation_index: int
+    operation_kind: str
+    dimension_role: str
+    expression: ExprNode
+    construction_span: SourceSpan
+
+    def __post_init__(self):
+        if not self.slot or self.operation_index < 0:
+            raise ValueError("a bookend dimension has an exact projection slot")
+        if self.dimension_role not in {
+                "input_width", "output_width",
+                "input_channels", "output_channels"}:
+            raise ValueError("bookend constructor dimension roles are closed")
+        if not isinstance(self.expression, ExprNode) \
+                or not isinstance(self.construction_span, SourceSpan) \
+                or self.expression.span is None \
+                or self.expression.span.source != self.construction_span.source:
+            raise ValueError("a bookend dimension retains exact source evidence")
+
+
+@dataclass(frozen=True)
 class RootOperationApplication:
     """One registered operation on one exact root/block route."""
 
@@ -146,6 +185,7 @@ class RootOperationApplication:
     operations: tuple
     operation_spans: tuple[SourceSpan, ...]
     route_spans: tuple[SourceSpan, ...]
+    dimension_operands: tuple[BookendDimensionOperand, ...]
 
     def __post_init__(self):
         if self.role not in _ROLES:
@@ -167,6 +207,16 @@ class RootOperationApplication:
         if any(not isinstance(span, SourceSpan)
                for span in (*self.operation_spans, *self.route_spans)):
             raise TypeError("root operation provenance is exact")
+        if any(not isinstance(item, BookendDimensionOperand)
+               or not 0 <= item.operation_index < len(self.operations)
+               or item.operation_kind
+               != self.operations[item.operation_index].kind
+               for item in self.dimension_operands):
+            raise ValueError(
+                "bookend dimensions cite exact carried operations")
+        slots = tuple(item.slot for item in self.dimension_operands)
+        if len(slots) != len(set(slots)):
+            raise ValueError("bookend dimension slots are occurrence-unique")
 
 
 @dataclass(frozen=True)
@@ -249,6 +299,86 @@ class DiffusionBookendInventory:
             raise ValueError("derived operations cite carried bookend applications")
 
 
+def _self_field(expression: ExprNode | None) -> str | None:
+    if expression is None or expression.kind != "attribute" \
+            or not expression.name or len(expression.children) != 1:
+        return None
+    base = expression.children[0]
+    return (expression.name if base.kind == "name" and base.name == "self"
+            else None)
+
+
+def _site_protocol(index, site):
+    if len(site.candidates) != 1 or site.candidates[0].symbol is not None:
+        return None
+    proof = resolve_import_reference(
+        index, site.owner.source, site.enclosing_callable,
+        site.candidates[0].reference)
+    return proof.qualified_target if proof is not None else None
+
+
+def _site_dimension_expressions(index, site):
+    roles = _DIMENSION_PROTOCOLS.get(_site_protocol(index, site))
+    if roles is None:
+        return ()
+    keyword_names = {
+        "input_width": "in_features", "output_width": "out_features",
+        "input_channels": "in_channels", "output_channels": "out_channels",
+    }
+    kwargs = dict(site.kwargs)
+    rows = []
+    for position, role in enumerate(roles):
+        expression = kwargs.get(keyword_names[role])
+        if expression is None and len(site.args) > position:
+            expression = site.args[position]
+        if expression is not None and expression.span is not None:
+            rows.append((role, expression))
+    return tuple(rows)
+
+
+def _dimension_slot(role, call, operation_index, dimension_role):
+    span = call.span
+    return (f"{role}@{span.source.canonical_path}:{span.line}:{span.col}:"
+            f"op[{operation_index}].{dimension_role}")
+
+
+def _application_dimensions(index, root, owner, call, role, operations, spans):
+    """Return only constructor dimensions that round-trip to one exact op."""
+    field = _self_field(call.callee)
+    if field is None:
+        return ()
+    node = root.graph.node_for(owner)
+    if node is None:
+        return ()
+    containers = tuple(item for item in index.containers
+                       if item.owner == node.symbol and item.field == field)
+    sites_by_operation = {}
+    if len(containers) == 1:
+        # Sequential operation evidence already cites the construction site's
+        # own span.  Match by that identity; never zip by apparent order.
+        for operation_index, span in enumerate(spans):
+            matches = tuple(site for site in containers[0].elements
+                            if site.span == span)
+            if len(matches) == 1:
+                sites_by_operation[operation_index] = matches[0]
+    elif not containers and len(operations) == 1:
+        resolution = resolve_construction_call_in_graph(
+            index, root.graph, owner, call)
+        if resolution.status == "resolved" \
+                and resolution.selected is not None:
+            sites_by_operation[0] = resolution.selected.site
+
+    out = []
+    for operation_index, site in sorted(sites_by_operation.items()):
+        for dimension_role, expression in _site_dimension_expressions(
+                index, site):
+            out.append(BookendDimensionOperand(
+                _dimension_slot(role, call, operation_index, dimension_role),
+                operation_index, operations[operation_index].kind,
+                dimension_role, expression, site.span))
+    return tuple(out)
+
+
 def _classified_application(index, root, owner, execution, call, role,
                             route_spans):
     classified = projector_call_operation_in_graph(
@@ -259,8 +389,11 @@ def _classified_application(index, root, owner, execution, call, role,
     if not operations:
         return None, failure
     route = tuple(dict.fromkeys((call.span, execution.call.span, *route_spans)))
+    dimensions = _application_dimensions(
+        index, root, owner, call, role, tuple(operations), tuple(spans))
     return RootOperationApplication(
-        role, owner, execution, call, tuple(operations), tuple(spans), route), failure
+        role, owner, execution, call, tuple(operations), tuple(spans), route,
+        dimensions), failure
 
 
 def _block_rows(streams, conditioning):
@@ -339,7 +472,13 @@ def read_diffusion_bookends(
             continue
         state_formals = {item.formal.name for item in stream.roots
                          if item.role == "state"}
-        condition_formals = {item.formal.name for item in condition.roots}
+        # External context is a stream root, not a modulation root.  Omitting
+        # it here hid exact root-side context projectors (for example an
+        # encoder-state Linear) even though U10-D had already proven the lane.
+        condition_formals = {
+            item.formal.name for item in stream.roots
+            if item.role == "context"
+        } | {item.formal.name for item in condition.roots}
         for execution in stack.executions:
             callable_record = index.callable_by_symbol(
                 execution.call.enclosing_callable)
@@ -431,7 +570,8 @@ def read_diffusion_bookends(
 
 
 __all__ = [
-    "RootOperationApplication", "ProvenTemporalOperation",
+    "BookendDimensionOperand", "RootOperationApplication",
+    "ProvenTemporalOperation",
     "ProvenTensorGeometry",
     "DiffusionBookendInventory", "read_diffusion_bookends",
 ]

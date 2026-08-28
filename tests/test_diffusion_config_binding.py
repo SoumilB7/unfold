@@ -13,6 +13,13 @@ from model_unfolder.adapters.diffusor.config_binding import (
     bind_diffusion_source_projection,
 )
 from model_unfolder.adapters.diffusor import config_binding
+from model_unfolder.adapters.diffusor.projection_ir import (
+    _project_cross_context_block,
+    project_diffusion_ir,
+)
+from model_unfolder.adapters.transformer.blocks.attention import (
+    attention_child_blocks,
+)
 from model_unfolder.evidence import config_access
 from model_unfolder.evidence.component_owner import resolve_component_root
 from model_unfolder.evidence.diffusion_root import read_diffusion_root_topology
@@ -20,6 +27,43 @@ from model_unfolder.evidence.document import DocumentBinding, prepare_document
 from model_unfolder.evidence.models import SourceBundle
 from model_unfolder.evidence.program_index import build_program_index
 from model_unfolder.evidence.reader_result import ReaderResult
+from model_unfolder.evidence.receipts import (
+    fabrication_findings,
+    join_obligation_receipts,
+    stamp_context,
+)
+from model_unfolder.ir import AttentionSpec
+
+
+def test_contextual_primary_attention_gets_its_exact_external_rail():
+    primary = AttentionSpec(
+        kind=None, num_heads=None, cross_attention=True,
+        cross_kv_source="external context")
+    blocks = [{"id": "attn", "kind": "attention"}]
+    projected = _project_cross_context_block(blocks, primary, None)
+    assert projected[0]["id"] == "cross_attention_states"
+    assert projected[0]["feeds"] == "attn"
+    assert projected[1:] == blocks
+
+
+def test_contextual_attention_authors_the_matching_external_rail_card():
+    attention = AttentionSpec(
+        kind=None, num_heads=None, cross_attention=True,
+        cross_kv_source="external context")
+    cards = attention_child_blocks(attention, 64, generic=True)
+    card = next(item for item in cards
+                if item["id"] == "cross_attention_states")
+    assert card["title"] == "Cross-attention K/V states"
+    assert "external context" in card["description"]
+
+
+def test_multiple_contextual_lanes_cannot_share_one_anonymous_rail():
+    lane = AttentionSpec(
+        kind=None, num_heads=None, cross_attention=True,
+        cross_kv_source="external context")
+    with pytest.raises(ValueError, match="multiple external-context rails"):
+        _project_cross_context_block(
+            [{"id": "attn"}, {"id": "cross_attn"}], lane, lane)
 
 
 SOURCE = """
@@ -117,6 +161,66 @@ class Root:
 """
 
 
+GATED_DELTA_SOURCE = """
+from diffusers.configuration_utils import register_to_config as rtc
+import torch
+from torch import nn
+from torch.nn import functional as F
+
+def step_one(q, k, v, **kwargs): return q, k
+def step_two(q, k, v, **kwargs): return q, k
+
+class Recurrent:
+    def __init__(self, key_heads, value_heads, key_dim, value_dim, kernel):
+        self.red = key_heads
+        self.green = value_heads
+        self.blue = key_dim
+        self.gold = value_dim
+        self.kw = kernel
+        self.qk_width = self.blue * self.red
+        self.v_width = self.gold * self.green
+        self.conv = nn.Conv1d(
+            self.qk_width * 2 + self.v_width,
+            self.qk_width * 2 + self.v_width, kernel_size=self.kw)
+        self.first = step_one
+        self.second = step_two
+    def forward(self, x):
+        q, k, v = torch.split(
+            x, [self.qk_width, self.qk_width, self.v_width], dim=-1)
+        q = q.reshape(1, 1, -1, self.blue)
+        k = k.reshape(1, 1, -1, self.blue)
+        v = v.reshape(1, 1, -1, self.gold)
+        beta = x.sigmoid()
+        decay = F.softplus(x)
+        if x.shape[0] == 1:
+            out, state = self.first(q, k, v, decay=decay, beta=beta)
+        else:
+            out, state = self.second(q, k, v, decay=decay, beta=beta)
+        if self.green // self.red > 1:
+            q = q.repeat_interleave(self.green // self.red)
+            k = k.repeat_interleave(self.green // self.red)
+        return out
+
+class Cell:
+    def __init__(self, key_heads, value_heads, key_dim, value_dim, kernel):
+        self.unit = Recurrent(
+            key_heads, value_heads, key_dim, value_dim, kernel)
+    def forward(self, x): return self.unit(x)
+
+class Root:
+    @rtc
+    def __init__(self, layers=2, key_heads=2, value_heads=4,
+                 key_dim=8, value_dim=4, kernel=3):
+        self.layers = nn.ModuleList([
+            Cell(key_heads, value_heads, key_dim, value_dim, kernel)
+            for _ in range(layers)
+        ])
+    def forward(self, x):
+        for item in self.layers: x = item(x)
+        return x
+"""
+
+
 CONFIG = {
     "hidden": 64,
     "wide": 128,
@@ -187,7 +291,7 @@ def test_count_operand_is_found_inside_the_normalized_expression(tmp_path):
     result, _ledger = _bind(tmp_path)
     rows = tuple(
         item for item in result.require_value().operands
-        if item.fact_owner == "denoiser.stack"
+        if item.fact_owner == "denoiser.stacks[0]"
         and item.fact_key == "num_layers")
     assert len(rows) == 1
     assert rows[0].path == ("layers",)
@@ -208,6 +312,33 @@ def test_import_proven_registration_binds_scalar_constructor_operands(tmp_path):
     }
     assert value.source.blocks[0].attention[0].head_protocol == "grouped_kv"
     assert all(event.intent != "consumed" for event in ledger.events)
+
+
+def test_registered_self_config_count_binds_the_exact_parameter_path(tmp_path):
+    source = REGISTERED_SOURCE.replace(
+        "for _ in range(layers)",
+        "for _ in range(self.config.layers)")
+    result, _ledger = _bind(tmp_path, source=source)
+    rows = tuple(
+        item for item in result.require_value().operands
+        if item.fact_owner == "denoiser.stacks[0]"
+        and item.fact_key == "num_layers")
+    assert len(rows) == 1
+    assert rows[0].path == ("layers",)
+
+
+def test_local_self_config_write_disables_the_framework_address(tmp_path):
+    source = REGISTERED_SOURCE.replace(
+        "query_heads=8, kv_heads=2):\n        self.sequence",
+        "query_heads=8, kv_heads=2):\n"
+        "        self.config = object()\n        self.sequence").replace(
+            "for _ in range(layers)",
+            "for _ in range(self.config.layers)")
+    result, _ledger = _bind(tmp_path, source=source)
+    assert not any(
+        item.fact_owner == "denoiser.stacks[0]"
+        and item.fact_key == "num_layers"
+        for item in result.require_value().operands)
 
 
 def test_local_registration_spelling_cannot_bind_scalar_constructor(tmp_path):
@@ -372,21 +503,21 @@ def test_nested_document_binding_cannot_masquerade_as_the_root(tmp_path):
 
 @pytest.mark.parametrize(
         "witness, expected_blocks, expected_unresolved, expected_bound", [
-    ("auraflow-v0-3", 2, None, 0),
-    ("cogvideox-5b", 1, 0, 1),
-    ("flux-2-dev", 2, 0, 2),
-    ("fluxtransformer2dmodel", 2, None, 2),
-    ("hunyuanvideo", 1, 2, 1),
-    ("ltx-video", 1, None, 1),
-    ("lumina-image-2-0", 3, None, 3),
+    ("auraflow-v0-3", 2, None, 2),
+        ("cogvideox-5b", 1, 0, 3),
+        ("flux-2-dev", 2, 0, 4),
+        ("fluxtransformer2dmodel", 2, None, 4),
+        ("hunyuanvideo", 3, 0, 9),
+        ("ltx-video", 1, None, 4),
+    ("lumina-image-2-0", 3, None, 4),
     ("mochi-1-preview", 1, None, 1),
     ("pixart-sigma-xl-2-1024-ms", 0, None, 0),
-    ("prxpixel-t2i", 1, None, 1),
-    ("qwen-image", 1, None, 1),
+        ("prxpixel-t2i", 1, None, 2),
+        ("qwen-image", 1, None, 5),
     ("sana-1600m-1024px-diffusers", 1, 2, 1),
     ("stable-diffusion-3-5-large", 0, None, 0),
     ("stable-diffusion-xl-base-1-0", 0, 4, 0),
-    ("wan2-2-t2v-a14b-diffusers", 1, 1, 1),
+    ("wan2-2-t2v-a14b-diffusers", 1, 1, 2),
 ])
 def test_real_witness_operands_are_exact_and_never_consumed(
         witness, expected_blocks, expected_unresolved, expected_bound):
@@ -428,3 +559,378 @@ def test_real_witness_operands_are_exact_and_never_consumed(
     assert sum(event.intent == "bound" for event in emitted) \
         == len(value.operands)
     assert len(value.operands) == expected_bound
+
+
+def test_f3_consumes_exact_rows_once_and_projects_source_proven_structure(
+        tmp_path):
+    result, _binding_ledger = _bind(
+        tmp_path, source=REGISTERED_SOURCE)
+    bound = result.require_value()
+    ledger = config_access.ConfigAccessLedger()
+    with config_access.capture_events(ledger), \
+            config_access.owner_scope("root.denoiser"):
+        projected = project_diffusion_ir(bound)
+
+    assert len(projected.templates) == 1
+    assert len(projected.layers) == 4
+    layer = projected.layers[0]
+    assert layer.attention.kind == "gqa"
+    assert (layer.attention.num_heads, layer.attention.num_kv_heads) == (8, 2)
+    # The shared exact-expression rail closes the constructor-local
+    # ``self.width = hidden // query_heads`` assignment.  This is a derived
+    # source+config value backed by both exact operands, not a conventional
+    # hidden/query reconstruction in F3.
+    assert layer.attention.head_dim == 8
+    assert layer.attention.projection_mode == "split_qkv"
+    assert layer.attention.mask == "unknown"
+    assert layer.attention.scores_scaled is True
+    assert layer.ffn.kind == "dense"
+    assert layer.ffn.gated is True
+    assert layer.ffn.projection_mode == "split"
+    assert layer.norm_kind == "layernorm"
+    assert layer.norm_placement == "pre"
+    assert layer.residual_topology == "sequential"
+    consumed = tuple(event for event in ledger.events
+                     if event.intent == "consumed")
+    assert len(consumed) == len(bound.operands)
+    assert len({(event.fact_owner, event.fact_key, event.config_path)
+                for event in consumed}) == len(consumed)
+    assert all(event.mechanism.startswith("diffusion_") for event in consumed)
+    assert all(event.value_status_hash for event in consumed)
+
+
+def test_f3_derived_head_dimension_consumes_every_exact_premise(tmp_path):
+    """One derived field may lawfully depend on multiple config occurrences.
+
+    ``hidden // query_heads`` is one code-derived head dimension backed by two
+    exact checkpoint operands.  The projector must join and consume both rows;
+    requiring a single row would leave real source evidence unprojectable.
+    """
+    result, _binding_ledger = _bind(tmp_path, source=SOURCE)
+    bound = result.require_value()
+    head_rows = tuple(item for item in bound.operands
+                      if item.fact_key == "head_dim")
+    assert {item.path for item in head_rows} == {
+        ("hidden",), ("query_heads",),
+    }
+    ledger = config_access.ConfigAccessLedger()
+    with config_access.capture_events(ledger), \
+            config_access.owner_scope("root.denoiser"):
+        projected = project_diffusion_ir(bound)
+    assert projected.layers[0].attention.head_dim == 8
+    consumed_paths = {
+        tuple(event.config_path.split("."))
+        for event in ledger.events
+        if event.intent == "consumed"
+        and event.fact_key == "diffusion_attention_head_dim"
+    }
+    assert consumed_paths == {("hidden",), ("query_heads",)}
+
+
+def test_f3_projection_closure_rejects_same_signature_block_forgery(tmp_path):
+    result, _ledger = _bind(tmp_path, source=REGISTERED_SOURCE)
+    with config_access.capture_events(config_access.ConfigAccessLedger()), \
+            config_access.owner_scope("root.denoiser"):
+        projected = project_diffusion_ir(result.require_value())
+    layer = projected.layers[0]
+    forged_blocks = [dict(block) for block in layer.blocks]
+    forged_blocks[0]["description"] = "fabricated presentation claim"
+    forged = replace(
+        layer,
+        blocks=forged_blocks,
+    )
+    # The grouping signature is deliberately coarser than the full block list;
+    # projection closure must nevertheless reject the altered structure.
+    assert forged.signature() == layer.signature()
+    with pytest.raises(ValueError, match="derive solely from templates"):
+        replace(projected, layers=(forged, *projected.layers[1:]))
+
+
+def test_f3_never_converts_dispatch_or_missing_kv_operand_to_mha(tmp_path):
+    dispatch = REGISTERED_SOURCE.replace(
+        "from torch.nn import functional as F",
+        "from torch.nn import functional as F\n"
+        "from diffusers.models.attention_dispatch import dispatch_attention_fn",
+    ).replace(
+        "return F.scaled_dot_product_attention(\n"
+        "            self.q(state), self.k(context), self.v(context))",
+        "return dispatch_attention_fn(\n"
+        "            self.q(state), self.k(context), self.v(context))",
+    )
+    result, _ledger = _bind(tmp_path / "dispatch", source=dispatch)
+    with config_access.capture_events(config_access.ConfigAccessLedger()), \
+            config_access.owner_scope("root.denoiser"):
+        projected = project_diffusion_ir(result.require_value())
+    assert projected.layers[0].attention.kind is None
+
+    missing = {key: value for key, value in CONFIG.items()
+               if key != "kv_heads"}
+    result, _ledger = _bind(
+        tmp_path / "missing", source=REGISTERED_SOURCE, config=missing)
+    with config_access.capture_events(config_access.ConfigAccessLedger()), \
+            config_access.owner_scope("root.denoiser"):
+        projected = project_diffusion_ir(result.require_value())
+    assert projected.layers[0].attention.kind is None
+    assert projected.layers[0].attention.num_kv_heads is None
+
+
+def test_f3_partial_gated_delta_geometry_keeps_mechanism_and_unknown_dims(
+        tmp_path):
+    config = {
+        "layers": 2, "key_heads": 2, "value_heads": 4,
+        "key_dim": 8, "value_dim": 4,
+        # ``kernel`` is intentionally absent: source still proves the mixer,
+        # while its five-part geometry is incomplete.
+    }
+    result, _ledger = _bind(
+        tmp_path, source=GATED_DELTA_SOURCE, config=config)
+    bound = result.require_value()
+    assert any(item.fact_key == "conv_kernel"
+               for item in bound.unresolved_operands)
+    ledger = config_access.ConfigAccessLedger()
+    with config_access.capture_events(ledger), \
+            config_access.owner_scope("root.denoiser"):
+        projected = project_diffusion_ir(bound)
+    attention = projected.layers[0].attention
+    assert attention.kind == "gated_delta"
+    assert attention.mixer_state == "gated_delta"
+    assert attention.num_heads is attention.num_kv_heads is None
+    assert attention.head_dim is attention.conv_kernel_size is None
+    assert len([event for event in ledger.events
+                if event.intent == "consumed"]) == len(bound.operands)
+
+
+def test_f3_missing_exact_stack_count_keeps_symbolic_template_unexpanded(
+        tmp_path):
+    missing = {key: value for key, value in CONFIG.items() if key != "layers"}
+    result, _ledger = _bind(
+        tmp_path, source=REGISTERED_SOURCE, config=missing)
+    with config_access.capture_events(config_access.ConfigAccessLedger()), \
+            config_access.owner_scope("root.denoiser"):
+        projected = project_diffusion_ir(result.require_value())
+    assert len(projected.templates) == 1
+    assert projected.templates[0].count is None
+    assert projected.layers == ()
+    assert projected.unresolved == (
+        "denoiser.stacks[0]: exact repetition count is not checkpoint-bound",
+    )
+
+
+def test_f3_production_render_is_honest_and_click_coupled():
+    from model_unfolder import unfold
+    from model_unfolder.block_schema import (
+        validate_block_tree, validate_click_coupling,
+    )
+    from test_support import FLUX, PIXART
+
+    flux = unfold(FLUX)
+    assert flux.ir.num_layers == 57
+    assert all(layer.attention.mask == "unknown" for layer in flux.ir.layers)
+    flux_html = flux.to_html(standalone=True)
+    assert validate_block_tree(flux.ir) == []
+    assert validate_click_coupling(flux_html) == []
+    assert all(term not in flux_html for term in (
+        "Patchify", "Unpatchify", "AdaLN-Out"))
+    expanded = flux.to_json()
+    io = expanded["io"]
+    assert "patchify" not in io
+    assert io["input"]["kind"] == "denoiser_state"
+    assert io["output"]["kind"] == "denoiser_state"
+    assert io["output"]["domain"] is None
+    assert io["input_transform"].get("operations") == ["linear"]
+    assert "noise_prediction" not in str(io)
+
+    pixart = unfold(PIXART)
+    assert pixart.ir.num_layers == 0
+    assert pixart.ir.extras["render"]["opaque_layer_block"]["resolved"] is False
+    pixart_html = pixart.to_html(standalone=True)
+    assert "Repeated denoiser" in pixart_html
+    assert validate_block_tree(pixart.ir) == []
+    assert validate_click_coupling(pixart_html) == []
+    assert all(term not in pixart_html for term in (
+        "Patchify", "Unpatchify", "AdaLN-Out"))
+
+
+def _production_flux_spec_chain():
+    """Return the actual parser-owned U10 fact/obligation/receipt chain."""
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.parser import config_to_ir
+    from test_support import FLUX
+
+    context = ParseContext.build(FLUX)
+    ir = config_to_ir(FLUX, parse_context=context)
+    extras = ir.extras
+    obligations = tuple(
+        item for item in extras["config_access"]["projection_obligations"]
+        if item["target"]["key"] == "diffusion_stack_depth")
+    receipts = tuple(
+        item for item in context.projection_receipts
+        if item.fact_key == "diffusion_stack_depth")
+    return extras, obligations, receipts
+
+
+def test_f4_production_spec_receipts_join_exact_flux_stack_facts():
+    """F4 closes config occurrence -> typed fact -> actual LayerSpec field.
+
+    The receipt originates inside ``project_diffusion_ir`` and stays on the
+    ParseContext until the audit context stamps it.  The renderer does not
+    manufacture a receipt for this non-visual structural surface.
+    """
+    extras, obligations, receipts = _production_flux_spec_chain()
+    assert len(obligations) == len(receipts) == 2
+    assert {item.fact_id for item in receipts} == {
+        "root.denoiser.stacks[0].diffusion_stack_depth",
+        "root.denoiser.stacks[1].diffusion_stack_depth",
+    }
+    assert all(
+        item.surface == "spec"
+        and item.structural_target == "diffusion_stack_depth"
+        and item.node_ids == ("diffusion_stack_depth",)
+        and item.projector_symbol ==
+        "adapters.diffusor.projection_ir.project_diffusion_ir"
+        and item.context_token == ""
+        for item in receipts)
+
+    token = "test-flux-spec-context"
+    joined = join_obligation_receipts(
+        obligations, stamp_context(receipts, token),
+        extras["fact_provenance"], context_token=token)
+    assert joined["findings"] == []
+    assert len(joined["receipted_targets"]) == 2
+
+
+def test_f4_missing_production_spec_receipt_blocks():
+    extras, obligations, receipts = _production_flux_spec_chain()
+    token = "test-flux-spec-context"
+    joined = join_obligation_receipts(
+        obligations, stamp_context(receipts[:1], token),
+        extras["fact_provenance"], context_token=token)
+    assert len(joined["receipted_targets"]) == 1
+    assert any("no projector emitted a matching receipt" in finding
+               for finding in joined["findings"])
+
+
+def test_f4_spec_receipt_value_drift_blocks():
+    extras, obligations, receipts = _production_flux_spec_chain()
+    token = "test-flux-spec-context"
+    forged = replace(receipts[0], fact_value_status_hash="0" * 16)
+    joined = join_obligation_receipts(
+        obligations, stamp_context((forged, *receipts[1:]), token),
+        extras["fact_provenance"], context_token=token)
+    assert len(joined["receipted_targets"]) == 1
+    assert any("drawing drifted from the ledgered fact" in finding
+               for finding in joined["findings"])
+
+
+def test_f4_source_only_spec_value_has_fact_and_real_consumer_receipt():
+    """A code-fixed mechanism is not exempt from the receipt law.
+
+    FLUX's projected FFN form is fixed by the exact source occurrence and has
+    no F2 activation operand.  Before this poison, the value reached
+    ``FFNSpec`` but the config-only receipt path emitted neither a typed fact
+    nor a receipt.  Source-only and source+config projections must be equally
+    auditable.
+    """
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.parser import config_to_ir
+    from test_support import FLUX
+
+    context = ParseContext.build(FLUX)
+    ir = config_to_ir(FLUX, parse_context=context)
+    facts = ir.extras["fact_provenance"]
+    expected = {
+        "root.denoiser.diffusion_root_topology": (
+            "diffusion_root_topology", "spec", "diffusion_root_topology"),
+        "root.denoiser.diffusion_bookend_operations": (
+            "diffusion_bookend_operations", "block", "denoiser_bookends"),
+        "root.denoiser.stacks[0].cell.diffusion_norm_mechanism": (
+            "diffusion_norm_mechanism", "spec", "diffusion_norm_mechanism"),
+        "root.denoiser.stacks[1].ffn.diffusion_ffn_mechanism": (
+            "diffusion_ffn_mechanism", "spec", "diffusion_ffn_mechanism"),
+    }
+    assert all(facts[fact_id]["status"] == "code_proven"
+               for fact_id in expected)
+    # An occurrence's ``root`` is the component-root class, not necessarily
+    # the nested class owning each decisive span.  U10 must retain exact
+    # file/line provenance without laundering every span through that root
+    # class label.
+    typed = context.facts.typed_records()
+    for fact_id in expected:
+        assert typed[fact_id].source_spans
+        assert all(span.file and span.line is not None
+                   and span.class_name is None
+                   for span in typed[fact_id].source_spans)
+    receipts = tuple(item for item in context.projection_receipts
+                     if item.fact_id in expected)
+    assert len(receipts) == len(expected)
+    assert {
+        item.fact_id: (
+            item.mechanism, item.surface, item.structural_target)
+        for item in receipts
+    } == expected
+    assert fabrication_findings(receipts, facts, set()) == []
+
+
+@pytest.mark.parametrize(("witness", "expected_counts", "expected_layers"), (
+    ("flux-2-dev", (8, 48), 56),
+    # The root dual/single stacks are guarded rivals. The exact imported
+    # registration protocol proves the omitted selector's literal default,
+    # selecting their ordinary branches; the nested refiner remains non-root.
+    ("hunyuanvideo", (20, 40), 60),
+    # One shared class contains guarded rival attention calls.  Exact literal
+    # constructor arguments select one runtime lane per occurrence; the
+    # inactive rival must not inflate the F3 lane cardinality.
+    ("lumina-image-2-0", (2, 2, 26), 30),
+    ("sana-1600m-1024px-diffusers", (20,), 20),
+))
+def test_f3_materializes_only_exact_root_topology_stages(
+        witness, expected_counts, expected_layers):
+    import model_unfolder as mu
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.parser import _coerce_prepared
+
+    corpus = Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
+    data = json.loads((corpus / f"{witness}.json").read_text())
+    prepared = _coerce_prepared(data.get("config") or data)
+    context = ParseContext.build(prepared.document)
+    binding = DocumentBinding("root", (), prepared)
+    context.prepared_documents["root"] = binding
+    index = context.program_index()
+    root = resolve_component_root(index, context.source_bundle, "root")
+    topology = read_diffusion_root_topology(index, root)
+    companions = ReaderResult.absent(root.graph.root.occurrence)
+    with config_access.capture_events(context.config_access), \
+            config_access.bound_document(binding), \
+            config_access.owner_scope("root.denoiser"):
+        bound = bind_diffusion_source_projection(
+            index, root, binding, topology, companions).require_value()
+        projected = project_diffusion_ir(bound)
+    assert tuple(template.count for template in projected.templates
+                 if template.root_stage) == expected_counts
+    assert len(projected.layers) == expected_layers
+    if witness == "hunyuanvideo":
+        assert len(projected.templates) == 3
+        assert [item.stack_variant for item in projected.templates[:2]] == [
+            {"selected_branch": 1, "candidate_count": 2},
+            {"selected_branch": 1, "candidate_count": 2},
+        ]
+        assert [item.source.evidence.stack.selection.premises
+                for item in projected.templates[:2]] == [
+            ((("image_condition_type",), "class_default", None),),
+            ((("image_condition_type",), "class_default", None),),
+        ]
+        assert projected.templates[2].count == 2
+        assert projected.templates[2].root_stage is False
+        assert any("not an exact root-topology stage" in item
+                   for item in projected.unresolved)
+    if witness == "sana-1600m-1024px-diffusers":
+        template = projected.templates[0]
+        assert template.materialization_blocked is False
+        assert template.attention.cross_attention is False
+        assert template.cross_attention is not None
+        assert template.cross_attention.cross_attention is True
+    if witness == "lumina-image-2-0":
+        assert all(not item.materialization_blocked
+                   for item in projected.templates)
+        assert all(item.attention.variant["stream_relation"] == "single_state"
+                   for item in projected.templates)

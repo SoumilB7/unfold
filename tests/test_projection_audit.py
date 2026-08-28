@@ -26,6 +26,7 @@ from model_unfolder.sable import (
     _PROJECTION_AUDIT_BLOCKING,
 )
 from model_unfolder.evidence import config_access as _config_access
+from model_unfolder.renderers.html.fact_projection import layer_and_model_facts
 from test_support import bind_document, LLAMA, FLUX
 
 
@@ -78,6 +79,30 @@ def test_projection_audit_union_is_across_all_events():
     })
     log = [_event({"decoder.attention.scores_scale"}), _event({"decoder.layer.norm_kind"})]
     assert _projection_audit_findings(ir, log) == []
+
+
+def test_diffusion_root_and_stack_facts_are_not_outside_the_drawn_net():
+    """U10 facts live under denoiser/stack occurrence owners, not decoder.
+
+    Treating those owner families as non-drawable would let an exact root
+    topology, bookend route, or repetition count disappear while the blocking
+    projection audit remained vacuously green.
+    """
+    facts = {
+        "root.denoiser.diffusion_root_topology": {
+            "value": "repeated_stack", "status": "code_proven"},
+        "root.denoiser.diffusion_bookend_operations": {
+            "value": {}, "status": "code_proven"},
+        "root.denoiser.stacks[0].diffusion_stack_depth": {
+            "value": 8, "status": "code_and_config"},
+        "root.denoiser.stacks[0].diffusion_stack_variant": {
+            "value": {"selected_branch": 1, "candidate_count": 2},
+            "status": "class_default"},
+    }
+    ir = _ir(facts)
+    assert set(layer_and_model_facts(ir)) == set(facts)
+    assert len(_projection_audit_findings(ir, render_log=[])) == 4
+    assert _projection_audit_findings(ir, [_event(facts)]) == []
 
 
 def test_projection_audit_is_wired_into_sable_as_blocking_and_clean():

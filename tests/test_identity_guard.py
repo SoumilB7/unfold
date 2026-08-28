@@ -36,8 +36,6 @@ from __future__ import annotations
 import pathlib
 from collections import Counter
 
-import pytest
-
 from model_unfolder.evidence.identity_guard import (
     _FILE_ROOT,
     _LAWFUL_BY_KEY,
@@ -127,9 +125,6 @@ def test_every_lawful_table_is_visible_never_silently_skipped():
 
 EXPECTED_PYTHON_ACCESS = {
     ("model_unfolder/adapters/diffusor/parser.py",
-     "runtime access to declared class vocabulary 'dit_class_markers' "
-     "(declared-component: reads the config's own _class_name declaration)"): 1,
-    ("model_unfolder/adapters/diffusor/parser.py",
      "runtime access to declared class vocabulary 'scheduler_flow_matching_markers' "
      "(declared-component: reads the config's own _class_name declaration)"): 1,
     ("model_unfolder/evidence/conformance.py",
@@ -144,9 +139,6 @@ EXPECTED_PYTHON_ACCESS = {
     ("model_unfolder/evidence/conformance.py",
      "runtime access to declared class vocabulary 'single_stream_class_markers' "
      "(code-shape: classifies a class resolved from init evidence)"): 1,
-    ("model_unfolder/evidence/sources.py",
-     "runtime access to declared class vocabulary 'dit_class_markers' "
-     "(declared-component: reads the config's own _class_name declaration)"): 1,
     ("model_unfolder/evidence/decoderness.py",
      "runtime access to declared class vocabulary 'causal_lm_suffixes' "
      "(declared-role: reads the config's own architectures task declaration)"): 1,

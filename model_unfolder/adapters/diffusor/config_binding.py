@@ -14,7 +14,12 @@ from dataclasses import dataclass, replace
 
 from .schema import DiffusionSourceProjection, project_diffusion_source
 from ...evidence import config_access
-from ...evidence.attention import AttentionHeadBinding, AttentionScoreScalingBinding
+from ...evidence.attention import (
+    AttentionHeadBinding,
+    AttentionScoreScalingBinding,
+    GatedDeltaGeometryBinding,
+)
+from ...evidence.attention_lane import FrameworkAttentionGeometryEvidence
 from ...evidence.attention_geometry import AttentionHeadGeometry
 from ...evidence.cell_topology import DecoderCellTopologyEvidence
 from ...evidence.component_owner import (
@@ -24,6 +29,7 @@ from ...evidence.component_owner import (
 )
 from ...evidence.config_registration import (
     RegisteredConstructorConfig,
+    RegisteredConstructorDefaultValue,
     read_registered_constructor_config,
 )
 from ...evidence.diffusion_block import read_diffusion_block_facts
@@ -31,7 +37,10 @@ from ...evidence.diffusion_bookends import read_diffusion_bookends
 from ...evidence.diffusion_companion import CompanionDenoiserInventory
 from ...evidence.diffusion_conditioning import read_diffusion_conditioning_graph
 from ...evidence.diffusion_root import DiffusionRootTopology
-from ...evidence.diffusion_stack import read_diffusion_stack_inventory
+from ...evidence.diffusion_stack import (
+    ConfigSelectedStackVariant,
+    read_diffusion_stack_inventory,
+)
 from ...evidence.diffusion_stream import read_diffusion_stream_graph
 from ...evidence.document import DocumentBinding
 from ...evidence.ffn_mechanism import ConfigSelectedFFNMechanism
@@ -72,6 +81,7 @@ class _OperandSpec:
     reader: str
     source_owner: OwnerOccurrenceId
     source_spans: tuple[SourceSpan, ...]
+    projection_slot: str = ""
 
     def __post_init__(self):
         if not self.path or any(not isinstance(part, str) or not part
@@ -80,6 +90,8 @@ class _OperandSpec:
         if not all(isinstance(item, str) and item
                    for item in (self.fact_owner, self.fact_key, self.reader)):
             raise TypeError("a diffusion operand spec names target and reader")
+        if not isinstance(self.projection_slot, str):
+            raise TypeError("an operand projection slot is typed text")
         if not isinstance(self.source_owner, OwnerOccurrenceId):
             raise TypeError("a diffusion operand spec names its exact source owner")
         if not self.source_spans or any(
@@ -94,6 +106,7 @@ class _OperandSpec:
         return (
             self.path, self.fact_owner, self.fact_key, self.reader,
             self.source_owner, self.source_spans,
+            self.projection_slot,
         )
 
 
@@ -102,6 +115,7 @@ def _spec_key(spec):
         spec.path, spec.fact_owner, spec.fact_key, spec.reader,
         _owner_key(spec.source_owner),
         tuple(_span_key(span) for span in spec.source_spans),
+        spec.projection_slot,
     )
 
 
@@ -146,6 +160,7 @@ class BoundDiffusionConfigOperand:
     fact_owner: str
     fact_key: str
     reader: str
+    projection_slot: str = ""
 
     def __post_init__(self):
         if not isinstance(self.component_root, OwnerOccurrenceId):
@@ -182,6 +197,8 @@ class BoundDiffusionConfigOperand:
         if not all(isinstance(item, str) and item for item in (
                 self.fact_owner, self.fact_key, self.reader)):
             raise TypeError("a bound operand names its intended target and reader")
+        if not isinstance(self.projection_slot, str):
+            raise TypeError("a bound operand projection slot is typed text")
 
     @property
     def component(self):
@@ -204,6 +221,7 @@ class BoundDiffusionConfigOperand:
         return (
             self.path, self.fact_owner, self.fact_key, self.reader,
             self.source_owner, self.source_spans,
+            self.projection_slot,
         )
 
 
@@ -218,6 +236,7 @@ class UnboundDiffusionConfigOperand:
     fact_owner: str
     fact_key: str
     reader: str
+    projection_slot: str
     reason: str
 
     def __post_init__(self):
@@ -238,12 +257,15 @@ class UnboundDiffusionConfigOperand:
         if not all(isinstance(item, str) and item for item in (
                 self.fact_owner, self.fact_key, self.reader, self.reason)):
             raise TypeError("an unresolved operand retains target, reader and reason")
+        if not isinstance(self.projection_slot, str):
+            raise TypeError("an unresolved operand projection slot is typed text")
 
     @property
     def identity(self):
         return (
             self.path, self.fact_owner, self.fact_key, self.reader,
             self.source_owner, self.source_spans,
+            self.projection_slot,
         )
 
 
@@ -254,6 +276,7 @@ class BoundDiffusionSourceProjection:
     source: DiffusionSourceProjection
     config_root: ComponentRootResolution
     registration_result: ReaderResult[RegisteredConstructorConfig]
+    operand_specs: tuple[_OperandSpec, ...]
     operands: tuple[BoundDiffusionConfigOperand, ...]
     unresolved_operands: tuple[UnboundDiffusionConfigOperand, ...]
 
@@ -268,6 +291,12 @@ class BoundDiffusionSourceProjection:
         if not isinstance(self.registration_result, ReaderResult) \
                 or self.registration_result.owner != self.source.component_root:
             raise ValueError("the registration result belongs to this component")
+        if any(not isinstance(item, _OperandSpec)
+               for item in self.operand_specs):
+            raise TypeError("the bound projection retains typed operand evidence")
+        if self.operand_specs != tuple(sorted(set(self.operand_specs),
+                                             key=_spec_key)):
+            raise ValueError("operand evidence is unique and canonical")
         if self.registration_result.status == "resolved":
             registration = self.registration_result.value
             if not isinstance(registration, RegisteredConstructorConfig) \
@@ -298,8 +327,7 @@ class BoundDiffusionSourceProjection:
                 or len(unresolved) != len(set(unresolved)) \
                 or set(bound) & set(unresolved):
             raise ValueError("operand partitions are disjoint, unique and canonical")
-        expected = tuple(item.identity for item in _block_operand_specs(
-            self.source, self.config_root))
+        expected = tuple(item.identity for item in self.operand_specs)
         actual = tuple(sorted((*bound, *unresolved), key=lambda item: _spec_key(
             _OperandSpec(*item))))
         if actual != expected:
@@ -315,13 +343,18 @@ class BoundDiffusionSourceProjection:
 class _ExactOperandSelector:
     """Resolve exact paths once; retain candidates until evidence selects them."""
 
-    def __init__(self, binding: DocumentBinding, component_root: OwnerOccurrenceId):
+    def __init__(self, binding: DocumentBinding, component_root: OwnerOccurrenceId,
+                 registration: RegisteredConstructorConfig | None = None):
         if not isinstance(binding, DocumentBinding):
             raise TypeError("F2 requires the root's prepared DocumentBinding")
         if not isinstance(component_root, OwnerOccurrenceId):
             raise TypeError("F2 requires one exact component root")
         self.binding = binding
         self.component_root = component_root
+        if registration is not None \
+                and registration.owner != component_root:
+            raise ValueError("registered config belongs to the selected root")
+        self.registration = registration
         self.resolutions = {}
 
     def _resolve(self, path):
@@ -360,9 +393,26 @@ class _ExactOperandSelector:
 
     def guarded(self, path):
         resolution = self._resolve(path)
-        if resolution is None:
+        if resolution is not None:
+            return True, resolution.value, "config_declared"
+        # A registered constructor default is code evidence, not a checkpoint
+        # occurrence.  It may select an exact source guard only when the file
+        # did not declare that path at all; a present, conflicting or
+        # class-normalized value is never overwritten by the default.
+        path = tuple(path)
+        if self.registration is None or len(path) != 1 \
+                or path[0] in self.binding.prepared.checkpoint:
             return False, None, ""
-        return True, resolution.value, "config_declared"
+        matches = tuple(
+            item for item in self.registration.parameters
+            if item.name == path[0] and item.has_default
+            and item.default is not None and item.default.kind == "constant")
+        if len(matches) != 1:
+            return False, None, ""
+        parameter = matches[0]
+        return RegisteredConstructorDefaultValue(
+            parameter.default.const_value, path, parameter,
+            self.registration)
 
     def bind(self, spec: _OperandSpec):
         resolution = self._resolve(spec.path)
@@ -370,6 +420,7 @@ class _ExactOperandSelector:
             return UnboundDiffusionConfigOperand(
                 self.component_root, spec.source_owner, spec.source_spans,
                 spec.path, spec.fact_owner, spec.fact_key, spec.reader,
+                spec.projection_slot,
                 "exact checkpoint occurrence is missing, ambiguous, or unaddressable")
         resolution.bind(
             reader=spec.reader, fact_owner=spec.fact_owner,
@@ -377,7 +428,8 @@ class _ExactOperandSelector:
         return BoundDiffusionConfigOperand(
             self.component_root, spec.source_owner, spec.source_spans,
             tuple(self.binding.document_path), spec.path, resolution,
-            spec.fact_owner, spec.fact_key, spec.reader)
+            spec.fact_owner, spec.fact_key, spec.reader,
+            spec.projection_slot)
 
 
 def _spans(value, fallback):
@@ -387,13 +439,44 @@ def _spans(value, fallback):
     return spans or tuple(fallback)
 
 
-def _spec(path, owner, key, reader, source_owner, source_spans):
+def _spec(path, owner, key, reader, source_owner, source_spans,
+          projection_slot=""):
     return _OperandSpec(
         tuple(path), owner, key, reader, source_owner,
-        tuple(dict.fromkeys(source_spans)))
+        tuple(dict.fromkeys(source_spans)), projection_slot)
 
 
-def _bound_parameter_paths(root, occurrence, expression):
+def _registered_self_config_path(index, root, occurrence, expression,
+                                 registration):
+    """Map ``self.config.<parameter>`` through an exact framework protocol.
+
+    ``register_to_config`` is the authority for this address.  The familiar
+    spelling alone proves nothing, and a model class that writes ``self.config``
+    locally may have replaced the framework object, so that case is refused.
+    """
+    if registration is None or occurrence != registration.owner:
+        return None
+    if any(item.field == "config"
+           for item in index.field_assigns_of(registration.owner.root)):
+        return None
+    segments = []
+    current = expression
+    while current.kind == "attribute" and len(current.children) == 1:
+        segments.append(current.name)
+        current = current.children[0]
+    segments.reverse()
+    if len(segments) < 2 or segments[0] != "config" \
+            or current.kind != "name" or current.name != "self":
+        return None
+    parameter_paths = dict(registration.parameter_paths)
+    prefix = parameter_paths.get(segments[1])
+    if prefix is None:
+        return None
+    return tuple((*prefix, *segments[2:]))
+
+
+def _bound_parameter_paths(index, root, occurrence, expression,
+                           registration=None):
     """Return every exact constructor-parameter path used by ``expression``.
 
     A repeated-container count is retained as its whole normalized expression
@@ -419,6 +502,11 @@ def _bound_parameter_paths(root, occurrence, expression):
     def visit(item):
         if item is None:
             return
+        framework_path = _registered_self_config_path(
+            index, root, occurrence, item, registration)
+        if framework_path is not None:
+            found.append((framework_path, item.span))
+            return
         if item.kind == "name" and item.name:
             paths = tuple(dict.fromkeys(by_parameter.get(item.name, ())))
             if len(paths) == 1:
@@ -435,30 +523,64 @@ def _bound_parameter_paths(root, occurrence, expression):
 def _block_operand_specs(
         projection: DiffusionSourceProjection,
         config_root: ComponentRootResolution,
+        index: ProgramIndex,
+        registration: RegisteredConstructorConfig | None = None,
 ):
     specs = []
-    for block in projection.blocks:
+    for block_index, block in enumerate(projection.blocks):
+        # A source occurrence remains exact after it enters the config ledger.
+        # The old broad owners (``denoiser.stack`` / ``denoiser.attention``)
+        # collapsed two independently constructed stack templates that happened
+        # to read the same checkpoint path.  F3 projects symbolic templates, so
+        # its stable audit address is the canonical source-ordered stack slot.
+        stack_owner = f"denoiser.stacks[{block_index}]"
         stack = block.evidence.stack
+        if isinstance(stack.selection, ConfigSelectedStackVariant):
+            specs.extend(_spec(
+                path, stack_owner, "stack_variant",
+                "read_diffusion_stack_inventory",
+                stack.owner_occurrence, stack.selection.spans)
+                for path, kind, _value in stack.selection.premises
+                if kind == "config_declared")
         count_paths = (
             ((tuple(segment.name
                     for segment in stack.count_config_path.segments),
               stack.count_config_path.span),)
             if stack.count_config_path is not None else
             _bound_parameter_paths(
-                config_root, stack.owner_occurrence, stack.count_expression))
+                index, config_root, stack.owner_occurrence,
+                stack.count_expression, registration))
         for count_path, count_span in count_paths:
             specs.append(_spec(
                 count_path,
-                "denoiser.stack", "num_layers",
+                stack_owner, "num_layers",
                 "read_diffusion_stack_inventory",
                 stack.owner_occurrence,
                 (count_span or stack.count_expression.span,)))
-        for lane in block.evidence.attention_lanes:
+        for lane_index, lane in enumerate(block.evidence.attention_lanes):
+            lane_owner = f"{stack_owner}.attention[{lane_index}]"
+            framework_geometry = getattr(lane.child, "geometry", None)
+            if isinstance(framework_geometry,
+                          FrameworkAttentionGeometryEvidence):
+                for fact_key, expression in (
+                    ("framework_query_heads", framework_geometry.query_heads),
+                    ("framework_key_value_heads",
+                     framework_geometry.key_value_heads),
+                    ("framework_head_dim", framework_geometry.head_dim),
+                ):
+                    for path, operand_span in _bound_parameter_paths(
+                            index, config_root, stack.block_occurrence,
+                            expression, registration):
+                        specs.append(_spec(
+                            path, lane_owner, fact_key,
+                            "framework_attention_container_geometry",
+                            stack.block_occurrence,
+                            (operand_span, *framework_geometry.spans)))
             head = lane.head_binding_result
             if head.status == "resolved" and isinstance(
                     head.value, AttentionHeadBinding):
                 specs.extend(_spec(
-                    path, "denoiser.attention", "head_protocol",
+                    path, lane_owner, "head_protocol",
                     "attention_head_binding_at_block",
                     head.value.attention_occurrence,
                     _spans(head.value, lane.spans))
@@ -471,7 +593,7 @@ def _block_operand_specs(
             if geometry.status == "resolved" and isinstance(
                     geometry.value, AttentionHeadGeometry):
                 specs.extend(_spec(
-                    path, "denoiser.attention", "head_dim",
+                    path, lane_owner, "head_dim",
                     "attention_head_geometry_at_block",
                     geometry.value.owner_occurrence,
                     _spans(geometry.value, lane.spans))
@@ -480,7 +602,7 @@ def _block_operand_specs(
             if scaling.status == "resolved" and isinstance(
                     scaling.value, AttentionScoreScalingBinding):
                 specs.extend(_spec(
-                    path, "denoiser.attention", "score_scaling",
+                    path, lane_owner, "score_scaling",
                     "attention_score_scaling_for_child",
                     scaling.value.attention_occurrence,
                     _spans(scaling.value, lane.spans))
@@ -489,7 +611,7 @@ def _block_operand_specs(
             if qk_norm.status == "resolved" and isinstance(
                     qk_norm.value, QKNormCodeEvidence):
                 specs.extend(_spec(
-                    atom.config_path, "denoiser.attention", "qk_norm",
+                    atom.config_path, lane_owner, "qk_norm",
                     "qk_norm_evidence_at_attention",
                     lane.child.compute_occurrence,
                     lane.spans)
@@ -497,31 +619,55 @@ def _block_operand_specs(
             position = lane.position_application_result
             if position.status == "resolved":
                 specs.extend(_spec(
-                    path, "denoiser.attention", "position_application",
+                    path, lane_owner, "position_application",
                     "qk_half_turn_application_at_attention",
                     lane.child.compute_occurrence,
                     _spans(position.value, lane.spans))
                     for path in position.value.guard_config_paths)
+
+        # A positively-proven non-softmax mixer is also a code-and-config
+        # mechanism.  Its five operands were absent from F2 even though U6 had
+        # already assigned their roles from split/reshape/repeat/Conv1d uses;
+        # leaving them out would force F3 either to drop the proved mechanism or
+        # reopen raw config.  Bind every role here, still without consuming it.
+        for mixer_index, mixer in enumerate(block.evidence.non_softmax_mixers):
+            if mixer.status != "resolved" or not isinstance(
+                    mixer.value, GatedDeltaGeometryBinding):
+                continue
+            value = mixer.value
+            mixer_owner = f"{stack_owner}.mixers[{mixer_index}]"
+            for fact_key, path in (
+                ("key_heads", value.key_heads_path),
+                ("value_heads", value.value_heads_path),
+                ("key_head_dim", value.key_head_dim_path),
+                ("value_head_dim", value.value_head_dim_path),
+                ("conv_kernel", value.conv_kernel_path),
+            ):
+                specs.append(_spec(
+                    path, mixer_owner, fact_key,
+                    "gated_delta_geometry_at_occurrence",
+                    value.mixer_occurrence,
+                    _spans(value, block.evidence.spans)))
 
         ffn = block.evidence.ffn_result
         if ffn.status == "resolved":
             value = ffn.value
             if isinstance(value, ConfigSelectedFFNMechanism):
                 specs.append(_spec(
-                    value.selector_config_path, "denoiser.ffn", "mechanism",
+                    value.selector_config_path, f"{stack_owner}.ffn", "mechanism",
                     "ffn_mechanism_at_block",
                     value.wrapper_invocation.callee_owner_occurrence,
                     _spans(value, block.evidence.spans)))
             if value.activation_config_path:
                 specs.append(_spec(
-                    value.activation_config_path, "denoiser.ffn", "activation",
+                    value.activation_config_path, f"{stack_owner}.ffn", "activation",
                     "ffn_mechanism_at_block", value.owner_occurrence,
                     _spans(value, block.evidence.spans)))
         cell = block.evidence.cell_topology_result
         if cell.status == "resolved" and isinstance(
                 cell.value, DecoderCellTopologyEvidence):
             specs.extend(_spec(
-                path, "denoiser.cell", "topology", "cell_topology_at_block",
+                path, f"{stack_owner}.cell", "topology", "cell_topology_at_block",
                 cell.value.block_occurrence,
                 _spans(cell.value, block.evidence.spans))
                 for path in dict.fromkeys((
@@ -529,6 +675,30 @@ def _block_operand_specs(
                     *cell.value.residual_config_paths,
                     *((cell.value.residual_scale_path,)
                       if cell.value.residual_scale_path is not None else ()))))
+
+    # Root bookend dimensions are separate from the repeated-block facts above.
+    # The U10-E reader has already proven an exact framework constructor role;
+    # F2 only maps that constructor expression through the authoritative owner
+    # graph to its exact checkpoint occurrence.
+    for application in projection.bookends.applications:
+        for dimension in application.dimension_operands:
+            # A direct constructor parameter has one exact checkpoint value.
+            # Arithmetic dimension expressions require a separate typed
+            # evaluator; binding their leaves here would falsely project one
+            # premise as the computed constructor width.
+            if dimension.expression.kind != "name":
+                continue
+            for path, operand_span in _bound_parameter_paths(
+                    index, config_root, application.owner_occurrence,
+                    dimension.expression, registration):
+                specs.append(_spec(
+                    path, "denoiser", "bookend_geometry",
+                    "diffusion_bookend_constructor_geometry",
+                    application.owner_occurrence,
+                    tuple(dict.fromkeys((
+                        operand_span, dimension.construction_span,
+                        application.call.span))),
+                    dimension.slot))
     return tuple(sorted(set(specs), key=_spec_key))
 
 
@@ -567,9 +737,12 @@ def _bind_diffusion_source_projection_scoped(
             root_param_prefixes=registration.value.root_param_prefixes)
         config_root = replace(
             root, occurrence=graph.root.occurrence, graph=graph)
+    registration_value = (
+        registration.value if registration.status == "resolved" else None)
     selector = _ExactOperandSelector(
-        binding, config_root.graph.root.occurrence)
-    stacks = read_diffusion_stack_inventory(index, config_root)
+        binding, config_root.graph.root.occurrence, registration_value)
+    stacks = read_diffusion_stack_inventory(
+        index, config_root, config_guard_selector=selector.guarded)
     blocks = read_diffusion_block_facts(
         index, config_root, stacks, config_document=binding.document,
         config_value_selector=selector.value,
@@ -594,14 +767,16 @@ def _bind_diffusion_source_projection_scoped(
             source.failures or (ReaderFailure(
                 "incomplete_graph", "U10-F1 projection unavailable"),),
             provenance=source.provenance)
-    selected = tuple(selector.bind(spec)
-                     for spec in _block_operand_specs(source.value, config_root))
+    operand_specs = _block_operand_specs(
+        source.value, config_root, index, registration_value)
+    selected = tuple(selector.bind(spec) for spec in operand_specs)
     operands = tuple(item for item in selected
                      if isinstance(item, BoundDiffusionConfigOperand))
     unresolved = tuple(item for item in selected
                        if isinstance(item, UnboundDiffusionConfigOperand))
     value = BoundDiffusionSourceProjection(
-        source.value, config_root, registration, operands, unresolved)
+        source.value, config_root, registration, operand_specs,
+        operands, unresolved)
     failures = tuple(dict.fromkeys((
         *source.failures,
         *registration.failures,

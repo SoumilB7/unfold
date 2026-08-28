@@ -29,7 +29,8 @@ PROJECTED_STATUSES = frozenset({
 # ``decoder.attention.scores_scale`` has family segment ``attention`` (the
 # second-to-last dotted segment); ``model.tie_word_embeddings`` -> ``model``.
 DRAWABLE_FAMILY_SEGMENTS = frozenset({
-    "attention", "ffn", "layer", "model", "decoder", "input",
+    "attention", "mixers", "ffn", "cell", "stacks", "denoiser", "layer",
+    "model", "decoder", "input",
 })
 
 # Per-surface: the fact LEAF names each surface visibly draws today.
@@ -41,6 +42,11 @@ DRAWABLE_FAMILY_SEGMENTS = frozenset({
 #     (activation, gated, projection_mode);
 #   * the architecture view draws the norm cells (norm_kind), their pre/post
 #     placement (norm_placement), and the head-tying note (tie_word_embeddings).
+DIFFUSION_ATTENTION_DRAWN = frozenset({
+    "diffusion_attention_head_protocol", "diffusion_attention_head_dim",
+    "diffusion_attention_score_scaling", "diffusion_attention_qk_norm",
+    "diffusion_attention_position_application", "diffusion_stream_relation",
+})
 ATTENTION_DRAWN = frozenset({
     "mechanism", "head_geometry", "head_geometry_schedule", "scores_scale",
     "projection_mode", "mask",
@@ -50,11 +56,13 @@ ATTENTION_DRAWN = frozenset({
     "qk_norm", "qk_norm_schedule", "kv_sharing_schedule", "output_gate",
     "gated_delta_geometry", "sinks",
     "logit_softcap", "qkv_clip", "cached", "output_projection",
-})
+}) | DIFFUSION_ATTENTION_DRAWN
+MIXER_DRAWN = frozenset({"diffusion_gated_delta_geometry"})
+DIFFUSION_FFN_DRAWN = frozenset({"diffusion_ffn_mechanism"})
 ORDINARY_FFN_DRAWN = frozenset({
     "activation", "gated", "projection_mode", "intermediate_size",
     "ffn_schedule",
-})
+}) | DIFFUSION_FFN_DRAWN
 EXPERT_FFN_DRAWN = frozenset({
     "expert_projection_mode", "expert_activation_formula",
     "expert_intermediate_size", "shared_expert_count",
@@ -66,6 +74,17 @@ FFN_DRAWN = ORDINARY_FFN_DRAWN | EXPERT_FFN_DRAWN | ROUTER_DRAWN
 LAYER_DRAWN = frozenset({
     "norm_kind", "norm_placement", "residual_topology",
     "parallel_norm_count", "residual_scale",
+})
+CELL_DRAWN = frozenset({
+    "diffusion_cell_topology", "diffusion_norm_mechanism",
+    "diffusion_conditioning_applications",
+})
+STACK_DRAWN = frozenset({
+    "diffusion_stack_depth", "diffusion_stack_variant",
+})
+DENOISER_DRAWN = frozenset({
+    "diffusion_root_topology", "diffusion_bookend_operations",
+    "diffusion_bookend_geometry",
 })
 MODEL_DRAWN = frozenset({
     "tie_word_embeddings", "embedding_norm_kind", "final_norm_kind",
@@ -81,21 +100,42 @@ INPUT_DRAWN = frozenset({"position_addition"})
 # owner drawing the same leaf name.  The leaf-name sets above remain the
 # per-surface display/compat views; every GATE joins on these pairs.
 DRAWN_PAIRS = frozenset(
-    [("decoder.attention", leaf) for leaf in ATTENTION_DRAWN]
-    + [("decoder.ffn", leaf) for leaf in ORDINARY_FFN_DRAWN]
+    [("decoder.attention", leaf)
+     for leaf in ATTENTION_DRAWN - DIFFUSION_ATTENTION_DRAWN]
+    + [("decoder.ffn", leaf)
+       for leaf in ORDINARY_FFN_DRAWN - DIFFUSION_FFN_DRAWN]
     + [("decoder.ffn", leaf) for leaf in ROUTER_DRAWN]
     + [("decoder.ffn.expert", leaf) for leaf in EXPERT_FFN_DRAWN]
     + [("decoder.layer", leaf) for leaf in LAYER_DRAWN]
     + [("model", leaf) for leaf in MODEL_DRAWN]
     + [("decoder", leaf) for leaf in DECODER_DRAWN]
     + [("decoder.input", leaf) for leaf in INPUT_DRAWN]
+    # U10 diffusion surfaces are occurrence-qualified just like decoder
+    # surfaces.  Keep them in the authoritative reverse-fabrication join: a
+    # registered fact for one stack/lane may never authorize a sibling owner.
+    + [("root.denoiser.stacks[i].attention[i]", leaf)
+       for leaf in DIFFUSION_ATTENTION_DRAWN]
+    + [("root.denoiser.stacks[i].mixers[i]", leaf)
+       for leaf in MIXER_DRAWN]
+    + [("root.denoiser.stacks[i].ffn", leaf)
+       for leaf in DIFFUSION_FFN_DRAWN]
+    + [("root.denoiser.stacks[i].cell", leaf)
+       for leaf in CELL_DRAWN]
+    + [("root.denoiser.stacks[i]", leaf) for leaf in STACK_DRAWN]
+    + [("root.denoiser", leaf) for leaf in DENOISER_DRAWN]
 )
 
 
 def family_segment(key: str) -> str:
-    """The owner family of a ledger key: its second-to-last dotted segment."""
+    """The owner family of a ledger key, normalizing occurrence indices.
+
+    ``root.denoiser.stacks[1].mixers[0].fact`` belongs to the ``mixers``
+    surface family.  The index remains part of the ledger identity; only this
+    render-surface classifier removes it so a future occurrence does not need
+    another hard-coded family spelling.
+    """
     parts = key.split(".")
-    return parts[-2] if len(parts) >= 2 else ""
+    return parts[-2].split("[", 1)[0] if len(parts) >= 2 else ""
 
 
 def fact_provenance(ir) -> dict:
@@ -117,7 +157,8 @@ def projected_keys(ir, family: str, drawn_leaves) -> frozenset:
 
 
 def attention_facts(ir) -> frozenset:
-    return projected_keys(ir, "attention", ATTENTION_DRAWN)
+    return (projected_keys(ir, "attention", ATTENTION_DRAWN)
+            | projected_keys(ir, "mixers", MIXER_DRAWN))
 
 
 def ffn_facts(ir) -> frozenset:
@@ -133,7 +174,10 @@ def router_facts(ir) -> frozenset:
 
 
 def layer_and_model_facts(ir) -> frozenset:
-    return (projected_keys(ir, "layer", LAYER_DRAWN)
+    return (projected_keys(ir, "cell", CELL_DRAWN)
+            | projected_keys(ir, "stacks", STACK_DRAWN)
+            | projected_keys(ir, "denoiser", DENOISER_DRAWN)
+            | projected_keys(ir, "layer", LAYER_DRAWN)
             | projected_keys(ir, "model", MODEL_DRAWN)
             | projected_keys(ir, "decoder", DECODER_DRAWN)
             | projected_keys(ir, "input", INPUT_DRAWN))
@@ -141,7 +185,9 @@ def layer_and_model_facts(ir) -> frozenset:
 
 __all__ = [
     "PROJECTED_STATUSES", "DRAWABLE_FAMILY_SEGMENTS",
-    "ATTENTION_DRAWN", "DRAWN_PAIRS", "FFN_DRAWN", "ORDINARY_FFN_DRAWN",
+    "ATTENTION_DRAWN", "DIFFUSION_ATTENTION_DRAWN", "MIXER_DRAWN",
+    "DRAWN_PAIRS", "FFN_DRAWN", "ORDINARY_FFN_DRAWN",
+    "DIFFUSION_FFN_DRAWN", "CELL_DRAWN", "STACK_DRAWN", "DENOISER_DRAWN",
     "ROUTER_DRAWN",
     "EXPERT_FFN_DRAWN", "LAYER_DRAWN", "MODEL_DRAWN", "DECODER_DRAWN",
     "INPUT_DRAWN",

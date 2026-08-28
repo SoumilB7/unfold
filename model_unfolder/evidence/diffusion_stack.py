@@ -24,7 +24,7 @@ claim that no additional dynamically-executed stack exists.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from .call_arguments import (
     CallBindingResolution,
@@ -34,9 +34,11 @@ from .call_arguments import (
 from .component_owner import ComponentRootResolution, OwnerOccurrenceId
 from .container_inventory import (
     ContainerAddress,
+    ContainerInventory,
     ContainerRival,
     resolve_container_inventory,
 )
+from .config_guard import ExactConfigGuardResolver
 from .execution_flow import (
     AddressedInvocation,
     RepeatedInvocationTemplate,
@@ -45,6 +47,7 @@ from .execution_flow import (
 )
 from .program_index import (
     CallObservation,
+    ContainerElementsRecord,
     ExprNode,
     LoopObservation,
     ProgramIndex,
@@ -193,6 +196,44 @@ class StackExecution:
 
 
 @dataclass(frozen=True)
+class ConfigSelectedStackVariant:
+    """One guarded container rival selected by exact config/code evidence."""
+
+    rival: ContainerRival
+    selected_record: ContainerElementsRecord
+    selected_branch: int
+    premises: tuple[tuple[tuple[str, ...], str, object], ...]
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.rival, ContainerRival) \
+                or not isinstance(
+                    self.selected_record, ContainerElementsRecord) \
+                or self.selected_record not in self.rival.records:
+            raise ValueError("a selected stack variant retains its exact rival")
+        if self.selected_branch < 0 \
+                or self.selected_branch >= len(self.rival.records) \
+                or self.rival.records[self.selected_branch] \
+                != self.selected_record:
+            raise ValueError("the selected branch is the exact rival ordinal")
+        if any(
+                not isinstance(path, tuple) or not path
+                or any(not isinstance(part, str) or not part for part in path)
+                or kind not in {"config_declared", "class_default"}
+                for path, kind, _value in self.premises):
+            raise ValueError("a config-selected variant retains typed premises")
+        premise_keys = tuple((path, kind) for path, kind, _value
+                             in self.premises)
+        if len(premise_keys) != len(set(premise_keys)):
+            raise ValueError("variant premises are path-and-source unique")
+        if not self.spans or any(not isinstance(span, SourceSpan)
+                                 for span in self.spans) \
+                or not set(record.span for record in self.rival.records
+                           if record.span is not None) <= set(self.spans):
+            raise ValueError("a selected variant retains exact decisive spans")
+
+
+@dataclass(frozen=True)
 class DiffusionStackOccurrence:
     """One exact container address joined to one exact block occurrence."""
 
@@ -204,6 +245,7 @@ class DiffusionStackOccurrence:
     block_symbol: SymbolId
     executions: tuple[StackExecution, ...]
     owner_route: tuple = ()  # exact AddressedInvocation | StackExecution hops
+    selection: ConfigSelectedStackVariant | None = None
 
     def __post_init__(self) -> None:
         if not all(isinstance(item, OwnerOccurrenceId) for item in (
@@ -218,6 +260,12 @@ class DiffusionStackOccurrence:
             raise ValueError("the stack container belongs to the exact owner")
         if self.container.record.owner != self.owner_symbol:
             raise ValueError("the stack owner symbol owns the container record")
+        if self.selection is not None and (
+                not isinstance(self.selection, ConfigSelectedStackVariant)
+                or self.selection.rival.owner_occurrence
+                != self.owner_occurrence
+                or self.selection.selected_record != self.container.record):
+            raise ValueError("stack selection closes this exact container rival")
         if self.component_root.sites:
             raise ValueError("the component root has an empty occurrence chain")
         if self.owner_occurrence.root != self.component_root.root \
@@ -481,7 +529,7 @@ def _merge_stacks(rows):
         out.append(DiffusionStackOccurrence(
             first.component_root, first.owner_occurrence, first.owner_symbol,
             first.container, first.block_occurrence, first.block_symbol,
-            executions, first.owner_route))
+            executions, first.owner_route, first.selection))
     return tuple(sorted(out, key=lambda item: (
         tuple(_span_key(hop.call.span) for hop in item.owner_route),
         item.container.source_order,
@@ -490,9 +538,89 @@ def _merge_stacks(rows):
         item.block_symbol.qualified_name)))
 
 
+def _select_guarded_rivals(index, node, inventory, config_guard_selector):
+    """Select only an exhaustively decided exact container rival partition."""
+    if config_guard_selector is None or not inventory.rivals:
+        return inventory, {}
+    selected = []
+    unresolved = []
+    selections = {}
+    for rival in inventory.rivals:
+        decisions = []
+        resolvers = []
+        for record in rival.records:
+            if not record.elements:
+                decisions.append(None)
+                resolvers.append(None)
+                continue
+            guards = tuple(dict.fromkeys(site.guard for site in record.elements))
+            if len(guards) != 1:
+                decisions.append(None)
+                resolvers.append(None)
+                continue
+            resolver = ExactConfigGuardResolver(
+                index, node, config_guard_selector)
+            decisions.append(resolver.enabled(
+                guards[0], record.enclosing_callable))
+            resolvers.append(resolver)
+        true_rows = tuple(i for i, value in enumerate(decisions)
+                          if value is True)
+        if len(true_rows) != 1 or any(value is None for value in decisions) \
+                or any(value is not False for i, value in enumerate(decisions)
+                       if i != true_rows[0]):
+            unresolved.append(rival)
+            continue
+        branch = true_rows[0]
+        record = rival.records[branch]
+        resolver = resolvers[branch]
+        premises = []
+        conflicting = False
+        for source_value in resolver.source_values:
+            key = source_value[:2]
+            previous = next((item for item in premises
+                             if item[:2] == key), None)
+            if previous is None:
+                premises.append(source_value)
+            elif previous[2] != source_value[2]:
+                conflicting = True
+                break
+        premises = tuple(premises)
+        if conflicting:
+            unresolved.append(rival)
+            continue
+        if len(premises) != len(tuple(dict.fromkeys(resolver.source_kinds))):
+            unresolved.append(rival)
+            continue
+        spans = tuple(dict.fromkeys((
+            *(item.span for item in rival.records if item.span is not None),
+            *(site.span for item in rival.records for site in item.elements
+              if site.span is not None),
+            *resolver.spans,
+        )))
+        if not spans:
+            unresolved.append(rival)
+            continue
+        address = ContainerAddress(
+            rival.owner_occurrence, record, rival.source_order)
+        selection = ConfigSelectedStackVariant(
+            rival, record, branch, premises, spans)
+        selected.append(address)
+        selections[record] = selection
+    containers = tuple(sorted((*inventory.containers, *selected),
+                              key=lambda item: item.source_order))
+    rivals = tuple(unresolved)
+    if not containers and not rivals:
+        return ContainerInventory(
+            "absent", inventory.owner_occurrence, inventory.owner_symbol), {}
+    return ContainerInventory(
+        "resolved", inventory.owner_occurrence, inventory.owner_symbol,
+        containers, rivals), selections
+
+
 def read_diffusion_stack_inventory(
         index: ProgramIndex,
         root_resolution: ComponentRootResolution,
+        *, config_guard_selector=None,
         ) -> ReaderResult[DiffusionStackInventory]:
     """Inventory positively-executed repeated containers reachable from root."""
     if not isinstance(index, ProgramIndex):
@@ -524,6 +652,8 @@ def read_diffusion_stack_inventory(
         inventory = resolve_container_inventory(index, root_resolution, owner)
         if inventory.status == "failed":
             return
+        inventory, selections = _select_guarded_rivals(
+            index, node, inventory, config_guard_selector)
         invocations = resolve_addressed_invocations(
             index, root_resolution, owner, inventory)
         if invocations.status == "failed":
@@ -535,6 +665,8 @@ def read_diffusion_stack_inventory(
             row = _stack_from_template(
                 index, root_resolution, owner, node.symbol, route, template)
             if row is not None:
+                if row.container.record in selections:
+                    row = replace(row, selection=selections[row.container.record])
                 rows.append(row)
                 visit(row.block_occurrence, route + (row.executions[0],))
             else:
@@ -547,6 +679,9 @@ def read_diffusion_stack_inventory(
                 index, root_resolution, owner, node.symbol, route,
                 inventory, invocation)
             if indexed is not None:
+                if indexed.container.record in selections:
+                    indexed = replace(
+                        indexed, selection=selections[indexed.container.record])
                 seen_fields.add(indexed.container.field)
                 rows.append(indexed)
                 visit(indexed.block_occurrence,
@@ -565,6 +700,10 @@ def read_diffusion_stack_inventory(
                     index, root_resolution, owner, node.symbol, route,
                     inventory, item)
                 if graph_joined is not None:
+                    if graph_joined.container.record in selections:
+                        graph_joined = replace(
+                            graph_joined,
+                            selection=selections[graph_joined.container.record])
                     seen_fields.add(graph_joined.container.field)
                     rows.append(graph_joined)
                     visit(graph_joined.block_occurrence,
@@ -627,7 +766,8 @@ def read_diffusion_stack_inventory(
 
 
 __all__ = [
-    "StackExecution", "DiffusionStackOccurrence",
+    "StackExecution", "ConfigSelectedStackVariant",
+    "DiffusionStackOccurrence",
     "UnresolvedStackCandidate", "DiffusionStackInventory",
     "read_diffusion_stack_inventory",
 ]

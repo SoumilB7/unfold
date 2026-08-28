@@ -75,12 +75,17 @@ class ConfigExpressionEvaluator:
             return None
         if expr.kind == "constant":
             return EvaluatedExpression(expr.const_value, spans=spans(expr.span))
-        if expr.kind == "name":
-            return self.env.get(expr.name)
+        if expr.kind == "name" and expr.name in self.env:
+            # A concrete constructor actual is the strongest value for this
+            # occurrence.  When the symbolic occurrence has no evaluable
+            # actual, however, do not return early: its OwnerGraph binding may
+            # still prove the exact config path for this formal.
+            return self.env[expr.name]
         if expr.kind == "attribute" and len(expr.children) == 1 \
                 and expr.children[0].kind == "name" \
-                and expr.children[0].name == "self":
-            return self.env.get(f"self.{expr.name}")
+                and expr.children[0].name == "self" \
+                and f"self.{expr.name}" in self.env:
+            return self.env[f"self.{expr.name}"]
         config_path = self.config_path(expr)
         if config_path is not None:
             value = lookup(self.document, config_path)

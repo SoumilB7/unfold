@@ -206,9 +206,15 @@ def test_stable_audio_latent_is_one_dimensional_never_a_square_grid():
     assert ir.hidden_size == 24 * 64
     loop = {b["id"]: b for b in ir.extras["render"]["loop_blocks"]}
     facts = " ".join(loop["latent"]["facts"] or [])
-    assert "64 ch × 1,024 latent frames" in facts
+    # ``sample_size`` is stored by the root class but does not participate in
+    # the denoiser's forward shape; U10 therefore refuses to turn it into a
+    # rendered temporal extent.  Most importantly, it also never squares it.
+    assert facts == "VAE-space latent"
     assert "x 1,024" not in facts and "x 1024" not in facts
-    assert loop["image"]["label"] == "Waveform"
+    # U12 still identifies the Oobleck codec facts, but U10 does not claim the
+    # codec's output domain on the denoiser's behalf.
+    assert loop["image"]["label"] == "Output"
+    assert loop["image"]["title"] == "Output domain unresolved"
     vae_facts = " ".join(loop["vae_decode"]["facts"] or [])
     assert "44,100 Hz" in vae_facts and "2-channel audio" in vae_facts
     assert "temporal ↑2·4·4·8·8" in vae_facts
@@ -217,21 +223,73 @@ def test_stable_audio_latent_is_one_dimensional_never_a_square_grid():
 def test_stable_audio_has_no_fabricated_patchify():
     ir = config_to_ir(STABLE_AUDIO)
     blocks = {b["id"]: b for b in ir.extras["render"]["model_blocks"]}
-    assert blocks["embed"]["label"] == "Input projection"
-    assert "no patchify" in blocks["embed"]["description"]
-    assert blocks["lm_head"]["label"] == "To latent channels"
-    # An image DiT with a DECLARED patch keeps its Patchify labels.
+    assert blocks["embed"]["label"] == "Input operations"
+    assert blocks["embed"]["detail"]["operations"] == [
+        "linear", "activation", "reshape", "conv1d", "concat"]
+    assert blocks["final_rms"]["label"] == "Output operations"
+    assert blocks["final_rms"]["detail"]["operations"] == ["linear", "conv1d"]
+    assert blocks["lm_head"]["label"] == "Denoiser output"
+    assert "patchify" not in str(blocks).lower()
+    # A config-declared patch size cannot author a Patchify operation when the
+    # exact source projection does not prove one either.
     import test_support as td
     pix = config_to_ir(td.PIXART)
     pix_blocks = {b["id"]: b for b in pix.extras["render"]["model_blocks"]}
-    assert pix_blocks["embed"]["label"] == "Patchify"
+    assert pix_blocks["embed"]["label"] == "Input unresolved"
+    assert pix_blocks["embed"]["detail"]["operations"] == []
 
 
 def test_stable_audio_gqa_kv_heads_from_the_declared_alias():
     ir = config_to_ir(STABLE_AUDIO)
     attn = ir.layers[0].attention
     assert attn.num_heads == 24
-    assert attn.num_kv_heads == 12          # num_key_value_attention_heads
+    assert attn.head_dim == 64
+    # The self-attention construction omits kv_heads; the external API's
+    # default is not indexed, so U10 keeps it unknown rather than borrowing
+    # the cross lane's value.
+    assert attn.num_kv_heads is None
+    assert attn.kind is None
+    cross = ir.layers[0].cross_attention
+    assert cross is not None
+    assert (cross.kind, cross.num_heads, cross.num_kv_heads, cross.head_dim) \
+        == ("gqa", 24, 12, 64)
+    facts = ir.extras["fact_provenance"]
+    primary_fact = facts[
+        "root.denoiser.stacks[0].attention[0].diffusion_attention_head_protocol"]
+    cross_fact = facts[
+        "root.denoiser.stacks[0].attention[1].diffusion_attention_head_protocol"]
+    assert primary_fact["status"] == cross_fact["status"] == "code_and_config"
+    assert primary_fact["value"]["num_kv_heads"] is None
+    assert cross_fact["value"] == {
+        "kind": "gqa", "num_heads": 24, "num_kv_heads": 12,
+        "projection_mode": None, "output_gate": None}
+    # An unresolved FFN does not erase these exact lanes. The shared
+    # unknown-wiring projection retains both attentions and their external K/V
+    # rail without inventing norms, residual taps, or an FFN mechanism.
+    assert [block["id"] for block in ir.layers[0].blocks] == [
+        "cross_attention_states", "attn", "cross_attn",
+        "wiring_unresolved", "ffn"]
+    assert ir.layers[0].ffn.kind is None
+
+    geometry = facts["root.denoiser.diffusion_bookend_geometry"]
+    assert geometry["status"] == "code_and_config"
+    rows = geometry["value"]
+    assert any(row == {
+        "application_role": "conditioning_input",
+        "operation_kind": "linear", "dimension_role": "input_width",
+        "value": 768,
+    } for row in rows)
+    assert any(row["application_role"] == "state_input"
+               and row["dimension_role"] == "input_width"
+               and row["value"] == 1536 for row in rows)
+    assert any(row["application_role"] == "state_input"
+               and row["dimension_role"] == "input_width"
+               and row["value"] == 256 for row in rows)
+    embed = next(block for block in ir.extras["render"]["model_blocks"]
+                 if block["id"] == "embed")
+    assert embed["detail"]["dimensions"] == list(rows)
+    assert ir.extras["config_access"].get("unparsed_fields") is None
+    assert ir.extras.get("config_consumed_unreceipted") is None
 
 
 # ---- render health (both witnesses) ------------------------------------------

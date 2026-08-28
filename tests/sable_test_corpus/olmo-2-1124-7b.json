@@ -72,17 +72,17 @@
   },
   "hash_signature": [
     "1ae3e6e5656fd8d7a8df14271e75d850",
-    "375ae74c9482f6208152cd7e1e00c56b",
+    "a0f349144aaa167b84345f9edd5eae4c",
     "d666bddcd4b65fb7b24c84d32815ae72",
     "f0d17fa4a2e99755bf631734911bbc50"
   ],
   "model": "OLMo-2-1124-7B",
   "source": "local",
   "superseded_hash_signature": [
-    "096978f4d011ae27b31036406b74f73f",
     "1ae3e6e5656fd8d7a8df14271e75d850",
     "375ae74c9482f6208152cd7e1e00c56b",
-    "e0e970b04bc1418c5ee3791eeb168410"
+    "d666bddcd4b65fb7b24c84d32815ae72",
+    "f0d17fa4a2e99755bf631734911bbc50"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/olmo-2-1124-7b",

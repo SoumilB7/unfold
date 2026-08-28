@@ -51,7 +51,7 @@ _BASELINE = {
     "adapters/diffusor/loader.py": 2,
     # U4-B: the rotary source reader already types file/parse failures; its
     # broad wrapper hid a real tuple/frozenset contract regression as unknown.
-    "adapters/diffusor/parser.py": 17,
+    "adapters/diffusor/parser.py": 4,
     "adapters/transformer/debug.py": 1,
     # U9: exact component/projector/fusion readers replaced four remaining
     # modality compatibility wrappers.  Lock the resulting 6 -> 2 reduction.
@@ -72,7 +72,7 @@ _BASELINE = {
     # document-preparation primitive; the duplicate broad wrapper is gone.
     "evidence/context.py": 0,
     "evidence/identity_guard.py": 1,
-    "evidence/patterns.py": 1,
+    "evidence/patterns.py": 0,
     "evidence/sources.py": 2,
     "parser.py": 7,
     "sable.py": 2,

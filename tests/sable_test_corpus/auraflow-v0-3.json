@@ -144,6 +144,25 @@
     ]
   },
   "hash_signature": [
+    "091e485d4e137e6561ed0409726c881d",
+    "0f8d4b98dad7501ea5d7f11c8ee4ccf0",
+    "0f942b2dfc5527d1e808cd12e61d9b80",
+    "233bf3d1111aa040940edb49a84a4b9d",
+    "2fdd903168e065742048cd88d4072a8d",
+    "3c70eea8619a9915e77ad36a381f00b5",
+    "48e134ef4c919df87a42c8ac83b85ba6",
+    "494b981a572306132a61c18bc290e26b",
+    "8a70c0aa3f949557ca0901cfcf8aa72b",
+    "a0bfa030b3ecbd9b2c89578218afb1d0",
+    "a71d3f755a31dd4fc49f037f44024797",
+    "be4ece54ce9dc5f680647a9215d96b35",
+    "c50009c8594dfe7524fc253c00ea8da9",
+    "e025c723298cace8275df42568f631a6",
+    "f8bac308906a322c389514c1e3b6de2e"
+  ],
+  "model": "AuraFlow-v0.3",
+  "source": "local",
+  "superseded_hash_signature": [
     "0f942b2dfc5527d1e808cd12e61d9b80",
     "1a3d6bda4e340dbfb04840cb92c31c64",
     "1b1973ed51ddef1055fa900401a9c21c",
@@ -158,25 +177,6 @@
     "be4ece54ce9dc5f680647a9215d96b35",
     "c50009c8594dfe7524fc253c00ea8da9",
     "ea61700651015fdfb98974aaa2d1281a",
-    "f8bac308906a322c389514c1e3b6de2e"
-  ],
-  "model": "AuraFlow-v0.3",
-  "source": "local",
-  "superseded_hash_signature": [
-    "0f942b2dfc5527d1e808cd12e61d9b80",
-    "1578909c7b1d6b21b70d58ab0223af5f",
-    "1a3d6bda4e340dbfb04840cb92c31c64",
-    "1b1973ed51ddef1055fa900401a9c21c",
-    "1fbcf9eff4635e42f5074333b12979db",
-    "273c67b8e41bcbaf59ebb258dcbace9a",
-    "48e134ef4c919df87a42c8ac83b85ba6",
-    "494b981a572306132a61c18bc290e26b",
-    "5d3b553a834bd18ff5da0e9ab9ea10f1",
-    "86ee089bd2cb942c9b1e82cacd4f8b75",
-    "a0bfa030b3ecbd9b2c89578218afb1d0",
-    "a71d3f755a31dd4fc49f037f44024797",
-    "be4ece54ce9dc5f680647a9215d96b35",
-    "c50009c8594dfe7524fc253c00ea8da9",
     "f8bac308906a322c389514c1e3b6de2e"
   ],
   "visual_evidence": {

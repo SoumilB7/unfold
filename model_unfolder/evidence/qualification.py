@@ -209,8 +209,14 @@ def _applies(ir, rule, facts):
     model identity test.
     """
     extras = ir.get("extras") or {}
-    if rule.ir_scope != "transformer_decoder" \
-            or bool(extras.get("diffusion")):
+    render = extras.get("render") or {}
+    # U10-F4 deleted the raw ``extras.diffusion``/projection envelopes from
+    # source-projected denoisers.  The canonical render DTO still declares its
+    # structural domain, so transformer-decoder qualification must exclude it
+    # without relying on a retired compatibility payload.
+    is_diffusion = bool(extras.get("diffusion")) \
+        or render.get("family") == "diffusion"
+    if rule.ir_scope != "transformer_decoder" or is_diffusion:
         return False
     scheduled = "decoder.attention.head_geometry_schedule" in facts
     if rule.fact_key == "head_geometry_schedule":

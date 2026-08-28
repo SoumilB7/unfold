@@ -30,12 +30,14 @@ def _bundle(files, architecture="Root"):
         component_architectures={"root": architecture})
 
 
-def _read(tmp_path, source, *, architecture="Root", extra_files=()):
+def _read(tmp_path, source, *, architecture="Root", extra_files=(),
+          config_guard_selector=None):
     path = _write(tmp_path, "model.py", source)
     bundle = _bundle((path, *extra_files), architecture)
     index = build_program_index(bundle)
     root = resolve_component_root(index, bundle, "root")
-    return read_diffusion_stack_inventory(index, root), root, index
+    return read_diffusion_stack_inventory(
+        index, root, config_guard_selector=config_guard_selector), root, index
 
 
 BASE = """
@@ -194,6 +196,66 @@ def test_guarded_container_constructors_remain_unresolved_rivals(tmp_path):
     """
     result, _root, _index = _read(tmp_path, source)
     assert result.status == "incomplete"
+    assert not result.require_value().stacks
+    assert result.require_value().unresolved
+
+
+def test_exact_guard_partition_selects_one_rival_and_retains_proof(tmp_path):
+    source = """
+        from torch.nn import ModuleList
+        class A:
+            def forward(self, x): return x
+        class B:
+            def forward(self, x): return x
+        class Root:
+            def __init__(self, config):
+                if config.pick:
+                    self.items = ModuleList([A()])
+                else:
+                    self.items = ModuleList([B()])
+            def forward(self, x):
+                for item in self.items:
+                    x = item(x)
+                return x
+    """
+    selector = lambda path: (
+        (True, False, "config_declared")
+        if tuple(path) == ("pick",) else (False, None, ""))
+    result, _root, _index = _read(
+        tmp_path, source, config_guard_selector=selector)
+    inventory = result.require_value()
+    assert len(inventory.stacks) == 1
+    stack = inventory.stacks[0]
+    assert stack.block_symbol.qualified_name == "B"
+    assert stack.selection is not None
+    assert stack.selection.selected_branch == 1
+    assert len(stack.selection.rival.records) == 2
+    assert stack.selection.premises == (
+        (("pick",), "config_declared", False),)
+    assert not inventory.unresolved
+
+
+def test_unresolved_guard_never_selects_a_container_rival(tmp_path):
+    source = """
+        from torch.nn import ModuleList
+        class A:
+            def forward(self, x): return x
+        class B:
+            def forward(self, x): return x
+        class Root:
+            def __init__(self, config):
+                if config.pick:
+                    self.items = ModuleList([A()])
+                else:
+                    self.items = ModuleList([B()])
+            def forward(self, x):
+                for item in self.items:
+                    x = item(x)
+                return x
+    """
+    result, _root, _index = _read(
+        tmp_path, source,
+        config_guard_selector=lambda _path: (False, None, ""))
     assert not result.require_value().stacks
     assert result.require_value().unresolved
 

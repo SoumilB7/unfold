@@ -108,7 +108,7 @@ def attention_child_blocks(attention: AttentionSpec, hidden_size: int, *,
     if builder is None:
         label = ((attention.variant or {}).get("short")
                  or str(attention.kind or "Custom attention"))
-        return [{
+        cards = [{
             "id": "opaque_mixer",
             "title": f"{label} internals unresolved",
             "description": (
@@ -118,13 +118,31 @@ def attention_child_blocks(attention: AttentionSpec, hidden_size: int, *,
             ),
             "resolved": False,
         }]
-    if builder is _sdpa_child_blocks:
+    elif builder is _sdpa_child_blocks:
         cards = _sdpa_child_blocks(attention, hidden_size, generic=generic)
     else:
         cards = builder(attention, hidden_size)
+    # The canonical attention region draws this exact external K/V input for
+    # both known SDPA and opaque cross-attention.  It is a real clickable node,
+    # so its card must come from the same typed AttentionSpec rather than being
+    # patched into individual renderers or model families.
+    if attention.cross_attention and attention.cross_kv_source:
+        cards.append({
+            "id": "cross_attention_states",
+            "title": "Cross-attention K/V states",
+            "description": (
+                f"External states from {attention.cross_kv_source} supply the "
+                "key/value side of this exact cross-attention lane."
+            ),
+        })
     if id_prefix:
         for c in cards:
             c["id"] = f"{id_prefix}{c['id']}"
+    # The exact external-input card above is independent of whether the inner
+    # mixer was resolved.  Do not add mechanism-specific child cards below an
+    # opaque mixer, but do retain this known cross-attention boundary.
+    if builder is None:
+        return cards
     if attention.output_gate:
         cards.extend([
             {"id": "q_gate_split", "title": "Split query and output gate",

@@ -2,7 +2,7 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
-    "config_accessed_unprojected": false,
+    "config_accessed_unprojected": true,
     "config_ambiguity": true,
     "config_audit_incomplete": true,
     "config_consumed_unreceipted": true,
@@ -215,6 +215,22 @@
     ]
   },
   "hash_signature": [
+    "233bf3d1111aa040940edb49a84a4b9d",
+    "28e39454c95b30e92cf798c97768cfdd",
+    "2fafa21f0f504acbc36cae0d02e0897f",
+    "44f9b21c56bf92214df12f40270f61ec",
+    "7f8caa8f54b3a432dbdb16095095ff0d",
+    "89e5d1f408fe8c72264a1fe18f58492e",
+    "a3816b31eabc655a42b1babbf979e2ed",
+    "aa4f7268539d28a234b33d9a01b0ddc6",
+    "b2bbd72a624c2dfe682e5c26cba9dd5b",
+    "b81d64f599b43794abcc2478c65ece53",
+    "e16e1436c6595c19425f4be8020e587d",
+    "f5ed400ab571892a69eefebdf8baaa93"
+  ],
+  "model": "Wan2.2-T2V-A14B-Diffusers",
+  "source": "local",
+  "superseded_hash_signature": [
     "273c67b8e41bcbaf59ebb258dcbace9a",
     "28e39454c95b30e92cf798c97768cfdd",
     "2fafa21f0f504acbc36cae0d02e0897f",
@@ -230,27 +246,9 @@
     "eb435e44e6c5fcdfc06bff8743f3e93f",
     "f5ed400ab571892a69eefebdf8baaa93"
   ],
-  "model": "Wan2.2-T2V-A14B-Diffusers",
-  "source": "local",
-  "superseded_hash_signature": [
-    "273c67b8e41bcbaf59ebb258dcbace9a",
-    "28e39454c95b30e92cf798c97768cfdd",
-    "2fafa21f0f504acbc36cae0d02e0897f",
-    "30c2d7c94c314db9ec50938975babda9",
-    "3917079df0d8171ccac1a85ae637c270",
-    "624bf75dd569e595a7c2e822a0a8db11",
-    "7de1b35af5bfd972b5869d1c492d3b54",
-    "7f8caa8f54b3a432dbdb16095095ff0d",
-    "89e5d1f408fe8c72264a1fe18f58492e",
-    "aa4f7268539d28a234b33d9a01b0ddc6",
-    "b2bbd72a624c2dfe682e5c26cba9dd5b",
-    "b81d64f599b43794abcc2478c65ece53",
-    "eb435e44e6c5fcdfc06bff8743f3e93f",
-    "f5ed400ab571892a69eefebdf8baaa93"
-  ],
   "visual_evidence": {
     "gallery_dir": "galleries/wan2-2-t2v-a14b-diffusers",
     "manifest": true,
-    "png_count": 14
+    "png_count": 12
   }
 }

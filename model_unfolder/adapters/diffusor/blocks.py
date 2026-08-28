@@ -22,26 +22,263 @@ from ..transformer.common import format_dim as _fmt
 from .compound import vae_up_stage
 
 
-def diffusion_render_spec(geom: dict) -> dict:
-    """Top-level render spec for a diffusion pipeline.
+def _operation_labels(applications) -> list[str]:
+    """Format already-classified U9 operations without interpreting them."""
+    labels = []
+    for application in applications:
+        for operation in application.operations:
+            label = str(operation.kind).replace("_", " ")
+            if label not in labels:
+                labels.append(label)
+    return labels
 
-    ``geom`` carries the parsed scalars (hidden, heads, channels, encoders, ...);
-    see ``parser.parse``.  ``theme="blue"`` selects the diffusion palette.
 
-    Two block lists serve the two levels of the diagram:
+def _operation_block_label(prefix: str, operations: list[str]) -> str:
+    """Compact diagram label; the card retains the exact ordered operations."""
+    if not operations:
+        return f"{prefix} unresolved"
+    if len(operations) == 1:
+        return f"{prefix} op: {operations[0]}"
+    return f"{prefix} operations"
 
-    * ``loop_blocks`` — the hero sampling-loop view (Noise -> [Denoiser ⟳
-      Scheduler] ×T -> VAE -> Image). The ``denoiser`` node drills into...
-    * ``model_blocks`` — ...the DiT denoiser network (the transformer stack),
-      which renders exactly like a transformer architecture one panel deeper.
+
+def diffusion_projected_model_blocks(projection=None) -> list[Block]:
+    """U10-F3 denoiser bookends projected solely from the typed DTO.
+
+    The architecture view requires four canonical slots. An unproved slot is
+    retained as an explicitly unresolved boundary, never as the former
+    Patchify/AdaLN-Out/Unpatchify convention.
     """
+    source = projection.bound.source if projection is not None else None
+    inputs = tuple(item for item in source.bookends.applications
+                   if item.role == "state_input") if source is not None else ()
+    outputs = tuple(item for item in source.bookends.applications
+                    if item.role == "state_output") if source is not None else ()
+    input_ops = _operation_labels(inputs)
+    output_ops = _operation_labels(outputs)
+    geometry = ()
+    input_geometry = []
+    output_geometry = []
+    if projection is not None and source is not None and source.bookends.applications:
+        # This is the actual consumer of the bookend DTO.  The source projector
+        # authors the typed fact; this block builder certifies the exact value
+        # it consumed rather than letting the upstream reader receipt itself.
+        from ...evidence.context import active_facts, active_parse_context
+        from ...evidence.receipts import ProjectionReceipt, value_status_hash
+        from .projection_ir import diffusion_bookend_fact_value
+        facts = active_facts()
+        context = active_parse_context.get()
+        fact_id = "root.denoiser.diffusion_bookend_operations"
+        row = facts.records.get(fact_id) if facts is not None else None
+        value = diffusion_bookend_fact_value(projection)
+        if row is not None:
+            if row.value != value:
+                raise ValueError(
+                    "denoiser bookend blocks drifted from their typed fact")
+            if context is not None:
+                context.projection_receipts.append(ProjectionReceipt(
+                    fact_id=fact_id, owner="root.denoiser",
+                    fact_key="diffusion_bookend_operations",
+                    mechanism="diffusion_bookend_operations",
+                    fact_value_status_hash=value_status_hash(
+                        value, row.status),
+                    surface="block",
+                    structural_target="denoiser_bookends",
+                    projector_symbol=(
+                        "adapters.diffusor.blocks."
+                        "diffusion_projected_model_blocks"),
+                    node_ids=("embed", "final_rms"),
+                    projection_kind="field"))
+        from .projection_ir import diffusion_bookend_geometry_fact_value
+        geometry = diffusion_bookend_geometry_fact_value(projection)
+        geometry_row = facts.records.get(
+            "root.denoiser.diffusion_bookend_geometry") \
+            if facts is not None else None
+        if geometry_row is not None:
+            if geometry_row.value != geometry:
+                raise ValueError(
+                    "denoiser bookend geometry drifted from its typed fact")
+            input_geometry = [
+                item for item in geometry
+                if item["application_role"] != "state_output"]
+            output_geometry = [
+                item for item in geometry
+                if item["application_role"] == "state_output"]
+            node_ids = tuple(
+                node for node, rows in (
+                    ("embed", input_geometry), ("final_rms", output_geometry))
+                if rows)
+            if context is not None and node_ids:
+                context.projection_receipts.append(ProjectionReceipt(
+                    fact_id="root.denoiser.diffusion_bookend_geometry",
+                    owner="root.denoiser",
+                    fact_key="diffusion_bookend_geometry",
+                    mechanism="diffusion_bookend_geometry",
+                    fact_value_status_hash=value_status_hash(
+                        geometry, geometry_row.status),
+                    surface="block",
+                    structural_target="denoiser_bookend_geometry",
+                    projector_symbol=(
+                        "adapters.diffusor.blocks."
+                        "diffusion_projected_model_blocks"),
+                    node_ids=node_ids, projection_kind="field"))
+
+    def _geometry_facts(rows):
+        facts = [
+            f"{item['operation_kind']} "
+            f"{item['dimension_role'].replace('_', ' ')} "
+            f"{item['value']:,}"
+            if isinstance(item["value"], int) else
+            f"{item['operation_kind']} "
+            f"{item['dimension_role'].replace('_', ' ')}: {item['value']}"
+            for item in rows
+        ]
+        return list(dict.fromkeys(facts))
+    return [
+        {
+            "id": "tok_text", "role": "input", "kind": "source",
+            "diffusion_stage": "latent_input", "label": "Denoiser state",
+            "title": "Denoiser state input",
+            "description": (
+                "The exact state argument carried into the source-proven "
+                "repeated denoiser stack."),
+            "detail": {"state_role": "denoiser_input"},
+        },
+        {
+            "id": "embed", "role": "embedding", "kind": "embedding",
+            "diffusion_stage": "input_projection",
+            "label": _operation_block_label("Input", input_ops),
+            "resolved": bool(input_ops),
+            "title": ("Source-proven input operations" if input_ops
+                      else "Input transform unresolved"),
+            "description": (
+                " → ".join(input_ops) if input_ops else
+                "The source projection does not close an operation between the "
+                "root state and repeated stack; no patchify is invented."),
+            "detail": {"operations": input_ops,
+                       "dimensions": list(input_geometry)},
+            "facts": ((list(source.temporal_operation_kinds)
+                       if source is not None else [])
+                      + _geometry_facts(input_geometry)) or None,
+        },
+        {
+            "id": "final_rms", "role": "norm", "kind": "norm",
+            "diffusion_stage": "output_projection",
+            "label": _operation_block_label("Output", output_ops),
+            "resolved": bool(output_ops),
+            "title": ("Source-proven output operations" if output_ops
+                      else "Output transform unresolved"),
+            "description": (
+                " → ".join(output_ops) if output_ops else
+                "The source projection does not close an operation after the "
+                "repeated stack; no final modulation or projection is invented."),
+            "detail": {"operations": output_ops,
+                       "dimensions": list(output_geometry)},
+            "facts": _geometry_facts(output_geometry) or None,
+        },
+        {
+            "id": "lm_head", "role": "output", "kind": "output",
+            "diffusion_stage": "denoiser_output", "label": "Denoiser output",
+            "title": "Denoiser state output",
+            "description": (
+                "The exact state returned by the denoiser root. Its pixel, video, "
+                "or audio meaning belongs to the downstream codec boundary."),
+            "detail": {"state_role": "denoiser_output"},
+        },
+    ]
+
+
+def diffusion_projected_render_spec(projection, handoff_geom: dict) -> dict:
+    """Render F3 facts while preserving explicit U11-U13 outer handoffs."""
+    geom = dict(handoff_geom)
+    counts = [template.count for template in projection.templates
+              if template.root_stage and template.count is not None]
+    has_conditioning_input = any(
+        item.role == "conditioning_input"
+        for item in projection.bound.source.bookends.applications)
+    geom.update({
+        "denoiser_family": "source_projected",
+        "denoiser_label": ["Diffusion denoiser"],
+        "denoiser_title": "Source-proven diffusion denoiser",
+        "denoiser_desc": (
+            "The denoiser detail is projected from exact source occurrences and "
+            "their checkpoint-bound operands. Unresolved mechanisms remain opaque."
+        ),
+        # A materialized count does not imply the old dual/single-stream family
+        # split.  Carry it through a semantically neutral field.
+        "projected_layers": sum(counts) if counts else None,
+        "block_conditioning": None,
+        "output_domain": "unknown",
+        "suppress_conditioning_source": not has_conditioning_input,
+        "conditioning": ({
+            "kv_modality": "unknown",
+            "kv_label": "Source-proven external conditioning",
+            "kv_text": False,
+        } if has_conditioning_input else None),
+    })
     return {
         "family": "diffusion",
         "layout": "dit_pipeline",
-        # Green (the LLM default) for now — the blue palette is still defined in
-        # theme.py and selectable here later if we want a distinct diffusion look.
         "theme": "teal",
-        "model_blocks": diffusion_model_blocks(geom),
+        # An empty materialized layer list is an honest projection result (for
+        # example when the only exact stack is a nested refiner, or when the
+        # root stack count is unresolved).  Give the renderer an explicit,
+        # presentation-ready body instead of letting it manufacture a
+        # conventional transformer cell merely to satisfy its layout.
+        "opaque_layer_block": {
+            "id": "denoiser_structure_unresolved",
+            "role": "opaque",
+            "kind": "opaque",
+            "label": ["Repeated denoiser", "structure unresolved"],
+            "title": "Repeated denoiser structure unresolved",
+            "description": (
+                "The source projection does not prove a materializable root "
+                "layer stack. Nested or symbolic templates remain recorded in "
+                "the evidence surface, but no main denoiser layer is invented."
+            ),
+            "resolved": False,
+            "static": True,
+        },
+        "model_blocks": diffusion_projected_model_blocks(projection),
+        "loop_blocks": diffusion_loop_blocks(geom),
+        "loop_edges": diffusion_loop_edges(geom),
+        "loop_region": diffusion_loop_region(),
+    }
+
+
+def diffusion_opaque_render_spec(handoff_geom: dict) -> dict:
+    """A source-unresolved denoiser shell with no conventional DiT details."""
+    geom = dict(handoff_geom)
+    geom.update({
+        "denoiser_family": "source_projected",
+        "denoiser_label": ["Denoiser", "structure unresolved"],
+        "denoiser_title": "Denoiser structure unresolved",
+        "denoiser_desc": (
+            "The exact denoiser source/owner graph could not be closed. No "
+            "transformer stack, attention, FFN, patchify, or output mechanism "
+            "is inferred from the checkpoint vocabulary."),
+        "block_conditioning": None,
+        "output_domain": "unknown",
+        "suppress_conditioning_source": True,
+    })
+    return {
+        "family": "diffusion",
+        "layout": "dit_pipeline",
+        "theme": "teal",
+        "opaque_layer_block": {
+            "id": "denoiser_structure_unresolved",
+            "role": "opaque",
+            "kind": "opaque",
+            "label": ["Denoiser internals", "unresolved"],
+            "title": "Denoiser internals unresolved",
+            "description": (
+                "The exact source or owner graph is incomplete, so no repeated "
+                "cell, attention mechanism, or feed-forward mechanism is drawn."
+            ),
+            "resolved": False,
+            "static": True,
+        },
+        "model_blocks": diffusion_projected_model_blocks(),
         "loop_blocks": diffusion_loop_blocks(geom),
         "loop_edges": diffusion_loop_edges(geom),
         "loop_region": diffusion_loop_region(),
@@ -62,8 +299,10 @@ def diffusion_loop_edges(geom: dict) -> list[dict]:
     derived from edge multiplicity wherever they're needed.
     """
     encoders = geom.get("text_encoders") or []
-    text_ids = ([f"encoder_{i}" for i in range(len(encoders))]
-                if encoders else ["text_encoder"])
+    text_ids = (
+        [] if geom.get("suppress_conditioning_source") else
+        [f"encoder_{i}" for i in range(len(encoders))] if encoders else
+        ["text_encoder"])
     has_text_projection = bool(
         geom.get("caption_input_dim") or geom.get("caption_projection_dim"))
     has_context_assembly = has_text_projection and len(text_ids) > 1
@@ -151,6 +390,9 @@ def _timestep_mechanism(family: str | None, block_conditioning: bool | None = No
         return ("Embedded and applied at the SEQUENCE level — the stack "
                 "block's own forward takes no timestep (no per-block AdaLN; "
                 "read from the modeling source).")
+    if block_conditioning is None:
+        return ("The exact per-block application is unresolved; no AdaLN or "
+                "sequence-level mechanism is asserted.")
     return "Embedded and fed to every block as AdaLN modulation."
 
 
@@ -195,6 +437,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
     encoders = geom.get("text_encoders") or []
     family = geom.get("denoiser_family")
     added = geom.get("added_cond")          # SDXL-style text_time micro-conditioning
+    unknown_output = geom.get("output_domain") == "unknown"
 
     # Latent grid shape, when derivable: channels x (sample/patch) tokens per
     # side.  Video DiTs that declare temporal geometry (CogVideoX, Allegro) get
@@ -233,15 +476,19 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
     if geom.get("video") and geom.get("num_frames") and family == "unet":
         latent_shape = f"{_fmt(geom['num_frames'])} frames × {latent_shape}"
 
-    double = geom.get("double_stream_layers")
-    single = geom.get("single_stream_layers")
-    style = geom.get("denoiser_style") or "transformer"
-    depth_phrase = ", ".join(
-        p for p in (
-            f"{double} {style}" if double else "",
-            f"{single} single-stream" if single else "",
-        ) if p
-    ) or "transformer"
+    projected = geom.get("projected_layers")
+    if projected:
+        depth_phrase = f"{projected} source-proven layers"
+    else:
+        double = geom.get("double_stream_layers")
+        single = geom.get("single_stream_layers")
+        style = geom.get("denoiser_style") or "transformer"
+        depth_phrase = ", ".join(
+            p for p in (
+                f"{double} {style}" if double else "",
+                f"{single} single-stream" if single else "",
+            ) if p
+        ) or "transformer"
 
     scheduler = geom.get("scheduler")
     sched_train = geom.get("scheduler_train_timesteps")
@@ -278,8 +525,6 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
         if vae.get("upsampling_ratios"):
             vae_facts.append("temporal ↑" + "·".join(
                 str(r) for r in vae["upsampling_ratios"]))
-    cf = geom.get("config_facts") or {}
-    vae_facts.extend(cf.get("vae") or [])
     blocks_out = [
         {
             "id": "noise",
@@ -291,7 +536,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             "description": (
                 f"z_T: random Gaussian latent, shape [{latent_shape}], sampled in "
                 "the VAE latent space. "
-                + ("" if geom.get("audio") else
+                + ("" if geom.get("audio") or unknown_output else
                    "(Image-to-image instead starts from an encoded input image.) ")
                 + "This is the latent the loop iteratively denoises."
             ),
@@ -310,7 +555,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                 + _added_cond_sentence(added)
                 + _added_time_ids_sentence(geom.get("added_time_ids"))
             ),
-            "facts": cf.get("timestep") or None,
+                "facts": None,
         },
         *_text_conditioning_blocks(
             encoders, text_dim, geom.get("pooled_projection_dim"),
@@ -319,8 +564,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             entry_dims=[geom.get(k) for k in (
                 "cross_attention_dim", "caption_input_dim",
                 "joint_attention_dim", "text_embed_dim", "kv_join_dim")],
-            conditioning=geom.get("conditioning"),
-        ),
+            conditioning=geom.get("conditioning")),
         *(_text_context_blocks(geom)),
         *(_text_projection_blocks(geom)),
         {
@@ -338,7 +582,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                 "two arrows feeding it are two writers at different times, not a "
                 "sum."
             ),
-            "facts": ([latent_shape] if latent_shape else []) + (cf.get("latent") or []) or None,
+                "facts": [latent_shape] if latent_shape else None,
         },
         {
             "id": "denoiser",
@@ -353,7 +597,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                 "conditioning) and predicts the noise to remove. Click to open its "
                 "architecture."
             ),
-            "facts": cf.get("denoiser") or None,
+                "facts": None,
             # A UNet denoiser declares its U-shape stages as cards, so every box
             # in the U is clickable and described (a DiT declares none — its
             # layers carry the cards).
@@ -387,6 +631,9 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                 + _vae_decode_word(vae) + " maps it "
                 + ("from latent space back to the audio waveform."
                    if geom.get("audio") else
+                   "through the downstream output decoder; its media domain is "
+                   "not established by the denoiser source."
+                   if unknown_output else
                    "from latent space back to a full-resolution pixel image.")
                 + (" Click to open its architecture." if vae else "")
             ),
@@ -405,24 +652,23 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             "role": "output",
             "kind": "source",
             "diffusion_stage": "image_output",
-            "label": ("Waveform" if geom.get("audio")
+            "label": ("Output" if unknown_output else
+                      "Waveform" if geom.get("audio")
                       else "Frames" if geom.get("video") else "Image"),
-            "title": ("Output waveform" if geom.get("audio")
+            "title": ("Output domain unresolved" if unknown_output else
+                      "Output waveform" if geom.get("audio")
                       else "Output frames" if geom.get("video") else "Output image"),
-            "description": ("The generated audio waveform."
+            "description": (
+                            "The downstream codec/output domain is outside the "
+                            "U10 denoiser proof and remains unresolved."
+                            if unknown_output else
+                            "The generated audio waveform."
                             if geom.get("audio") else
                             "The generated video frames in pixel space."
                             if geom.get("video") else
                             "The generated image in pixel space."),
         },
     ]
-    # Text-conditioning chips (max text tokens, resolution embeddings) belong on
-    # the prompt/encoder card — attached here because the conditioning blocks
-    # are assembled by their own helper.
-    for block in blocks_out:
-        if block.get("diffusion_stage") in ("prompt", "text_encoder") and cf.get("conditioning"):
-            block["facts"] = (block.get("facts") or []) + list(cf["conditioning"])
-            break
     return blocks_out
 
 
@@ -643,7 +889,7 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
                 "A learned 3x3 convolution maps the latent channels into the "
                 "decoder's deepest feature width before the mid block."
             ),
-            "facts": [f"Conv 3x3", f"{_fmt(latent)} -> {_fmt(channels[-1])} ch"]
+            "facts": ["Conv 3x3", f"{_fmt(latent)} -> {_fmt(channels[-1])} ch"]
             if latent else ["Conv 3x3", f"out {_fmt(channels[-1])} ch"],
         })
         has_mid_attention = bool(vae.get("mid_block_add_attention"))
@@ -708,7 +954,7 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
             "id": "vae_output_head",
             "title": "Output image head",
             "description": "Final convolution maps decoder channels to the output image channels.",
-            "facts": [f"conv 3×3", f"{_fmt(channels[0])} → {out_ch} ch"],
+            "facts": ["conv 3×3", f"{_fmt(channels[0])} → {out_ch} ch"],
         })
     children.append({
         "id": "vae_image",
@@ -895,53 +1141,6 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
         _encoder_residual_card(prefix),
     ]
 
-
-def _entry_stage_blocks(geom: dict) -> list[Block]:
-    """A LATENT-lane secondary stack (Lumina's noise refiner) is an entry
-    stage: a small transformer applied once to the patchified latent tokens
-    before the main blocks.  Drawn in the entry chain (patchify -> refiner ->
-    stack); every fact is the detector's/config's own; the drill is the one
-    tower projection."""
-    from ...submodel import submodel_cell_blocks
-
-    stack = next((item for item in (geom.get("secondary_stacks") or [])
-                  if item.get("lane") == "latent"), None)
-    if not stack:
-        return []
-    count = stack["count"]
-    sub_model = stack["sub_model"]
-    gated = bool((sub_model.get("groups") or [{}])[0].get("residual_gate"))
-    return [{
-        "id": "entry_stage",
-        "role": "embedding",
-        "kind": "embedding",
-        "diffusion_stage": "patchify",
-        "label": ["Latent", "refiner"],
-        "title": f"Latent refiner (\u00d7{count})",
-        "description": (
-            f"A small transformer stack applied once to the patchified latent "
-            f"tokens before the main blocks: each of its {count} layers runs "
-            f"full self-attention and a feed-forward over the latent tokens"
-            + (", with a conditioning-computed gate on each residual update."
-               if gated else ".")
-        ),
-        "facts": [f"{count} refiner layers"]
-                 + (["input projection to model width"]
-                    if stack.get("entry_projection") else []),
-        "view": "refiner_tower",
-        "detail": {"sub_model": sub_model, "entry_label": "in (latent tokens)",
-                   "class": stack.get("block_class")},
-        "source_owner": stack.get("block_class"),
-        "source_file": stack.get("source_file"),
-        "children": submodel_cell_blocks(
-            sub_model, "entry_stage",
-            attn_description=("Full self-attention over the latent token "
-                              "sequence inside the refiner layer."),
-            norm_fallback="Norm",
-            norm_card=_encoder_norm_card,
-            residual_card=_encoder_residual_card,
-        ),
-    }]
 
 
 def _encoder_norm_card(prefix: str, norm: str, placement: str = "pre") -> Block:
@@ -1192,130 +1391,3 @@ def _encoder_desc(enc: str, text_dim, pooled, family: str | None = None,
     else:
         wording = "encodes the prompt into a conditioning embedding"
     return f"{enc}: {wording}. Frozen; run once and reused every sampling step."
-
-
-def diffusion_model_blocks(geom: dict) -> list[Block]:
-    """The pipeline skeleton, mapped onto the architecture view's bookend slots.
-
-    The view draws a fixed input pair (``tok_text`` -> ``embed``) below the layer
-    stack and a fixed output pair (``final_rms`` -> ``lm_head``) above it.  We give
-    those four slots diffusion semantics — the *denoiser* boundary — and fold the
-    surrounding pipeline (text encoder, timestep conditioning, VAE) into their
-    descriptions + the pipeline-context cards below.  So the drawn flow reads:
-
-        Noisy latent -> Patchify -> [ DiT x N ] -> Output projection -> Unpatchify/VAE
-
-    (The text-encoder and VAE stages get their own drawn lanes in a later pass;
-    here they are connected as pipeline-context cards so nothing is lost.)
-    """
-    hidden = _fmt(geom["hidden_size"])
-    in_ch = geom.get("in_channels")
-    patch = geom.get("patch_size") or 1
-    # An AUDIO denoiser with NO declared patch_size enters through a plain
-    # projection over the 1-D latent sequence — drawing "Patchify (1x1)"
-    # would fabricate a patch grid (Stable Audio: Conv1d + Linear in).
-    no_patchify = bool(geom.get("audio")) and not geom.get("patch_size")
-    pooled = geom.get("pooled_projection_dim")
-    text_dim = geom.get("joint_attention_dim") or geom.get("cross_attention_dim")
-    guidance = geom.get("guidance_embeds")
-    encoders = geom.get("text_encoders") or []
-    enc_label = " + ".join(encoders) if encoders else "a text encoder"
-    # Pre-block text fusion (llm_features_dim, e.g. Ideogram-4): the text features
-    # are linearly projected and added to the latent BEFORE the first block — a
-    # config-declared pipeline step, surfaced here rather than silently dropped.
-    fusion_dim = geom.get("llm_features_dim") if geom.get("pre_block_text_fusion") else None
-    fusion_note = (
-        f" The prompt features ({_fmt(fusion_dim)}-d) are linearly projected to "
-        f"{hidden}-d and added to the latent tokens before the first block "
-        "(the text conditioning is fused into the input, not attended)."
-        if fusion_dim else ""
-    )
-
-    blocks: list[Block] = [
-        {
-            "id": "tok_text",
-            "role": "input",
-            "kind": "source",
-            "diffusion_stage": "latent_input",
-            "label": "Noisy latent",
-            "title": "Noisy latent (z_t)",
-            "description": (
-                "VAE-space latent at timestep t"
-                + (f"; {_fmt(in_ch)} channels" if in_ch else "")
-                + f". Conditioned on the prompt (encoded by {enc_label}"
-                + (f", width {_fmt(text_dim)}" if text_dim else "")
-                + ") and on a sinusoidal timestep"
-                + (" + guidance" if guidance else "")
-                + (" embedding applied at the sequence level (the block's own "
-                   "forward takes no timestep — no per-block AdaLN). The "
-                   if geom.get("block_conditioning") is False else
-                   " embedding that drives AdaLN modulation across the stack. The ")
-                + "denoiser predicts the noise/velocity to remove."
-                + fusion_note
-            ),
-        },
-        {
-            "id": "embed",
-            "role": "embedding",
-            "kind": "embedding",
-            "diffusion_stage": "patchify",
-            "label": "Input projection" if no_patchify else "Patchify",
-            "title": "Input projection" if no_patchify else "Patch embedding",
-            "description": (
-                f"Projects the latent channels to {hidden}-d tokens along the "
-                "1-D latent sequence — no patchify (none declared; the "
-                "sequence is already one-dimensional)"
-                if no_patchify else
-                f"Linear/conv patchify (patch {patch}\u00d7{patch}) projecting latent "
-                f"patches to {hidden}-d tokens; positional embedding added"
-            ) + (f". Pooled text vector ({_fmt(pooled)}) joins the timestep "
-                 "conditioning." if pooled else "."),
-        },
-        *_entry_stage_blocks(geom),
-        *([{
-            "id": "join_concat",
-            "role": "residual",
-            "kind": "concat",
-            "diffusion_stage": "patchify",
-            "label": "\u2016",
-            "title": "Sequence join (\u2016)",
-            "description": (
-                "The refined text tokens and the latent patch tokens are "
-                "concatenated into ONE sequence here, once, before the stack — "
-                "every block then self-attends over the joined sequence."
-            ),
-        }] if geom.get("join_concat") else []),
-        {
-            "id": "final_rms",
-            "role": "norm",
-            "kind": "norm",
-            "diffusion_stage": "output_projection",
-            "label": "Output projection",
-            "title": "Final modulation + projection",
-            "description": (
-                "AdaLayerNorm-Out conditioned on the timestep vector, then a linear "
-                f"projection from {hidden}-d tokens back to latent patches."
-            ),
-        },
-        {
-            "id": "lm_head",
-            "role": "output",
-            "kind": "output",
-            "diffusion_stage": "unpatchify",
-            "label": "To latent channels" if no_patchify else "Unpatchify",
-            "title": ("Output projection → predicted noise" if no_patchify
-                      else "Unpatchify \u2192 predicted noise"),
-            "description": (
-                ("Projects tokens back to the latent channels: the denoiser's "
-                 "output for this step — the noise (or velocity) eps(z_t, t) "
-                 "to remove. The scheduler (in the sampling loop) uses it to "
-                 "step z_t -> z_{t-1}.")
-                if no_patchify else
-                ("Reassemble predicted patches into the latent grid: the denoiser's "
-                 "output for this step — the noise (or velocity) eps(z_t, t) to "
-                 "remove. The scheduler (in the sampling loop) uses it to step "
-                 "z_t -> z_{t-1}.")
-            ),
-        },
-    ]
-    return blocks

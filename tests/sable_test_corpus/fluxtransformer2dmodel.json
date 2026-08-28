@@ -98,6 +98,30 @@
   },
   "hash_signature": [
     "0751c0064be790891edf52f8bed807bb",
+    "38766bf823a11655b9a3fe1023fbe297",
+    "395f5467388ed1bdadb8c91c7e5e96c7",
+    "48125ea1e7d6a56703533d06cb377d75",
+    "4e6b754b82db1df486b8a21c3e488ad1",
+    "565270f4d8543fb166a76073d87e00cc",
+    "798d7657951c666b91dc4d411529dfd5",
+    "824ef6a6013d508dcb66c674d9211636",
+    "9680b5f576b615bc5ee7a1dabc19b8ac",
+    "a90de20e846dafb09ac1ab7b744f0556",
+    "b354d4cb12016360e1a9612e0000ac6e",
+    "ba0a8422185c20fb776481aa67bfa522",
+    "badaa1497d2255d8845e9ce6ea4314aa",
+    "bf7b50ecd75684e8a39b4248976719b8",
+    "c30d1a27a0b953075257e7927338eb7a",
+    "c9cee6b79d339d76616db6a1f685c359",
+    "d5bf84f9a38ff56360a296307e6402ed",
+    "ee6745e71c8107ec9f61595788134b3a",
+    "f3b14960315185f1921ac056d77d57be",
+    "f9cd9d6b2d90fbb0fe4c826bad7ef102"
+  ],
+  "model": "FluxTransformer2DModel",
+  "source": "local",
+  "superseded_hash_signature": [
+    "0751c0064be790891edf52f8bed807bb",
     "1b8324f57879475acf6c39e7365f7354",
     "2c40b324832c488a353ff4a3ac719206",
     "446dbdf34699f8ac07a5717439470221",
@@ -117,31 +141,9 @@
     "f3b14960315185f1921ac056d77d57be",
     "f9cd9d6b2d90fbb0fe4c826bad7ef102"
   ],
-  "model": "FluxTransformer2DModel",
-  "source": "local",
-  "superseded_hash_signature": [
-    "0751c0064be790891edf52f8bed807bb",
-    "2c40b324832c488a353ff4a3ac719206",
-    "48125ea1e7d6a56703533d06cb377d75",
-    "565270f4d8543fb166a76073d87e00cc",
-    "5833df436272502545aff43d0ec2b0a5",
-    "6edb93fbf90f9845aa37908a0e28c450",
-    "98b551a864d0cf05de9cdc1f9a12919e",
-    "a90de20e846dafb09ac1ab7b744f0556",
-    "af157e1f2aadd364958e472166241ee2",
-    "b354d4cb12016360e1a9612e0000ac6e",
-    "ba0a8422185c20fb776481aa67bfa522",
-    "badaa1497d2255d8845e9ce6ea4314aa",
-    "bf7b50ecd75684e8a39b4248976719b8",
-    "c9cee6b79d339d76616db6a1f685c359",
-    "cab11650142d0a456aca749072e2d76c",
-    "ecfc076a5de5fdabf3744363aaa85405",
-    "f3b14960315185f1921ac056d77d57be",
-    "f9cd9d6b2d90fbb0fe4c826bad7ef102"
-  ],
   "visual_evidence": {
     "gallery_dir": "galleries/fluxtransformer2dmodel",
     "manifest": true,
-    "png_count": 19
+    "png_count": 20
   }
 }

@@ -166,6 +166,11 @@ class ParseContext:
     # capture ContextVar only routes nested calls to this context's ledger and
     # is never a second truth store.  Compat bare-name views derive from it.
     config_access: ConfigAccessLedger = field(default_factory=ConfigAccessLedger)
+    # U10-F4: receipts emitted by an actual non-render structural consumer
+    # (currently the diffusion typed-spec projector).  They remain call-local;
+    # Sable admits and context-stamps only the receipts carried by the same
+    # ParseContext that produced the IR being checked.
+    projection_receipts: list[Any] = field(default_factory=list)
     # U2-R1 (§5.1): the prepared document for each component owner, keyed by the
     # EXACT owner ("root", "root.text_encoder", …).  A parser or renderer reads
     # its document's provenance from here rather than re-preparing (which was the

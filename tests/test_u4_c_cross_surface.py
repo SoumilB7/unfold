@@ -369,3 +369,28 @@ def test_top_level_unknown_safe_ffn_label_grows_its_architecture_box():
     assert unknown_w > one_w
     assert unknown_h > one_h
     assert unknown_w >= 340 and unknown_h >= 72
+
+
+def test_top_level_single_line_truth_cannot_overflow_or_shrink_kind_floor():
+    from model_unfolder.renderers.html.views import _block_layout
+
+    _, width, height, _ = _block_layout({
+        "kind": "ffn", "label": "Feed-forward (FFN)", "w": 40, "h": 10,
+    })
+    assert width >= 300
+    assert height >= 44
+
+
+def test_diffusion_bookend_label_uses_the_same_growth_law():
+    """The final input/output scaffold is outside the repeated block loop, but
+    its truth-bearing labels must use the identical content-fit calculation.
+    This pins the Sana ``Output operations`` clipping regression.
+    """
+    from model_unfolder.renderers.html.views import _block_layout
+
+    _, width, height, _ = _block_layout({
+        "kind": "norm", "label": "Output operations",
+        "w": 180, "h": 36, "font": 16,
+    })
+    assert width > 180
+    assert height >= 36

@@ -300,10 +300,16 @@ def test_unknown_single_stream_fusion_does_not_default_to_flux_wiring():
         source_bundle=SourceBundle(source="local", files=()),
         source="local",
     )
-    layer = parse_diffusion(cfg, context=context).layers[0]
-    assert layer.residual_topology == "unknown"
-    assert _ids(layer) == ["attn", "wiring_unresolved", "ffn"]
-    assert not {"ss_concat", "ss_proj", "gate_single"} & set(_ids(layer))
+    ir = parse_diffusion(cfg, context=context)
+    # A config-only count cannot manufacture a repeated source occurrence.
+    # The old assertion accidentally blessed precisely that U10 fabrication.
+    assert ir.layers == []
+    opaque = ir.extras["render"]["opaque_layer_block"]
+    assert opaque["resolved"] is False
+    assert opaque["kind"] == "opaque"
+    assert not {"ss_concat", "ss_proj", "gate_single"} & {
+        block.get("id") for block in ir.extras["render"]["model_blocks"]
+    }
 
 
 def test_final_norm_is_not_borrowed_from_the_repeated_layer():

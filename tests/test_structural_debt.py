@@ -73,9 +73,9 @@ def test_census_target_overrides_the_writer_join_not_the_identity():
 
 
 def test_unit_vocabulary_is_u3_to_u14_exactly():
-    assert MIGRATION_UNITS == frozenset(f"U{i}" for i in range(3, 15))
-    for unit in ("H7", "H8", "scoped", "UNASSIGNED", "U2", "U15", ""):
-        with pytest.raises(ValueError, match="U3–U14|migration_unit"):
+    assert MIGRATION_UNITS == frozenset(f"U{i}" for i in range(3, 16))
+    for unit in ("H7", "H8", "scoped", "UNASSIGNED", "U2", "U16", ""):
+        with pytest.raises(ValueError, match="U3–U15|migration_unit"):
             _row(migration_unit=unit)
 
 

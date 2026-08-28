@@ -579,6 +579,54 @@ def test_exact_framework_container_does_not_invent_processor_math(tmp_path):
     assert lane.compute_protocol == "framework_attention_container"
 
 
+def _framework_geometry_source(*, include_kv=True, renamed=False):
+    kv = ", kv_heads=kv_heads" if include_kv else ""
+    heads_name = "head_count" if renamed else "heads"
+    return PREFIX + textwrap.dedent(f"""
+        from diffusers.models.attention_processor import Attention as Container
+        class Block:
+            def __init__(self, heads, kv_heads, dim_head):
+                self.unit = Container(
+                    {heads_name}=heads{kv}, dim_head=dim_head)
+            def forward(self, x):
+                return self.unit(x)
+        class Root:
+            def __init__(self, config):
+                self.layers = nn.ModuleList([Block(
+                    config.query_groups, config.shared_groups, config.hidden)
+                    for _ in range(config.layers)])
+            def forward(self, x):
+                for item in self.layers:
+                    x = item(x)
+                return x
+    """)
+
+
+def test_framework_attention_geometry_is_api_role_not_model_identity(tmp_path):
+    result, _stacks, _root, _index = _read(
+        tmp_path, _framework_geometry_source(), config=CONFIG)
+    geometry = result.require_value().blocks[0].attention_lanes[0].child.geometry
+    assert geometry is not None
+    assert geometry.query_heads.name == "heads"
+    assert geometry.key_value_heads.name == "kv_heads"
+    assert geometry.head_dim.name == "dim_head"
+
+
+def test_framework_attention_omitted_kv_default_remains_unknown(tmp_path):
+    result, _stacks, _root, _index = _read(
+        tmp_path, _framework_geometry_source(include_kv=False), config=CONFIG)
+    geometry = result.require_value().blocks[0].attention_lanes[0].child.geometry
+    assert geometry is not None
+    assert geometry.key_value_heads is None
+
+
+def test_framework_attention_unknown_keyword_cannot_launder_geometry(tmp_path):
+    result, _stacks, _root, _index = _read(
+        tmp_path, _framework_geometry_source(renamed=True), config=CONFIG)
+    lane = result.require_value().blocks[0].attention_lanes[0]
+    assert lane.child.geometry is None
+
+
 def test_guarded_framework_lane_uses_exact_occurrence_guard(tmp_path):
     source = _processor_attention_source(guarded=True)
     active, _stacks, _root, _index = _read(
