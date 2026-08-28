@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .models import SourceBundle
+from .models import SourceBundle, SourceImportRoot
 
 
 def resolve_source_files(target: Any, *, source: str = "local", token: Any = None) -> SourceBundle:
@@ -492,6 +492,7 @@ def _installed_diffusers_arch_bundle(target: Any) -> SourceBundle | None:
     path = _diffusers_class_file(arch)
     if path is None:
         return None
+    import_root = _source_import_root(path, "diffusers")
     return SourceBundle(
         source="local",
         files=(path,),
@@ -499,8 +500,30 @@ def _installed_diffusers_arch_bundle(target: Any) -> SourceBundle | None:
         architecture=arch,
         model_id=_model_id(target),
         component_files={"root": (path,)},
+        import_roots={"root": (import_root,)} if import_root else {},
         component_architectures={"root": arch},
     )
+
+
+def _source_import_root(path: str, package: str) -> SourceImportRoot | None:
+    """Return the exact installed package directory containing ``path``.
+
+    Package identity is source-address metadata.  This helper never searches
+    for a model/class and never infers a mechanism; it merely closes a path
+    already selected by the source resolver against the named installed
+    package directory.
+    """
+    resolved = Path(path).resolve()
+    matches = [index for index, part in enumerate(resolved.parts)
+               if part == package]
+    if not matches:
+        return None
+    root = Path(*resolved.parts[:matches[-1] + 1])
+    try:
+        resolved.relative_to(root)
+    except ValueError:
+        return None
+    return SourceImportRoot(package, str(root))
 
 
 def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
@@ -524,6 +547,10 @@ def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
         if re.search(rf"^class {re.escape(cls)}\b", text, re.M):
             component_files = {"root": (str(f),)}
             supporting_files: dict[str, tuple[str, ...]] = {}
+            import_roots: dict[str, tuple[SourceImportRoot, ...]] = {}
+            root_import = _source_import_root(str(f), "diffusers")
+            if root_import is not None:
+                import_roots["root"] = (root_import,)
             component_model_types: dict = {}
             component_architectures = {"root": cls}
             files = [str(f)]
@@ -565,10 +592,15 @@ def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
                 component_architectures[slot] = companion_arch
                 if companion_path not in files:
                     files.append(companion_path)
+                companion_root = _source_import_root(
+                    companion_path, "diffusers")
+                if companion_root is not None:
+                    import_roots[slot] = (companion_root,)
             return SourceBundle(source="local", files=tuple(files),
                                 architecture=cls, model_id=model_id,
                                 component_files=component_files,
                                 supporting_files=supporting_files,
+                                import_roots=import_roots,
                                 component_model_types=component_model_types,
                                 component_architectures=component_architectures,
                                 pipeline_components=tuple(pipeline_components),

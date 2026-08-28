@@ -15,6 +15,28 @@ CODE_EVIDENCE_SCHEMA_VERSION = "1.0"
 
 
 @dataclass(frozen=True)
+class SourceImportRoot:
+    """One exact package root whose imports may extend a component's index.
+
+    This is source-address metadata only.  It permits a demand-driven index
+    expansion to follow an explicitly imported, actually-called constructor or
+    factory into the same installed package without treating the package,
+    module or symbol spelling as architectural evidence.
+    """
+
+    package: str
+    path: str
+
+    def __post_init__(self) -> None:
+        if not self.package or not self.path:
+            raise ValueError("an import root carries a package and filesystem path")
+        if any(not part.isidentifier() for part in self.package.split(".")):
+            raise ValueError("an import-root package is a dotted Python address")
+        if not Path(self.path).is_absolute():
+            raise ValueError("an import-root path is absolute")
+
+
+@dataclass(frozen=True)
 class SourceOp:
     """One ordered operation proven from a concrete callable."""
 
@@ -166,6 +188,12 @@ class SourceBundle:
     # config class as modeling architecture.  A support source supplies code
     # evidence only after an exact import/annotation edge reaches it.
     supporting_files: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    # Exact package roots from which the ONE ProgramIndex may discover support
+    # sources through called import bindings.  Discovery is address-only and
+    # component-qualified; absence means no implicit import walk.  U11 uses this
+    # for Diffusers' factory-split U-Net implementation instead of reopening a
+    # second whole-file AST universe.
+    import_roots: dict[str, tuple[SourceImportRoot, ...]] = field(default_factory=dict)
     component_model_types: dict[str, str] = field(default_factory=dict)
     component_architectures: dict[str, str] = field(default_factory=dict)
     # Pipeline SLOT components (a Diffusers pipeline's fetched text encoders:
