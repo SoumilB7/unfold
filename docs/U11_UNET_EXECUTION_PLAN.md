@@ -1,7 +1,7 @@
 # U11 — Source-Derived U-Net Stage and Cell Execution Plan
 
-Status: **ACTIVE — U11-A1 demand-driven source-address boundary implemented;
-committed-tree verification pending**
+Status: **ACTIVE — U11-A1 demand-driven source-address boundary DONE; U11-B
+exact stage-construction inventory next**
 
 Authority: this document is the binding execution plan for U11. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §§16.5 and 20.14 without weakening
@@ -499,7 +499,7 @@ Stop and report before proceeding if:
 | Phase | Status | Receipt / outcome |
 |---|---|---|
 | reconnaissance | DONE | U10 handoff, compatibility interpreter, five readers, debt and SDXL source-boundary gap verified |
-| U11-A1 demand-driven source address | IMPLEMENTED, VERIFYING | 14 fast synthetic/closure controls + real installed SDXL `get_down_block` one-hop proof; affected root/conformance 124 passed; U2 authority 44 passed; no consumer/output change |
+| U11-A1 demand-driven source address | DONE | `51d016e`; 15 exact-boundary controls including real installed SDXL `get_down_block`; committed-tree coordinator: focused 297, U2 authority 44, preservation 52, full 3,510 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-A2 legacy closure cutover | PENDING | lands with the U11-B/E consumers; deletes `_augment_diffusion_files` only after exact coverage |
 | U11-B stage construction | PENDING | — |
 | U11-C execution/skip DAG | PENDING | — |
@@ -513,3 +513,18 @@ Stop and report before proceeding if:
 U11 remains ACTIVE until all phases are complete, U11-owned quarantine/debt is
 zero (or reassigned with explicit later-unit ownership), approved artifacts are
 rebuilt, and the committed-tree acceptance bracket is green.
+
+### U11-A1 committed-tree receipt
+
+Commit `51d016ef916e8f827d780e8e68160f3f7c3ccc08` was verified from isolated
+worktrees by `scripts/verify_commit.py`:
+
+- static: PASS, four changed production Python files clean;
+- collection: 3,622 tests;
+- focused import/root/conformance lane: 297 passed;
+- affected U2 authority lane: 44 passed;
+- preservation lane: 52 passed with zero structural/pixel drift;
+- full suite: 3,510 passed, 14 skipped, 2 expected xfails; and
+- every lane's complete-tree fingerprint was identical before and after.
+
+Logs: `/private/tmp/model-unfolder-verification/3954fc72d0`.
