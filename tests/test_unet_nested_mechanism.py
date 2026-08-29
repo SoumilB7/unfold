@@ -33,6 +33,9 @@ from model_unfolder.evidence.import_source import (
 )
 from model_unfolder.evidence.models import SourceBundle, SourceImportRoot
 from model_unfolder.evidence.program_index import build_program_index
+from model_unfolder.evidence.selected_composite_ffn import (
+    selected_composite_ffn_mechanism,
+)
 from model_unfolder.evidence.unet_cell_mechanism import read_unet_cell_mechanisms
 from model_unfolder.evidence.unet_nested_mechanism import (
     AlternativeNestedOccurrenceId,
@@ -408,6 +411,7 @@ def test_real_sdxl_preserves_rival_transformer_routes_and_framework_attention():
             canonical_import=imported)
 
     proven = []
+    selected_mechanisms = []
     alternatives = []
     for item in attention:
         if not isinstance(item.occurrence_id,
@@ -456,9 +460,17 @@ def test_real_sdxl_preserves_rival_transformer_routes_and_framework_attention():
             value.index, feed_frame, "activation_fn")
         assert result.status == "resolved", result.failures
         proven.append(result.require_value())
+        mechanism = selected_composite_ffn_mechanism(
+            value.index, bundle, feed_frame)
+        assert mechanism.status == "resolved", mechanism.failures
+        selected_mechanisms.append(mechanism.require_value())
     assert len(proven) == 3
     assert {(item.value, item.source_kind) for item in proven} == {
         ("geglu", "class_default")}
     assert all([step.access_kind for step in item.steps] == [
         "parameter_forward", "registered_config_forward", "class_default"]
                for item in proven)
+    assert len(selected_mechanisms) == 3
+    assert {(item.gated, item.projection_mode, item.activation)
+            for item in selected_mechanisms} == {
+        (True, "fused_gate_up", "gelu")}
