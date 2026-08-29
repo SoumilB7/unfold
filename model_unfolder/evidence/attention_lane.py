@@ -47,6 +47,7 @@ from .execution_flow import (
     resolve_addressed_invocations,
 )
 from .expression_eval import construction_guard_evidence
+from .import_source import CanonicalCalledImportTarget
 from .program_index import (
     ConstructionSite,
     ExprNode,
@@ -146,12 +147,14 @@ class FrameworkAttentionLaneEvidence:
     block_occurrence: OwnerOccurrenceId
     invocation: AddressedInvocation | ExternalAddressedInvocation
     construction: ConstructionSite
-    protocol: str                 # framework_container | source_mixin_delegate
+    protocol: str                 # framework_container | indexed_framework_container
+                                  # | source_mixin_delegate
     external_reference: ExternalReferenceProof | None
     child_symbol: SymbolId | None
     processor: InjectedAttentionProcessorEvidence | None
     geometry: FrameworkAttentionGeometryEvidence | None
     spans: tuple[SourceSpan, ...]
+    canonical_import: CanonicalCalledImportTarget | None = None
 
     def __post_init__(self):
         if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
@@ -166,7 +169,8 @@ class FrameworkAttentionLaneEvidence:
                 or self.construction.span is None:
             raise ValueError("framework lane address has exact source spans")
         if self.protocol not in {
-                "framework_container", "source_mixin_delegate"}:
+                "framework_container", "indexed_framework_container",
+                "source_mixin_delegate"}:
             raise ValueError("framework attention protocol vocabulary is closed")
         if self.protocol == "framework_container":
             if not isinstance(self.invocation, ExternalAddressedInvocation) \
@@ -180,14 +184,40 @@ class FrameworkAttentionLaneEvidence:
         else:
             if not isinstance(self.invocation, AddressedInvocation) \
                     or not isinstance(self.child_symbol, SymbolId) \
-                    or self.external_reference is not None:
+                    or (self.protocol == "source_mixin_delegate"
+                        and self.external_reference is not None) \
+                    or (self.protocol == "indexed_framework_container"
+                        and (self.external_reference is None
+                             or self.canonical_import is None
+                             or self.canonical_import.qualified_target
+                             not in _ATTENTION_CONSTRUCTOR_PROTOCOLS
+                             or self.canonical_import.qualified_target.startswith(".")
+                             or not self.canonical_import.qualified_target.endswith(
+                                 f".{self.child_symbol.qualified_name}")
+                             or self.canonical_import.resolution.imported_symbol
+                             != self.child_symbol
+                             or self.canonical_import.resolution.call.span
+                             != self.construction.span
+                             or self.canonical_import.resolution.binding_chain[0]
+                             != self.external_reference.binding
+                             or self.external_reference.reference not in {
+                                 item.reference for item in self.construction.candidates
+                                 if item.symbol in {None, self.child_symbol}})):
                 raise ValueError("source delegate needs an exact indexed child")
             if self.invocation.callee_owner_occurrence.sites[-1] \
                     != self.construction.site_id \
                     or len(self.construction.candidates) != 1 \
-                    or self.construction.candidates[0].symbol != self.child_symbol:
+                    or (self.protocol == "source_mixin_delegate"
+                        and self.construction.candidates[0].symbol
+                        != self.child_symbol) \
+                    or (self.protocol == "indexed_framework_container"
+                        and self.construction.candidates[0].symbol
+                        not in {None, self.child_symbol}):
                 raise ValueError(
                     "source delegate is the invocation's exact construction")
+        if self.protocol != "indexed_framework_container" \
+                and self.canonical_import is not None:
+            raise ValueError("only an indexed framework lane carries canonical import evidence")
         if self.processor is not None \
                 and not isinstance(
                     self.processor, InjectedAttentionProcessorEvidence):
@@ -249,9 +279,9 @@ def _lane_identity(item):
             item.construction.site_id, processor_span)
 
 
-def _site_for_addressed(index, root, invocation):
-    child = root.graph.node_for(invocation.callee_owner_occurrence)
-    caller = root.graph.node_for(invocation.caller_occurrence)
+def _site_for_addressed(index, graph, invocation):
+    child = graph.node_for(invocation.callee_owner_occurrence)
+    caller = graph.node_for(invocation.caller_occurrence)
     if child is None or caller is None or child.via_site is None:
         return None, None
     sites = tuple(
@@ -412,7 +442,26 @@ def _self_field(expression):
     return expression.name if base.kind == "name" and base.name == "self" else None
 
 
-def _framework_candidate(index, root, invocation):
+def framework_attention_lane_positive_proof_in_graph(
+        index, graph, invocation, *, canonical_import=None):
+    """Prove one exact framework attention lane in an owner graph.
+
+    This is the occurrence-local form of U6's framework lane boundary.  It is
+    intentionally positive-only and does not require that ``graph`` be a
+    component root, so recursive modality and U-Net readers can reuse the same
+    exact protocol without manufacturing a temporary component resolution.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("framework attention proof requires a ProgramIndex")
+    if not isinstance(invocation,
+                      (AddressedInvocation, ExternalAddressedInvocation)):
+        raise TypeError("framework attention proof requires an exact invocation")
+    caller = graph.node_for(invocation.caller_occurrence)
+    if caller is None:
+        return None
+    if isinstance(invocation, AddressedInvocation) \
+            and graph.node_for(invocation.callee_owner_occurrence) is None:
+        return None
     if isinstance(invocation, ExternalAddressedInvocation):
         construction = invocation.construction
         reference = construction.external_reference
@@ -452,9 +501,42 @@ def _framework_candidate(index, root, invocation):
             "framework_container", reference, None, processor, geometry,
             tuple(span for span in spans if isinstance(span, SourceSpan)))
 
-    site, child_symbol = _site_for_addressed(index, root, invocation)
-    if site is None or child_symbol is None \
-            or not _source_delegate_is_exact(index, child_symbol, site):
+    site, child_symbol = _site_for_addressed(index, graph, invocation)
+    if site is None or child_symbol is None:
+        return None
+    # An imported framework container remains the same exact protocol after
+    # demand expansion makes its source indexable.  The canonical target must
+    # come from U11-A's exact source-root join; a relative lexical spelling is
+    # intentionally insufficient here.
+    references = tuple(
+        candidate.reference for candidate in site.candidates
+        if candidate.symbol in {None, child_symbol})
+    proofs = tuple(
+        proof for reference in references
+        if (proof := resolve_import_reference(
+            index, site.owner.source, site.enclosing_callable, reference))
+        is not None)
+    reference = proofs[0] if len(proofs) == 1 else None
+    if canonical_import is not None \
+            and not isinstance(canonical_import, CanonicalCalledImportTarget):
+        raise TypeError("canonical_import is a typed called-import proof")
+    if reference is not None and canonical_import is not None \
+            and canonical_import.qualified_target \
+            in _ATTENTION_CONSTRUCTOR_PROTOCOLS \
+            and not canonical_import.qualified_target.startswith("."):
+        processor = (_processor_evidence(index, child_symbol, site)
+                     or _default_processor_evidence(index, child_symbol, site))
+        spans = tuple(dict.fromkeys((
+            invocation.call.span, site.span, reference.binding.span,
+            *(processor.spans if processor is not None else ()),
+        )))
+        return FrameworkAttentionLaneEvidence(
+            invocation.caller_occurrence, invocation, site,
+            "indexed_framework_container", reference, child_symbol,
+            processor, None,
+            tuple(span for span in spans if isinstance(span, SourceSpan)),
+            canonical_import=canonical_import)
+    if not _source_delegate_is_exact(index, child_symbol, site):
         return None
     processor = (_processor_evidence(index, child_symbol, site)
                  or _default_processor_evidence(index, child_symbol, site))
@@ -515,7 +597,8 @@ def attention_lane_positive_census(
     for invocation in (*invocations.addressed, *invocations.external_addressed):
         if invocation.call_site in ordinary_sites:
             continue
-        candidate = _framework_candidate(index, root, invocation)
+        candidate = framework_attention_lane_positive_proof_in_graph(
+            index, root.graph, invocation)
         if candidate is None:
             continue
         guard = (
@@ -604,4 +687,5 @@ __all__ = [
     "FrameworkAttentionGeometryEvidence",
     "InjectedAttentionProcessorEvidence",
     "attention_lane_positive_census",
+    "framework_attention_lane_positive_proof_in_graph",
 ]

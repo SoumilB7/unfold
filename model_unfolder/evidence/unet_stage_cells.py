@@ -272,10 +272,14 @@ class UNetStageCellInventory:
     invocations: tuple[StageChildInvocation, ...]
     unresolved: tuple[UnresolvedStageChild, ...]
     index: ProgramIndex
+    bundle: SourceBundle
 
     def __post_init__(self) -> None:
         if not self.stages:
             raise ValueError("a cell inventory retains exact stage candidates")
+        if not isinstance(self.index, ProgramIndex) \
+                or not isinstance(self.bundle, SourceBundle):
+            raise TypeError("a cell inventory retains its exact index + bundle")
         ids = tuple(item.occurrence_id for item in self.stages)
         if len(ids) != len(set(ids)):
             raise ValueError("stage construction occurrence identities are unique")
@@ -479,7 +483,7 @@ def read_unet_stage_cells(graph: UNetStageExecutionGraph,
             tuple(item.span for item in expanded.calls_in(forward)
                   if item.span is not None)))
     inventory = UNetStageCellInventory(
-        graph, stages, tuple(invocations), tuple(unresolved), expanded)
+        graph, stages, tuple(invocations), tuple(unresolved), expanded, bundle)
     spans = tuple(dict.fromkeys(
         span for item in (*inventory.invocations, *inventory.unresolved)
         for span in ((item.call.span,) if isinstance(item, StageChildInvocation)

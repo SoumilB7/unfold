@@ -37,11 +37,15 @@ from dataclasses import dataclass
 from .component_owner import (
     ComponentRootResolution,
     ConstructedComponentRoot,
+    OwnerGraph,
     OwnerOccurrenceId,
     require_resolved_component_root,
 )
-from .container_inventory import ContainerAddress, ContainerInventory
-from .construction_calls import ConstructionAlternative, resolve_construction_call
+from .container_inventory import ContainerAddress, ContainerInventory, ContainerRival
+from .construction_calls import (
+    ConstructionAlternative,
+    resolve_construction_call_in_graph,
+)
 from .program_index import (
     CallObservation,
     CallSiteId,
@@ -313,7 +317,33 @@ def resolve_addressed_invocations(index: ProgramIndex,
     if inventory.owner_occurrence != owner_occurrence:
         raise ValueError("the container inventory must be for the same owner occurrence")
 
-    graph = root_resolution.graph
+    return resolve_addressed_invocations_in_graph(
+        index, root_resolution.graph, owner_occurrence, inventory)
+
+
+def resolve_addressed_invocations_in_graph(
+        index: ProgramIndex, graph: OwnerGraph,
+        owner_occurrence: OwnerOccurrenceId,
+        inventory: ContainerInventory) -> InvocationResolution:
+    """Resolve calls for an explicit occurrence in an exact owner graph.
+
+    Unlike the component-root wrapper, this boundary performs no component or
+    architectural owner selection.  It is for nested occurrences whose caller
+    already proved the exact graph and owner (U11 cell candidates are the first
+    consumer).  Every call still partitions the complete ProgramIndex census.
+    """
+    if not isinstance(index, ProgramIndex) or not isinstance(graph, OwnerGraph):
+        raise TypeError(
+            "graph-local invocation resolution requires ProgramIndex + OwnerGraph")
+    if not isinstance(owner_occurrence, OwnerOccurrenceId):
+        raise TypeError(
+            "graph-local invocation resolution requires an OwnerOccurrenceId")
+    if not isinstance(inventory, ContainerInventory):
+        raise TypeError(
+            "graph-local invocation resolution requires a ContainerInventory")
+    if inventory.owner_occurrence != owner_occurrence:
+        raise ValueError("the container inventory must be for the same occurrence")
+
     node = graph.node_for(owner_occurrence)
     if node is None:
         return InvocationResolution(
@@ -332,13 +362,15 @@ def resolve_addressed_invocations(index: ProgramIndex,
     census = index.call_sites_in(callable_symbol)
     loops = index.loops_in(callable_symbol)
     container_by_field = {c.field: c for c in inventory.containers}
+    rival_by_field = {r.field: r for r in inventory.rivals}
     addressed: list = []
     external_addressed: list = []
     templates: list = []
     unresolved: list = []
     for call in index.calls_in(callable_symbol):
-        _classify(index, root_resolution, CallSiteId.of(call), call, node,
-                  owner_occurrence, loops, container_by_field, addressed,
+        _classify(index, graph, CallSiteId.of(call), call, node,
+                  owner_occurrence, loops, container_by_field, rival_by_field,
+                  addressed,
                   external_addressed, templates, unresolved)
     return InvocationResolution(
         "resolved", owner_occurrence, owner_symbol, callable_symbol, tuple(census),
@@ -346,9 +378,9 @@ def resolve_addressed_invocations(index: ProgramIndex,
         tuple(external_addressed))
 
 
-def _classify(index, root_resolution, site, call, node, owner_occurrence, loops,
-              container_by_field, addressed, external_addressed, templates,
-              unresolved) -> None:
+def _classify(index, graph, site, call, node, owner_occurrence, loops,
+              container_by_field, rival_by_field, addressed,
+              external_addressed, templates, unresolved) -> None:
     callee = call.callee
     guard = call.guard
 
@@ -361,8 +393,8 @@ def _classify(index, root_resolution, site, call, node, owner_occurrence, loops,
         children = [c for c in node.children if c.via_field == field]
         blocked = [u for u in node.unresolved if u.field == field]
         if blocked:
-            construction = resolve_construction_call(
-                index, root_resolution, owner_occurrence, call)
+            construction = resolve_construction_call_in_graph(
+                index, graph, owner_occurrence, call)
             if construction.status == "resolved" \
                     and construction.selected.kind == "external":
                 selected = construction.selected
@@ -395,6 +427,12 @@ def _classify(index, root_resolution, site, call, node, owner_occurrence, loops,
             loop, iteration_kind, field, element_target = binding
             container = container_by_field.get(field)
             if container is None:
+                rival = rival_by_field.get(field)
+                if isinstance(rival, ContainerRival):
+                    unresolved.append(UnresolvedInvocation(
+                        site, owner_occurrence, "rival_container_records",
+                        call, guard, (rival,)))
+                    return
                 unresolved.append(UnresolvedInvocation(
                     site, owner_occurrence, "loop_iterable_not_a_cited_container", call, guard))
                 return
@@ -453,7 +491,7 @@ def _classify(index, root_resolution, site, call, node, owner_occurrence, loops,
             if child.via_field == field
             and child.via_site == element.site_id
             and child.symbol == element.candidates[0].symbol
-            and root_resolution.graph.node_for(child.occurrence) is child)
+            and graph.node_for(child.occurrence) is child)
         if len(children) != 1:
             unresolved.append(UnresolvedInvocation(
                 site, owner_occurrence,
@@ -1188,6 +1226,7 @@ __all__ = [
     "UnresolvedInvocation",
     "InvocationResolution",
     "resolve_addressed_invocations",
+    "resolve_addressed_invocations_in_graph",
     "InvocationNodeId",
     "HappensBeforeEdge",
     "UnresolvedRelation",

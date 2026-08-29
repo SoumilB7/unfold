@@ -368,4 +368,80 @@ def resolve_called_import_source(
         failure_detail="the exact re-export chain exceeds eight sources")
 
 
-__all__ = ["CalledImportSourceResolution", "resolve_called_import_source"]
+def canonical_called_import_target(
+        bundle: SourceBundle,
+        resolution: CalledImportSourceResolution,
+        ) -> CanonicalCalledImportTarget | None:
+    """Return the unique package-qualified address of a resolved import.
+
+    A relative import spelling has no global meaning.  This address-only join
+    uses the exact resolved source node and the component's declared import
+    root to produce ``package.module.Symbol``.  It does not classify that
+    address as any architectural mechanism.
+    """
+    if not isinstance(bundle, SourceBundle) \
+            or not isinstance(resolution, CalledImportSourceResolution):
+        raise TypeError("canonical import target requires bundle + resolution")
+    if resolution.status != "resolved":
+        return None
+    source = Path(resolution.source_node.source_id.canonical_path).resolve()
+    matches = []
+    for root in bundle.import_roots.get(resolution.component, ()):
+        root_path = Path(root.path).resolve()
+        if not _path_within(source, root_path):
+            continue
+        relative = source.relative_to(root_path)
+        module_parts = (relative.parts[:-1] if relative.name == "__init__.py"
+                        else (*relative.parts[:-1], relative.stem))
+        module = ".".join((root.package, *module_parts))
+        matches.append(CanonicalCalledImportTarget(
+            bundle, resolution, root,
+            f"{module}.{resolution.imported_symbol.qualified_name}"))
+    unique = {}
+    for item in matches:
+        key = (item.import_root.package, item.import_root.path,
+               item.qualified_target)
+        unique.setdefault(key, item)
+    return next(iter(unique.values())) if len(unique) == 1 else None
+
+
+@dataclass(frozen=True)
+class CanonicalCalledImportTarget:
+    """Self-verifying package address for one exact called-import proof."""
+
+    bundle: SourceBundle
+    resolution: CalledImportSourceResolution
+    import_root: SourceImportRoot
+    qualified_target: str
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.bundle, SourceBundle) \
+                or not isinstance(self.resolution, CalledImportSourceResolution) \
+                or not isinstance(self.import_root, SourceImportRoot) \
+                or not self.qualified_target:
+            raise TypeError("canonical import evidence is fully typed")
+        if self.resolution.status != "resolved" \
+                or self.import_root not in self.bundle.import_roots.get(
+                    self.resolution.component, ()):
+            raise ValueError("canonical import evidence belongs to a resolved declared root")
+        source = Path(
+            self.resolution.source_node.source_id.canonical_path).resolve()
+        root_path = Path(self.import_root.path).resolve()
+        if not _path_within(source, root_path):
+            raise ValueError("the resolved source belongs to the declared root")
+        relative = source.relative_to(root_path)
+        module_parts = (relative.parts[:-1] if relative.name == "__init__.py"
+                        else (*relative.parts[:-1], relative.stem))
+        expected = ".".join((
+            self.import_root.package, *module_parts,
+            self.resolution.imported_symbol.qualified_name))
+        if self.qualified_target != expected:
+            raise ValueError("the canonical target derives from root + source + symbol")
+
+
+__all__ = [
+    "CalledImportSourceResolution",
+    "CanonicalCalledImportTarget",
+    "canonical_called_import_target",
+    "resolve_called_import_source",
+]

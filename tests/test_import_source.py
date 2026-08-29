@@ -9,6 +9,7 @@ import pytest
 
 from model_unfolder.evidence.import_source import (
     CalledImportSourceResolution,
+    canonical_called_import_target,
     resolve_called_import_source,
 )
 from model_unfolder.evidence.models import SourceBundle, SourceImportRoot
@@ -53,6 +54,8 @@ def test_relative_called_import_adds_exact_source_and_symbol(tmp_path):
     assert result.imported_symbol.qualified_name == "make"
     assert result.source_node.source_id.component_key == "root"
     assert len(result.index.source_nodes) == len(index.source_nodes) + 1
+    assert canonical_called_import_target(
+        bundle, result).qualified_target == "pkg.factory.make"
 
 
 def test_import_alias_resolves_without_using_alias_as_semantics(tmp_path):
@@ -260,6 +263,8 @@ def test_exact_reexport_chain_resolves_without_name_search(tmp_path):
             for node in result.source_chain] == ["api.py", "impl.py"]
     assert not any(node.source_id.canonical_path.endswith("decoy.py")
                    for node in result.index.source_nodes)
+    assert canonical_called_import_target(
+        bundle, result).qualified_target == "pkg.impl.build"
 
 
 def test_reexport_cycle_is_typed_incomplete(tmp_path):

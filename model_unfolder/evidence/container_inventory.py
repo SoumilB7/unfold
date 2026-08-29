@@ -44,6 +44,7 @@ from dataclasses import dataclass
 from .component_owner import (
     ComponentRootResolution,
     ConstructedComponentRoot,
+    OwnerGraph,
     OwnerOccurrenceId,
     require_resolved_component_root,
 )
@@ -259,7 +260,28 @@ def resolve_container_inventory(index: ProgramIndex,
     if not isinstance(owner_occurrence, OwnerOccurrenceId):
         raise TypeError("resolve_container_inventory requires an explicit OwnerOccurrenceId owner")
 
-    graph = root_resolution.graph
+    return resolve_container_inventory_in_graph(
+        index, root_resolution.graph, owner_occurrence)
+
+
+def resolve_container_inventory_in_graph(
+        index: ProgramIndex, graph: OwnerGraph,
+        owner_occurrence: OwnerOccurrenceId) -> ContainerInventory:
+    """Inventory an explicitly selected occurrence in an exact owner graph.
+
+    This is the graph-local form of :func:`resolve_container_inventory`.  It
+    exists for already-qualified nested source occurrences (for example a
+    U11 cell candidate) that are not component roots.  It performs no root or
+    role selection and therefore cannot be used to bypass D0: callers must
+    already carry the exact graph and occurrence produced by their own closed
+    address boundary.
+    """
+    if not isinstance(index, ProgramIndex) or not isinstance(graph, OwnerGraph):
+        raise TypeError(
+            "graph-local container inventory requires ProgramIndex + OwnerGraph")
+    if not isinstance(owner_occurrence, OwnerOccurrenceId):
+        raise TypeError(
+            "graph-local container inventory requires an OwnerOccurrenceId")
     # The D0 resolution must have been built from THIS index: the graph root symbol
     # (with its exact SourceId content fingerprint) must resolve in `index`.  A D0
     # from a different ProgramIndex would otherwise silently enumerate mismatched
@@ -377,4 +399,5 @@ __all__ = [
     "ContainerRival",
     "ContainerInventory",
     "resolve_container_inventory",
+    "resolve_container_inventory_in_graph",
 ]
