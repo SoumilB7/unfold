@@ -1,7 +1,7 @@
 # U11 — Source-Derived U-Net Stage and Cell Execution Plan
 
-Status: **ACTIVE — U11-A1 through U11-E2b DONE; U11-E2 attention-interface
-interface semantics in progress**
+Status: **ACTIVE — U11-A1 through U11-E2c DONE; U11-E3 consumer cutover
+next**
 
 Authority: this document is the binding execution plan for U11. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §§16.5 and 20.14 without weakening
@@ -577,6 +577,70 @@ worktrees by `scripts/verify_commit.py`:
   identical before and after.
 
 Logs: `/private/tmp/model-unfolder-verification/419a9c2663`.
+
+#### U11-E2c implementation state and committed-tree receipt
+
+Status: **DONE; ATTENTION INPUT-ROLE EVIDENCE ONLY** — commit `c6f0ae8`.
+
+E2c proves an attention implementation's input interface from its exact source
+instead of from a familiar container/class/field spelling.  Every default
+implementation alternative independently proves its Q/K/V producer boundary,
+with Q descending from one callable formal, K/V from the same distinct optional
+formal, and an exact `None -> primary` fallback.  The container's exact
+constructor/default/installer/delegate route must preserve that interface
+unanimously.  A second callable on the same class is not treated as a
+transparent wrapper: if the positive compute proof and entry interface belong
+to different callables, the result remains typed unknown until a future exact
+wrapper-binding boundary joins them.
+
+At the exact parent occurrence, the lane invocation is then classified only as
+`self`, `context_slot` or `conditional`.  `context_slot` means that the
+source-level K/V interface can consume a distinct caller formal; it deliberately
+does **not** claim that non-`None` external conditioning reaches that slot at
+runtime.  U11-F owns that later component/config/execution join, after which a
+projected cross-attention label may become legal.  Constructor-decidable branch
+and guard values are occurrence-qualified, sibling field guards cannot clear a
+lane, and every exact constructor alternative for a lineage-transparent norm
+call must independently classify as LayerNorm or RMSNorm.  One opaque, dynamic,
+non-norm or unknown rival blocks transparency.
+
+The installed SDXL source provides the permanent real control.  Its three exact
+`BasicTransformerBlock` construction routes each prove the direct first
+attention lane as `conditional` (self versus distinct context slot).  The three
+direct second lanes remain typed `incomplete_graph`: an optional runtime
+GLIGEN/fuser transform may replace their primary state before invocation.  The
+nested fuser attention belongs to its own child occurrence and cannot be
+laundered through the parent frame.  This 3-proven / 3-unknown partition is the
+honest E2c output; no conventional self+cross template is inferred.
+
+The first committed-tree gate caught a real containment defect.  E2c initially
+added tuple/membership/boolean evaluation to the shared config-expression
+evaluator by default, which widened an unrelated production reader and changed
+Flux-2 IR, ledgers and HTML metadata.  No re-bless was accepted.  The capability
+is now explicitly opt-in for E2c constructor evidence, while the default shared
+evaluator retains its former conservative contract.  A poison pins that default
+refusal, and the exact Flux witness returned to zero drift before the final
+gate.
+
+Commit `c6f0ae8c97015635522c7aa47d929ab18c01c050` was verified from isolated
+worktrees by `scripts/verify_commit.py`:
+
+- static: PASS, 17 changed production/test Python files clean;
+- collection: 3,830 tests;
+- focused attention-interface/role/constructor/norm/SDXL lane: 282 passed;
+- affected U2 authority lane: 44 passed;
+- preservation lane: 52 passed with all 29 witnesses at zero structural,
+  evidence, HTML, gallery and pixel drift;
+- full suite: 3,718 passed, 14 skipped, 2 expected xfails; and
+- every lane's complete-tree fingerprint and source-artifact fingerprint was
+  identical before and after.
+
+Logs: `/private/tmp/model-unfolder-verification/c6834d87b3`.
+
+E2c changes no parser, fact, IR, renderer, parameter, debt, manifest or gallery
+consumer.  E1/E2a/E2b/E2c are now a closed evidence substrate; E3 must project
+them through one typed consumer path and delete the three legacy whole-file
+readers plus the universal nested Transformer2D template atomically.
 
 ### U11-F — exact samplers, bookends and conditioning
 
