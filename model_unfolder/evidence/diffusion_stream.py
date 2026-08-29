@@ -12,7 +12,7 @@ No absence here is a whole-forward negative proof.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from .attention_lane import FrameworkAttentionLaneEvidence
 from .call_arguments import bind_addressed_invocation
@@ -605,14 +605,25 @@ class _LocalLineage:
 
 
 def _local_lineage(index: ProgramIndex, callable_record,
-                   transparent_calls=()) -> _LocalLineage:
+                   transparent_calls=(), binding_guard_state=None) -> _LocalLineage:
     calls = tuple(index.calls_in(callable_record.symbol))
+    bindings = tuple(sorted(
+        index.bindings_in(callable_record.symbol),
+        key=lambda item: _span_key(item.span)))
+    if binding_guard_state is not None:
+        selected = []
+        for binding in bindings:
+            state = binding_guard_state(binding)
+            if state is False:
+                continue
+            selected.append(
+                replace(binding, guard=()) if state is True else binding)
+        bindings = tuple(selected)
     return _LocalLineage(
         index, callable_record,
         frozenset(item.name for item in callable_record.params
                   if item.name != "self"),
-        tuple(sorted(index.bindings_in(callable_record.symbol),
-                     key=lambda item: _span_key(item.span))),
+        bindings,
         calls, tuple(transparent_calls))
 
 
@@ -622,8 +633,10 @@ def _local_lineage(index: ProgramIndex, callable_record,
 # fork another lineage engine.  The returned object remains observation-only:
 # it reads frozen ProgramIndex records and never opens source or config.
 def local_lineage_at_callable(index: ProgramIndex, callable_record,
-                              transparent_calls=()) -> _LocalLineage:
-    return _local_lineage(index, callable_record, transparent_calls)
+                              transparent_calls=(), binding_guard_state=None
+                              ) -> _LocalLineage:
+    return _local_lineage(
+        index, callable_record, transparent_calls, binding_guard_state)
 
 
 @dataclass(frozen=True)

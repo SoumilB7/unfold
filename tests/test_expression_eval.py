@@ -9,6 +9,7 @@ from model_unfolder.evidence.component_owner import (
 )
 from model_unfolder.evidence.expression_eval import (
     ConfigExpressionEvaluator,
+    EvaluatedExpression,
     constructor_argument_env,
 )
 from model_unfolder.evidence.models import SourceBundle
@@ -115,3 +116,76 @@ def test_missing_runtime_actual_falls_through_to_exact_config_binding(tmp_path):
             node.config_bindings, {"enabled": False}, env={})
              .expression(control.controlling)})
     assert from_actual.expression(control.controlling).value is False
+
+
+def test_literal_membership_guard_is_evaluated_without_name_semantics(tmp_path):
+    index, _graph_value = _graph(tmp_path, """
+        class Root:
+            def __init__(self, choice):
+                if choice in ("first", "second"):
+                    self.active = True
+    """)
+    test = next(item.controlling for item in index.controls
+                if item.kind == "if")
+    inside = ConfigExpressionEvaluator(
+        (), {}, {"choice": EvaluatedExpression("second")},
+        allow_control_literals=True).expression(test)
+    outside = ConfigExpressionEvaluator(
+        (), {}, {"choice": EvaluatedExpression("other")},
+        allow_control_literals=True).expression(test)
+    assert inside is not None and inside.value is True
+    assert outside is not None and outside.value is False
+
+
+def test_membership_with_an_unknown_collection_item_stays_unknown(tmp_path):
+    index, _graph_value = _graph(tmp_path, """
+        class Root:
+            def __init__(self, choice):
+                if choice in ("first", runtime_value):
+                    self.active = True
+    """)
+    test = next(item.controlling for item in index.controls
+                if item.kind == "if")
+    assert ConfigExpressionEvaluator(
+        (), {}, {"choice": EvaluatedExpression("first")},
+        allow_control_literals=True) \
+        .expression(test) is None
+
+
+def test_boolean_guard_uses_only_exact_python_short_circuit(tmp_path):
+    index, _graph_value = _graph(tmp_path, """
+        class Root:
+            def __init__(self, present, mode):
+                if present and mode != "disabled":
+                    self.active = True
+    """)
+    test = next(item.controlling for item in index.controls
+                if item.kind == "if")
+    stopped = ConfigExpressionEvaluator(
+        (), {}, {"present": EvaluatedExpression(False)},
+        allow_control_literals=True).expression(test)
+    assert stopped is not None and stopped.value is False
+    # Once execution reaches an unknown operand, later syntax cannot be used
+    # to manufacture a decision.
+    assert ConfigExpressionEvaluator(
+        (), {}, {"present": EvaluatedExpression(True)},
+        allow_control_literals=True).expression(test) is None
+    decided = ConfigExpressionEvaluator((), {}, {
+        "present": EvaluatedExpression(True),
+        "mode": EvaluatedExpression("enabled"),
+    }, allow_control_literals=True).expression(test)
+    assert decided is not None and decided.value is True
+
+
+def test_control_literal_extension_is_opt_in(tmp_path):
+    index, _graph_value = _graph(tmp_path, """
+        class Root:
+            def __init__(self, choice):
+                if choice in ("first", "second"):
+                    self.active = True
+    """)
+    test = next(item.controlling for item in index.controls
+                if item.kind == "if")
+    assert ConfigExpressionEvaluator(
+        (), {}, {"choice": EvaluatedExpression("first")}).expression(test) \
+        is None

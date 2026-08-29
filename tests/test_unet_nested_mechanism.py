@@ -11,6 +11,9 @@ from model_unfolder.evidence.attention_lane import (
     FrameworkAttentionLaneEvidence,
     framework_attention_lane_positive_proof_in_graph,
 )
+from model_unfolder.evidence.attention_invocation_role import (
+    framework_attention_invocation_role,
+)
 from model_unfolder.evidence.component_owner import (
     resolve_component_root,
     resolve_owner_graph,
@@ -412,6 +415,9 @@ def test_real_sdxl_preserves_rival_transformer_routes_and_framework_attention():
 
     proven = []
     selected_mechanisms = []
+    input_roles = []
+    input_role_statuses = []
+    input_role_failures = []
     alternatives = []
     for item in attention:
         if not isinstance(item.occurrence_id,
@@ -442,6 +448,25 @@ def test_real_sdxl_preserves_rival_transformer_routes_and_framework_attention():
         block_target = target_for(alternative.site, alternative.candidate)
         block_frame = constructor_frame(
             value.index, block_target, transformer_frame)
+        alternative_attention = tuple(
+            item for item in attention
+            if isinstance(item.occurrence_id,
+                          AlternativeNestedOccurrenceId)
+            and item.occurrence_id.alternative == alternative
+            and item.attention.block_occurrence
+            == block_frame.graph.root.occurrence)
+        assert alternative_attention
+        for lane_row in alternative_attention:
+            role = framework_attention_invocation_role(
+                value.index, block_frame, lane_row.attention)
+            if role.status not in {"resolved", "incomplete"}:
+                input_role_failures.append((
+                    alternative.site.span.line,
+                    lane_row.attention.construction.target,
+                    tuple(item.kind for item in role.failures)))
+                continue
+            input_role_statuses.append(role.status)
+            input_roles.append(role.require_value())
         feed_sites = tuple(
             site for site in value.index.construction_sites_of(
                 alternative.symbol)
@@ -474,3 +499,20 @@ def test_real_sdxl_preserves_rival_transformer_routes_and_framework_attention():
     assert {(item.gated, item.projection_mode, item.activation)
             for item in selected_mechanisms} == {
         (True, "fused_gate_up", "gelu")}
+    # Each exact BasicTransformerBlock route proves attn1's two source-level
+    # alternatives (self vs distinct context slot).  The direct attn2 lanes
+    # remain typed unknown because an optional runtime GLIGEN/fuser transform
+    # can replace their primary state before the call.  A nested fuser's own
+    # ``attn`` belongs to the child occurrence and is never queried with this
+    # parent frame.  U11-F may shrink the attn2 unknowns only with an exact
+    # component-bound runtime/config proof; E2c must not infer conventional
+    # self+cross structure from the familiar two-lane shape.
+    assert len(input_roles) == 3
+    assert {item.kind for item in input_roles} == {"conditional"}
+    assert input_role_statuses == ["incomplete"] * 3
+    assert len(input_role_failures) == 3
+    assert {target for _line, target, _kinds in input_role_failures} == {
+        "attn2"}
+    assert {kinds for _line, _target, kinds in input_role_failures} == {
+        ("incomplete_graph",)}
+    assert len({line for line, _target, _kinds in input_role_failures}) == 3

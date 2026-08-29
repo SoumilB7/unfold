@@ -4,11 +4,21 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import textwrap
+from dataclasses import replace
 
 import pytest
 
 from model_unfolder.evidence.context import ParseContext
-from model_unfolder.evidence.decoder_norm import decoder_norm_kind_for_path
+from model_unfolder.evidence.component_owner import resolve_owner_graph
+from model_unfolder.evidence.decoder_norm import (
+    decoder_norm_kind_for_path,
+    norm_preserving_invocations_in_frame,
+    norm_preserving_invocations_in_graph,
+)
+from model_unfolder.evidence.constructor_values import (
+    canonical_construction_target,
+    constructor_frame,
+)
 from model_unfolder.evidence.models import SourceBundle
 from model_unfolder.evidence.program_index import build_program_index
 
@@ -235,3 +245,122 @@ def test_legacy_whole_file_norm_readers_are_deleted():
 
     assert not hasattr(patterns, "decoder_norm_kind_from_files")
     assert not hasattr(patterns, "norm_kind_from_files_math")
+
+
+def _preserving_read(tmp_path, assignments, *, field="chosen"):
+    source = f"""
+from torch import nn
+
+class Block:
+    def __init__(self, width, flag):
+{assignments}
+    def forward(self, signal):
+        return self.{field}(signal)
+"""
+    path = tmp_path / "preserving.py"
+    path.write_text(textwrap.dedent(source), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Block"}, architecture="Block")
+    index = build_program_index(bundle)
+    block = next(item.symbol for item in index.classes
+                 if item.symbol.qualified_name == "Block")
+    graph = resolve_owner_graph(index, block)
+    return norm_preserving_invocations_in_graph(
+        index, graph, graph.root.occurrence)
+
+
+def test_all_guarded_norm_constructor_sites_prove_state_preservation(tmp_path):
+    result = _preserving_read(tmp_path, """
+        if flag:
+            self.chosen = nn.LayerNorm(width)
+        else:
+            self.chosen = nn.RMSNorm(width)
+""")
+    assert result.has_value, result.failures
+    evidence = result.require_value().candidates[0]
+    assert evidence.alternative_kinds == ("layernorm", "rmsnorm")
+    assert len(evidence.sites) == 2
+    assert all(site.guard for site in evidence.sites)
+
+
+@pytest.mark.parametrize("opaque", [
+    "nn.Linear(width, width)",
+    "factory(width)",
+])
+def test_one_opaque_or_dynamic_rival_blocks_norm_preservation(tmp_path, opaque):
+    result = _preserving_read(tmp_path, f"""
+        if flag:
+            self.chosen = nn.LayerNorm(width)
+        else:
+            self.chosen = {opaque}
+""")
+    assert not result.has_value
+
+
+def test_sibling_norm_field_cannot_vote_for_the_called_field(tmp_path):
+    result = _preserving_read(tmp_path, """
+        self.decoy = nn.LayerNorm(width)
+        self.chosen = nn.Linear(width, width)
+""")
+    assert not result.has_value
+
+
+def test_norm_preservation_dto_retains_every_exact_constructor_site(tmp_path):
+    value = _preserving_read(tmp_path, """
+        if flag:
+            self.chosen = nn.LayerNorm(width)
+        else:
+            self.chosen = nn.RMSNorm(width)
+""").require_value().candidates[0]
+    with pytest.raises(ValueError, match="closes all exact variants"):
+        replace(value, sites=value.sites[:1])
+    with pytest.raises(ValueError, match="caller-field site"):
+        forged = replace(value.sites[0], target="decoy")
+        replace(value, all_sites=(forged, value.all_sites[1]),
+                sites=(forged, value.sites[1]))
+
+
+def _frame_preserving_read(tmp_path, actual):
+    source = f"""
+from torch import nn
+class Block:
+    def __init__(self, width, mode):
+        if mode in ("layer_norm", "layer_norm_i2vgen"):
+            self.chosen = nn.LayerNorm(width)
+        else:
+            self.chosen = nn.Linear(width, width)
+    def forward(self, signal):
+        return self.chosen(signal)
+class Root:
+    def __init__(self):
+        self.block = Block(16, {actual})
+"""
+    path = tmp_path / "frame_preserving.py"
+    path.write_text(textwrap.dedent(source), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Root"}, architecture="Root")
+    index = build_program_index(bundle)
+    site = next(item for item in index.construction_sites
+                if item.owner.qualified_name == "Root"
+                and item.target == "block")
+    frame = constructor_frame(index, canonical_construction_target(
+        index, site, site.candidates[0].symbol))
+    return norm_preserving_invocations_in_frame(index, frame)
+
+
+def test_constructor_proven_false_opaque_branch_is_excluded(tmp_path):
+    result = _frame_preserving_read(tmp_path, '"layer_norm"')
+    assert result.has_value, result.failures
+    evidence = result.require_value().candidates[0]
+    assert len(evidence.all_sites) == 2
+    assert len(evidence.sites) == 1
+    assert evidence.alternative_kinds == ("layernorm",)
+    assert [item.decision for item in evidence.guard_decisions] == [True, False]
+
+
+def test_unknown_constructor_guard_keeps_opaque_branch_and_blocks(tmp_path):
+    assert not _frame_preserving_read(tmp_path, "runtime()").has_value

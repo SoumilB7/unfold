@@ -65,16 +65,27 @@ def canonical_alias_view(document, aliases):
 class ConfigExpressionEvaluator:
     """Evaluate one expression under one exact owner's config bindings."""
 
-    def __init__(self, bindings, document, env=None):
+    def __init__(self, bindings, document, env=None, *,
+                 allow_control_literals=False):
         self.bindings = {item.parameter: item for item in bindings}
         self.document = document
         self.env = dict(env or {})
+        self.allow_control_literals = bool(allow_control_literals)
 
     def expression(self, expr: ExprNode | None) -> EvaluatedExpression | None:
         if expr is None:
             return None
         if expr.kind == "constant":
             return EvaluatedExpression(expr.const_value, spans=spans(expr.span))
+        if self.allow_control_literals \
+                and expr.kind in {"tuple", "list", "set"}:
+            items = tuple(self.expression(item) for item in expr.children)
+            if any(item is None for item in items):
+                return None
+            values = tuple(item.value for item in items)
+            value = ({*values} if expr.kind == "set" else
+                     list(values) if expr.kind == "list" else values)
+            return combined(value, expr, *items)
         if expr.kind == "name" and expr.name in self.env:
             # A concrete constructor actual is the strongest value for this
             # occurrence.  When the symbolic occurrence has no evaluable
@@ -142,6 +153,26 @@ class ConfigExpressionEvaluator:
             except TypeError:
                 return None
             return combined(value, expr, child)
+        if self.allow_control_literals \
+                and expr.kind == "boolop" \
+                and expr.operator in {"and", "or"} \
+                and expr.children:
+            evaluated = []
+            for child in expr.children:
+                item = self.expression(child)
+                if item is None:
+                    # Python could stop before this operand, but reaching an
+                    # unknown operand means the exact expression value is no
+                    # longer provable.  Never inspect later operands to recover
+                    # a convenient architectural branch.
+                    return None
+                evaluated.append(item)
+                truth = bool(item.value)
+                if expr.operator == "and" and not truth:
+                    return combined(item.value, expr, *evaluated)
+                if expr.operator == "or" and truth:
+                    return combined(item.value, expr, *evaluated)
+            return combined(evaluated[-1].value, expr, *evaluated)
         if expr.kind == "compare" and len(expr.children) == 2:
             left, right = (self.expression(item) for item in expr.children)
             if left is None or right is None:
@@ -155,6 +186,10 @@ class ConfigExpressionEvaluator:
                 ">=": lambda: left.value >= right.value,
                 "<": lambda: left.value < right.value,
                 "<=": lambda: left.value <= right.value,
+                **({
+                    "in": lambda: left.value in right.value,
+                    "not in": lambda: left.value not in right.value,
+                } if self.allow_control_literals else {}),
             }
             if expr.operator not in operators:
                 return None

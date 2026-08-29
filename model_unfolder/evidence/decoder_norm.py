@@ -14,14 +14,36 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .component_owner import OwnerOccurrenceId
-from .construction_calls import resolve_construction_call
-from .container_inventory import resolve_container_inventory
+from .component_owner import OwnerGraph, OwnerOccurrenceId
+from .constructor_condition import (
+    ConstructorGuardDecision,
+    resolve_constructor_guard,
+)
+from .construction_calls import (
+    resolve_construction_call,
+    resolve_construction_call_in_graph,
+)
+from .container_inventory import (
+    resolve_container_inventory,
+    resolve_container_inventory_in_graph,
+)
+from .constructor_values import ConstructorFrame
 from .decoder_block import decoder_block_candidates_for_config
-from .execution_flow import resolve_addressed_invocations
+from .execution_flow import (
+    resolve_addressed_invocations,
+    resolve_addressed_invocations_in_graph,
+)
 from .models import SourceBundle
-from .primitive_semantics import classify_primitive_call
-from .program_index import CallObservation, ProgramIndex, SourceSpan
+from .primitive_semantics import (
+    classify_primitive_call,
+    primitive_kind_for_site,
+)
+from .program_index import (
+    CallObservation,
+    ConstructionSite,
+    ProgramIndex,
+    SourceSpan,
+)
 from .reader_result import (
     Ambiguity,
     ReaderFailure,
@@ -67,6 +89,97 @@ class NormInvocationCensus:
         calls = tuple(item.call for item in self.candidates)
         if len(calls) != len(set(calls)):
             raise ValueError("norm invocation calls are unique")
+
+
+@dataclass(frozen=True)
+class NormPreservingInvocationEvidence:
+    """A call whose every exact construction alternative is a norm."""
+
+    owner: OwnerOccurrenceId
+    call: CallObservation
+    frame: ConstructorFrame | None
+    all_sites: tuple[ConstructionSite, ...]
+    sites: tuple[ConstructionSite, ...]
+    alternative_kinds: tuple[str, ...]
+    guard_decisions: tuple[ConstructorGuardDecision, ...]
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self):
+        if not isinstance(self.owner, OwnerOccurrenceId) \
+                or not isinstance(self.call, CallObservation) \
+                or (self.frame is not None
+                    and not isinstance(self.frame, ConstructorFrame)) \
+                or not self.all_sites \
+                or not self.sites \
+                or any(not isinstance(item, ConstructionSite)
+                       for item in (*self.all_sites, *self.sites)) \
+                or len({item.site_id for item in self.all_sites}) \
+                != len(self.all_sites) \
+                or any(item not in self.all_sites for item in self.sites) \
+                or not self.alternative_kinds \
+                or len(self.alternative_kinds) != len(self.sites) \
+                or any(item not in _NORMS for item in self.alternative_kinds) \
+                or self.call.span not in self.spans \
+                or any(not isinstance(item, SourceSpan) for item in self.spans):
+            raise ValueError("norm-preserving evidence closes all exact variants")
+        callee = self.call.callee
+        field = (callee.name if callee.kind == "attribute" and callee.children
+                 and callee.children[0].kind == "name"
+                 and callee.children[0].name == "self" else None)
+        if not field or any(
+                site.owner != self.call.owner
+                or site.target_kind != "field"
+                or site.target != field
+                or site.span not in self.spans
+                for site in self.all_sites):
+            raise ValueError(
+                "norm-preserving alternatives are every exact caller-field site")
+        if self.frame is None:
+            if self.all_sites != self.sites or self.guard_decisions:
+                raise ValueError("graph-only preservation excludes no guarded site")
+        else:
+            if self.frame.target.symbol != self.call.owner:
+                raise ValueError("constructor frame and norm call have one owner")
+            if len(_unique_values(self.guard_decisions)) \
+                    != len(self.guard_decisions) \
+                    or any(not isinstance(item, ConstructorGuardDecision)
+                           or item.frame != self.frame
+                           for item in self.guard_decisions):
+                raise ValueError("guard decisions belong to the exact frame")
+            active = []
+            for site in self.all_sites:
+                if not site.guard:
+                    active.append(site)
+                    continue
+                decisions = tuple(
+                    item for item in self.guard_decisions
+                    if item.callable_symbol == site.enclosing_callable
+                    and item.guard == site.guard)
+                if len(decisions) > 1:
+                    raise ValueError("one constructor site has at most one decision")
+                if not decisions or decisions[0].decision:
+                    active.append(site)
+            if tuple(active) != self.sites:
+                raise ValueError("guard decisions determine every possible site")
+        required = {
+            *(span for item in self.guard_decisions for span in item.spans),
+        }
+        if not required <= set(self.spans):
+            raise ValueError("norm-preserving evidence retains guard provenance")
+
+
+@dataclass(frozen=True)
+class NormPreservingInvocationCensus:
+    owner: OwnerOccurrenceId
+    candidates: tuple[NormPreservingInvocationEvidence, ...]
+
+    def __post_init__(self):
+        if not isinstance(self.owner, OwnerOccurrenceId) or not self.candidates \
+                or any(not isinstance(item, NormPreservingInvocationEvidence)
+                       or item.owner != self.owner for item in self.candidates) \
+                or len({item.call for item in self.candidates}) \
+                != len(self.candidates):
+            raise ValueError("norm-preserving census is nonempty and exact-owner")
 
 
 def decoder_norm_kind_for_path(
@@ -155,6 +268,147 @@ def norm_invocations_at_owner(index, root, owner):
         return ReaderResult.failed(owner, (ReaderFailure(
             "incomplete_graph", "the decoder block forward is absent"),))
 
+    return _classify_norm_invocations(
+        index, owner, invocations,
+        lambda call: resolve_construction_call(index, root, owner, call))
+
+
+def norm_invocations_in_graph(index, graph, owner):
+    """Graph-local form for an already-proven nested owner occurrence.
+
+    This establishes no component/root role.  It reuses the same positive
+    primitive classifier as :func:`norm_invocations_at_owner` after the caller
+    supplies the exact owner graph (for example a U11 nested block route).
+    """
+    if not isinstance(index, ProgramIndex) or not isinstance(graph, OwnerGraph) \
+            or not isinstance(owner, OwnerOccurrenceId):
+        raise TypeError("graph-local norm evidence needs index/graph/owner")
+    inventory = resolve_container_inventory_in_graph(index, graph, owner)
+    invocations = resolve_addressed_invocations_in_graph(
+        index, graph, owner, inventory)
+    if invocations.status == "failed":
+        return ReaderResult.failed(owner, (ReaderFailure(
+            "incomplete_graph",
+            invocations.failure_detail or invocations.failure_kind),))
+    if invocations.status == "absent":
+        return ReaderResult.failed(owner, (ReaderFailure(
+            "incomplete_graph", "the nested owner forward is absent"),))
+    return _classify_norm_invocations(
+        index, owner, invocations,
+        lambda call: resolve_construction_call_in_graph(
+            index, graph, owner, call))
+
+
+def norm_preserving_invocations_in_graph(index, graph, owner):
+    """Positive calls for which every exact constructor rival is a norm.
+
+    This is deliberately weaker than a norm-*kind* claim and stronger than a
+    name match.  It exists for data-lineage consumers: LayerNorm/RMSNorm rivals
+    may leave the exact kind unresolved while unanimously preserving the first
+    tensor input as normalized state.
+    """
+    return _norm_preserving_invocations(
+        index, graph, owner, frame=None)
+
+
+def norm_preserving_invocations_in_frame(index, frame):
+    """Frame-qualified form that excludes only constructor-proven false sites."""
+    if not isinstance(index, ProgramIndex) \
+            or not isinstance(frame, ConstructorFrame):
+        raise TypeError("frame norm-preserving evidence needs index + frame")
+    return _norm_preserving_invocations(
+        index, frame.graph, frame.graph.root.occurrence, frame=frame)
+
+
+def _norm_preserving_invocations(index, graph, owner, *, frame):
+    if not isinstance(index, ProgramIndex) or not isinstance(graph, OwnerGraph) \
+            or not isinstance(owner, OwnerOccurrenceId):
+        raise TypeError("norm-preserving evidence needs index/graph/owner")
+    if frame is not None and (
+            frame.graph != graph or frame.graph.root.occurrence != owner):
+        raise ValueError("the constructor frame owns this exact local graph")
+    inventory = resolve_container_inventory_in_graph(index, graph, owner)
+    invocations = resolve_addressed_invocations_in_graph(
+        index, graph, owner, inventory)
+    if invocations.status != "resolved":
+        return ReaderResult.failed(owner, (ReaderFailure(
+            "incomplete_graph",
+            invocations.failure_detail or "the nested owner forward is absent"),))
+    node = graph.node_for(owner)
+    if node is None or index.class_by_symbol(node.symbol) is None:
+        return ReaderResult.failed(owner, (ReaderFailure(
+            "incomplete_graph", "the exact norm-call owner is absent"),))
+    rows = []
+    for call in index.calls_in(invocations.callable_symbol):
+        callee = call.callee
+        if callee.kind != "attribute" or not callee.children \
+                or callee.children[0].kind != "name" \
+                or callee.children[0].name != "self":
+            continue
+        field = callee.name
+        # The OwnerGraph may intentionally leave mutually guarded external
+        # primitives unresolved.  For state-lineage transparency we do not need
+        # to choose a child occurrence or a single norm kind: we need the
+        # stronger, exhaustive statement that EVERY exact construction site for
+        # this exact owner+field independently classifies as a norm.  Site-level
+        # primitive classification preserves those rival guards and refuses
+        # zero/multi-candidate, dynamic, opaque, or unbound constructors.
+        all_sites = tuple(
+            site for site in index.construction_sites_of(node.symbol)
+            if site.target_kind == "field" and site.target == field)
+        decisions = []
+        sites = []
+        for site in all_sites:
+            if frame is None or not site.guard:
+                sites.append(site)
+                continue
+            result = resolve_constructor_guard(
+                index, frame, site.enclosing_callable,
+                site.guard, site.span)
+            if result.status != "resolved":
+                # Unknown is a possible runtime site and must remain in the
+                # exhaustive alternative set.
+                sites.append(site)
+                continue
+            decision = result.require_value()
+            decisions.append(decision)
+            if decision.decision:
+                sites.append(site)
+        sites = tuple(sites)
+        classified = tuple(
+            primitive_kind_for_site(index, site) for site in sites)
+        if not all_sites or not sites or any(
+                item is None or item[0] not in _NORMS
+                            for item in classified):
+            continue
+        kinds = tuple(item[0] for item in classified)
+        spans = tuple(dict.fromkeys((
+            call.span,
+            *(site.span for site in all_sites),
+            *(span for item in classified for span in item[1]),
+            *(span for item in decisions for span in item.spans),
+        )))
+        rows.append(NormPreservingInvocationEvidence(
+            owner, call, frame, all_sites, sites, kinds,
+            _unique_values(decisions), spans))
+    if not rows:
+        return ReaderResult.failed(owner, (ReaderFailure(
+            "incomplete_graph",
+            "no call has an exhaustive exact norm-site proof"),))
+    census = NormPreservingInvocationCensus(owner, tuple(rows))
+    spans = tuple(dict.fromkeys(
+        span for item in rows for span in item.spans))
+    return ReaderResult.incomplete(
+        owner, census,
+        failures=(ReaderFailure(
+            "incomplete_graph",
+            "positive norm-preserving calls do not prove opaque-call absence"),),
+        provenance=(ReaderProvenance(
+            "source", spans=spans,
+            detail="every exact construction rival independently proves a norm"),))
+
+
+def _classify_norm_invocations(index, owner, invocations, construction_for):
     classified = []
     seen_sites = set()
     for invocation in (
@@ -172,8 +426,7 @@ def norm_invocations_at_owner(index, root, owner):
                 or callee.children[0].kind != "name" \
                 or callee.children[0].name != "self":
             continue
-        construction = resolve_construction_call(
-            index, root, owner, invocation.call)
+        construction = construction_for(invocation.call)
         primitive = classify_primitive_call(index, construction)
         if primitive.status != "resolved" or primitive.value not in _NORMS:
             continue
@@ -247,8 +500,20 @@ def _span_key(span):
     )
 
 
+def _unique_values(values):
+    out = []
+    for value in values:
+        if value not in out:
+            out.append(value)
+    return tuple(out)
+
+
 __all__ = [
     "NormInvocationEvidence", "NormInvocationCensus",
+    "NormPreservingInvocationEvidence", "NormPreservingInvocationCensus",
     "decoder_norm_kind_for_path", "norm_invocations_at_owner",
+    "norm_invocations_in_graph",
+    "norm_preserving_invocations_in_graph",
+    "norm_preserving_invocations_in_frame",
     "norm_kind_at_owner",
 ]

@@ -617,6 +617,7 @@ def producer_sources_reaching_expressions(
     method_resolver=None, initial_sources=None,
     preserve_local_tuple_lanes=False,
     include_guarded_bindings=True,
+    metadata_only_attributes=(),
     binding_predicate=None,
     binding_guard_state=None,
     binding_lane_states=None,
@@ -672,7 +673,8 @@ def producer_sources_reaching_expressions(
             binding_is_conditional = bool(binding.guard) \
                 and guard_state is not True
             sources, source_uncertain = _expression_sources(
-                binding.value, env, calls_by_span, dependencies)
+                binding.value, env, calls_by_span, dependencies,
+                metadata_only_attributes=metadata_only_attributes)
             targets = tuple(_target_names(target) for target in binding.targets)
             flat_targets = tuple(name for group in targets for name in group)
             # ``x += y`` reads the prior x and writes the result.  Treating it
@@ -736,7 +738,8 @@ def producer_sources_reaching_expressions(
                     unpack_widths.get(occurrence, 0), len(flat_targets))
         for argument in expressions:
             argument_sources, argument_uncertain = _expression_sources(
-                argument, env, calls_by_span, dependencies)
+                argument, env, calls_by_span, dependencies,
+                metadata_only_attributes=metadata_only_attributes)
             entry_sources.update(argument_sources)
             uncertain = uncertain or argument_uncertain
     return frozenset(entry_sources), unpack_widths, dependencies, uncertain
@@ -1047,11 +1050,21 @@ def _tainted_expression(expression, env):
     )
 
 
-def _expression_sources(expression, env, calls_by_span, dependencies):
+def _expression_sources(
+        expression, env, calls_by_span, dependencies, *,
+        metadata_only_attributes=(),
+):
     if expression is None:
         return frozenset(), False
     if expression.kind == "name":
         return env.get(expression.name, (frozenset(), False))
+    if expression.kind == "attribute" \
+            and expression.name in metadata_only_attributes:
+        # Shape/dtype/device describe a tensor but do not carry its numerical
+        # data into the value being computed.  Readers must opt into this
+        # distinction explicitly; the generic lineage behavior remains the
+        # conservative all-operands union.
+        return frozenset(), False
     if expression.span in calls_by_span:
         occurrence = calls_by_span[expression.span]
         if expression.kind != "call":
@@ -1065,12 +1078,14 @@ def _expression_sources(expression, env, calls_by_span, dependencies):
         for child in expression.children[1:]:
             if isinstance(child, ExprNode):
                 sources, _ = _expression_sources(
-                    child, env, calls_by_span, dependencies)
+                    child, env, calls_by_span, dependencies,
+                    metadata_only_attributes=metadata_only_attributes)
                 upstream.update(sources)
         for _, child in expression.keyword_children:
             if isinstance(child, ExprNode):
                 sources, _ = _expression_sources(
-                    child, env, calls_by_span, dependencies)
+                    child, env, calls_by_span, dependencies,
+                    metadata_only_attributes=metadata_only_attributes)
                 upstream.update(sources)
         dependencies.setdefault(occurrence, set()).update(upstream)
         # The occurrence itself is the new value's exact producer.  Complexity
@@ -1082,7 +1097,8 @@ def _expression_sources(expression, env, calls_by_span, dependencies):
     for child in expression.children:
         if isinstance(child, ExprNode):
             sources, child_uncertain = _expression_sources(
-                child, env, calls_by_span, dependencies)
+                child, env, calls_by_span, dependencies,
+                metadata_only_attributes=metadata_only_attributes)
             out.update(sources)
             # Uncertainty on an unrelated operand (for example a conditionally
             # prepared rotary cosine) does not make the projection producer
@@ -1091,7 +1107,8 @@ def _expression_sources(expression, env, calls_by_span, dependencies):
     for _, child in expression.keyword_children:
         if isinstance(child, ExprNode):
             sources, child_uncertain = _expression_sources(
-                child, env, calls_by_span, dependencies)
+                child, env, calls_by_span, dependencies,
+                metadata_only_attributes=metadata_only_attributes)
             out.update(sources)
             uncertain = uncertain or (child_uncertain and bool(sources))
     return frozenset(out), uncertain
