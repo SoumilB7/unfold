@@ -708,6 +708,49 @@ The real SDXL matrix must retain all exact rivals until F1 selects them and must
 not upgrade E2c's three unresolved second lanes before F2 proves their runtime
 source path.
 
+#### U11-F1 implementation state and committed-tree receipt
+
+Status: **DONE; EVIDENCE-ONLY** — commit `e3aa738`.
+
+`read_unet_stage_selection` now closes the exact chain from an imported
+`register_to_config` constructor formal, through the checkpoint-declared list
+occurrence, exact `for`/`enumerate` target, exact factory actual/formal binding,
+and exact guarded factory return.  Every list position is retained as its own
+construction occurrence.  Repeating the same class twice therefore produces
+two positions rather than one class-level fact; short and long lists remain
+their actual lengths rather than being mirrored or filled.  Tokens and selected
+class symbols remain address evidence only.
+
+The installed SDXL control resolves exactly six rows: three checkpoint-ordered
+`down_blocks` positions and three checkpoint-ordered `up_blocks` positions,
+including repeated cross-attention block classes as distinct occurrences.  It
+retains no unresolved candidate for that witness.  Missing checkpoint fields,
+class defaults, scalar selectors, local selector transforms, nested unrelated
+loops, dynamic guards, rival live returns, incomplete factory censuses and
+direct multi-template containers remain explicit partial evidence.  Full
+class/formal/container/local renaming preserves the structural join.
+
+The one neutral source normalization needed by installed Diffusers—literal
+`str.startswith` plus exact integer/slice access—is separately opt-in on the
+shared expression evaluator.  Its default contract remains unchanged and is
+pinned by a refusal control, so F1 cannot widen existing readers as E2c's first
+draft did.
+
+Coordinator receipt `3e338d2b29` on
+`e3aa7388f30a274efc3111cbecf8791d2f37ce2e`:
+
+- static: PASS, four changed Python files clean;
+- collection: 3,849 tests;
+- focused F1/expression/U11 prerequisite lane: 262 passed;
+- affected U2 authority lane: 44 passed;
+- preservation lane: 52 passed with all 29 witnesses at zero drift;
+- full suite: 3,737 passed, 14 skipped, 2 expected xfails; and
+- every lane's complete-tree and source-artifact fingerprints were identical.
+
+F1 has no parser, fact, IR, renderer, parameter, debt, manifest or gallery
+consumer.  U11-F2 must now prove the non-`None` runtime source reaching each
+E2c context-capable lane; F1 selection alone cannot label any lane cross-attention.
+
 ### U11-G — canonical projection and consumer cutover
 
 Build one closed typed projection over U11-A..F. It must carry exact owners,
@@ -864,7 +907,7 @@ Stop and report before proceeding if:
 | U11-C execution/skip DAG | DONE | `d7f7bae`; exact repeated-stage nodes; exact guarded inter-loop constructed-call occurrences; one U10 skip edge; unsupported/unreachable calls and all non-proven order remain typed unresolved; real SDXL retains both guarded direct invocations without using `mid_block` semantics; committed-tree coordinator: focused 362, U2 authority 44, preservation 52, full 3,553 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-D ResNet/temporal cells | DONE — EVIDENCE-ONLY | `be64cce` + `5efd851` + `bdf2204` + containment correction `43e4e53`; exact child inventory, local mechanisms and neutral reshape→Conv3d→blend proof; real SDXL and spatio-temporal UNet qualify without role spellings; initial gate caught and removed cross-domain projector widening; final coordinator: focused 265, U2 authority 44, preservation 52, full 3,574 passed / 14 skipped / 2 xfailed, every fingerprint and source-artifact digest identical; root frame-axis semantic join remains correctly deferred to U11-G |
 | U11-E attention/transformer/FFN | ACTIVE — E1 + E2a + E2b DONE, E2c IN PROGRESS | `6b0c979` exact nested-mechanism inventory; `eb9e2f8` mechanism-neutral exact constructor-value transport; `980a9fe` code-selected fused gated FFN proof with exact last-axis split; all three installed-SDXL transformer rivals independently resolve the same operand and mechanism without token/class/model semantics; E2b coordinator: focused 305, U2 authority 44, preservation 52, full 3,640 passed / 14 skipped / 2 xfailed, every tree/artifact fingerprint identical; attention input roles and all production consumers remain unprojected |
-| U11-F sampler/bookend/conditioning | PENDING | — |
+| U11-F sampler/bookend/conditioning | ACTIVE | F1 DONE (`e3aa738`); F2–F4 pending |
 | U11-G projection/cutover | PENDING | — |
 | U11-H legacy deletion | PENDING | — |
 | U11-I qualification/artifacts | PENDING | — |
