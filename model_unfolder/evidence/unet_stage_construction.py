@@ -569,6 +569,29 @@ def _factory_candidates(
     return tuple(candidates), tuple(issues), expanded
 
 
+def resolve_stage_constructor_candidates(
+        index: ProgramIndex,
+        bundle: SourceBundle,
+        component: str,
+        call: CallObservation,
+        ) -> tuple[tuple[StageClassCandidate, ...],
+                   tuple[StageConstructionIssue, ...], ProgramIndex]:
+    """Expand one exact stage/cell constructor call without role semantics.
+
+    U11-B and later U11 child readers share this ONE demand-driven factory/import
+    boundary.  The call must belong to the supplied index and component; callers
+    cannot pass a class spelling or reopen source through another parser.
+    """
+    if not isinstance(index, ProgramIndex) or not isinstance(bundle, SourceBundle):
+        raise TypeError("stage-constructor expansion requires ProgramIndex + bundle")
+    if not isinstance(call, CallObservation) \
+            or call not in index.calls_in(call.enclosing_callable):
+        raise ValueError("stage-constructor expansion requires one exact indexed call")
+    if not component or call.enclosing_callable.source.component_key != component:
+        raise ValueError("the constructor call belongs to the requested component")
+    return _factory_candidates(index, bundle, component, call)
+
+
 def _direct_templates(stage: RepeatedRootStage, order: int, index: ProgramIndex):
     templates = []
     for record in stage.container_records:
@@ -684,7 +707,7 @@ def read_unet_stage_construction(
                 owner, stage, order, issues))
             continue
         for producer, binding, storage in routes:
-            candidates, issues, expanded = _factory_candidates(
+            candidates, issues, expanded = resolve_stage_constructor_candidates(
                 expanded, bundle, root_resolution.component_key, producer)
             templates.append(RepeatedStageConstruction(
                 owner, stage, order, producer, binding, storage, None,
@@ -806,4 +829,5 @@ __all__ = [
     "UnresolvedStageConstruction",
     "read_unet_stage_construction",
     "read_direct_field_construction",
+    "resolve_stage_constructor_candidates",
 ]

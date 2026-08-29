@@ -343,6 +343,23 @@ counterexamples are required.
 Exit: the ResNet drill is source-derived or opaque; GroupNorm/SiLU/two-Conv/
 temporal prose is never conventional.
 
+#### U11-D1 — neutral stage-child occurrence inventory
+
+Before any residual/attention/sampler classification, enumerate every exact
+constructed child invocation under every U11-C stage-class candidate. Support
+direct, sliced/reversed/enumerated and zip/enumerate(zip) container iteration,
+plus direct constructed fields. Preserve every factory/import rival, call site,
+guard, loop binding and construction site. Uncalled containers do not enter;
+unsupported/unreachable calls remain typed unresolved. This inventory assigns
+no child role and remains whole-callable-open.
+
+Status: **IMPLEMENTED, TARGETED-VERIFIED** — synthetic controls cover direct,
+plain-loop and paired-container routes, renaming, repeated calls, uncalled
+containers, unsupported/unreachable code and cross-construction laundering.
+The real installed SDXL source proves exact residual/attention/sampler child
+addresses while the DTO exposes no role field. U11-D is not complete until D2
+derives the actual per-cell mechanisms and the phase gate is green.
+
 ### U11-E — attention, nested transformer and FFN cells
 
 Goal: delete the three U11 attention/FFN whole-file readers and the universal
@@ -527,7 +544,7 @@ Stop and report before proceeding if:
 | U11-A2 legacy closure cutover | PENDING | lands with the U11-B/E consumers; deletes `_augment_diffusion_files` only after exact coverage |
 | U11-B stage construction | DONE | `0e5f71a`; exact U10 container→producer→append relation; exact U11-A1 factory expansion; all guarded returned class candidates preserved; 19 synthetic/closure controls + real installed SDXL; committed-tree coordinator: focused 269, U2 authority 44, preservation 52, full 3,530 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-C execution/skip DAG | DONE | `d7f7bae`; exact repeated-stage nodes; exact guarded inter-loop constructed-call occurrences; one U10 skip edge; unsupported/unreachable calls and all non-proven order remain typed unresolved; real SDXL retains both guarded direct invocations without using `mid_block` semantics; committed-tree coordinator: focused 362, U2 authority 44, preservation 52, full 3,553 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
-| U11-D ResNet/temporal cells | PENDING | — |
+| U11-D ResNet/temporal cells | ACTIVE — D1 TARGETED-VERIFIED | neutral exact child-invocation inventory implemented; real SDXL reaches residual/attention/downsampler/upsampler candidates without role semantics; D2 mechanism evidence and phase receipt pending |
 | U11-E attention/transformer/FFN | PENDING | — |
 | U11-F sampler/bookend/conditioning | PENDING | — |
 | U11-G projection/cutover | PENDING | — |
