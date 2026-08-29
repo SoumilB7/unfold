@@ -1,7 +1,7 @@
 # U11 — Source-Derived U-Net Stage and Cell Execution Plan
 
-Status: **ACTIVE — U11-A1 and U11-B DONE; U11-C exact partial stage-execution
-graph IMPLEMENTED, VERIFYING**
+Status: **ACTIVE — U11-A1, U11-B and U11-C DONE; U11-D exact cell evidence
+next**
 
 Authority: this document is the binding execution plan for U11. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §§16.5 and 20.14 without weakening
@@ -526,7 +526,7 @@ Stop and report before proceeding if:
 | U11-A1 demand-driven source address | DONE | `51d016e`; 15 exact-boundary controls including real installed SDXL `get_down_block`; committed-tree coordinator: focused 297, U2 authority 44, preservation 52, full 3,510 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-A2 legacy closure cutover | PENDING | lands with the U11-B/E consumers; deletes `_augment_diffusion_files` only after exact coverage |
 | U11-B stage construction | DONE | `0e5f71a`; exact U10 container→producer→append relation; exact U11-A1 factory expansion; all guarded returned class candidates preserved; 19 synthetic/closure controls + real installed SDXL; committed-tree coordinator: focused 269, U2 authority 44, preservation 52, full 3,530 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
-| U11-C execution/skip DAG | IMPLEMENTED, VERIFYING | exact repeated-stage nodes; exact guarded inter-loop constructed-call occurrences; one U10 skip edge; unsupported/unreachable calls and all non-proven order remain typed unresolved; real SDXL retains both guarded direct invocations without using `mid_block` semantics |
+| U11-C execution/skip DAG | DONE | `d7f7bae`; exact repeated-stage nodes; exact guarded inter-loop constructed-call occurrences; one U10 skip edge; unsupported/unreachable calls and all non-proven order remain typed unresolved; real SDXL retains both guarded direct invocations without using `mid_block` semantics; committed-tree coordinator: focused 362, U2 authority 44, preservation 52, full 3,553 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-D ResNet/temporal cells | PENDING | — |
 | U11-E attention/transformer/FFN | PENDING | — |
 | U11-F sampler/bookend/conditioning | PENDING | — |
@@ -567,3 +567,23 @@ worktrees by `scripts/verify_commit.py`:
 - every lane's complete-tree fingerprint was identical before and after.
 
 Logs: `/private/tmp/model-unfolder-verification/2324e8e02a`.
+
+### U11-C committed-tree receipt
+
+Commit `d7f7baebd9dc491ac9ae7ce0d7c4af70459039b2` was verified from isolated
+worktrees by `scripts/verify_commit.py`:
+
+- static: PASS, four changed production Python files clean;
+- collection: 3,665 tests;
+- focused U10/U11 ownership, construction and execution lane: 362 passed;
+- affected U2 authority lane: 44 passed;
+- preservation lane: 52 passed with zero structural/pixel drift;
+- full suite: 3,553 passed, 14 skipped, 2 expected xfails; and
+- every lane's complete-tree fingerprint was identical before and after.
+
+The gate also pins the two audit corrections found before commit: a call after
+an unconditional return and a call inside an unsupported expression remain
+typed unresolved evidence and can never be promoted to a stage node. Calls
+nested inside the return expression itself remain lawful local call evidence.
+
+Logs: `/private/tmp/model-unfolder-verification/7e60324efc`.
