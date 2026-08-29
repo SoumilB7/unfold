@@ -1,7 +1,7 @@
 # U11 — Source-Derived U-Net Stage and Cell Execution Plan
 
-Status: **ACTIVE — U11-A1 through U11-E2c DONE; U11-E3 consumer cutover
-next**
+Status: **ACTIVE — U11-A1 through U11-E2c DONE; U11-F/G must close stage
+selection and runtime-conditioning joins before the E3/H atomic cutover**
 
 Authority: this document is the binding execution plan for U11. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §§16.5 and 20.14 without weakening
@@ -471,6 +471,19 @@ selector proof:
   template in the same commit series. E1/E2 evidence may not become another
   permanent parallel interpretation path.
 
+  **Binding sequencing correction (post-E2c audit):** E3 is an atomic output
+  cutover, not the next substrate unit. U11-B's carried contract still marks
+  stage factory/config branch selection open, and E2c's `context_slot` is not a
+  runtime external-conditioning proof. The compatibility parser's visible
+  config-created stage rows therefore cannot yet be joined occurrence-exactly
+  to E1/E2. Cutting over now would either guess that join or erase known output
+  into opaque cards merely to satisfy phase numbering. Both violate §§3.4,
+  3.6, 3.7 and 3.9. Execute U11-F's exact selector/conditioning/sampler joins
+  and U11-G's canonical occurrence projection first; then land E3 and H as one
+  migration series that projects the typed graph and deletes the old readers,
+  templates and satisfied debt atomically. No legacy reader is permitted to
+  gain new behavior during this interval.
+
 #### U11-E1 implementation state
 
 Status: **DONE; EVIDENCE-ONLY** — commit `6b0c979`.
@@ -640,7 +653,10 @@ Logs: `/private/tmp/model-unfolder-verification/c6834d87b3`.
 E2c changes no parser, fact, IR, renderer, parameter, debt, manifest or gallery
 consumer.  E1/E2a/E2b/E2c are now a closed evidence substrate; E3 must project
 them through one typed consumer path and delete the three legacy whole-file
-readers plus the universal nested Transformer2D template atomically.
+readers plus the universal nested Transformer2D template atomically after F/G
+make the occurrence joins provable.  Until then those legacy paths are frozen:
+they may not be extended, patched for another model or treated as evidence for
+the new projection.
 
 ### U11-F — exact samplers, bookends and conditioning
 
@@ -653,6 +669,44 @@ options and scale factors only after the source use is proven.
 
 Do not absorb scheduler or VAE semantics (U13/U12), and do not reinterpret U10
 transformer-root semantics as UNet internals.
+
+Implementation order is binding:
+
+1. **U11-F1 — occurrence-exact stage selection.** For every U11-B factory or
+   constructor alternative, bind the exact root config occurrence to the exact
+   constructor/formal/loop/factory guard that selects it. Preserve each stage
+   position as an occurrence; a symbolic repeated template stays symbolic until
+   the exact checkpoint count/list occurrence instantiates it. A block token or
+   candidate class spelling remains an address operand only—the selected class's
+   source proves its mechanism. Unequal aliases, short/long lists, rival factory
+   branches, dynamic tokens and source-missing paths remain typed ambiguous or
+   incomplete. This unit is the prerequisite for mapping E1/E2 mechanisms onto
+   visible down/direct/up occurrences.
+2. **U11-F2 — runtime attention-source join.** Starting from E2c's exact lane
+   call and `self`/`context_slot`/`conditional` role, prove whether a non-`None`
+   external value reaches that exact context formal for that selected stage
+   occurrence. Join the exact parent/root formal lineage, component slot,
+   checkpoint/config guard and bookend application. Only this join may project
+   `cross_attention=True` and a K/V source. A context-capable lane with no proven
+   runtime source remains `context_slot`/conditional, never conventional cross.
+3. **U11-F3 — exact sampler and cell-count selection.** Bind down/up sampler
+   calls and per-stage child repetitions from execution plus constructor/config
+   operands. Do not infer all-but-final sampling, mirrored counts or the legacy
+   up-path `+1` rule. Preserve symbolic count expressions and partial lists.
+4. **U11-F4 — bookends and conditioning operations.** Prove input/output
+   projections, centering, timestep/class/additional embedding applications,
+   encoder projections and other conditioning arithmetic from exact calls and
+   dataflow. Reuse U10 bookend/conditioning evidence where it already closes
+   the same occurrence; do not create a U-Net copy.
+
+F1–F4 are evidence/config-binding units only. They may publish typed results
+and projection obligations, but parser/renderer/parameter output remains frozen
+until U11-G constructs the one canonical graph. Each unit needs renamed-class,
+same-class-two-occurrences, conflicting-selector, truncated-list,
+missing-source, runtime-`None`, sibling-conditioning and image/video controls.
+The real SDXL matrix must retain all exact rivals until F1 selects them and must
+not upgrade E2c's three unresolved second lanes before F2 proves their runtime
+source path.
 
 ### U11-G — canonical projection and consumer cutover
 
