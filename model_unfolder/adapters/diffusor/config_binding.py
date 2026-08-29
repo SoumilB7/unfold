@@ -31,6 +31,7 @@ from ...evidence.config_registration import (
     RegisteredConstructorConfig,
     RegisteredConstructorDefaultValue,
     read_registered_constructor_config,
+    registered_constructor_path_for_expression,
 )
 from ...evidence.diffusion_block import read_diffusion_block_facts
 from ...evidence.diffusion_bookends import read_diffusion_bookends
@@ -446,35 +447,6 @@ def _spec(path, owner, key, reader, source_owner, source_spans,
         tuple(dict.fromkeys(source_spans)), projection_slot)
 
 
-def _registered_self_config_path(index, root, occurrence, expression,
-                                 registration):
-    """Map ``self.config.<parameter>`` through an exact framework protocol.
-
-    ``register_to_config`` is the authority for this address.  The familiar
-    spelling alone proves nothing, and a model class that writes ``self.config``
-    locally may have replaced the framework object, so that case is refused.
-    """
-    if registration is None or occurrence != registration.owner:
-        return None
-    if any(item.field == "config"
-           for item in index.field_assigns_of(registration.owner.root)):
-        return None
-    segments = []
-    current = expression
-    while current.kind == "attribute" and len(current.children) == 1:
-        segments.append(current.name)
-        current = current.children[0]
-    segments.reverse()
-    if len(segments) < 2 or segments[0] != "config" \
-            or current.kind != "name" or current.name != "self":
-        return None
-    parameter_paths = dict(registration.parameter_paths)
-    prefix = parameter_paths.get(segments[1])
-    if prefix is None:
-        return None
-    return tuple((*prefix, *segments[2:]))
-
-
 def _bound_parameter_paths(index, root, occurrence, expression,
                            registration=None):
     """Return every exact constructor-parameter path used by ``expression``.
@@ -502,8 +474,11 @@ def _bound_parameter_paths(index, root, occurrence, expression,
     def visit(item):
         if item is None:
             return
-        framework_path = _registered_self_config_path(
-            index, root, occurrence, item, registration)
+        framework_path = (
+            registered_constructor_path_for_expression(
+                index, registration, item)
+            if registration is not None and occurrence == registration.owner
+            else None)
         if framework_path is not None:
             found.append((framework_path, item.span))
             return

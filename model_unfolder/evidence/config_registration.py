@@ -15,9 +15,19 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .component_owner import ComponentRootResolution, OwnerOccurrenceId
+from .component_owner import (
+    ComponentRootResolution,
+    OwnerGraph,
+    OwnerOccurrenceId,
+)
 from .construction_calls import ExternalReferenceProof, resolve_import_reference
-from .program_index import CallableRecord, ExprNode, ParamRecord, ProgramIndex
+from .program_index import (
+    CallableRecord,
+    ExprNode,
+    ParamRecord,
+    ProgramIndex,
+    SymbolId,
+)
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
 
 
@@ -44,9 +54,11 @@ def _reference_leaf(expression):
 
 @dataclass(frozen=True)
 class RegisteredConstructorConfig:
-    """One exact root constructor governed by the registration protocol."""
+    """One exact owner constructor governed by the registration protocol."""
 
     owner: OwnerOccurrenceId
+    owner_graph: OwnerGraph
+    owner_symbol: SymbolId
     constructor: CallableRecord
     decorator: ExprNode
     protocol: ExternalReferenceProof
@@ -55,13 +67,22 @@ class RegisteredConstructorConfig:
     parameter_paths: tuple[tuple[str, tuple[str, ...]], ...]
 
     def __post_init__(self):
-        if not isinstance(self.owner, OwnerOccurrenceId) or self.owner.sites:
-            raise TypeError("registered config belongs to one component root")
+        if not isinstance(self.owner, OwnerOccurrenceId):
+            raise TypeError("registered config belongs to one exact occurrence")
+        if not isinstance(self.owner_graph, OwnerGraph) \
+                or self.owner_graph.node_for(self.owner) is None \
+                or self.owner_graph.node_for(self.owner).symbol \
+                != self.owner_symbol:
+            raise ValueError("registered config closes its exact owner graph")
+        if not isinstance(self.owner_symbol, SymbolId) \
+                or self.owner_symbol.source.component_key \
+                != self.owner.root.source.component_key:
+            raise ValueError("registered config retains its occurrence symbol")
         if not isinstance(self.constructor, CallableRecord) \
-                or self.constructor.owner != self.owner.root \
+                or self.constructor.owner != self.owner_symbol \
                 or self.constructor.symbol.qualified_name \
-                != f"{self.owner.root.qualified_name}.__init__":
-            raise ValueError("registered config cites the exact root constructor")
+                != f"{self.owner_symbol.qualified_name}.__init__":
+            raise ValueError("registered config cites the exact occurrence constructor")
         if not isinstance(self.decorator, ExprNode) \
                 or self.decorator not in self.constructor.decorators \
                 or not isinstance(self.protocol, ExternalReferenceProof) \
@@ -121,6 +142,46 @@ class RegisteredConstructorDefaultValue:
         ) if span is not None))
 
 
+def registered_constructor_path_for_expression(
+        index: ProgramIndex,
+        registration: RegisteredConstructorConfig,
+        expression: ExprNode,
+) -> tuple[str, ...] | None:
+    """Map one exact ``self.config.<parameter>`` access to its local path.
+
+    The imported registration protocol is the address authority. The spelling
+    ``self.config`` alone proves nothing, and an owner that writes a local
+    ``self.config`` field is refused because it may have replaced the
+    framework-managed object.
+    """
+    if not isinstance(index, ProgramIndex) \
+            or not isinstance(registration, RegisteredConstructorConfig) \
+            or not isinstance(expression, ExprNode):
+        raise TypeError(
+            "registered constructor access requires index, proof and expression")
+    if index.class_by_symbol(registration.owner_symbol) is None \
+            or index.callable_by_symbol(registration.constructor.symbol) \
+            != registration.constructor:
+        return None
+    if any(item.field == "config"
+           for item in index.field_assigns_of(registration.owner_symbol)):
+        return None
+    segments = []
+    current = expression
+    while current.kind == "attribute" and len(current.children) == 1:
+        if not current.name:
+            return None
+        segments.append(current.name)
+        current = current.children[0]
+    segments.reverse()
+    if len(segments) < 2 or segments[0] != "config" \
+            or current.kind != "name" or current.name != "self":
+        return None
+    prefix = dict(registration.parameter_paths).get(segments[1])
+    return (tuple((*prefix, *segments[2:]))
+            if prefix is not None else None)
+
+
 def read_registered_constructor_config(
         index: ProgramIndex,
         root: ComponentRootResolution,
@@ -130,16 +191,41 @@ def read_registered_constructor_config(
         raise TypeError("constructor registration requires a ProgramIndex")
     if not isinstance(root, ComponentRootResolution) or not root.address_resolved:
         raise ValueError("constructor registration requires a resolved D0 root")
-    owner = root.graph.root.occurrence
-    if index.class_by_symbol(root.graph.root.symbol) is None:
+    return read_registered_constructor_config_at_occurrence(
+        index, root.graph, root.graph.root.occurrence)
+
+
+def read_registered_constructor_config_at_occurrence(
+        index: ProgramIndex,
+        graph: OwnerGraph,
+        owner: OwnerOccurrenceId,
+) -> ReaderResult[RegisteredConstructorConfig]:
+    """Resolve registration for one exact occurrence in an owner graph.
+
+    This is an address protocol only.  It does not select the occurrence,
+    inspect a checkpoint value, or infer that any registered parameter is an
+    architectural fact.  A nested consumer must already hold the exact graph
+    and occurrence from its own closed address boundary.
+    """
+    if not isinstance(index, ProgramIndex) or not isinstance(graph, OwnerGraph):
+        raise TypeError(
+            "occurrence registration requires ProgramIndex + OwnerGraph")
+    if not isinstance(owner, OwnerOccurrenceId):
+        raise TypeError("occurrence registration requires OwnerOccurrenceId")
+    node = graph.node_for(owner)
+    if node is None:
         return ReaderResult.failed(owner, (ReaderFailure(
-            "out_of_owner", "the D0 root belongs to a different ProgramIndex"),))
-    constructor = index.callable_by_symbol(type(root.graph.root.symbol)(
-        root.graph.root.symbol.source,
-        f"{root.graph.root.symbol.qualified_name}.__init__"))
+            "out_of_owner", "the occurrence is absent from the owner graph"),))
+    if index.class_by_symbol(graph.root.symbol) is None \
+            or index.class_by_symbol(node.symbol) is None:
+        return ReaderResult.failed(owner, (ReaderFailure(
+            "out_of_owner", "the owner graph belongs to a different ProgramIndex"),))
+    constructor = index.callable_by_symbol(type(node.symbol)(
+        node.symbol.source,
+        f"{node.symbol.qualified_name}.__init__"))
     if constructor is None or constructor.span is None:
         return ReaderResult.failed(owner, (ReaderFailure(
-            "missing_source", "the exact root constructor is unavailable"),))
+            "missing_source", "the exact owner constructor is unavailable"),))
 
     resolved = tuple(
         (decorator, proof)
@@ -167,10 +253,10 @@ def read_registered_constructor_config(
                 suspicious[0].span),))
         return ReaderResult.absent(owner, provenance=(ReaderProvenance(
             "source", spans=(constructor.span,),
-            detail="root constructor has no registered-config protocol"),))
+            detail="owner constructor has no registered-config protocol"),))
 
     decorator, proof = resolved[0]
-    class_record = index.class_by_symbol(root.graph.root.symbol)
+    class_record = index.class_by_symbol(node.symbol)
     ignore_assignments = tuple(
         item for item in class_record.body_assigns
         if item.attr == "ignore_for_config")
@@ -197,7 +283,8 @@ def read_registered_constructor_config(
         and parameter.kind not in {"vararg", "kwarg"}
         and parameter.name not in ignored_parameters)
     value = RegisteredConstructorConfig(
-        owner, constructor, decorator, proof, ignored_parameters, parameters,
+        owner, graph, node.symbol, constructor, decorator, proof,
+        ignored_parameters, parameters,
         tuple((parameter.name, (parameter.name,))
               for parameter in parameters))
     spans = tuple(dict.fromkeys(span for span in (
@@ -212,4 +299,6 @@ __all__ = [
     "RegisteredConstructorConfig",
     "RegisteredConstructorDefaultValue",
     "read_registered_constructor_config",
+    "read_registered_constructor_config_at_occurrence",
+    "registered_constructor_path_for_expression",
 ]

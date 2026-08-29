@@ -18,6 +18,11 @@ from model_unfolder.evidence.component_owner import (
 from model_unfolder.evidence.container_inventory import (
     resolve_container_inventory_in_graph,
 )
+from model_unfolder.evidence.constructor_values import (
+    canonical_construction_target,
+    constructor_frame,
+    resolve_effective_constructor_parameter,
+)
 from model_unfolder.evidence.diffusion_root import read_diffusion_root_topology
 from model_unfolder.evidence.execution_flow import (
     resolve_addressed_invocations_in_graph,
@@ -387,3 +392,73 @@ def test_real_sdxl_preserves_rival_transformer_routes_and_framework_attention():
     # activation_fn operand.  Source alone does not prove SDXL's checkpoint
     # choice, so E1 must not manufacture GEGLU/gating before the config join.
     assert not any(item.kind == "ffn" for item in transformer)
+
+    # E2's neutral constructor-value boundary can nevertheless prove the exact
+    # runtime operand independently for every preserved route.  The route is:
+    # Transformer2DModel's literal class default -> its imported
+    # register_to_config self.config access -> BasicTransformerBlock formal ->
+    # FeedForward formal.  This assertion still does not interpret "geglu" as
+    # an FFN mechanism; that semantic selection belongs to E2's U7 join.
+    def target_for(site, candidate):
+        imported = (canonical_called_import_target(bundle,
+                    candidate.import_chain[-1])
+                    if candidate.import_chain else None)
+        return canonical_construction_target(
+            value.index, site, candidate.symbol,
+            canonical_import=imported)
+
+    proven = []
+    alternatives = []
+    for item in attention:
+        if not isinstance(item.occurrence_id,
+                          AlternativeNestedOccurrenceId):
+            continue
+        alternative = item.occurrence_id.alternative
+        if all(kept.site != alternative.site for kept in alternatives):
+            alternatives.append(alternative)
+    for alternative in alternatives:
+        parent_candidates = tuple(dict.fromkeys(
+            (construction, candidate)
+            for invocation in value.cells.cells.invocations
+            for construction in invocation.constructions
+            for candidate in construction.candidates
+            if invocation.parent.occurrence_id == alternative.parent.parent
+            and candidate.symbol == alternative.parent.symbol
+            and candidate.span == alternative.parent.candidate_span
+            and (construction.site.span if construction.site is not None
+                 else construction.field_assign.value.span)
+            == alternative.parent.construction_span))
+        assert len(parent_candidates) == 1
+        construction, parent_candidate = parent_candidates[0]
+        assert construction.site is not None
+        transformer_target = target_for(
+            construction.site, parent_candidate)
+        transformer_frame = constructor_frame(
+            value.index, transformer_target)
+        block_target = target_for(alternative.site, alternative.candidate)
+        block_frame = constructor_frame(
+            value.index, block_target, transformer_frame)
+        feed_sites = tuple(
+            site for site in value.index.construction_sites_of(
+                alternative.symbol)
+            if site.target == "ff")
+        assert len(feed_sites) == 1
+        feed_site = feed_sites[0]
+        feed_candidates = tuple(
+            item.symbol for item in feed_site.candidates
+            if item.symbol is not None)
+        assert len(feed_candidates) == 1
+        feed_target = canonical_construction_target(
+            value.index, feed_site, feed_candidates[0])
+        feed_frame = constructor_frame(
+            value.index, feed_target, block_frame)
+        result = resolve_effective_constructor_parameter(
+            value.index, feed_frame, "activation_fn")
+        assert result.status == "resolved", result.failures
+        proven.append(result.require_value())
+    assert len(proven) == 3
+    assert {(item.value, item.source_kind) for item in proven} == {
+        ("geglu", "class_default")}
+    assert all([step.access_kind for step in item.steps] == [
+        "parameter_forward", "registered_config_forward", "class_default"]
+               for item in proven)

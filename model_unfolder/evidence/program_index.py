@@ -287,13 +287,14 @@ class ParamRecord:
     name: str
     has_default: bool = False
     default: ExprNode | None = None
-    kind: str = "positional"     # positional | keyword_only | vararg | kwarg
+    kind: str = "positional"     # posonly | positional | keyword_only | vararg | kwarg
     annotation: ExprNode | None = None
 
     def __post_init__(self) -> None:
         if not self.name:
             raise ValueError("a parameter has a non-empty Python address")
-        if self.kind not in {"positional", "keyword_only", "vararg", "kwarg"}:
+        if self.kind not in {
+                "posonly", "positional", "keyword_only", "vararg", "kwarg"}:
             raise ValueError(f"unknown parameter kind {self.kind!r}")
         if self.has_default != (self.default is not None):
             raise ValueError("parameter default presence is represented exactly")
@@ -1533,10 +1534,13 @@ class _SourceWalker:
         for i, a in enumerate(positional):
             di = i - n_no_default
             if di >= 0:
-                out.append(self._param(a, defaults[di], "positional"))
+                out.append(self._param(
+                    a, defaults[di],
+                    "posonly" if i < len(posonly) else "positional"))
             else:
                 out.append(ParamRecord(
-                    a.arg, has_default=False, kind="positional",
+                    a.arg, has_default=False,
+                    kind="posonly" if i < len(posonly) else "positional",
                     annotation=self._expr(a.annotation)
                     if a.annotation is not None else None))
         if args.vararg:
