@@ -1,6 +1,6 @@
 # U11 — Source-Derived U-Net Stage and Cell Execution Plan
 
-Status: **ACTIVE — U11-A1 through U11-E2a DONE; U11-E2 selector and
+Status: **ACTIVE — U11-A1 through U11-E2b DONE; U11-E2 attention-interface
 interface semantics in progress**
 
 Authority: this document is the binding execution plan for U11. It refines
@@ -545,6 +545,39 @@ isolated worktrees by `scripts/verify_commit.py`:
 
 Logs: `/private/tmp/model-unfolder-verification/06f4f53eef`.
 
+#### U11-E2b implementation state and committed-tree receipt
+
+Status: **DONE; SELECTED FFN MECHANISM EVIDENCE ONLY** — commit `980a9fe`.
+
+E2b joins E2a's exact runtime operand to the complete selected implementation
+expression and then proves the implementation's operation protocol from source.
+It does not assign semantics from the selector token, implementation class name,
+or model identity.  Every installed-SDXL rival route independently selects the
+same fused gate/up projection, proves an exact two-way last-axis split, proves
+the activation is applied to exactly one half, proves elementwise gating, and
+proves the down projection.  A final self-review found that accepting
+``chunk(2)`` without its axis could falsely certify a non-channel split; the
+reader now requires exact ``chunk(2, dim=-1)`` (keyword or positional), with
+four wrong-axis/missing-axis controls permanently pinning the correction.
+
+No parser, fact, IR, renderer, parameter, debt-register, manifest or gallery
+consumer changed.  The selected mechanism remains evidence-only until E3's
+single-source consumer cutover.
+
+Commit `980a9fe6a1c7a8965059b7d7291ee8160a5890f2` was verified from isolated
+worktrees by `scripts/verify_commit.py`:
+
+- static: PASS, five changed production Python files clean;
+- collection: 3,752 tests;
+- focused selector/FFN/nested-mechanism lane: 305 passed;
+- affected U2 authority lane: 44 passed;
+- preservation lane: 52 passed with zero structural/pixel drift;
+- full suite: 3,640 passed, 14 skipped, 2 expected xfails; and
+- every lane's complete-tree fingerprint and source-artifact fingerprint was
+  identical before and after.
+
+Logs: `/private/tmp/model-unfolder-verification/419a9c2663`.
+
 ### U11-F — exact samplers, bookends and conditioning
 
 Goal: bind the remaining UNet-specific structural/config debt.
@@ -712,7 +745,7 @@ Stop and report before proceeding if:
 | U11-B stage construction | DONE | `0e5f71a`; exact U10 container→producer→append relation; exact U11-A1 factory expansion; all guarded returned class candidates preserved; 19 synthetic/closure controls + real installed SDXL; committed-tree coordinator: focused 269, U2 authority 44, preservation 52, full 3,530 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-C execution/skip DAG | DONE | `d7f7bae`; exact repeated-stage nodes; exact guarded inter-loop constructed-call occurrences; one U10 skip edge; unsupported/unreachable calls and all non-proven order remain typed unresolved; real SDXL retains both guarded direct invocations without using `mid_block` semantics; committed-tree coordinator: focused 362, U2 authority 44, preservation 52, full 3,553 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-D ResNet/temporal cells | DONE — EVIDENCE-ONLY | `be64cce` + `5efd851` + `bdf2204` + containment correction `43e4e53`; exact child inventory, local mechanisms and neutral reshape→Conv3d→blend proof; real SDXL and spatio-temporal UNet qualify without role spellings; initial gate caught and removed cross-domain projector widening; final coordinator: focused 265, U2 authority 44, preservation 52, full 3,574 passed / 14 skipped / 2 xfailed, every fingerprint and source-artifact digest identical; root frame-axis semantic join remains correctly deferred to U11-G |
-| U11-E attention/transformer/FFN | ACTIVE — E1 + E2a DONE, E2b/E2c IN PROGRESS | `6b0c979` exact nested-mechanism inventory; `eb9e2f8` mechanism-neutral exact constructor-value transport; all three installed-SDXL transformer rivals independently resolve the same effective operand without interpreting it; E2a coordinator: focused 255, U2 authority 44, preservation 52, full 3,601 passed / 14 skipped / 2 xfailed, every tree/artifact fingerprint identical; selected FFN implementation and attention input roles remain unprojected; no production consumer/output change |
+| U11-E attention/transformer/FFN | ACTIVE — E1 + E2a + E2b DONE, E2c IN PROGRESS | `6b0c979` exact nested-mechanism inventory; `eb9e2f8` mechanism-neutral exact constructor-value transport; `980a9fe` code-selected fused gated FFN proof with exact last-axis split; all three installed-SDXL transformer rivals independently resolve the same operand and mechanism without token/class/model semantics; E2b coordinator: focused 305, U2 authority 44, preservation 52, full 3,640 passed / 14 skipped / 2 xfailed, every tree/artifact fingerprint identical; attention input roles and all production consumers remain unprojected |
 | U11-F sampler/bookend/conditioning | PENDING | — |
 | U11-G projection/cutover | PENDING | — |
 | U11-H legacy deletion | PENDING | — |
