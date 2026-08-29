@@ -384,6 +384,21 @@ lineage through the parent call before any temporal label or AlphaBlender claim
 may be projected. Whole-callable CFG coverage also remains open, so missing
 operations are not negative facts.
 
+#### U11-D2b — neutral repeated-axis mixing proof
+
+Status: **IMPLEMENTED, TARGETED-VERIFIED; EVIDENCE-ONLY** — a cell may now
+publish a structural repeated-axis mix only when one exact side-input-derived
+axis count reaches an exact reshape, that reshaped value reaches an exact
+internal Conv3d path, and a later exact internal callable arithmetically blends
+the dimensional result with the preserved branch. The DTO closes every call,
+binding, reshape, Conv3d and blend-return span. A standalone Conv3d and a class
+whose name contains both `Temporal` and `AlphaBlender` prove nothing.
+
+The installed `UNetSpatioTemporalConditionModel` witness yields three exact
+repeated-axis mix rows for structurally discovered cells. Production still
+labels all three `temporal_axis_proven=False`: the structural row must be joined
+to U10/root frame-axis lineage during U11-G before temporal language is legal.
+
 ### U11-E — attention, nested transformer and FFN cells
 
 Goal: delete the three U11 attention/FFN whole-file readers and the universal
@@ -568,7 +583,7 @@ Stop and report before proceeding if:
 | U11-A2 legacy closure cutover | PENDING | lands with the U11-B/E consumers; deletes `_augment_diffusion_files` only after exact coverage |
 | U11-B stage construction | DONE | `0e5f71a`; exact U10 container→producer→append relation; exact U11-A1 factory expansion; all guarded returned class candidates preserved; 19 synthetic/closure controls + real installed SDXL; committed-tree coordinator: focused 269, U2 authority 44, preservation 52, full 3,530 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-C execution/skip DAG | DONE | `d7f7bae`; exact repeated-stage nodes; exact guarded inter-loop constructed-call occurrences; one U10 skip edge; unsupported/unreachable calls and all non-proven order remain typed unresolved; real SDXL retains both guarded direct invocations without using `mid_block` semantics; committed-tree coordinator: focused 362, U2 authority 44, preservation 52, full 3,553 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
-| U11-D ResNet/temporal cells | ACTIVE — D1 + D2a TARGETED-VERIFIED | exact child inventory and positive local mechanisms implemented; real SDXL proves GroupNorm/Conv2d/Dropout/residual/scale without role spellings; temporal-axis lineage, phase receipt and cutover pending |
+| U11-D ResNet/temporal cells | ACTIVE — D1 + D2a/D2b TARGETED-VERIFIED | exact child inventory, local mechanisms and neutral reshape→Conv3d→blend proof implemented; real SDXL and spatio-temporal UNet qualify without role spellings; root frame-axis join, phase receipt and cutover pending |
 | U11-E attention/transformer/FFN | PENDING | — |
 | U11-F sampler/bookend/conditioning | PENDING | — |
 | U11-G projection/cutover | PENDING | — |

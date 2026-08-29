@@ -47,12 +47,16 @@ ROOT = """
 
 STAGES = """
     from torch.nn import ModuleList
-    from .cells import AddCell, ScaleCell, ThreeDCell, PlainCell
+    from .cells import (
+        AddCell, ScaleCell, ThreeDCell, PlainCell, CompositeCell,
+        TemporalAlphaBlenderCell,
+    )
 
     class Stage:
         def __init__(self):
             self.units = ModuleList([
-                AddCell(), ScaleCell(), ThreeDCell(), PlainCell(),
+                AddCell(), ScaleCell(), ThreeDCell(), PlainCell(), CompositeCell(),
+                TemporalAlphaBlenderCell(),
             ])
         def forward(self, value, skip=None, side=None):
             for unit in self.units:
@@ -111,6 +115,36 @@ CELLS = """
             self.a = Conv2d(8, 8, 1)
         def forward(self, value, context):
             return self.a(value)
+
+    class AxisChild:
+        def __init__(self):
+            self.a = Conv3d(8, 8, (3, 1, 1))
+        def forward(self, value):
+            return self.a(value)
+
+    class BlendChild:
+        def forward(self, one, two, control):
+            weight = control
+            output = weight * one + (1 - weight) * two
+            return output
+
+    class CompositeCell:
+        def __init__(self):
+            self.spatial = Conv2d(8, 8, 1)
+            self.dimensional = AxisChild()
+            self.combine = BlendChild()
+        def forward(self, value, context):
+            count = context.shape[-1]
+            spatial = self.spatial(value)
+            repeated = value.reshape(1, count, 8, 4, 4)
+            dimensional = self.dimensional(repeated)
+            return self.combine(spatial, dimensional, context)
+
+    class TemporalAlphaBlenderCell:
+        def __init__(self):
+            self.a = Conv2d(8, 8, 1)
+        def forward(self, value, context):
+            return self.a(value)
 """
 
 
@@ -152,8 +186,9 @@ def _one(result, class_name):
     assert rows
     first = rows[0]
     assert all((item.operations, item.residual_merge, item.conditioning,
-                item.convolution_dimensions) ==
+                item.repeated_axis_mix, item.convolution_dimensions) ==
                (first.operations, first.residual_merge, first.conditioning,
+                first.repeated_axis_mix,
                 first.convolution_dimensions) for item in rows)
     return first
 
@@ -203,6 +238,22 @@ def test_conv3d_is_not_silently_called_temporal(tmp_path):
     assert any(item.kind == "temporal_axis_unproven" for item in cell.issues)
 
 
+def test_reshape_conv3d_blend_is_repeated_axis_evidence_not_temporal(tmp_path):
+    cell = _one(_read(_bundle(tmp_path)), "CompositeCell")
+    proof = cell.repeated_axis_mix
+    assert proof is not None
+    assert proof.side_parameter == "context"
+    assert proof.convolution_spans
+    assert cell.temporal_axis_proven is False
+
+
+def test_temporal_and_blender_spellings_cannot_create_axis_evidence(tmp_path):
+    cell = _one(_read(_bundle(tmp_path)), "TemporalAlphaBlenderCell")
+    assert cell.convolution_dimensions == (2,)
+    assert cell.repeated_axis_mix is None
+    assert cell.temporal_axis_proven is False
+
+
 def test_conv_without_add_does_not_fabricate_a_residual_cell(tmp_path):
     cell = _one(_read(_bundle(tmp_path)), "PlainCell")
     assert cell.residual_merge is None
@@ -214,11 +265,13 @@ def test_cell_and_field_renaming_cannot_change_mechanisms(tmp_path):
                       .replace("ScaleCell", "UnitB")
                       .replace("ThreeDCell", "UnitC")
                       .replace("PlainCell", "UnitD")
+                      .replace("CompositeCell", "UnitE")
                       .replace("units", "bucket"))
     renamed_cells = (CELLS.replace("AddCell", "UnitA")
                      .replace("ScaleCell", "UnitB")
                      .replace("ThreeDCell", "UnitC")
                      .replace("PlainCell", "UnitD")
+                     .replace("CompositeCell", "UnitE")
                      .replace("self.a", "self.first")
                      .replace("self.b", "self.second")
                      .replace("self.c", "self.third")
@@ -244,6 +297,6 @@ def test_mechanism_closure_rejects_fabricated_dimension_and_temporal_claim(tmp_p
     with pytest.raises(ValueError):
         replace(cell, convolution_dimensions=(2, 3))
     with pytest.raises(ValueError):
-        replace(cell, convolutions=())
+        replace(cell.convolutions[0], dimension=2)
     with pytest.raises(ValueError):
         replace(cell, temporal_axis_proven=True)

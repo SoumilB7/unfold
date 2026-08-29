@@ -25,6 +25,7 @@ from .construction_calls import resolve_construction_call_in_graph
 from .models import SourceOp
 from .program_index import (
     BindingObservation,
+    CallObservation,
     ExprNode,
     GuardStep,
     ProgramIndex,
@@ -63,6 +64,13 @@ def _span_key(span: SourceSpan | None) -> tuple[int, int, int, int]:
 def _before(left: SourceSpan | None, right: SourceSpan | None) -> bool:
     return left is not None and right is not None \
         and left.source == right.source and _span_key(left) < _span_key(right)
+
+
+def _contains_span(outer: SourceSpan | None, inner: SourceSpan | None) -> bool:
+    return outer is not None and inner is not None \
+        and outer.source == inner.source \
+        and _span_key(outer)[:2] <= _span_key(inner)[:2] \
+        and _span_key(inner)[2:] <= _span_key(outer)[2:]
 
 
 def _target_names(expr: ExprNode) -> tuple[str, ...]:
@@ -264,6 +272,41 @@ class ConditioningInjectionEvidence:
 
 
 @dataclass(frozen=True)
+class RepeatedAxisMixEvidence:
+    """A local reshape→Conv3d→two-branch blend over a side-derived axis.
+
+    This is deliberately not named temporal.  U11-G may call it temporal only
+    after joining the side parameter to root-level frame-axis evidence.
+    """
+
+    side_parameter: str
+    axis_binding: BindingObservation
+    reshape_span: SourceSpan
+    dimensional_call: CallObservation
+    convolution_spans: tuple[SourceSpan, ...]
+    blend_call: CallObservation
+    blend_return_span: SourceSpan
+
+    def __post_init__(self) -> None:
+        if not self.side_parameter \
+                or not isinstance(self.axis_binding, BindingObservation) \
+                or not isinstance(self.reshape_span, SourceSpan) \
+                or not isinstance(self.dimensional_call, CallObservation) \
+                or not isinstance(self.blend_call, CallObservation) \
+                or not isinstance(self.blend_return_span, SourceSpan):
+            raise TypeError("a repeated-axis mix retains exact typed evidence")
+        if not self.convolution_spans \
+                or any(not isinstance(item, SourceSpan)
+                       for item in self.convolution_spans):
+            raise ValueError("a repeated-axis mix carries exact Conv3d spans")
+        if self.dimensional_call.enclosing_callable != \
+                self.blend_call.enclosing_callable:
+            raise ValueError("the dimensional and blend calls share one cell forward")
+        if not _before(self.dimensional_call.span, self.blend_call.span):
+            raise ValueError("the exact dimensional call precedes the blend call")
+
+
+@dataclass(frozen=True)
 class CellMechanismIssue:
     kind: str
     detail: str
@@ -284,6 +327,7 @@ class UNetCellMechanism:
     convolutions: tuple[ConvolutionEvidence, ...]
     residual_merge: ResidualMergeEvidence | None
     conditioning: tuple[ConditioningInjectionEvidence, ...]
+    repeated_axis_mix: RepeatedAxisMixEvidence | None
     convolution_dimensions: tuple[int, ...]
     temporal_axis_proven: bool
     issues: tuple[CellMechanismIssue, ...]
@@ -309,17 +353,16 @@ class UNetCellMechanism:
         }))
         if self.convolution_dimensions != expected_dims:
             raise ValueError("convolution dimensions derive only from exact operations")
-        direct_conv_ops = {
-            item for item in self.operations
-            if item.operation.kind in {"conv1d", "conv2d", "conv3d"}
-            and item.span.source == self.occurrence_id.symbol.source
-        }
-        if {item.operation for item in self.convolutions} != direct_conv_ops:
-            raise ValueError(
-                "every directly-owned exact convolution carries constructor operands")
+        if len({item.operation for item in self.convolutions}) \
+                != len(self.convolutions):
+            raise ValueError("convolution constructor receipts are unique")
         if self.temporal_axis_proven:
             raise ValueError(
                 "U11-D2 local mechanisms cannot prove a temporal axis")
+        if self.repeated_axis_mix is not None \
+                and not isinstance(self.repeated_axis_mix,
+                                   RepeatedAxisMixEvidence):
+            raise TypeError("repeated-axis evidence is typed")
         if not any(item.kind == "whole_callable_open" for item in self.issues):
             raise ValueError("every local mechanism retains open CFG coverage")
         if 3 in self.convolution_dimensions and not any(
@@ -464,6 +507,151 @@ def _convolutions(index, graph, owner, forward, operations):
     return tuple(rows)
 
 
+def _latest_binding(index, forward, name, cutoff):
+    matches = tuple(
+        item for item in _binding_map(index, forward)
+        if not item.guard and _before(item.span, cutoff)
+        and not _contains_span(
+            item.value.span if item.value is not None else None, cutoff)
+        and name in {target for pattern in item.targets
+                     for target in _target_names(pattern)})
+    return matches[-1] if matches else None
+
+
+def _lineage_expressions(index, forward, expression, cutoff, visiting=frozenset()):
+    """Exact unguarded simple-name definition lineage, positive only."""
+    if expression is None:
+        return ()
+    rows = [expression]
+    for name in _expression_names(expression):
+        if name in visiting:
+            continue
+        binding = _latest_binding(index, forward, name, cutoff)
+        if binding is not None and binding.value is not None:
+            rows.extend(_lineage_expressions(
+                index, forward, binding.value, binding.span,
+                {*visiting, name}))
+    return tuple(dict.fromkeys(rows))
+
+
+def _call_operation(index, graph, owner, call):
+    classified = projector_call_operation_in_graph(index, graph, owner, call)
+    return classified if classified is not None else ((), (), None)
+
+
+def _internal_call(index, graph, owner, call):
+    if call.callee.kind != "attribute" or not call.callee.children \
+            or call.callee.children[0].kind != "name" \
+            or call.callee.children[0].name != "self":
+        return None
+    resolution = resolve_construction_call_in_graph(index, graph, owner, call)
+    if resolution.status != "resolved" \
+            or resolution.selected.kind != "internal":
+        return None
+    return resolution.selected
+
+
+def _blend_return(index, symbol):
+    """Exact arithmetic return combining the first two value parameters."""
+    forward = SymbolId(symbol.source, f"{symbol.qualified_name}.forward")
+    record = index.callable_by_symbol(forward)
+    returns = tuple(index.return_observations_in(forward))
+    if record is None or len(returns) != 1 or returns[0].value is None:
+        return None
+    formals = tuple(param.name for param in record.params
+                    if param.name not in {"self", "cls"}
+                    and param.kind not in {"vararg", "kwarg"})
+    if len(formals) < 2:
+        return None
+    expression = _resolve_return_expression(
+        index, forward, returns[0].value, returns[0].span)
+    if expression is None or expression.span is None \
+            or not {formals[0], formals[1]} <= _expression_names(expression) \
+            or not _contains_operator(expression, "+") \
+            or not _contains_operator(expression, "*"):
+        return None
+    return expression.span
+
+
+def _repeated_axis_mix(index, graph, owner, forward, formals, snapshots):
+    if len(formals) < 2:
+        return None
+    axis_bindings = []
+    for binding, before, _after in snapshots:
+        if binding.value is None:
+            continue
+        origins = _expr_origins(binding.value, before)
+        for side in formals[1:]:
+            if side in origins and (binding.value.kind == "subscript"
+                                    or any(child.kind == "subscript"
+                                           for child in binding.value.children)):
+                names = tuple(name for pattern in binding.targets
+                              for name in _target_names(pattern))
+                if len(names) == 1:
+                    axis_bindings.append((names[0], side, binding))
+
+    calls = tuple(index.calls_in(forward))
+    dimensional = []
+    for call in calls:
+        selected = _internal_call(index, graph, owner, call)
+        if selected is None or not call.args:
+            continue
+        ops, spans, _failure = projector_operation_chain_in_graph(
+            index, graph, selected.internal_occurrence)
+        conv_spans = tuple(span for op, span in zip(ops, spans)
+                           if op.kind == "conv3d")
+        if not conv_spans:
+            continue
+        lineage = _lineage_expressions(
+            index, forward, call.args[0], call.span)
+        lineage_names = set().union(*(_expression_names(item)
+                                      for item in lineage)) if lineage else set()
+        shape_calls = tuple(
+            candidate for candidate in calls
+            if candidate.span is not None
+            and any(expr.span is not None
+                    and candidate.span.source == expr.span.source
+                    and _span_key(expr.span)[:2] <= _span_key(candidate.span)[:2]
+                    and _span_key(candidate.span)[2:] <= _span_key(expr.span)[2:]
+                    for expr in lineage)
+            and any(op.kind == "reshape" for op in
+                    _call_operation(index, graph, owner, candidate)[0]))
+        for axis_name, side, binding in axis_bindings:
+            if axis_name in lineage_names and shape_calls:
+                dimensional.append((call, conv_spans, side, binding,
+                                    shape_calls[0].span))
+
+    for dimensional_call, conv_spans, side, axis_binding, reshape_span \
+            in dimensional:
+        produced = {
+            name for binding in index.bindings_in(forward)
+            if binding.value is not None
+            and binding.value.span == dimensional_call.span
+            for pattern in binding.targets for name in _target_names(pattern)
+        }
+        if not produced:
+            continue
+        for blend_call in calls:
+            if not _before(dimensional_call.span, blend_call.span):
+                continue
+            selected = _internal_call(index, graph, owner, blend_call)
+            if selected is None:
+                continue
+            inputs = (*blend_call.args,
+                      *(value for _name, value in blend_call.kwargs))
+            input_names = set().union(*(_expression_names(item)
+                                        for item in inputs)) if inputs else set()
+            if not produced & input_names:
+                continue
+            blend_span = _blend_return(index, selected.internal_symbol)
+            if blend_span is None:
+                continue
+            return RepeatedAxisMixEvidence(
+                side, axis_binding, reshape_span, dimensional_call,
+                conv_spans, blend_call, blend_span)
+    return None
+
+
 def _mechanism(index: ProgramIndex, occurrence_id,
                invocations) -> UNetCellMechanism:
     symbol = occurrence_id.symbol
@@ -474,6 +662,7 @@ def _mechanism(index: ProgramIndex, occurrence_id,
     convolutions = ()
     residual = None
     conditioning = ()
+    repeated_axis_mix = None
     if callable_record is None:
         issues.append(CellMechanismIssue(
             "missing_forward", "cell candidate has no indexed forward",
@@ -520,6 +709,8 @@ def _mechanism(index: ProgramIndex, occurrence_id,
                 index, forward, formals[0], final_origins, tuple(operations))
             conditioning = _conditioning(
                 index, forward, formals[0], formals[1:], snapshots)
+            repeated_axis_mix = _repeated_axis_mix(
+                index, graph, owner, forward, formals, snapshots)
     dimensions = tuple(sorted({
         int(item.operation.kind[-2]) for item in operations
         if item.operation.kind in {"conv1d", "conv2d", "conv3d"}
@@ -536,7 +727,7 @@ def _mechanism(index: ProgramIndex, occurrence_id,
         tuple(item.span for item in operations)))
     return UNetCellMechanism(
         occurrence_id, invocations, tuple(operations), convolutions,
-        residual, conditioning,
+        residual, conditioning, repeated_axis_mix,
         dimensions, False, tuple(issues))
 
 
@@ -575,6 +766,7 @@ __all__ = [
     "ConditioningInjectionEvidence",
     "ISSUE_KINDS",
     "ResidualMergeEvidence",
+    "RepeatedAxisMixEvidence",
     "UNetCellMechanism",
     "UNetCellMechanismInventory",
     "read_unet_cell_mechanisms",

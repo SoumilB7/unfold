@@ -253,3 +253,28 @@ def test_real_sdxl_inventory_preserves_cell_and_sampler_calls_without_roles():
     assert all(item.convolution_dimensions == (2,) for item in residual)
     assert all(any(op.operation.label == "GroupNorm" for op in item.operations)
                for item in residual)
+
+
+def test_real_spatiotemporal_unet_proves_axis_mix_without_temporal_name_rule():
+    import diffusers
+
+    package = Path(diffusers.__file__).resolve().parent
+    source = package / "models" / "unets" / "unet_spatio_temporal_condition.py"
+    bundle = SourceBundle(
+        source="test", architecture="UNetSpatioTemporalConditionModel",
+        component_files={"root": (str(source),)},
+        component_architectures={"root": "UNetSpatioTemporalConditionModel"},
+        import_roots={"root": (SourceImportRoot("diffusers", str(package)),)},
+    )
+    inventory = _read(bundle)[0].require_value()
+    mechanisms = read_unet_cell_mechanisms(inventory).require_value().mechanisms
+    mixed = tuple(item for item in mechanisms
+                  if item.repeated_axis_mix is not None)
+    assert mixed
+    assert all(item.occurrence_id.symbol.qualified_name
+               == "SpatioTemporalResBlock" for item in mixed)
+    assert all(item.repeated_axis_mix.convolution_spans for item in mixed)
+    # The test names the real witness after the structural result. Production
+    # evidence still refuses the semantic temporal label until the U11-G root
+    # frame-axis join exists.
+    assert all(item.temporal_axis_proven is False for item in mixed)
