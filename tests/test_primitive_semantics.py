@@ -43,13 +43,15 @@ _SOURCE = """
     class Base:
         def __init__(self, config):
             self.embedding = nn.Embedding(config.vocab, config.hidden)
+            self.group = nn.GroupNorm(config.groups, config.hidden)
             self.norm = LayerNorm(config.hidden)
             self.rms_math = MisleadingLayerNorm(config)
             self.layer_math = MisleadingRMSNorm(config)
             self.unknown = UnknownPrimitive(config)
         def forward(self, x):
             a = self.embedding(x)
-            b = self.norm(a)
+            grouped = self.group(a)
+            b = self.norm(grouped)
             c = self.rms_math(b)
             d = self.layer_math(c)
             return self.unknown(d)
@@ -98,6 +100,7 @@ def _construction(index, root, stage, field):
 
 @pytest.mark.parametrize(("field", "expected"), [
     ("embedding", "embedding"),
+    ("group", "groupnorm"),
     ("norm", "layernorm"),
 ])
 def test_exact_external_protocol_classifies_primitive(tmp_path, field, expected):

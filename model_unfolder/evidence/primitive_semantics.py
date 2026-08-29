@@ -29,6 +29,8 @@ from .reader_result import (
 _EXTERNAL_PRIMITIVES = {
     "torch.nn.Embedding": "embedding",
     "torch.nn.modules.sparse.Embedding": "embedding",
+    "torch.nn.GroupNorm": "groupnorm",
+    "torch.nn.modules.normalization.GroupNorm": "groupnorm",
     "torch.nn.LayerNorm": "layernorm",
     "torch.nn.modules.normalization.LayerNorm": "layernorm",
     "torch.nn.RMSNorm": "rmsnorm",
@@ -37,6 +39,7 @@ _EXTERNAL_PRIMITIVES = {
 
 _FUNCTIONAL_PROTOCOLS = {
     "torch.nn.functional.embedding": "embedding",
+    "torch.nn.functional.group_norm": "groupnorm",
     "torch.nn.functional.layer_norm": "layernorm",
 }
 
@@ -53,7 +56,7 @@ def classify_primitive_call(
     index: ProgramIndex,
     resolution: ConstructionCallResolution,
 ) -> ReaderResult[str]:
-    """Classify one exact construction call as embedding/layernorm/rmsnorm."""
+    """Classify one exact construction call as a registered primitive."""
     if not isinstance(index, ProgramIndex):
         raise TypeError("classify_primitive_call requires a ProgramIndex")
     if not isinstance(resolution, ConstructionCallResolution):

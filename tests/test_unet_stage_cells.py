@@ -12,6 +12,9 @@ from model_unfolder.evidence.diffusion_root import read_diffusion_root_topology
 from model_unfolder.evidence.models import SourceBundle, SourceImportRoot
 from model_unfolder.evidence.program_index import build_program_index
 from model_unfolder.evidence.unet_stage_cells import read_unet_stage_cells
+from model_unfolder.evidence.unet_cell_mechanism import (
+    read_unet_cell_mechanisms,
+)
 from model_unfolder.evidence.unet_stage_construction import (
     read_unet_stage_construction,
 )
@@ -242,3 +245,11 @@ def test_real_sdxl_inventory_preserves_cell_and_sampler_calls_without_roles():
         name for item in inventory.invocations for name in _candidate_names(item)}
     assert not hasattr(inventory.invocations[0], "role")
     assert not hasattr(inventory.invocations[0], "resnet")
+    mechanisms = read_unet_cell_mechanisms(inventory).require_value().mechanisms
+    residual = tuple(item for item in mechanisms
+                     if item.occurrence_id.symbol.qualified_name == "ResnetBlock2D")
+    assert residual
+    assert all(item.residual_merge is not None for item in residual)
+    assert all(item.convolution_dimensions == (2,) for item in residual)
+    assert all(any(op.operation.label == "GroupNorm" for op in item.operations)
+               for item in residual)

@@ -360,6 +360,30 @@ The real installed SDXL source proves exact residual/attention/sampler child
 addresses while the DTO exposes no role field. U11-D is not complete until D2
 derives the actual per-cell mechanisms and the phase gate is green.
 
+#### U11-D2a — exact local cell mechanisms
+
+Status: **IMPLEMENTED, TARGETED-VERIFIED; EVIDENCE-ONLY** — every exact D1
+child-construction occurrence now receives an independent positive mechanism
+row. The row derives return-path and local-call operations through the shared
+primitive/operation protocols, proves a return-level residual add and output
+scaling expression independently, proves additive versus scale/shift side-input
+injection from local definition lineage, and retains exact Conv1d/2d/3d
+constructor operands. The canonical primitive protocol now includes exact
+external GroupNorm; the shared operation protocol includes exact Dropout.
+
+Counterexamples cover a conventional two-convolution residual cell, a one-conv
+non-residual cell, additive and scale/shift conditioning, guarded input-branch
+projection, Conv3d, full field/class renaming and DTO forgeries. The installed
+SDXL witness proves GroupNorm + Conv2d + Dropout + residual/scale evidence from
+its exact child occurrences. No parser, renderer, fact, debt, manifest or
+gallery surface consumes this evidence yet.
+
+Conv3d remains only a three-dimensional convolution. D2a always publishes
+`temporal_axis_unproven`; a later D2 boundary must prove exact frame-axis
+lineage through the parent call before any temporal label or AlphaBlender claim
+may be projected. Whole-callable CFG coverage also remains open, so missing
+operations are not negative facts.
+
 ### U11-E — attention, nested transformer and FFN cells
 
 Goal: delete the three U11 attention/FFN whole-file readers and the universal
@@ -544,7 +568,7 @@ Stop and report before proceeding if:
 | U11-A2 legacy closure cutover | PENDING | lands with the U11-B/E consumers; deletes `_augment_diffusion_files` only after exact coverage |
 | U11-B stage construction | DONE | `0e5f71a`; exact U10 container→producer→append relation; exact U11-A1 factory expansion; all guarded returned class candidates preserved; 19 synthetic/closure controls + real installed SDXL; committed-tree coordinator: focused 269, U2 authority 44, preservation 52, full 3,530 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-C execution/skip DAG | DONE | `d7f7bae`; exact repeated-stage nodes; exact guarded inter-loop constructed-call occurrences; one U10 skip edge; unsupported/unreachable calls and all non-proven order remain typed unresolved; real SDXL retains both guarded direct invocations without using `mid_block` semantics; committed-tree coordinator: focused 362, U2 authority 44, preservation 52, full 3,553 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
-| U11-D ResNet/temporal cells | ACTIVE — D1 TARGETED-VERIFIED | neutral exact child-invocation inventory implemented; real SDXL reaches residual/attention/downsampler/upsampler candidates without role semantics; D2 mechanism evidence and phase receipt pending |
+| U11-D ResNet/temporal cells | ACTIVE — D1 + D2a TARGETED-VERIFIED | exact child inventory and positive local mechanisms implemented; real SDXL proves GroupNorm/Conv2d/Dropout/residual/scale without role spellings; temporal-axis lineage, phase receipt and cutover pending |
 | U11-E attention/transformer/FFN | PENDING | — |
 | U11-F sampler/bookend/conditioning | PENDING | — |
 | U11-G projection/cutover | PENDING | — |

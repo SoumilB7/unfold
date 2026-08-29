@@ -74,6 +74,8 @@ _CONSTRUCTION_OPERATIONS = {
     "torch.nn.Conv1d": ("conv1d", "1D convolution"),
     "torch.nn.Conv2d": ("conv2d", "2D convolution"),
     "torch.nn.Conv3d": ("conv3d", "3D convolution"),
+    "torch.nn.Dropout": ("dropout", "Dropout"),
+    "torch.nn.modules.dropout.Dropout": ("dropout", "Dropout"),
     "torch.nn.AvgPool1d": ("pooling", "Average pooling"),
     "torch.nn.AvgPool2d": ("pooling", "Average pooling"),
     "torch.nn.AvgPool3d": ("pooling", "Average pooling"),
@@ -358,8 +360,13 @@ def _operation_for_call(index, graph, occurrence, owner_symbol, call, seen_owner
                 owner_symbol.source.canonical_path, call.span.line),),
                 (call.span,), None)
         primitive = classify_primitive_alternative(index, selected)
-        if primitive.status == "resolved" and primitive.value in {"layernorm", "rmsnorm"}:
-            label = "LayerNorm" if primitive.value == "layernorm" else "RMSNorm"
+        if primitive.status == "resolved" and primitive.value in {
+                "groupnorm", "layernorm", "rmsnorm"}:
+            label = {
+                "groupnorm": "GroupNorm",
+                "layernorm": "LayerNorm",
+                "rmsnorm": "RMSNorm",
+            }[primitive.value]
             return ((SourceOp(
                 "norm", label, _construction_label(selected),
                 owner_symbol.source.canonical_path, call.span.line),),
@@ -641,8 +648,13 @@ def _sequential_operations(index, container):
             spans.append(site.span)
             continue
         primitive = primitive_kind_for_site(index, site)
-        if primitive is not None and primitive[0] in {"layernorm", "rmsnorm"}:
-            label = "LayerNorm" if primitive[0] == "layernorm" else "RMSNorm"
+        if primitive is not None and primitive[0] in {
+                "groupnorm", "layernorm", "rmsnorm"}:
+            label = {
+                "groupnorm": "GroupNorm",
+                "layernorm": "LayerNorm",
+                "rmsnorm": "RMSNorm",
+            }[primitive[0]]
             ops.append(SourceOp(
                 "norm", label, _site_label(site),
                 site.owner.source.canonical_path, site.span.line if site.span else None))
