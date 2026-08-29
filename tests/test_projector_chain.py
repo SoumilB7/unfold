@@ -38,27 +38,6 @@ def test_sequential_protocol_emits_exact_ordered_primitive_chain(tmp_path):
         "Linear (in)", "GELU", "Linear (out)"]
 
 
-def test_exact_groupnorm_and_dropout_are_shared_operation_protocols(tmp_path):
-    result = _chain(tmp_path, """
-        from torch.nn import Conv2d, Dropout, GroupNorm
-        class Root:
-            def __init__(self):
-                self.norm = GroupNorm(4, 8)
-                self.drop = Dropout(0.1)
-                self.conv = Conv2d(8, 8, 3)
-            def forward(self, x):
-                x = self.norm(x)
-                x = self.drop(x)
-                return self.conv(x)
-    """)
-    assert result.status == "resolved"
-    assert [(op.kind, op.label) for op in result.value.operations] == [
-        ("norm", "GroupNorm"),
-        ("dropout", "Dropout"),
-        ("conv2d", "2D convolution"),
-    ]
-
-
 def test_only_return_reaching_calls_enter_the_chain(tmp_path):
     result = _chain(tmp_path, """
         from torch.nn import Linear

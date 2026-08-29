@@ -35,7 +35,9 @@ from .program_index import (
 from .projector_chain import (
     projector_call_operation_in_graph,
     projector_operation_chain_in_graph,
+    projector_return_path_calls,
 )
+from .primitive_semantics import classify_primitive_alternative
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
 from .unet_stage_cells import (
     ChildConstructionEvidence,
@@ -52,6 +54,11 @@ ISSUE_KINDS = frozenset({
     "temporal_axis_unproven",
     "whole_callable_open",
 })
+
+_CELL_EXTERNAL_OPERATIONS = {
+    "torch.nn.Dropout": ("dropout", "Dropout"),
+    "torch.nn.modules.dropout.Dropout": ("dropout", "Dropout"),
+}
 
 
 def _span_key(span: SourceSpan | None) -> tuple[int, int, int, int]:
@@ -536,6 +543,31 @@ def _lineage_expressions(index, forward, expression, cutoff, visiting=frozenset(
 
 def _call_operation(index, graph, owner, call):
     classified = projector_call_operation_in_graph(index, graph, owner, call)
+    if classified is not None and classified[0]:
+        return classified
+    if call.callee.kind != "attribute" or not call.callee.children \
+            or call.callee.children[0].kind != "name" \
+            or call.callee.children[0].name != "self":
+        return classified if classified is not None else ((), (), None)
+    resolution = resolve_construction_call_in_graph(index, graph, owner, call)
+    if resolution.status != "resolved":
+        return classified if classified is not None else ((), (), None)
+    selected = resolution.selected
+    primitive = classify_primitive_alternative(index, selected)
+    if primitive.status == "resolved" and primitive.value == "groupnorm":
+        return ((SourceOp(
+            "norm", "GroupNorm", selected.site.owner.qualified_name,
+            call.owner.source.canonical_path, call.span.line),),
+            (call.span,), None)
+    if selected.kind == "external":
+        protocol = _CELL_EXTERNAL_OPERATIONS.get(
+            selected.external_reference.qualified_target)
+        if protocol is not None:
+            kind, label = protocol
+            return ((SourceOp(
+                kind, label, selected.site.owner.qualified_name,
+                call.owner.source.canonical_path, call.span.line),),
+                (call.span,), None)
     return classified if classified is not None else ((), (), None)
 
 
@@ -670,30 +702,31 @@ def _mechanism(index: ProgramIndex, occurrence_id,
     else:
         graph = resolve_owner_graph(index, symbol)
         owner = OwnerOccurrenceId(symbol)
-        chain_ops, chain_spans, failure = projector_operation_chain_in_graph(
-            index, graph, owner)
-        for op, span in zip(chain_ops, chain_spans):
-            operations.append(CellOperationEvidence(
-                op, span, "return_path"))
-        main_spans = set(chain_spans)
+        traced_calls, trace_failures = projector_return_path_calls(index, symbol)
+        main_spans = set()
+        for call in traced_calls:
+            op_items, op_spans, _call_failure = _call_operation(
+                index, graph, owner, call)
+            main_spans.update(op_spans)
+            for op, span in zip(op_items, op_spans):
+                operations.append(CellOperationEvidence(
+                    op, span, "return_path", call.guard))
         for call in index.calls_in(forward):
             if call.span is None or call.span in main_spans:
                 continue
-            classified = projector_call_operation_in_graph(
+            op_items, op_spans, _call_failure = _call_operation(
                 index, graph, owner, call)
-            if classified is None:
-                continue
-            op_items, op_spans, _call_failure = classified
             for op, span in zip(op_items, op_spans):
                 operations.append(CellOperationEvidence(
                     op, span, "local_call", call.guard))
         operations = list(dict.fromkeys(operations))
         convolutions = _convolutions(
             index, graph, owner, forward, tuple(operations))
-        if failure is not None:
+        if trace_failures:
             issues.append(CellMechanismIssue(
-                "operation_path_incomplete", failure.detail,
-                tuple(span for span in (failure.span,) if span is not None)))
+                "operation_path_incomplete", trace_failures[0].detail,
+                tuple(span for span in (trace_failures[0].span,)
+                      if span is not None)))
         if graph.conflicts:
             issues.append(CellMechanismIssue(
                 "owner_graph_conflict",

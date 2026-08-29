@@ -74,8 +74,6 @@ _CONSTRUCTION_OPERATIONS = {
     "torch.nn.Conv1d": ("conv1d", "1D convolution"),
     "torch.nn.Conv2d": ("conv2d", "2D convolution"),
     "torch.nn.Conv3d": ("conv3d", "3D convolution"),
-    "torch.nn.Dropout": ("dropout", "Dropout"),
-    "torch.nn.modules.dropout.Dropout": ("dropout", "Dropout"),
     "torch.nn.AvgPool1d": ("pooling", "Average pooling"),
     "torch.nn.AvgPool2d": ("pooling", "Average pooling"),
     "torch.nn.AvgPool3d": ("pooling", "Average pooling"),
@@ -361,9 +359,8 @@ def _operation_for_call(index, graph, occurrence, owner_symbol, call, seen_owner
                 (call.span,), None)
         primitive = classify_primitive_alternative(index, selected)
         if primitive.status == "resolved" and primitive.value in {
-                "groupnorm", "layernorm", "rmsnorm"}:
+                "layernorm", "rmsnorm"}:
             label = {
-                "groupnorm": "GroupNorm",
                 "layernorm": "LayerNorm",
                 "rmsnorm": "RMSNorm",
             }[primitive.value]
@@ -453,6 +450,22 @@ def projector_operation_chain_in_graph(index, graph, occurrence, seen=()):
     ops, spans = _label_affine_positions(ops, spans)
     failure = failures[0] if failures else None
     return tuple(ops), tuple(spans), failure
+
+
+def projector_return_path_calls(index, owner_symbol):
+    """Return the exact positive return-path call census without semantics.
+
+    A domain reader can classify an additional exact protocol without widening
+    every existing operation-chain consumer. Guarded/rival path uncertainty is
+    returned unchanged as typed failures.
+    """
+    if not isinstance(index, ProgramIndex) or not isinstance(owner_symbol, SymbolId):
+        raise TypeError("return-path call reading requires index + exact owner")
+    forward = SymbolId(
+        owner_symbol.source, f"{owner_symbol.qualified_name}.forward")
+    if index.callable_by_symbol(forward) is None:
+        return (), ()
+    return _return_path_calls(index, forward)
 
 
 def _immediate_tensor_elementwise(call, owner_symbol):
@@ -649,9 +662,8 @@ def _sequential_operations(index, container):
             continue
         primitive = primitive_kind_for_site(index, site)
         if primitive is not None and primitive[0] in {
-                "groupnorm", "layernorm", "rmsnorm"}:
+                "layernorm", "rmsnorm"}:
             label = {
-                "groupnorm": "GroupNorm",
                 "layernorm": "LayerNorm",
                 "rmsnorm": "RMSNorm",
             }[primitive[0]]
@@ -799,5 +811,6 @@ __all__ = [
     "ACTIVATION_REGISTRY_PROTOCOLS", "ProjectorOperationChain",
     "projector_call_operation_in_graph",
     "projector_call_lineage_inputs",
-    "projector_operation_chain_in_graph", "read_projector_operation_chain",
+    "projector_operation_chain_in_graph", "projector_return_path_calls",
+    "read_projector_operation_chain",
 ]

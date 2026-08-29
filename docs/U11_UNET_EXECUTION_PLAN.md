@@ -368,8 +368,10 @@ row. The row derives return-path and local-call operations through the shared
 primitive/operation protocols, proves a return-level residual add and output
 scaling expression independently, proves additive versus scale/shift side-input
 injection from local definition lineage, and retains exact Conv1d/2d/3d
-constructor operands. The canonical primitive protocol now includes exact
-external GroupNorm; the shared operation protocol includes exact Dropout.
+constructor operands. The canonical primitive protocol now recognizes exact
+external GroupNorm. D2 applies exact GroupNorm/Dropout only over its own proven
+return/local call census; it deliberately does not widen existing projector
+consumers before U11-G cutover.
 
 Counterexamples cover a conventional two-convolution residual cell, a one-conv
 non-residual cell, additive and scale/shift conditioning, guarded input-branch
