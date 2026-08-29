@@ -1,7 +1,7 @@
 # U11 — Source-Derived U-Net Stage and Cell Execution Plan
 
-Status: **ACTIVE — U11-A1 through U11-D DONE; U11-E exact
-attention/transformer/FFN evidence next**
+Status: **ACTIVE — U11-A1 through U11-E1 DONE; U11-E2 selector and
+interface semantics in progress**
 
 Authority: this document is the binding execution plan for U11. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §§16.5 and 20.14 without weakening
@@ -448,6 +448,68 @@ Exit: block-name `Attn` semantics, same-role unions, hand-authored MHA/no-RoPE/
 no-cache/4x-FFN claims and `unet_transformer_ffn_activation_from_files` are
 deleted.
 
+Implementation is split so an address proof cannot silently become a role or
+selector proof:
+
+- **U11-E1 — exact positive nested-mechanism inventory.** Starting only from
+  U11-D2's exact cell occurrences, recursively walk their exact owner graphs,
+  retain caller-formal input lineages, and reuse U6/U7 positive mechanism
+  readers. Imported framework containers require an exact lexical import,
+  declared package root, resolved source symbol and graph occurrence. Rival
+  construction routes are preserved and inspected independently; no route is
+  selected because it looks familiar. E1 assigns neither self/cross roles nor
+  config-selected FFN variants.
+- **U11-E2 — selector and interface semantics.** Bind each exact constructor
+  operand/default through the construction chain before selecting an FFN
+  activation/gating variant or an attention input role. A class default may
+  fill an absent operand but may not override a checkpoint declaration. Mixed
+  attention/FFN kinds remain occurrence-qualified. Unknown selectors or input
+  interfaces remain unknown.
+- **U11-E3 — consumer cutover and deletion.** Project the E1/E2 evidence from
+  one typed source into parser/IR/cards/expanded/params/conformance, then delete
+  the three whole-file readers and the universal Transformer2D compatibility
+  template in the same commit series. E1/E2 evidence may not become another
+  permanent parallel interpretation path.
+
+#### U11-E1 implementation state
+
+Status: **DONE; EVIDENCE-ONLY** — commit `6b0c979`.
+
+The new boundary begins at exact U11-D2 cell occurrences and adds no
+parser/IR/renderer/parameter consumer. It preserves the three guarded
+`Transformer2DModel` construction routes exercised by installed SDXL rather
+than selecting one. Every route independently reaches exact nested attention
+occurrences. Diffusers `Attention` is qualified only through a closed framework
+container protocol joined to its exact import source and owner-graph
+occurrence; a matching short name or a same-shaped foreign import is powerless.
+
+The same installed source exposes a deliberate E2 dependency: `FeedForward`
+selects dense/gated activation implementations from an `activation_fn`
+operand. E1 therefore emits no FFN mechanism for SDXL. It does not manufacture
+GEGLU, gating, a four-times expansion or a familiar default from class
+spelling. E2 must prove the exact checkpoint/default-to-constructor-to-selected-
+implementation chain before that mechanism becomes drawable.
+
+#### U11-E1 committed-tree receipt
+
+Commit `6b0c9790e2345c240256fade5fcd60843116caf8` was verified from isolated
+worktrees by `scripts/verify_commit.py`:
+
+- static: PASS, eight changed production Python files clean;
+- collection: 3,695 tests;
+- focused U11 nested-mechanism and prerequisite lane: 378 passed;
+- affected U2 authority lane: 44 passed;
+- preservation lane: 52 passed with zero structural/pixel drift;
+- full suite: 3,583 passed, 14 skipped, 2 expected xfails; and
+- every lane's complete-tree fingerprint and source-artifact fingerprint was
+  identical before and after.
+
+Logs: `/private/tmp/model-unfolder-verification/92ba7aaac7`.
+
+E1 therefore establishes only exact positive nested mechanism inventory. It
+does not claim that a constructor selector is architectural evidence, does not
+assign self/cross attention roles, and does not project any new structure.
+
 ### U11-F — exact samplers, bookends and conditioning
 
 Goal: bind the remaining UNet-specific structural/config debt.
@@ -615,7 +677,7 @@ Stop and report before proceeding if:
 | U11-B stage construction | DONE | `0e5f71a`; exact U10 container→producer→append relation; exact U11-A1 factory expansion; all guarded returned class candidates preserved; 19 synthetic/closure controls + real installed SDXL; committed-tree coordinator: focused 269, U2 authority 44, preservation 52, full 3,530 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-C execution/skip DAG | DONE | `d7f7bae`; exact repeated-stage nodes; exact guarded inter-loop constructed-call occurrences; one U10 skip edge; unsupported/unreachable calls and all non-proven order remain typed unresolved; real SDXL retains both guarded direct invocations without using `mid_block` semantics; committed-tree coordinator: focused 362, U2 authority 44, preservation 52, full 3,553 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-D ResNet/temporal cells | DONE — EVIDENCE-ONLY | `be64cce` + `5efd851` + `bdf2204` + containment correction `43e4e53`; exact child inventory, local mechanisms and neutral reshape→Conv3d→blend proof; real SDXL and spatio-temporal UNet qualify without role spellings; initial gate caught and removed cross-domain projector widening; final coordinator: focused 265, U2 authority 44, preservation 52, full 3,574 passed / 14 skipped / 2 xfailed, every fingerprint and source-artifact digest identical; root frame-axis semantic join remains correctly deferred to U11-G |
-| U11-E attention/transformer/FFN | PENDING | — |
+| U11-E attention/transformer/FFN | ACTIVE — E1 DONE, E2 IN PROGRESS | `6b0c979`; exact positive nested-mechanism inventory, graph-local traversal and canonical imported-framework attention join; all three installed-SDXL transformer construction rivals retained and independently qualified; committed-tree coordinator: focused 378, U2 authority 44, preservation 52, full 3,583 passed / 14 skipped / 2 xfailed; every tree/artifact fingerprint identical; FFN selector and self/cross interface semantics deliberately remain unknown for E2; no production consumer/output change |
 | U11-F sampler/bookend/conditioning | PENDING | — |
 | U11-G projection/cutover | PENDING | — |
 | U11-H legacy deletion | PENDING | — |
