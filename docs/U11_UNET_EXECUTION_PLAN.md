@@ -1,7 +1,7 @@
 # U11 — Source-Derived U-Net Stage and Cell Execution Plan
 
-Status: **ACTIVE — U11-A1, U11-B and U11-C DONE; U11-D exact cell evidence
-next**
+Status: **ACTIVE — U11-A1 through U11-D DONE; U11-E exact
+attention/transformer/FFN evidence next**
 
 Authority: this document is the binding execution plan for U11. It refines
 `EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §§16.5 and 20.14 without weakening
@@ -401,6 +401,35 @@ repeated-axis mix rows for structurally discovered cells. Production still
 labels all three `temporal_axis_proven=False`: the structural row must be joined
 to U10/root frame-axis lineage during U11-G before temporal language is legal.
 
+#### U11-D committed-tree receipt
+
+Status: **DONE; EVIDENCE-ONLY** — commits `be64cce`, `5efd851`, `bdf2204`
+and containment correction `43e4e53` were verified together from committed
+tree `43e4e53ab0688ddd55e9e8a822b6c8d23671d478`.
+
+The first phase gate caught a real cross-domain widening: adding GroupNorm and
+Dropout to the generic projector-chain protocol changed CogVideoX and MusicGen
+evidence surfaces even though U11 was the only intended consumer. The
+correction restored the generic protocol's prior contract, retained neutral
+return/local-call observations, and made the U11 cell reader interpret those
+operations only inside exact U11-owned occurrences. Direct CogVideoX and
+MusicGen preservation controls passed after the correction, and the final
+phase gate found no structural, pixel or artifact drift.
+
+Final coordinator receipt `00a4c43004`:
+
+- collection: 3,686 tests;
+- focused U11-D/primitive/projector lane: 265 passed;
+- affected U2 authority lane: 44 passed;
+- preservation lane: 52 passed with zero structural/pixel drift;
+- full suite: 3,574 passed, 14 skipped, 2 expected xfails; and
+- every lane's tree fingerprint and source-artifact fingerprint was identical
+  before and after.
+
+U11-D therefore closes only the exact cell-evidence boundary. Its neutral
+repeated-axis rows remain semantically non-temporal until U11-G joins exact
+root frame-axis lineage; no renderer/parser cutover has happened early.
+
 ### U11-E — attention, nested transformer and FFN cells
 
 Goal: delete the three U11 attention/FFN whole-file readers and the universal
@@ -585,7 +614,7 @@ Stop and report before proceeding if:
 | U11-A2 legacy closure cutover | PENDING | lands with the U11-B/E consumers; deletes `_augment_diffusion_files` only after exact coverage |
 | U11-B stage construction | DONE | `0e5f71a`; exact U10 container→producer→append relation; exact U11-A1 factory expansion; all guarded returned class candidates preserved; 19 synthetic/closure controls + real installed SDXL; committed-tree coordinator: focused 269, U2 authority 44, preservation 52, full 3,530 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-C execution/skip DAG | DONE | `d7f7bae`; exact repeated-stage nodes; exact guarded inter-loop constructed-call occurrences; one U10 skip edge; unsupported/unreachable calls and all non-proven order remain typed unresolved; real SDXL retains both guarded direct invocations without using `mid_block` semantics; committed-tree coordinator: focused 362, U2 authority 44, preservation 52, full 3,553 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
-| U11-D ResNet/temporal cells | ACTIVE — D1 + D2a/D2b TARGETED-VERIFIED | exact child inventory, local mechanisms and neutral reshape→Conv3d→blend proof implemented; real SDXL and spatio-temporal UNet qualify without role spellings; root frame-axis join, phase receipt and cutover pending |
+| U11-D ResNet/temporal cells | DONE — EVIDENCE-ONLY | `be64cce` + `5efd851` + `bdf2204` + containment correction `43e4e53`; exact child inventory, local mechanisms and neutral reshape→Conv3d→blend proof; real SDXL and spatio-temporal UNet qualify without role spellings; initial gate caught and removed cross-domain projector widening; final coordinator: focused 265, U2 authority 44, preservation 52, full 3,574 passed / 14 skipped / 2 xfailed, every fingerprint and source-artifact digest identical; root frame-axis semantic join remains correctly deferred to U11-G |
 | U11-E attention/transformer/FFN | PENDING | — |
 | U11-F sampler/bookend/conditioning | PENDING | — |
 | U11-G projection/cutover | PENDING | — |
