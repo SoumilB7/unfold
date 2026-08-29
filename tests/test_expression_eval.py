@@ -189,3 +189,37 @@ def test_control_literal_extension_is_opt_in(tmp_path):
     assert ConfigExpressionEvaluator(
         (), {}, {"choice": EvaluatedExpression("first")}).expression(test) \
         is None
+
+
+def test_string_prefix_and_slice_protocols_are_separately_opt_in(tmp_path):
+    index, _graph_value = _graph(tmp_path, """
+        class Root:
+            def __init__(self, choice):
+                choice = choice[2:] if choice.startswith("X:") else choice
+                if choice == "dense":
+                    self.active = True
+    """)
+    binding = next(item for item in index.bindings
+                   if item.value is not None and item.value.kind == "ifexp")
+    env = {"choice": EvaluatedExpression("X:dense")}
+    assert ConfigExpressionEvaluator(
+        (), {}, env, allow_control_literals=True).expression(binding.value) \
+        is None
+    evaluated = ConfigExpressionEvaluator(
+        (), {}, env, allow_control_literals=True,
+        allow_string_protocols=True).expression(binding.value)
+    assert evaluated is not None and evaluated.value == "dense"
+
+
+def test_string_protocol_rejects_dynamic_prefix_and_noninteger_slice(tmp_path):
+    index, _graph_value = _graph(tmp_path, """
+        class Root:
+            def __init__(self, choice, prefix, offset):
+                a = choice.startswith(prefix)
+                b = choice[offset:]
+    """)
+    values = [item.value for item in index.bindings if item.value is not None]
+    evaluator = ConfigExpressionEvaluator(
+        (), {}, {"choice": EvaluatedExpression("X:dense")},
+        allow_string_protocols=True)
+    assert all(evaluator.expression(item) is None for item in values)

@@ -66,11 +66,13 @@ class ConfigExpressionEvaluator:
     """Evaluate one expression under one exact owner's config bindings."""
 
     def __init__(self, bindings, document, env=None, *,
-                 allow_control_literals=False):
+                 allow_control_literals=False,
+                 allow_string_protocols=False):
         self.bindings = {item.parameter: item for item in bindings}
         self.document = document
         self.env = dict(env or {})
         self.allow_control_literals = bool(allow_control_literals)
+        self.allow_string_protocols = bool(allow_string_protocols)
 
     def expression(self, expr: ExprNode | None) -> EvaluatedExpression | None:
         if expr is None:
@@ -127,6 +129,61 @@ class ConfigExpressionEvaluator:
                 return (
                     combined(evaluated.value, expr, evaluated)
                     if evaluated is not None else None)
+        if self.allow_string_protocols and expr.kind == "call" \
+                and expr.children:
+            callee, *arguments = expr.children
+            if not expr.keyword_children \
+                    and callee.kind == "attribute" \
+                    and callee.name == "startswith" \
+                    and len(callee.children) == 1 \
+                    and len(arguments) == 1:
+                receiver = self.expression(callee.children[0])
+                prefix = self.expression(arguments[0])
+                if receiver is None or prefix is None \
+                        or not isinstance(receiver.value, str) \
+                        or not isinstance(prefix.value, (str, tuple)):
+                    return None
+                if isinstance(prefix.value, tuple) and not all(
+                        isinstance(item, str) for item in prefix.value):
+                    return None
+                return combined(
+                    receiver.value.startswith(prefix.value), expr,
+                    receiver, prefix)
+        if self.allow_string_protocols and expr.kind == "subscript" \
+                and len(expr.children) == 2:
+            receiver = self.expression(expr.children[0])
+            selector = expr.children[1]
+            if receiver is None or not isinstance(
+                    receiver.value, (str, tuple, list)):
+                return None
+            if selector.kind == "constant" \
+                    and isinstance(selector.const_value, int) \
+                    and not isinstance(selector.const_value, bool):
+                try:
+                    return combined(
+                        receiver.value[selector.const_value], expr, receiver,
+                        EvaluatedExpression(
+                            selector.const_value, spans=spans(selector.span)))
+                except IndexError:
+                    return None
+            if selector.kind == "slice" and len(selector.children) == 3:
+                parts = []
+                evidence = []
+                for part in selector.children:
+                    if part is None:
+                        parts.append(None)
+                        continue
+                    evaluated = self.expression(part)
+                    if evaluated is None or isinstance(evaluated.value, bool) \
+                            or not isinstance(evaluated.value, int):
+                        return None
+                    parts.append(evaluated.value)
+                    evidence.append(evaluated)
+                try:
+                    return combined(
+                        receiver.value[slice(*parts)], expr, receiver, *evidence)
+                except (IndexError, ValueError):
+                    return None
         if expr.kind == "binop" and len(expr.children) == 2:
             left, right = (self.expression(item) for item in expr.children)
             if left is None or right is None:
