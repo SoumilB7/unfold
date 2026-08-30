@@ -22,6 +22,9 @@ from model_unfolder.evidence.unet_stage_selection import (
 from model_unfolder.evidence.unet_stage_operands import (
     read_unet_selected_stage_operands,
 )
+from model_unfolder.evidence.unet_stage_constructor_operands import (
+    read_unet_selected_stage_constructor_operands,
+)
 
 
 SOURCE = """
@@ -373,3 +376,28 @@ def test_real_sdxl_instantiates_six_exact_stage_occurrences():
     assert tuple(per_stage[(field, position, "cross_attention_dim")]
                  for field in ("down_blocks", "up_blocks")
                  for position in range(3)) == (2048,) * 6
+
+    stage_operands = read_unet_selected_stage_constructor_operands(
+        operands.require_value())
+    assert stage_operands.status == "incomplete"
+    assert len(stage_operands.require_value().operands) == 103
+    assert len(stage_operands.require_value().issues) == 10
+    stage_values = {
+        (item.selected.source.template.topology_stage.field,
+         item.selected.position, item.formal.name): item.value
+        for item in stage_operands.value.operands
+    }
+    assert tuple(stage_values[("down_blocks", position, "num_layers")]
+                 for position in range(3)) == (2, 2, 2)
+    assert tuple(stage_values[("up_blocks", position, "num_layers")]
+                 for position in range(3)) == (3, 3, 3)
+    assert tuple(stage_values[("down_blocks", position, "add_downsample")]
+                 for position in range(3)) == (True, True, False)
+    assert tuple(stage_values[("up_blocks", position, "add_upsample")]
+                 for position in range(3)) == (True, True, False)
+    assert tuple(stage_values[(field, position, "cross_attention_dim")]
+                 for field, position in (
+                     ("down_blocks", 1), ("down_blocks", 2),
+                     ("up_blocks", 0), ("up_blocks", 1))) == (2048,) * 4
+    assert ("down_blocks", 0, "cross_attention_dim") not in stage_values
+    assert ("up_blocks", 2, "cross_attention_dim") not in stage_values
