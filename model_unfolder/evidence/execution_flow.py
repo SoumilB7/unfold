@@ -570,7 +570,7 @@ def _enclosing_iteration(index, loops, call, name):
         kind, field, target = shape
         if target.kind != "name" or target.name != name:
             continue
-        if kind.startswith("enumerated") and not _unshadowed_builtin(
+        if kind.startswith("enumerated") and not unshadowed_builtin(
                 index, loop.enclosing_callable, "enumerate"):
             continue
         if (loop.body_span is not None and call.span is not None
@@ -632,7 +632,7 @@ def _iteration_shape(loop):
     return kind, field, target
 
 
-def _unshadowed_builtin(index, callable_symbol, name) -> bool:
+def unshadowed_builtin(index, callable_symbol, name) -> bool:
     """Positive lexical proof that an unqualified builtin name is unshadowed.
 
     The module binding census is produced by ProgramIndex from the same AST.
@@ -1232,5 +1232,6 @@ __all__ = [
     "UnresolvedRelation",
     "ExecutionFlowResolution",
     "execution_taint_reason",
+    "unshadowed_builtin",
     "resolve_execution_flow",
 ]

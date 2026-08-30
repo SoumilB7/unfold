@@ -152,6 +152,95 @@ def test_enumerated_zip_binds_each_target_to_its_exact_container(tmp_path):
         == {"CellTwo"}
 
 
+def test_local_list_zip_alias_binds_each_exact_container(tmp_path):
+    stages = STAGES.replace(
+        "for index, (one, two) in enumerate(zip(self.left, self.right)):",
+        "pairs = list(zip(self.left, self.right))\n"
+        "            for one, two in pairs:")
+    inventory = _read(_bundle(tmp_path, stages=stages))[0].require_value()
+    paired = [item for item in inventory.invocations
+              if item.parent.occurrence_id.symbol.qualified_name == "PairedStage"]
+    assert {(item.target, item.field) for item in paired} == {
+        ("one", "left"), ("two", "right")}
+    assert all(len(item.iteration_aliases) == 1 for item in paired)
+    assert all(item.iteration_builtins == ("list", "zip") for item in paired)
+    assert {item.iteration_aliases[0].value.children[0].name
+            for item in paired} == {"list"}
+
+
+def test_conditional_or_reassigned_iterable_alias_is_not_guessed(tmp_path):
+    stages = STAGES.replace(
+        "for index, (one, two) in enumerate(zip(self.left, self.right)):",
+        "pairs = list(zip(self.left, self.right))\n"
+        "            if runtime():\n"
+        "                pairs = list(zip(self.right, self.left))\n"
+        "            for one, two in pairs:")
+    inventory = _read(_bundle(tmp_path, stages=stages))[0].require_value()
+    paired = [item for item in inventory.invocations
+              if item.parent.occurrence_id.symbol.qualified_name == "PairedStage"]
+    assert paired == []
+    assert any(item.kind == "unsupported_iteration"
+               for item in inventory.unresolved)
+
+
+def test_iteration_route_rejects_unused_same_callable_binding(tmp_path):
+    stages = STAGES.replace(
+        "for index, (one, two) in enumerate(zip(self.left, self.right)):",
+        "pairs = list(zip(self.left, self.right))\n"
+        "            spare = self.unused\n"
+        "            for one, two in pairs:")
+    inventory = _read(_bundle(tmp_path, stages=stages))[0].require_value()
+    invocation = next(item for item in inventory.invocations
+                      if item.iteration_aliases)
+    spare = next(item for item in inventory.index.bindings_in(
+        invocation.loop.enclosing_callable)
+        if any(target.kind == "name" and target.name == "spare"
+               for target in item.targets))
+    with pytest.raises(ValueError, match="exact used route"):
+        replace(invocation, iteration_aliases=(*invocation.iteration_aliases,
+                                               spare))
+
+
+def test_inventory_rejects_a_stale_overwritten_iterable_alias(tmp_path):
+    stages = STAGES.replace(
+        "for index, (one, two) in enumerate(zip(self.left, self.right)):",
+        "pairs = list(zip(self.left, self.right))\n"
+        "            pairs = list(zip(self.left, self.right))\n"
+        "            for one, two in pairs:")
+    inventory = _read(_bundle(tmp_path, stages=stages))[0].require_value()
+    invocation = next(item for item in inventory.invocations
+                      if item.iteration_aliases)
+    definitions = tuple(
+        item for item in inventory.index.bindings_in(
+            invocation.loop.enclosing_callable)
+        if any(target.kind == "name" and target.name == "pairs"
+               for target in item.targets))
+    assert len(definitions) == 2
+    forged = replace(invocation, iteration_aliases=(definitions[0],))
+    with pytest.raises(ValueError, match="exact reaching route"):
+        replace(inventory, invocations=tuple(
+            forged if item == invocation else item
+            for item in inventory.invocations))
+
+
+@pytest.mark.parametrize("shadow", [
+    "zip = custom_zip\n        ",
+    "list = custom_list\n        ",
+])
+def test_shadowed_wrapper_name_cannot_author_iteration_binding(
+        tmp_path, shadow):
+    stages = STAGES.replace(
+        "for index, (one, two) in enumerate(zip(self.left, self.right)):",
+        f"{shadow}    pairs = list(zip(self.left, self.right))\n"
+        "            for one, two in pairs:")
+    inventory = _read(_bundle(tmp_path, stages=stages))[0].require_value()
+    paired = [item for item in inventory.invocations
+              if item.parent.occurrence_id.symbol.qualified_name == "PairedStage"]
+    assert paired == []
+    assert any(item.kind == "unsupported_iteration"
+               for item in inventory.unresolved)
+
+
 def test_constructed_but_uncalled_container_does_not_become_a_child(tmp_path):
     inventory = _read(_bundle(tmp_path))[0].require_value()
     assert "unused" not in {item.field for item in inventory.invocations}
@@ -241,6 +330,15 @@ def test_real_sdxl_inventory_preserves_cell_and_sampler_calls_without_roles():
     inventory = _read(bundle)[0].require_value()
     fields = {item.field for item in inventory.invocations}
     assert {"resnets", "attentions", "downsamplers", "upsamplers"} <= fields
+    cross_down_attention = tuple(
+        item for item in inventory.invocations
+        if item.field == "attentions"
+        and item.parent.occurrence_id.symbol.qualified_name
+        == "CrossAttnDownBlock2D")
+    assert cross_down_attention
+    assert all(item.iteration_aliases for item in cross_down_attention)
+    assert all(item.iteration_builtins == ("enumerate", "list", "zip")
+               for item in cross_down_attention)
     assert {"ResnetBlock2D", "Transformer2DModel"} <= {
         name for item in inventory.invocations for name in _candidate_names(item)}
     assert not hasattr(inventory.invocations[0], "role")

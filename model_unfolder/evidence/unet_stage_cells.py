@@ -15,10 +15,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .execution_flow import execution_taint_reason
+from .execution_flow import execution_taint_reason, unshadowed_builtin
 from .component_owner import OwnerOccurrenceId
 from .models import SourceBundle
 from .program_index import (
+    BindingObservation,
     CallObservation,
     ConstructionSite,
     ContainerElementsRecord,
@@ -84,7 +85,22 @@ def _callee_name(expr: ExprNode | None) -> str | None:
     return expr.name if expr is not None and expr.kind == "name" else None
 
 
-def _iteration_bindings(iterable: ExprNode | None, target: ExprNode | None) \
+def _before(left: SourceSpan | None, right: SourceSpan | None) -> bool:
+    return bool(left is not None and right is not None
+                and left.source == right.source
+                and (left.end_line or left.line, left.end_col or left.col)
+                <= (right.line, right.col))
+
+
+def _binding_target(binding: BindingObservation) -> str | None:
+    names = tuple(name for target in binding.targets
+                  for name in _target_names(target))
+    return names[0] if len(names) == 1 else None
+
+
+def _iteration_bindings(iterable: ExprNode | None, target: ExprNode | None,
+                        aliases: dict[str, BindingObservation] | None = None,
+                        seen=frozenset()) \
         -> tuple[tuple[str, str], ...] | None:
     """Exact ``container field -> loop target`` bindings, or unsupported.
 
@@ -93,12 +109,20 @@ def _iteration_bindings(iterable: ExprNode | None, target: ExprNode | None) \
     """
     if iterable is None or target is None:
         return None
+    aliases = aliases or {}
+    if iterable.kind == "name" and iterable.name in aliases:
+        if iterable.name in seen:
+            return None
+        value = aliases[iterable.name].value
+        return _iteration_bindings(
+            value, target, aliases, seen | {iterable.name})
     field = _self_field(iterable)
     targets = _target_names(target)
     if field is not None:
         return ((field, targets[-1]),) if len(targets) == 1 else None
     if iterable.kind == "subscript" and iterable.children:
-        return _iteration_bindings(iterable.children[0], target)
+        return _iteration_bindings(
+            iterable.children[0], target, aliases, seen)
     if iterable.kind != "call" or not iterable.children:
         return None
     callee = _callee_name(iterable.children[0])
@@ -108,17 +132,99 @@ def _iteration_bindings(iterable: ExprNode | None, target: ExprNode | None) \
         if callee == "enumerate" and target.kind in {"tuple", "list"} \
                 and len(target.children) >= 2:
             inner_target = target.children[-1]
-        return _iteration_bindings(args[0], inner_target)
+        return _iteration_bindings(args[0], inner_target, aliases, seen)
     if callee != "zip" or target.kind not in {"tuple", "list"} \
             or len(args) != len(target.children):
         return None
     rows: list[tuple[str, str]] = []
     for arg, child_target in zip(args, target.children):
-        bound = _iteration_bindings(arg, child_target)
+        bound = _iteration_bindings(arg, child_target, aliases, seen)
         if bound is None:
             return None
         rows.extend(bound)
     return tuple(rows)
+
+
+def _referenced_aliases(expression: ExprNode | None,
+                        aliases: dict[str, BindingObservation],
+                        seen=frozenset()) -> frozenset[str]:
+    if expression is None:
+        return frozenset()
+    if expression.kind == "name" and expression.name in aliases:
+        name = expression.name
+        if name in seen:
+            return frozenset((name,))
+        return frozenset((name,)) | _referenced_aliases(
+            aliases[name].value, aliases, seen | {name})
+    return frozenset().union(*(
+        [_referenced_aliases(child, aliases, seen)
+         for child in expression.children]
+        + [_referenced_aliases(child, aliases, seen)
+           for _name, child in expression.keyword_children]))
+
+
+def _iteration_builtin_names(
+        expression: ExprNode | None,
+        aliases: dict[str, BindingObservation], seen=frozenset()) \
+        -> frozenset[str]:
+    if expression is None:
+        return frozenset()
+    if expression.kind == "name" and expression.name in aliases:
+        if expression.name in seen:
+            return frozenset()
+        return _iteration_builtin_names(
+            aliases[expression.name].value, aliases,
+            seen | {expression.name})
+    own = frozenset()
+    if expression.kind == "call" and expression.children:
+        callee = _callee_name(expression.children[0])
+        if callee in {"enumerate", "reversed", "list", "tuple", "zip"}:
+            own = frozenset((callee,))
+    return own | frozenset().union(*(
+        [_iteration_builtin_names(child, aliases, seen)
+         for child in expression.children]
+        + [_iteration_builtin_names(child, aliases, seen)
+           for _name, child in expression.keyword_children]))
+
+
+def _iteration_aliases(index: ProgramIndex, loop: LoopObservation) \
+        -> tuple[BindingObservation, ...] | None:
+    """Resolve only exact callable-local iterable aliases reaching ``loop``."""
+    selected = []
+    visiting = set()
+
+    def visit(expression):
+        if expression is None:
+            return True
+        if expression.kind == "name" and expression.name:
+            name = expression.name
+            definitions = tuple(
+                item for item in index.bindings_in(loop.enclosing_callable)
+                if _binding_target(item) == name
+                and _before(item.span, loop.span))
+            if not definitions:
+                return True
+            unguarded = tuple(item for item in definitions if not item.guard)
+            if not unguarded:
+                return False
+            winner = unguarded[-1]
+            if any(_before(winner.span, item.span)
+                   for item in definitions if item != winner):
+                return False
+            if name in visiting or winner.value is None:
+                return False
+            visiting.add(name)
+            if not visit(winner.value):
+                return False
+            visiting.remove(name)
+            selected.append(winner)
+            return True
+        return all(visit(child) for child in expression.children) \
+            and all(visit(child) for _name, child in expression.keyword_children)
+
+    if not visit(loop.iterable):
+        return None
+    return tuple(dict.fromkeys(selected))
 
 
 def _call_for_span(index: ProgramIndex, callable_symbol: SymbolId,
@@ -220,6 +326,8 @@ class StageChildInvocation:
     call: CallObservation
     loop: LoopObservation | None
     target: str
+    iteration_aliases: tuple[BindingObservation, ...]
+    iteration_builtins: tuple[str, ...]
     constructions: tuple[ChildConstructionEvidence, ...]
 
     def __post_init__(self) -> None:
@@ -234,10 +342,29 @@ class StageChildInvocation:
                     or self.call.callee.kind != "name" \
                     or self.call.callee.name != self.target:
                 raise ValueError("repeated child call is bound by the exact loop target")
-            bindings = _iteration_bindings(self.loop.iterable, self.loop.target)
+            if any(item.enclosing_callable != self.loop.enclosing_callable
+                   or item.guard or item.value is None
+                   or not _before(item.span, self.loop.span)
+                   for item in self.iteration_aliases):
+                raise ValueError("iteration aliases are exact reaching definitions")
+            alias_map = {_binding_target(item): item
+                         for item in self.iteration_aliases}
+            if None in alias_map or len(alias_map) != len(self.iteration_aliases):
+                raise ValueError("iteration aliases have unique simple targets")
+            if _referenced_aliases(
+                    self.loop.iterable, alias_map) != frozenset(alias_map):
+                raise ValueError("iteration aliases are the exact used route")
+            expected_builtins = tuple(sorted(_iteration_builtin_names(
+                self.loop.iterable, alias_map)))
+            if self.iteration_builtins != expected_builtins:
+                raise ValueError("iteration builtin protocols are exact syntax")
+            bindings = _iteration_bindings(
+                self.loop.iterable, self.loop.target, alias_map)
             if bindings is None or (self.field, self.target) not in bindings:
                 raise ValueError("the loop structurally binds target to this container")
-        elif self.loop is not None or _self_field(self.call.callee) != self.field:
+        elif self.loop is not None or self.iteration_aliases \
+                or self.iteration_builtins \
+                or _self_field(self.call.callee) != self.field:
             raise ValueError("direct child call targets exact self field")
         if not self.constructions or any(item.field != self.field
                                          for item in self.constructions):
@@ -298,6 +425,19 @@ class UNetStageCellInventory:
         if any(item.call not in self.index.calls_in(item.call.enclosing_callable)
                for item in self.invocations):
             raise ValueError("all child calls belong to the final index")
+        if any(alias not in self.index.bindings_in(alias.enclosing_callable)
+               for item in self.invocations for alias in item.iteration_aliases):
+            raise ValueError("all iteration aliases belong to the final index")
+        if any(item.kind == "repeated"
+               and _iteration_aliases(self.index, item.loop)
+               != item.iteration_aliases
+               for item in self.invocations):
+            raise ValueError(
+                "iteration aliases are the exact reaching route for each loop")
+        if any(not unshadowed_builtin(
+                self.index, item.call.enclosing_callable, name)
+               for item in self.invocations for name in item.iteration_builtins):
+            raise ValueError("iteration builtin protocols are lexically proven")
         if any(construction.producer_call is not None
                and construction.producer_call not in self.index.calls_in(
                    construction.producer_call.enclosing_callable)
@@ -415,7 +555,17 @@ def read_unet_stage_cells(graph: UNetStageExecutionGraph,
             if record.owner == symbol:
                 records_by_field.setdefault(record.field, []).append(record)
         for loop in expanded.loops_in(forward):
-            bindings = _iteration_bindings(loop.iterable, loop.target)
+            aliases = _iteration_aliases(expanded, loop)
+            alias_map = ({_binding_target(item): item for item in aliases}
+                         if aliases is not None else {})
+            builtin_names = tuple(sorted(_iteration_builtin_names(
+                loop.iterable, alias_map)))
+            bindings = (_iteration_bindings(
+                loop.iterable, loop.target, alias_map)
+                if aliases is not None else None)
+            if bindings is not None and any(not unshadowed_builtin(
+                    expanded, forward, name) for name in builtin_names):
+                bindings = None
             if bindings is None:
                 unresolved.append(UnresolvedStageChild(
                     stage, "unsupported_iteration",
@@ -456,7 +606,7 @@ def read_unet_stage_cells(graph: UNetStageExecutionGraph,
                     if constructions:
                         invocations.append(StageChildInvocation(
                             stage, "repeated", field, call, loop, target,
-                            tuple(constructions)))
+                            aliases, builtin_names, tuple(constructions)))
                     else:
                         unresolved.append(UnresolvedStageChild(
                             stage, "construction_incomplete",
@@ -476,7 +626,7 @@ def read_unet_stage_cells(graph: UNetStageExecutionGraph,
                     stage, "call_tainted", reason, (call.span,)))
                 continue
             invocations.append(StageChildInvocation(
-                stage, "direct", field, call, None, field, constructions))
+                stage, "direct", field, call, None, field, (), (), constructions))
         unresolved.append(UnresolvedStageChild(
             stage, "whole_callable_open",
             "positive child-call inventory; whole-callable CFG coverage is open",

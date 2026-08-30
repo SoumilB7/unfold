@@ -273,6 +273,7 @@ class UnresolvedStageTemplate:
 class UNetStageSelectionInventory:
     owner: OwnerOccurrenceId
     construction: UNetStageConstructionInventory
+    binding: DocumentBinding
     registration_result: ReaderResult[RegisteredConstructorConfig]
     stages: tuple[SelectedStageTemplate, ...]
     unresolved_templates: tuple[UnresolvedStageTemplate, ...]
@@ -280,6 +281,10 @@ class UNetStageSelectionInventory:
     def __post_init__(self) -> None:
         if self.construction.owner != self.owner:
             raise ValueError("stage selection consumes the exact construction inventory")
+        if not isinstance(self.binding, DocumentBinding) \
+                or self.binding.owner != "root" or self.binding.document_path \
+                or not self.binding.describes(self.binding.document):
+            raise ValueError("stage selection retains its prepared root document")
         if not isinstance(self.registration_result, ReaderResult) \
                 or self.registration_result.owner != self.owner:
             raise ValueError("stage selection retains the exact registration result")
@@ -554,7 +559,8 @@ def read_unet_stage_selection(
                 if item.topology_order not in represented)
 
     value = UNetStageSelectionInventory(
-        construction.owner, construction, registration_result, tuple(selected),
+        construction.owner, construction, binding, registration_result,
+        tuple(selected),
         tuple(sorted(unresolved, key=lambda item: item.topology_order)))
     spans = tuple(dict.fromkeys(
         span for stage in value.stages for span in stage.source.spans))

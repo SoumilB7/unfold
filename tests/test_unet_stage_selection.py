@@ -19,6 +19,9 @@ from model_unfolder.evidence.unet_stage_construction import (
 from model_unfolder.evidence.unet_stage_selection import (
     read_unet_stage_selection,
 )
+from model_unfolder.evidence.unet_stage_operands import (
+    read_unet_selected_stage_operands,
+)
 
 
 SOURCE = """
@@ -326,3 +329,47 @@ def test_real_sdxl_instantiates_six_exact_stage_occurrences():
     )
     assert result.value.unresolved_occurrences == ()
     assert result.value.unresolved_templates == ()
+
+    operands = read_unet_selected_stage_operands(
+        result.require_value())
+    assert operands.status == "incomplete"
+    down_channels = {
+        (item.selected.position, item.formal.name): item.value
+        for item in operands.value.operands
+        if item.selected.source.template.topology_stage.field == "down_blocks"
+        and item.formal.name in {"in_channels", "out_channels"}
+    }
+    assert down_channels == {
+        (0, "in_channels"): 320,
+        (0, "out_channels"): 320,
+        (1, "out_channels"): 640,
+        (2, "out_channels"): 1280,
+    }
+    loop_carried = tuple(
+        item for item in operands.value.issues
+        if item.selected.source.template.topology_stage.field == "down_blocks"
+        and item.formal is not None and item.formal.name == "in_channels")
+    assert [(item.selected.position, item.kind) for item in loop_carried] == [
+        (1, "local_lineage_unresolved"),
+        (2, "local_lineage_unresolved"),
+    ]
+    per_stage = {
+        (item.selected.source.template.topology_stage.field,
+         item.selected.position, item.formal.name): item.value
+        for item in operands.value.operands
+        if item.formal.name in {
+            "num_layers", "add_downsample", "add_upsample",
+            "cross_attention_dim",
+        }
+    }
+    assert tuple(per_stage[("down_blocks", position, "num_layers")]
+                 for position in range(3)) == (2, 2, 2)
+    assert tuple(per_stage[("up_blocks", position, "num_layers")]
+                 for position in range(3)) == (3, 3, 3)
+    assert tuple(per_stage[("down_blocks", position, "add_downsample")]
+                 for position in range(3)) == (True, True, False)
+    assert tuple(per_stage[("up_blocks", position, "add_upsample")]
+                 for position in range(3)) == (True, True, False)
+    assert tuple(per_stage[(field, position, "cross_attention_dim")]
+                 for field in ("down_blocks", "up_blocks")
+                 for position in range(3)) == (2048,) * 6

@@ -753,8 +753,8 @@ E2c context-capable lane; F1 selection alone cannot label any lane cross-attenti
 
 #### U11-F2a implementation state and sequencing correction
 
-Status: **ACTIVE; EVIDENCE-ONLY FOUNDATION** — runtime projection remains
-forbidden.
+Status: **DONE; EVIDENCE-ONLY FOUNDATION** — commit `e0fb168`; runtime
+projection remains forbidden pending F3 and F2b.
 
 The first F2 implementation pass established the exact neutral rail rather
 than forcing SDXL through a familiar cross-attention template:
@@ -804,6 +804,53 @@ occurrence mismatch.  This zero is an anti-laundering pin, not the desired final
 architecture.  F2b may turn rows into external K/V routes only after F3 closes
 the two prerequisites above.  No parser, fact, IR, renderer, parameter, debt,
 manifest or gallery consumer may use F2a directly.
+
+Coordinator receipt `7f327519ac` on
+`e0fb1680204eaf7511a4c92038e386f688d5d53c`:
+
+- static: PASS, eight changed Python files clean;
+- collection: 3,865 tests;
+- focused F2a/formal-route/constructor/nested-mechanism lane: 235 passed;
+- affected U2 authority lane: 44 passed;
+- preservation lane: 52 passed with zero structural/pixel drift;
+- full suite: 3,753 passed, 14 skipped, 2 expected xfails; and
+- every lane's complete-tree and source-artifact fingerprints were identical.
+
+#### U11-F3a implementation state
+
+Status: **ACTIVE; SELECTED-OPERAND AND ITERATION-ADDRESS FOUNDATION** — no
+sampler/cell-count architectural claim and no production consumer yet.
+
+F3a closes the two neutral prerequisites exposed by F2a without turning either
+one into architecture:
+
+- a callable-local iterable such as
+  `pairs = list(zip(self.left, self.right)); for left, right in pairs` is now
+  bound only through the exact reaching assignment, exact loop target and
+  lexically unshadowed Python wrapper names. Conditional, reassigned, cyclic,
+  stale, unused or shadowed routes remain `unsupported_iteration`. The carried
+  aliases and wrapper spellings recompute against the final ProgramIndex.
+- every F1-selected factory call now has an occurrence-exact operand inventory.
+  F1 retains the prepared root document that authored the selection, and F3
+  accepts no second independently supplied document.
+  Values are evaluated from the registered checkpoint document, exact loop
+  position/value, positively selected guards and exact local definition
+  lineage. A short parallel list is never filled; later loop iterations are
+  never inferred from a single lexical pass; class/default/config provenance
+  remains explicit. Builtin sequence protocols are a closed opt-in set and
+  every callable **and** `isinstance` type spelling must be lexically
+  unshadowed.
+
+The installed SDXL control currently proves, independently for all six selected
+stages, exact output channels `(320, 640, 1280)` down and `(1280, 640, 320)`
+up, cell-count operands `(2, 2, 2)` down and `(3, 3, 3)` up, external context
+width `2048`, and sampler-construction flags `(true, true, false)` on both
+paths. Later down-path input channels remain typed unresolved because source
+updates the previous-channel local across loop iterations; F3a does not yet
+provide a recurrence proof. These are constructor operands only. F3b must join
+them to the selected stage constructor and its exact executed child/container
+evidence before a cell count or sampler-presence fact exists. F2b may then use
+that same selected-constructor environment to close the nested attention route.
 
 ### U11-G — canonical projection and consumer cutover
 

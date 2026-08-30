@@ -14,6 +14,13 @@ from .program_index import ExprNode, SourceSpan, SymbolId
 
 
 MISSING = object()
+BUILTIN_PROTOCOLS = frozenset({
+    "isinstance", "len", "list", "tuple", "reversed", "min", "max",
+    # These names are accepted only as the second argument to ``isinstance``.
+    # Keeping them in the same caller-supplied lexical-proof set prevents a
+    # shadowed ``int``/``dict`` spelling from being treated as Python's type.
+    "bool", "int", "float", "str", "dict", "set",
+})
 
 
 @dataclass(frozen=True)
@@ -67,12 +74,21 @@ class ConfigExpressionEvaluator:
 
     def __init__(self, bindings, document, env=None, *,
                  allow_control_literals=False,
-                 allow_string_protocols=False):
+                 allow_string_protocols=False,
+                 allow_dynamic_sequence_index=False,
+                 allow_boolean_not=False,
+                 builtin_protocols=frozenset()):
         self.bindings = {item.parameter: item for item in bindings}
         self.document = document
         self.env = dict(env or {})
         self.allow_control_literals = bool(allow_control_literals)
         self.allow_string_protocols = bool(allow_string_protocols)
+        self.allow_dynamic_sequence_index = bool(
+            allow_dynamic_sequence_index)
+        self.allow_boolean_not = bool(allow_boolean_not)
+        self.builtin_protocols = frozenset(builtin_protocols)
+        if not self.builtin_protocols <= BUILTIN_PROTOCOLS:
+            raise ValueError("expression builtin protocols are a closed set")
 
     def expression(self, expr: ExprNode | None) -> EvaluatedExpression | None:
         if expr is None:
@@ -129,6 +145,47 @@ class ConfigExpressionEvaluator:
                 return (
                     combined(evaluated.value, expr, evaluated)
                     if evaluated is not None else None)
+        if expr.kind == "call" and expr.children \
+                and expr.children[0].kind == "name" \
+                and expr.children[0].name in self.builtin_protocols \
+                and not expr.keyword_children:
+            protocol = expr.children[0].name
+            arguments = expr.children[1:]
+            if protocol == "isinstance" and len(arguments) == 2:
+                value = self.expression(arguments[0])
+                expected = _builtin_types(
+                    arguments[1], self.builtin_protocols)
+                if value is None or expected is None:
+                    return None
+                return combined(
+                    isinstance(value.value, expected), expr, value)
+            values = tuple(self.expression(item) for item in arguments)
+            if any(item is None for item in values):
+                return None
+            try:
+                if protocol == "len" and len(values) == 1 \
+                        and isinstance(values[0].value,
+                                       (str, tuple, list, dict, set)):
+                    result = len(values[0].value)
+                elif protocol in {"list", "tuple", "reversed"} \
+                        and len(values) == 1 \
+                        and isinstance(values[0].value,
+                                       (str, tuple, list, range)):
+                    sequence = values[0].value
+                    result = (list(sequence) if protocol == "list" else
+                              tuple(sequence) if protocol == "tuple" else
+                              tuple(reversed(sequence)))
+                elif protocol in {"min", "max"} and values:
+                    operands = (values[0].value
+                                if len(values) == 1
+                                and isinstance(values[0].value, (tuple, list))
+                                else tuple(item.value for item in values))
+                    result = min(operands) if protocol == "min" else max(operands)
+                else:
+                    return None
+            except (TypeError, ValueError):
+                return None
+            return combined(result, expr, *values)
         if self.allow_string_protocols and expr.kind == "call" \
                 and expr.children:
             callee, *arguments = expr.children
@@ -164,6 +221,18 @@ class ConfigExpressionEvaluator:
                         receiver.value[selector.const_value], expr, receiver,
                         EvaluatedExpression(
                             selector.const_value, spans=spans(selector.span)))
+                except IndexError:
+                    return None
+            evaluated_selector = (self.expression(selector)
+                                  if self.allow_dynamic_sequence_index
+                                  else None)
+            if evaluated_selector is not None \
+                    and isinstance(evaluated_selector.value, int) \
+                    and not isinstance(evaluated_selector.value, bool):
+                try:
+                    return combined(
+                        receiver.value[evaluated_selector.value], expr,
+                        receiver, evaluated_selector)
                 except IndexError:
                     return None
             if selector.kind == "slice" and len(selector.children) == 3:
@@ -203,7 +272,11 @@ class ConfigExpressionEvaluator:
             return combined(value, expr, left, right)
         if expr.kind == "unaryop" and len(expr.children) == 1:
             child = self.expression(expr.children[0])
-            if child is None or expr.operator not in {"+", "-"}:
+            if child is None:
+                return None
+            if self.allow_boolean_not and expr.operator == "not":
+                return combined(not child.value, expr, child)
+            if expr.operator not in {"+", "-"}:
                 return None
             try:
                 value = +child.value if expr.operator == "+" else -child.value
@@ -550,6 +623,22 @@ def lookup(document, path):
     return current
 
 
+def _builtin_types(expression, proven_names):
+    mapping = {
+        "bool": bool, "int": int, "float": float, "str": str,
+        "list": list, "tuple": tuple, "dict": dict, "set": set,
+    }
+    if expression.kind == "name":
+        return (mapping.get(expression.name)
+                if expression.name in proven_names else None)
+    if expression.kind in {"tuple", "list"}:
+        values = tuple(_builtin_types(item, proven_names)
+                       for item in expression.children)
+        if values and all(item is not None for item in values):
+            return values
+    return None
+
+
 def scoped_document(document, path):
     """Return the exact component document addressed by ``path``."""
     value = lookup(document, tuple(path))
@@ -622,7 +711,7 @@ def _premise_values_agree(left, right):
 
 
 __all__ = [
-    "ConfigExpressionEvaluator", "EvaluatedExpression", "MISSING",
+    "BUILTIN_PROTOCOLS", "ConfigExpressionEvaluator", "EvaluatedExpression", "MISSING",
     "canonical_alias_view",
     "callable_argument_env", "combined", "construction_guard_evidence",
     "construction_guard_state",

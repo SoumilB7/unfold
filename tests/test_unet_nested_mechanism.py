@@ -530,14 +530,13 @@ def test_real_sdxl_preserves_rival_transformer_routes_and_framework_attention():
         ("incomplete_graph",)}
     assert len({line for line, _target, _kinds in input_role_failures}) == 3
 
-    # F2a now carries the exact formal-route rail and the previously omitted
-    # Transformer2D -> BasicTransformerBlock runtime calls.  It must still
-    # refuse to call SDXL cross-attention at this point: the selected stage's
-    # per-position constructor operands are not yet bound, so
-    # ``is_input_continuous`` cannot exclude the patched-input rewrite, and D1
-    # does not yet bind the down-path zip(resnets, attentions) loop.  F3 owns
-    # those exact occurrence/config operands; zero here is the permanent
-    # anti-laundering control, not a desired final architecture answer.
+    # F2a carries the exact formal-route rail and F3a now binds both aliases in
+    # the down/up ``zip(resnets, attentions)`` loops.  That closes six selected
+    # stage occurrences over six exact unresolved lane routes (36 total), but
+    # it still must not call SDXL cross-attention: the selected child
+    # constructor operands have not yet excluded the patched-input rewrite.
+    # Zero sources is the permanent anti-laundering control; the issue count is
+    # an occurrence-exact census, not a family-level expectation.
     config = json.loads(Path(
         "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json"
     ).read_text(encoding="utf-8"))["config"]
@@ -549,6 +548,6 @@ def test_real_sdxl_preserves_rival_transformer_routes_and_framework_attention():
         selection.require_value(), value, root)
     assert runtime.status == "incomplete"
     assert runtime.require_value().sources == ()
-    assert len(runtime.require_value().issues) == 18
+    assert len(runtime.require_value().issues) == 36
     assert {item.kind for item in runtime.require_value().issues} == {
         "lane_route_unresolved"}

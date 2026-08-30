@@ -223,3 +223,111 @@ def test_string_protocol_rejects_dynamic_prefix_and_noninteger_slice(tmp_path):
         (), {}, {"choice": EvaluatedExpression("X:dense")},
         allow_string_protocols=True)
     assert all(evaluator.expression(item) is None for item in values)
+
+
+def test_exact_environment_integer_can_select_sequence_position(tmp_path):
+    index, _graph_value = _graph(tmp_path, """
+        class Root:
+            def __init__(self, values, position):
+                selected = values[position]
+    """)
+    expression = next(item.value for item in index.bindings
+                      if item.value is not None and item.value.kind == "subscript")
+    env = {
+        "values": EvaluatedExpression([11, 29]),
+        "position": EvaluatedExpression(1),
+    }
+    assert ConfigExpressionEvaluator((), {}, env).expression(expression) is None
+    assert ConfigExpressionEvaluator(
+        (), {}, env, allow_string_protocols=True).expression(expression) is None
+    result = ConfigExpressionEvaluator(
+        (), {}, env, allow_string_protocols=True,
+        allow_dynamic_sequence_index=True).expression(expression)
+    assert result is not None and result.value == 29
+
+
+def test_boolean_or_out_of_range_selector_stays_unknown(tmp_path):
+    index, _graph_value = _graph(tmp_path, """
+        class Root:
+            def __init__(self, values, position):
+                selected = values[position]
+    """)
+    expression = next(item.value for item in index.bindings
+                      if item.value is not None and item.value.kind == "subscript")
+    for selector in (True, 8):
+        assert ConfigExpressionEvaluator((), {}, {
+            "values": EvaluatedExpression([11, 29]),
+            "position": EvaluatedExpression(selector),
+        }, allow_string_protocols=True,
+           allow_dynamic_sequence_index=True).expression(expression) is None
+
+
+def test_closed_builtin_sequence_protocols_are_separately_opt_in(tmp_path):
+    index, _graph_value = _graph(tmp_path, """
+        class Root:
+            def __init__(self, values):
+                a = isinstance(values, tuple)
+                b = len(values)
+                c = list(reversed(values))
+                d = min(1, b)
+    """)
+    expressions = {next(iter(item.targets)).name: item.value
+                   for item in index.bindings if item.value is not None}
+    env = {"values": EvaluatedExpression((7, 9))}
+    assert all(ConfigExpressionEvaluator(
+        (), {}, env, allow_control_literals=True).expression(item) is None
+               for item in expressions.values())
+    evaluator = ConfigExpressionEvaluator(
+        (), {}, env, allow_control_literals=True,
+        builtin_protocols={
+            "isinstance", "len", "list", "tuple", "reversed", "min"})
+    values = {}
+    for name in ("a", "b", "c", "d"):
+        result = evaluator.expression(expressions[name])
+        assert result is not None
+        evaluator.env[name] = result
+        values[name] = result.value
+    assert values == {"a": True, "b": 2, "c": [9, 7], "d": 1}
+
+
+def test_isinstance_type_spelling_requires_its_own_lexical_proof(tmp_path):
+    index, _graph_value = _graph(tmp_path, """
+        class Root:
+            def __init__(self, value):
+                active = isinstance(value, int)
+    """)
+    expression = next(item.value for item in index.bindings
+                      if item.value is not None)
+    env = {"value": EvaluatedExpression(4)}
+    assert ConfigExpressionEvaluator(
+        (), {}, env, builtin_protocols={"isinstance"}) \
+        .expression(expression) is None
+    result = ConfigExpressionEvaluator(
+        (), {}, env, builtin_protocols={"isinstance", "int"}) \
+        .expression(expression)
+    assert result is not None and result.value is True
+
+
+def test_unknown_builtin_protocol_name_is_rejected():
+    import pytest
+
+    with pytest.raises(ValueError, match="closed set"):
+        ConfigExpressionEvaluator((), {}, builtin_protocols={"sorted"})
+
+
+def test_boolean_not_is_control_literal_opt_in(tmp_path):
+    index, _graph_value = _graph(tmp_path, """
+        class Root:
+            def __init__(self, final):
+                active = not final
+    """)
+    expression = next(item.value for item in index.bindings
+                      if item.value is not None)
+    env = {"final": EvaluatedExpression(False)}
+    assert ConfigExpressionEvaluator((), {}, env).expression(expression) is None
+    assert ConfigExpressionEvaluator(
+        (), {}, env, allow_control_literals=True).expression(expression) is None
+    result = ConfigExpressionEvaluator(
+        (), {}, env, allow_control_literals=True,
+        allow_boolean_not=True).expression(expression)
+    assert result is not None and result.value is True
