@@ -8,6 +8,7 @@ import textwrap
 import pytest
 
 from model_unfolder.evidence.constructor_fields import (
+    DerivedConstructorFieldValue,
     resolve_effective_constructor_field,
 )
 from model_unfolder.evidence.constructor_values import (
@@ -74,7 +75,6 @@ def test_complete_class_field_and_formal_renaming_is_powerless(tmp_path):
 
 
 @pytest.mark.parametrize("old,new", [
-    ("self.saved = choice", "self.saved = not choice"),
     ("self.saved = choice", "self.saved = helper(choice)"),
     ("self.saved = choice", "if choice:\n            self.saved = choice"),
     ("self.saved = choice", "self.saved = choice\n        self.saved = False"),
@@ -83,6 +83,43 @@ def test_complete_class_field_and_formal_renaming_is_powerless(tmp_path):
 def test_nonformal_guarded_and_rival_field_writes_remain_unknown(
         tmp_path, old, new):
     assert _read(tmp_path, SOURCE.replace(old, new)).status == "failed"
+
+
+def test_exact_derived_boolean_field_uses_resolved_formals(tmp_path):
+    source = SOURCE.replace(
+        "self.saved = choice",
+        "self.saved = (choice is not None) and (other is None)").replace(
+            "def __init__(self, choice=False):",
+            "def __init__(self, choice=False, other=None):")
+    value = _read(tmp_path, source).require_value()
+    assert isinstance(value, DerivedConstructorFieldValue)
+    assert value.value is True
+    assert [item.parameter.name for item in value.parameters] == [
+        "choice", "other"]
+
+
+def test_derived_field_refuses_dynamic_or_unresolved_input(tmp_path):
+    source = SOURCE.replace(
+        "self.saved = choice", "self.saved = choice and runtime()")
+    assert _read(tmp_path, source).status == "failed"
+
+
+def test_derived_field_refuses_a_rebound_formal(tmp_path):
+    source = SOURCE.replace(
+        "self.saved = choice",
+        "choice = not choice\n        self.saved = choice and True")
+    assert _read(tmp_path, source).status == "failed"
+
+
+def test_derived_field_dto_recomputes_value_and_provenance(tmp_path):
+    source = SOURCE.replace(
+        "self.saved = choice", "self.saved = choice and True")
+    value = _read(tmp_path, source).require_value()
+    assert isinstance(value, DerivedConstructorFieldValue)
+    with pytest.raises(ValueError, match="recomputed"):
+        replace(value, derived_value=not value.derived_value)
+    with pytest.raises(ValueError, match="recomputed"):
+        replace(value, evaluation_spans=())
 
 
 def test_unaddressed_sibling_field_cannot_be_selected(tmp_path):

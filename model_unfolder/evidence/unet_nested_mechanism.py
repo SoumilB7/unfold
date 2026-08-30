@@ -46,7 +46,14 @@ from .import_source import (
     canonical_called_import_target,
     resolve_called_import_source,
 )
-from .program_index import ConstructionSite, ExprNode, ProgramIndex, SourceSpan, SymbolId
+from .program_index import (
+    CallObservation,
+    ConstructionSite,
+    ExprNode,
+    ProgramIndex,
+    SourceSpan,
+    SymbolId,
+)
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
 from .unet_cell_mechanism import (
     CellCandidateOccurrenceId,
@@ -94,12 +101,14 @@ class AlternativeCellRoot:
     symbol: SymbolId
     rival_sites: tuple[ConstructionSite, ...]
     candidate: StageClassCandidate
+    invocation: CallObservation
 
     def __post_init__(self) -> None:
         if not isinstance(self.parent, CellCandidateOccurrenceId) \
                 or not self.field or not isinstance(self.site, ConstructionSite) \
                 or not isinstance(self.symbol, SymbolId) \
-                or not isinstance(self.candidate, StageClassCandidate):
+                or not isinstance(self.candidate, StageClassCandidate) \
+                or not isinstance(self.invocation, CallObservation):
             raise TypeError("an alternative root retains cell/field/site/symbol")
         if len(self.rival_sites) < 2 or self.site not in self.rival_sites:
             raise ValueError("an alternative root preserves the complete rival set")
@@ -111,6 +120,9 @@ class AlternativeCellRoot:
                 or self.candidate.call is None \
                 or self.candidate.call.span != self.site.span:
             raise ValueError("the alternative carries its exact U11-A1 route")
+        if self.invocation.owner != self.parent.symbol \
+                or self.invocation.span is None:
+            raise ValueError("the alternative retains its authoritative runtime call")
 
 
 @dataclass(frozen=True)
@@ -374,7 +386,8 @@ def _alternative_roots(index, bundle, parent, unresolved):
         candidates, _issues, expanded = resolve_stage_constructor_candidates(
             expanded, bundle, parent.symbol.source.component_key, call)
         rows.extend(AlternativeCellRoot(
-            parent, rival.field, site, candidate.symbol, sites, candidate)
+            parent, rival.field, site, candidate.symbol, sites, candidate,
+            unresolved.call)
             for candidate in candidates)
     return tuple(rows), expanded
 

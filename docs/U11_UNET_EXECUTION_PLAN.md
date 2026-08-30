@@ -751,6 +751,60 @@ F1 has no parser, fact, IR, renderer, parameter, debt, manifest or gallery
 consumer.  U11-F2 must now prove the non-`None` runtime source reaching each
 E2c context-capable lane; F1 selection alone cannot label any lane cross-attention.
 
+#### U11-F2a implementation state and sequencing correction
+
+Status: **ACTIVE; EVIDENCE-ONLY FOUNDATION** — runtime projection remains
+forbidden.
+
+The first F2 implementation pass established the exact neutral rail rather
+than forcing SDXL through a familiar cross-attention template:
+
+- `FormalBindingEdge` proves one exact caller formal → call actual → callee
+  formal edge with complete call/dataflow provenance.  `FormalSourceRoute`
+  composes only contiguous edges and cannot skip a callable or merge roots.
+  This is deliberately a source-template relation inside one addressed
+  component; the surrounding F1/D/E evidence, not this neutral rail, supplies
+  runtime construction-occurrence identity.
+- Expanded `**kwargs` may coexist with an explicitly supplied target formal
+  because Python raises on a duplicate; an expanded mapping alone cannot prove
+  an omitted target.
+- A non-`None` external interface contract requires both a required formal and
+  a non-optional source annotation.  A missing annotation, `Optional`,
+  `T | None`, `=None`, literal `None`, multiple roots or unresolved guard stays
+  unproven.
+- E1's `AlternativeCellRoot` now retains the authoritative runtime invocation
+  that produced its rival constructor-container route.  Previously it retained
+  the constructor sites but omitted the exact Transformer2D→block call needed
+  by F2.
+- Constructor fields now have a typed neutral derived-expression proof for one
+  unguarded expression over exact constructor formals.  This closes literal
+  boolean formulas without adding field-name or model-family semantics.
+
+The real SDXL counterexample exposed two genuine prerequisites, so the original
+F2→F3 order is corrected to **F2a rail → F3 occurrence/config operands → F2b
+closure → F4**:
+
+1. The selected Transformer2D occurrence declares
+   `is_input_continuous = (in_channels is not None) and (patch_size is None)`.
+   Its exact `in_channels` value is forwarded from a selected stage position;
+   F1 binds only the stage-class selector, not the parallel per-position
+   constructor operands.  Without F3's occurrence/config binding, the patched
+   input branch can still rewrite `encoder_hidden_states`, so F2 must not clear
+   that rival.
+2. The down path iterates `list(zip(self.resnets, self.attentions))`.  U11-D1
+   does not yet bind that derived iterable to the two source containers, so its
+   nested attention occurrence is absent.  F3 must add a neutral exact zip
+   binding; F2 may not infer the missing down-path lane from the selected class
+   or its `has_cross_attention` field.
+
+Accordingly the installed SDXL control currently emits **zero** runtime-source
+claims and 18 typed `lane_route_unresolved` rows for the source-visible up-path
+alternatives.  The optional fuser's own lane is separately rejected by exact
+occurrence mismatch.  This zero is an anti-laundering pin, not the desired final
+architecture.  F2b may turn rows into external K/V routes only after F3 closes
+the two prerequisites above.  No parser, fact, IR, renderer, parameter, debt,
+manifest or gallery consumer may use F2a directly.
+
 ### U11-G — canonical projection and consumer cutover
 
 Build one closed typed projection over U11-A..F. It must carry exact owners,
@@ -907,7 +961,7 @@ Stop and report before proceeding if:
 | U11-C execution/skip DAG | DONE | `d7f7bae`; exact repeated-stage nodes; exact guarded inter-loop constructed-call occurrences; one U10 skip edge; unsupported/unreachable calls and all non-proven order remain typed unresolved; real SDXL retains both guarded direct invocations without using `mid_block` semantics; committed-tree coordinator: focused 362, U2 authority 44, preservation 52, full 3,553 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-D ResNet/temporal cells | DONE — EVIDENCE-ONLY | `be64cce` + `5efd851` + `bdf2204` + containment correction `43e4e53`; exact child inventory, local mechanisms and neutral reshape→Conv3d→blend proof; real SDXL and spatio-temporal UNet qualify without role spellings; initial gate caught and removed cross-domain projector widening; final coordinator: focused 265, U2 authority 44, preservation 52, full 3,574 passed / 14 skipped / 2 xfailed, every fingerprint and source-artifact digest identical; root frame-axis semantic join remains correctly deferred to U11-G |
 | U11-E attention/transformer/FFN | ACTIVE — E1 + E2a + E2b DONE, E2c IN PROGRESS | `6b0c979` exact nested-mechanism inventory; `eb9e2f8` mechanism-neutral exact constructor-value transport; `980a9fe` code-selected fused gated FFN proof with exact last-axis split; all three installed-SDXL transformer rivals independently resolve the same operand and mechanism without token/class/model semantics; E2b coordinator: focused 305, U2 authority 44, preservation 52, full 3,640 passed / 14 skipped / 2 xfailed, every tree/artifact fingerprint identical; attention input roles and all production consumers remain unprojected |
-| U11-F sampler/bookend/conditioning | ACTIVE | F1 DONE (`e3aa738`); F2–F4 pending |
+| U11-F sampler/bookend/conditioning | ACTIVE | F1 DONE (`e3aa738`); F2a rail built, F3 prerequisites then F2b/F4 pending |
 | U11-G projection/cutover | PENDING | — |
 | U11-H legacy deletion | PENDING | — |
 | U11-I qualification/artifacts | PENDING | — |

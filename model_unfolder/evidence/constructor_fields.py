@@ -77,6 +77,64 @@ class EffectiveConstructorFieldValue:
 
 
 @dataclass(frozen=True)
+class DerivedConstructorFieldValue:
+    """One exact unguarded field expression over resolved constructor formals."""
+
+    frame: ConstructorFrame
+    field: str
+    assignment: FieldAssignRecord
+    parameters: tuple[EffectiveConstructorValue, ...]
+    derived_value: object
+    evaluation_spans: tuple[SourceSpan, ...]
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.frame, ConstructorFrame) \
+                or not self.field or not isinstance(
+                    self.assignment, FieldAssignRecord) \
+                or self.assignment.owner != self.frame.target.symbol \
+                or self.assignment.enclosing_callable != self.frame.constructor.symbol \
+                or self.assignment.field != self.field \
+                or self.assignment.guard \
+                or self.assignment.value.kind in {"name", "unsupported"}:
+            raise ValueError("a derived field is one exact unguarded expression")
+        if tuple(sorted(self.parameters,
+                        key=lambda item: item.parameter.name)) != self.parameters \
+                or len({item.parameter.name for item in self.parameters}) \
+                != len(self.parameters) \
+                or any(item.frame != self.frame for item in self.parameters):
+            raise ValueError("derived field parameters are exact and unique")
+        env = {
+            item.parameter.name: EvaluatedExpression(
+                item.value, spans=item.spans)
+            for item in self.parameters
+        }
+        evaluated = ConfigExpressionEvaluator(
+            (), {}, env, allow_control_literals=True).expression(
+                self.assignment.value)
+        if evaluated is None or evaluated.value != self.derived_value \
+                or tuple(evaluated.spans) != self.evaluation_spans:
+            raise ValueError("derived field value is recomputed from exact inputs")
+        required = {
+            self.assignment.span, self.assignment.value.span,
+            *self.evaluation_spans,
+            *(span for item in self.parameters for span in item.spans),
+        }
+        if None in required or not required <= set(self.spans) \
+                or any(not isinstance(item, SourceSpan) for item in self.spans):
+            raise ValueError("derived-field provenance closes expression + inputs")
+
+    @property
+    def value(self):
+        return self.derived_value
+
+    @property
+    def source_kind(self) -> str:
+        kinds = {item.source_kind for item in self.parameters}
+        return "class_default" if kinds == {"class_default"} else "derived"
+
+
+@dataclass(frozen=True)
 class ConstructorFieldAssignmentDecision:
     """One exact constructor field write classified active or inactive."""
 
@@ -149,7 +207,9 @@ def resolve_effective_constructor_field(
         index: ProgramIndex,
         frame: ConstructorFrame,
         field: str,
-) -> ReaderResult[EffectiveConstructorFieldValue]:
+) -> ReaderResult[
+        EffectiveConstructorFieldValue | GuardedConstructorFieldValue |
+        DerivedConstructorFieldValue]:
     """Resolve one explicitly-addressed instance field without role semantics."""
     if not isinstance(index, ProgramIndex) \
             or not isinstance(frame, ConstructorFrame) \
@@ -168,6 +228,10 @@ def resolve_effective_constructor_field(
     assignment = assignments[0]
     if assignment.guard or assignment.value.kind != "name" \
             or not assignment.value.name:
+        if not assignment.guard:
+            derived = _resolve_derived_field(index, frame, field, assignment)
+            if derived.status == "resolved":
+                return derived
         guarded = _resolve_guarded_literal_field(
             index, frame, field, assignments)
         if guarded.status == "resolved":
@@ -214,6 +278,61 @@ def resolve_effective_constructor_field(
         provenance=(ReaderProvenance(
             "source", spans=spans,
             detail="exact self-field -> constructor-formal -> literal route"),))
+
+
+def _resolve_derived_field(index, frame, field, assignment):
+    ordinary = {
+        item.name: item for item in frame.constructor.params
+        if item.name != "self" and item.kind not in {"vararg", "kwarg"}}
+    names = sorted(name for name in _names(assignment.value)
+                   if name in ordinary)
+    if not names:
+        return ReaderResult.failed(frame.graph.root.occurrence, (ReaderFailure(
+            "incomplete_graph",
+            "derived constructor field has no exact formal inputs",
+            assignment.span),))
+    parameters = []
+    env = {}
+    for name in names:
+        prior_mutations = tuple(
+            item for item in index.bindings_in(frame.constructor.symbol)
+            if _span_before(item.span, assignment.span)
+            and any(_target_contains_name(target, name)
+                    for target in item.targets))
+        if prior_mutations:
+            return ReaderResult.failed(frame.graph.root.occurrence, (
+                ReaderFailure(
+                    "conflict",
+                    f"derived field formal {name!r} is rebound before use",
+                    prior_mutations[-1].span),))
+        result = resolve_effective_constructor_parameter(index, frame, name)
+        if result.status != "resolved":
+            return ReaderResult.failed(frame.graph.root.occurrence, (ReaderFailure(
+                "incomplete_graph",
+                f"derived field formal {name!r} has no exact value",
+                assignment.span),))
+        value = result.require_value()
+        parameters.append(value)
+        env[name] = EvaluatedExpression(value.value, spans=value.spans)
+    evaluated = ConfigExpressionEvaluator(
+        (), {}, env, allow_control_literals=True).expression(assignment.value)
+    if evaluated is None:
+        return ReaderResult.failed(frame.graph.root.occurrence, (ReaderFailure(
+            "incomplete_graph", "constructor field expression is not evaluable",
+            assignment.span),))
+    spans = tuple(dict.fromkeys(span for span in (
+        assignment.span, assignment.value.span, *evaluated.spans,
+        *(span for item in parameters for span in item.spans),
+    ) if isinstance(span, SourceSpan)))
+    value = DerivedConstructorFieldValue(
+        frame, field, assignment, tuple(sorted(
+            parameters, key=lambda item: item.parameter.name)),
+        evaluated.value, tuple(evaluated.spans), spans)
+    return ReaderResult.resolved(
+        frame.graph.root.occurrence, value,
+        provenance=(ReaderProvenance(
+            "source", spans=spans,
+            detail="exact constructor-formal expression -> instance field"),))
 
 
 def _resolve_guarded_literal_field(index, frame, field, assignments):
@@ -302,6 +421,7 @@ def _span_before(left, right):
 
 __all__ = [
     "ConstructorFieldAssignmentDecision",
+    "DerivedConstructorFieldValue",
     "EffectiveConstructorFieldValue",
     "GuardedConstructorFieldValue",
     "resolve_effective_constructor_field",

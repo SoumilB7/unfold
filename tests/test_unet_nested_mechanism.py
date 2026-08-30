@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import textwrap
+import json
 from dataclasses import replace
 from pathlib import Path
 
@@ -27,6 +28,7 @@ from model_unfolder.evidence.constructor_values import (
     resolve_effective_constructor_parameter,
 )
 from model_unfolder.evidence.diffusion_root import read_diffusion_root_topology
+from model_unfolder.evidence.document import DocumentBinding, prepare_document
 from model_unfolder.evidence.execution_flow import (
     resolve_addressed_invocations_in_graph,
 )
@@ -44,11 +46,15 @@ from model_unfolder.evidence.unet_nested_mechanism import (
     AlternativeNestedOccurrenceId,
     read_unet_nested_mechanisms,
 )
+from model_unfolder.evidence.unet_attention_source import (
+    read_unet_runtime_attention_sources,
+)
 from model_unfolder.evidence.unet_stage_cells import read_unet_stage_cells
 from model_unfolder.evidence.unet_stage_construction import (
     read_unet_stage_construction,
 )
 from model_unfolder.evidence.unet_stage_execution import read_unet_stage_execution
+from model_unfolder.evidence.unet_stage_selection import read_unet_stage_selection
 
 
 ROOT = """
@@ -159,7 +165,7 @@ def _bundle(tmp_path, *, stages=STAGES, cells=CELLS):
     )
 
 
-def _read(bundle):
+def _read_layers(bundle):
     index = build_program_index(bundle)
     root = resolve_component_root(index, bundle, "root")
     topology = read_diffusion_root_topology(index, root).require_value()
@@ -168,7 +174,11 @@ def _read(bundle):
     execution = read_unet_stage_execution(stages, bundle, root).require_value()
     cells = read_unet_stage_cells(execution, bundle).require_value()
     mechanisms = read_unet_cell_mechanisms(cells).require_value()
-    return read_unet_nested_mechanisms(mechanisms)
+    return root, stages, read_unet_nested_mechanisms(mechanisms)
+
+
+def _read(bundle):
+    return _read_layers(bundle)[-1]
 
 
 def _for_parent(result, name="NestedCell"):
@@ -368,7 +378,8 @@ def test_real_sdxl_preserves_rival_transformer_routes_and_framework_attention():
         component_architectures={"root": "UNet2DConditionModel"},
         import_roots={"root": (SourceImportRoot("diffusers", str(package)),)},
     )
-    value = _read(bundle).require_value()
+    root, stage_construction, nested_result = _read_layers(bundle)
+    value = nested_result.require_value()
     transformer = tuple(
         item for item in value.mechanisms
         if (item.occurrence_id.parent
@@ -394,6 +405,8 @@ def test_real_sdxl_preserves_rival_transformer_routes_and_framework_attention():
     assert alternatives
     assert len({item.site for item in alternatives}) == 3
     assert all(len(item.rival_sites) == 3 for item in alternatives)
+    assert all(item.invocation.owner == item.parent.symbol
+               for item in alternatives)
     # FeedForward selects both dense and gated activation classes from the
     # activation_fn operand.  Source alone does not prove SDXL's checkpoint
     # choice, so E1 must not manufacture GEGLU/gating before the config join.
@@ -516,3 +529,26 @@ def test_real_sdxl_preserves_rival_transformer_routes_and_framework_attention():
     assert {kinds for _line, _target, kinds in input_role_failures} == {
         ("incomplete_graph",)}
     assert len({line for line, _target, _kinds in input_role_failures}) == 3
+
+    # F2a now carries the exact formal-route rail and the previously omitted
+    # Transformer2D -> BasicTransformerBlock runtime calls.  It must still
+    # refuse to call SDXL cross-attention at this point: the selected stage's
+    # per-position constructor operands are not yet bound, so
+    # ``is_input_continuous`` cannot exclude the patched-input rewrite, and D1
+    # does not yet bind the down-path zip(resnets, attentions) loop.  F3 owns
+    # those exact occurrence/config operands; zero here is the permanent
+    # anti-laundering control, not a desired final architecture answer.
+    config = json.loads(Path(
+        "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json"
+    ).read_text(encoding="utf-8"))["config"]
+    selection = read_unet_stage_selection(
+        stage_construction, root,
+        DocumentBinding("root", (), prepare_document(config, merge=False)))
+    assert selection.status == "resolved"
+    runtime = read_unet_runtime_attention_sources(
+        selection.require_value(), value, root)
+    assert runtime.status == "incomplete"
+    assert runtime.require_value().sources == ()
+    assert len(runtime.require_value().issues) == 18
+    assert {item.kind for item in runtime.require_value().issues} == {
+        "lane_route_unresolved"}

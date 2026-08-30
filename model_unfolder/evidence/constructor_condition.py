@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .constructor_fields import (
+    DerivedConstructorFieldValue,
     EffectiveConstructorFieldValue,
     GuardedConstructorFieldValue,
     resolve_effective_constructor_field,
@@ -41,7 +42,8 @@ class ConstructorBranchDecision:
     decision: bool
     selected: ExprNode
     fields: tuple[
-        EffectiveConstructorFieldValue | GuardedConstructorFieldValue, ...]
+        EffectiveConstructorFieldValue | GuardedConstructorFieldValue |
+        DerivedConstructorFieldValue, ...]
     spans: tuple[SourceSpan, ...]
 
     def __post_init__(self) -> None:
@@ -56,7 +58,8 @@ class ConstructorBranchDecision:
         if any(not isinstance(
                 item,
                 (EffectiveConstructorFieldValue,
-                 GuardedConstructorFieldValue))
+                 GuardedConstructorFieldValue,
+                 DerivedConstructorFieldValue))
                for item in self.fields) \
                 or tuple(sorted(
                     self.fields, key=lambda item: item.field)) != self.fields \
@@ -125,7 +128,8 @@ class ConstructorGuardDecision:
     tests: tuple[ExprNode, ...]
     decision: bool
     fields: tuple[
-        EffectiveConstructorFieldValue | GuardedConstructorFieldValue, ...]
+        EffectiveConstructorFieldValue | GuardedConstructorFieldValue |
+        DerivedConstructorFieldValue, ...]
     parameters: tuple[EffectiveConstructorValue, ...]
     spans: tuple[SourceSpan, ...]
 
@@ -150,7 +154,8 @@ class ConstructorGuardDecision:
         if any(not isinstance(
                 item,
                 (EffectiveConstructorFieldValue,
-                 GuardedConstructorFieldValue))
+                 GuardedConstructorFieldValue,
+                 DerivedConstructorFieldValue))
                for item in self.fields) \
                 or tuple(sorted(
                     self.fields, key=lambda item: item.field)) != self.fields \
