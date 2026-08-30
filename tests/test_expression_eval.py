@@ -315,6 +315,24 @@ def test_unknown_builtin_protocol_name_is_rejected():
         ConfigExpressionEvaluator((), {}, builtin_protocols={"sorted"})
 
 
+def test_range_protocol_is_exact_and_separately_opt_in(tmp_path):
+    index, _graph_value = _graph(tmp_path, """
+        class Root:
+            def __init__(self, start, stop):
+                values = range(start, stop)
+    """)
+    expression = next(item.value for item in index.bindings
+                      if item.value is not None)
+    env = {"start": EvaluatedExpression(2), "stop": EvaluatedExpression(5)}
+    assert ConfigExpressionEvaluator((), {}, env).expression(expression) is None
+    result = ConfigExpressionEvaluator(
+        (), {}, env, builtin_protocols={"range"}).expression(expression)
+    assert result is not None and tuple(result.value) == (2, 3, 4)
+    assert ConfigExpressionEvaluator((), {}, {
+        "start": EvaluatedExpression(True), "stop": EvaluatedExpression(5),
+    }, builtin_protocols={"range"}).expression(expression) is None
+
+
 def test_boolean_not_is_control_literal_opt_in(tmp_path):
     index, _graph_value = _graph(tmp_path, """
         class Root:

@@ -848,9 +848,44 @@ width `2048`, and sampler-construction flags `(true, true, false)` on both
 paths. Later down-path input channels remain typed unresolved because source
 updates the previous-channel local across loop iterations; F3a does not yet
 provide a recurrence proof. These are constructor operands only. F3b must join
-them to the selected stage constructor and its exact executed child/container
-evidence before a cell count or sampler-presence fact exists. F2b may then use
+them to the selected stage constructor and its exact child construction/call
+addresses before a cell count or sampler-presence fact exists. F2b may then use
 that same selected-constructor environment to close the nested attention route.
+
+F3b transports that inventory through each selected factory-return call into
+the exact selected stage initializer. It accepts only exact Python binding and
+three closed forms: one factory-formal forward, one literal actual, or one
+omitted evaluable source default. Expanded arguments, transformed expressions,
+missing required formals and unresolved F3a values stay typed issues. The real
+SDXL route preserves 103 exact selected-constructor values, including all six
+cell-count and sampler-flag formals. The external-context width reaches only the
+four selected constructors that actually declare that formal; it is not copied
+onto the two plain constructors merely because the root factory carries it.
+Ten unrelated or loop-recurrent values remain explicit issues. This still does
+not assert a cell count or sampler. F3c must join the selected constructor environment to the
+exact D1 container construction and addressed child call. A call address is not
+proof that a conditional runtime guard executes it.
+
+F3c performs that neutral construction join. For every exact selected position
+it retains the exact D1 stage-class occurrence and call-site address, evaluates
+only the constructor guards that source actually wrote, and derives repetition from an
+exact container count expression, exact constructor-loop iterable, or literal
+container membership. `range` is a separately opted-in, lexically unshadowed
+Python protocol; a shadowed range cannot author a count. The output remains a
+symbolic construction template plus count—never N fabricated child
+occurrences—and exposes every exact call-site alternative on that one row.
+Mutually exclusive calls to the same container therefore cannot duplicate its
+population for a later consumer to sum. The row exposes
+no execution claim and no sampler/cell/attention role. Runtime call guards are
+published as explicit unresolved evidence for F3d. Same-class positions, false
+construction guards, short count lists, rival/missing records and forged result rows have
+dedicated counterexamples. F3d must now join these constructed child templates,
+their positively resolved invocation guards and D2's proven operations before
+naming a sampler; F3c's field/class spellings remain addresses only.
+Every D1 unresolved lane is propagated occurrence-exactly, including the open
+whole-callable boundary. Positive selected templates/counts remain available,
+but F3c cannot report a complete stage merely because all children it happened
+to observe were countable.
 
 ### U11-G — canonical projection and consumer cutover
 

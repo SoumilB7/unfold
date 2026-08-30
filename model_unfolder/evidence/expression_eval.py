@@ -15,7 +15,7 @@ from .program_index import ExprNode, SourceSpan, SymbolId
 
 MISSING = object()
 BUILTIN_PROTOCOLS = frozenset({
-    "isinstance", "len", "list", "tuple", "reversed", "min", "max",
+    "isinstance", "len", "list", "tuple", "reversed", "range", "min", "max",
     # These names are accepted only as the second argument to ``isinstance``.
     # Keeping them in the same caller-supplied lexical-proof set prevents a
     # shadowed ``int``/``dict`` spelling from being treated as Python's type.
@@ -175,6 +175,9 @@ class ConfigExpressionEvaluator:
                     result = (list(sequence) if protocol == "list" else
                               tuple(sequence) if protocol == "tuple" else
                               tuple(reversed(sequence)))
+                elif protocol == "range" and 1 <= len(values) <= 3 \
+                        and all(type(item.value) is int for item in values):
+                    result = range(*(item.value for item in values))
                 elif protocol in {"min", "max"} and values:
                     operands = (values[0].value
                                 if len(values) == 1

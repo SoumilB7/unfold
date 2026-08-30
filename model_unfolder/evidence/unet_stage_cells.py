@@ -304,7 +304,14 @@ class ChildConstructionEvidence:
             if candidate.import_chain:
                 bound = candidate.import_chain[0].call == self.producer_call
             elif candidate.site is not None:
-                bound = candidate.site == self.site
+                bound = (candidate.site == self.site
+                         if self.site is not None else
+                         self.field_assign is not None
+                         and candidate.site.owner == self.field_assign.owner
+                         and candidate.site.enclosing_callable
+                         == self.field_assign.enclosing_callable
+                         and candidate.site.target == self.field
+                         and candidate.site.span == self.field_assign.value.span)
             elif candidate.returned_by is not None:
                 local = SymbolId(
                     self.producer_call.enclosing_callable.source,
@@ -544,7 +551,8 @@ def read_unet_stage_cells(graph: UNetStageExecutionGraph,
     for stage in stages:
         symbol = stage.occurrence_id.symbol
         forward = SymbolId(symbol.source, f"{symbol.qualified_name}.forward")
-        if expanded.callable_by_symbol(forward) is None:
+        forward_record = expanded.callable_by_symbol(forward)
+        if forward_record is None:
             unresolved.append(UnresolvedStageChild(
                 stage, "missing_forward", "stage candidate has no indexed forward",
                 (stage.occurrence_id.candidate_span,)))
@@ -630,8 +638,11 @@ def read_unet_stage_cells(graph: UNetStageExecutionGraph,
         unresolved.append(UnresolvedStageChild(
             stage, "whole_callable_open",
             "positive child-call inventory; whole-callable CFG coverage is open",
-            tuple(item.span for item in expanded.calls_in(forward)
-                  if item.span is not None)))
+            tuple(dict.fromkeys((
+                *(span for span in (forward_record.span,) if span is not None),
+                *(item.span for item in expanded.calls_in(forward)
+                  if item.span is not None),
+            )))))
     inventory = UNetStageCellInventory(
         graph, stages, tuple(invocations), tuple(unresolved), expanded, bundle)
     spans = tuple(dict.fromkeys(

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import textwrap
+import json
 from dataclasses import replace
 from pathlib import Path
 
@@ -9,6 +10,7 @@ import pytest
 
 from model_unfolder.evidence.component_owner import resolve_component_root
 from model_unfolder.evidence.diffusion_root import read_diffusion_root_topology
+from model_unfolder.evidence.document import DocumentBinding, prepare_document
 from model_unfolder.evidence.models import SourceBundle, SourceImportRoot
 from model_unfolder.evidence.program_index import build_program_index
 from model_unfolder.evidence.unet_stage_cells import read_unet_stage_cells
@@ -19,6 +21,14 @@ from model_unfolder.evidence.unet_stage_construction import (
     read_unet_stage_construction,
 )
 from model_unfolder.evidence.unet_stage_execution import read_unet_stage_execution
+from model_unfolder.evidence.unet_stage_selection import read_unet_stage_selection
+from model_unfolder.evidence.unet_stage_operands import read_unet_selected_stage_operands
+from model_unfolder.evidence.unet_stage_constructor_operands import (
+    read_unet_selected_stage_constructor_operands,
+)
+from model_unfolder.evidence.unet_selected_stage_children import (
+    read_unet_selected_stage_children,
+)
 
 
 ROOT = """
@@ -327,7 +337,8 @@ def test_real_sdxl_inventory_preserves_cell_and_sampler_calls_without_roles():
         component_architectures={"root": "UNet2DConditionModel"},
         import_roots={"root": (SourceImportRoot("diffusers", str(package)),)},
     )
-    inventory = _read(bundle)[0].require_value()
+    cell_result, graph = _read(bundle)
+    inventory = cell_result.require_value()
     fields = {item.field for item in inventory.invocations}
     assert {"resnets", "attentions", "downsamplers", "upsamplers"} <= fields
     cross_down_attention = tuple(
@@ -351,6 +362,49 @@ def test_real_sdxl_inventory_preserves_cell_and_sampler_calls_without_roles():
     assert all(item.convolution_dimensions == (2,) for item in residual)
     assert all(any(op.operation.label == "GroupNorm" for op in item.operations)
                for item in residual)
+
+    corpus = json.loads(Path(
+        "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json"
+    ).read_text(encoding="utf-8"))["config"]
+    root = resolve_component_root(graph.construction.index, bundle, "root")
+    binding = DocumentBinding(
+        "root", (), prepare_document(corpus, merge=False))
+    selection = read_unet_stage_selection(
+        graph.construction, root, binding).require_value()
+    factory = read_unet_selected_stage_operands(selection).require_value()
+    constructor = read_unet_selected_stage_constructor_operands(
+        factory).require_value()
+    selected_children = read_unet_selected_stage_children(
+        constructor, inventory).require_value()
+    rows = {(item.selected.source.template.topology_stage.field,
+             item.selected.position, item.field): item
+            for item in selected_children.populations}
+    assert tuple(rows["down_blocks", position, "downsamplers"].status
+                 for position in range(3)) \
+        == ("constructed", "constructed", "guard_absent")
+    assert tuple(rows["up_blocks", position, "upsamplers"].status
+                 for position in range(3)) \
+        == ("constructed", "constructed", "guard_absent")
+    assert tuple(rows["down_blocks", position, "resnets"].repetition_count
+                 for position in range(3)) == (2, 2, 2)
+    assert tuple(rows["up_blocks", position, "resnets"].repetition_count
+                 for position in range(3)) == (3, 3, 3)
+    down_attention = rows["down_blocks", 1, "attentions"]
+    up_attention = rows["up_blocks", 0, "attentions"]
+    assert down_attention.repetition_count == 2
+    assert up_attention.repetition_count == 3
+    assert len(down_attention.invocations) == 2
+    assert len(up_attention.invocations) == 2
+    assert len({item.call.span for item in down_attention.invocations}) == 2
+    assert len({item.call.span for item in up_attention.invocations}) == 2
+    assert {path for path, _value in down_attention.premises} == {
+        ("down_block_types",), ("dual_cross_attention",),
+        ("layers_per_block",),
+    }
+    assert any(item.kind == "invocation_guard_unresolved"
+               and item.selected == down_attention.selected
+               and item.invocation in down_attention.invocations
+               for item in selected_children.issues)
 
 
 def test_real_spatiotemporal_unet_proves_axis_mix_without_temporal_name_rule():
