@@ -27,6 +27,11 @@ from .construction_calls import (
     resolve_construction_call_in_graph,
     resolve_import_reference,
 )
+from .framework_operations import (
+    construction_operation_protocol_for_site,
+    functional_operation_protocol_for_call,
+    operation_protocol_for_proof,
+)
 from .models import SourceOp
 from .primitive_semantics import (
     classify_primitive_alternative,
@@ -69,43 +74,6 @@ _FIRST_ARGUMENT_TENSOR_FUNCTIONS = frozenset({
 _ACCUMULATOR_MUTATIONS = frozenset({
     "append", "extend", "insert", "add", "update",
 })
-
-_CONSTRUCTION_OPERATIONS = {
-    "torch.nn.Conv1d": ("conv1d", "1D convolution"),
-    "torch.nn.Conv2d": ("conv2d", "2D convolution"),
-    "torch.nn.Conv3d": ("conv3d", "3D convolution"),
-    "torch.nn.AvgPool1d": ("pooling", "Average pooling"),
-    "torch.nn.AvgPool2d": ("pooling", "Average pooling"),
-    "torch.nn.AvgPool3d": ("pooling", "Average pooling"),
-    "torch.nn.AdaptiveAvgPool1d": ("pooling", "Adaptive average pooling"),
-    "torch.nn.AdaptiveAvgPool2d": ("pooling", "Adaptive average pooling"),
-    "torch.nn.AdaptiveAvgPool3d": ("pooling", "Adaptive average pooling"),
-    "torch.nn.PixelShuffle": ("pixel_shuffle", "Pixel shuffle"),
-    "torch.nn.PixelUnshuffle": ("pixel_unshuffle", "Pixel unshuffle"),
-    "torch.nn.Embedding": ("embedding", "Embedding lookup"),
-}
-
-_FUNCTION_OPERATIONS = {
-    "torch.cat": ("concat", "Concatenate tensors"),
-    "torch.concat": ("concat", "Concatenate tensors"),
-    "torch.concatenate": ("concat", "Concatenate tensors"),
-    "torch.stack": ("stack", "Stack tensors"),
-    "torch.split": ("split", "Split tensor"),
-    "torch.chunk": ("split", "Chunk tensor"),
-    "torch.nn.functional.avg_pool1d": ("pooling", "Average pooling"),
-    "torch.nn.functional.avg_pool2d": ("pooling", "Average pooling"),
-    "torch.nn.functional.avg_pool3d": ("pooling", "Average pooling"),
-    "torch.nn.functional.adaptive_avg_pool1d": (
-        "pooling", "Adaptive average pooling"),
-    "torch.nn.functional.adaptive_avg_pool2d": (
-        "pooling", "Adaptive average pooling"),
-    "torch.nn.functional.adaptive_avg_pool3d": (
-        "pooling", "Adaptive average pooling"),
-    "torch.nn.functional.pixel_shuffle": ("pixel_shuffle", "Pixel shuffle"),
-    "torch.nn.functional.pixel_unshuffle": (
-        "pixel_unshuffle", "Pixel unshuffle"),
-    "torch.nn.functional.interpolate": ("resize", "Resize tensor"),
-}
 
 _METHOD_OPERATIONS = {
     "split": ("split", "Split tensor"),
@@ -403,8 +371,9 @@ def _operation_for_call(index, graph, occurrence, owner_symbol, call, seen_owner
             "activation", fn.upper() if fn != "gelu" else "GELU",
             owner_symbol.qualified_name, owner_symbol.source.canonical_path,
             call.span.line, fn=fn),), (call.span,), None)
-    if proof is not None and proof.qualified_target in _FUNCTION_OPERATIONS:
-        kind, label = _FUNCTION_OPERATIONS[proof.qualified_target]
+    operation_protocol = functional_operation_protocol_for_call(index, call)
+    if operation_protocol is not None:
+        kind, label = operation_protocol.kind, operation_protocol.label
         return ((SourceOp(
             kind, label, owner_symbol.qualified_name,
             owner_symbol.source.canonical_path, call.span.line),),
@@ -696,18 +665,14 @@ def _sequential_operations(index, container):
 def _construction_operation(selected):
     if selected.kind != "external":
         return None
-    return _CONSTRUCTION_OPERATIONS.get(
-        selected.external_reference.qualified_target)
+    protocol = operation_protocol_for_proof(
+        selected.external_reference, "construction")
+    return ((protocol.kind, protocol.label) if protocol is not None else None)
 
 
 def _site_construction_operation(index, site):
-    if len(site.candidates) != 1 or site.candidates[0].symbol is not None:
-        return None
-    proof = resolve_import_reference(
-        index, site.owner.source, site.enclosing_callable,
-        site.candidates[0].reference)
-    return (_CONSTRUCTION_OPERATIONS.get(proof.qualified_target)
-            if proof is not None else None)
+    protocol = construction_operation_protocol_for_site(index, site)
+    return ((protocol.kind, protocol.label) if protocol is not None else None)
 
 
 def _activation_registry_field(index, owner, field):
