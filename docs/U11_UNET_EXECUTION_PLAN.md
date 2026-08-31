@@ -818,9 +818,9 @@ Coordinator receipt `7f327519ac` on
 
 #### U11-F3a–F3c implementation state and committed-tree receipts
 
-Status: **F3a, F3b AND F3c DONE; EVIDENCE-ONLY** — no sampler/cell-count
-architectural claim and no production consumer yet. F3d remains the required
-runtime-execution and spatial-primitive join.
+Status: **F3a, F3b AND F3c DONE; EVIDENCE-ONLY** — at this boundary there was
+still no sampler/cell-count architectural claim or production consumer; F3d
+was the required runtime-execution and spatial-primitive join.
 
 F3a closes the two neutral prerequisites exposed by F2a without turning either
 one into architecture:
@@ -880,7 +880,7 @@ population for a later consumer to sum. The row exposes
 no execution claim and no sampler/cell/attention role. Runtime call guards are
 published as explicit unresolved evidence for F3d. Same-class positions, false
 construction guards, short count lists, rival/missing records and forged result rows have
-dedicated counterexamples. F3d must now join these constructed child templates,
+dedicated counterexamples. These are the constructed child templates F3d joins to
 their positively resolved invocation guards and D2's proven operations before
 naming a sampler; F3c's field/class spellings remain addresses only.
 Every D1 unresolved lane is propagated occurrence-exactly, including the open
@@ -908,6 +908,61 @@ source-artifact fingerprints and zero structural or pixel drift. The bounded
 fresh-process verifier used by the latter receipts is pinned in `f0d8491`; its
 global collection/partition laws prevent a parallel bracket from passing by
 omitting, duplicating or sharing mutable test-process state.
+
+#### U11-F3d implementation state and committed-tree receipt
+
+Status: **DONE; EVIDENCE-ONLY** — commit `3bf628a`. No parser, fact, IR,
+renderer, parameter, debt, manifest or gallery consumer exists yet.
+
+F3d closes the distinction that F3c deliberately left open: construction is
+not execution, and execution is not a spatial effect. It first joins each exact
+F3c population to positively selected runtime child calls. The resulting count
+is the exact symbolic population count multiplied by the number of proven
+active call sites. Constructor operands are rebound through the exact selected
+child initializer; a missing initializer, rival/dynamic binding or unresolved
+runtime guard remains a typed issue. The synthetic presence token used for
+`is not None` control cannot be laundered through a local alias into length,
+truthiness, arithmetic or value semantics.
+
+A separate spatial reader then joins that positive execution row to D2's exact
+child mechanism and one registered framework primitive. Construction-site and
+functional operations share the neutral `framework_operations` protocol;
+classification requires an exact import-binding proof, so a renamed import is
+stable while an identically named internal or unrelated external symbol proves
+nothing. Direct constructor calls, local constructor-to-field aliases,
+constructor-selected alternatives, stride/default evaluation, exhaustive
+equivalent resize branches and the operation-to-return value route all retain
+their exact spans. An unknown stride, an independently overwriting branch, a
+one-sided resize alternative, an unresolved later constructor write or an
+unregistered transpose/expansion primitive stays unresolved. Multiple
+independently proven operations are retained as an inventory; no priority rule
+picks a familiar answer.
+
+The installed Diffusers SDXL control proves exactly four sampler effects from
+source: `Conv2d(stride=2)` on down stages 0 and 1, and
+`torch.nn.functional.interpolate` on up stages 0 and 1. Both final stages have
+no constructed/executed sampler and remain absent. The upsample proof survives
+unknown conditional dtype/contiguity transforms only when both paths preserve
+the resized value; an independent replacement blocks it. Class, field, formal
+and import-alias renaming preserve the result, while same-class stage
+occurrences keep their distinct selected operands.
+
+Coordinator receipt `415bfb9cf1` on
+`3bf628ad978aa0ccbc4bf1be11db3f084353f53c`:
+
+- static: PASS, all five changed Python files clean;
+- collection: 3,951 tests;
+- focused F3d/projector/F3c/D2 lane: 262 passed;
+- affected U2 authority lane: 44 passed;
+- preservation lane: 52 passed with all 29 witnesses at zero drift;
+- exhaustive lane: all 3,855 globally partitioned tests ran exactly once
+  across 22 bounded fresh-process batches, with only established skips/xfails;
+  and
+- every lane's complete-tree and source-artifact fingerprints were identical.
+
+F3 is now closed. F2b may consume these occurrence-exact constructor and
+execution rows to prove runtime attention-source routes; it may not infer a
+context source from sampler evidence or from a stage/class spelling.
 
 ### U11-G — canonical projection and consumer cutover
 
@@ -1065,7 +1120,7 @@ Stop and report before proceeding if:
 | U11-C execution/skip DAG | DONE | `d7f7bae`; exact repeated-stage nodes; exact guarded inter-loop constructed-call occurrences; one U10 skip edge; unsupported/unreachable calls and all non-proven order remain typed unresolved; real SDXL retains both guarded direct invocations without using `mid_block` semantics; committed-tree coordinator: focused 362, U2 authority 44, preservation 52, full 3,553 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-D ResNet/temporal cells | DONE — EVIDENCE-ONLY | `be64cce` + `5efd851` + `bdf2204` + containment correction `43e4e53`; exact child inventory, local mechanisms and neutral reshape→Conv3d→blend proof; real SDXL and spatio-temporal UNet qualify without role spellings; initial gate caught and removed cross-domain projector widening; final coordinator: focused 265, U2 authority 44, preservation 52, full 3,574 passed / 14 skipped / 2 xfailed, every fingerprint and source-artifact digest identical; root frame-axis semantic join remains correctly deferred to U11-G |
 | U11-E attention/transformer/FFN | ACTIVE — E1 + E2a + E2b + E2c DONE; E3 DEFERRED TO G/H CUTOVER | `6b0c979` exact nested-mechanism inventory; `eb9e2f8` mechanism-neutral exact constructor-value transport; `980a9fe` code-selected fused gated FFN proof; `c6f0ae8` exact attention input-role evidence; all remain evidence-only and production consumers stay unprojected until F/G close the canonical occurrence route |
-| U11-F sampler/bookend/conditioning | ACTIVE | F1 DONE (`e3aa738`); F2a DONE (`e0fb168`); F3a/F3b/F3c DONE (`51f6321`, `435baa8`, `5619ded`); F3d execution/spatial proof, then F2b and F4 pending |
+| U11-F sampler/bookend/conditioning | ACTIVE | F1 DONE (`e3aa738`); F2a DONE (`e0fb168`); F3a/F3b/F3c/F3d DONE (`51f6321`, `435baa8`, `5619ded`, `3bf628a`); F2b and F4 pending |
 | U11-G projection/cutover | PENDING | — |
 | U11-H legacy deletion | PENDING | — |
 | U11-I qualification/artifacts | PENDING | — |
