@@ -816,10 +816,11 @@ Coordinator receipt `7f327519ac` on
 - full suite: 3,753 passed, 14 skipped, 2 expected xfails; and
 - every lane's complete-tree and source-artifact fingerprints were identical.
 
-#### U11-F3a implementation state
+#### U11-F3a–F3c implementation state and committed-tree receipts
 
-Status: **ACTIVE; SELECTED-OPERAND AND ITERATION-ADDRESS FOUNDATION** — no
-sampler/cell-count architectural claim and no production consumer yet.
+Status: **F3a, F3b AND F3c DONE; EVIDENCE-ONLY** — no sampler/cell-count
+architectural claim and no production consumer yet. F3d remains the required
+runtime-execution and spatial-primitive join.
 
 F3a closes the two neutral prerequisites exposed by F2a without turning either
 one into architecture:
@@ -886,6 +887,27 @@ Every D1 unresolved lane is propagated occurrence-exactly, including the open
 whole-callable boundary. Positive selected templates/counts remain available,
 but F3c cannot report a complete stage merely because all children it happened
 to observe were countable.
+
+The three independently committed evidence boundaries are:
+
+- `51f6321` (F3a): exact selected factory operands and callable-local iterable
+  address binding. Its committed-tree receipt collected 3,887 tests, passed
+  241 focused controls, 44 U2 authority controls and all 52 preservation
+  controls, then ran the exact full remainder in bounded fresh processes.
+- `435baa8` (F3b): exact factory-to-selected-stage-constructor value transport.
+  Its receipt collected 3,896 tests, passed 209 focused controls, 44 authority
+  controls and all 52 preservation controls, then ran the exact full remainder.
+- `5619ded` (F3c): occurrence-exact selected child construction populations and
+  symbolic counts. Its receipt collected 3,911 tests, passed 229 focused
+  controls, 44 authority controls and all 52 preservation controls, then ran
+  the remaining 3,815 tests exactly once across 22 bounded fresh-process
+  batches.
+
+Every lane in all three receipts was green with identical before/after tree and
+source-artifact fingerprints and zero structural or pixel drift. The bounded
+fresh-process verifier used by the latter receipts is pinned in `f0d8491`; its
+global collection/partition laws prevent a parallel bracket from passing by
+omitting, duplicating or sharing mutable test-process state.
 
 ### U11-G — canonical projection and consumer cutover
 
@@ -1042,8 +1064,8 @@ Stop and report before proceeding if:
 | U11-B stage construction | DONE | `0e5f71a`; exact U10 container→producer→append relation; exact U11-A1 factory expansion; all guarded returned class candidates preserved; 19 synthetic/closure controls + real installed SDXL; committed-tree coordinator: focused 269, U2 authority 44, preservation 52, full 3,530 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-C execution/skip DAG | DONE | `d7f7bae`; exact repeated-stage nodes; exact guarded inter-loop constructed-call occurrences; one U10 skip edge; unsupported/unreachable calls and all non-proven order remain typed unresolved; real SDXL retains both guarded direct invocations without using `mid_block` semantics; committed-tree coordinator: focused 362, U2 authority 44, preservation 52, full 3,553 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-D ResNet/temporal cells | DONE — EVIDENCE-ONLY | `be64cce` + `5efd851` + `bdf2204` + containment correction `43e4e53`; exact child inventory, local mechanisms and neutral reshape→Conv3d→blend proof; real SDXL and spatio-temporal UNet qualify without role spellings; initial gate caught and removed cross-domain projector widening; final coordinator: focused 265, U2 authority 44, preservation 52, full 3,574 passed / 14 skipped / 2 xfailed, every fingerprint and source-artifact digest identical; root frame-axis semantic join remains correctly deferred to U11-G |
-| U11-E attention/transformer/FFN | ACTIVE — E1 + E2a + E2b DONE, E2c IN PROGRESS | `6b0c979` exact nested-mechanism inventory; `eb9e2f8` mechanism-neutral exact constructor-value transport; `980a9fe` code-selected fused gated FFN proof with exact last-axis split; all three installed-SDXL transformer rivals independently resolve the same operand and mechanism without token/class/model semantics; E2b coordinator: focused 305, U2 authority 44, preservation 52, full 3,640 passed / 14 skipped / 2 xfailed, every tree/artifact fingerprint identical; attention input roles and all production consumers remain unprojected |
-| U11-F sampler/bookend/conditioning | ACTIVE | F1 DONE (`e3aa738`); F2a rail built, F3 prerequisites then F2b/F4 pending |
+| U11-E attention/transformer/FFN | ACTIVE — E1 + E2a + E2b + E2c DONE; E3 DEFERRED TO G/H CUTOVER | `6b0c979` exact nested-mechanism inventory; `eb9e2f8` mechanism-neutral exact constructor-value transport; `980a9fe` code-selected fused gated FFN proof; `c6f0ae8` exact attention input-role evidence; all remain evidence-only and production consumers stay unprojected until F/G close the canonical occurrence route |
+| U11-F sampler/bookend/conditioning | ACTIVE | F1 DONE (`e3aa738`); F2a DONE (`e0fb168`); F3a/F3b/F3c DONE (`51f6321`, `435baa8`, `5619ded`); F3d execution/spatial proof, then F2b and F4 pending |
 | U11-G projection/cutover | PENDING | — |
 | U11-H legacy deletion | PENDING | — |
 | U11-I qualification/artifacts | PENDING | — |
