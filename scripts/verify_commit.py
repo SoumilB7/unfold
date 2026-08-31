@@ -6,7 +6,9 @@ isolated checkout one after another.  That repeated the same expensive corpus
 work serially.  This coordinator preserves every boundary while running each
 lane in its own detached worktree.  Cheap/authority lanes form a fail-fast
 preflight; after they release their workers, the exhaustive full and
-preservation partitions receive the whole bounded CPU budget.
+preservation partitions receive the whole bounded CPU budget.  The full
+remainder is collected once and run in fresh file processes: exact coverage
+without persistent-worker memory accumulation.
 
 Example::
 
@@ -121,6 +123,16 @@ def _artifact_source_root() -> pathlib.Path:
     root = common.parent
     _artifact_fingerprint(root)  # fail before creating lanes if incomplete
     return root
+
+
+def _coordinator_fingerprint() -> str:
+    """Identify the verification law even when checking an older commit."""
+    digest = hashlib.sha256()
+    for path in (pathlib.Path(__file__).resolve(),
+                 ROOT / "scripts" / "pytest_file_bracket.py"):
+        digest.update(path.name.encode() + b"\0")
+        digest.update(hashlib.sha256(path.read_bytes()).digest())
+    return digest.hexdigest()
 
 
 def _stage_external_artifacts(source: pathlib.Path, worktree: pathlib.Path) -> None:
@@ -271,9 +283,11 @@ def _partitioned_full_command(pytest_base, workers: int) -> tuple[str, ...]:
     coverage.  Their union with this remainder is still the full collection.
     """
     owned_elsewhere = (PRESERVATION_TEST, *U2_AUTHORITY_TESTS)
-    ignores = tuple(f"--ignore={path}" for path in owned_elsewhere)
-    return (*pytest_base, "tests", *ignores, "--durations=25",
-            *_xdist_args(workers, "loadfile"))
+    bracket = ROOT / "scripts" / "pytest_file_bracket.py"
+    ignores = tuple(item for path in owned_elsewhere
+                    for item in ("--ignore", path))
+    return (sys.executable, str(bracket), "--workers", str(workers),
+            *ignores, "tests")
 
 
 def _run_phase(lanes: tuple[Lane, ...], worktrees: dict[str, pathlib.Path],
@@ -322,9 +336,10 @@ def main(argv: list[str] | None = None) -> int:
     if not args.focus:
         raise SystemExit("at least one --focus path is required (anti-vacuous gate)")
     # Normal receipts partition the complete suite into two exhaustive pieces:
-    # preservation (parallel per witness) and everything else (parallel per
-    # file, preserving within-file order and avoiding duplicated module/session
-    # fixtures). Phase boundaries request one literal serial full invocation.
+    # preservation (parallel per witness) and everything else (fresh process
+    # per collected test file, preserving within-file order and preventing
+    # persistent-worker memory accumulation).  Phase boundaries can still
+    # request one literal serial full invocation as an explicit control.
     full_command = ((*pytest_base, "tests") if args.serial_full else
                     _partitioned_full_command(pytest_base, full_workers))
     preflight_lanes = (
@@ -349,6 +364,7 @@ def main(argv: list[str] | None = None) -> int:
     worktrees: dict[str, pathlib.Path] = {}
     results: list[LaneResult] = []
     started = time.monotonic()
+    coordinator_before = _coordinator_fingerprint()
     artifact_source = _artifact_source_root()
     source_artifacts_before = _artifact_fingerprint(artifact_source)
     try:
@@ -372,12 +388,15 @@ def main(argv: list[str] | None = None) -> int:
             _git("worktree", "prune")
 
     elapsed = time.monotonic() - started
+    coordinator_after = _coordinator_fingerprint()
     source_artifacts_after = _artifact_fingerprint(artifact_source)
     by_name = {result.name: result for result in results}
     missing = sorted({lane.name for lane in lanes} - set(by_name))
     failed = sorted(name for name, result in by_name.items() if not result.passed)
     receipt = {
         "commit": commit,
+        "coordinator_fingerprint_before": coordinator_before,
+        "coordinator_fingerprint_after": coordinator_after,
         "wall_seconds": round(elapsed, 3),
         "full_workers": 1 if args.serial_full else full_workers,
         "preservation_workers": preservation_workers,
@@ -409,10 +428,13 @@ def main(argv: list[str] | None = None) -> int:
           f"preservation workers: {preservation_workers}; "
           f"authority workers: {authority_workers}")
     source_changed = source_artifacts_before != source_artifacts_after
-    if missing or failed or source_changed:
+    coordinator_changed = coordinator_before != coordinator_after
+    if missing or failed or source_changed or coordinator_changed:
         print(f"VERIFICATION FAIL: missing={missing} failed={failed}")
         if source_changed:
             print("VERIFICATION FAIL: source external artifacts changed during run")
+        if coordinator_changed:
+            print("VERIFICATION FAIL: coordinator changed during run")
         return 1
     print("VERIFICATION PASS: every lane green; every lane fingerprint identical")
     return 0
