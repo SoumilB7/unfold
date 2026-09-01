@@ -782,7 +782,7 @@ than forcing SDXL through a familiar cross-attention template:
 
 The real SDXL counterexample exposed two genuine prerequisites, so the original
 F2→F3 order is corrected to **F2a rail → F3 occurrence/config operands → F2b
-closure → F4**:
+route substrate → F4 root preprocessing → F2c route closure → remaining F4**:
 
 1. The selected Transformer2D occurrence declares
    `is_input_continuous = (in_channels is not None) and (patch_size is None)`.
@@ -801,9 +801,10 @@ Accordingly the installed SDXL control currently emits **zero** runtime-source
 claims and 18 typed `lane_route_unresolved` rows for the source-visible up-path
 alternatives.  The optional fuser's own lane is separately rejected by exact
 occurrence mismatch.  This zero is an anti-laundering pin, not the desired final
-architecture.  F2b may turn rows into external K/V routes only after F3 closes
-the two prerequisites above.  No parser, fact, IR, renderer, parameter, debt,
-manifest or gallery consumer may use F2a directly.
+architecture. F2b may build the exact route substrate only after F3 closes the
+two prerequisites above. F2c may turn it into external K/V routes only after
+F4 proves the selected root preprocessing path. No parser, fact, IR, renderer,
+parameter, debt, manifest or gallery consumer may use F2a/F2b directly.
 
 Coordinator receipt `7f327519ac` on
 `e0fb1680204eaf7511a4c92038e386f688d5d53c`:
@@ -850,8 +851,9 @@ paths. Later down-path input channels remain typed unresolved because source
 updates the previous-channel local across loop iterations; F3a does not yet
 provide a recurrence proof. These are constructor operands only. F3b must join
 them to the selected stage constructor and its exact child construction/call
-addresses before a cell count or sampler-presence fact exists. F2b may then use
-that same selected-constructor environment to close the nested attention route.
+addresses before a cell count or sampler-presence fact exists. F2b may use that
+same selected-constructor environment to address the nested attention route;
+F2c closes the route only after F4 proves any root conditioning preprocessing.
 
 F3b transports that inventory through each selected factory-return call into
 the exact selected stage initializer. It accepts only exact Python binding and
@@ -961,8 +963,69 @@ Coordinator receipt `415bfb9cf1` on
 - every lane's complete-tree and source-artifact fingerprints were identical.
 
 F3 is now closed. F2b may consume these occurrence-exact constructor and
-execution rows to prove runtime attention-source routes; it may not infer a
+execution rows to build runtime attention-source routes; it may not infer a
 context source from sampler evidence or from a stage/class spelling.
+
+#### U11-F2b implementation state and committed-tree receipt
+
+Status: **DONE AS ROUTE SUBSTRATE; NO CROSS-ATTENTION FACT** — commit
+`2401b2e`. No parser, fact, IR, renderer, parameter, debt, manifest or gallery
+consumer changed.
+
+F2b now shares one occurrence-exact selected-constructor environment with F3d's
+spatial reader. Exact constructor operands flow through source-ordered
+`self.<field>` writes and exactly indexed local `self` helper calls. Unknown
+guards, unsupported execution regions, recursive or unindexed helpers and
+unresolved later writes invalidate only the state they can affect; a stale
+earlier value can never survive by omission. Helper-call guard decisions and
+every exact call/write span remain provenance. Same-class stage occurrences
+therefore evaluate from their own checkpoint-selected operands rather than one
+class-wide environment.
+
+F3d separately learned the exact exhaustive-equivalent runtime form used by
+installed Diffusers gradient checkpointing: two syntax-identical calls in the
+complementary arms of one exact `if`/`else` prove one execution per repeated
+element while retaining both call sites. Different calls, unrelated guards,
+unsupported regions, mixed literal syntax and one-sided alternatives remain
+unresolved. This is execution evidence only, never mechanism classification.
+The F3d provenance was also corrected to cite the exact checkpoint stage-list
+path that selected each occurrence.
+
+The formal-route rail can now bind an exactly selected conditional call
+argument without laundering the unselected branch. F2b joins F1's selected
+stage, F3d's positive child execution, E1's exact nested occurrence and E2c's
+attention input lane. It retains one route attempt per exact runtime
+alternative and validates that every selected argument belongs to the exact
+block occurrence. The DTO deliberately has no `cross_attention` field: a
+required non-optional source interface is not yet proof of the semantic label.
+
+The installed SDXL control reaches all four selected attention-bearing stage
+occurrences—down positions 1/2 and up positions 0/1—and then stops honestly.
+The root forward first rewrites `encoder_hidden_states` through
+`process_encoder_hidden_states`; that helper can select text, image, mixed or
+unchanged sources. F2b therefore emits zero positive runtime-source rows and
+four exact `root_preprocess_unresolved` rows (plus the independently unresolved
+lane rows). It does not treat helper arguments as helper-return provenance and
+does not manufacture conventional cross-attention. F4 must prove the selected
+helper-return/bookend path; F2c then closes the route. Direct nested occurrences
+whose exact parent invocation is not carried likewise remain typed
+`lane_route_unresolved` until F2c has a lawful parent-call address.
+
+Coordinator receipt `93b47f2c98` on
+`2401b2e207ba3a943020f5e7f7f7221c710422bf`:
+
+- static: PASS, all eight changed Python files clean;
+- collection: 3,970 tests;
+- focused F2b/F3d/formal-route/nested-mechanism lane: 255 passed, including
+  the installed SDXL route and sampler examples;
+- affected U2 authority lane: 44 passed;
+- preservation lane: 52 passed with zero structural/pixel drift;
+- exhaustive lane: all 3,874 remaining globally collected tests ran exactly
+  once across 22 bounded fresh-process batches; and
+- every lane's complete-tree and source-artifact fingerprints were identical.
+
+The binding sequence from here is **F4 root conditioning preprocessing → F2c
+runtime K/V route closure → remaining F4 bookends/conditioning → U11-G**.
 
 ### U11-G — canonical projection and consumer cutover
 
@@ -1120,7 +1183,7 @@ Stop and report before proceeding if:
 | U11-C execution/skip DAG | DONE | `d7f7bae`; exact repeated-stage nodes; exact guarded inter-loop constructed-call occurrences; one U10 skip edge; unsupported/unreachable calls and all non-proven order remain typed unresolved; real SDXL retains both guarded direct invocations without using `mid_block` semantics; committed-tree coordinator: focused 362, U2 authority 44, preservation 52, full 3,553 passed / 14 skipped / 2 xfailed; every lane fingerprint-identical; no consumer/output change |
 | U11-D ResNet/temporal cells | DONE — EVIDENCE-ONLY | `be64cce` + `5efd851` + `bdf2204` + containment correction `43e4e53`; exact child inventory, local mechanisms and neutral reshape→Conv3d→blend proof; real SDXL and spatio-temporal UNet qualify without role spellings; initial gate caught and removed cross-domain projector widening; final coordinator: focused 265, U2 authority 44, preservation 52, full 3,574 passed / 14 skipped / 2 xfailed, every fingerprint and source-artifact digest identical; root frame-axis semantic join remains correctly deferred to U11-G |
 | U11-E attention/transformer/FFN | ACTIVE — E1 + E2a + E2b + E2c DONE; E3 DEFERRED TO G/H CUTOVER | `6b0c979` exact nested-mechanism inventory; `eb9e2f8` mechanism-neutral exact constructor-value transport; `980a9fe` code-selected fused gated FFN proof; `c6f0ae8` exact attention input-role evidence; all remain evidence-only and production consumers stay unprojected until F/G close the canonical occurrence route |
-| U11-F sampler/bookend/conditioning | ACTIVE | F1 DONE (`e3aa738`); F2a DONE (`e0fb168`); F3a/F3b/F3c/F3d DONE (`51f6321`, `435baa8`, `5619ded`, `3bf628a`); F2b and F4 pending |
+| U11-F sampler/bookend/conditioning | ACTIVE | F1 DONE (`e3aa738`); F2a DONE (`e0fb168`); F3a/F3b/F3c/F3d DONE (`51f6321`, `435baa8`, `5619ded`, `3bf628a`); F2b route substrate DONE (`2401b2e`); F4 root preprocessing, F2c route closure and remaining F4 pending |
 | U11-G projection/cutover | PENDING | — |
 | U11-H legacy deletion | PENDING | — |
 | U11-I qualification/artifacts | PENDING | — |
