@@ -662,8 +662,14 @@ def test_same_class_instances_decide_method_guards_from_their_own_fields(
                     if item.guard)
         evidence = selected_instance_guard_evidence(
             environments, forward.symbol, call.guard, call.span)
-        decisions[selected.population.selected.position] = evidence.value
-    assert decisions == {0: True, 1: False}
+        decisions[selected.population.selected.position] = (
+            evidence.value,
+            tuple(path for path, _value in evidence.premises),
+        )
+    assert decisions == {
+        0: (True, (("convolution",),)),
+        1: (False, (("convolution",),)),
+    }
 
 
 def test_unregistered_conv_transpose_is_not_guessed_as_expansion(tmp_path):

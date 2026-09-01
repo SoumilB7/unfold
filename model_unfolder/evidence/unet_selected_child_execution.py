@@ -19,6 +19,7 @@ from .expression_eval import (
     EvaluatedExpression,
     guard_path_evidence,
     locals_before,
+    unique_premises,
 )
 from .program_index import (
     CallableRecord,
@@ -263,6 +264,7 @@ class SelectedChildConstructorOperand:
     value: object
     source_kind: str
     stage_operand_dependencies: tuple[SelectedStageConstructorOperand, ...]
+    premises: tuple[tuple[tuple[str, ...], object], ...]
     spans: tuple[SourceSpan, ...]
 
     def __post_init__(self):
@@ -289,6 +291,8 @@ class SelectedChildConstructorOperand:
         if any(item.selected != self.population.selected
                for item in self.stage_operand_dependencies):
             raise ValueError("child operand dependencies belong to this stage")
+        if unique_premises(self.premises) != self.premises:
+            raise ValueError("child operand retains unique exact value premises")
         required = {site.span, self.constructor.span, self.actual.span,
                     *(span for item in self.stage_operand_dependencies
                       for span in item.spans)}
@@ -412,7 +416,8 @@ def _child_operands(index, children, population, construction):
                                        for span in item.spans))))
         rows.append(SelectedChildConstructorOperand(
             population, construction, candidate.symbol, constructor, formal,
-            actual, value.value, source_kind, dependencies, spans))
+            actual, value.value, source_kind, dependencies,
+            value.premises, spans))
     return tuple(rows), tuple(problems)
 
 
@@ -495,8 +500,7 @@ def read_unet_selected_child_execution(
         *(path for row in children.populations
           for path, _value in row.premises),
         *(path for row in value.operands
-          for dependency in row.stage_operand_dependencies
-          for path, _value in dependency.premises),
+          for path, _value in row.premises),
     )))
     provenance = ((ReaderProvenance(
         "code_and_config", spans=spans,

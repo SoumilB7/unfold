@@ -109,3 +109,35 @@ def test_transport_closure_rejects_foreign_lane_and_helper(tmp_path):
             value.owner_occurrence, value.caller, value.caller, value.call,
             value.caller_definition, value.returned,
             value.arguments, value.lanes, value.spans)
+
+
+def test_unsupported_execution_is_strict_unless_a_consumer_explicitly_defers(
+        tmp_path):
+    source = _SOURCE.replace(
+        "    def helper(self, left, right):\n",
+        "    def helper(self, left, right):\n"
+        "        try:\n"
+        "            left = left\n"
+        "        finally:\n"
+        "            left = left\n")
+    index, strict = _result(tmp_path, source)
+    assert strict.status == "failed"
+    root_bundle = SourceBundle(
+        source="local", files=tuple(item.source_id.canonical_path
+                                    for item in index.source_nodes),
+        component_files={"root": tuple(
+            item.source_id.canonical_path for item in index.source_nodes)},
+        component_architectures={"root": "Owner"}, architecture="Owner")
+    root = resolve_component_root(index, root_bundle, "root")
+    caller = next(item.symbol for item in index.callables
+                  if item.symbol.qualified_name == "Owner.forward")
+    call = next(item for item in index.calls_in(caller)
+                if item.callee.source_segment == "self.helper")
+    deferred = resolve_self_method_return_transport(
+        index, root, root.occurrence, caller, call,
+        defer_unsupported_to_consumer=True)
+    assert deferred.status == "resolved"
+    with pytest.raises(TypeError):
+        resolve_self_method_return_transport(
+            index, root, root.occurrence, caller, call,
+            defer_unsupported_to_consumer=1)

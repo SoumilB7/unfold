@@ -142,10 +142,20 @@ def resolve_self_method_return_transport(
     owner_occurrence: OwnerOccurrenceId,
     caller: SymbolId,
     call: CallObservation,
+    *,
+    defer_unsupported_to_consumer: bool = False,
 ) -> ReaderResult[SelfMethodReturnTransport]:
-    """Resolve one exact same-class helper call and its return-lane mapping."""
+    """Resolve one exact same-class helper call and its return-lane mapping.
+
+    The default remains execution-strict.  A consumer that has an independent,
+    exact path evaluator may explicitly defer unsupported-region handling, but
+    must then inspect every indexed unsupported region in the helper.  This
+    flag proves transport only; it never upgrades callable completeness.
+    """
     if not isinstance(index, ProgramIndex):
         raise TypeError("self-method return transport requires a ProgramIndex")
+    if type(defer_unsupported_to_consumer) is not bool:
+        raise TypeError("unsupported-region deferral is an explicit boolean")
     root = require_resolved_component_root(
         root, caller="self-method return transport")
     if not isinstance(owner_occurrence, OwnerOccurrenceId):
@@ -178,7 +188,7 @@ def resolve_self_method_return_transport(
     unsupported = tuple(
         item for item in index.unsupported_execution
         if item.enclosing_callable == helper_symbol)
-    if unsupported:
+    if unsupported and not defer_unsupported_to_consumer:
         return _failed(owner_occurrence, "unsupported helper execution prevents exact transport")
 
     arguments = _bind_arguments(helper, call)
