@@ -47,7 +47,20 @@ from model_unfolder.evidence.unet_nested_mechanism import (
     read_unet_nested_mechanisms,
 )
 from model_unfolder.evidence.unet_attention_source import (
+    RuntimeAttentionSource,
     read_unet_runtime_attention_sources,
+)
+from model_unfolder.evidence.unet_selected_child_execution import (
+    read_unet_selected_child_execution,
+)
+from model_unfolder.evidence.unet_selected_stage_children import (
+    read_unet_selected_stage_children,
+)
+from model_unfolder.evidence.unet_stage_constructor_operands import (
+    read_unet_selected_stage_constructor_operands,
+)
+from model_unfolder.evidence.unet_stage_operands import (
+    read_unet_selected_stage_operands,
 )
 from model_unfolder.evidence.unet_stage_cells import read_unet_stage_cells
 from model_unfolder.evidence.unet_stage_construction import (
@@ -530,13 +543,10 @@ def test_real_sdxl_preserves_rival_transformer_routes_and_framework_attention():
         ("incomplete_graph",)}
     assert len({line for line, _target, _kinds in input_role_failures}) == 3
 
-    # F2a carries the exact formal-route rail and F3a now binds both aliases in
-    # the down/up ``zip(resnets, attentions)`` loops.  That closes six selected
-    # stage occurrences over six exact unresolved lane routes (36 total), but
-    # it still must not call SDXL cross-attention: the selected child
-    # constructor operands have not yet excluded the patched-input rewrite.
-    # Zero sources is the permanent anti-laundering control; the issue count is
-    # an occurrence-exact census, not a family-level expectation.
+    # F2b joins the checkpoint-selected stage and constructor operands to the
+    # exact runtime call.  SDXL's gradient-checkpointing if/else calls are
+    # syntax-identical complementary alternatives: both exact call sites are
+    # retained as one runtime execution, never selected or double-counted.
     config = json.loads(Path(
         "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json"
     ).read_text(encoding="utf-8"))["config"]
@@ -544,10 +554,67 @@ def test_real_sdxl_preserves_rival_transformer_routes_and_framework_attention():
         stage_construction, root,
         DocumentBinding("root", (), prepare_document(config, merge=False)))
     assert selection.status == "resolved"
+    factory = read_unet_selected_stage_operands(
+        selection.require_value()).require_value()
+    constructor = read_unet_selected_stage_constructor_operands(
+        factory).require_value()
+    children = read_unet_selected_stage_children(
+        constructor, value.cells.cells).require_value()
+    child_execution = read_unet_selected_child_execution(
+        children).require_value()
+    child_compact = (
+        tuple(sorted((field, sum(item.population.field == field
+                                 for item in child_execution.operands))
+                     for field in {row.field for row in children.populations})),
+        tuple(sorted((item.population.field, item.detail)
+                     for item in child_execution.issues
+                     if item.kind == "constructor_operand_unresolved")),
+    )
+    assert any(item.population.field == "attentions"
+               for item in child_execution.operands), child_compact
     runtime = read_unet_runtime_attention_sources(
-        selection.require_value(), value, root)
+        selection.require_value(), value, child_execution, root)
     assert runtime.status == "incomplete"
-    assert runtime.require_value().sources == ()
-    assert len(runtime.require_value().issues) == 36
+    compact = (
+        len(runtime.require_value().sources),
+        tuple((item.selected_stage.source.template.topology_stage.field,
+               item.selected_stage.position,
+               item.child_execution.execution_mode,
+               len(item.routes))
+              for item in runtime.require_value().sources),
+        tuple(sorted((kind, sum(issue.kind == kind
+                                for issue in runtime.require_value().issues))
+                     for kind in {item.kind
+                                  for item in runtime.require_value().issues})),
+        tuple(sorted({item.detail for item in runtime.require_value().issues})),
+    )
+    # F2b reaches the root conditioning preprocessor and stops honestly.  The
+    # exact root formal is first rewritten by process_encoder_hidden_states;
+    # treating every argument of that helper as if it reached the return would
+    # launder optional image inputs into an unconditional text-source claim.
+    # F4 owns the selected helper-return/bookend proof, after which F2 can close
+    # these four selected stage occurrences.  Until then there is deliberately
+    # no cross-attention boolean on RuntimeAttentionSource and no positive row.
+    assert not hasattr(RuntimeAttentionSource, "cross_attention")
+    assert not runtime.require_value().sources, compact
+    root_blocked = tuple(
+        item for item in runtime.require_value().issues
+        if item.kind == "root_preprocess_unresolved")
+    assert {
+        (item.selected_stage.source.template.topology_stage.field,
+         item.selected_stage.position)
+        for item in root_blocked
+    } == {("down_blocks", 1), ("down_blocks", 2),
+          ("up_blocks", 0), ("up_blocks", 1)}
+    assert all(item.child_execution is not None
+               and item.child_execution.execution_mode
+               == "exhaustive_equivalent"
+               and len(item.child_execution.runtime_invocations) == 2
+               and item.child_execution.execution_count
+               == item.child_execution.population.repetition_count
+               and "root:actual has no single exact caller-formal root"
+               in item.detail
+               for item in root_blocked)
+    assert runtime.require_value().issues
     assert {item.kind for item in runtime.require_value().issues} == {
-        "lane_route_unresolved"}
+        "lane_route_unresolved", "root_preprocess_unresolved"}

@@ -17,6 +17,10 @@ from model_unfolder.evidence.unet_cell_mechanism import read_unet_cell_mechanism
 from model_unfolder.evidence.unet_selected_child_execution import (
     read_unet_selected_child_execution,
 )
+from model_unfolder.evidence.unet_selected_constructor import (
+    selected_constructor_environments,
+    selected_instance_guard_evidence,
+)
 from model_unfolder.evidence.unet_selected_spatial import (
     read_unet_selected_spatial_operations,
 )
@@ -105,7 +109,7 @@ def _document(**updates):
     return value
 
 
-def _read(tmp_path, document=None, source=SOURCE):
+def _execution_result(tmp_path, document=None, source=SOURCE):
     path = Path(tmp_path) / "model.py"
     path.write_text(textwrap.dedent(source), encoding="utf-8")
     bundle = SourceBundle(
@@ -130,8 +134,13 @@ def _read(tmp_path, document=None, source=SOURCE):
     children = read_unet_selected_stage_children(
         constructor, cells).require_value()
     mechanisms = read_unet_cell_mechanisms(cells).require_value()
-    executed = read_unet_selected_child_execution(children).require_value()
-    return read_unet_selected_spatial_operations(executed, mechanisms)
+    return read_unet_selected_child_execution(children), mechanisms
+
+
+def _read(tmp_path, document=None, source=SOURCE):
+    executed, mechanisms = _execution_result(tmp_path, document, source)
+    return read_unet_selected_spatial_operations(
+        executed.require_value(), mechanisms)
 
 
 def test_constructed_and_invoked_spatial_child_has_exact_reduction(tmp_path):
@@ -146,6 +155,14 @@ def test_constructed_and_invoked_spatial_child_has_exact_reduction(tmp_path):
     assert row.numeric_operand == 2
     assert row.execution.execution_count == 1
     assert row.execution.population.selected.position == 0
+
+
+def test_execution_provenance_retains_the_stage_selector_config_path(tmp_path):
+    result, _mechanisms = _execution_result(tmp_path)
+    assert result.provenance
+    assert {item.kind for item in result.provenance} == {"code_and_config"}
+    assert ("kinds",) in {
+        path for item in result.provenance for path in item.config_paths}
 
 
 def test_false_constructor_guard_does_not_create_an_execution(tmp_path):
@@ -225,7 +242,7 @@ def test_two_exact_runtime_calls_multiply_the_population_execution_count(tmp_pat
     value = _read(tmp_path, source=source).require_value()
     row = next(item for item in value.execution.executions
                if item.population.field == "spatial")
-    assert len(row.active_invocations) == 2
+    assert len(row.runtime_invocations) == 2
     assert row.execution_count == 2
     assert value.spatial_operations[0].execution == row
 
@@ -240,6 +257,130 @@ def test_runtime_unknown_guard_stays_unresolved(tmp_path):
     assert any(item.kind == "invocation_guard_unresolved"
                and item.population.field == "spatial"
                for item in value.execution.issues)
+
+
+def test_complementary_unknown_branches_with_identical_calls_execute_once(
+        tmp_path):
+    source = SOURCE.replace(
+        "            value = unit(value)\n",
+        "            if runtime_checkpointing():\n"
+        "                value = unit(value)\n"
+        "            else:\n"
+        "                value = unit(value)\n")
+    execution = _read(tmp_path, source=source).require_value().execution
+    row = next(item for item in execution.executions
+               if item.population.field == "units"
+               and item.population.selected.position == 0)
+    assert row.execution_mode == "exhaustive_equivalent"
+    assert len(row.runtime_invocations) == 2
+    assert row.execution_count == row.population.repetition_count == 2
+    assert {step.kind for invocation in row.runtime_invocations
+            for step in invocation.call.guard} >= {"if", "else"}
+    with pytest.raises(ValueError):
+        replace(row, execution_mode="selected")
+    with pytest.raises(ValueError):
+        replace(row, runtime_invocations=tuple(reversed(
+            row.runtime_invocations)))
+    with pytest.raises(ValueError):
+        replace(row, guard_spans=(row.runtime_invocations[0].call.span,))
+
+
+def test_complementary_unknown_branches_with_different_calls_stay_unresolved(
+        tmp_path):
+    source = SOURCE.replace(
+        "            value = unit(value)\n",
+        "            if runtime_checkpointing():\n"
+        "                value = unit(value)\n"
+        "            else:\n"
+        "                value = unit(side)\n")
+    execution = _read(tmp_path, source=source).require_value().execution
+    assert not any(item.population.field == "units"
+                   for item in execution.executions)
+    assert any(item.kind == "invocation_guard_unresolved"
+               and item.population.field == "units"
+               for item in execution.issues)
+
+
+def test_complementary_calls_preserve_literal_container_syntax(tmp_path):
+    source = SOURCE.replace(
+        "            value = unit(value)\n",
+        "            if runtime_checkpointing():\n"
+        "                value = unit([value])\n"
+        "            else:\n"
+        "                value = unit((value,))\n")
+    execution = _read(tmp_path, source=source).require_value().execution
+    assert not any(item.population.field == "units"
+                   for item in execution.executions)
+    assert any(item.kind == "invocation_guard_unresolved"
+               and item.population.field == "units"
+               for item in execution.issues)
+
+
+def test_equivalent_calls_compare_mixed_literal_keys_without_crashing(tmp_path):
+    source = SOURCE.replace(
+        "            value = unit(value)\n",
+        "            if runtime_checkpointing():\n"
+        "                value = unit({1: value, 'two': value})\n"
+        "            else:\n"
+        "                value = unit({1: value, 'two': value})\n")
+    execution = _read(tmp_path, source=source).require_value().execution
+    row = next(item for item in execution.executions
+               if item.population.field == "units"
+               and item.population.selected.position == 0)
+    assert row.execution_mode == "exhaustive_equivalent"
+
+
+def test_separate_unknown_guards_are_not_laundered_as_complements(tmp_path):
+    source = SOURCE.replace(
+        "            value = unit(value)\n",
+        "            if runtime_one():\n"
+        "                value = unit(value)\n"
+        "            if runtime_two():\n"
+        "                value = unit(value)\n")
+    execution = _read(tmp_path, source=source).require_value().execution
+    assert not any(item.population.field == "units"
+                   for item in execution.executions)
+    assert any(item.kind == "invocation_guard_unresolved"
+               and item.population.field == "units"
+               for item in execution.issues)
+
+
+def test_equivalent_branch_calls_inside_unsupported_try_remain_unresolved(
+        tmp_path):
+    source = SOURCE.replace(
+        "            value = unit(value)\n",
+        "            try:\n"
+        "                if runtime_checkpointing():\n"
+        "                    value = unit(value)\n"
+        "                else:\n"
+        "                    value = unit(value)\n"
+        "            except RuntimeError:\n"
+        "                pass\n")
+    execution = _read(tmp_path, source=source).require_value().execution
+    assert not any(item.population.field == "units"
+                   for item in execution.executions)
+    # D1 rejects both calls before F3d can treat the complementary branch
+    # pair as an exhaustive execution.  The unsupported region remains typed
+    # evidence rather than disappearing behind an empty F3d population.
+    tainted = tuple(item for item in execution.children.cells.unresolved
+                    if item.kind == "call_tainted"
+                    and item.detail == "unsupported_execution_region")
+    assert len(tainted) == 4  # two exact sites × two selected stage instances
+    assert not any(item.field == "units"
+                   for item in execution.children.populations)
+
+
+def test_unresolved_execution_does_not_erase_constructor_operands(tmp_path):
+    source = SOURCE.replace(
+        "            value = unit(value)\n",
+        "            if runtime_enabled():\n"
+        "                value = unit(value)\n")
+    execution = _read(tmp_path, source=source).require_value().execution
+    assert not any(item.population.field == "units"
+                   for item in execution.executions)
+    assert any(item.population.field == "units"
+               and item.formal.name == "width"
+               for item in execution.operands)
 
 
 def test_presence_token_cannot_evaluate_arbitrary_field_arithmetic(tmp_path):
@@ -308,6 +449,223 @@ def test_same_child_class_at_two_stage_occurrences_keeps_distinct_values(tmp_pat
         (0, "torch.nn.Conv2d"), (1, "torch.nn.AvgPool2d")]
 
 
+def test_same_child_class_selects_different_constructor_helpers_by_operand(
+        tmp_path):
+    source = SOURCE.replace(
+        "    def __init__(self, width, convolution=True, stride=2):\n",
+        "    def __init__(self, width, convolution=True, stride=2):\n"
+        "        self.enabled = convolution\n"
+        "        if self.enabled:\n"
+        "            self._one()\n"
+        "        else:\n"
+        "            self._two()\n").replace(
+        "    def forward(self, value):\n"
+        "        return self.op(value)\n\nclass Stage:",
+        "    def _one(self):\n"
+        "        self.marker = 1\n"
+        "    def _two(self):\n"
+        "        self.marker = 2\n"
+        "    def forward(self, value):\n"
+        "        return self.op(value)\n\nclass Stage:")
+    document = _document(spatial=[True, True], convolution=[True, False])
+    execution = _read(
+        tmp_path, document, source).require_value().execution
+    by_position = {}
+    for selected in execution.executions:
+        if selected.population.field != "spatial":
+            continue
+        operands = tuple(item for item in execution.operands
+                         if item.population == selected.population)
+        environments = selected_constructor_environments(
+            execution.index, operands)
+        helper = environments.callables[1]
+        assert {
+            step.span for call in helper.helper_route for step in call.guard
+        } <= set(helper.spans)
+        by_position[selected.population.selected.position] = tuple(
+            item.callable_symbol.qualified_name
+            for item in environments.callables[1:])
+    assert by_position == {0: ("Spatial._one",), 1: ("Spatial._two",)}
+
+
+def test_unresolved_helper_field_write_propagates_to_constructor_root(tmp_path):
+    source = SOURCE.replace(
+        "    def __init__(self, width, convolution=True, stride=2):\n",
+        "    def __init__(self, width, convolution=True, stride=2):\n"
+        "        self._prepare()\n").replace(
+        "    def forward(self, value):\n"
+        "        return self.op(value)\n\nclass Stage:",
+        "    def _prepare(self):\n"
+        "        self.marker = runtime_value()\n"
+        "    def forward(self, value):\n"
+        "        return self.op(value)\n\nclass Stage:")
+    execution = _read(
+        tmp_path, _document(), source).require_value().execution
+    selected = next(item for item in execution.executions
+                    if item.population.field == "spatial")
+    operands = tuple(item for item in execution.operands
+                     if item.population == selected.population)
+    environments = selected_constructor_environments(execution.index, operands)
+    assert "self.marker" in environments.callables[0].unresolved_addresses
+    assert "self.marker" in environments.callables[1].unresolved_addresses
+
+
+def test_unresolved_helper_call_kills_an_earlier_field_value(tmp_path):
+    source = SOURCE.replace(
+        "    def __init__(self, width, convolution=True, stride=2):\n",
+        "    def __init__(self, width, convolution=True, stride=2):\n"
+        "        self.marker = True\n"
+        "        if runtime_enabled():\n"
+        "            self._prepare()\n").replace(
+        "    def forward(self, value):\n"
+        "        return self.op(value)\n\nclass Stage:",
+        "    def _prepare(self):\n"
+        "        self.marker = False\n"
+        "    def forward(self, value):\n"
+        "        return self.op(value)\n\nclass Stage:")
+    execution = _read(
+        tmp_path, _document(), source).require_value().execution
+    selected = next(item for item in execution.executions
+                    if item.population.field == "spatial")
+    operands = tuple(item for item in execution.operands
+                     if item.population == selected.population)
+    environments = selected_constructor_environments(execution.index, operands)
+    root = environments.callables[0]
+    assert "self.marker" not in {item.address for item in root.values}
+    assert "self.marker" in root.unresolved_addresses
+    assert environments.unresolved_calls
+
+
+def test_unindexed_self_helper_kills_all_earlier_instance_values(tmp_path):
+    source = SOURCE.replace(
+        "    def __init__(self, width, convolution=True, stride=2):\n",
+        "    def __init__(self, width, convolution=True, stride=2):\n"
+        "        self.enabled = convolution\n"
+        "        self._external_prepare()\n")
+    execution = _read(
+        tmp_path, _document(), source).require_value().execution
+    selected = next(item for item in execution.executions
+                    if item.population.field == "spatial")
+    operands = tuple(item for item in execution.operands
+                     if item.population == selected.population)
+    environments = selected_constructor_environments(execution.index, operands)
+    root = environments.callables[0]
+    assert "self.enabled" not in {item.address for item in root.values}
+    assert "self.*" in root.unresolved_addresses
+    assert environments.unresolved_calls
+    with pytest.raises(ValueError, match="recompute"):
+        replace(environments, unresolved_calls=())
+    with pytest.raises(ValueError, match="recompute"):
+        replace(environments, callables=environments.callables[:-1])
+
+
+def test_exact_write_after_unindexed_helper_restores_only_that_field(tmp_path):
+    source = SOURCE.replace(
+        "    def __init__(self, width, convolution=True, stride=2):\n",
+        "    def __init__(self, width, convolution=True, stride=2):\n"
+        "        self.before = True\n"
+        "        self._external_prepare()\n"
+        "        self.enabled = convolution\n")
+    execution = _read(
+        tmp_path, _document(), source).require_value().execution
+    selected = next(item for item in execution.executions
+                    if item.population.field == "spatial")
+    operands = tuple(item for item in execution.operands
+                     if item.population == selected.population)
+    environments = selected_constructor_environments(execution.index, operands)
+    root = environments.callables[0]
+    values = {item.address: item.value for item in root.values}
+    assert "self.before" not in values
+    assert values["self.enabled"] is True
+    assert "self.*" in root.unresolved_addresses
+
+
+def test_helper_rhs_executes_before_its_assignment_store(tmp_path):
+    source = SOURCE.replace(
+        "    def __init__(self, width, convolution=True, stride=2):\n",
+        "    def __init__(self, width, convolution=True, stride=2):\n"
+        "        self.marker = self._prepare()\n").replace(
+        "    def forward(self, value):\n"
+        "        return self.op(value)\n\nclass Stage:",
+        "    def _prepare(self):\n"
+        "        self.marker = False\n"
+        "        return True\n"
+        "    def forward(self, value):\n"
+        "        return self.op(value)\n\nclass Stage:")
+    execution = _read(
+        tmp_path, _document(), source).require_value().execution
+    selected = next(item for item in execution.executions
+                    if item.population.field == "spatial")
+    operands = tuple(item for item in execution.operands
+                     if item.population == selected.population)
+    root = selected_constructor_environments(
+        execution.index, operands).callables[0]
+    assert "self.marker" not in {item.address for item in root.values}
+    assert "self.marker" in root.unresolved_addresses
+
+
+def test_helper_in_unsupported_try_region_never_becomes_positive(tmp_path):
+    source = SOURCE.replace(
+        "    def __init__(self, width, convolution=True, stride=2):\n",
+        "    def __init__(self, width, convolution=True, stride=2):\n"
+        "        self.marker = True\n"
+        "        try:\n"
+        "            self._prepare()\n"
+        "        except RuntimeError:\n"
+        "            pass\n").replace(
+        "    def forward(self, value):\n"
+        "        return self.op(value)\n\nclass Stage:",
+        "    def _prepare(self):\n"
+        "        self.marker = False\n"
+        "    def forward(self, value):\n"
+        "        return self.op(value)\n\nclass Stage:")
+    execution = _read(
+        tmp_path, _document(), source).require_value().execution
+    selected = next(item for item in execution.executions
+                    if item.population.field == "spatial")
+    operands = tuple(item for item in execution.operands
+                     if item.population == selected.population)
+    environments = selected_constructor_environments(execution.index, operands)
+    root = environments.callables[0]
+    assert "self.marker" not in {item.address for item in root.values}
+    assert "self.marker" in root.unresolved_addresses
+    assert environments.unresolved_calls
+
+
+def test_same_class_instances_decide_method_guards_from_their_own_fields(
+        tmp_path):
+    source = SOURCE.replace(
+        "    def __init__(self, width, convolution=True, stride=2):\n",
+        "    def __init__(self, width, convolution=True, stride=2):\n"
+        "        self.enabled = convolution\n").replace(
+        "    def forward(self, value):\n"
+        "        return self.op(value)\n\nclass Stage:",
+        "    def forward(self, value):\n"
+        "        if self.enabled:\n"
+        "            return self.op(value)\n"
+        "        return value\n\nclass Stage:")
+    execution = _read(
+        tmp_path, _document(spatial=[True, True],
+                            convolution=[True, False]),
+        source).require_value().execution
+    decisions = {}
+    for selected in execution.executions:
+        if selected.population.field != "spatial":
+            continue
+        operands = tuple(item for item in execution.operands
+                         if item.population == selected.population)
+        environments = selected_constructor_environments(
+            execution.index, operands)
+        forward = next(item for item in execution.index.callables
+                       if item.symbol.qualified_name == "Spatial.forward")
+        call = next(item for item in execution.index.calls_in(forward.symbol)
+                    if item.guard)
+        evidence = selected_instance_guard_evidence(
+            environments, forward.symbol, call.guard, call.span)
+        decisions[selected.population.selected.position] = evidence.value
+    assert decisions == {0: True, 1: False}
+
+
 def test_unregistered_conv_transpose_is_not_guessed_as_expansion(tmp_path):
     source = SOURCE.replace(
         "self.op = Conv2d(width, width, kernel_size=3, stride=stride)",
@@ -362,6 +720,23 @@ def test_dynamic_stride_remains_unknown(tmp_path):
     assert value.execution.executions
     assert not value.spatial_operations
     assert any(item.kind == "constructor_operand_unresolved"
+               for item in value.execution.issues)
+
+
+def test_unrelated_dynamic_constructor_formal_does_not_erase_exact_operands(
+        tmp_path):
+    source = SOURCE.replace(
+        "def __init__(self, width, convolution=True, stride=2):",
+        "def __init__(self, width, convolution=True, stride=2, metadata=None):"
+    ).replace(
+        "Spatial(width, convolution)",
+        "Spatial(width, convolution, metadata=runtime_metadata())")
+    value = _read(tmp_path, source=source).require_value()
+    assert [(item.effect, item.mechanism, item.numeric_operand)
+            for item in value.spatial_operations] == [
+                ("reduce", "torch.nn.Conv2d", 2)]
+    assert any(item.kind == "constructor_operand_unresolved"
+               and "metadata" in item.detail
                for item in value.execution.issues)
 
 

@@ -43,6 +43,7 @@ ISSUE_KINDS = frozenset({
     "invocation_guard_unresolved",
     "invocation_absent",
 })
+EXECUTION_MODES = frozenset({"selected", "exhaustive_equivalent"})
 
 
 class _PresentPopulationToken:
@@ -63,11 +64,6 @@ class _PresentPopulationToken:
 
 
 _PRESENT_POPULATION = _PresentPopulationToken()
-
-
-def _span_key(span: SourceSpan):
-    return (span.line, span.col, span.end_line or span.line,
-            span.end_col or span.col)
 
 
 def _ordinary(record: CallableRecord):
@@ -161,7 +157,23 @@ def _runtime_steps(invocation: StageChildInvocation):
                          and step.span == invocation.loop.span))
 
 
+def _within(inner: SourceSpan | None, outer: SourceSpan | None) -> bool:
+    if inner is None or outer is None or inner.source != outer.source:
+        return False
+    return (inner.line, inner.col) >= (outer.line, outer.col) \
+        and (inner.end_line or inner.line, inner.end_col or inner.col) \
+        <= (outer.end_line or outer.line, outer.end_col or outer.col)
+
+
+def _supported_runtime_call(index, invocation):
+    return not any(_within(invocation.call.span, item.span)
+                   for item in index.unsupported_execution_in(
+                       invocation.call.enclosing_callable))
+
+
 def _runtime_state(index, children, population, invocation):
+    if not _supported_runtime_call(index, invocation):
+        return None
     guard = _runtime_steps(invocation)
     if not guard:
         return EvaluatedExpression(True, spans=(invocation.call.span,))
@@ -185,6 +197,59 @@ def _runtime_state(index, children, population, invocation):
         # The opaque presence token deliberately raises if a local alias tries
         # to turn it into truthiness, arithmetic, or value equality.
         return None
+
+
+def _constant_key(value):
+    if isinstance(value, dict):
+        items = tuple((_constant_key(key), _constant_key(item))
+                      for key, item in value.items())
+        return ("dict", tuple(sorted(items, key=repr)))
+    if isinstance(value, list):
+        return ("list", tuple(_constant_key(item) for item in value))
+    if isinstance(value, tuple):
+        return ("tuple", tuple(_constant_key(item) for item in value))
+    if isinstance(value, (set, frozenset)):
+        return (type(value).__name__, tuple(sorted(
+            (_constant_key(item) for item in value), key=repr)))
+    return (type(value).__module__, type(value).__qualname__, repr(value))
+
+
+def _expression_key(expression: ExprNode):
+    """Span-free syntax identity; never a semantic role or source string."""
+    return (
+        expression.kind, expression.name, _constant_key(expression.const_value),
+        expression.operator,
+        tuple(_expression_key(item) for item in expression.children),
+        tuple((name, _expression_key(item))
+              for name, item in expression.keyword_children),
+    )
+
+
+def _call_key(invocation: StageChildInvocation):
+    call = invocation.call
+    return (
+        _expression_key(call.callee),
+        tuple(_expression_key(item) for item in call.args),
+        tuple((name, _expression_key(item)) for name, item in call.kwargs),
+    )
+
+
+def _exhaustive_equivalent_invocations(invocations):
+    """Prove one exact binary if/else executes the same child call.
+
+    The two call sites remain distinct evidence.  Ignoring spans here is legal
+    only after their guard suffixes prove the complementary branch pair and
+    their complete normalized call syntax agrees.
+    """
+    if len(invocations) != 2:
+        return False
+    suffixes = tuple(_runtime_steps(item) for item in invocations)
+    if any(len(item) != 1 for item in suffixes):
+        return False
+    left, right = (item[0] for item in suffixes)
+    return left.span == right.span \
+        and {left.kind, right.kind} == {"if", "else"} \
+        and _call_key(invocations[0]) == _call_key(invocations[1])
 
 
 @dataclass(frozen=True)
@@ -234,24 +299,39 @@ class SelectedChildConstructorOperand:
 @dataclass(frozen=True)
 class SelectedChildExecution:
     population: SelectedStageChildPopulation
-    active_invocations: tuple[StageChildInvocation, ...]
+    runtime_invocations: tuple[StageChildInvocation, ...]
     execution_count: int
     guard_spans: tuple[SourceSpan, ...]
+    execution_mode: str = "selected"
 
     def __post_init__(self):
         if self.population.status != "constructed" \
                 or self.population.repetition_count is None \
-                or not self.active_invocations \
+                or not self.runtime_invocations \
                 or any(item not in self.population.invocations
-                       for item in self.active_invocations) \
-                or self.execution_count != (
-                    self.population.repetition_count
-                    * len(self.active_invocations)) \
+                       for item in self.runtime_invocations) \
+                or self.execution_mode not in EXECUTION_MODES \
                 or self.execution_count <= 0:
             raise ValueError("execution is exact positive population × call evidence")
-        required = {item.call.span for item in self.active_invocations}
+        if self.execution_mode == "selected":
+            expected = (self.population.repetition_count
+                        * len(self.runtime_invocations))
+        else:
+            if self.runtime_invocations != self.population.invocations \
+                    or not _exhaustive_equivalent_invocations(
+                        self.runtime_invocations):
+                raise ValueError(
+                    "equivalent execution retains the complete binary branch pair")
+            expected = self.population.repetition_count
+        if self.execution_count != expected:
+            raise ValueError("execution count follows selected-vs-alternative semantics")
+        required = {
+            *(item.call.span for item in self.runtime_invocations),
+            *(step.span for item in self.runtime_invocations
+              for step in _runtime_steps(item)),
+        }
         if not required <= set(self.guard_spans):
-            raise ValueError("execution provenance cites every active call")
+            raise ValueError("execution provenance cites every runtime alternative")
 
 
 @dataclass(frozen=True)
@@ -286,15 +366,15 @@ class UNetSelectedChildExecution:
 def _child_operands(index, children, population, construction):
     if construction.site is None or len(construction.candidates) != 1 \
             or construction.issues:
-        return (), "child construction has no unique exact site candidate"
+        return (), ("child construction has no unique exact site candidate",)
     candidate = construction.candidates[0]
     constructor = index.callable_by_symbol(SymbolId(
         candidate.symbol.source, f"{candidate.symbol.qualified_name}.__init__"))
     if constructor is None:
-        return (), "child candidate has no indexed initializer"
+        return (), ("child candidate has no indexed initializer",)
     actuals = _actual_map(construction.site, constructor)
     if actuals is None:
-        return (), "child constructor call is not exactly bindable"
+        return (), ("child constructor call is not exactly bindable",)
     stage_env = _stage_env(children, population)
     evaluator = ConfigExpressionEvaluator(
         (), {}, stage_env, allow_control_literals=True,
@@ -304,12 +384,15 @@ def _child_operands(index, children, population, construction):
     deps = tuple(item for item in children.operands.operands
                  if item.selected == population.selected)
     rows = []
+    problems = []
     for formal in _ordinary(constructor):
         actual = actuals.get(formal.name)
         source_kind = "stage_expression"
         if actual is None:
             if not formal.has_default or formal.default is None:
-                return (), f"required child formal {formal.name!r} is missing"
+                problems.append(
+                    f"required child formal {formal.name!r} is missing")
+                continue
             actual = formal.default
             source_kind = "class_default"
             value = ConfigExpressionEvaluator(
@@ -317,7 +400,9 @@ def _child_operands(index, children, population, construction):
         else:
             value = evaluator.expression(actual)
         if value is None:
-            return (), f"child formal {formal.name!r} has no exact value"
+            problems.append(
+                f"child formal {formal.name!r} has no exact value")
+            continue
         dependencies = tuple(item for item in deps
                              if any(span in value.spans for span in item.spans))
         spans = tuple(dict.fromkeys((construction.site.span,
@@ -328,7 +413,7 @@ def _child_operands(index, children, population, construction):
         rows.append(SelectedChildConstructorOperand(
             population, construction, candidate.symbol, constructor, formal,
             actual, value.value, source_kind, dependencies, spans))
-    return tuple(rows), ""
+    return tuple(rows), tuple(problems)
 
 
 def _derive(children):
@@ -339,11 +424,34 @@ def _derive(children):
         if population.status != "constructed" \
                 or not population.repetition_count:
             continue
+        for construction in population.present_constructions:
+            child_rows, problems = _child_operands(
+                children.index, children, population, construction)
+            operands.extend(child_rows)
+            for problem in problems:
+                issues.append(SelectedChildExecutionIssue(
+                    population, "constructor_operand_unresolved", problem,
+                    ((_construction_span(construction),))))
         states = tuple((item, _runtime_state(
             children.index, children, population, item))
                        for item in population.invocations)
         if any(state is None or type(state.value) is not bool
                for _item, state in states):
+            if all(state is None for _item, state in states) \
+                    and all(_supported_runtime_call(children.index, item)
+                            for item in population.invocations) \
+                    and _exhaustive_equivalent_invocations(
+                        population.invocations):
+                spans = tuple(dict.fromkeys((
+                    *(item.call.span for item in population.invocations),
+                    *(step.span for item in population.invocations
+                      for step in _runtime_steps(item)),
+                )))
+                executions.append(SelectedChildExecution(
+                    population, population.invocations,
+                    population.repetition_count, spans,
+                    "exhaustive_equivalent"))
+                continue
             issues.append(SelectedChildExecutionIssue(
                 population, "invocation_guard_unresolved",
                 "one exact child call guard is not decidable from F3 evidence",
@@ -362,16 +470,7 @@ def _derive(children):
             tuple(dict.fromkeys((
                 *(item.call.span for item in active),
                 *(span for _item, state in states for span in state.spans),
-            )))))
-        for construction in population.present_constructions:
-            child_rows, problem = _child_operands(
-                children.index, children, population, construction)
-            if problem:
-                issues.append(SelectedChildExecutionIssue(
-                    population, "constructor_operand_unresolved", problem,
-                    ((_construction_span(construction),))))
-                continue
-            operands.extend(child_rows)
+            ))), "selected"))
     return tuple(operands), tuple(executions), tuple(issues)
 
 
@@ -391,16 +490,17 @@ def read_unet_selected_child_execution(
         *(span for item in value.executions for span in item.guard_spans),
         *(span for item in value.issues for span in item.spans),
     )))
+    config_paths = tuple(dict.fromkeys((
+        *(row.selected.source.config_path for row in children.populations),
+        *(path for row in children.populations
+          for path, _value in row.premises),
+        *(path for row in value.operands
+          for dependency in row.stage_operand_dependencies
+          for path, _value in dependency.premises),
+    )))
     provenance = ((ReaderProvenance(
         "code_and_config", spans=spans,
-        config_paths=tuple(dict.fromkeys(
-            (
-                *(path for row in children.populations
-                  for path, _value in row.premises),
-                *(path for row in value.operands
-                  for dependency in row.stage_operand_dependencies
-                  for path, _value in dependency.premises),
-            ))),
+        config_paths=config_paths,
         detail="selected child construction→runtime call"),)
         if spans else ())
     if value.issues or children.issues:
@@ -416,7 +516,7 @@ def read_unet_selected_child_execution(
 
 
 __all__ = [
-    "ISSUE_KINDS", "SelectedChildConstructorOperand",
+    "ISSUE_KINDS", "EXECUTION_MODES", "SelectedChildConstructorOperand",
     "SelectedChildExecution", "SelectedChildExecutionIssue",
     "UNetSelectedChildExecution", "read_unet_selected_child_execution",
 ]

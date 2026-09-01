@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .component_owner import OwnerOccurrenceId
+from .constructor_condition import SelectedConstructorCallArgument
 from .diffusion_stream import local_lineage_at_callable
 from .program_index import (
     CallObservation,
@@ -79,6 +80,7 @@ class FormalBindingEdge:
     lineage_spans: tuple[SourceSpan, ...]
     guard_decision_spans: tuple[SourceSpan, ...]
     spans: tuple[SourceSpan, ...]
+    argument_selection: SelectedConstructorCallArgument | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.owner, OwnerOccurrenceId) \
@@ -91,8 +93,14 @@ class FormalBindingEdge:
                 or self.callee.symbol.source.component_key != component:
             raise ValueError("a formal edge stays inside its addressed component")
         bound = _bind_call(self.call, self.callee)
-        if bound is None or bound.get(self.callee_formal.name) != self.actual:
+        original = (self.argument_selection.original
+                    if self.argument_selection is not None else self.actual)
+        if bound is None or bound.get(self.callee_formal.name) != original:
             raise ValueError("the actual binds the exact callee formal")
+        if self.argument_selection is not None \
+                and (self.argument_selection.call != self.call
+                     or self.argument_selection.selected != self.actual):
+            raise ValueError("the selected actual closes this exact call branch")
         if self.source_kind not in SOURCE_KINDS \
                 or (self.source_kind == "required_formal") \
                 != (not self.caller_formal.has_default):
@@ -104,6 +112,8 @@ class FormalBindingEdge:
         required = {
             self.call.span, self.actual.span, self.caller.span, self.callee.span,
             *self.lineage_spans, *self.guard_decision_spans,
+            *((self.argument_selection.spans)
+              if self.argument_selection is not None else ()),
         }
         if None in required or not required <= set(self.spans) \
                 or any(not isinstance(item, SourceSpan) for item in self.spans):
@@ -177,7 +187,8 @@ def _annotation_is_nonoptional(annotation: ExprNode | None) -> bool:
 def bind_formal_edge(index: ProgramIndex, owner: OwnerOccurrenceId,
                      call: CallObservation,
                      callee: CallableRecord, callee_formal: str,
-                     binding_guard_resolver=None) \
+                     binding_guard_resolver=None,
+                     argument_selection: SelectedConstructorCallArgument | None = None) \
         -> ReaderResult[FormalBindingEdge]:
     """Bind one call argument through exact local lineage to one caller formal."""
     if not isinstance(index, ProgramIndex) \
@@ -201,6 +212,12 @@ def bind_formal_edge(index: ProgramIndex, owner: OwnerOccurrenceId,
     actual = bound.get(callee_formal)
     if actual is None:
         return _failed(owner, "callee formal is not supplied")
+    if argument_selection is not None:
+        if not isinstance(argument_selection, SelectedConstructorCallArgument) \
+                or argument_selection.call != call \
+                or argument_selection.original != actual:
+            return _failed(owner, "argument selection does not bind this formal")
+        actual = argument_selection.selected
     decision_spans = []
 
     def guard_state(binding):
@@ -229,12 +246,14 @@ def bind_formal_edge(index: ProgramIndex, owner: OwnerOccurrenceId,
     spans = tuple(dict.fromkeys(span for span in (
         caller.span, call.span, actual.span, callee.span, *lineage_spans,
         *decision_spans,
+        *((argument_selection.spans)
+          if argument_selection is not None else ()),
     ) if isinstance(span, SourceSpan)))
     value = FormalBindingEdge(
         owner, caller, call, callee, source, target, actual,
         "optional_formal" if source.has_default else "required_formal",
         tuple(sorted(trace.roots)), lineage_spans,
-        tuple(dict.fromkeys(decision_spans)), spans)
+        tuple(dict.fromkeys(decision_spans)), spans, argument_selection)
     return ReaderResult.resolved(
         owner, value,
         provenance=(ReaderProvenance(

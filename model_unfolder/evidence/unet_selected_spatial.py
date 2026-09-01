@@ -46,6 +46,7 @@ from .unet_selected_child_execution import (
     SelectedChildExecution,
     UNetSelectedChildExecution,
 )
+from .unet_selected_constructor import selected_constructor_environment
 
 
 EFFECTS = frozenset({"reduce", "resize"})
@@ -215,34 +216,9 @@ def _mechanism_for(mechanisms, population, construction):
 
 
 def _child_env(index, operands):
-    env = {item.formal.name: EvaluatedExpression(item.value, spans=item.spans)
-           for item in operands}
-    symbol = operands[0].candidate_symbol
-    constructor = operands[0].constructor.symbol
-    for assignment in sorted(index.field_assigns_of(symbol),
-                             key=lambda item: _span_key(item.span)):
-        evaluator = ConfigExpressionEvaluator(
-            (), {}, dict(env), allow_control_literals=True,
-            allow_boolean_not=True)
-        locals_before(index, constructor, assignment.span, evaluator)
-        state = guard_path_evidence(
-            index, constructor, assignment.guard, evaluator, assignment.span)
-        key = f"self.{assignment.field}"
-        if state is None or type(state.value) is not bool:
-            # An unresolved later write kills any earlier apparent value.  It
-            # may be restored only by a subsequent positively-selected write.
-            env.pop(key, None)
-            continue
-        if not state.value:
-            continue
-        value = evaluator.expression(assignment.value)
-        if value is None:
-            env.pop(key, None)
-            continue
-        env[key] = EvaluatedExpression(
-            value.value, value.premises,
-            tuple(dict.fromkeys((assignment.span, *value.spans))))
-    return env
+    # Kept as a private compatibility spelling inside this reader; the actual
+    # interpretation is shared with U11-F2b in one typed boundary.
+    return selected_constructor_environment(index, operands)
 
 
 def _child_evaluator(index, operands):

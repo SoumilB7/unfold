@@ -8,6 +8,13 @@ import textwrap
 import pytest
 
 from model_unfolder.evidence.component_owner import resolve_component_root
+from model_unfolder.evidence.constructor_condition import (
+    select_constructor_conditioned_call_argument,
+)
+from model_unfolder.evidence.constructor_values import (
+    canonical_construction_target,
+    constructor_frame,
+)
 from model_unfolder.evidence.invocation_source import (
     bind_formal_edge,
     compose_formal_route,
@@ -239,3 +246,65 @@ def test_foreign_callee_record_is_rejected(tmp_path):
         left, owner, _call(left, "Root", "middle"),
         _callable(right, "Middle"), "side")
     assert result.status == "failed"
+
+
+def test_constructor_selected_none_cannot_launder_a_required_formal(tmp_path):
+    source = SOURCE.replace(
+        "class Middle:\n    def __init__(self):\n        self.sink = Sink()",
+        "class Middle:\n    def __init__(self, enabled):\n"
+        "        self.enabled = enabled\n        self.sink = Sink()").replace(
+        "return self.sink(payload=value, context=renamed)",
+        "return self.sink(\n"
+        "            payload=value,\n"
+        "            context=renamed if self.enabled else None)").replace(
+        "self.middle = Middle()", "self.middle = Middle(False)")
+    index, owner = _index(tmp_path, source)
+    site = next(item for item in index.construction_sites
+                if item.owner.qualified_name == "Root"
+                and item.target == "middle")
+    frame = constructor_frame(index, canonical_construction_target(
+        index, site, site.candidates[0].symbol))
+    call = _call(index, "Middle", "sink")
+    original = next(value for name, value in call.kwargs
+                    if name == "context")
+    selection = select_constructor_conditioned_call_argument(
+        index, frame, call, original).require_value()
+    assert selection.selected.kind == "constant"
+    assert selection.selected.const_value is None
+    result = bind_formal_edge(
+        index, owner, call, _callable(index, "Sink"), "context",
+        argument_selection=selection)
+    assert result.status == "failed"
+
+
+def test_constructor_selected_live_branch_retains_exact_formal_lineage(tmp_path):
+    source = SOURCE.replace(
+        "class Middle:\n    def __init__(self):\n        self.sink = Sink()",
+        "class Middle:\n    def __init__(self, enabled):\n"
+        "        self.enabled = enabled\n        self.sink = Sink()").replace(
+        "return self.sink(payload=value, context=renamed)",
+        "return self.sink(\n"
+        "            payload=value,\n"
+        "            context=renamed if self.enabled else None)").replace(
+        "self.middle = Middle()", "self.middle = Middle(True)")
+    index, owner = _index(tmp_path, source)
+    site = next(item for item in index.construction_sites
+                if item.owner.qualified_name == "Root"
+                and item.target == "middle")
+    frame = constructor_frame(index, canonical_construction_target(
+        index, site, site.candidates[0].symbol))
+    call = _call(index, "Middle", "sink")
+    original = next(value for name, value in call.kwargs
+                    if name == "context")
+    selection = select_constructor_conditioned_call_argument(
+        index, frame, call, original).require_value()
+    edge = bind_formal_edge(
+        index, owner, call, _callable(index, "Sink"), "context",
+        argument_selection=selection).require_value()
+    assert edge.actual.kind == "name" and edge.actual.name == "renamed"
+    assert edge.argument_selection == selection
+    assert edge.lineage_roots == ("side",)
+    with pytest.raises(ValueError):
+        replace(edge, argument_selection=None)
+    with pytest.raises(ValueError):
+        replace(edge, actual=selection.original)
