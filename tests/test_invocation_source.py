@@ -16,6 +16,7 @@ from model_unfolder.evidence.constructor_values import (
     constructor_frame,
 )
 from model_unfolder.evidence.invocation_source import (
+    ExactLocalLineageSubstitution,
     bind_formal_edge,
     compose_formal_route,
 )
@@ -308,3 +309,85 @@ def test_constructor_selected_live_branch_retains_exact_formal_lineage(tmp_path)
         replace(edge, argument_selection=None)
     with pytest.raises(ValueError):
         replace(edge, actual=selection.original)
+
+
+def _helper_substitution(index, source_names=("external",)):
+    caller = _callable(index, "Root")
+    helper_call = _call(index, "Root", "preprocess")
+    definitions = tuple(
+        item for item in index.bindings_in(caller.symbol)
+        if item.value is not None and item.value.span == helper_call.span)
+    assert len(definitions) == 1
+    definition = definitions[0]
+    assert len(definition.targets) == 1
+    by_name = {item.name: item for item in caller.params if item.name != "self"}
+    sources = tuple(by_name[name] for name in source_names)
+    spans = tuple(dict.fromkeys((
+        caller.span, helper_call.span, definition.span,
+        definition.targets[0].span,
+    )))
+    return ExactLocalLineageSubstitution(
+        caller, definition, definition.targets[0], sources, spans)
+
+
+def _helper_source(returned="left"):
+    return SOURCE.replace(
+        "    def forward(self, sample, external: object):\n",
+        "    def preprocess(self, left, right):\n"
+        f"        return {returned}\n"
+        "    def forward(self, sample, external: object):\n").replace(
+        "        transformed = external + 1",
+        "        transformed = self.preprocess(external, sample)")
+
+
+def test_exact_helper_return_substitution_closes_the_local_formal_edge(tmp_path):
+    index, owner = _index(tmp_path, _helper_source("left"))
+    call = _call(index, "Root", "middle")
+    callee = _callable(index, "Middle")
+    # A same-class helper is opaque until its exact return transport is supplied.
+    assert bind_formal_edge(index, owner, call, callee, "side").status == "failed"
+    substitution = _helper_substitution(index)
+    edge = bind_formal_edge(
+        index, owner, call, callee, "side",
+        lineage_substitutions=(substitution,)).require_value()
+    assert edge.caller_formal.name == "external"
+    assert edge.lineage_substitution == substitution
+    assert set(substitution.proof_spans) <= set(edge.spans)
+
+
+def test_helper_with_one_argument_cannot_self_certify_its_return_source(tmp_path):
+    source = _helper_source("0").replace(
+        "self.preprocess(external, sample)", "self.preprocess(external)").replace(
+        "def preprocess(self, left, right):", "def preprocess(self, left):")
+    index, owner = _index(tmp_path, source)
+    result = bind_formal_edge(
+        index, owner, _call(index, "Root", "middle"),
+        _callable(index, "Middle"), "side")
+    assert result.status == "failed"
+
+
+def test_mixed_helper_sources_and_later_rewrites_never_collapse_to_one(tmp_path):
+    index, owner = _index(tmp_path / "mixed", _helper_source("left"))
+    mixed = _helper_substitution(index, ("external", "sample"))
+    assert bind_formal_edge(
+        index, owner, _call(index, "Root", "middle"),
+        _callable(index, "Middle"), "side",
+        lineage_substitutions=(mixed,)).status == "failed"
+
+    source = _helper_source("left").replace(
+        "        return self.middle(sample, transformed)",
+        "        transformed = sample\n"
+        "        return self.middle(sample, transformed)")
+    index, owner = _index(tmp_path / "rewrite", source)
+    stale = _helper_substitution(index)
+    assert bind_formal_edge(
+        index, owner, _call(index, "Root", "middle"),
+        _callable(index, "Middle"), "side",
+        lineage_substitutions=(stale,)).status == "failed"
+
+
+def test_local_substitution_closure_rejects_a_foreign_target(tmp_path):
+    index, _owner = _index(tmp_path, _helper_source("left"))
+    substitution = _helper_substitution(index)
+    with pytest.raises(ValueError):
+        replace(substitution, target=substitution.definition.value)

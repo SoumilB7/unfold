@@ -126,6 +126,7 @@ def test_selected_constructor_guard_controls_exact_helper_lineage(
     assert route.relation == relation
     assert route.config_paths == (("mode",),)
     assert route.owner == route.transport.owner_occurrence
+    assert route.lineage_substitution.source_formals == route.caller_sources
 
 
 def test_helper_arguments_do_not_become_sources_unless_the_return_reaches_them(

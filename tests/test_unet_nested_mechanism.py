@@ -50,6 +50,9 @@ from model_unfolder.evidence.unet_attention_source import (
     RuntimeAttentionSource,
     read_unet_runtime_attention_sources,
 )
+from model_unfolder.evidence.unet_root_preprocess import (
+    read_unet_root_preprocessing,
+)
 from model_unfolder.evidence.unet_selected_child_execution import (
     read_unet_selected_child_execution,
 )
@@ -554,6 +557,8 @@ def test_real_sdxl_preserves_rival_transformer_routes_and_framework_attention():
         stage_construction, root,
         DocumentBinding("root", (), prepare_document(config, merge=False)))
     assert selection.status == "resolved"
+    preprocessing = read_unet_root_preprocessing(
+        selection.require_value(), root)
     factory = read_unet_selected_stage_operands(
         selection.require_value()).require_value()
     constructor = read_unet_selected_stage_constructor_operands(
@@ -573,48 +578,64 @@ def test_real_sdxl_preserves_rival_transformer_routes_and_framework_attention():
     assert any(item.population.field == "attentions"
                for item in child_execution.operands), child_compact
     runtime = read_unet_runtime_attention_sources(
-        selection.require_value(), value, child_execution, root)
-    assert runtime.status == "incomplete"
+        selection.require_value(), preprocessing.require_value(),
+        value, child_execution, root)
+    runtime_value = runtime.require_value()
     compact = (
-        len(runtime.require_value().sources),
+        runtime.status,
+        len(runtime_value.sources),
         tuple((item.selected_stage.source.template.topology_stage.field,
                item.selected_stage.position,
                item.child_execution.execution_mode,
                len(item.routes))
-              for item in runtime.require_value().sources),
+              for item in runtime_value.sources),
         tuple(sorted((kind, sum(issue.kind == kind
-                                for issue in runtime.require_value().issues))
+                                for issue in runtime_value.issues))
                      for kind in {item.kind
-                                  for item in runtime.require_value().issues})),
-        tuple(sorted({item.detail for item in runtime.require_value().issues})),
+                                  for item in runtime_value.issues})),
     )
-    # F2b reaches the root conditioning preprocessor and stops honestly.  The
-    # exact root formal is first rewritten by process_encoder_hidden_states;
-    # treating every argument of that helper as if it reached the return would
-    # launder optional image inputs into an unconditional text-source claim.
-    # F4 owns the selected helper-return/bookend proof, after which F2 can close
-    # these four selected stage occurrences.  Until then there is deliberately
-    # no cross-attention boolean on RuntimeAttentionSource and no positive row.
+    # F4 proves the selected process_encoder_hidden_states return source, so
+    # F2c closes exactly the four selected attention-bearing stage occurrences.
+    # The other nested lanes remain typed unresolved; a partial route inventory
+    # is not upgraded to a conventional cross-attention boolean.
+    assert compact == (
+        "incomplete", 4,
+        (("down_blocks", 1, "exhaustive_equivalent", 2),
+         ("down_blocks", 2, "exhaustive_equivalent", 2),
+         ("up_blocks", 0, "exhaustive_equivalent", 2),
+         ("up_blocks", 1, "exhaustive_equivalent", 2)),
+        (("lane_route_unresolved", 32),),
+    )
     assert not hasattr(RuntimeAttentionSource, "cross_attention")
-    assert not runtime.require_value().sources, compact
-    root_blocked = tuple(
-        item for item in runtime.require_value().issues
-        if item.kind == "root_preprocess_unresolved")
-    assert {
-        (item.selected_stage.source.template.topology_stage.field,
-         item.selected_stage.position)
-        for item in root_blocked
-    } == {("down_blocks", 1), ("down_blocks", 2),
-          ("up_blocks", 0), ("up_blocks", 1)}
-    assert all(item.child_execution is not None
-               and item.child_execution.execution_mode
-               == "exhaustive_equivalent"
-               and len(item.child_execution.runtime_invocations) == 2
-               and item.child_execution.execution_count
-               == item.child_execution.population.repetition_count
-               and "root:actual has no single exact caller-formal root"
-               in item.detail
-               for item in root_blocked)
-    assert runtime.require_value().issues
-    assert {item.kind for item in runtime.require_value().issues} == {
-        "lane_route_unresolved", "root_preprocess_unresolved"}
+    preprocess_routes = tuple(
+        item.lineage_substitution
+        for item in preprocessing.require_value().routes)
+    substituted = tuple(
+        edge for source in runtime_value.sources
+        for alternative in source.routes for edge in alternative.route.edges
+        if edge.lineage_substitution is not None)
+    assert len(substituted) == 8
+    assert all(edge.lineage_substitution in preprocess_routes
+               and edge.caller_formal.name == "encoder_hidden_states"
+               and tuple(item.name for item in
+                         edge.lineage_substitution.source_formals)
+               == ("encoder_hidden_states",)
+               for edge in substituted)
+    assert any(item.kind == "code_and_config"
+               and ("encoder_hid_dim_type",) in item.config_paths
+               for item in runtime.provenance)
+
+    # A valid F4 result from a different checkpoint-selected evidence object
+    # cannot be substituted into this F2c aggregate, even on the same source.
+    foreign_config = dict(config)
+    foreign_config["encoder_hid_dim_type"] = "text_proj"
+    foreign_selection = read_unet_stage_selection(
+        stage_construction, root,
+        DocumentBinding(
+            "root", (), prepare_document(foreign_config, merge=False)))
+    assert foreign_selection.status == "resolved"
+    foreign_preprocessing = read_unet_root_preprocessing(
+        foreign_selection.require_value(), root).require_value()
+    with pytest.raises(
+            ValueError, match="exact F1/F4/E1/F3d evidence universe"):
+        replace(runtime_value, root_preprocessing=foreign_preprocessing)

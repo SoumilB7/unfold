@@ -41,6 +41,7 @@ from .unet_nested_mechanism import (
     NestedMechanismEvidence,
     UNetNestedMechanismInventory,
 )
+from .unet_root_preprocess import UNetRootPreprocessing
 from .unet_stage_cells import (
     ChildConstructionEvidence,
     StageChildInvocation,
@@ -359,6 +360,7 @@ class RuntimeAttentionSourceIssue:
 @dataclass(frozen=True)
 class UNetRuntimeAttentionSources:
     selection: UNetStageSelectionInventory
+    root_preprocessing: UNetRootPreprocessing
     nested_inventory: UNetNestedMechanismInventory
     child_execution: UNetSelectedChildExecution
     sources: tuple[RuntimeAttentionSource, ...] | None
@@ -367,8 +369,15 @@ class UNetRuntimeAttentionSources:
     def __post_init__(self) -> None:
         base_index = self.child_execution.index
         expanded_index = self.nested_inventory.index
-        if self.child_execution.children.operands.factory.selection \
+        selection_index = self.root_preprocessing.index
+        if self.root_preprocessing.selection != self.selection \
+                or self.child_execution.children.operands.factory.selection \
                 != self.selection \
+                or selection_index.bundle_source != base_index.bundle_source \
+                or any(node not in base_index.source_nodes
+                       for node in selection_index.source_nodes) \
+                or any(failure not in base_index.parse_failures
+                       for failure in selection_index.parse_failures) \
                 or base_index.bundle_source != expanded_index.bundle_source \
                 or any(node not in expanded_index.source_nodes
                        for node in base_index.source_nodes) \
@@ -381,9 +390,11 @@ class UNetRuntimeAttentionSources:
                            invocation.call.enclosing_callable)
                        for execution in self.child_execution.executions
                        for invocation in execution.runtime_invocations):
-            raise ValueError("F2b retains one exact F1/F3/E1 evidence universe")
+            raise ValueError(
+                "F2c retains one exact F1/F4/E1/F3d evidence universe")
         expected_sources, expected_issues = _derive(
-            self.selection, self.nested_inventory, self.child_execution)
+            self.selection, self.root_preprocessing,
+            self.nested_inventory, self.child_execution)
         if self.sources is None and self.issues is None:
             object.__setattr__(self, "sources", expected_sources)
             object.__setattr__(self, "issues", expected_issues)
@@ -481,8 +492,8 @@ def _frame_guard_resolver(index, frame, callable_symbol, environments=None):
     return resolve
 
 
-def _routes_for_lane(selected, stage, nested, row, child_execution,
-                     construction, environments, lane_cache):
+def _routes_for_lane(selected, stage, substitutions, nested, row,
+                     child_execution, construction, environments, lane_cache):
     if not isinstance(row.occurrence_id, AlternativeNestedOccurrenceId) \
             or not isinstance(row.attention, FrameworkAttentionLaneEvidence):
         return (), "failed", "unresolved", "lane_route_unresolved", \
@@ -587,7 +598,8 @@ def _routes_for_lane(selected, stage, nested, row, child_execution,
             attempts["root_guard"] += 1
             root_edge_result = bind_formal_edge(
                 index, stage.occurrence_id.owner, root_call, stage_forward,
-                stage_edge.caller_formal.name)
+                stage_edge.caller_formal.name,
+                lineage_substitutions=substitutions)
             if root_edge_result.status != "resolved":
                 edge_failures.extend(
                     f"root:{item.detail}"
@@ -638,11 +650,13 @@ def _routes_for_lane(selected, stage, nested, row, child_execution,
             "lane_route_unresolved", detail)
 
 
-def _derive(selection, nested, child_execution):
+def _derive(selection, preprocessing, nested, child_execution):
     sources = []
     issues = []
     lane_cache = {}
     environment_cache = {}
+    substitutions = tuple(
+        item.lineage_substitution for item in preprocessing.routes)
     for selected in selection.occurrences:
         stage = _selected_stage(selected, nested)
         if stage is None:
@@ -683,7 +697,7 @@ def _derive(selection, nested, child_execution):
                         nested.index, operands))
             environments = environment_cache[environment_key]
             routes, role_status, role_kind, issue_kind, detail = _routes_for_lane(
-                selected, stage, nested, row, execution, construction,
+                selected, stage, substitutions, nested, row, execution, construction,
                 environments, lane_cache)
             if not routes:
                 issues.append(RuntimeAttentionSourceIssue(
@@ -713,24 +727,37 @@ def _derive(selection, nested, child_execution):
 
 def read_unet_runtime_attention_sources(
         selection: UNetStageSelectionInventory,
+        root_preprocessing: UNetRootPreprocessing,
         nested: UNetNestedMechanismInventory,
         child_execution: UNetSelectedChildExecution,
         root_resolution: ComponentRootResolution,
 ) -> ReaderResult[UNetRuntimeAttentionSources]:
     if not isinstance(selection, UNetStageSelectionInventory) \
+            or not isinstance(root_preprocessing, UNetRootPreprocessing) \
             or not isinstance(nested, UNetNestedMechanismInventory) \
             or not isinstance(child_execution, UNetSelectedChildExecution) \
             or not isinstance(root_resolution, ComponentRootResolution):
-        raise TypeError("U11-F2b requires exact F1/E1/F3d/D0 evidence")
+        raise TypeError("U11-F2c requires exact F1/F4/E1/F3d/D0 evidence")
     owner = nested.cells.cells.graph.owner
     if root_resolution.status != "resolved" \
             or root_resolution.occurrence != owner \
-            or child_execution.children.cells.graph.owner != owner:
+            or child_execution.children.cells.graph.owner != owner \
+            or root_preprocessing.root != root_resolution \
+            or root_preprocessing.selection != selection:
         return ReaderResult.failed(owner, (ReaderFailure(
-            "out_of_owner", "F1/E1/F3d/D0 evidence does not share one root"),))
+            "out_of_owner",
+            "F1/F4/E1/F3d/D0 evidence does not share one root"),))
     value = UNetRuntimeAttentionSources(
-        selection, nested, child_execution, None, None)
+        selection, root_preprocessing, nested, child_execution, None, None)
     sources, issues = value.sources, value.issues
+    used_substitutions = tuple(
+        edge.lineage_substitution
+        for source in sources for alternative in source.routes
+        for edge in alternative.route.edges
+        if edge.lineage_substitution is not None)
+    used_preprocessing = tuple(
+        item for item in root_preprocessing.routes
+        if item.lineage_substitution in used_substitutions)
     spans = tuple(dict.fromkeys((
         *(span for item in selection.occurrences
           for span in item.guard_spans),
@@ -740,7 +767,13 @@ def read_unet_runtime_attention_sources(
           if isinstance(span, SourceSpan)),
     )))
     provenance = ((ReaderProvenance(
-        "source", spans=spans,
+        ("code_and_config" if any(
+            item.config_paths for item in used_preprocessing)
+         else "source"),
+        spans=spans,
+        config_paths=tuple(dict.fromkeys(
+            path for item in used_preprocessing
+            for path in item.config_paths)),
         detail="exact selected-stage -> cell -> block -> attention formal route"),)
         if spans else ())
     if issues or not sources:

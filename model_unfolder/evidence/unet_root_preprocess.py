@@ -20,6 +20,7 @@ from . import config_access
 from .component_owner import ComponentRootResolution, OwnerOccurrenceId
 from .diffusion_stream import local_lineage_at_callable
 from .expression_eval import EvaluatedExpression, unique_premises
+from .invocation_source import ExactLocalLineageSubstitution
 from .program_index import (
     CallObservation,
     ExprNode,
@@ -208,6 +209,20 @@ class RootPreprocessRoute:
     @property
     def caller_target(self) -> ExprNode:
         return self.transport.lanes[0].caller_target
+
+    @property
+    def lineage_substitution(self) -> ExactLocalLineageSubstitution:
+        proof_spans = tuple(dict.fromkeys((
+            *self.spans, self.transport.caller.span,
+            self.transport.helper.span,
+        )))
+        return ExactLocalLineageSubstitution(
+            self.transport.caller,
+            self.transport.caller_definition,
+            self.caller_target,
+            self.caller_sources,
+            proof_spans,
+        )
 
 
 @dataclass(frozen=True)

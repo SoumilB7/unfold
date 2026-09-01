@@ -14,6 +14,7 @@ from .component_owner import OwnerOccurrenceId
 from .constructor_condition import SelectedConstructorCallArgument
 from .diffusion_stream import local_lineage_at_callable
 from .program_index import (
+    BindingObservation,
     CallObservation,
     CallableRecord,
     ExprNode,
@@ -59,6 +60,80 @@ def _bind_call(call: CallObservation, record: CallableRecord) \
     return bound
 
 
+def _target_contains(target: ExprNode, selected: ExprNode) -> bool:
+    if target == selected:
+        return True
+    if target.kind not in {"tuple", "list", "starred"}:
+        return False
+    return any(_target_contains(child, selected) for child in target.children)
+
+
+def _span_within(inner: SourceSpan | None, outer: SourceSpan | None) -> bool:
+    return bool(inner is not None and outer is not None
+                and inner.source == outer.source
+                and (inner.line, inner.col) >= (outer.line, outer.col)
+                and (inner.end_line or inner.line,
+                     inner.end_col or inner.col)
+                <= (outer.end_line or outer.line,
+                    outer.end_col or outer.col))
+
+
+def _indexed_self_helpers(index, caller, definition):
+    if caller.owner is None:
+        return ()
+    rows = []
+    for observed in index.calls_in(caller.symbol):
+        callee = observed.callee
+        if not _span_within(observed.span, definition.value.span) \
+                or callee.kind != "attribute" or not callee.name \
+                or len(callee.children) != 1 \
+                or callee.children[0].kind != "name" \
+                or callee.children[0].name != "self":
+            continue
+        symbol = SymbolId(
+            caller.symbol.source,
+            f"{caller.owner.qualified_name}.{callee.name}")
+        helper = index.callable_by_symbol(symbol)
+        if helper is not None and helper.owner == caller.owner:
+            rows.append(observed)
+    return tuple(rows)
+
+
+@dataclass(frozen=True)
+class ExactLocalLineageSubstitution:
+    """A separately-proven local definition's exact formal source roots.
+
+    This is a neutral bridge for a call/return proof that the callable-local
+    lineage engine cannot rediscover by treating an opaque call as transparent.
+    It never asserts semantics for that call.  The consuming edge still proves
+    that this exact definition reaches its actual without a later rival write.
+    """
+
+    caller: CallableRecord
+    definition: BindingObservation
+    target: ExprNode
+    source_formals: tuple[ParamRecord, ...]
+    proof_spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self) -> None:
+        ordinary = _ordinary_params(self.caller)
+        if not isinstance(self.definition, BindingObservation) \
+                or self.definition.enclosing_callable != self.caller.symbol \
+                or self.definition.value is None \
+                or not any(_target_contains(item, self.target)
+                           for item in self.definition.targets):
+            raise ValueError("a local substitution belongs to one exact definition")
+        if tuple(dict.fromkeys(self.source_formals)) \
+                != self.source_formals \
+                or any(item not in ordinary for item in self.source_formals):
+            raise ValueError("substitution sources are unique exact caller formals")
+        required = {self.caller.span, self.definition.span, self.target.span}
+        if None in required or not required <= set(self.proof_spans) \
+                or any(not isinstance(item, SourceSpan)
+                       for item in self.proof_spans):
+            raise ValueError("local substitution closes definition provenance")
+
+
 @dataclass(frozen=True)
 class FormalBindingEdge:
     """One exact source-template caller -> actual -> callee binding.
@@ -81,6 +156,7 @@ class FormalBindingEdge:
     guard_decision_spans: tuple[SourceSpan, ...]
     spans: tuple[SourceSpan, ...]
     argument_selection: SelectedConstructorCallArgument | None = None
+    lineage_substitution: ExactLocalLineageSubstitution | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.owner, OwnerOccurrenceId) \
@@ -101,6 +177,16 @@ class FormalBindingEdge:
                 and (self.argument_selection.call != self.call
                      or self.argument_selection.selected != self.actual):
             raise ValueError("the selected actual closes this exact call branch")
+        if self.lineage_substitution is not None:
+            substitution = self.lineage_substitution
+            if not isinstance(substitution, ExactLocalLineageSubstitution) \
+                    or substitution.caller != self.caller \
+                    or substitution.source_formals != (self.caller_formal,) \
+                    or self.actual.kind != "name" \
+                    or substitution.target.kind != "name" \
+                    or self.actual.name != substitution.target.name:
+                raise ValueError(
+                    "formal edge substitution closes its exact local address")
         if self.source_kind not in SOURCE_KINDS \
                 or (self.source_kind == "required_formal") \
                 != (not self.caller_formal.has_default):
@@ -114,6 +200,8 @@ class FormalBindingEdge:
             *self.lineage_spans, *self.guard_decision_spans,
             *((self.argument_selection.spans)
               if self.argument_selection is not None else ()),
+            *((self.lineage_substitution.proof_spans)
+              if self.lineage_substitution is not None else ()),
         }
         if None in required or not required <= set(self.spans) \
                 or any(not isinstance(item, SourceSpan) for item in self.spans):
@@ -188,14 +276,19 @@ def bind_formal_edge(index: ProgramIndex, owner: OwnerOccurrenceId,
                      call: CallObservation,
                      callee: CallableRecord, callee_formal: str,
                      binding_guard_resolver=None,
-                     argument_selection: SelectedConstructorCallArgument | None = None) \
+                     argument_selection: SelectedConstructorCallArgument | None = None,
+                     lineage_substitutions: tuple[
+                         ExactLocalLineageSubstitution, ...] = ()) \
         -> ReaderResult[FormalBindingEdge]:
     """Bind one call argument through exact local lineage to one caller formal."""
     if not isinstance(index, ProgramIndex) \
             or not isinstance(owner, OwnerOccurrenceId) \
             or not isinstance(call, CallObservation) \
             or not isinstance(callee, CallableRecord) \
-            or not isinstance(callee_formal, str) or not callee_formal:
+            or not isinstance(callee_formal, str) or not callee_formal \
+            or not isinstance(lineage_substitutions, tuple) \
+            or any(not isinstance(item, ExactLocalLineageSubstitution)
+                   for item in lineage_substitutions):
         raise TypeError("formal binding requires index/call/callee/formal address")
     caller = index.callable_by_symbol(call.enclosing_callable)
     if caller is None or call not in index.calls_in(call.enclosing_callable):
@@ -231,29 +324,56 @@ def bind_formal_edge(index: ProgramIndex, owner: OwnerOccurrenceId,
         binding_guard_state=(guard_state
                              if binding_guard_resolver is not None else None))
     trace = lineage.trace(actual, call.span, call.guard)
-    if trace.unresolved or len(trace.roots) != 1:
-        return _failed(
-            owner,
-            "actual has no single exact caller-formal root")
-    root_name = next(iter(trace.roots))
     caller_params = {item.name: item for item in _ordinary_params(caller)}
+    substitution = None
+    matches = tuple(
+        item for item in lineage_substitutions
+        if item.caller == caller and actual.kind == "name"
+        and item.target.kind == "name" and item.target.name == actual.name)
+    reaching_definitions = (lineage.definitions(actual.name, call.span)
+                            if actual.kind == "name" else ())
+    exact_helpers = tuple(
+        helper for definition, _value in reaching_definitions
+        for helper in _indexed_self_helpers(index, caller, definition))
+    if exact_helpers and not matches:
+        return _failed(
+            owner, "exact same-class helper return proof is required")
+    if matches:
+        if len(matches) != 1 or len(matches[0].source_formals) != 1:
+            return _failed(
+                owner, "actual has no single exact caller-formal root")
+        candidate = matches[0]
+        if len(reaching_definitions) != 1 \
+                or reaching_definitions[0][0] != candidate.definition:
+            return _failed(
+                owner, "local substitution has a rival or later definition")
+        substitution = candidate
+        trace_roots = (candidate.source_formals[0].name,)
+        lineage_spans = tuple(dict.fromkeys(candidate.proof_spans))
+    elif not trace.unresolved and len(trace.roots) == 1:
+        trace_roots = tuple(sorted(trace.roots))
+        lineage_spans = tuple(dict.fromkeys(trace.spans))
+    else:
+        return _failed(owner, "actual has no single exact caller-formal root")
+    root_name = trace_roots[0]
     source = caller_params.get(root_name)
     if source is None:
         return _failed(
             owner,
             "actual lineage terminates outside the caller interface")
-    lineage_spans = tuple(dict.fromkeys(trace.spans))
     spans = tuple(dict.fromkeys(span for span in (
         caller.span, call.span, actual.span, callee.span, *lineage_spans,
         *decision_spans,
         *((argument_selection.spans)
           if argument_selection is not None else ()),
+        *((substitution.proof_spans) if substitution is not None else ()),
     ) if isinstance(span, SourceSpan)))
     value = FormalBindingEdge(
         owner, caller, call, callee, source, target, actual,
         "optional_formal" if source.has_default else "required_formal",
-        tuple(sorted(trace.roots)), lineage_spans,
-        tuple(dict.fromkeys(decision_spans)), spans, argument_selection)
+        trace_roots, lineage_spans,
+        tuple(dict.fromkeys(decision_spans)), spans, argument_selection,
+        substitution)
     return ReaderResult.resolved(
         owner, value,
         provenance=(ReaderProvenance(
@@ -280,6 +400,7 @@ def _failed(owner, detail: str):
 __all__ = [
     "FormalBindingEdge",
     "FormalSourceRoute",
+    "ExactLocalLineageSubstitution",
     "SOURCE_KINDS",
     "bind_formal_edge",
     "compose_formal_route",
