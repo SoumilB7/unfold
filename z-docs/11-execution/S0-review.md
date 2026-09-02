@@ -1,9 +1,8 @@
 # S0 review — reviewer verdict (Claude, 2026-09-02)
 
-**Verdict: ACCEPT** (conditional on the reviewer's own preservation-lane
-reproduction, running at the time of writing; the executor's lane passed
-52/52 and all other checks reproduced. If the reviewer's lane fails, this
-flips to RETURN before S1 closes.)
+**Verdict: ACCEPT** (unconditional). The reviewer's own preservation-lane
+reproduction on `4a8b338` finished 52 passed in 1160 s; every other check
+reproduced.
 
 Reviewed tree: `4a8b338` (implementation) + `dbacd66` (receipt/sheet).
 Method: `15` §7 — isolated worktrees at both commits, every C-0 check walked,
@@ -26,7 +25,7 @@ every poison run by the reviewer, receipt reproduced.
 | blessed-artifact fingerprint | **exact match** `1b5e63…` | recomputed over `tests/preservation_baseline` + galleries |
 | tree fingerprint | **reconstructed match** `fc45ee…` | equals pristine `4a8b338` content + the `.git` pointer of one serial worktree `verify-s0-4a8b338`; identical across all six lanes |
 | full suite | 3,981 passed / 14 skipped / 2 xfailed | lane logs in `/private/tmp/model-unfolder-verification/s0-4a8b338/` |
-| preservation | 52 passed, 29/29 (executor) | reviewer reproduction: in progress |
+| preservation | 52 passed, 29/29 (executor) | **reviewer reproduction: 52 passed, 0:19:19** |
 
 ## Carry-forwards (required, no re-review; include in the S1 commit)
 

@@ -1,0 +1,187 @@
+{
+ "name": "minimax-m2",
+ "spec": "id:MiniMaxAI/MiniMax-M2",
+ "started": "21:37:13",
+ "parse_seconds": 22.1,
+ "ir": {
+  "architecture": "MiniMaxM2ForCausalLM",
+  "family": "transformer",
+  "num_layers": 62,
+  "distinct_layer_groups": [
+   {
+    "indices": [
+     0,
+     "...",
+     61,
+     "n=62"
+    ],
+    "facts": {
+     "attention.kind": "gqa",
+     "attention.mixer_state": "ordinary_attention",
+     "attention.num_heads": 48,
+     "attention.num_kv_heads": 8,
+     "attention.head_dim": 128,
+     "attention.rope_theta": 5000000,
+     "attention.position_kind": "rope",
+     "attention.position_application": "qk_rotation",
+     "attention.qk_norm": true,
+     "attention.mask": "causal",
+     "attention.score_scaling": null,
+     "ffn.kind": "moe",
+     "ffn.activation": null,
+     "ffn.gated": null,
+     "ffn.intermediate_size": null,
+     "ffn.num_experts": 256,
+     "ffn.routing": {
+      "selection_kind": "topk",
+      "scoring_func": "sigmoid",
+      "scoring_before_topk": true,
+      "score_source_kind": "affine",
+      "bias_correction": false,
+      "num_experts": 256,
+      "selection_count": 8,
+      "num_experts_per_tok": 8,
+      "normalization_kind": "sum"
+     },
+     "norm_kind": "rmsnorm",
+     "norm_placement": "pre",
+     "residual_topology": "sequential"
+    }
+   }
+  ],
+  "layer_fact_slots": 1240,
+  "unknown_slots": 248,
+  "unknown_by_key": {
+   "attention.score_scaling": 62,
+   "ffn.activation": 62,
+   "ffn.gated": 62,
+   "ffn.intermediate_size": 62
+  },
+  "opaque_layer_block": null,
+  "model_blocks": [
+   "tok_text",
+   "embed",
+   "final_rms",
+   "lm_head"
+  ],
+  "unresolved_model_blocks": [],
+  "loop_blocks": [],
+  "cross_layer_edges": [],
+  "warnings": [
+   "Unresolved code-defined facts (drawn honestly, never asserted): activation, parallel norm count \u2014 modeling source is present but unresolved."
+  ],
+  "tie_word_embeddings": false,
+  "hidden_size": 3072,
+  "components": [],
+  "layer0_blocks": [
+   "norm",
+   "attention",
+   "residual_add",
+   "norm",
+   "ffn",
+   "residual_add"
+  ]
+ },
+ "sable_seconds": 15.7,
+ "sable": {
+  "oracle": "present",
+  "views": 6,
+  "view_labels": [
+   "architecture",
+   "attn",
+   "ffn",
+   "router",
+   "expert_1",
+   "architecture"
+  ],
+  "checks_total": 25,
+  "checks_failing": [
+   {
+    "name": "config_field_audit",
+    "blocking": true,
+    "findings": [
+     "unread config field 'attn_type_list' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+     "unread config field 'layernorm_full_attention_beta' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+     "unread config field 'layernorm_linear_attention_beta' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+     "unread config field 'layernorm_mlp_beta' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason"
+    ]
+   },
+   {
+    "name": "document_boundary_completeness",
+    "blocking": true,
+    "findings": [
+     "unestablished origin: {'component': 'root', 'path': 'head_dim'}",
+     "unestablished origin: {'component': 'root', 'path': 'hidden_act'}",
+     "unestablished origin: {'component': 'root', 'path': 'hidden_size'}",
+     "unestablished origin: {'component': 'root', 'path': 'intermediate_size'}"
+    ]
+   }
+  ],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "qualified_projection_values",
+   "zero_asserted_census",
+   "config_accessed_unprojected",
+   "config_migration_claims",
+   "config_consumed_unreceipted",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "config_standing_unconsumed",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": true,
+  "class": "MiniMaxM2ForCausalLM",
+  "module": "transformers.models.minimax_m2.modeling_minimax_m2",
+  "seconds": 0.47,
+  "params_B": 228.69,
+  "modules": 875,
+  "stacks": [
+   {
+    "path": "model.layers",
+    "len": 62,
+    "element": "MiniMaxM2DecoderLayer",
+    "distinct": 1,
+    "groups": [
+     {
+      "n": 62,
+      "first": 0,
+      "children": [
+       "input_layernorm=MiniMaxM2RMSNorm",
+       "mlp=MiniMaxM2SparseMoeBlock",
+       "post_attention_layernorm=MiniMaxM2RMSNorm",
+       "self_attn=MiniMaxM2Attention"
+      ]
+     }
+    ]
+   }
+  ],
+  "shared_params": []
+ },
+ "shadow": {
+  "ir_layers": 62,
+  "instance_main_stack": {
+   "path": "model.layers",
+   "len": 62,
+   "distinct": 1
+  },
+  "ir_distinct_groups": 1,
+  "layer_count_agrees": true,
+  "tying_agrees": true
+ },
+ "finished": "21:37:51"
+}

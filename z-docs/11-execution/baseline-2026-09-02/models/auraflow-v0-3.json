@@ -1,0 +1,247 @@
+{
+ "name": "auraflow-v0-3",
+ "spec": "corpus:auraflow-v0-3",
+ "started": "21:20:22",
+ "model": "AuraFlow-v0.3",
+ "blessed_views": 15,
+ "parse_seconds": 40.9,
+ "ir": {
+  "architecture": "AuraFlowTransformer2DModel",
+  "family": "diffusion",
+  "num_layers": 36,
+  "distinct_layer_groups": [
+   {
+    "indices": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "facts": {
+     "attention.kind": null,
+     "attention.mixer_state": null,
+     "attention.num_heads": null,
+     "attention.num_kv_heads": null,
+     "attention.head_dim": null,
+     "attention.rope_theta": null,
+     "attention.position_kind": "unknown",
+     "attention.position_application": "unknown",
+     "attention.qk_norm": null,
+     "attention.mask": "unknown",
+     "attention.score_scaling": null,
+     "ffn.kind": null,
+     "ffn.activation": null,
+     "ffn.gated": null,
+     "ffn.intermediate_size": null,
+     "ffn.num_experts": null,
+     "ffn.routing": null,
+     "norm_kind": "unknown",
+     "norm_placement": "unknown",
+     "residual_topology": "unknown"
+    }
+   },
+   {
+    "indices": [
+     4,
+     "...",
+     35,
+     "n=32"
+    ],
+    "facts": {
+     "attention.kind": null,
+     "attention.mixer_state": null,
+     "attention.num_heads": null,
+     "attention.num_kv_heads": null,
+     "attention.head_dim": null,
+     "attention.rope_theta": null,
+     "attention.position_kind": "unknown",
+     "attention.position_application": "unknown",
+     "attention.qk_norm": null,
+     "attention.mask": "unknown",
+     "attention.score_scaling": null,
+     "ffn.kind": "dense",
+     "ffn.activation": "silu",
+     "ffn.gated": true,
+     "ffn.intermediate_size": null,
+     "ffn.num_experts": null,
+     "ffn.routing": null,
+     "norm_kind": "unknown",
+     "norm_placement": "unknown",
+     "residual_topology": "unknown"
+    }
+   }
+  ],
+  "layer_fact_slots": 720,
+  "unknown_slots": 624,
+  "unknown_by_key": {
+   "attention.kind": 36,
+   "attention.mixer_state": 36,
+   "attention.num_heads": 36,
+   "attention.num_kv_heads": 36,
+   "attention.head_dim": 36,
+   "attention.rope_theta": 36,
+   "attention.position_kind": 36,
+   "attention.position_application": 36,
+   "attention.qk_norm": 36,
+   "attention.mask": 36,
+   "attention.score_scaling": 36,
+   "ffn.kind": 4,
+   "ffn.activation": 4,
+   "ffn.gated": 4,
+   "ffn.intermediate_size": 36,
+   "ffn.num_experts": 36,
+   "ffn.routing": 36,
+   "norm_kind": 36,
+   "norm_placement": 36,
+   "residual_topology": 36
+  },
+  "opaque_layer_block": "Repeated denoiser structure unresolved",
+  "model_blocks": [
+   "tok_text",
+   "embed",
+   "final_rms",
+   "lm_head"
+  ],
+  "unresolved_model_blocks": [
+   "final_rms"
+  ],
+  "loop_blocks": [
+   "noise",
+   "timestep",
+   "prompt",
+   "encoder_0",
+   "latent",
+   "denoiser",
+   "scheduler",
+   "vae_decode",
+   "image"
+  ],
+  "cross_layer_edges": [],
+  "warnings": [
+   "denoiser.stacks[0]: FFN mechanism is not uniquely source-resolved"
+  ],
+  "tie_word_embeddings": true,
+  "hidden_size": 0,
+  "components": [],
+  "layer0_blocks": [
+   "attention",
+   "gate_mul",
+   "gate_mul",
+   "norm",
+   "ffn"
+  ]
+ },
+ "sable_seconds": 21.2,
+ "sable": {
+  "oracle": "present",
+  "views": 15,
+  "view_labels": [
+   "architecture",
+   "encoder_0",
+   "denoiser",
+   "denoiser",
+   "scheduler",
+   "vae_decode",
+   "attn",
+   "ffn",
+   "ffn",
+   "encoder_0_op_ffn",
+   "vae_decoder_block_4",
+   "vae_decoder_block_3",
+   "vae_decoder_block_2",
+   "vae_decoder_block_1",
+   "architecture"
+  ],
+  "checks_total": 25,
+  "checks_failing": [],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "config_field_audit",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "qualified_projection_values",
+   "zero_asserted_census",
+   "config_accessed_unprojected",
+   "config_migration_claims",
+   "config_consumed_unreceipted",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "document_boundary_completeness",
+   "config_standing_unconsumed",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": true,
+  "class": "AuraFlowTransformer2DModel",
+  "module": "diffusers.models.transformers.auraflow_transformer_2d",
+  "seconds": 3.22,
+  "params_B": 6.859,
+  "modules": 759,
+  "stacks": [
+   {
+    "path": "joint_transformer_blocks",
+    "len": 4,
+    "element": "AuraFlowJointTransformerBlock",
+    "distinct": 1,
+    "groups": [
+     {
+      "n": 4,
+      "first": 0,
+      "children": [
+       "attn=Attention",
+       "ff=AuraFlowFeedForward",
+       "ff_context=AuraFlowFeedForward",
+       "norm1=AdaLayerNormZero",
+       "norm1_context=AdaLayerNormZero",
+       "norm2=FP32LayerNorm",
+       "norm2_context=FP32LayerNorm"
+      ]
+     }
+    ]
+   },
+   {
+    "path": "single_transformer_blocks",
+    "len": 32,
+    "element": "AuraFlowSingleTransformerBlock",
+    "distinct": 1,
+    "groups": [
+     {
+      "n": 32,
+      "first": 0,
+      "children": [
+       "attn=Attention",
+       "ff=AuraFlowFeedForward",
+       "norm1=AdaLayerNormZero",
+       "norm2=FP32LayerNorm"
+      ]
+     }
+    ]
+   }
+  ],
+  "shared_params": []
+ },
+ "shadow": {
+  "ir_layers": 36,
+  "instance_main_stack": {
+   "path": "single_transformer_blocks",
+   "len": 32,
+   "distinct": 1
+  },
+  "ir_distinct_groups": 2,
+  "layer_count_agrees": false,
+  "tying_agrees": false
+ },
+ "finished": "21:21:28"
+}

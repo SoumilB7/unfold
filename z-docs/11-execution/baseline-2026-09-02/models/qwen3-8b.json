@@ -1,0 +1,157 @@
+{
+ "name": "qwen3-8b",
+ "spec": "corpus:qwen3-8b",
+ "started": "21:26:21",
+ "model": "Qwen3-8B",
+ "blessed_views": 4,
+ "parse_seconds": 1.9,
+ "ir": {
+  "architecture": "Qwen3ForCausalLM",
+  "family": "transformer",
+  "num_layers": 36,
+  "distinct_layer_groups": [
+   {
+    "indices": [
+     0,
+     "...",
+     35,
+     "n=36"
+    ],
+    "facts": {
+     "attention.kind": "gqa",
+     "attention.mixer_state": "ordinary_attention",
+     "attention.num_heads": 32,
+     "attention.num_kv_heads": 8,
+     "attention.head_dim": 128,
+     "attention.rope_theta": 1000000,
+     "attention.position_kind": "rope",
+     "attention.position_application": "qk_rotation",
+     "attention.qk_norm": true,
+     "attention.mask": "causal",
+     "attention.score_scaling": null,
+     "ffn.kind": "dense",
+     "ffn.activation": "silu",
+     "ffn.gated": true,
+     "ffn.intermediate_size": 12288,
+     "ffn.num_experts": null,
+     "ffn.routing": null,
+     "norm_kind": "rmsnorm",
+     "norm_placement": "pre",
+     "residual_topology": "sequential"
+    }
+   }
+  ],
+  "layer_fact_slots": 720,
+  "unknown_slots": 108,
+  "unknown_by_key": {
+   "attention.score_scaling": 36,
+   "ffn.num_experts": 36,
+   "ffn.routing": 36
+  },
+  "opaque_layer_block": null,
+  "model_blocks": [
+   "tok_text",
+   "embed",
+   "final_rms",
+   "lm_head"
+  ],
+  "unresolved_model_blocks": [],
+  "loop_blocks": [],
+  "cross_layer_edges": [],
+  "warnings": [
+   "Unresolved code-defined facts (drawn honestly, never asserted): parallel norm count \u2014 modeling source is present but unresolved."
+  ],
+  "tie_word_embeddings": false,
+  "hidden_size": 4096,
+  "components": [],
+  "layer0_blocks": [
+   "norm",
+   "attention",
+   "residual_add",
+   "norm",
+   "ffn",
+   "residual_add"
+  ]
+ },
+ "sable_seconds": 13.4,
+ "sable": {
+  "oracle": "present",
+  "views": 4,
+  "view_labels": [
+   "architecture",
+   "attn",
+   "ffn",
+   "architecture"
+  ],
+  "checks_total": 25,
+  "checks_failing": [],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "config_field_audit",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "qualified_projection_values",
+   "zero_asserted_census",
+   "config_accessed_unprojected",
+   "config_migration_claims",
+   "config_consumed_unreceipted",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "document_boundary_completeness",
+   "config_standing_unconsumed",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": true,
+  "class": "Qwen3ForCausalLM",
+  "module": "transformers.models.qwen3.modeling_qwen3",
+  "seconds": 0.03,
+  "params_B": 8.191,
+  "modules": 547,
+  "stacks": [
+   {
+    "path": "model.layers",
+    "len": 36,
+    "element": "Qwen3DecoderLayer",
+    "distinct": 1,
+    "groups": [
+     {
+      "n": 36,
+      "first": 0,
+      "children": [
+       "input_layernorm=Qwen3RMSNorm",
+       "mlp=Qwen3MLP",
+       "post_attention_layernorm=Qwen3RMSNorm",
+       "self_attn=Qwen3Attention"
+      ]
+     }
+    ]
+   }
+  ],
+  "shared_params": []
+ },
+ "shadow": {
+  "ir_layers": 36,
+  "instance_main_stack": {
+   "path": "model.layers",
+   "len": 36,
+   "distinct": 1
+  },
+  "ir_distinct_groups": 1,
+  "layer_count_agrees": true,
+  "tying_agrees": true
+ },
+ "finished": "21:26:37"
+}

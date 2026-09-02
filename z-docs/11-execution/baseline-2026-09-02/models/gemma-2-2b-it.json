@@ -1,0 +1,199 @@
+{
+ "name": "gemma-2-2b-it",
+ "spec": "corpus:gemma-2-2b-it",
+ "started": "21:21:35",
+ "model": "gemma-2-2b-it",
+ "blessed_views": 6,
+ "parse_seconds": 5.9,
+ "ir": {
+  "architecture": "Gemma2ForCausalLM",
+  "family": "transformer",
+  "num_layers": 26,
+  "distinct_layer_groups": [
+   {
+    "indices": [
+     0,
+     "...",
+     24,
+     "n=13"
+    ],
+    "facts": {
+     "attention.kind": "gqa",
+     "attention.mixer_state": "ordinary_attention",
+     "attention.num_heads": 8,
+     "attention.num_kv_heads": 4,
+     "attention.head_dim": 256,
+     "attention.rope_theta": 10000.0,
+     "attention.position_kind": "rope",
+     "attention.position_application": "qk_rotation",
+     "attention.qk_norm": null,
+     "attention.mask": "sliding",
+     "attention.score_scaling": null,
+     "ffn.kind": "dense",
+     "ffn.activation": "gelu_pytorch_tanh",
+     "ffn.gated": true,
+     "ffn.intermediate_size": 9216,
+     "ffn.num_experts": null,
+     "ffn.routing": null,
+     "norm_kind": "rmsnorm",
+     "norm_placement": "double",
+     "residual_topology": "sequential"
+    }
+   },
+   {
+    "indices": [
+     1,
+     "...",
+     25,
+     "n=13"
+    ],
+    "facts": {
+     "attention.kind": "gqa",
+     "attention.mixer_state": "ordinary_attention",
+     "attention.num_heads": 8,
+     "attention.num_kv_heads": 4,
+     "attention.head_dim": 256,
+     "attention.rope_theta": 10000.0,
+     "attention.position_kind": "rope",
+     "attention.position_application": "qk_rotation",
+     "attention.qk_norm": null,
+     "attention.mask": "global",
+     "attention.score_scaling": null,
+     "ffn.kind": "dense",
+     "ffn.activation": "gelu_pytorch_tanh",
+     "ffn.gated": true,
+     "ffn.intermediate_size": 9216,
+     "ffn.num_experts": null,
+     "ffn.routing": null,
+     "norm_kind": "rmsnorm",
+     "norm_placement": "double",
+     "residual_topology": "sequential"
+    }
+   }
+  ],
+  "layer_fact_slots": 520,
+  "unknown_slots": 104,
+  "unknown_by_key": {
+   "attention.qk_norm": 26,
+   "attention.score_scaling": 26,
+   "ffn.num_experts": 26,
+   "ffn.routing": 26
+  },
+  "opaque_layer_block": null,
+  "model_blocks": [
+   "tok_text",
+   "embed",
+   "final_rms",
+   "lm_head"
+  ],
+  "unresolved_model_blocks": [],
+  "loop_blocks": [],
+  "cross_layer_edges": [],
+  "warnings": [
+   "Unresolved code-defined facts (drawn honestly, never asserted): parallel norm count \u2014 modeling source is present but unresolved."
+  ],
+  "tie_word_embeddings": true,
+  "hidden_size": 2304,
+  "components": [],
+  "layer0_blocks": [
+   "norm",
+   "attention",
+   "norm",
+   "residual_add",
+   "norm",
+   "ffn",
+   "norm",
+   "residual_add"
+  ]
+ },
+ "sable_seconds": 18.2,
+ "sable": {
+  "oracle": "present",
+  "views": 6,
+  "view_labels": [
+   "architecture",
+   "architecture_v1",
+   "attn",
+   "ffn",
+   "attn",
+   "architecture"
+  ],
+  "checks_total": 25,
+  "checks_failing": [],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "config_field_audit",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "qualified_projection_values",
+   "zero_asserted_census",
+   "config_accessed_unprojected",
+   "config_migration_claims",
+   "config_consumed_unreceipted",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "document_boundary_completeness",
+   "config_standing_unconsumed",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": true,
+  "class": "Gemma2ForCausalLM",
+  "module": "transformers.models.gemma2.modeling_gemma2",
+  "seconds": 0.03,
+  "params_B": 2.614,
+  "modules": 397,
+  "stacks": [
+   {
+    "path": "model.layers",
+    "len": 26,
+    "element": "Gemma2DecoderLayer",
+    "distinct": 1,
+    "groups": [
+     {
+      "n": 26,
+      "first": 0,
+      "children": [
+       "input_layernorm=Gemma2RMSNorm",
+       "mlp=Gemma2MLP",
+       "post_attention_layernorm=Gemma2RMSNorm",
+       "post_feedforward_layernorm=Gemma2RMSNorm",
+       "pre_feedforward_layernorm=Gemma2RMSNorm",
+       "self_attn=Gemma2Attention"
+      ]
+     }
+    ]
+   }
+  ],
+  "shared_params": [
+   [
+    "model.embed_tokens.weight",
+    "lm_head.weight"
+   ]
+  ]
+ },
+ "shadow": {
+  "ir_layers": 26,
+  "instance_main_stack": {
+   "path": "model.layers",
+   "len": 26,
+   "distinct": 1
+  },
+  "ir_distinct_groups": 2,
+  "layer_count_agrees": true,
+  "tying_agrees": true
+ },
+ "finished": "21:22:00"
+}

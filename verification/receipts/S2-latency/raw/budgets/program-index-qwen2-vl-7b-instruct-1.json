@@ -1,0 +1,32 @@
+{
+  "calls": 2949,
+  "classes": 72,
+  "config": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/qwen2-vl-7b-instruct.json",
+  "index_fingerprint": "12747392facc3efea22ce135b93b1dd30a17a446502b838a7a809b3e927989c6",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 1.4620881658047438,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 1.0441331253387034,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 1.3982190424576402,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    5.67138671875,
+    4.20068359375,
+    3.685546875
+  ],
+  "mode": "program-index",
+  "name": "qwen2-vl-7b-instruct",
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "d778d46d6fadfad31427965e8bbfc0b61d422f77",
+  "seconds": 1.229315749835223,
+  "source_nodes": 12
+}

@@ -1,0 +1,166 @@
+{
+ "name": "glm-4-9b",
+ "spec": "id:THUDM/glm-4-9b",
+ "started": "21:25:18",
+ "parse_seconds": 4.5,
+ "ir": {
+  "architecture": "ChatGLMModel",
+  "family": "transformer",
+  "num_layers": 40,
+  "distinct_layer_groups": [
+   {
+    "indices": [
+     0,
+     "...",
+     39,
+     "n=40"
+    ],
+    "facts": {
+     "attention.kind": null,
+     "attention.mixer_state": null,
+     "attention.num_heads": null,
+     "attention.num_kv_heads": null,
+     "attention.head_dim": null,
+     "attention.rope_theta": null,
+     "attention.position_kind": "unknown",
+     "attention.position_application": "unknown",
+     "attention.qk_norm": null,
+     "attention.mask": "unknown",
+     "attention.score_scaling": null,
+     "ffn.kind": null,
+     "ffn.activation": null,
+     "ffn.gated": null,
+     "ffn.intermediate_size": null,
+     "ffn.num_experts": null,
+     "ffn.routing": null,
+     "norm_kind": "unknown",
+     "norm_placement": "unknown",
+     "residual_topology": "unknown"
+    }
+   }
+  ],
+  "layer_fact_slots": 800,
+  "unknown_slots": 800,
+  "unknown_by_key": {
+   "attention.kind": 40,
+   "attention.mixer_state": 40,
+   "attention.num_heads": 40,
+   "attention.num_kv_heads": 40,
+   "attention.head_dim": 40,
+   "attention.rope_theta": 40,
+   "attention.position_kind": 40,
+   "attention.position_application": 40,
+   "attention.qk_norm": 40,
+   "attention.mask": 40,
+   "attention.score_scaling": 40,
+   "ffn.kind": 40,
+   "ffn.activation": 40,
+   "ffn.gated": 40,
+   "ffn.intermediate_size": 40,
+   "ffn.num_experts": 40,
+   "ffn.routing": 40,
+   "norm_kind": 40,
+   "norm_placement": 40,
+   "residual_topology": 40
+  },
+  "opaque_layer_block": null,
+  "model_blocks": [
+   "tok_text",
+   "embed",
+   "final_rms",
+   "lm_head"
+  ],
+  "unresolved_model_blocks": [
+   "final_rms"
+  ],
+  "loop_blocks": [],
+  "cross_layer_edges": [],
+  "warnings": [
+   "Modeling source is present but the exact positional operation is unresolved.",
+   "Unresolved code-defined facts (drawn honestly, never asserted): activation, bias, final norm kind, mask, mechanism, norm kind, norm placement, parallel norm count, projection mode, residual topology, scores scale \u2014 modeling source is present but unresolved."
+  ],
+  "tie_word_embeddings": false,
+  "hidden_size": 4096,
+  "components": [],
+  "layer0_blocks": [
+   "attention",
+   "norm",
+   "ffn"
+  ]
+ },
+ "sable_seconds": 13.2,
+ "sable": {
+  "oracle": "present",
+  "views": 4,
+  "view_labels": [
+   "architecture",
+   "attn",
+   "ffn",
+   "architecture"
+  ],
+  "checks_total": 25,
+  "checks_failing": [
+   {
+    "name": "config_field_audit",
+    "blocking": true,
+    "findings": [
+     "unread config field '_repo_id' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+     "unread config field 'add_qkv_bias' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+     "unread config field 'kv_channels' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+     "unread config field 'multi_query_attention' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason"
+    ]
+   },
+   {
+    "name": "config_accessed_unprojected",
+    "blocking": false,
+    "findings": [
+     "config occurrence root:'rmsnorm' (spelled 'rmsnorm') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored"
+    ]
+   },
+   {
+    "name": "config_standing_unconsumed",
+    "blocking": true,
+    "findings": [
+     "root:rmsnorm (as rmsnorm) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt"
+    ]
+   }
+  ],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "qualified_projection_values",
+   "zero_asserted_census",
+   "config_migration_claims",
+   "config_consumed_unreceipted",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "document_boundary_completeness",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": false,
+  "error": "ValueError: The checkpoint you are trying to load has model type `chatglm` but Transformers does not recognize this architecture. This could be because of an issue with the checkpoint, or because your version of Transformers is out of date.\n\nYou can update Transformers with the command `pip install --upgrade tr",
+  "seconds": 0.0
+ },
+ "shadow": {
+  "ir_layers": 40,
+  "instance_main_stack": null,
+  "ir_distinct_groups": 1,
+  "layer_count_agrees": false,
+  "tying_agrees": true
+ },
+ "finished": "21:25:36"
+}

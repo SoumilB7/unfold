@@ -1555,6 +1555,34 @@ def resolve_component_root(index, bundle, component_key, *,
     declared = architectures.get(component_key)
     if declared is None and component_key == "root":
         declared = getattr(bundle, "architecture", None)   # root-only compat
+
+    # The cache belongs to this immutable, ParseContext-local ProgramIndex.
+    # Include every non-index input that can change the answer.  Invalid prefix
+    # objects deliberately bypass memoization so the original validator owns
+    # their failure semantics.
+    cache_key = None
+    try:
+        prefix_key = None if root_param_prefixes is None else tuple(sorted(
+            (name, tuple(prefix))
+            for name, prefix in root_param_prefixes.items()))
+        cache_key = (component_key, declared, prefix_key)
+        cache = index._call_memo.setdefault("component_root", {})
+        if cache_key in cache:
+            return cache[cache_key]
+    except (AttributeError, TypeError):
+        cache = None
+
+    result = _resolve_component_root_uncached(
+        index, component_key, declared,
+        root_param_prefixes=root_param_prefixes)
+    if cache_key is not None:
+        cache[cache_key] = result
+    return result
+
+
+def _resolve_component_root_uncached(index, component_key, declared, *,
+                                     root_param_prefixes=None):
+    """The exact D0 proof, separated only so its pure result can be memoized."""
     if not declared:
         # empty / absent architecture never "picks the only class"
         return ComponentRootResolution(

@@ -1,0 +1,136 @@
+{
+ "name": "pixart-sigma-xl-2-1024-ms",
+ "spec": "corpus:pixart-sigma-xl-2-1024-ms",
+ "started": "21:25:45",
+ "model": "PixArt-Sigma-XL-2-1024-MS",
+ "blessed_views": 13,
+ "parse_seconds": 3.1,
+ "ir": {
+  "architecture": "Transformer2DModel",
+  "family": "diffusion",
+  "num_layers": 0,
+  "distinct_layer_groups": [],
+  "layer_fact_slots": 0,
+  "unknown_slots": 0,
+  "unknown_by_key": {},
+  "opaque_layer_block": "Repeated denoiser structure unresolved",
+  "model_blocks": [
+   "tok_text",
+   "embed",
+   "final_rms",
+   "lm_head"
+  ],
+  "unresolved_model_blocks": [
+   "embed",
+   "final_rms"
+  ],
+  "loop_blocks": [
+   "noise",
+   "timestep",
+   "prompt",
+   "encoder_0",
+   "latent",
+   "denoiser",
+   "scheduler",
+   "vae_decode",
+   "image"
+  ],
+  "cross_layer_edges": [],
+  "warnings": [],
+  "tie_word_embeddings": true,
+  "hidden_size": 0,
+  "components": [],
+  "layer0_blocks": []
+ },
+ "sable_seconds": 13.9,
+ "sable": {
+  "oracle": "present",
+  "views": 13,
+  "view_labels": [
+   "architecture",
+   "encoder_0",
+   "denoiser",
+   "scheduler",
+   "vae_decode",
+   "encoder_0_g0_op_selfattn",
+   "encoder_0_g0_op_ffn",
+   "encoder_0_g1_op_selfattn",
+   "vae_decoder_block_4",
+   "vae_decoder_block_3",
+   "vae_decoder_block_2",
+   "vae_decoder_block_1",
+   "architecture"
+  ],
+  "checks_total": 25,
+  "checks_failing": [],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "config_field_audit",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "qualified_projection_values",
+   "zero_asserted_census",
+   "config_accessed_unprojected",
+   "config_migration_claims",
+   "config_consumed_unreceipted",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "document_boundary_completeness",
+   "config_standing_unconsumed",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": true,
+  "class": "PixArtTransformer2DModel",
+  "module": "diffusers.models.transformers.pixart_transformer_2d",
+  "seconds": 0.04,
+  "params_B": 0.611,
+  "modules": 663,
+  "stacks": [
+   {
+    "path": "transformer_blocks",
+    "len": 28,
+    "element": "BasicTransformerBlock",
+    "distinct": 1,
+    "groups": [
+     {
+      "n": 28,
+      "first": 0,
+      "children": [
+       "attn1=Attention",
+       "attn2=Attention",
+       "ff=FeedForward",
+       "norm1=LayerNorm",
+       "norm2=LayerNorm"
+      ]
+     }
+    ]
+   }
+  ],
+  "shared_params": []
+ },
+ "shadow": {
+  "ir_layers": 0,
+  "instance_main_stack": {
+   "path": "transformer_blocks",
+   "len": 28,
+   "distinct": 1
+  },
+  "ir_distinct_groups": 0,
+  "layer_count_agrees": false,
+  "tying_agrees": false
+ },
+ "finished": "21:26:02"
+}

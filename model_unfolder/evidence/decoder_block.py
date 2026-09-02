@@ -480,6 +480,37 @@ def decoder_block_candidates_for_config(
     if not isinstance(allow_root_stage, bool):
         raise TypeError("allow_root_stage is an explicit adapter authorization")
 
+    # Reader selectors are call-local closures over one immutable prepared
+    # config.  Key them by identity and retain both objects in the cache row so
+    # Python id reuse can never cross-clear a later parse.  The cache itself
+    # dies with the ParseContext-owned ProgramIndex.
+    key = (
+        id(bundle), config_path, allow_root_stage, id(config_selector),
+    )
+    cache = index._call_memo.setdefault("decoder_block_candidates", {})
+    cached = cache.get(key)
+    if cached is not None \
+            and cached[0] is bundle and cached[1] is config_selector:
+        return cached[2]
+
+    result = _decoder_block_candidates_for_config_uncached(
+        index, bundle, config_path,
+        allow_root_stage=allow_root_stage,
+        config_selector=config_selector)
+    cache[key] = (bundle, config_selector, result)
+    return result
+
+
+def _decoder_block_candidates_for_config_uncached(
+    index: ProgramIndex,
+    bundle: SourceBundle,
+    config_path: tuple[str, ...],
+    *,
+    allow_root_stage: bool,
+    config_selector=None,
+) -> ReaderResult[DecoderBlockCandidates]:
+    """The exact address proof, split only for call-local memoization."""
+
     outer = resolve_component_root(index, bundle, "root")
     if outer.status != "resolved":
         # A composite checkpoint may have no installed wrapper architecture

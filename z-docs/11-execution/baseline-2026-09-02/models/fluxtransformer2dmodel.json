@@ -1,0 +1,250 @@
+{
+ "name": "fluxtransformer2dmodel",
+ "spec": "corpus:fluxtransformer2dmodel",
+ "started": "21:23:56",
+ "model": "FluxTransformer2DModel",
+ "blessed_views": 20,
+ "parse_seconds": 19.9,
+ "ir": {
+  "architecture": "FluxTransformer2DModel",
+  "family": "diffusion",
+  "num_layers": 57,
+  "distinct_layer_groups": [
+   {
+    "indices": [
+     0,
+     "...",
+     18,
+     "n=19"
+    ],
+    "facts": {
+     "attention.kind": null,
+     "attention.mixer_state": null,
+     "attention.num_heads": null,
+     "attention.num_kv_heads": null,
+     "attention.head_dim": null,
+     "attention.rope_theta": null,
+     "attention.position_kind": "unknown",
+     "attention.position_application": "unknown",
+     "attention.qk_norm": null,
+     "attention.mask": "unknown",
+     "attention.score_scaling": null,
+     "ffn.kind": null,
+     "ffn.activation": null,
+     "ffn.gated": null,
+     "ffn.intermediate_size": null,
+     "ffn.num_experts": null,
+     "ffn.routing": null,
+     "norm_kind": "layernorm",
+     "norm_placement": "unknown",
+     "residual_topology": "unknown"
+    }
+   },
+   {
+    "indices": [
+     19,
+     "...",
+     56,
+     "n=38"
+    ],
+    "facts": {
+     "attention.kind": null,
+     "attention.mixer_state": null,
+     "attention.num_heads": null,
+     "attention.num_kv_heads": null,
+     "attention.head_dim": null,
+     "attention.rope_theta": null,
+     "attention.position_kind": "unknown",
+     "attention.position_application": "unknown",
+     "attention.qk_norm": null,
+     "attention.mask": "unknown",
+     "attention.score_scaling": null,
+     "ffn.kind": "dense",
+     "ffn.activation": "gelu",
+     "ffn.gated": false,
+     "ffn.intermediate_size": null,
+     "ffn.num_experts": null,
+     "ffn.routing": null,
+     "norm_kind": "unknown",
+     "norm_placement": "unknown",
+     "residual_topology": "unknown"
+    }
+   }
+  ],
+  "layer_fact_slots": 1140,
+  "unknown_slots": 1007,
+  "unknown_by_key": {
+   "attention.kind": 57,
+   "attention.mixer_state": 57,
+   "attention.num_heads": 57,
+   "attention.num_kv_heads": 57,
+   "attention.head_dim": 57,
+   "attention.rope_theta": 57,
+   "attention.position_kind": 57,
+   "attention.position_application": 57,
+   "attention.qk_norm": 57,
+   "attention.mask": 57,
+   "attention.score_scaling": 57,
+   "ffn.kind": 19,
+   "ffn.activation": 19,
+   "ffn.gated": 19,
+   "ffn.intermediate_size": 57,
+   "ffn.num_experts": 57,
+   "ffn.routing": 57,
+   "norm_placement": 57,
+   "residual_topology": 57,
+   "norm_kind": 38
+  },
+  "opaque_layer_block": "Repeated denoiser structure unresolved",
+  "model_blocks": [
+   "tok_text",
+   "embed",
+   "final_rms",
+   "lm_head"
+  ],
+  "unresolved_model_blocks": [],
+  "loop_blocks": [
+   "noise",
+   "timestep",
+   "prompt",
+   "encoder_0",
+   "encoder_1",
+   "latent",
+   "denoiser",
+   "scheduler",
+   "vae_decode",
+   "image"
+  ],
+  "cross_layer_edges": [],
+  "warnings": [
+   "denoiser.stacks[0]: FFN mechanism is not uniquely source-resolved"
+  ],
+  "tie_word_embeddings": true,
+  "hidden_size": 0,
+  "components": [],
+  "layer0_blocks": [
+   "attention",
+   "norm",
+   "ffn"
+  ]
+ },
+ "sable_seconds": 11.3,
+ "sable": {
+  "oracle": "present",
+  "views": 20,
+  "view_labels": [
+   "architecture",
+   "encoder_0",
+   "encoder_1",
+   "denoiser",
+   "denoiser",
+   "scheduler",
+   "vae_decode",
+   "attn",
+   "ffn",
+   "ffn",
+   "encoder_0_op_selfattn",
+   "encoder_0_op_ffn",
+   "encoder_1_g0_op_selfattn",
+   "encoder_1_g0_op_ffn",
+   "encoder_1_g1_op_selfattn",
+   "vae_decoder_block_4",
+   "vae_decoder_block_3",
+   "vae_decoder_block_2",
+   "vae_decoder_block_1",
+   "architecture"
+  ],
+  "checks_total": 25,
+  "checks_failing": [],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "config_field_audit",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "qualified_projection_values",
+   "zero_asserted_census",
+   "config_accessed_unprojected",
+   "config_migration_claims",
+   "config_consumed_unreceipted",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "document_boundary_completeness",
+   "config_standing_unconsumed",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": true,
+  "class": "FluxTransformer2DModel",
+  "module": "diffusers.models.transformers.transformer_flux",
+  "seconds": 0.04,
+  "params_B": 11.901,
+  "modules": 1279,
+  "stacks": [
+   {
+    "path": "transformer_blocks",
+    "len": 19,
+    "element": "FluxTransformerBlock",
+    "distinct": 1,
+    "groups": [
+     {
+      "n": 19,
+      "first": 0,
+      "children": [
+       "attn=FluxAttention",
+       "ff=FeedForward",
+       "ff_context=FeedForward",
+       "norm1=AdaLayerNormZero",
+       "norm1_context=AdaLayerNormZero",
+       "norm2=LayerNorm",
+       "norm2_context=LayerNorm"
+      ]
+     }
+    ]
+   },
+   {
+    "path": "single_transformer_blocks",
+    "len": 38,
+    "element": "FluxSingleTransformerBlock",
+    "distinct": 1,
+    "groups": [
+     {
+      "n": 38,
+      "first": 0,
+      "children": [
+       "act_mlp=GELU",
+       "attn=FluxAttention",
+       "norm=AdaLayerNormZeroSingle",
+       "proj_mlp=Linear",
+       "proj_out=Linear"
+      ]
+     }
+    ]
+   }
+  ],
+  "shared_params": []
+ },
+ "shadow": {
+  "ir_layers": 57,
+  "instance_main_stack": {
+   "path": "single_transformer_blocks",
+   "len": 38,
+   "distinct": 1
+  },
+  "ir_distinct_groups": 2,
+  "layer_count_agrees": false,
+  "tying_agrees": false
+ },
+ "finished": "21:24:28"
+}

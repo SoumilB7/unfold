@@ -1,0 +1,157 @@
+{
+ "name": "stable-diffusion-3-5-large",
+ "spec": "corpus:stable-diffusion-3-5-large",
+ "started": "21:28:25",
+ "model": "stable-diffusion-3.5-large",
+ "blessed_views": 19,
+ "parse_seconds": 12.9,
+ "ir": {
+  "architecture": "SD3Transformer2DModel",
+  "family": "diffusion",
+  "num_layers": 0,
+  "distinct_layer_groups": [],
+  "layer_fact_slots": 0,
+  "unknown_slots": 0,
+  "unknown_by_key": {},
+  "opaque_layer_block": "Repeated denoiser structure unresolved",
+  "model_blocks": [
+   "tok_text",
+   "embed",
+   "final_rms",
+   "lm_head"
+  ],
+  "unresolved_model_blocks": [
+   "embed",
+   "final_rms"
+  ],
+  "loop_blocks": [
+   "noise",
+   "timestep",
+   "prompt",
+   "encoder_0",
+   "encoder_1",
+   "encoder_2",
+   "latent",
+   "denoiser",
+   "scheduler",
+   "vae_decode",
+   "image"
+  ],
+  "cross_layer_edges": [],
+  "warnings": [],
+  "tie_word_embeddings": true,
+  "hidden_size": 0,
+  "components": [],
+  "layer0_blocks": []
+ },
+ "sable_seconds": 11.3,
+ "sable": {
+  "oracle": "present",
+  "views": 19,
+  "view_labels": [
+   "architecture",
+   "encoder_0",
+   "encoder_1",
+   "encoder_2",
+   "denoiser",
+   "scheduler",
+   "vae_decode",
+   "encoder_0_op_selfattn",
+   "encoder_0_op_ffn",
+   "encoder_1_op_ffn",
+   "encoder_2_g0_op_selfattn",
+   "encoder_2_g0_op_ffn",
+   "encoder_2_g1_op_selfattn",
+   "vae_mid_block",
+   "vae_decoder_block_4",
+   "vae_decoder_block_3",
+   "vae_decoder_block_2",
+   "vae_decoder_block_1",
+   "architecture"
+  ],
+  "checks_total": 25,
+  "checks_failing": [],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "config_field_audit",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "qualified_projection_values",
+   "zero_asserted_census",
+   "config_accessed_unprojected",
+   "config_migration_claims",
+   "config_consumed_unreceipted",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "document_boundary_completeness",
+   "config_standing_unconsumed",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": true,
+  "class": "SD3Transformer2DModel",
+  "module": "diffusers.models.transformers.transformer_sd3",
+  "seconds": 0.05,
+  "params_B": 8.057,
+  "modules": 1456,
+  "stacks": [
+   {
+    "path": "transformer_blocks",
+    "len": 38,
+    "element": "JointTransformerBlock",
+    "distinct": 2,
+    "groups": [
+     {
+      "n": 37,
+      "first": 0,
+      "children": [
+       "attn=Attention",
+       "ff=FeedForward",
+       "ff_context=FeedForward",
+       "norm1=AdaLayerNormZero",
+       "norm1_context=AdaLayerNormZero",
+       "norm2=LayerNorm",
+       "norm2_context=LayerNorm"
+      ]
+     },
+     {
+      "n": 1,
+      "first": 37,
+      "children": [
+       "attn=Attention",
+       "ff=FeedForward",
+       "norm1=AdaLayerNormZero",
+       "norm1_context=AdaLayerNormContinuous",
+       "norm2=LayerNorm"
+      ]
+     }
+    ]
+   }
+  ],
+  "shared_params": []
+ },
+ "shadow": {
+  "ir_layers": 0,
+  "instance_main_stack": {
+   "path": "transformer_blocks",
+   "len": 38,
+   "distinct": 2
+  },
+  "ir_distinct_groups": 0,
+  "layer_count_agrees": false,
+  "tying_agrees": false
+ },
+ "finished": "21:28:49"
+}

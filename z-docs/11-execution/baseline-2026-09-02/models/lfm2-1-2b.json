@@ -1,0 +1,197 @@
+{
+ "name": "lfm2-1-2b",
+ "spec": "id:LiquidAI/LFM2-1.2B",
+ "started": "21:24:47",
+ "parse_seconds": 2.2,
+ "ir": {
+  "architecture": "Lfm2ForCausalLM",
+  "family": "transformer",
+  "num_layers": 16,
+  "distinct_layer_groups": [
+   {
+    "indices": [
+     0,
+     "...",
+     15,
+     "n=16"
+    ],
+    "facts": {
+     "attention.kind": "gqa",
+     "attention.mixer_state": null,
+     "attention.num_heads": 32,
+     "attention.num_kv_heads": 8,
+     "attention.head_dim": 64,
+     "attention.rope_theta": 1000000.0,
+     "attention.position_kind": "rope",
+     "attention.position_application": "qk_rotation",
+     "attention.qk_norm": null,
+     "attention.mask": "causal",
+     "attention.score_scaling": null,
+     "ffn.kind": "dense",
+     "ffn.activation": "silu",
+     "ffn.gated": true,
+     "ffn.intermediate_size": 12288,
+     "ffn.num_experts": null,
+     "ffn.routing": null,
+     "norm_kind": "rmsnorm",
+     "norm_placement": "unknown",
+     "residual_topology": "unknown"
+    }
+   }
+  ],
+  "layer_fact_slots": 320,
+  "unknown_slots": 112,
+  "unknown_by_key": {
+   "attention.mixer_state": 16,
+   "attention.qk_norm": 16,
+   "attention.score_scaling": 16,
+   "ffn.num_experts": 16,
+   "ffn.routing": 16,
+   "norm_placement": 16,
+   "residual_topology": 16
+  },
+  "opaque_layer_block": null,
+  "model_blocks": [
+   "tok_text",
+   "embed",
+   "final_rms",
+   "lm_head"
+  ],
+  "unresolved_model_blocks": [],
+  "loop_blocks": [],
+  "cross_layer_edges": [],
+  "warnings": [
+   "Config declares speech-synthesis components not drawn yet \u2014 speech-encoder prenet (feature extractor) \u2014 only the main transformer stack is drawn (audio plan U-E).",
+   "Unresolved code-defined facts (drawn honestly, never asserted): norm placement, parallel norm count, residual topology \u2014 modeling source is present but unresolved."
+  ],
+  "tie_word_embeddings": true,
+  "hidden_size": 2048,
+  "components": [],
+  "layer0_blocks": [
+   "attention",
+   "norm",
+   "ffn"
+  ]
+ },
+ "sable_seconds": 11.6,
+ "sable": {
+  "oracle": "present",
+  "views": 4,
+  "view_labels": [
+   "architecture",
+   "attn",
+   "ffn",
+   "architecture"
+  ],
+  "checks_total": 25,
+  "checks_failing": [
+   {
+    "name": "config_field_audit",
+    "blocking": true,
+    "findings": [
+     "unread config field 'block_auto_adjust_ff_dim' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+     "unread config field 'block_dim' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+     "unread config field 'block_ffn_dim_multiplier' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+     "unread config field 'block_mlp_init_scale' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason"
+    ]
+   },
+   {
+    "name": "qualified_projection_values",
+    "blocking": true,
+    "findings": [
+     "decoder.attention.mixer_schedule projects a 16-layer schedule without an owner-qualified instance fact (required consumers: ['card', 'json', 'opgraph', 'params', 'spec'])"
+    ]
+   },
+   {
+    "name": "document_boundary_completeness",
+    "blocking": true,
+    "findings": [
+     "unestablished origin: {'component': 'root', 'path': 'conv_bias'}",
+     "unestablished origin: {'component': 'root', 'path': 'conv_dim'}",
+     "unestablished origin: {'component': 'root', 'path': 'hidden_size'}",
+     "unestablished origin: {'component': 'root', 'path': 'intermediate_size'}"
+    ]
+   }
+  ],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "zero_asserted_census",
+   "config_accessed_unprojected",
+   "config_migration_claims",
+   "config_consumed_unreceipted",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "config_standing_unconsumed",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": true,
+  "class": "Lfm2ForCausalLM",
+  "module": "transformers.models.lfm2.modeling_lfm2",
+  "seconds": 0.41,
+  "params_B": 1.17,
+  "modules": 201,
+  "stacks": [
+   {
+    "path": "model.layers",
+    "len": 16,
+    "element": "Lfm2DecoderLayer",
+    "distinct": 2,
+    "groups": [
+     {
+      "n": 10,
+      "first": 0,
+      "children": [
+       "conv=Lfm2ShortConv",
+       "feed_forward=Lfm2MLP",
+       "ffn_norm=Lfm2RMSNorm",
+       "operator_norm=Lfm2RMSNorm"
+      ]
+     },
+     {
+      "n": 6,
+      "first": 2,
+      "children": [
+       "feed_forward=Lfm2MLP",
+       "ffn_norm=Lfm2RMSNorm",
+       "operator_norm=Lfm2RMSNorm",
+       "self_attn=Lfm2Attention"
+      ]
+     }
+    ]
+   }
+  ],
+  "shared_params": [
+   [
+    "model.embed_tokens.weight",
+    "lm_head.weight"
+   ]
+  ]
+ },
+ "shadow": {
+  "ir_layers": 16,
+  "instance_main_stack": {
+   "path": "model.layers",
+   "len": 16,
+   "distinct": 2
+  },
+  "ir_distinct_groups": 1,
+  "layer_count_agrees": true,
+  "tying_agrees": true
+ },
+ "finished": "21:25:02"
+}

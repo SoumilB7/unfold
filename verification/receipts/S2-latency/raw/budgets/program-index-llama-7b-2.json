@@ -1,0 +1,32 @@
+{
+  "calls": 677,
+  "classes": 15,
+  "config": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/llama-7b.json",
+  "index_fingerprint": "894ef7ad556c0cd0b0c572a731b4beced7c99c88f8d73f17094203c0014ace21",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 1.3530359589494765,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 1.0687414170242846,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 1.3598857498727739,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    3.2802734375,
+    3.66845703125,
+    3.48681640625
+  ],
+  "mode": "program-index",
+  "name": "llama-7b",
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "d778d46d6fadfad31427965e8bbfc0b61d422f77",
+  "seconds": 0.2678617499768734,
+  "source_nodes": 4
+}

@@ -1,0 +1,192 @@
+{
+ "name": "gpt-neox-20b",
+ "spec": "id:EleutherAI/gpt-neox-20b",
+ "started": "21:38:57",
+ "parse_seconds": 2.9,
+ "ir": {
+  "architecture": "GPTNeoXForCausalLM",
+  "family": "transformer",
+  "num_layers": 44,
+  "distinct_layer_groups": [
+   {
+    "indices": [
+     0,
+     "...",
+     43,
+     "n=44"
+    ],
+    "facts": {
+     "attention.kind": null,
+     "attention.mixer_state": "ordinary_attention",
+     "attention.num_heads": null,
+     "attention.num_kv_heads": null,
+     "attention.head_dim": null,
+     "attention.rope_theta": 10000,
+     "attention.position_kind": "rope",
+     "attention.position_application": "qk_rotation",
+     "attention.qk_norm": null,
+     "attention.mask": "causal",
+     "attention.score_scaling": null,
+     "ffn.kind": "dense",
+     "ffn.activation": "gelu_fast",
+     "ffn.gated": false,
+     "ffn.intermediate_size": 24576,
+     "ffn.num_experts": null,
+     "ffn.routing": null,
+     "norm_kind": "layernorm",
+     "norm_placement": "pre",
+     "residual_topology": "parallel"
+    }
+   }
+  ],
+  "layer_fact_slots": 880,
+  "unknown_slots": 352,
+  "unknown_by_key": {
+   "attention.kind": 44,
+   "attention.num_heads": 44,
+   "attention.num_kv_heads": 44,
+   "attention.head_dim": 44,
+   "attention.qk_norm": 44,
+   "attention.score_scaling": 44,
+   "ffn.num_experts": 44,
+   "ffn.routing": 44
+  },
+  "opaque_layer_block": null,
+  "model_blocks": [
+   "tok_text",
+   "embed",
+   "final_rms",
+   "lm_head"
+  ],
+  "unresolved_model_blocks": [],
+  "loop_blocks": [],
+  "cross_layer_edges": [],
+  "warnings": [
+   "Unresolved code-defined facts (drawn honestly, never asserted): mechanism \u2014 modeling source is present but unresolved."
+  ],
+  "tie_word_embeddings": false,
+  "hidden_size": 6144,
+  "components": [],
+  "layer0_blocks": [
+   "norm",
+   "attention",
+   "residual_add",
+   "ffn"
+  ]
+ },
+ "sable_seconds": 13.6,
+ "sable": {
+  "oracle": "present",
+  "views": 4,
+  "view_labels": [
+   "architecture",
+   "attn",
+   "ffn",
+   "architecture"
+  ],
+  "checks_total": 25,
+  "checks_failing": [
+   {
+    "name": "config_field_audit",
+    "blocking": true,
+    "findings": [
+     "unread config field 'attention_probs_dropout_prob' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+     "unread config field 'hidden_dropout_prob' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+     "unread config field 'num_attention_heads' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason"
+    ]
+   },
+   {
+    "name": "qualified_projection_values",
+    "blocking": true,
+    "findings": [
+     "decoder.attention.mixer_schedule is ledgered as ('ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention') but every authoritative structural surface withholds it"
+    ]
+   },
+   {
+    "name": "config_consumed_unreceipted",
+    "blocking": true,
+    "findings": [
+     "root:rope_parameters.partial_rotary_factor -> decoder.attention.rope_initialization is in receipted scope decoder.attention/position_frequency_initialization but no projector emitted a matching receipt (a consumed, ledgered fact the diagram does not draw)",
+     "root:rope_parameters.rope_theta -> decoder.attention.rope_theta is in receipted scope decoder.attention/position_frequency_initialization but no projector emitted a matching receipt (a consumed, ledgered fact the diagram does not draw)",
+     "root:rope_parameters.rope_type -> decoder.attention.rope_initialization is in receipted scope decoder.attention/position_frequency_initialization but no projector emitted a matching receipt (a consumed, ledgered fact the diagram does not draw)"
+    ]
+   },
+   {
+    "name": "document_boundary_completeness",
+    "blocking": true,
+    "findings": [
+     "unestablished origin: {'component': 'root', 'path': 'attention_bias'}",
+     "unestablished origin: {'component': 'root', 'path': 'hidden_act'}",
+     "unestablished origin: {'component': 'root', 'path': 'hidden_size'}",
+     "unestablished origin: {'component': 'root', 'path': 'intermediate_size'}"
+    ]
+   }
+  ],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "zero_asserted_census",
+   "config_accessed_unprojected",
+   "config_migration_claims",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "config_standing_unconsumed",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": true,
+  "class": "GPTNeoXForCausalLM",
+  "module": "transformers.models.gpt_neox.modeling_gpt_neox",
+  "seconds": 0.04,
+  "params_B": 20.555,
+  "modules": 536,
+  "stacks": [
+   {
+    "path": "gpt_neox.layers",
+    "len": 44,
+    "element": "GPTNeoXLayer",
+    "distinct": 1,
+    "groups": [
+     {
+      "n": 44,
+      "first": 0,
+      "children": [
+       "attention=GPTNeoXAttention",
+       "input_layernorm=LayerNorm",
+       "mlp=GPTNeoXMLP",
+       "post_attention_dropout=Dropout",
+       "post_attention_layernorm=LayerNorm",
+       "post_mlp_dropout=Dropout"
+      ]
+     }
+    ]
+   }
+  ],
+  "shared_params": []
+ },
+ "shadow": {
+  "ir_layers": 44,
+  "instance_main_stack": {
+   "path": "gpt_neox.layers",
+   "len": 44,
+   "distinct": 1
+  },
+  "ir_distinct_groups": 1,
+  "layer_count_agrees": true,
+  "tying_agrees": true
+ },
+ "finished": "21:39:14"
+}

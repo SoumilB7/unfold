@@ -1,0 +1,191 @@
+{
+ "name": "sana-1-5-4-8b",
+ "spec": "id:Efficient-Large-Model/SANA1.5_4.8B_1024px_diffusers",
+ "started": "21:33:46",
+ "parse_seconds": 13.8,
+ "ir": {
+  "architecture": "SanaTransformer2DModel",
+  "family": "diffusion",
+  "num_layers": 60,
+  "distinct_layer_groups": [
+   {
+    "indices": [
+     0,
+     "...",
+     59,
+     "n=60"
+    ],
+    "facts": {
+     "attention.kind": null,
+     "attention.mixer_state": null,
+     "attention.num_heads": null,
+     "attention.num_kv_heads": null,
+     "attention.head_dim": null,
+     "attention.rope_theta": null,
+     "attention.position_kind": "unknown",
+     "attention.position_application": "unknown",
+     "attention.qk_norm": null,
+     "attention.mask": "unknown",
+     "attention.score_scaling": null,
+     "ffn.kind": null,
+     "ffn.activation": null,
+     "ffn.gated": null,
+     "ffn.intermediate_size": null,
+     "ffn.num_experts": null,
+     "ffn.routing": null,
+     "norm_kind": "layernorm",
+     "norm_placement": "unknown",
+     "residual_topology": "unknown"
+    }
+   }
+  ],
+  "layer_fact_slots": 1200,
+  "unknown_slots": 1140,
+  "unknown_by_key": {
+   "attention.kind": 60,
+   "attention.mixer_state": 60,
+   "attention.num_heads": 60,
+   "attention.num_kv_heads": 60,
+   "attention.head_dim": 60,
+   "attention.rope_theta": 60,
+   "attention.position_kind": 60,
+   "attention.position_application": 60,
+   "attention.qk_norm": 60,
+   "attention.mask": 60,
+   "attention.score_scaling": 60,
+   "ffn.kind": 60,
+   "ffn.activation": 60,
+   "ffn.gated": 60,
+   "ffn.intermediate_size": 60,
+   "ffn.num_experts": 60,
+   "ffn.routing": 60,
+   "norm_placement": 60,
+   "residual_topology": 60
+  },
+  "opaque_layer_block": "Repeated denoiser structure unresolved",
+  "model_blocks": [
+   "tok_text",
+   "embed",
+   "final_rms",
+   "lm_head"
+  ],
+  "unresolved_model_blocks": [
+   "embed"
+  ],
+  "loop_blocks": [
+   "noise",
+   "timestep",
+   "prompt",
+   "encoder_0",
+   "latent",
+   "denoiser",
+   "scheduler",
+   "vae_decode",
+   "image"
+  ],
+  "cross_layer_edges": [],
+  "warnings": [
+   "denoiser.stacks[0]: FFN mechanism is not uniquely source-resolved"
+  ],
+  "tie_word_embeddings": true,
+  "hidden_size": 0,
+  "components": [],
+  "layer0_blocks": [
+   "block",
+   "attention",
+   "gate_mul",
+   "attention",
+   "norm",
+   "ffn"
+  ]
+ },
+ "sable_seconds": 20.1,
+ "sable": {
+  "oracle": "present",
+  "views": 11,
+  "view_labels": [
+   "architecture",
+   "encoder_0",
+   "denoiser",
+   "scheduler",
+   "vae_decode",
+   "attn",
+   "cross_attn",
+   "ffn",
+   "encoder_0_op_selfattn",
+   "encoder_0_op_ffn",
+   "architecture"
+  ],
+  "checks_total": 25,
+  "checks_failing": [],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "config_field_audit",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "qualified_projection_values",
+   "zero_asserted_census",
+   "config_accessed_unprojected",
+   "config_migration_claims",
+   "config_consumed_unreceipted",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "document_boundary_completeness",
+   "config_standing_unconsumed",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": true,
+  "class": "SanaTransformer2DModel",
+  "module": "diffusers.models.transformers.sana_transformer",
+  "seconds": 1.99,
+  "params_B": 4.722,
+  "modules": 1581,
+  "stacks": [
+   {
+    "path": "transformer_blocks",
+    "len": 60,
+    "element": "SanaTransformerBlock",
+    "distinct": 1,
+    "groups": [
+     {
+      "n": 60,
+      "first": 0,
+      "children": [
+       "attn1=Attention",
+       "attn2=Attention",
+       "ff=GLUMBConv",
+       "norm1=LayerNorm",
+       "norm2=LayerNorm"
+      ]
+     }
+    ]
+   }
+  ],
+  "shared_params": []
+ },
+ "shadow": {
+  "ir_layers": 60,
+  "instance_main_stack": {
+   "path": "transformer_blocks",
+   "len": 60,
+   "distinct": 1
+  },
+  "ir_distinct_groups": 1,
+  "layer_count_agrees": true,
+  "tying_agrees": false
+ },
+ "finished": "21:34:22"
+}

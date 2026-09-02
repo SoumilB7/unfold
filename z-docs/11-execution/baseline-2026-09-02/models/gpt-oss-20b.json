@@ -1,0 +1,211 @@
+{
+ "name": "gpt-oss-20b",
+ "spec": "corpus:gpt-oss-20b",
+ "started": "21:24:07",
+ "model": "gpt-oss-20b",
+ "blessed_views": 8,
+ "parse_seconds": 2.6,
+ "ir": {
+  "architecture": "GptOssForCausalLM",
+  "family": "transformer",
+  "num_layers": 24,
+  "distinct_layer_groups": [
+   {
+    "indices": [
+     0,
+     "...",
+     22,
+     "n=12"
+    ],
+    "facts": {
+     "attention.kind": "gqa",
+     "attention.mixer_state": "ordinary_attention",
+     "attention.num_heads": 64,
+     "attention.num_kv_heads": 8,
+     "attention.head_dim": 64,
+     "attention.rope_theta": 150000,
+     "attention.position_kind": "rope",
+     "attention.position_application": "qk_rotation",
+     "attention.qk_norm": null,
+     "attention.mask": "sliding",
+     "attention.score_scaling": null,
+     "ffn.kind": "moe",
+     "ffn.activation": null,
+     "ffn.gated": null,
+     "ffn.intermediate_size": null,
+     "ffn.num_experts": 32,
+     "ffn.routing": {
+      "selection_kind": "topk",
+      "scoring_func": "softmax",
+      "scoring_before_topk": false,
+      "score_source_kind": "affine",
+      "bias_correction": false,
+      "num_experts": 32,
+      "selection_count": 4,
+      "num_experts_per_tok": 4
+     },
+     "norm_kind": "rmsnorm",
+     "norm_placement": "pre",
+     "residual_topology": "sequential"
+    }
+   },
+   {
+    "indices": [
+     1,
+     "...",
+     23,
+     "n=12"
+    ],
+    "facts": {
+     "attention.kind": "gqa",
+     "attention.mixer_state": "ordinary_attention",
+     "attention.num_heads": 64,
+     "attention.num_kv_heads": 8,
+     "attention.head_dim": 64,
+     "attention.rope_theta": 150000,
+     "attention.position_kind": "rope",
+     "attention.position_application": "qk_rotation",
+     "attention.qk_norm": null,
+     "attention.mask": "global",
+     "attention.score_scaling": null,
+     "ffn.kind": "moe",
+     "ffn.activation": null,
+     "ffn.gated": null,
+     "ffn.intermediate_size": null,
+     "ffn.num_experts": 32,
+     "ffn.routing": {
+      "selection_kind": "topk",
+      "scoring_func": "softmax",
+      "scoring_before_topk": false,
+      "score_source_kind": "affine",
+      "bias_correction": false,
+      "num_experts": 32,
+      "selection_count": 4,
+      "num_experts_per_tok": 4
+     },
+     "norm_kind": "rmsnorm",
+     "norm_placement": "pre",
+     "residual_topology": "sequential"
+    }
+   }
+  ],
+  "layer_fact_slots": 480,
+  "unknown_slots": 120,
+  "unknown_by_key": {
+   "attention.qk_norm": 24,
+   "attention.score_scaling": 24,
+   "ffn.activation": 24,
+   "ffn.gated": 24,
+   "ffn.intermediate_size": 24
+  },
+  "opaque_layer_block": null,
+  "model_blocks": [
+   "tok_text",
+   "embed",
+   "final_rms",
+   "lm_head"
+  ],
+  "unresolved_model_blocks": [],
+  "loop_blocks": [],
+  "cross_layer_edges": [],
+  "warnings": [
+   "Unresolved code-defined facts (drawn honestly, never asserted): activation, parallel norm count \u2014 modeling source is present but unresolved."
+  ],
+  "tie_word_embeddings": false,
+  "hidden_size": 2880,
+  "components": [],
+  "layer0_blocks": [
+   "norm",
+   "attention",
+   "residual_add",
+   "norm",
+   "ffn",
+   "residual_add"
+  ]
+ },
+ "sable_seconds": 10.6,
+ "sable": {
+  "oracle": "present",
+  "views": 8,
+  "view_labels": [
+   "architecture",
+   "architecture_v1",
+   "attn",
+   "ffn",
+   "attn",
+   "router",
+   "expert_1",
+   "architecture"
+  ],
+  "checks_total": 25,
+  "checks_failing": [],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "config_field_audit",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "qualified_projection_values",
+   "zero_asserted_census",
+   "config_accessed_unprojected",
+   "config_migration_claims",
+   "config_consumed_unreceipted",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "document_boundary_completeness",
+   "config_standing_unconsumed",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": true,
+  "class": "GptOssForCausalLM",
+  "module": "transformers.models.gpt_oss.modeling_gpt_oss",
+  "seconds": 0.02,
+  "params_B": 20.915,
+  "modules": 271,
+  "stacks": [
+   {
+    "path": "model.layers",
+    "len": 24,
+    "element": "GptOssDecoderLayer",
+    "distinct": 1,
+    "groups": [
+     {
+      "n": 24,
+      "first": 0,
+      "children": [
+       "input_layernorm=GptOssRMSNorm",
+       "mlp=GptOssMLP",
+       "post_attention_layernorm=GptOssRMSNorm",
+       "self_attn=GptOssAttention"
+      ]
+     }
+    ]
+   }
+  ],
+  "shared_params": []
+ },
+ "shadow": {
+  "ir_layers": 24,
+  "instance_main_stack": {
+   "path": "model.layers",
+   "len": 24,
+   "distinct": 1
+  },
+  "ir_distinct_groups": 2,
+  "layer_count_agrees": true,
+  "tying_agrees": true
+ },
+ "finished": "21:24:20"
+}

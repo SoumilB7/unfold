@@ -1,0 +1,192 @@
+{
+ "name": "qwen-image",
+ "spec": "corpus:qwen-image",
+ "started": "21:26:47",
+ "model": "Qwen-Image",
+ "blessed_views": 13,
+ "parse_seconds": 71.2,
+ "ir": {
+  "architecture": "QwenImageTransformer2DModel",
+  "family": "diffusion",
+  "num_layers": 60,
+  "distinct_layer_groups": [
+   {
+    "indices": [
+     0,
+     "...",
+     59,
+     "n=60"
+    ],
+    "facts": {
+     "attention.kind": null,
+     "attention.mixer_state": null,
+     "attention.num_heads": 24,
+     "attention.num_kv_heads": null,
+     "attention.head_dim": 128,
+     "attention.rope_theta": null,
+     "attention.position_kind": "unknown",
+     "attention.position_application": "unknown",
+     "attention.qk_norm": null,
+     "attention.mask": "unknown",
+     "attention.score_scaling": null,
+     "ffn.kind": null,
+     "ffn.activation": null,
+     "ffn.gated": null,
+     "ffn.intermediate_size": null,
+     "ffn.num_experts": null,
+     "ffn.routing": null,
+     "norm_kind": "layernorm",
+     "norm_placement": "unknown",
+     "residual_topology": "unknown"
+    }
+   }
+  ],
+  "layer_fact_slots": 1200,
+  "unknown_slots": 1020,
+  "unknown_by_key": {
+   "attention.kind": 60,
+   "attention.mixer_state": 60,
+   "attention.num_kv_heads": 60,
+   "attention.rope_theta": 60,
+   "attention.position_kind": 60,
+   "attention.position_application": 60,
+   "attention.qk_norm": 60,
+   "attention.mask": 60,
+   "attention.score_scaling": 60,
+   "ffn.kind": 60,
+   "ffn.activation": 60,
+   "ffn.gated": 60,
+   "ffn.intermediate_size": 60,
+   "ffn.num_experts": 60,
+   "ffn.routing": 60,
+   "norm_placement": 60,
+   "residual_topology": 60
+  },
+  "opaque_layer_block": "Repeated denoiser structure unresolved",
+  "model_blocks": [
+   "tok_text",
+   "embed",
+   "final_rms",
+   "lm_head"
+  ],
+  "unresolved_model_blocks": [],
+  "loop_blocks": [
+   "noise",
+   "timestep",
+   "prompt",
+   "encoder_0",
+   "latent",
+   "denoiser",
+   "scheduler",
+   "vae_decode",
+   "image"
+  ],
+  "cross_layer_edges": [],
+  "warnings": [
+   "denoiser.stacks[0]: FFN mechanism is not uniquely source-resolved"
+  ],
+  "tie_word_embeddings": true,
+  "hidden_size": 3072,
+  "components": [],
+  "layer0_blocks": [
+   "attention",
+   "norm",
+   "ffn"
+  ]
+ },
+ "sable_seconds": 12.2,
+ "sable": {
+  "oracle": "present",
+  "views": 13,
+  "view_labels": [
+   "architecture",
+   "encoder_0",
+   "denoiser",
+   "scheduler",
+   "vae_decode",
+   "attn",
+   "ffn",
+   "encoder_0_op_selfattn",
+   "vae_decoder_block_4",
+   "vae_decoder_block_3",
+   "vae_decoder_block_2",
+   "vae_decoder_block_1",
+   "architecture"
+  ],
+  "checks_total": 25,
+  "checks_failing": [],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "config_field_audit",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "qualified_projection_values",
+   "zero_asserted_census",
+   "config_accessed_unprojected",
+   "config_migration_claims",
+   "config_consumed_unreceipted",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "document_boundary_completeness",
+   "config_standing_unconsumed",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": true,
+  "class": "QwenImageTransformer2DModel",
+  "module": "diffusers.models.transformers.transformer_qwenimage",
+  "seconds": 0.08,
+  "params_B": 20.43,
+  "modules": 2297,
+  "stacks": [
+   {
+    "path": "transformer_blocks",
+    "len": 60,
+    "element": "QwenImageTransformerBlock",
+    "distinct": 1,
+    "groups": [
+     {
+      "n": 60,
+      "first": 0,
+      "children": [
+       "attn=Attention",
+       "img_mlp=FeedForward",
+       "img_mod=Sequential",
+       "img_norm1=LayerNorm",
+       "img_norm2=LayerNorm",
+       "txt_mlp=FeedForward",
+       "txt_mod=Sequential",
+       "txt_norm1=LayerNorm",
+       "txt_norm2=LayerNorm"
+      ]
+     }
+    ]
+   }
+  ],
+  "shared_params": []
+ },
+ "shadow": {
+  "ir_layers": 60,
+  "instance_main_stack": {
+   "path": "transformer_blocks",
+   "len": 60,
+   "distinct": 1
+  },
+  "ir_distinct_groups": 1,
+  "layer_count_agrees": true,
+  "tying_agrees": false
+ },
+ "finished": "21:28:11"
+}

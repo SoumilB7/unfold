@@ -92,6 +92,8 @@ trusted.
   `stack.kind = decoder_only, num_layers = 0` silently; it returns a typed
   refusal or a visible zero-layer warning.
 
+**C-3 addendum (v2.4)** — poison: a Qwen3.x `ForConditionalGeneration` config through plain `unfold()` yields a typed refusal, not a traceback; the projector join is the named producer.
+
 **C-4 recall and unknown-rate gates (S4)**
 - Recall ratchet poison: take a blessed fixture, downgrade one proven fact to
   unresolved in a scratch copy → gate red with the fact named.
@@ -101,7 +103,8 @@ trusted.
 - `config_accessed_unprojected` / `asserted_facts` are in the blocking set;
   `census.py --check` wired into CI; `zero_asserted_census` re-raises.
 - `coverage.json` per model: `proven / flagged / silent`; silent = 0 for all
-  29 witnesses; a poison witness with one silent fact → CI red.
+  29 witnesses **and the 15 unseen-model ids** (v2.4); a poison witness with one silent fact → CI red.
+- Ship-path chips (v2.4): `unfold()` on Jamba shows a chip where `op_conformance` fires; on DeepSeek-Coder-V2-Lite where `fact_conformance` fires.
 
 **C-5 release (S5)**
 - `pip install model-unfolder==0.3.0` in a clean venv renders the 29 witnesses.
@@ -186,6 +189,10 @@ verdict persisted per bless; Space cold render under the S2 budget.
 | LongCat-Flash | intra-layer shortcut MoE | shortcut as a relation row |
 
 ## §E The state to re-cache after compaction (facts, 2026-09-02)
+
+- **S0 ACCEPTED, S1 ACCEPTED** (`11-execution/S0-review.md`, `S1-review.md`); HEAD `d778d46` pushed; executor may run S2.
+- **Baseline generation audit DONE** at `d778d46`: `11-execution/baseline-2026-09-02/BASELINE_GENERATION_AUDIT.md` (44 models). Three silent classes found on unseen models → plan v2.4.
+- Running state lives in `11-execution/REVIEWER_LOG.md`.
 
 - Branch `audio-composite-support`, HEAD `9a4e1e5`, 2 unpushed (F4 `9b3cb7b`,
   F2c `9a4e1e5`); U11 tracker row stale; 14 `unet_*` readers, zero production

@@ -1,0 +1,220 @@
+{
+ "name": "deepseek-v3",
+ "spec": "corpus:deepseek-v3",
+ "started": "21:23:39",
+ "model": "DeepSeek-V3",
+ "blessed_views": 11,
+ "parse_seconds": 3.5,
+ "ir": {
+  "architecture": "DeepseekV3ForCausalLM",
+  "family": "transformer",
+  "num_layers": 61,
+  "distinct_layer_groups": [
+   {
+    "indices": [
+     0,
+     1,
+     2
+    ],
+    "facts": {
+     "attention.kind": "mla",
+     "attention.mixer_state": "ordinary_attention",
+     "attention.num_heads": 128,
+     "attention.num_kv_heads": 128,
+     "attention.head_dim": 192,
+     "attention.rope_theta": 10000,
+     "attention.position_kind": "rope",
+     "attention.position_application": "qk_rotation",
+     "attention.qk_norm": null,
+     "attention.mask": "causal",
+     "attention.score_scaling": null,
+     "ffn.kind": "dense",
+     "ffn.activation": "silu",
+     "ffn.gated": true,
+     "ffn.intermediate_size": null,
+     "ffn.num_experts": null,
+     "ffn.routing": null,
+     "norm_kind": "rmsnorm",
+     "norm_placement": "pre",
+     "residual_topology": "sequential"
+    }
+   },
+   {
+    "indices": [
+     3,
+     "...",
+     60,
+     "n=58"
+    ],
+    "facts": {
+     "attention.kind": "mla",
+     "attention.mixer_state": "ordinary_attention",
+     "attention.num_heads": 128,
+     "attention.num_kv_heads": 128,
+     "attention.head_dim": 192,
+     "attention.rope_theta": 10000,
+     "attention.position_kind": "rope",
+     "attention.position_application": "qk_rotation",
+     "attention.qk_norm": null,
+     "attention.mask": "causal",
+     "attention.score_scaling": null,
+     "ffn.kind": "moe",
+     "ffn.activation": "silu",
+     "ffn.gated": true,
+     "ffn.intermediate_size": null,
+     "ffn.num_experts": 256,
+     "ffn.routing": {
+      "selection_kind": "topk",
+      "scoring_func": "sigmoid",
+      "scoring_before_topk": true,
+      "score_source_kind": "affine",
+      "bias_correction": true,
+      "num_experts": 256,
+      "selection_count": 8,
+      "num_experts_per_tok": 8,
+      "grouped": true,
+      "group_score_kind": "top2_sum",
+      "n_group": 8,
+      "topk_group": 4,
+      "normalization_kind": "sum",
+      "routed_scaling_factor": 2.5
+     },
+     "norm_kind": "rmsnorm",
+     "norm_placement": "pre",
+     "residual_topology": "sequential"
+    }
+   }
+  ],
+  "layer_fact_slots": 1220,
+  "unknown_slots": 189,
+  "unknown_by_key": {
+   "attention.qk_norm": 61,
+   "attention.score_scaling": 61,
+   "ffn.intermediate_size": 61,
+   "ffn.num_experts": 3,
+   "ffn.routing": 3
+  },
+  "opaque_layer_block": null,
+  "model_blocks": [
+   "tok_text",
+   "embed",
+   "final_rms",
+   "lm_head"
+  ],
+  "unresolved_model_blocks": [],
+  "loop_blocks": [],
+  "cross_layer_edges": [],
+  "warnings": [
+   "Unresolved code-defined facts (drawn honestly, never asserted): parallel norm count, projection mode \u2014 modeling source is present but unresolved."
+  ],
+  "tie_word_embeddings": false,
+  "hidden_size": 7168,
+  "components": [],
+  "layer0_blocks": [
+   "norm",
+   "attention",
+   "residual_add",
+   "norm",
+   "ffn",
+   "residual_add"
+  ]
+ },
+ "sable_seconds": 11.2,
+ "sable": {
+  "oracle": "present",
+  "views": 11,
+  "view_labels": [
+   "architecture",
+   "architecture_v1",
+   "attn",
+   "ffn",
+   "ffn",
+   "mla_query_path",
+   "mla_kv_path",
+   "router",
+   "expert_1",
+   "g_topk",
+   "architecture"
+  ],
+  "checks_total": 25,
+  "checks_failing": [],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "config_field_audit",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "qualified_projection_values",
+   "zero_asserted_census",
+   "config_accessed_unprojected",
+   "config_migration_claims",
+   "config_consumed_unreceipted",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "document_boundary_completeness",
+   "config_standing_unconsumed",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": true,
+  "class": "DeepseekV3ForCausalLM",
+  "module": "transformers.models.deepseek_v3.modeling_deepseek_v3",
+  "seconds": 0.03,
+  "params_B": 671.026,
+  "modules": 1215,
+  "stacks": [
+   {
+    "path": "model.layers",
+    "len": 61,
+    "element": "DeepseekV3DecoderLayer",
+    "distinct": 2,
+    "groups": [
+     {
+      "n": 3,
+      "first": 0,
+      "children": [
+       "input_layernorm=DeepseekV3RMSNorm",
+       "mlp=DeepseekV3MLP",
+       "post_attention_layernorm=DeepseekV3RMSNorm",
+       "self_attn=DeepseekV3Attention"
+      ]
+     },
+     {
+      "n": 58,
+      "first": 3,
+      "children": [
+       "input_layernorm=DeepseekV3RMSNorm",
+       "mlp=DeepseekV3MoE",
+       "post_attention_layernorm=DeepseekV3RMSNorm",
+       "self_attn=DeepseekV3Attention"
+      ]
+     }
+    ]
+   }
+  ],
+  "shared_params": []
+ },
+ "shadow": {
+  "ir_layers": 61,
+  "instance_main_stack": {
+   "path": "model.layers",
+   "len": 61,
+   "distinct": 2
+  },
+  "ir_distinct_groups": 2,
+  "layer_count_agrees": true,
+  "tying_agrees": true
+ },
+ "finished": "21:23:54"
+}

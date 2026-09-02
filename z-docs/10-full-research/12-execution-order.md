@@ -1,6 +1,6 @@
-# Execution order v2.3 — binding (2026-09-02)
+# Execution order v2.4 — binding (2026-09-02)
 
-v2.3 adds the **relation axis** (§1f) after the hard-model probe in `13-hard-models-and-relations.md`. Supersedes v1 (big-bang cutover; stale F4/F2c) and v2.1 (single-disposition
+v2.4 adds the **unseen-model lane, the no-traceback law and ship-path chips** after the baseline generation audit (`11-execution/baseline-2026-09-02/BASELINE_GENERATION_AUDIT.md`: 3 crashes, 2 shipped fabrications, 1 flattened schedule on 15 unseen models). v2.3 added the **relation axis** (§1f) after the hard-model probe in `13-hard-models-and-relations.md`. Supersedes v1 (big-bang cutover; stale F4/F2c) and v2.1 (single-disposition
 reconciliation; bet 2 overstated; remapping mis-scoped; unlawful time-box
 escape). Every correction in v2.2 was tested live on SD3.5, PixArt-Σ and
 Gemma-2 (§7) before being accepted. Both reviews approve the direction.
@@ -161,7 +161,7 @@ G/H/I.**
 `decoder_block_candidates_for_config`, `resolve_component_root`,
 `everchanging.load`.
 **Exit (two budgets):** (a) `_seg` proven linear and output-identical on the
-5 profiled targets (fingerprints unchanged); (b) ProgramIndex construction
+5 profiled targets plus Qwen3-Omni (739 s baseline) and MusicGen (128 s) (fingerprints unchanged); (b) ProgramIndex construction
 *after imports* and end-to-end cold latency each measured on a quiet machine
 and recorded as the baseline; budgets are set from that baseline, not
 asserted in advance. Library import (measured 6.5 s for torch + diffusers +
@@ -177,6 +177,12 @@ placeholder text tower for bare diffusion configs (live today: a plain
 with `tok_text / embed / final_rms / lm_head` blocks); add the visible
 zero-layer warning. Extend `consumer_firewall` with a blocking "no semantic
 default resolves an unknown" rule.
+**No-traceback law (v2.4):** every `unfold()` ends in an IR or a typed
+refusal, never an exception. First producer-first fix: the projector caller
+join (`evidence/projector.py:159`, `node_for(...)` may be `None`) that crashes
+the whole Qwen3.x `ForConditionalGeneration` family. Poison: a
+`ForConditionalGeneration` config through the plain path must yield a typed
+refusal.
 **Exit:** rule blocking with poison test; preservation delta enumerated per
 witness and approved before re-bless; every removed site yields a chip.
 
@@ -188,6 +194,13 @@ labels in the fixture signature); no waiver without a chip; flip
 receipts in-repo; `bless` requires a persisted verdict from a reviewer that
 did not implement the change; per-model `proven / flagged / silent`
 published, silent must be 0.
+**Unseen-model lane (v2.4):** the 15 set-C ids of the baseline audit become
+a standing CI set with the same denominator; "silent" = a crash or a blocking
+net finding not surfaced on the drawing. **Ship-path chips (v2.4):** a
+blocking conformance finding (`op_conformance`, `fact_conformance`,
+`config_field_audit` schedule fields) must appear as a chip in `unfold()`
+output, not only in the Sable report — Jamba and DeepSeek-Coder-V2-Lite are
+the poisons.
 **Exit:** each gate has a poison test that fires; `coverage.json` committed.
 
 ### S5 — ship v0.3.0, an **honesty/reliability** release (end of week 2)

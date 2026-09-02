@@ -1,0 +1,234 @@
+{
+ "name": "stable-diffusion-xl-base-1-0",
+ "spec": "corpus:stable-diffusion-xl-base-1-0",
+ "started": "21:28:49",
+ "model": "stable-diffusion-xl-base-1.0",
+ "blessed_views": 29,
+ "parse_seconds": 6.2,
+ "ir": {
+  "architecture": "UNet2DConditionModel",
+  "family": "diffusion",
+  "num_layers": 0,
+  "distinct_layer_groups": [],
+  "layer_fact_slots": 0,
+  "unknown_slots": 0,
+  "unknown_by_key": {},
+  "opaque_layer_block": null,
+  "model_blocks": [],
+  "unresolved_model_blocks": [],
+  "loop_blocks": [
+   "noise",
+   "timestep",
+   "prompt",
+   "encoder_0",
+   "encoder_1",
+   "latent",
+   "denoiser",
+   "scheduler",
+   "vae_decode",
+   "image"
+  ],
+  "cross_layer_edges": [],
+  "warnings": [],
+  "tie_word_embeddings": true,
+  "hidden_size": 1280,
+  "components": [],
+  "layer0_blocks": []
+ },
+ "sable_seconds": 14.4,
+ "sable": {
+  "oracle": "present",
+  "views": 29,
+  "view_labels": [
+   "architecture",
+   "encoder_0",
+   "encoder_1",
+   "denoiser",
+   "scheduler",
+   "vae_decode",
+   "encoder_0_op_selfattn",
+   "encoder_0_op_ffn",
+   "encoder_1_op_selfattn",
+   "encoder_1_op_ffn",
+   "unet_down_0",
+   "unet_down_1",
+   "unet_down_2",
+   "unet_mid",
+   "unet_up_0",
+   "unet_up_1",
+   "unet_up_2",
+   "unet_text_cond",
+   "vae_decoder_block_4",
+   "vae_decoder_block_3",
+   "vae_decoder_block_2",
+   "vae_decoder_block_1",
+   "unet_down_0__resnet",
+   "unet_down_1__resnet",
+   "unet_down_1__transformer",
+   "unet_down_2__resnet",
+   "unet_down_2__transformer",
+   "unet_down_1__crossattn",
+   "unet_down_1__ff"
+  ],
+  "checks_total": 25,
+  "checks_failing": [
+   {
+    "name": "config_accessed_unprojected",
+    "blocking": false,
+    "findings": [
+     "config occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+     "config occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+     "config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+     "config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored"
+    ]
+   }
+  ],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "config_field_audit",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "qualified_projection_values",
+   "zero_asserted_census",
+   "config_migration_claims",
+   "config_consumed_unreceipted",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "document_boundary_completeness",
+   "config_standing_unconsumed",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": true,
+  "class": "UNet2DConditionModel",
+  "module": "diffusers.models.unets.unet_2d_condition",
+  "seconds": 0.08,
+  "params_B": 2.567,
+  "modules": 1930,
+  "stacks": [
+   {
+    "path": "down_blocks",
+    "len": 3,
+    "element": "DownBlock2D",
+    "distinct": 3,
+    "groups": [
+     {
+      "n": 1,
+      "first": 0,
+      "children": [
+       "downsamplers=ModuleList",
+       "resnets=ModuleList"
+      ]
+     },
+     {
+      "n": 1,
+      "first": 1,
+      "children": [
+       "attentions=ModuleList",
+       "downsamplers=ModuleList",
+       "resnets=ModuleList"
+      ]
+     },
+     {
+      "n": 1,
+      "first": 2,
+      "children": [
+       "attentions=ModuleList",
+       "resnets=ModuleList"
+      ]
+     }
+    ]
+   },
+   {
+    "path": "up_blocks",
+    "len": 3,
+    "element": "CrossAttnUpBlock2D",
+    "distinct": 2,
+    "groups": [
+     {
+      "n": 2,
+      "first": 0,
+      "children": [
+       "attentions=ModuleList",
+       "resnets=ModuleList",
+       "upsamplers=ModuleList"
+      ]
+     },
+     {
+      "n": 1,
+      "first": 2,
+      "children": [
+       "resnets=ModuleList"
+      ]
+     }
+    ]
+   },
+   {
+    "path": "mid_block.attentions.0.transformer_blocks",
+    "len": 10,
+    "element": "BasicTransformerBlock",
+    "distinct": 1,
+    "groups": [
+     {
+      "n": 10,
+      "first": 0,
+      "children": [
+       "attn1=Attention",
+       "attn2=Attention",
+       "ff=FeedForward",
+       "norm1=LayerNorm",
+       "norm2=LayerNorm",
+       "norm3=LayerNorm"
+      ]
+     }
+    ]
+   },
+   {
+    "path": "mid_block.resnets",
+    "len": 2,
+    "element": "ResnetBlock2D",
+    "distinct": 1,
+    "groups": [
+     {
+      "n": 2,
+      "first": 0,
+      "children": [
+       "conv1=Conv2d",
+       "conv2=Conv2d",
+       "dropout=Dropout",
+       "nonlinearity=SiLU",
+       "norm1=GroupNorm",
+       "norm2=GroupNorm",
+       "time_emb_proj=Linear"
+      ]
+     }
+    ]
+   }
+  ],
+  "shared_params": []
+ },
+ "shadow": {
+  "ir_layers": 0,
+  "instance_main_stack": {
+   "path": "mid_block.attentions.0.transformer_blocks",
+   "len": 10,
+   "distinct": 1
+  },
+  "ir_distinct_groups": 0,
+  "layer_count_agrees": false,
+  "tying_agrees": false
+ },
+ "finished": "21:29:10"
+}

@@ -1,0 +1,158 @@
+{
+ "name": "llama-7b",
+ "spec": "corpus:llama-7b",
+ "started": "21:22:56",
+ "model": "llama-7b",
+ "blessed_views": 4,
+ "parse_seconds": 1.6,
+ "ir": {
+  "architecture": "LlamaForCausalLM",
+  "family": "transformer",
+  "num_layers": 32,
+  "distinct_layer_groups": [
+   {
+    "indices": [
+     0,
+     "...",
+     31,
+     "n=32"
+    ],
+    "facts": {
+     "attention.kind": "mha",
+     "attention.mixer_state": "ordinary_attention",
+     "attention.num_heads": 32,
+     "attention.num_kv_heads": 32,
+     "attention.head_dim": 128,
+     "attention.rope_theta": 10000.0,
+     "attention.position_kind": "rope",
+     "attention.position_application": "qk_rotation",
+     "attention.qk_norm": null,
+     "attention.mask": "causal",
+     "attention.score_scaling": null,
+     "ffn.kind": "dense",
+     "ffn.activation": "silu",
+     "ffn.gated": true,
+     "ffn.intermediate_size": 11008,
+     "ffn.num_experts": null,
+     "ffn.routing": null,
+     "norm_kind": "rmsnorm",
+     "norm_placement": "pre",
+     "residual_topology": "sequential"
+    }
+   }
+  ],
+  "layer_fact_slots": 640,
+  "unknown_slots": 128,
+  "unknown_by_key": {
+   "attention.qk_norm": 32,
+   "attention.score_scaling": 32,
+   "ffn.num_experts": 32,
+   "ffn.routing": 32
+  },
+  "opaque_layer_block": null,
+  "model_blocks": [
+   "tok_text",
+   "embed",
+   "final_rms",
+   "lm_head"
+  ],
+  "unresolved_model_blocks": [],
+  "loop_blocks": [],
+  "cross_layer_edges": [],
+  "warnings": [
+   "Unresolved code-defined facts (drawn honestly, never asserted): parallel norm count \u2014 modeling source is present but unresolved."
+  ],
+  "tie_word_embeddings": false,
+  "hidden_size": 4096,
+  "components": [],
+  "layer0_blocks": [
+   "norm",
+   "attention",
+   "residual_add",
+   "norm",
+   "ffn",
+   "residual_add"
+  ]
+ },
+ "sable_seconds": 14.7,
+ "sable": {
+  "oracle": "present",
+  "views": 4,
+  "view_labels": [
+   "architecture",
+   "attn",
+   "ffn",
+   "architecture"
+  ],
+  "checks_total": 25,
+  "checks_failing": [],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "config_field_audit",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "qualified_projection_values",
+   "zero_asserted_census",
+   "config_accessed_unprojected",
+   "config_migration_claims",
+   "config_consumed_unreceipted",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "document_boundary_completeness",
+   "config_standing_unconsumed",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": true,
+  "class": "LlamaForCausalLM",
+  "module": "transformers.models.llama.modeling_llama",
+  "seconds": 0.03,
+  "params_B": 6.738,
+  "modules": 423,
+  "stacks": [
+   {
+    "path": "model.layers",
+    "len": 32,
+    "element": "LlamaDecoderLayer",
+    "distinct": 1,
+    "groups": [
+     {
+      "n": 32,
+      "first": 0,
+      "children": [
+       "input_layernorm=LlamaRMSNorm",
+       "mlp=LlamaMLP",
+       "post_attention_layernorm=LlamaRMSNorm",
+       "self_attn=LlamaAttention"
+      ]
+     }
+    ]
+   }
+  ],
+  "shared_params": []
+ },
+ "shadow": {
+  "ir_layers": 32,
+  "instance_main_stack": {
+   "path": "model.layers",
+   "len": 32,
+   "distinct": 1
+  },
+  "ir_distinct_groups": 1,
+  "layer_count_agrees": true,
+  "tying_agrees": true
+ },
+ "finished": "21:23:13"
+}

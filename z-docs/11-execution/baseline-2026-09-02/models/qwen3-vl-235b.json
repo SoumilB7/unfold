@@ -1,0 +1,17 @@
+{
+ "name": "qwen3-vl-235b",
+ "spec": "id:Qwen/Qwen3-VL-235B-A22B-Instruct",
+ "started": "21:36:30",
+ "parse_error": "AttributeError: 'NoneType' object has no attribute 'symbol'",
+ "parse_seconds": 127.8,
+ "sable_error": "AttributeError: 'NoneType' object has no attribute 'symbol'",
+ "sable_seconds": 3.6,
+ "instance": {
+  "ok": false,
+  "error": "no config dict available"
+ },
+ "shadow": {
+  "error": "'ir'"
+ },
+ "finished": "21:38:42"
+}

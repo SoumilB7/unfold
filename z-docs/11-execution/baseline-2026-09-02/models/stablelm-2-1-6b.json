@@ -1,0 +1,158 @@
+{
+ "name": "stablelm-2-1-6b",
+ "spec": "corpus:stablelm-2-1-6b",
+ "started": "21:26:37",
+ "model": "stablelm-2-1_6b",
+ "blessed_views": 4,
+ "parse_seconds": 2.1,
+ "ir": {
+  "architecture": "StableLmForCausalLM",
+  "family": "transformer",
+  "num_layers": 24,
+  "distinct_layer_groups": [
+   {
+    "indices": [
+     0,
+     "...",
+     23,
+     "n=24"
+    ],
+    "facts": {
+     "attention.kind": "mha",
+     "attention.mixer_state": "ordinary_attention",
+     "attention.num_heads": 32,
+     "attention.num_kv_heads": 32,
+     "attention.head_dim": 64,
+     "attention.rope_theta": 10000,
+     "attention.position_kind": "rope",
+     "attention.position_application": "qk_rotation",
+     "attention.qk_norm": false,
+     "attention.mask": "causal",
+     "attention.score_scaling": null,
+     "ffn.kind": "dense",
+     "ffn.activation": "silu",
+     "ffn.gated": true,
+     "ffn.intermediate_size": 5632,
+     "ffn.num_experts": null,
+     "ffn.routing": null,
+     "norm_kind": "layernorm",
+     "norm_placement": "pre",
+     "residual_topology": "sequential"
+    }
+   }
+  ],
+  "layer_fact_slots": 480,
+  "unknown_slots": 72,
+  "unknown_by_key": {
+   "attention.score_scaling": 24,
+   "ffn.num_experts": 24,
+   "ffn.routing": 24
+  },
+  "opaque_layer_block": null,
+  "model_blocks": [
+   "tok_text",
+   "embed",
+   "final_rms",
+   "lm_head"
+  ],
+  "unresolved_model_blocks": [],
+  "loop_blocks": [],
+  "cross_layer_edges": [],
+  "warnings": [
+   "Unresolved code-defined facts (drawn honestly, never asserted): parallel norm count \u2014 modeling source is present but unresolved."
+  ],
+  "tie_word_embeddings": false,
+  "hidden_size": 2048,
+  "components": [],
+  "layer0_blocks": [
+   "norm",
+   "attention",
+   "residual_add",
+   "norm",
+   "ffn",
+   "residual_add"
+  ]
+ },
+ "sable_seconds": 13.8,
+ "sable": {
+  "oracle": "present",
+  "views": 4,
+  "view_labels": [
+   "architecture",
+   "attn",
+   "ffn",
+   "architecture"
+  ],
+  "checks_total": 25,
+  "checks_failing": [],
+  "checks_passing": [
+   "click_coupling",
+   "dangling_connectors",
+   "unique_ref_ids",
+   "no_dotted_arrows",
+   "no_dotted_boundaries",
+   "config_field_audit",
+   "op_conformance",
+   "wiring_conformance",
+   "fact_conformance",
+   "nested_conformance",
+   "label_lint",
+   "evidence_ambiguity",
+   "asserted_facts",
+   "projection_audit",
+   "qualified_projection_values",
+   "zero_asserted_census",
+   "config_accessed_unprojected",
+   "config_migration_claims",
+   "config_consumed_unreceipted",
+   "receipt_fabrication",
+   "config_audit_incomplete",
+   "document_boundary_completeness",
+   "config_standing_unconsumed",
+   "structural_debt_register",
+   "config_ambiguity"
+  ]
+ },
+ "instance": {
+  "ok": true,
+  "class": "StableLmForCausalLM",
+  "module": "transformers.models.stablelm.modeling_stablelm",
+  "seconds": 0.02,
+  "params_B": 1.645,
+  "modules": 343,
+  "stacks": [
+   {
+    "path": "model.layers",
+    "len": 24,
+    "element": "StableLmDecoderLayer",
+    "distinct": 1,
+    "groups": [
+     {
+      "n": 24,
+      "first": 0,
+      "children": [
+       "dropout=Dropout",
+       "input_layernorm=LayerNorm",
+       "mlp=StableLmMLP",
+       "post_attention_layernorm=LayerNorm",
+       "self_attn=StableLmAttention"
+      ]
+     }
+    ]
+   }
+  ],
+  "shared_params": []
+ },
+ "shadow": {
+  "ir_layers": 24,
+  "instance_main_stack": {
+   "path": "model.layers",
+   "len": 24,
+   "distinct": 1
+  },
+  "ir_distinct_groups": 1,
+  "layer_count_agrees": true,
+  "tying_agrees": true
+ },
+ "finished": "21:26:53"
+}

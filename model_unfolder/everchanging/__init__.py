@@ -24,19 +24,41 @@ dependency.
 """
 from __future__ import annotations
 
+import copy
+import functools
 from pathlib import Path
 
 _DIR = Path(__file__).resolve().parent
 
 
+@functools.lru_cache(maxsize=64)
+def _parse_yaml_document(text: str, parser: str):
+    """Parse one exact YAML document once per content and parser backend."""
+    if parser == "pyyaml":
+        import yaml
+        return yaml.safe_load(text) or {}
+    return _parse_flow_yaml(text)
+
+
 def load(domain: str, name: str) -> dict:
-    """Load ``everchanging/<domain>/<name>.yaml`` (e.g. ``load("transformer", "aliases")``)."""
+    """Load ``everchanging/<domain>/<name>.yaml`` with content-keyed parsing.
+
+    The file is still read so a content change invalidates even when its mtime
+    is preserved.  Returning a deep copy preserves the former fresh-result
+    contract: one caller cannot mutate vocabulary observed by another.
+    """
     text = (_DIR / domain / f"{name}.yaml").read_text(encoding="utf-8")
     try:
-        import yaml  # optional; not a hard dependency
+        __import__("yaml")  # backend availability is part of cache identity
+        parser = "pyyaml"
     except ImportError:
-        return _parse_flow_yaml(text)
-    return yaml.safe_load(text) or {}
+        parser = "builtin"
+    return copy.deepcopy(_parse_yaml_document(text, parser))
+
+
+def clear_load_cache() -> None:
+    """Explicit invalidation for tests and long-lived development processes."""
+    _parse_yaml_document.cache_clear()
 
 
 # --- transformer domain -----------------------------------------------------

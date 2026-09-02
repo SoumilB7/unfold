@@ -60,6 +60,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import os
+import re
 from dataclasses import dataclass
 from functools import cached_property, lru_cache
 
@@ -1318,6 +1319,10 @@ class _SourceWalker:
                  *, config_vocab: dict, factory_names: frozenset):
         self.sid = sid
         self.text = text
+        # CPython AST columns are UTF-8 byte offsets and its source-segment
+        # helper splits the complete file on every call.  Preserve those exact
+        # slicing semantics while paying for the line table once per file.
+        self._source_lines = _split_source_lines(text)
         self.tree = tree
         self._config_roots = config_vocab["config_roots"]
         self._act_dispatch = config_vocab["activation_dispatch"]
@@ -2353,11 +2358,26 @@ class _SourceWalker:
             getattr(node, "end_col_offset", 0) or 0)
 
     def _seg(self, node) -> str:
-        # get_source_segment returns None for a node without position info; the
-        # only raises are line/col misalignment against the source text.
+        # This is ast.get_source_segment(..., padded=False) over the once-per-
+        # file line table.  AST col offsets are UTF-8 byte offsets, hence the
+        # encode/slice/decode steps are intentional and output-compatible.
         try:
-            return ast.get_source_segment(self.text, node) or ""
-        except (ValueError, IndexError):
+            if node.end_lineno is None or node.end_col_offset is None:
+                return ""
+            line = node.lineno - 1
+            end_line = node.end_lineno - 1
+            col = node.col_offset
+            end_col = node.end_col_offset
+            if line == end_line:
+                return self._source_lines[line].encode()[col:end_col].decode()
+            first = self._source_lines[line].encode()[col:].decode()
+            last = self._source_lines[end_line].encode()[:end_col].decode()
+            return "".join((
+                first,
+                *self._source_lines[line + 1:end_line],
+                last,
+            ))
+        except (AttributeError, UnicodeDecodeError, ValueError, IndexError):
             return ""
 
     def _expr(self, node) -> ExprNode | None:
@@ -2479,6 +2499,18 @@ def _span_after(later: SourceSpan | None,
 # The ONE immutable index + assembly
 # =========================================================================== #
 
+_SOURCE_LINE_PATTERN = re.compile(r"(.*?(?:\r\n|\n|\r|$))")
+
+
+def _split_source_lines(text: str) -> tuple[str, ...]:
+    """Split source exactly as CPython's parser-facing segment helper does.
+
+    ``str.splitlines`` treats form-feed as a line boundary while the parser
+    does not.  Keeping the tiny parser-compatible expression here avoids a
+    private-stdlib dependency and makes the once-per-file cost explicit.
+    """
+    return tuple(match[0] for match in _SOURCE_LINE_PATTERN.finditer(text))
+
 @dataclass(frozen=True)
 class ProgramIndex:
     """The single immutable observation index for one SourceBundle (boundary 7).
@@ -2517,6 +2549,16 @@ class ProgramIndex:
     unsupported_execution: tuple = ()
     parse_failures: tuple = ()
     fingerprint: str = ""
+
+    @cached_property
+    def _call_memo(self) -> dict:
+        """Call-local memo tables for pure address queries.
+
+        Like ``_address_index``, this derived state is not a dataclass field,
+        does not enter equality/fingerprints/serialization, and cannot author
+        evidence.  It dies with the one ParseContext-owned ProgramIndex.
+        """
+        return {}
 
     # -- address-only query surface (no name/substring/role selection) ----- #
 

@@ -1,0 +1,29 @@
+{
+  "config": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/z-docs/11-execution/baseline-2026-09-02/_cfg/qwen3-omni-30b/config.json",
+  "ir_sha256": "5538e2d3eed6cffaaafbb6340100f8f4030195397bbedaa47411d92274187ebd",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 1.3229057500138879,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 0.8885481669567525,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 1.2422164171002805,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    4.818359375,
+    4.8779296875,
+    4.142578125
+  ],
+  "mode": "cold-unfold",
+  "name": "qwen3-omni-30b",
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "d778d46d6fadfad31427965e8bbfc0b61d422f77",
+  "seconds": 6.919065999798477
+}

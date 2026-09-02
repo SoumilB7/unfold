@@ -1,0 +1,7 @@
+llama-7b	tests/sable_test_corpus/llama-7b.json
+deepseek-v3	tests/sable_test_corpus/deepseek-v3.json
+qwen2-vl-7b-instruct	tests/sable_test_corpus/qwen2-vl-7b-instruct.json
+pixart-sigma-xl-2-1024-ms	tests/sable_test_corpus/pixart-sigma-xl-2-1024-ms.json
+stable-diffusion-3-5-large	tests/sable_test_corpus/stable-diffusion-3-5-large.json
+qwen3-omni-30b	z-docs/11-execution/baseline-2026-09-02/_cfg/qwen3-omni-30b/config.json
+musicgen-small	tests/sable_test_corpus/musicgen-small.json
