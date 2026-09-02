@@ -1,197 +1,141 @@
-# TRUE_CONFIG — the complete config a checkpoint *should* have shipped
+# TRUE_CONFIG — implementation plan
 
-*A design plan for `true_config()`: reconstruct, from the partial config + the code
-evidence we already resolve, the full structural config — every field a config
-would have carried if configs declared structure — with provenance on every field
-and honest holes where nothing is proven.*
+> **Status: `#TODO` — not implemented.** No code reads or produces a true config
+> today. This is the worklist only.
+>
+> **Supersedes** the first version of this document, which proposed a grouped
+> schema with `_provenance`/`_unresolved`/`_coverage` nested inside the returned
+> object. That design was rejected: it was a bloated dictionary of our own
+> invention, not a config.
 
-*Committed on `audio-composite-support` as a separate DESIGN-ONLY change (no code).
-Written 2026-07-13. Companion to `CONFIG_VS_CODE_CONVERTIBILITY.md` (workspace root)
-and `EVIDENCE_ARCHITECTURE_HARDENING_PLAN.md`.*
+Durable product intent lives in `z-docs/01-product/true-config.md`. The field
+vocabulary lives in `z-docs/08-reference/canonical-config.md`. This document is the
+detailed worklist and holds no authority over either.
 
 ---
 
-## 1. What it is (one sentence)
+## 1. The contract
 
-> `true_config(x)` returns the **config-shaped, provenance-carrying dict of the
-> fully-resolved architecture** — the checkpoint's declared values *plus* every
-> structural fact the code proves, each tagged with the evidence channel that
-> decided it, and every still-unproven fact listed honestly as unresolved.
+`true_config(x)` returns **the config.json this checkpoint should have shipped**:
+the model's own field spellings and nesting, made complete and correct by filling in
+every field the modeling code reads but the checkpoint left implicit.
 
-It answers a question the raw `config.json` cannot: *"given this partial config and
-the modeling source, what is the complete structural specification of this model?"*
+Diffed against the repository's own `config.json`, every added line must be a field
+that legitimately belongs there. The returned object *is* a config — no provenance
+keys, no regrouping, no invented structural annotations.
 
-## 2. The core realization — it is a PROJECTION, not new acquisition
+## 2. The field-belonging rule
 
-The parsed `ModelIR` + `FactLedger` (`ir.extras["fact_provenance"]`) is already the
-fully-resolved structural truth. `true_config()` is a **fourth projection of the one
-declaration** (alongside SVG, JSON, cards — Law 2, "one declaration, N projections"):
-it serializes what is *already decided* into a config-shaped view. It never
-re-derives a fact. This is the single most important constraint on the design.
+A field belongs when, and only when, **the modeling code reads it from config**.
 
-```text
-              ┌─ SVG (diagram)
-              ├─ to_json() (traceable schema)
-ModelIR ──────┼─ cards (prose)
-+ FactLedger  └─ true_config()  ← NEW: config-shaped + provenance
-```
+This yields both properties at once:
+- **complete** — nothing the architecture needs is missing;
+- **minimal** — nothing the code does not read is added.
 
-## 3. The four guarantees it inherits from the laws
+Bounded further by the canonical reference: a true config is the intersection of
+that curated vocabulary with the fields this model's code actually reads. A code-read
+field absent from the reference is surfaced as a reference-extension signal, never
+silently emitted.
 
-| # | Guarantee | Why | Mechanism |
-|---|---|---|---|
-| G-a | **Provenance never dropped** | a flat merge hiding channel = defaults-as-facts, the sin we killed | every field has a `_provenance` entry: `{status, source}` |
-| G-b | **Unknown stays unknown** | Law 5 — honesty outranks completeness | holes go in `_unresolved` with reason (`oracle_missing` vs `ambiguous`), never filled |
-| G-c | **Values vs shapes honored** | the binding law (§1.2) | geometry = checkpoint value; structure = code value; a code-named gate shows both |
-| G-d | **One author (G-8) — serializer only** | true_config must not become a 2nd interpreter | reads decided IR/ledger values ONLY; unattributed IR fields tagged `ir_spec`, never upgraded |
+## 3. Evidence base (harvested, not assumed)
 
-## 4. Output shape
+Established against real declarations on the development machine:
 
-A nested, config-shaped dict grouped by owner/mechanism, with two sidecars:
-`_provenance` (per field) and `_unresolved` (honest holes). Illustrative
-(decoder LLM, e.g. a Llama-4-shaped model):
-
-```jsonc
-{
-  "_true_config_version": "0.1",
-  "_identity": { "model_type": "llama4_text", "note": "address/label only — not structural" },
-
-  "geometry": {
-    "hidden_size": 5120, "num_hidden_layers": 48,
-    "num_attention_heads": 40, "num_key_value_heads": 8,
-    "intermediate_size": 8192, "head_dim": 128, "vocab_size": 202048
-  },
-  "attention": {
-    "kind": "gqa",
-    "qk_norm": true,
-    "rope": { "applied": true, "dim": 128, "theta": 500000, "nope_layers": [3,7,11] },
-    "bias": { "q": false, "k": false, "v": false, "o": false },
-    "score_scale": "1/sqrt(head_dim)"
-  },
-  "ffn":  { "gated": true, "activation": "silu", "storage": "fused_gate_up" },
-  "norm": { "kind": "rmsnorm", "placement": "pre", "eps": 1e-5 },
-  "moe":  {
-    "per_layer": [true, true, "…"], "num_experts": 16, "experts_per_tok": 1,
-    "expert_storage": "fused_gate_up",
-    "router": { "scoring": "sigmoid", "aux_bias": true, "score_before_topk": true }
-  },
-
-  "_provenance": {
-    "geometry.hidden_size": { "status": "config_declared", "source": "config.hidden_size" },
-    "ffn.gated":            { "status": "code_proven",     "source": "decoder_ffn_gated_from_files @ modeling_llama4.py" },
-    "norm.placement":       { "status": "code_proven",     "source": "norm dataflow @ modeling_llama4.py" },
-    "moe.per_layer":        { "status": "code_and_config", "source": "is_moe_layer gate @ modeling_llama4.py; config.moe_layers" },
-    "attention.qk_norm":    { "status": "code_proven",     "source": "decoder_qk_norm_from_files" }
-  },
-
-  "_unresolved": [
-    { "field": "attention.chunked", "status": "ambiguous",     "reason": "attention_chunk_size present but reader not wired (bucket B)" },
-    { "field": "scheduler",         "status": "oracle_missing", "reason": "not a diffusion model" }
-  ],
-
-  "_coverage": { "resolved": 23, "unresolved": 2, "unattributed": 1 }
-}
-```
-
-### Access modes
-- `true_config(x)` → the full object above (values + `_provenance` + `_unresolved`).
-- `true_config(x, provenance=False)` → just the clean nested values (quick read).
-- `true_config(x, diff=True)` → **the killer view**: a 3-way split
-  `{declared_in_config, added_by_code, still_unknown}` — literally *"what your config
-  was silent about and what code recovered."* This is the direct visual companion to
-  `CONFIG_VS_CODE_CONVERTIBILITY.md`'s buckets.
-- Surfaces: `Diagram.true_config()` + top-level `true_config(x)` + `.save("m.true.json")`.
-
-## 5. Where every field comes from (no new work at read time)
-
-All inputs are already produced during `config_to_ir`:
-
-| Source | Supplies |
-|---|---|
-| `ir` typed specs (`LayerSpec`/`AttentionSpec`/`FFNSpec`, extras) | the resolved values |
-| `ir.extras["fact_provenance"]` (FactLedger) | status + source per recorded fact |
-| `ir.extras["config_audit"]` (`accessed`/`unread`) | which config fields were read; unread → candidate `_unresolved` |
-| `ir.extras["source_provenance"]` | which files/architecture backed each component |
-| `ParseContext.class_defaults` tier | `class_default` provenance for hydrated fields |
-
-`true_config()` is therefore a **pure, cheap projection** over an already-parsed
-`Diagram`. No source re-resolution, no re-parse.
-
-## 6. Bounded honesty — true_config IS the campaign's coverage meter
-
-The FactLedger is incremental today (H2 closed-registry census is still open), so
-`true_config()` today is **partial and must say so**:
-
-- fields with a ledger record → full provenance;
-- IR spec fields with a value but no ledger record → emitted, tagged
-  `status: "ir_spec"` (unattributed) — honest that the channel is not yet recorded;
-- unread/ambiguous/oracle-missing facts → `_unresolved`.
-
-`_coverage` makes the gap a number. As H2/H10 register every structural fact, the
-`unattributed` count trends to zero and `_unresolved` shrinks — **true_config
-becomes complete exactly when the config→code campaign is done.** It is the natural
-"definition of done" artifact and a standing progress dashboard.
-
-## 7. The round-trip property (metamorphic test + real value)
-
-Feeding `true_config(x)` back through the parser should reproduce the same diagram —
-because it is a superset of the original config with structure made explicit:
-
-```text
-unfold(config)          → diagram A, signature S_A
-unfold(true_config(A))  → diagram B, signature S_B      assert S_A == S_B
-```
-
-This is both a **test** (any drift = a projection that added or lost a fact — a bug)
-and a **feature** (a portable, complete, source-free structural spec that renders
-identically without needing the modeling `.py` again). Requires a thin true-config
-reader path so `unfold` can consume canonical field names; v1 may ship the
-diff/inspection value first and the closed round-trip second.
-
-## 8. Implementation sketch (for this worktree)
-
-- New module `model_unfolder/true_config.py` — pure projection over `ModelIR`;
-  zero fact re-derivation (enforced by a "no evidence-reader imports" test, like the
-  renderer firewall).
-- Field-name vocabulary in `everchanging/` (YAML, per the config-vocab-in-YAML law):
-  maps IR spec fields → canonical true-config field names. Naming stays out of Python.
-- Surfaces: `Diagram.true_config(...)`, top-level `true_config(x)`, `.save(*.true.json)`.
-- Tests (metamorphic, per H9):
-  - **provenance-complete**: every emitted value has a `_provenance` entry;
-  - **unknown-never-filled** (poison): an `oracle_missing`/`ambiguous` fact must
-    appear in `_unresolved`, never as a value;
-  - **no-upgrade** (poison): an unattributed IR field must not claim `code_proven`;
-  - **round-trip**: `unfold(true_config(x))` signature == `unfold(x)` signature;
-  - **values-stay-config**: geometry fields keep `config_declared`.
-
-## 9. Relationship to existing outputs (distinct audiences)
-
-| Output | Shape | Audience |
+| Source | Supplies | Extent |
 |---|---|---|
-| `to_ir()` | raw typed IR dict | internal |
-| `to_json()` | expanded traceable schema (renderer-neutral, verbose) | tools/LLMs re-tracing |
-| **`true_config()`** | **config-shaped, provenance-carrying, complete** | someone who wants *the config the model should have had* |
+| installed `transformers` config classes | declared field set + defaults per family | 37 families of 656 registered |
+| installed `diffusers` model/scheduler `__init__` signatures | the diffusers config contract | 21 classes |
+| blessed corpus fixtures | real serialized checkpoint values | 25 checkpoints, 229 distinct fields |
 
-All three are projections of one IR — no divergence risk as long as true_config
-stays a serializer.
+### Findings that constrain the implementation
 
-## 10. Non-goals / risks
+1. **RoPE is one object, not a top-level pair.** 28 harvested families declare
+   `rope_parameters`; `rope_theta`/`rope_scaling` are not top-level class fields in
+   the installed version. The real DeepSeek-V3 checkpoint serializes
+   `rope_parameters` and carries no `rope_scaling`. The assembler must emit the
+   model's actual spelling, not a remembered one.
+2. **Some structural facts are declared fields in some families.** `is_gated_act`
+   (T5/UMT5), `apply_residual_connection_post_layernorm` (BLOOM), and
+   `num_ln_in_parallel_attn` (Falcon) are genuine config fields for facts that are
+   code-proven elsewhere. The belonging rule handles this without special-casing:
+   the code reads them, so they belong.
+3. **Class defaults and real checkpoints each miss what the other has.**
+   `scoring_func`/`topk_method` appear in the real DeepSeek-V3 config but are
+   declared by almost no config class; conversely, unserialized class defaults never
+   appear in a checkpoint. Neither source alone is sufficient — and the third
+   source, *what the code actually reads*, is precisely what this feature adds.
 
-- **Not** a second interpreter — it must never recompute a fact (the top risk;
-  guarded by the firewall test).
-- **Not** a fabricated-complete config — holes are explicit, never guessed.
-- **Not** an HF-loadable config by default — it uses canonical (owner-qualified)
-  field names; HF-spelling emission is a possible later mode, not v1.
-- Provenance for not-yet-ledgered facts is honest (`ir_spec`), so early adopters
-  aren't misled about how strongly a field is proven.
+## 4. Stages
 
-## 11. Build steps
+**Stage 1 — Field-demand scan.** AST-scan the resolved source, per component and
+scope, for every config read (`config.x`, `getattr(config, "x", …)`, `config["x"]`)
+across the construction and forward closure. Output: the exact demand set. This is
+the one genuinely new extractor; it is also reusable as the basis of an
+unclaimed-signal check (a field the code reads that no fact consumes).
 
-1. `true_config.py` projector reading IR + `fact_provenance` + `config_audit`;
-   emit values + `_provenance` + `_unresolved` + `_coverage`. (serializer only)
-2. `everchanging/true_config_fields.yaml` — IR-field → canonical-name vocabulary.
-3. `Diagram.true_config()` + top-level `true_config()` + `.save(*.true.json)`.
-4. `diff=True` 3-way view (declared / added-by-code / unknown).
-5. Metamorphic + poison tests (§8).
-6. Round-trip reader path (`unfold` consumes a true_config) — after the diff value ships.
-7. Wire `_coverage.unattributed` into the campaign metrics (H2/H10 dashboard).
+**Stage 2 — Value resolution.** For each demanded field, in order: serialized config
+value → installed class default → code-derived default expression → unresolved.
+Reuses the existing hydration channel, the class-default tier, and the config
+expression evaluator. Never guesses.
+
+**Stage 3 — Config-shaped assembly.** Merge into the model's native shape: keep
+present fields, add resolved-missing ones, recurse sub-configs under their own
+component source, preserve identity fields as addresses. No grouping, no sidecar.
+
+**Stage 4 — Companion (separate object).** Provenance `{field → status, source}` and
+the config-versus-true diff `{kept | filled-from-class-default | derived-from-code |
+normalized | unresolved}`. Returned only on request; never inside the config.
+
+## 5. Surface
+
+- `Diagram.true_config()` → the clean config dict.
+- `true_config(x)` top level.
+- `true_config(x, with_provenance=True)` → `(config, companion)`.
+- `.save("model.true.json")` writes the clean config only.
+
+## 6. Rules the implementation must not break
+
+- **Serializer only.** It reads already-resolved model representation and evidence.
+  It never recomputes a fact. Guarded by a forbidden-import test, in the manner of
+  the renderer firewall.
+- **No invented fields.** Anything outside the canonical vocabulary is surfaced, not
+  emitted.
+- **No guessed values.** A demanded field that cannot resolve is omitted from the
+  config and reported in the companion as a real gap.
+- **Structural facts with no config field stay out.** They belong to the diagram and
+  facts.
+- **Dead flags normalize to the code's effective value**, with the checkpoint's
+  stated value recorded in the companion.
+- **Source-missing degrades honestly.** Without source, the demand set is unknown:
+  return the present config plus an explicit note that completeness is unverified.
+  Never fill from convention.
+
+## 7. Verification
+
+- every demanded field is resolved or explicitly unresolved;
+- **round trip** — re-running the product on a true config reproduces the original
+  architecture signature;
+- **anti-bloat** — no field the code never reads appears in the output;
+- **no upgrade** — a field with no recorded provenance channel is never presented as
+  code-proven;
+- **unknown never filled** (poison) — an unresolved demand must not acquire a value;
+- **values stay config** — geometry fields remain checkpoint-declared.
+
+## 8. Build order
+
+1. field-demand scan (per component, scope-qualified);
+2. value-resolution ladder over the demand set;
+3. config-shaped assembler with sub-config recursion;
+4. `Diagram.true_config()` / top-level surface / `.save`;
+5. companion (provenance + diff);
+6. the verification set in §7;
+7. widen the canonical reference harvest beyond 37 families as a completeness net.
+
+## 9. Known limits carried into the work
+
+- 37 of 656 families harvested; the namelist was chosen for mechanism coverage, not
+  popularity. The remainder are unaudited.
+- Diffusers schemas are `__init__` signatures — the config contract, but version
+  bound. Harvest ran against `transformers 5.12.1` / `diffusers 0.38.0`.
+- The demand scan requires resolvable source. Coverage of true config is therefore
+  bounded by source resolution, and says so rather than compensating.

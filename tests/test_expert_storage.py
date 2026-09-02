@@ -596,8 +596,8 @@ def test_moe_block_does_not_prepend_an_ordinary_ffn_path(slug):
     child_ids = {item["id"] for item in block["children"]}
     assert not child_ids & {
         "gate_proj", "up_proj", "activation", "multiply", "down_proj"}
-    assert {"router", "expert_1", "expert_k", "expert_kp1",
-            "expert_n", "add_moe"} <= child_ids
+    assert {"router", "expert_1", "add_moe"} <= child_ids
+    assert not {"expert_k", "expert_kp1", "expert_n"} & child_ids
 
 
 def test_parser_and_conformance_share_one_exact_expert_result(monkeypatch):

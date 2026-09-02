@@ -1925,9 +1925,11 @@ def test_moe_text_encoder_opens_the_canonical_moe_drill():
     seg = html.split('data-card-id="encoder_0_op_ffn"', 1)[1]
     svg = seg.split("</svg>", 1)[0]
     nodes = set(re.findall(r'data-id="([^"]+)"', svg))
-    assert {"router", "expert_1", "expert_n", "add_moe"} <= nodes
+    assert {"router", "expert_1", "add_moe"} <= nodes
+    assert not {"expert_k", "expert_kp1", "expert_n"} & nodes
     assert "in · 4,096" in svg          # the ENCODER's width, not FLUX's inner dim
     assert "top-2 of 8" in svg
+    assert "template × 2" in svg
     # Full canonical depth: the router gate pipeline and the expert FFN leaves.
     assert 'data-card-id="router"' in html
     assert 'data-card-id="expert_1"' in html

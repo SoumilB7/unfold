@@ -117,7 +117,7 @@ def block_diffusion_loop_blocks(
     """
     hidden = _fmt(hidden_size)
     vocab = _fmt(vocab_size)
-    cap = float(final_logit_softcap) if final_logit_softcap is not None else 30.0
+    cap = float(final_logit_softcap) if final_logit_softcap is not None else None
     sc_int = ffn_intermediate_size or hidden_size  # DiffusionGemmaSelfConditioning uses intermediate_size
     return [
         {
@@ -160,12 +160,14 @@ def block_diffusion_loop_blocks(
             "description": (
                 f"A block of {canvas_length} jointly-denoised token positions.  "
                 "Initialised with random IDs drawn uniformly from the vocabulary "
-                "(x_T ∈ U(V)).  The denoising loop refines this canvas over up to "
-                "48 steps; accepted tokens are progressively locked until the "
+                "(x_T ∈ U(V)).  The denoising loop refines this canvas under a "
+                "runtime step policy whose exact bound is unresolved; accepted "
+                "tokens are progressively locked until the "
                 "canvas converges (stable + confident stopping criterion), then the "
                 "whole canvas is appended to the generated output."
             ),
-            "facts": [f"{canvas_length} tokens", "init U(V)", "jointly refined"],
+            "facts": [f"{canvas_length} tokens", "init U(V)", "jointly refined",
+                      "step bound unresolved"],
         },
         {
             "id": "bd_self_cond",
@@ -247,15 +249,22 @@ def block_diffusion_loop_blocks(
         },
         {
             "id": "bd_lm_head",
-            "title": "LM head · logit softcap",
+            "title": ("LM head · logit softcap" if cap is not None
+                      else "LM head · softcap unresolved"),
             "description": (
                 f"Linear projection from hidden dim to vocabulary logits, followed "
                 f"by Gemma4-style softcapping: logits = tanh(logits / {cap}) × {cap}. "
                 f"This bounds logit magnitude to ±{cap} without hard clipping, "
                 "keeping gradients healthy at the extremes of the distribution.  "
                 "Weights are tied with the token embedding table."
+                if cap is not None else
+                "Linear projection from hidden dim to vocabulary logits. The exact "
+                "post-head softcap value is unresolved; no conventional bound is "
+                "inserted. Weights are tied with the token embedding table."
             ),
-            "facts": [f"{hidden} → {vocab}", f"softcap ±{cap}"],
+            "facts": ([f"{hidden} → {vocab}", f"softcap ±{cap}"]
+                      if cap is not None else
+                      [f"{hidden} → {vocab}", "softcap unresolved"]),
         },
         {
             "id": "bd_sampler",
@@ -263,7 +272,8 @@ def block_diffusion_loop_blocks(
             "description": (
                 "The entropy-bound sampler decides which canvas tokens to commit "
                 "this step.  Positions are accepted in increasing entropy order "
-                "until cumulative entropy exceeds the bound ε=0.1 — these accepted "
+                "until cumulative entropy exceeds a runtime bound whose exact value "
+                "is unresolved — these accepted "
                 "positions are approximately mutually independent.  Non-accepted "
                 "tokens are re-randomised (renoised) with new uniform samples so the "
                 "decoder sees fresh uncertainty there next step; the accepted logits "
@@ -274,7 +284,9 @@ def block_diffusion_loop_blocks(
                 "are appended to the generated sequence — then a fresh canvas begins "
                 "the next block."
             ),
-            "facts": ["accepted → lock", "rest → renoise", f"converged → {canvas_length} out"],
+            "facts": ["accepted → lock", "rest → renoise",
+                      "entropy bound unresolved",
+                      f"converged → {canvas_length} out"],
         },
     ]
 

@@ -24,16 +24,19 @@ def build_moe_view(ir: dict, info: dict, mount_id: str, block: dict | None = Non
     n_total = ffn.get("num_experts")
     k = ffn.get("num_experts_per_tok")
     n_shared = ffn.get("num_shared_experts") or 0
-    last = str(n_total) if n_total else "N"
-
-    experts = [("expert_1", "Expert 1"), ("expert_k", "Expert k"),
-               ("expert_kp1", "Expert k+1"), ("expert_n", f"Expert {last}")]
+    # This is one source-proven expert TEMPLATE repeated by routing.  Four
+    # decorative expert boxes used to look like four actual occurrences
+    # (including impossible k+1 and N lanes).  Keep one symbolic lane and state
+    # the repetition as a fact instead of fabricating occurrences.
+    selected = str(k) if k else "k"
+    experts = [("expert_1", ["Selected expert", f"template × {selected}"])]
     note = None
     if n_total:
         note = f"top-{k} of {n_total} experts active" if k else f"{n_total} experts"
         if n_shared:
             note += f" · +{n_shared} shared (always on)"
 
+    aggregation_known = isinstance(k, int) and not isinstance(k, bool) and k >= 2
     nodes = [
         Node("moe_hidden", "port",
              (f"in · {hidden:,}" if hidden else "in"), static=True),
@@ -41,7 +44,14 @@ def build_moe_view(ir: dict, info: dict, mount_id: str, block: dict | None = Non
         *[Node(nid, "expert", lbl) for nid, lbl in experts],
         # Tier-2 connector: weighted routed outputs (+ shared expert) join here;
         # its existing add_moe child card explains the operands.
-        Node("add_moe", "residual_add"),
+        Node(
+            "add_moe",
+            "residual_add" if aggregation_known or n_shared else "unknown",
+            None if aggregation_known or n_shared else
+            ["Expert aggregation", "multiplicity unresolved"],
+            resolved=bool(aggregation_known or n_shared),
+            meta=({"symbolic_inputs": k} if aggregation_known else {}),
+        ),
         Node("moe_out", "port", static=True),
     ]
     # Routed experts fan out from the router; the shared expert (always-on) taps

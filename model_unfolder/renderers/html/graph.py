@@ -59,6 +59,7 @@ KIND: dict[str, Glyph] = {
     "expert":       Glyph("rect", 120, 54, 15, label="Expert"),
     "shared_expert":Glyph("rect", 150, 54, 14, label="Shared expert"),
     "opaque":       Glyph("rect", 256, 56, 15, label="Custom block"),
+    "unknown":      Glyph("rect", 280, 56, 15, label="Operation unresolved"),
     "residual_add": Glyph("circle", 28, 28, sym="+", label="Residual add"),
     "gate_mul":     Glyph("circle", 28, 28, sym="×", label="Multiply"),
     # attention / token-mixing cell
@@ -74,7 +75,7 @@ KIND: dict[str, Glyph] = {
     "cache":        Glyph("rect", 230, 56, 15, label="Cache"),
     "conv":         Glyph("rect", 200, 50, 15, label="Conv"),
     "subgraph":     Glyph("rect", 250, 58, 16, label="Path"),
-    "context_window": Glyph("window", 396, 64, label="Context window", accent=True),
+    "context_window": Glyph("rect", 300, 64, 14, label="Sliding context", accent=True),
     # a bare in/out anchor: just a small mono caption on the flow stem, for
     # views where a full source/output block would only restate the obvious
     "port":         Glyph("port", 150, 18, 11),
@@ -102,7 +103,19 @@ class Node:
         return self.target or self.id
 
     def glyph(self) -> Glyph:
-        return KIND.get(self.kind, KIND["norm"])
+        # A renderer vocabulary miss is not evidence that the operation is a
+        # normalization.  Keep the unknown visible and semantically neutral.
+        return KIND.get(self.kind, KIND["unknown"])
+
+    def presentation_resolved(self) -> bool:
+        """Whether this node may use the confident, resolved presentation.
+
+        A caller predating a newly-added operation kind may leave ``resolved``
+        at its default.  The renderer still cannot paint that vocabulary miss
+        as known: recognizing the glyph is part of presenting it as resolved.
+        Explicit ``unknown`` nodes obey the same rule.
+        """
+        return self.resolved and self.kind in KIND and self.kind != "unknown"
 
     def font_size(self) -> int:
         return self.font if self.font is not None else self.glyph().font
@@ -281,6 +294,18 @@ def _has_constant_operand(node: Node) -> bool:
     return bool(_NUMERIC_OPERAND.search(str(node.sub or "")))
 
 
+def _has_symbolic_input_set(node: Node) -> bool:
+    """Whether one visible template denotes an exact multi-input set.
+
+    MoE renders one expert *template* rather than inventing four expert
+    occurrences.  A source-proven top-k greater than one means that lane
+    represents exactly k expert outputs entering the weighted sum.  This typed
+    metadata is the only symbolic exception to the two-separate-lines rule.
+    """
+    count = node.meta.get("symbolic_inputs")
+    return isinstance(count, int) and not isinstance(count, bool) and count >= 2
+
+
 def wiring_problems(graph: "Graph") -> list[str]:
     """Return one message per dangling connector in *graph* (empty = clean).
 
@@ -316,6 +341,9 @@ def wiring_problems(graph: "Graph") -> list[str]:
             continue
         if n.kind in {"gate_mul", "residual_add"} \
                 and _has_constant_operand(n):
+            continue
+        if n.kind == "residual_add" and indeg.get(n.id, 0) == 1 \
+                and _has_symbolic_input_set(n):
             continue
         sym = _GLYPH_SYM.get(n.glyph().sym, n.glyph().sym)
         problems.append(

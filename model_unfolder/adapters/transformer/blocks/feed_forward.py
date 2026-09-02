@@ -580,36 +580,11 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "children": expert_children,
         },
         {
-            "id": "expert_k",
-            "title": "Expert FFN",
-            "description": expert_desc,
-            "facts": expert_facts,
-            "view": "moe_expert",
-            "detail": {"ffn": expert_detail},
-            "children": expert_children,
-        },
-        {
-            "id": "expert_kp1",
-            "title": "Expert FFN",
-            "description": expert_desc,
-            "facts": expert_facts,
-            "view": "moe_expert",
-            "detail": {"ffn": expert_detail},
-            "children": expert_children,
-        },
-        {
-            "id": "expert_n",
-            "title": "Expert FFN",
-            "description": expert_desc,
-            "facts": expert_facts,
-            "view": "moe_expert",
-            "detail": {"ffn": expert_detail},
-            "children": expert_children,
-        },
-        {
             "id": "add_moe",
             "kind": "residual_add",
-            # Tier-2 connector: a glyph on the join (not a box), clickable for its card.
+            # Tier-2 connector: a glyph on the join with its existing concise
+            # card.  It is not static: the block standard requires connectors
+            # to remain explainable/clickable even though they are not boxes.
             "title": "Weighted sum",
             "description": f"Combines top-{n_active} expert outputs, weighted by router probabilities"
             + (", then adds the shared expert(s)." if n_shared else "."),

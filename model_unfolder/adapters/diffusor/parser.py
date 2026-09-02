@@ -595,6 +595,12 @@ def _parse_projected_denoiser(cfg, arch_name, context, bound_result) -> ModelIR:
             "Exact denoiser source projection unavailable — architecture is "
             "kept opaque rather than inferred from config fields.")
 
+    if not layers:
+        warnings.append(
+            "No root denoiser layers were materialized; the repeated denoiser "
+            "structure remains visibly unresolved rather than being replaced "
+            "by a zero-layer text transformer.")
+
     # The typed layers and render DTO are the production outputs.  Do not add
     # raw extras merely to announce which implementation path ran: downstream
     # code distinguishes this path structurally (diffusion render, no UNet

@@ -347,9 +347,13 @@ def _apply_presentation(graph, attn: dict) -> None:
             # ids but carries meta["canonical_id"] through the rename.
             if (node.meta or {}).get("canonical_id", node.id) == "hidden":
                 node.kind = "context_window"
-                node.label = None
+                window = attn.get("window_size")
+                node.label = [
+                    "Sliding context",
+                    f"window {window:,}" if window else "window size unresolved",
+                ]
                 node.sub = None
-                node.meta = {"window_size": attn.get("window_size")}
+                node.meta = {"window_size": window}
     graph.aside = _kv_sharing_aside(attn)
 
 

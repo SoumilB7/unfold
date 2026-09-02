@@ -90,6 +90,21 @@ def _root_sym(name="C", path="/m.py", fp="fp", component="root"):
     return SymbolId(SourceId(path, fp, component_key=component), name)
 
 
+def test_index_without_call_memo_bypasses_cache_without_unbound_key():
+    """S3/S2-review: a non-ProgramIndex test double keeps pure semantics.
+
+    The failed memo lookup must clear both cache and key; otherwise a completed
+    uncached resolution tries to write through an unbound ``cache_key``.
+    """
+    class BareIndex:
+        parse_failures = ()
+        classes = ()
+
+    bundle = _bundle({}, {"root": "Missing"})
+    result = resolve_component_root(BareIndex(), bundle, "root")
+    assert result.status == "absent"
+
+
 # --------------------------------------------------------------------------- #
 # Poison 1 — same class spelling in two files of one component -> ambiguous
 # --------------------------------------------------------------------------- #

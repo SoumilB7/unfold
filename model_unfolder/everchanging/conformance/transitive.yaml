@@ -34,7 +34,7 @@ constructor_classmethods: [_from_config, from_config, from_pretrained]
 # Drawn node kinds that are NOT computational ops to diff (ports, layout sugar,
 # and the drill-INTO container glyphs that have their OWN drill + diff).  Dropped
 # from a drill's drawn op-set before the op-kind diff.
-drawn_ignore: [port, formula, subgraph, opaque, output, source, embedding, router, expert, shared_expert]
+drawn_ignore: [port, formula, subgraph, opaque, unknown, output, source, embedding, router, expert, shared_expert]
 
 # Drawn node kind -> canonical code op alphabet ("drawn=code"); only kinds whose
 # drawn spelling differs from the code spelling need a row.

@@ -22,7 +22,19 @@ from pathlib import Path
 CONSUMER_KINDS = frozenset({"renderer", "json", "params", "conformance"})
 ACCESS_KINDS = frozenset({
     "backward_import", "raw_config", "raw_extras", "semantic_bucket",
-    "source_reopen", "spec_default", "syntax", "truthy_cleanup",
+    "semantic_default", "source_reopen", "spec_default", "syntax",
+    "truthy_cleanup",
+})
+
+# Closed set of mechanism/layout values which a terminal consumer may project
+# only from an already-decided fact.  Generic presentation nouns ("operation",
+# "encoder", "unresolved") are deliberately absent: they describe a role or
+# an honest hole rather than resolving it into architecture.
+_SEMANTIC_DEFAULT_LITERALS = frozenset({
+    "pre", "post", "double", "causal", "bidirectional", "sliding",
+    "mha", "gqa", "mqa", "mla", "dense", "moe", "conv_glu",
+    "split", "split_qkv", "fused_qkv", "fused_gate_up",
+    "rmsnorm", "layernorm", "silu", "gelu", "relu", "softmax",
 })
 
 # These are dependency *directions*, not semantic name heuristics.  A terminal
@@ -172,6 +184,73 @@ def _empty_literal(node: ast.AST) -> bool:
     return isinstance(node, (ast.List, ast.Tuple, ast.Set, ast.Dict)) \
         and not getattr(node, "elts", None) \
         and not getattr(node, "keys", None)
+
+
+def _missingness_test(node: ast.AST) -> bool:
+    """Whether a conditional explicitly tests absence/truthiness.
+
+    This is deliberately independent of identifier spelling: renaming
+    ``placement`` to ``x`` cannot turn ``'pre' if x is None else x`` lawful.
+    Equality to a non-None value is canonicalization/selection, not a missing
+    value test, and is handled separately.
+    """
+    if isinstance(node, (ast.Name, ast.Attribute, ast.Subscript, ast.Call)):
+        return True
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
+        return _missingness_test(node.operand)
+    if isinstance(node, ast.Compare) and len(node.ops) == 1 \
+            and len(node.comparators) == 1:
+        return (
+            isinstance(node.left, ast.Constant) and node.left.value is None
+        ) or (
+            isinstance(node.comparators[0], ast.Constant)
+            and node.comparators[0].value is None
+        )
+    return False
+
+
+def _exact_semantic_canonicalization(node: ast.IfExp) -> bool:
+    """Whether *node* maps one exact known spelling and preserves all others.
+
+    ``"split_qkv" if storage == "split" else storage`` is not a default:
+    ``None`` remains ``None`` and an unrecognized value remains unrecognized.
+    The exemption is intentionally narrow.  Truthy selection such as
+    ``placement if placement else "pre"`` and a conditional whose other arm
+    is not the exact tested selector remain blocking semantic defaults.
+    """
+    if not isinstance(node.test, ast.Compare) or len(node.test.ops) != 1 \
+            or not isinstance(node.test.ops[0], (ast.Eq, ast.Is)) \
+            or len(node.test.comparators) != 1:
+        return False
+    left, right = node.test.left, node.test.comparators[0]
+    if not isinstance(left, ast.Constant) and _literal_key(right) is not None:
+        selector = left
+    elif not isinstance(right, ast.Constant) and _literal_key(left) is not None:
+        selector = right
+    else:
+        return False
+    # Exactly one result arm must pass the selector through unchanged and the
+    # other must be an exact known canonical spelling.
+    return (
+        ast.dump(node.orelse, include_attributes=False)
+        == ast.dump(selector, include_attributes=False)
+        and _semantic_known_value(node.body) is not None
+    ) or (
+        ast.dump(node.body, include_attributes=False)
+        == ast.dump(selector, include_attributes=False)
+        and _semantic_known_value(node.orelse) is not None
+    )
+
+
+def _semantic_known_value(node: ast.AST) -> str | None:
+    """Return a known architectural literal selected by *node*, if exact."""
+    value = _literal_key(node)
+    if value in _SEMANTIC_DEFAULT_LITERALS:
+        return value
+    if isinstance(node, ast.Subscript):
+        value = _subscript_key(node)
+        return value if value in _SEMANTIC_DEFAULT_LITERALS else None
+    return None
 
 
 def _extras_path(node: ast.AST, bindings: dict[str, tuple[str, ...]]) \
@@ -675,6 +754,46 @@ def scan_consumer_source(source: str, *, module: str,
                         and _subscript_key(target) == "code_finding_ids" \
                         and not _empty_literal(node.value):
                     add(node.value, "semantic_bucket", "code_finding_ids")
+
+        # A terminal projection may show an explicit unknown, but it cannot
+        # replace a missing/unrecognized semantic discriminator with a familiar
+        # architecture.  This catches both ``placement or 'pre'`` and mapping
+        # forms such as ``table.get(placement) or table['pre']``.  It is a
+        # zero-debt rule: production carries no semantic_default occurrence.
+        if isinstance(node, ast.BoolOp) and isinstance(node.op, ast.Or):
+            for fallback in node.values[1:]:
+                known = _semantic_known_value(fallback)
+                if known is not None:
+                    add(fallback, "semantic_default", known)
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) \
+                and node.func.attr == "get" and len(node.args) >= 2:
+            known = _semantic_known_value(node.args[1])
+            if known is not None:
+                add(node.args[1], "semantic_default", known)
+        if isinstance(node, ast.IfExp) \
+                and _missingness_test(node.test) \
+                and not _exact_semantic_canonicalization(node):
+            for fallback in (node.body, node.orelse):
+                known = _semantic_known_value(fallback)
+                if known is not None:
+                    add(fallback, "semantic_default", known)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            positional = [*node.args.posonlyargs, *node.args.args]
+            defaults = [None] * (len(positional) - len(node.args.defaults)) \
+                + list(node.args.defaults)
+            for arg, default in zip(positional, defaults):
+                if default is None:
+                    continue
+                known = _semantic_known_value(default)
+                if known is not None:
+                    add(default, "semantic_default", known)
+            for arg, default in zip(node.args.kwonlyargs,
+                                    node.args.kw_defaults):
+                if default is None:
+                    continue
+                known = _semantic_known_value(default)
+                if known is not None:
+                    add(default, "semantic_default", known)
 
         if isinstance(node, ast.Call):
             called = _call_name(node.func)

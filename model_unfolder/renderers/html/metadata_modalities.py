@@ -480,19 +480,30 @@ def _audio_cell_cards(encoder: dict) -> list:
     )
 
 
-def _audio_norm_card(prefix: str, norm: str, placement: str = "pre"):
+def _norm_placement_description(placement: str | None) -> tuple[str, list[str]]:
+    """Project a closed placement value without supplying a default."""
     where = {
         "pre": "before each sublayer (pre-norm)",
         "double": ("on each sublayer's input AND output before the residual "
                    "add (sandwich placement)"),
         "post": "after each sublayer's residual add (post-norm)",
     }
+    if placement in where:
+        return where[placement], []
+    return "at an unresolved point relative to each sublayer", [
+        "placement unresolved",
+    ]
+
+
+def _audio_norm_card(prefix: str, norm: str, placement: str | None = None):
+    placement_desc, placement_facts = _norm_placement_description(placement)
     return {
         "id": f"{prefix}_op_norm",
         "title": norm,
         "description": (f"{norm} normalizes audio-frame features "
-                        f"{where.get(placement) or where['pre']} inside each "
+                        f"{placement_desc} inside each "
                         "repeated audio encoder layer."),
+        **({"facts": placement_facts} if placement_facts else {}),
     }
 
 
@@ -654,19 +665,16 @@ def _conditioning_description(cond: dict) -> tuple[str, list[str]]:
     )
 
 
-def _conditioning_norm_card(prefix: str, norm: str, placement: str = "pre"):
-    where = {
-        "pre": "before each sublayer (pre-norm)",
-        "double": ("on each sublayer's input AND output before the residual "
-                   "add (sandwich placement)"),
-        "post": "after each sublayer's residual add (post-norm)",
-    }
+def _conditioning_norm_card(prefix: str, norm: str,
+                            placement: str | None = None):
+    placement_desc, placement_facts = _norm_placement_description(placement)
     return {
         "id": f"{prefix}_op_norm",
         "title": norm,
         "description": (f"{norm} normalizes prompt-token features "
-                        f"{where.get(placement) or where['pre']} inside each "
+                        f"{placement_desc} inside each "
                         "repeated encoder layer."),
+        **({"facts": placement_facts} if placement_facts else {}),
     }
 
 
@@ -883,19 +891,16 @@ def _vision_cell_cards(encoder: dict) -> list:
     )
 
 
-def _vision_norm_card(prefix: str, norm: str, placement: str = "pre"):
-    where = {
-        "pre": "before each sublayer (pre-norm)",
-        "double": ("on each sublayer's input AND output before the residual "
-                   "add (sandwich placement)"),
-        "post": "after each sublayer's residual add (post-norm)",
-    }
+def _vision_norm_card(prefix: str, norm: str,
+                      placement: str | None = None):
+    placement_desc, placement_facts = _norm_placement_description(placement)
     return {
         "id": f"{prefix}_op_norm",
         "title": norm,
         "description": (f"{norm} normalizes patch-token features "
-                        f"{where.get(placement) or where['pre']} inside each "
+                        f"{placement_desc} inside each "
                         "repeated vision encoder layer."),
+        **({"facts": placement_facts} if placement_facts else {}),
     }
 
 

@@ -782,11 +782,11 @@ def attention_label(attention: AttentionSpec) -> list[str]:
     if attention.variant and attention.variant.get("label"):
         return list(attention.variant["label"])
     if attention.cross_attention:
-        # Name the actual side source (from the spec's own cross_kv_source):
-        # a seq2seq composite's K/V are encoded PROMPT states, not vision.
-        side = ("Prompt" if "prompt states" in str(attention.cross_kv_source or "")
-                else "Vision")
-        return _prefixed_label(prefix, side, "Cross-Attention")
+        # ``cross_kv_source`` is explanatory prose, not a typed modality enum.
+        # Searching its words used to turn every non-prompt string into
+        # "Vision".  Preserve the proven cross-attention role while leaving
+        # the side-source classification explicitly unresolved.
+        return _prefixed_label(prefix, "Cross-Attention", "(K/V source unresolved)")
     if kind == "mla":
         return _prefixed_label(prefix, "Multi-Head Latent", "Attention")
     if kind == "mqa":

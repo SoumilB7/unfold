@@ -1143,7 +1143,8 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
 
 
 
-def _encoder_norm_card(prefix: str, norm: str, placement: str = "pre") -> Block:
+def _encoder_norm_card(prefix: str, norm: str,
+                       placement: str | None = None) -> Block:
     where = {
         "pre": (f"{norm} normalizes each token's features before the sublayer "
                 "(pre-norm). Keeps activation scales stable so the network "
@@ -1156,10 +1157,19 @@ def _encoder_norm_card(prefix: str, norm: str, placement: str = "pre") -> Block:
                  "(post-norm). Keeps activation scales stable so the network "
                  f"trains deeply. Both sublayers in every layer are {norm}-normalized."),
     }
+    if placement in where:
+        description = where[placement]
+        facts = []
+    else:
+        description = (
+            f"{norm} is present in the repeated encoder layer, but its exact "
+            "placement relative to the sublayer is unresolved.")
+        facts = ["placement unresolved"]
     return {
         "id": f"{prefix}_op_norm",
         "title": norm,
-        "description": where.get(placement) or where["pre"],
+        "description": description,
+        **({"facts": facts} if facts else {}),
     }
 
 

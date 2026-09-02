@@ -39,7 +39,13 @@ _DIAGRAM_OP_KINDS = frozenset({
     "norm", "attention", "ffn", "concat", "linear",
     "gate_mul", "residual_add", "activation", "slice", "route", "reshape", "conv",
 })
-_NON_OP_KINDS = frozenset({"adaln", "conditioning", "source", "output", "port", "embedding"})
+_NON_OP_KINDS = frozenset({
+    "adaln", "conditioning", "source", "output", "port", "embedding",
+    # Presentation state, not a mechanism claim.  Unknown remains visible in
+    # the diagram but must not be compared to source as though the model
+    # literally executed an operation named ``unknown``.
+    "unknown",
+})
 
 
 @dataclass(frozen=True)

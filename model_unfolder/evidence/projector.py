@@ -121,6 +121,21 @@ def projector_result(index: ProgramIndex, bundle: SourceBundle, *,
 
     root = resolve_component_root(index, bundle, "root")
     candidates = lineage.value.candidates
+    # A lineage candidate may be exact within its local graph while its caller
+    # is not addressable in the component-root graph.  That is a typed evidence
+    # failure, not permission to dereference ``None`` (the Qwen3.x
+    # ForConditionalGeneration crash) or to borrow another owner.
+    missing_callers = tuple(
+        item.caller_occurrence for item in candidates
+        if root.graph is None
+        or root.graph.node_for(item.caller_occurrence) is None
+    )
+    if missing_callers:
+        return ReaderResult.failed(lineage.owner, (ReaderFailure(
+            "out_of_owner",
+            "projector caller occurrence is not addressable in the exact "
+            "component-root owner graph",
+        ),))
     groups = {}
     for candidate in candidates:
         signature = tuple(

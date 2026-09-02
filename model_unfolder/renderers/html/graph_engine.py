@@ -30,7 +30,6 @@ from .svg import (
     _svg_text,
     _v_line,
     _v_seg,
-    _window_strip,
 )
 from .theme import C, FONT_HEAD, FONT_MONO, GAP
 from .render_context import (
@@ -125,6 +124,11 @@ def _render_graph_in_context(
     # config-consumption obligations.  Both ride the render event, not the SVG.
     context.record_graph(
         view_key,
+        # Render events retain the COMPLETE presentation-kind census.  The
+        # conformance vocabulary classifies ``unknown`` as presentation-only,
+        # just like ports and formula nodes.  Keeping it here is important: an
+        # unknown-only drill with no source closure must still fail as
+        # unresolved instead of disappearing behind an empty event.
         (n.kind for n in graph.nodes),
         (n.id for n in graph.nodes),
         facts_projected=facts_projected,
@@ -288,9 +292,6 @@ def _draw_node(parts, info, shadow_id, node, g) -> None:
                        numerator=node.meta.get("numerator") or "Scores",
                        denominator=node.meta.get("denominator"),
                        clickable=not node.static)
-    elif shape == "window":
-        _window_strip(parts, g["left"], g["top"], g["w"], g["h"],
-                      node.meta.get("window_size"))
     elif shape == "port":
         heading = node.heading()
         text = heading if isinstance(heading, str) else " ".join(heading)
@@ -302,7 +303,8 @@ def _draw_node(parts, info, shadow_id, node, g) -> None:
     else:
         _rect_block(parts, info, shadow_id, node.data_id(), g["left"], g["top"],
                     g["w"], g["h"], node.heading(), font_size=node.font_size(),
-                    resolved=node.resolved, sub=node.sub, accent=node.glyph().accent,
+                    resolved=node.presentation_resolved(), sub=node.sub,
+                    accent=node.glyph().accent,
                     clickable=not node.static)
         if node.kind == "cache" or node.cache_ports:
             # one convention everywhere: the port pair sits bottom-right

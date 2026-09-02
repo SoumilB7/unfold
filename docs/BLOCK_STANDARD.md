@@ -3,10 +3,9 @@
 *The single rulebook for what becomes a block, what becomes wiring, and what becomes a
 footnote — for **every** transformer and diffusion model `model-unfolder` draws.*
 
-This generalizes the block-worthiness paradigm first proven on DiffusionGemma (CLAUDE.md
-Gate C) into a standard that applies family-by-family. It is the reference the optimization
-sweep (`docs/MODULARIZATION.md`) is measured against, and the contract a new architecture's
-**Sable** pass must satisfy.
+This generalizes the block-worthiness paradigm first proven on DiffusionGemma into a
+standard that applies family-by-family. It is the contract a new architecture's **Sable**
+pass and the current evidence-authority execution campaign must satisfy.
 
 > **The law.** *A block is a thing a researcher would draw on a whiteboard and give a name.
 > Everything else is either an arrow (wiring) or a footnote (a property).*
@@ -152,7 +151,7 @@ that its place in the diagram is *not decided yet* — a guardrail so a new adap
 silently become a first-class block. Today the **diffusion** renderer enforces pale-when-
 unapproved ([block_schema.py:74-88](../model_unfolder/block_schema.py#L74)); the **transformer**
 taxonomy is blessed and documented but the pale guard is not yet wired (see
-`docs/MODULARIZATION.md`, the symmetric-guard item).
+the active execution plan's recall and unknown-rate gate).
 
 ### 3.7 The graph primitives (drill-down views)
 Every drill-down is a `Graph` of typed `Node`s laid out by the shared engine — no view

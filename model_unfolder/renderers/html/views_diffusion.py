@@ -607,7 +607,7 @@ def _latent_grid(parts: list[str], x0: float, y0: float, n: int = 5, cell: int =
 # Block diffusion fragment — DiffusionGemma generation loop
 #
 # Architecture: encoder (causal, one pass per canvas) → KV cache →
-#   denoising loop (bidirectional decoder × ≤48 steps, with entropy-bound
+#   denoising loop (bidirectional decoder repeated under a runtime step policy,
 #   accept/renoise and self-conditioning from prev step's logits).
 # ---------------------------------------------------------------------------
 
@@ -741,7 +741,7 @@ def _build_block_diffusion_view(ir: dict, info: dict, mount_id: str) -> str:
 
     What the arrows explain — two processes sharing one store:
       * SETUP (once, outside the loop): Prompt → Encoder → writes the KV store.
-      * LOOP  (≤48 steps): Canvas → Self-cond → Decoder → LM head → Sampler,
+      * LOOP: Canvas → Self-cond → Decoder → LM head → Sampler,
         with the Decoder READING the KV store each step, and the Sampler feeding
         its result back to the Canvas (renoise) and Self-cond (prev logits).
 
@@ -753,7 +753,10 @@ def _build_block_diffusion_view(ir: dict, info: dict, mount_id: str) -> str:
     """
     n_layers = len(ir.get("layers", []))
     bd = ((ir.get("extras") or {}).get("block_diffusion")) or {}
-    canvas_len = bd.get("canvas_length", 256)
+    canvas_len = bd.get("canvas_length")
+    canvas_label = (
+        f"Canvas · {canvas_len} tokens"
+        if canvas_len is not None else "Canvas length unresolved")
 
     w, h = 760, 620
     enc_cx = 152    # encoder column centre-x (left, outside the loop)
@@ -770,18 +773,23 @@ def _build_block_diffusion_view(ir: dict, info: dict, mount_id: str) -> str:
         "x": loop_x, "y": loop_y, "width": loop_w, "height": loop_h,
         "rx": 18, "ry": 18, "fill": C["bg_inner"], "stroke": "none",
     }))
-    _badge(parts, loop_x + loop_w, loop_y + 14, "↺ up to 48 steps")
+    _badge(parts, loop_x + loop_w, loop_y + 14, "↺ step bound unresolved")
 
     pos: dict[str, dict] = {}
+    loop_cards = info.get("blocks") or {}
+    lm_label = (loop_cards.get("bd_lm_head") or {}).get(
+        "title", "LM head · softcap unresolved")
+    sampler_label = (loop_cards.get("bd_sampler") or {}).get(
+        "title", "Accept / renoise · bound unresolved")
 
     # ── Denoising chain: stacked bottom→top with a uniform gap, so the five
     # flow arrows between them are all exactly `gap` long. ──
     chain = [
-        ("bd_canvas", 176, 52, [f"Canvas · {canvas_len} tokens", "init U(V)"], 13),
+        ("bd_canvas", 176, 52, [canvas_label, "init U(V)"], 13),
         ("bd_self_cond", 172, 46, "Self-conditioning", 14),
         ("bd_decoder", 228, 74, [f"Decoder  ×{n_layers}", "bidirectional layers"], 15),
-        ("bd_lm_head", 196, 50, "LM head · softcap", 14),
-        ("bd_sampler", 204, 58, ["Accept / renoise", "(entropy bound)"], 13),
+        ("bd_lm_head", 196, 50, lm_label, 14),
+        ("bd_sampler", 204, 58, sampler_label, 13),
     ]
     bottom = loop_y + loop_h - 20   # canvas bottom edge
     for bid, bw, bh, label, fs in chain:

@@ -20,7 +20,11 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
 
     for node_id in ("tok_text", "embed", "embed_norm", "join_concat",
                     "position_ids", "position_embed", "position_add"):
-        if node_id not in info.get("blocks", {}):
+        block = info.get("blocks", {}).get(node_id)
+        if block is None:
+            continue
+        if not dominant and node_id != "tok_text" \
+                and block.get("resolved") is not True:
             continue
         panels.append(_simple_card(node_id, *_meta(info, node_id)))
 
@@ -29,7 +33,9 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
     # cards; the adapter-authored opaque body is static by construction.
     if not dominant:
         for node_id in ("final_rms", "lm_head"):
-            if node_id in info.get("blocks", {}):
+            block = info.get("blocks", {}).get(node_id)
+            if block is not None and (
+                    node_id == "lm_head" or block.get("resolved") is True):
                 panels.append(_simple_card(node_id, *_meta(info, node_id)))
         return "".join(panels)
 

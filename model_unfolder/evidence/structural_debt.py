@@ -907,7 +907,7 @@ _CONSUMER_DEBT_BASELINE = (
     ('model_unfolder/renderers/html/metadata_modalities.py', '_vision_cell_cards', 'renderer', 'backward_import', '962109a2344e67b0'),
     ('model_unfolder/renderers/html/sections.py', '_diffusion_stats', 'renderer', 'raw_extras', 'da27bb4cf97df230'),
     ('model_unfolder/renderers/html/sections.py', '_stats_banner', 'renderer', 'raw_extras', '538efc70e7a2bf65'),
-    ('model_unfolder/renderers/html/views.py', '_build_architecture_view', 'renderer', 'raw_extras', '933be75c6d3a7af4'),
+    ('model_unfolder/renderers/html/views.py', '_build_architecture_view', 'renderer', 'raw_extras', 'c1857aa2d8151c0e'),
     ('model_unfolder/renderers/html/views.py', '_is_diffusion_architecture', 'renderer', 'raw_extras', '538efc70e7a2bf65'),
     ('model_unfolder/renderers/html/views_diffusion.py', '_build_block_diffusion_loop_cards', 'renderer', 'raw_extras', '261bebf740a7e89d'),
     ('model_unfolder/renderers/html/views_diffusion.py', '_build_block_diffusion_view', 'renderer', 'raw_extras', '1c3216f252696602'),

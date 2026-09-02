@@ -1571,6 +1571,7 @@ def resolve_component_root(index, bundle, component_key, *,
             return cache[cache_key]
     except (AttributeError, TypeError):
         cache = None
+        cache_key = None
 
     result = _resolve_component_root_uncached(
         index, component_key, declared,

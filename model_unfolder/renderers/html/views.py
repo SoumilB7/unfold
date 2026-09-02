@@ -4,7 +4,11 @@ from __future__ import annotations
 from ...block_schema import DIFFUSION_BLOCK_IDS, DIFFUSION_STAGES
 from ...labels import kind_short, mask_short
 from ...evidence.receipts import receipts_from_projects
-from .fact_projection import layer_and_model_facts
+from .fact_projection import (
+    DENOISER_DRAWN,
+    layer_and_model_facts,
+    projected_keys,
+)
 from .metadata import _block_label, _indices_summary, _signature
 from .render_context import current_render_context
 from .svg import (
@@ -109,6 +113,81 @@ def _is_resolved_diffusion_block(is_diffusion: bool, info: dict, node_id: str, b
     return node_id in DIFFUSION_BLOCK_IDS
 
 
+def _build_zero_layer_diffusion_view(ir: dict, info: dict, mount_id: str,
+                                     opaque: dict) -> str:
+    """Draw an honest boundary for a denoiser with no materialized root layer.
+
+    The ordinary architecture layout always contains transformer bookends.  On
+    a bare diffusion config that historical scaffold looked like a zero-layer
+    text decoder even though no token embedding, final norm, or LM head had
+    been proven.  Retain only exact source/output boundaries and independently
+    proven bookend operations around one opaque denoiser body.
+    """
+    canonical = info.get("blocks") or {}
+    blocks: list[dict] = []
+    for node_id in ("tok_text", "embed"):
+        block = canonical.get(node_id)
+        if not isinstance(block, dict):
+            continue
+        # The denoiser state boundary itself remains useful.  An intermediate
+        # operation is retained only when its producer marked it resolved.
+        if node_id == "tok_text" or block.get("resolved") is True:
+            blocks.append(block)
+    blocks.append(opaque)
+    for node_id in ("final_rms", "lm_head"):
+        block = canonical.get(node_id)
+        if not isinstance(block, dict):
+            continue
+        if node_id == "lm_head" or block.get("resolved") is True:
+            blocks.append(block)
+
+    w = 720
+    gap = 34
+    layouts = [(_block_layout(block), block) for block in blocks]
+    content_h = sum(layout[2] for layout, _block in layouts) \
+        + gap * max(0, len(layouts) - 1)
+    h = max(360, int(content_h + 170))
+    cx = w / 2
+    arrow_id, shadow_id = _ids(mount_id, "arch-zero")
+    parts = [_defs(arrow_id, shadow_id)]
+    parts.append(_region_rect(40, 26, w - 80, h - 52, C["bg_outer"]))
+
+    positions = []
+    bottom = h - 76
+    for (layout, block_w, block_h, font), block in layouts:
+        top = bottom - block_h
+        node_id = block["id"]
+        resolved = bool(block.get("resolved", True))
+        geom = _rect_block(
+            parts, info, shadow_id, node_id,
+            cx - block_w / 2, top, block_w, block_h,
+            _block_label(info, node_id, block.get("label")),
+            font_size=font, resolved=resolved,
+            clickable=not block.get("static", False),
+        )
+        positions.append(geom)
+        bottom = top - gap
+    for src, dst in zip(positions, positions[1:]):
+        parts.append(_v_line(src, dst, arrow_id))
+    parts.append(_svg_text(
+        cx, 54, "No root denoiser layers materialized",
+        {"text-anchor": "middle", "fill": C["muted"],
+         "font-family": FONT_MONO, "font-size": 12},
+    ))
+    ctx = current_render_context()
+    if ctx is not None:
+        # The opaque body and any retained, independently resolved bookends are
+        # still real projections.  Receipt only the denoiser-family facts that
+        # this boundary visibly carries; never use the broader architecture
+        # union to certify a model/layer fact that the zero-layer view omitted.
+        ctx.note_facts_projected(
+            "architecture",
+            projected_keys(ir, "denoiser", DENOISER_DRAWN),
+            node_ids=tuple(block["id"] for block in blocks),
+        )
+    return _svg(w, h, f"{ir.get('name', 'model')} unresolved denoiser", parts)
+
+
 def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     """Data-driven decoder architecture view.
 
@@ -123,6 +202,13 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     space while compact decoder-only models keep the same vocabulary.
     """
     is_diffusion = _is_diffusion_architecture(ir)
+    if is_diffusion and not (ir.get("layers") or []):
+        opaque = (((ir.get("extras") or {}).get("render") or {}).get(
+            "opaque_layer_block"))
+        if not isinstance(opaque, dict):
+            raise ValueError(
+                "a zero-layer diffusion view requires an opaque denoiser block")
+        return _build_zero_layer_diffusion_view(ir, info, mount_id, opaque)
     dominant = info.get("dominant")
     if dominant is not None:
         spec = dominant["spec"]

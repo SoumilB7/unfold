@@ -284,4 +284,10 @@ def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
         return Node(op.id, "opaque", op.label or "Custom block",
                     resolved=region.resolved,
                     static=True if region.resolved is False else static)
-    return Node(op.id, "norm", op.label or op.kind, static=static)
+    # The op graph may grow before the HTML glyph vocabulary does.  An
+    # unrecognized operation remains a visible unresolved operation; it never
+    # inherits the old normalization shape merely by falling through.
+    return Node(
+        op.id, "unknown", op.label or [op.kind, "rendering unresolved"],
+        resolved=False, static=True, meta={"source_kind": op.kind},
+    )

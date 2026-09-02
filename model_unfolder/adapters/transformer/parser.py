@@ -24,6 +24,7 @@ from typing import Any
 from . import debug
 from ...everchanging import load_aliases
 from ...ir import AttentionSpec, CrossLayerEdge, FFNSpec, ModelIR
+from ...errors import ConfigParseError
 from .assembly import decoder_extras, decoder_layer, parallel_decoder_layer
 from .common import architecture_name, get_config_value as _g, model_name
 from .special_parts.per_layer_embedding import (
@@ -4307,12 +4308,27 @@ def parse(cfg: Any, context=None) -> ModelIR:
             cross_layers=sorted(cross_attn_layer_set),
             multiaxis_result=_multiaxis_result,
         )
+        _projector_result = projector_result_for_context(
+            context,
+            config_document=_evidence_config_document,
+            config_selector=_u9_selector)
+        if _projector_result.status == "failed" and any(
+                failure.kind == "out_of_owner"
+                for failure in _projector_result.failures):
+            # This is an internal address-integrity failure, not an unknown
+            # mechanism.  Continuing would silently discard a source-proven
+            # projector candidate whose caller is outside the authoritative
+            # owner graph.  The public boundary therefore returns the typed
+            # crash-class refusal required by the no-traceback law.
+            detail = "; ".join(
+                failure.detail for failure in _projector_result.failures
+                if failure.kind == "out_of_owner")
+            raise ConfigParseError(
+                "Projector evidence could not be attached to the resolved "
+                f"component owner: {detail}")
         modality_extras = apply_projector_evidence(
             modality_extras,
-            projector_result_for_context(
-                context,
-                config_document=_evidence_config_document,
-                config_selector=_u9_selector),
+            _projector_result,
             cfg, owner_namespace=_owner_ns,
         )
     # Multi-codebook token streams.  The config count is powerless until the

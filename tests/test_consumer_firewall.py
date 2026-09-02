@@ -38,6 +38,75 @@ def test_consumer_quarantine_is_non_vacuous_and_spans_all_four_surfaces():
         "spec_default",
     }
     assert not any(item.kind == "semantic_bucket" for item in accesses)
+    assert not any(item.kind == "semantic_default" for item in accesses)
+
+
+def test_poison_semantic_default_cannot_resolve_an_unknown():
+    direct = _scan(
+        "def card(placement):\n"
+        "    return placement or 'pre'\n"
+    )
+    mapped = _scan(
+        "def card(placement):\n"
+        "    where = {'pre': 'before'}\n"
+        "    return where.get(placement) or where['pre']\n"
+    )
+    assert [(item.kind, item.target) for item in direct] == [
+        ("semantic_default", "pre"),
+    ]
+    assert any(item.kind == "semantic_default" and item.target == "pre"
+               for item in mapped)
+
+
+def test_poison_semantic_default_has_no_get_conditional_or_signature_escape():
+    found = _scan(
+        "def a(spec):\n"
+        "    return spec.get('kind', 'mha')\n"
+        "def b(placement):\n"
+        "    return 'post' if placement is None else placement\n"
+        "def c(norm_kind='rmsnorm'):\n"
+        "    return norm_kind\n"
+    )
+    assert {(item.kind, item.target) for item in found} == {
+        ("semantic_default", "mha"),
+        ("semantic_default", "post"),
+        ("semantic_default", "rmsnorm"),
+    }
+
+
+def test_poison_semantic_default_cannot_escape_by_renaming_the_selector():
+    found = _scan(
+        "def a(x):\n"
+        "    return x or 'pre'\n"
+        "def b(doc, x):\n"
+        "    return doc.get(x, 'mha')\n"
+        "def c(x):\n"
+        "    return 'post' if x is None else x\n"
+        "def d(x='rmsnorm'):\n"
+        "    return x\n"
+    )
+    assert {(item.kind, item.target) for item in found} == {
+        ("semantic_default", "pre"),
+        ("semantic_default", "mha"),
+        ("semantic_default", "post"),
+        ("semantic_default", "rmsnorm"),
+    }
+
+
+def test_exact_semantic_canonicalization_preserves_unknown_control():
+    found = _scan(
+        "def normalize(storage):\n"
+        "    return 'split_qkv' if storage == 'split' else storage\n"
+    )
+    assert not any(item.kind == "semantic_default" for item in found)
+
+    defaulting = _scan(
+        "def default(placement):\n"
+        "    return placement if placement else 'pre'\n"
+    )
+    assert [(item.kind, item.target) for item in defaulting] == [
+        ("semantic_default", "pre"),
+    ]
 
 
 def test_poison_renderer_direct_backward_import_blocks():

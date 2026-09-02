@@ -9,6 +9,7 @@ from model_unfolder import unfold
 from model_unfolder.evidence.conformance import check_fact_conformance
 from model_unfolder.evidence.models import SourceBundle
 from model_unfolder.evidence.projector import projector_evidence
+from model_unfolder.evidence.projector import projector_result
 from model_unfolder.evidence.program_index import build_program_index
 from model_unfolder.evidence.sources import resolve_source_files
 
@@ -262,3 +263,45 @@ def test_projector_ir_has_no_family_profile_or_family_title():
     html = diagram.to_html(standalone=True)
     assert "Mistral3 multimodal projector" not in html
     assert "Patch merger" in html
+
+
+def test_projector_caller_missing_from_root_graph_is_a_typed_failure(
+    tmp_path, monkeypatch,
+):
+    """The caller/root join refuses instead of dereferencing ``None``."""
+    import textwrap
+    from types import SimpleNamespace
+    from model_unfolder.evidence import projector as projector_module
+    from model_unfolder.evidence.projector_lineage import projector_lineage_result
+
+    path = tmp_path / "modeling_projector_join.py"
+    path.write_text(textwrap.dedent("""
+        from torch.nn import Linear
+        class Root:
+            def __init__(self): self.bridge = Linear(4, 4)
+            def forward(self, inputs_embeds, image_features, mask):
+                image_features = self.bridge(image_features)
+                return inputs_embeds.masked_scatter(mask, image_features)
+    """), encoding="utf-8")
+    bundle = SourceBundle(
+        source="test", files=(str(path),), architecture="Root",
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Root"})
+    index = build_program_index(bundle)
+    lineage = projector_lineage_result(index, bundle)
+    assert lineage.status == "resolved"
+
+    class MissingGraph:
+        def node_for(self, _occurrence):
+            return None
+
+    monkeypatch.setattr(
+        projector_module, "projector_lineage_result",
+        lambda *_args, **_kwargs: lineage)
+    monkeypatch.setattr(
+        projector_module, "resolve_component_root",
+        lambda *_args, **_kwargs: SimpleNamespace(graph=MissingGraph()))
+    result = projector_result(index, bundle)
+    assert result.status == "failed"
+    assert result.failures[0].kind == "out_of_owner"
+    assert "caller occurrence" in result.failures[0].detail

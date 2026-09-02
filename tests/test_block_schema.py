@@ -210,10 +210,11 @@ def test_ffn_detail_view_uses_clicked_block_not_dominant_group():
     dense_in_moe_context = render_block_detail(dense_ir, _make_info(moe_ir), "ffn-dense", dense_block)
     assert "Linear (in)" in dense_in_moe_context
     assert "Linear (gate)" not in dense_in_moe_context
-    assert "Expert 1" not in dense_in_moe_context
+    assert "Selected expert" not in dense_in_moe_context
 
     moe_in_dense_context = render_block_detail(moe_ir, _make_info(dense_ir), "ffn-moe", moe_block)
-    assert "Expert 1" in moe_in_dense_context
+    assert "Selected expert" in moe_in_dense_context
+    assert "template × 2" in moe_in_dense_context
     assert "Router" in moe_in_dense_context
     assert "Linear (in)" not in moe_in_dense_context
 
