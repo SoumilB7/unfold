@@ -1,0 +1,36 @@
+{
+  "combined_sha256": "b1e34cd9581efe4829c534e103842c4cb44e3ea556131aaa78cb3ae4e1b4fcc1",
+  "config": "tests/sable_test_corpus/musicgen-small.json",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 1.40531637519598,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 1.0506998337805271,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 1.3681485829874873,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    4.064453125,
+    3.94775390625,
+    4.17626953125
+  ],
+  "mode": "fingerprint",
+  "name": "musicgen-small",
+  "parse_seconds": 3.8104463340714574,
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "a9ca33cf2a3f3d4f514cd2edabed8ee082b4bb76",
+  "surface_hashes": {
+    "expanded": "a3edd09183463f8c02f57b3fc5594212861c32e7f0f7251cb4879102d5e27c37",
+    "html_meta": "ec064ce2c56ba412c2213ccb9d471c2803e717b9675b74127a49b92a0d329b04",
+    "ir": "5a9c380073c8a1537f095154740a9bdf503e37ad251b9b39f375cdec3e09bfb0",
+    "ledgers": "bdd9adbe216bb3e1185e2adedf0ed592458b3b2473da532978ebfeed4a3994ec",
+    "params": "e130d8ffb3d0b53596aa7481c159387fb734120e11ae5144ff03b8bd5aa8794f"
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "step": "S2",
+  "verified_commit": "a9ca33cf2a3f3d4f514cd2edabed8ee082b4bb76",
+  "mode": "one detached committed worktree; verification lanes serial; exhaustive remainder partitioned into bounded fresh processes",
+  "result": "PASS",
+  "tree_fingerprint": "92638157c0dacb5e99cbfd7d302498d6c58afbe33c07186fba3b1703be54d669",
+  "blessed_artifact_fingerprint": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+  "collection": {
+    "total": 4004,
+    "passed": 3988,
+    "skipped": 14,
+    "xfailed": 2,
+    "failed": 0
+  },
+  "lanes": {
+    "static": {
+      "duration_seconds": 1,
+      "result": "PASS; pyflakes clean; diff-check clean",
+      "fingerprint_identical": true
+    },
+    "focused": {
+      "duration_seconds": 17,
+      "result": "202 passed",
+      "fingerprint_identical": true
+    },
+    "u2_authority": {
+      "duration_seconds": 178,
+      "result": "44 passed",
+      "fingerprint_identical": true
+    },
+    "collect": {
+      "duration_seconds": 10,
+      "result": "4004 collected",
+      "fingerprint_identical": true
+    },
+    "preservation": {
+      "duration_seconds": 247,
+      "result": "52 passed; 29 witnesses; zero structural or pixel drift",
+      "fingerprint_identical": true
+    },
+    "full_remainder": {
+      "duration_seconds": 1341,
+      "result": "3908 exact tests: 3892 passed, 14 skipped, 2 xfailed, 0 failed; 22/22 batches passed",
+      "fingerprint_identical": true
+    }
+  },
+  "latency": {
+    "target_fingerprints": "7/7 byte-identical on ir, ledgers, expanded, params and html_meta",
+    "profile": "ast.get_source_segment rank null; absent from top 20",
+    "program_index_after_imports_budget_seconds": 5.5,
+    "end_to_end_cold_budget_seconds": 9.0,
+    "budget_method": "three sequential fresh processes per target; median; libraries imported outside the timer"
+  },
+  "poisons": {
+    "ast_get_source_segment_reintroduced": "RED",
+    "component_root_cache_cleared_per_call": "RED",
+    "decoder_candidate_cache_cleared_per_call": "RED",
+    "everchanging_content_cache_bypassed": "RED",
+    "numeric_budget_below_measured_maximum": "RED",
+    "combined_result": "5 failed, 2 passed as required"
+  },
+  "notes": [
+    "The first static attempt correctly rejected two unused imports; both were removed and the complete receipt restarted on the amended commit.",
+    "No output, manifest, gallery or preservation blessing changed.",
+    "Soumil's docs/MODULARIZATION.md and docs/TRUE_CONFIG_PLAN.md working-tree changes were never staged or modified."
+  ]
+}
