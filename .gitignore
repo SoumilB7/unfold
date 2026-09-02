@@ -53,3 +53,6 @@ tests/preservation_baseline/
 # Harness-owned session worktrees only (REC-0 §6.2) — a project-owned
 # .claude configuration is source and stays tracked/fingerprinted
 .claude/worktrees/
+
+# B9 (15 §6, 2026-09-03): canonical z-docs live outside this repository.
+z-docs
