@@ -1,0 +1,79 @@
+{
+  "authority_workers": 3,
+  "commit": "071b4ccea08de06d52dc05096feca1af5e5ebdad",
+  "coordinator_fingerprint_after": "266676c087ce815ca58b25437221b1ef4bec10a4bfccd061c621cee944d5bf1e",
+  "coordinator_fingerprint_before": "266676c087ce815ca58b25437221b1ef4bec10a4bfccd061c621cee944d5bf1e",
+  "failed_lanes": [
+    "full",
+    "preservation"
+  ],
+  "focused_workers": 1,
+  "full_workers": 6,
+  "lanes": {
+    "collect": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 11.203,
+      "fingerprint_after": "9d934a69feef05ae3a7f920d4080ed2ba635f9734d60923e67727c5bad48e86c",
+      "fingerprint_before": "9d934a69feef05ae3a7f920d4080ed2ba635f9734d60923e67727c5bad48e86c",
+      "log": "verification/receipts/S3-prebless-071b4cc/lanes/collect.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "focused": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 93.068,
+      "fingerprint_after": "b8ee18f26c1671da1d61e453e5a7df81f6fefe8888f6ddc096683445ca0903e4",
+      "fingerprint_before": "b8ee18f26c1671da1d61e453e5a7df81f6fefe8888f6ddc096683445ca0903e4",
+      "log": "verification/receipts/S3-prebless-071b4cc/lanes/focused.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "full": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 804.409,
+      "fingerprint_after": "5c2ac021672f45fb193c823a8433bbe2bf0716352006c70fd1d093264f718f4d",
+      "fingerprint_before": "5c2ac021672f45fb193c823a8433bbe2bf0716352006c70fd1d093264f718f4d",
+      "log": "verification/receipts/S3-prebless-071b4cc/lanes/full.log",
+      "passed": false,
+      "returncode": 1
+    },
+    "preservation": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 349.06,
+      "fingerprint_after": "0270833c0a6a8d6de89613adc03ad0763e90e1fe7ed39332f948605f1ef004c3",
+      "fingerprint_before": "0270833c0a6a8d6de89613adc03ad0763e90e1fe7ed39332f948605f1ef004c3",
+      "log": "verification/receipts/S3-prebless-071b4cc/lanes/preservation.log",
+      "passed": false,
+      "returncode": 1
+    },
+    "static": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 0.622,
+      "fingerprint_after": "cccfa41eb8708d1893ebfa27f9ec08509e0e57b0edd826a31ccab33b022580a6",
+      "fingerprint_before": "cccfa41eb8708d1893ebfa27f9ec08509e0e57b0edd826a31ccab33b022580a6",
+      "log": "verification/receipts/S3-prebless-071b4cc/lanes/static.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "u2-authority": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 68.137,
+      "fingerprint_after": "ffc2dc9af0900d90d66a7e9c7ef78274bc9e2f4c75af3f7ad4bf01c70d1ada89",
+      "fingerprint_before": "ffc2dc9af0900d90d66a7e9c7ef78274bc9e2f4c75af3f7ad4bf01c70d1ada89",
+      "log": "verification/receipts/S3-prebless-071b4cc/lanes/u2-authority.log",
+      "passed": true,
+      "returncode": 0
+    }
+  },
+  "missing_lanes": [],
+  "preservation_workers": 4,
+  "source_artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+  "source_artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+  "wall_seconds": 901.563
+}
