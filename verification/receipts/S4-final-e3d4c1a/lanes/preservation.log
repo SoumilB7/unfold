@@ -1,0 +1,16 @@
+bringing up nodes...
+bringing up nodes...
+
+....................................................                     [100%]
+============================= slowest 10 durations =============================
+89.98s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[flux-2-dev]
+69.18s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[stable-diffusion-xl-base-1-0]
+68.08s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[pixart-sigma-xl-2-1024-ms]
+62.79s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[cogvideox-5b]
+61.68s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[ltx-video]
+60.71s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[qwen-image]
+55.96s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[fluxtransformer2dmodel]
+53.07s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[prxpixel-t2i]
+50.84s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[lumina-image-2-0]
+48.52s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[qwen2-vl-7b-instruct]
+52 passed in 440.40s (0:07:20)
