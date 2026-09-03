@@ -288,6 +288,15 @@
     "d052e6ffcbec38cae3c36dd0b0dd66ec"
   ],
   "model": "Sana_1600M_1024px_diffusers",
+  "proven_facts": [
+    "root.denoiser.diffusion_bookend_operations",
+    "root.denoiser.diffusion_root_topology",
+    "root.denoiser.stacks[0].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[0].attention[1].diffusion_stream_relation",
+    "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+    "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
+    "root.denoiser.stacks[0].diffusion_stack_depth"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "1c1bb3f942a941091573a63d28df04aa",
@@ -302,6 +311,56 @@
     "a2dd49449d9b57dd41f5f488d286a55a",
     "b74fdbf963bc0fe63f5964d2018e6e8e",
     "d052e6ffcbec38cae3c36dd0b0dd66ec"
+  ],
+  "view_signature": [
+    {
+      "hash": "2e7f2f09ae70365c0149d48dac399f3f",
+      "label": "architecture"
+    },
+    {
+      "hash": "b74fdbf963bc0fe63f5964d2018e6e8e",
+      "label": "architecture"
+    },
+    {
+      "hash": "4b28977d7e010f52eeee1f027e6c7d0e",
+      "label": "attn"
+    },
+    {
+      "hash": "d052e6ffcbec38cae3c36dd0b0dd66ec",
+      "label": "cross_attn"
+    },
+    {
+      "hash": "1c1bb3f942a941091573a63d28df04aa",
+      "label": "denoiser"
+    },
+    {
+      "hash": "a2dd49449d9b57dd41f5f488d286a55a",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "44214a47b62afb95cf44b9c9a99c6eae",
+      "label": "encoder_0_g0_op_ffn"
+    },
+    {
+      "hash": "0f077fbbb987b06ff9dd52f8c0190d38",
+      "label": "encoder_0_g0_op_selfattn"
+    },
+    {
+      "hash": "8a4def6a3fe0f334e2b21a1a7bc1dc7d",
+      "label": "encoder_0_g1_op_selfattn"
+    },
+    {
+      "hash": "88c41725caee80b8095553dd7841b6fd",
+      "label": "ffn"
+    },
+    {
+      "hash": "6f3ff3d93134f0e32a666f32805babb4",
+      "label": "scheduler"
+    },
+    {
+      "hash": "8a360c4f1e446063bd592a6f7c329e78",
+      "label": "vae_decode"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/sana-1600m-1024px-diffusers",

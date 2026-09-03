@@ -240,6 +240,28 @@
     "e61a83137bf7f8efd7fa6bc30ad12024"
   ],
   "model": "HunyuanVideo",
+  "proven_facts": [
+    "root.denoiser.diffusion_bookend_operations",
+    "root.denoiser.diffusion_root_topology",
+    "root.denoiser.stacks[0].attention[0].diffusion_attention_head_dim",
+    "root.denoiser.stacks[0].attention[0].diffusion_attention_head_protocol",
+    "root.denoiser.stacks[0].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+    "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
+    "root.denoiser.stacks[0].diffusion_stack_depth",
+    "root.denoiser.stacks[0].diffusion_stack_variant",
+    "root.denoiser.stacks[1].attention[0].diffusion_attention_head_dim",
+    "root.denoiser.stacks[1].attention[0].diffusion_attention_head_protocol",
+    "root.denoiser.stacks[1].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[1].diffusion_stack_depth",
+    "root.denoiser.stacks[1].diffusion_stack_variant",
+    "root.denoiser.stacks[1].ffn.diffusion_ffn_mechanism",
+    "root.denoiser.stacks[2].attention[0].diffusion_attention_head_dim",
+    "root.denoiser.stacks[2].attention[0].diffusion_attention_head_protocol",
+    "root.denoiser.stacks[2].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[2].cell.diffusion_norm_mechanism",
+    "root.denoiser.stacks[2].diffusion_stack_depth"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "30514691da513ec4ac4962bb1d572db9",
@@ -263,6 +285,88 @@
     "d1c84104e399fd2b01a9463008f05c8b",
     "d58c90381048f30d394f66ce4ef66814",
     "e61a83137bf7f8efd7fa6bc30ad12024"
+  ],
+  "view_signature": [
+    {
+      "hash": "2c9c2c0065847964ec88ebbe372cd5bd",
+      "label": "architecture"
+    },
+    {
+      "hash": "34745baa907ad91bd27af32239c6d5ac",
+      "label": "architecture"
+    },
+    {
+      "hash": "d1c84104e399fd2b01a9463008f05c8b",
+      "label": "attn"
+    },
+    {
+      "hash": "133c5ed972f7e0529d0c866eee5821b0",
+      "label": "denoiser"
+    },
+    {
+      "hash": "e0e26ad22437675e48e0c9bf06d3d56c",
+      "label": "denoiser"
+    },
+    {
+      "hash": "b659f21587c423bd7f132f2db073db23",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "98cc1a1085bcbd1bf37bca2d7bc8f0b5",
+      "label": "encoder_0_op_ffn"
+    },
+    {
+      "hash": "a6f55388487fd4dd7caa7b7c3fed498c",
+      "label": "encoder_0_op_selfattn"
+    },
+    {
+      "hash": "395f5467388ed1bdadb8c91c7e5e96c7",
+      "label": "encoder_1"
+    },
+    {
+      "hash": "5629211bc9efbd086f2f26426877c1af",
+      "label": "encoder_1_op_ffn"
+    },
+    {
+      "hash": "e61a83137bf7f8efd7fa6bc30ad12024",
+      "label": "encoder_1_op_selfattn"
+    },
+    {
+      "hash": "2d4deb7e5d271b6c70408c4d31d43018",
+      "label": "ffn"
+    },
+    {
+      "hash": "7afb01b9d7ac072ddcf62251ed13ea45",
+      "label": "ffn"
+    },
+    {
+      "hash": "bf38a076baa29fc5858612bbd71d0fe5",
+      "label": "scheduler"
+    },
+    {
+      "hash": "502c3ffeb9a9ffadf61a8ec993944433",
+      "label": "vae_decode"
+    },
+    {
+      "hash": "30b5201d259e95a942012b0a27fe6d7f",
+      "label": "vae_decoder_block_1"
+    },
+    {
+      "hash": "511bc69086c757f55d1a4e9922fd78ed",
+      "label": "vae_decoder_block_2"
+    },
+    {
+      "hash": "34829e302343eaa19667bcba8a150848",
+      "label": "vae_decoder_block_3"
+    },
+    {
+      "hash": "30514691da513ec4ac4962bb1d572db9",
+      "label": "vae_decoder_block_4"
+    },
+    {
+      "hash": "8df75c06f9f0a30aab0fb5cbcde3a971",
+      "label": "vae_mid_block"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/hunyuanvideo",

@@ -121,6 +121,15 @@
     "cf678126205587f1b0df309e76864f36"
   ],
   "model": "prxpixel-t2i",
+  "proven_facts": [
+    "root.denoiser.diffusion_bookend_geometry",
+    "root.denoiser.diffusion_bookend_operations",
+    "root.denoiser.diffusion_root_topology",
+    "root.denoiser.stacks[0].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+    "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
+    "root.denoiser.stacks[0].diffusion_stack_depth"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "0201f62f45d46c90dc7b5b7e64e90ad2",
@@ -132,6 +141,44 @@
     "8337bb24bb131952bceebd5200e91ab7",
     "9b6938eb70f3013ae1cd3c1ec2974489",
     "b71eb6feae06badfeaa50453bc0725f5"
+  ],
+  "view_signature": [
+    {
+      "hash": "560f734b61ef710d22939cbd933fd5ff",
+      "label": "architecture"
+    },
+    {
+      "hash": "56df7ae152bd3d291debd2406e747e83",
+      "label": "architecture"
+    },
+    {
+      "hash": "cf678126205587f1b0df309e76864f36",
+      "label": "attn"
+    },
+    {
+      "hash": "745b88f160585a465ed286f71d584db0",
+      "label": "denoiser"
+    },
+    {
+      "hash": "732c3da7a1ffcb0005f203266c1e092b",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "38433759c72140f5833413de64e0bf5c",
+      "label": "encoder_0_op_ffn"
+    },
+    {
+      "hash": "9b6938eb70f3013ae1cd3c1ec2974489",
+      "label": "encoder_0_op_selfattn"
+    },
+    {
+      "hash": "0c7d3c3ee6cbb10bcbe0bf91a4c3174b",
+      "label": "ffn"
+    },
+    {
+      "hash": "455fcad6f15a7a8642673b21b0f8fcd7",
+      "label": "scheduler"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/prxpixel-t2i",

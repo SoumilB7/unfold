@@ -899,7 +899,7 @@ _CONSUMER_DEBT_BASELINE = (
     ('model_unfolder/renderers/html/metadata_modalities.py', '_audio_cell_cards', 'renderer', 'backward_import', '962109a2344e67b0'),
     ('model_unfolder/renderers/html/metadata_modalities.py', '_conditioning_children', 'renderer', 'backward_import', '3dfe0c4d151975ba'),
     ('model_unfolder/renderers/html/metadata_modalities.py', '_modality_badges', 'renderer', 'raw_extras', '72aee0d2fbeff24f'),
-    ('model_unfolder/renderers/html/metadata_modalities.py', '_fusion_children', 'renderer', 'raw_extras', 'b5786f19ba04bd6a'),
+    ('model_unfolder/renderers/html/metadata_modalities.py', '_fusion_children', 'renderer', 'raw_extras', '9d5abf5412fafe8c'),
     ('model_unfolder/renderers/html/metadata_modalities.py', '_fusion_description', 'renderer', 'raw_extras', '3649e8c389d841d0'),
     ('model_unfolder/renderers/html/metadata_modalities.py', '_is_conditioning_fusion', 'renderer', 'raw_extras', '944dba77202a5d65'),
     ('model_unfolder/renderers/html/metadata_modalities.py', '_multimodal_block_lookup', 'renderer', 'raw_extras', '3e2116805ecafa81'),

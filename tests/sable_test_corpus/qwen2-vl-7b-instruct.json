@@ -180,6 +180,27 @@
     "e7220fa964088846e1912959abfda3fc"
   ],
   "model": "Qwen2-VL-7B-Instruct",
+  "proven_facts": [
+    "decoder.attention.bias",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mask",
+    "decoder.attention.mask_schedule",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.output_projection",
+    "decoder.attention.projection_mode",
+    "decoder.attention.scores_scale",
+    "decoder.ffn.activation",
+    "decoder.ffn.gated",
+    "decoder.ffn.intermediate_size",
+    "decoder.ffn.projection_mode",
+    "decoder.layer.norm_kind",
+    "decoder.layer.norm_placement",
+    "decoder.layer.residual_topology",
+    "model.tie_word_embeddings",
+    "root.video.projector_out_features",
+    "root.vision.projector_out_features"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "000c82b0a96adbbd92b9e185a2c6795b",
@@ -193,6 +214,52 @@
     "baa634dfcddee173bbf3a55bfc67a3b5",
     "c514c819f533d468a8a54799bfa0bbaa",
     "e7220fa964088846e1912959abfda3fc"
+  ],
+  "view_signature": [
+    {
+      "hash": "536f77e2592b41352d119ad55c5d7060",
+      "label": "architecture"
+    },
+    {
+      "hash": "c01c8a92cec3e0d22006d1b2f5456bba",
+      "label": "architecture"
+    },
+    {
+      "hash": "000c82b0a96adbbd92b9e185a2c6795b",
+      "label": "attn"
+    },
+    {
+      "hash": "a82ae2d276e27f7f1f83e9804ab7cd45",
+      "label": "ffn"
+    },
+    {
+      "hash": "c514c819f533d468a8a54799bfa0bbaa",
+      "label": "fusion"
+    },
+    {
+      "hash": "83ec299d0868e4d562c8388bde97e88b",
+      "label": "video_patches"
+    },
+    {
+      "hash": "af08169058fe7250a148c9db0b50a469",
+      "label": "video_path"
+    },
+    {
+      "hash": "154cfe6b7e797a1b5ecf7e4dc31b8509",
+      "label": "vision_encoder"
+    },
+    {
+      "hash": "baa634dfcddee173bbf3a55bfc67a3b5",
+      "label": "vision_patches"
+    },
+    {
+      "hash": "a084abb5d4edf995ff1080d03ad7d93c",
+      "label": "vision_path"
+    },
+    {
+      "hash": "e7220fa964088846e1912959abfda3fc",
+      "label": "vision_projector"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/qwen2-vl-7b-instruct",

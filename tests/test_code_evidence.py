@@ -2084,7 +2084,7 @@ def test_unet_prose_on_code_evidence_rail():
     assert "resolved through the denoiser's act_fn input" in blob2
 
 
-def test_asserted_facts_tagged_and_advisory():
+def test_asserted_facts_are_tagged_for_the_s4_blocking_ship_gate():
     """B5 (U2): the `asserted` tuple now carries ONLY the drawn conventions
     the doctrine keeps (sqrt(dim) scores, split storage, kept-pre placement) —
     everything else is either evidence-backed or a TYPED unknown, never a

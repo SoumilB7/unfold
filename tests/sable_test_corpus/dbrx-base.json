@@ -62,6 +62,30 @@
     "ff13ffe154dd7f96056aadbbcdf40c13"
   ],
   "model": "dbrx-base",
+  "proven_facts": [
+    "decoder.attention.bias",
+    "decoder.attention.cached",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mask",
+    "decoder.attention.mask_schedule",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.output_projection",
+    "decoder.attention.position_schedule",
+    "decoder.attention.projection_mode",
+    "decoder.attention.qkv_clip",
+    "decoder.attention.rope_initialization",
+    "decoder.attention.rope_theta",
+    "decoder.attention.scores_scale",
+    "decoder.ffn.expert.expert_activation_formula",
+    "decoder.ffn.expert.expert_projection_mode",
+    "decoder.ffn.ffn_schedule",
+    "decoder.ffn.routing_policy",
+    "decoder.layer.norm_placement",
+    "decoder.layer.residual_topology",
+    "model.final_norm_kind",
+    "model.tie_word_embeddings"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "172dd903895de84a46acdd979242decc",
@@ -70,6 +94,32 @@
     "9bdbcf5d2def935a5841d12f719e4acd",
     "feac69d7eb366a819fdf3a98fef2ddc7",
     "ff13ffe154dd7f96056aadbbcdf40c13"
+  ],
+  "view_signature": [
+    {
+      "hash": "9bdbcf5d2def935a5841d12f719e4acd",
+      "label": "architecture"
+    },
+    {
+      "hash": "ff13ffe154dd7f96056aadbbcdf40c13",
+      "label": "architecture"
+    },
+    {
+      "hash": "feac69d7eb366a819fdf3a98fef2ddc7",
+      "label": "attn"
+    },
+    {
+      "hash": "7c73b6aeef876249dabbc347060d78fb",
+      "label": "expert_1"
+    },
+    {
+      "hash": "2c3e3357139af0916fcf15e9b15d8bb2",
+      "label": "ffn"
+    },
+    {
+      "hash": "457c6853dedb78425e5c85c2cc171b63",
+      "label": "router"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/dbrx-base",

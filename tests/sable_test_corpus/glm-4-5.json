@@ -100,6 +100,37 @@
     "d08a31aea8f3894b54d243ea115ebb9e"
   ],
   "model": "GLM-4.5",
+  "proven_facts": [
+    "decoder.attention.bias",
+    "decoder.attention.cached",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mask",
+    "decoder.attention.mask_schedule",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.output_projection",
+    "decoder.attention.position_schedule",
+    "decoder.attention.projection_mode",
+    "decoder.attention.qk_norm",
+    "decoder.attention.qk_norm_schedule",
+    "decoder.attention.rope_initialization",
+    "decoder.attention.rope_theta",
+    "decoder.attention.scores_scale",
+    "decoder.ffn.activation",
+    "decoder.ffn.expert.expert_activation_formula",
+    "decoder.ffn.expert.expert_intermediate_size",
+    "decoder.ffn.expert.expert_projection_mode",
+    "decoder.ffn.expert.shared_expert_count",
+    "decoder.ffn.ffn_schedule",
+    "decoder.ffn.gated",
+    "decoder.ffn.projection_mode",
+    "decoder.ffn.routing_policy",
+    "decoder.layer.norm_kind",
+    "decoder.layer.norm_placement",
+    "decoder.layer.residual_topology",
+    "model.final_norm_kind",
+    "model.tie_word_embeddings"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "14116d9baf3e2c6b075d22750390f718",
@@ -111,6 +142,44 @@
     "bc5df722fc681af5bf5ef5d127daa955",
     "bdefc6faf978f47be8662e9e530a4ebb",
     "d08a31aea8f3894b54d243ea115ebb9e"
+  ],
+  "view_signature": [
+    {
+      "hash": "bc5df722fc681af5bf5ef5d127daa955",
+      "label": "architecture"
+    },
+    {
+      "hash": "d08a31aea8f3894b54d243ea115ebb9e",
+      "label": "architecture"
+    },
+    {
+      "hash": "48ffc71f29e33d83b6558475a9c256fa",
+      "label": "architecture_v1"
+    },
+    {
+      "hash": "9f154ffd8f9114a8e742be3f83a85319",
+      "label": "attn"
+    },
+    {
+      "hash": "6358d38fa166c25631200a061e77e894",
+      "label": "expert_1"
+    },
+    {
+      "hash": "1a58f54930d25fa7f9b24be19fed4cbb",
+      "label": "ffn"
+    },
+    {
+      "hash": "a39b1c9708734671c499bce8772b066f",
+      "label": "ffn"
+    },
+    {
+      "hash": "bdefc6faf978f47be8662e9e530a4ebb",
+      "label": "g_topk"
+    },
+    {
+      "hash": "14116d9baf3e2c6b075d22750390f718",
+      "label": "router"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/glm-4-5",

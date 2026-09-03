@@ -161,6 +161,17 @@
     "f8bac308906a322c389514c1e3b6de2e"
   ],
   "model": "AuraFlow-v0.3",
+  "proven_facts": [
+    "root.denoiser.diffusion_bookend_operations",
+    "root.denoiser.diffusion_root_topology",
+    "root.denoiser.stacks[0].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+    "root.denoiser.stacks[0].diffusion_stack_depth",
+    "root.denoiser.stacks[1].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[1].cell.diffusion_conditioning_applications",
+    "root.denoiser.stacks[1].diffusion_stack_depth",
+    "root.denoiser.stacks[1].ffn.diffusion_ffn_mechanism"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "0f942b2dfc5527d1e808cd12e61d9b80",
@@ -178,6 +189,68 @@
     "c50009c8594dfe7524fc253c00ea8da9",
     "ea61700651015fdfb98974aaa2d1281a",
     "f8bac308906a322c389514c1e3b6de2e"
+  ],
+  "view_signature": [
+    {
+      "hash": "0f8d4b98dad7501ea5d7f11c8ee4ccf0",
+      "label": "architecture"
+    },
+    {
+      "hash": "8a70c0aa3f949557ca0901cfcf8aa72b",
+      "label": "architecture"
+    },
+    {
+      "hash": "f8bac308906a322c389514c1e3b6de2e",
+      "label": "attn"
+    },
+    {
+      "hash": "3c70eea8619a9915e77ad36a381f00b5",
+      "label": "denoiser"
+    },
+    {
+      "hash": "e025c723298cace8275df42568f631a6",
+      "label": "denoiser"
+    },
+    {
+      "hash": "233bf3d1111aa040940edb49a84a4b9d",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "494b981a572306132a61c18bc290e26b",
+      "label": "encoder_0_op_ffn"
+    },
+    {
+      "hash": "091e485d4e137e6561ed0409726c881d",
+      "label": "ffn"
+    },
+    {
+      "hash": "2fdd903168e065742048cd88d4072a8d",
+      "label": "ffn"
+    },
+    {
+      "hash": "a71d3f755a31dd4fc49f037f44024797",
+      "label": "scheduler"
+    },
+    {
+      "hash": "c50009c8594dfe7524fc253c00ea8da9",
+      "label": "vae_decode"
+    },
+    {
+      "hash": "0f942b2dfc5527d1e808cd12e61d9b80",
+      "label": "vae_decoder_block_1"
+    },
+    {
+      "hash": "a0bfa030b3ecbd9b2c89578218afb1d0",
+      "label": "vae_decoder_block_2"
+    },
+    {
+      "hash": "48e134ef4c919df87a42c8ac83b85ba6",
+      "label": "vae_decoder_block_3"
+    },
+    {
+      "hash": "be4ece54ce9dc5f680647a9215d96b35",
+      "label": "vae_decoder_block_4"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/auraflow-v0-3",

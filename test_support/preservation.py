@@ -273,6 +273,22 @@ def _view_hashes(cfg: dict) -> list[dict[str, str]]:
         (label, _visual_hash(svg)) for label, svg in svg_views(html))
 
 
+def input_sha256(path) -> str:
+    """Hash only the executable frozen input, never review/lock metadata.
+
+    S4 adds labeled-view and proven-fact locks to the same fixture document.
+    Hashing the whole JSON made those guardrails masquerade as a model-input
+    change.  The parser is driven by exactly ``config`` + ``source``; those are
+    therefore the closed input identity and any mutation to either still fires.
+    """
+    payload = json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
+    executable = {
+        "config": payload.get("config"),
+        "source": payload.get("source", "local"),
+    }
+    return hashlib.sha256(_canon_bytes(executable)).hexdigest()
+
+
 def build_expected_manifest(corpus_dir, out_path) -> dict:
     """COR-0 (§5): the AUTHORITATIVE executable manifest — for every reviewed
     witnesses: input hash, canonical surface hashes (none None), required view
@@ -287,7 +303,7 @@ def build_expected_manifest(corpus_dir, out_path) -> dict:
                     for s, d in docs.items() if d is not None}
         assert all(surfaces.values()), (path.stem, surfaces)
         witnesses[path.stem] = {
-            "input_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            "input_sha256": input_sha256(path),
             "surfaces": surfaces,
             "views": _view_hashes(cfg),
         }
@@ -348,7 +364,7 @@ def verify_expected_witness(corpus_dir, manifest_path, slug: str) -> list[str]:
     path = corpus_dir / f"{slug}.json"
     if not path.exists():
         return [f"{slug}: corpus input MISSING"]
-    if hashlib.sha256(path.read_bytes()).hexdigest() != row["input_sha256"]:
+    if input_sha256(path) != row["input_sha256"]:
         return [f"{slug}: corpus input hash MISMATCH"]
 
     findings: list[str] = []

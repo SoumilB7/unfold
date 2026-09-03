@@ -25,7 +25,6 @@ from typing import Any
 from . import debug
 from ...everchanging import load_aliases
 from ...ir import AttentionSpec, CrossLayerEdge, FFNSpec, ModelIR
-from ...errors import ConfigParseError
 from .assembly import decoder_extras, decoder_layer, parallel_decoder_layer
 from .common import architecture_name, get_config_value as _g, model_name
 from .special_parts.per_layer_embedding import (
@@ -4324,20 +4323,16 @@ def parse(cfg: Any, context=None) -> ModelIR:
             context,
             config_document=_evidence_config_document,
             config_selector=_u9_selector)
-        if _projector_result.status == "failed" and any(
-                failure.kind == "out_of_owner"
-                for failure in _projector_result.failures):
-            # This is an internal address-integrity failure, not an unknown
-            # mechanism.  Continuing would silently discard a source-proven
-            # projector candidate whose caller is outside the authoritative
-            # owner graph.  The public boundary therefore returns the typed
-            # crash-class refusal required by the no-traceback law.
+        if _projector_result.status in {"failed", "ambiguous"}:
+            # Projector/fusion/modality readers are SIDE readers.  Their typed
+            # failure cannot erase a separately-proven main text stack.  The
+            # failure is retained on the side card and in the visible banner;
+            # main-stack failures still use ConfigParseError.
             detail = "; ".join(
-                failure.detail for failure in _projector_result.failures
-                if failure.kind == "out_of_owner")
-            raise ConfigParseError(
-                "Projector evidence could not be attached to the resolved "
-                f"component owner: {detail}")
+                failure.detail for failure in _projector_result.failures)
+            warnings.append(
+                "Unresolved evidence — projector evidence unresolved"
+                + (f": {detail}" if detail else ""))
         modality_extras = apply_projector_evidence(
             modality_extras,
             _projector_result,

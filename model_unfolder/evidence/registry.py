@@ -1476,7 +1476,7 @@ MIGRATED_SCOPES: tuple[MigrationClaim, ...] = (
 # two near-duplicate sets "kept in sync" by comment are unified).
 INFRA_EXTRAS_KEYS = frozenset({
     "config_audit", "source_provenance", "fact_provenance", "config_consumed",
-    "code_evidence", "config_access", "config_ambiguity",
+    "code_evidence", "config_access", "config_ambiguity", "ship_findings",
 })
 
 

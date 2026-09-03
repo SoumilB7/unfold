@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from model_unfolder import ConfigParseError, unfold
+from model_unfolder import unfold
 from model_unfolder.adapters.transformer.blocks.model import (
     block_diffusion_loop_blocks,
 )
@@ -231,15 +231,16 @@ def test_bare_sd35_is_an_unresolved_denoiser_not_a_text_tower():
     assert "LM head" not in html
 
 
-def test_qwen3_conditional_generation_plain_unfold_has_no_projector_traceback(
+def test_qwen3_conditional_generation_plain_unfold_surfaces_side_reader_failure(
     monkeypatch,
 ):
     """Exercise the original crash class through the public plain-dict path.
 
     The fake graph reproduces the exact producer defect: lineage found a caller
     which the component-root graph cannot address.  That is an address-integrity
-    failure, not an unknown mechanism, so the public path must return the typed
-    crash-class refusal required by C-3 rather than silently dropping it.
+    failure, not an unknown mechanism.  S4 classifies the projector as a SIDE
+    reader: preserve the proven main stack and mark the affected projector,
+    rather than refusing the whole model or dropping the failure silently.
     """
     transformers = pytest.importorskip("transformers")
     from model_unfolder.evidence import projector as projector_module
@@ -257,6 +258,28 @@ def test_qwen3_conditional_generation_plain_unfold_has_no_projector_traceback(
         projector_module, "resolve_component_root",
         lambda *_args, **_kwargs: SimpleNamespace(
             graph=MissingCallerGraph()))
-    with pytest.raises(ConfigParseError, match="Projector evidence"):
-        unfold(config)
+    diagram = unfold(config)
+    ir = diagram.to_ir()
+    assert ir["layers"], "the independently-proven text tower must survive"
+    assert any("projector evidence unresolved" in warning
+               for warning in ir["warnings"])
+    html = diagram.to_html()
+    assert "projector evidence unresolved" in html
+    assert "Projector evidence unresolved" in html
     assert calls, "the poison must exercise the missing-caller join"
+
+
+def test_side_reader_failure_does_not_fabricate_a_projector_block():
+    """A visible failure may qualify a projector, never create one."""
+    from model_unfolder.adapters.transformer.special_parts.modalities.vision \
+        import apply_projector_evidence
+
+    payload = {"modalities": {"inputs": {
+        "vision": {"kind": "code_defined_modality_path"},
+    }}}
+    failure = SimpleNamespace(
+        status="failed",
+        failures=(SimpleNamespace(detail="caller is outside owner graph"),),
+    )
+    result = apply_projector_evidence(payload, failure)
+    assert "projector" not in result["modalities"]["inputs"]["vision"]

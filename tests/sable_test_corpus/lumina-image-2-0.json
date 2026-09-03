@@ -232,6 +232,17 @@
     "e8483db9c1ba9cfd194089017b390919"
   ],
   "model": "Lumina-Image-2.0",
+  "proven_facts": [
+    "root.denoiser.diffusion_bookend_geometry",
+    "root.denoiser.diffusion_bookend_operations",
+    "root.denoiser.diffusion_root_topology",
+    "root.denoiser.stacks[0].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[0].diffusion_stack_depth",
+    "root.denoiser.stacks[1].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[1].diffusion_stack_depth",
+    "root.denoiser.stacks[2].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[2].diffusion_stack_depth"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "5ac17d8fca6973a62b84e7b3d39e3952",
@@ -250,6 +261,72 @@
     "e26eed19307ea820a6ca8e23b99e5ecc",
     "e847adc67aedfd6922a3ded3a8fe39b7",
     "e8483db9c1ba9cfd194089017b390919"
+  ],
+  "view_signature": [
+    {
+      "hash": "e847adc67aedfd6922a3ded3a8fe39b7",
+      "label": "architecture"
+    },
+    {
+      "hash": "e8483db9c1ba9cfd194089017b390919",
+      "label": "architecture"
+    },
+    {
+      "hash": "7cf4921225fcca4d43711514541a2142",
+      "label": "attn"
+    },
+    {
+      "hash": "b4e96f1814df3fe5ef6d6e0fce3ec841",
+      "label": "denoiser"
+    },
+    {
+      "hash": "a2dd49449d9b57dd41f5f488d286a55a",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "7d3443fd29ef5465e5722d3dea2ff019",
+      "label": "encoder_0_g0_op_ffn"
+    },
+    {
+      "hash": "2ed958eb5ee52143fd4566e3af4b4721",
+      "label": "encoder_0_g0_op_selfattn"
+    },
+    {
+      "hash": "5ac17d8fca6973a62b84e7b3d39e3952",
+      "label": "encoder_0_g1_op_selfattn"
+    },
+    {
+      "hash": "e26eed19307ea820a6ca8e23b99e5ecc",
+      "label": "ffn"
+    },
+    {
+      "hash": "72c72e56496f2ecf5c83d5192468a0e7",
+      "label": "scheduler"
+    },
+    {
+      "hash": "a4bd9d4acf64c641ef5d7bbe32e79a7b",
+      "label": "vae_decode"
+    },
+    {
+      "hash": "c9548637d7d0e759e38443e69f62a120",
+      "label": "vae_decoder_block_1"
+    },
+    {
+      "hash": "c445b387e72b69a1bcb1cf0bc02975cc",
+      "label": "vae_decoder_block_2"
+    },
+    {
+      "hash": "b26496903a90d935f59b32446b1d93be",
+      "label": "vae_decoder_block_3"
+    },
+    {
+      "hash": "c09631c90c0265de4279c56e8f8a8d57",
+      "label": "vae_decoder_block_4"
+    },
+    {
+      "hash": "cb0c2c4d1a5455f44683943e4feedaf9",
+      "label": "vae_mid_block"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/lumina-image-2-0",

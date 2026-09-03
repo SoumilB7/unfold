@@ -187,6 +187,15 @@
     "cdd40226ad21413bbe1904a814c8750b"
   ],
   "model": "CogVideoX-5b",
+  "proven_facts": [
+    "root.denoiser.diffusion_bookend_operations",
+    "root.denoiser.diffusion_root_topology",
+    "root.denoiser.stacks[0].attention[0].diffusion_attention_head_dim",
+    "root.denoiser.stacks[0].attention[0].diffusion_attention_head_protocol",
+    "root.denoiser.stacks[0].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+    "root.denoiser.stacks[0].diffusion_stack_depth"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "034c793ae3e5acd9fce6c0bd159ecd6a",
@@ -204,6 +213,68 @@
     "c5cc5eee15e31c66f7795620d62aae28",
     "cdd40226ad21413bbe1904a814c8750b",
     "f174c29ca628d59c7087401466310055"
+  ],
+  "view_signature": [
+    {
+      "hash": "73492783a05d58d76d21107cf42d50c1",
+      "label": "architecture"
+    },
+    {
+      "hash": "9ff512011ed4ec16a1e0c51ff0f9934c",
+      "label": "architecture"
+    },
+    {
+      "hash": "a99b54ef057a9be8af7f1638e5315428",
+      "label": "attn"
+    },
+    {
+      "hash": "5651119d6ae544140f027ed5b199efe7",
+      "label": "denoiser"
+    },
+    {
+      "hash": "9680b5f576b615bc5ee7a1dabc19b8ac",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "b52492e9f2340abd8bb03a36c8116a80",
+      "label": "encoder_0_g0_op_ffn"
+    },
+    {
+      "hash": "990639c19760198453e28e3b61ecd3ee",
+      "label": "encoder_0_g0_op_selfattn"
+    },
+    {
+      "hash": "67ba8cb5e7c47043fa5e69d804de52f6",
+      "label": "encoder_0_g1_op_selfattn"
+    },
+    {
+      "hash": "981aa27e85b804050b732c6603a0d531",
+      "label": "ffn"
+    },
+    {
+      "hash": "b7eafb19db8b53e0f5790078c3d1f62a",
+      "label": "scheduler"
+    },
+    {
+      "hash": "68a15e11ae644cd2c62c97d9bb926534",
+      "label": "vae_decode"
+    },
+    {
+      "hash": "b08f4423fef372283566c0aea18020cf",
+      "label": "vae_decoder_block_1"
+    },
+    {
+      "hash": "034c793ae3e5acd9fce6c0bd159ecd6a",
+      "label": "vae_decoder_block_2"
+    },
+    {
+      "hash": "cdd40226ad21413bbe1904a814c8750b",
+      "label": "vae_decoder_block_3"
+    },
+    {
+      "hash": "6eabcdc83515c7b99964efc1de4da6d1",
+      "label": "vae_decoder_block_4"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/cogvideox-5b",

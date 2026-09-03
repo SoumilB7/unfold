@@ -75,7 +75,7 @@ _BASELINE = {
     "evidence/patterns.py": 0,
     "evidence/sources.py": 2,
     "parser.py": 7,
-    "sable.py": 2,
+    "sable.py": 1,
 }
 
 

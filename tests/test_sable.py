@@ -209,15 +209,40 @@ def test_config_access_capture_survives_nested_reset_and_reports_dotted_paths():
     ]
 
 
-def test_config_field_audit_is_blocking():
-    """Promoted 2026-07-04 (owned-field backlog reached zero): an unread config
-    switch now FAILS the mechanical pass — a new field must be source-bound,
-    registered as exact owner/path debt, or consciously scoped-ignored."""
+def test_config_field_audit_is_blocking_and_visible_on_the_ship_path():
+    """An unread field remains debt, but an exact chip makes it non-silent."""
     cfg = {**LLAMA, "brand_new_architecture_switch": True}
     report = sable(cfg, render_images=False)
     audit = next(c for c in report.checks if c.name == "config_field_audit")
     assert audit.blocking is True
-    assert any("brand_new_architecture_switch" in finding for finding in audit.findings)
+    assert audit.passed
+    diagram = mu.unfold(cfg)
+    assert "config_field_audit evidence unresolved" in diagram.to_html()
+    assert any(
+        row["check"] == "config_field_audit"
+        and "brand_new_architecture_switch" in row["message"]
+        for row in diagram.to_ir()["extras"]["ship_findings"])
+
+
+def test_config_field_audit_poison_without_exact_chip_blocks(monkeypatch):
+    """Suppressing the exact receipt turns the same unread field gate red."""
+    from model_unfolder.evidence import ship_findings as ship_module
+
+    real_apply = ship_module.apply_ship_findings
+
+    def hide_config_field_receipt(ir, findings):
+        return real_apply(ir, tuple(
+            finding for finding in findings
+            if finding.check != "config_field_audit"))
+
+    monkeypatch.setattr(ship_module, "apply_ship_findings",
+                        hide_config_field_receipt)
+    report = sable(
+        {**LLAMA, "brand_new_architecture_switch": True},
+        render_images=False)
+    audit = next(c for c in report.checks if c.name == "config_field_audit")
+    assert any("brand_new_architecture_switch" in finding
+               for finding in audit.findings)
     assert not report.mechanical_passed
 
 
@@ -237,14 +262,36 @@ def test_config_field_audit_clears_only_a_read_mapping_parent():
 def test_u2_projection_and_census_nets_are_wired_blocking_and_clean():
     """U2 P4: net #13 (projection-audit) and net #14 (zero-asserted census) are
     both blocking mechanical nets and both pass on a real decoder; the
-    accessed-but-unprojected upgrade is advisory."""
+    accessed-but-unprojected upgrade is blocking under S4's visible-receipt
+    contract."""
     report = sable(LLAMA, render_images=False)
     by_name = {c.name: c for c in report.checks}
     assert by_name["projection_audit"].blocking is True
     assert by_name["projection_audit"].passed, by_name["projection_audit"].findings
     assert by_name["zero_asserted_census"].blocking is True
     assert by_name["zero_asserted_census"].passed, by_name["zero_asserted_census"].findings
-    assert by_name["config_accessed_unprojected"].blocking is False
+    assert by_name["config_accessed_unprojected"].blocking is True
+
+
+def test_asserted_fact_gate_requires_its_exact_visible_receipt():
+    """S4 promotion is anti-vacuous even though the real corpus is clean."""
+    from types import SimpleNamespace
+    from model_unfolder.evidence.ship_findings import (
+        ShipFinding, apply_ship_findings)
+    from model_unfolder.sable import (
+        _asserted_fact_findings, _ship_gate_findings)
+
+    raw = {"layers": [{"attention": {"asserted": ["future_default"]}}]}
+    findings = _asserted_fact_findings(raw)
+    assert findings and "future_default" in findings[0]
+    assert _ship_gate_findings(raw, "asserted_facts", findings) == findings
+
+    holder = SimpleNamespace(extras={}, warnings=[])
+    apply_ship_findings(holder, (
+        ShipFinding("asserted_facts", findings[0], "repeated_layer"),
+    ))
+    surfaced = {"layers": raw["layers"], "extras": holder.extras}
+    assert _ship_gate_findings(surfaced, "asserted_facts", findings) == []
 
 
 # --------------------------------------------------------------------------- #
@@ -458,28 +505,139 @@ def test_sable_mechanical_pass_on_corpus(name, cfg):
 # the CI lock
 # --------------------------------------------------------------------------- #
 
-def test_bless_refuses_without_visual_artifacts(tmp_path):
-    """The visual gate is ARTIFACT-verified, in every environment:
-    a CLEAN string cannot bless without real on-disk evidence."""
+def test_bless_refuses_self_set_clean_and_missing_visual_artifacts(tmp_path):
+    """Neither a mutable CLEAN string nor missing pixels can bless a render."""
     r = sable(FLUX, render_images=False)
-    # mechanical-clean but visual PENDING -> NOT blessable.
-    with pytest.raises(ValueError):
-        bless(r, FLUX, corpus_dir=str(tmp_path))
-    # CLEAN with NO gallery (rsvg absent / render skipped) -> refused loudly.
+    # A report-producing process cannot bless its own output by mutating the
+    # legacy display field.  An independent persisted verdict is mandatory.
     r.visual_review = "CLEAN"
-    with pytest.raises(ValueError, match="without images is not a review"):
+    with pytest.raises(ValueError, match="independent persisted review verdict"):
         bless(r, FLUX, corpus_dir=str(tmp_path))
+    verdict = tmp_path / "verdict.json"
+    verdict.write_text(json.dumps({
+        "decision": "ACCEPT", "reviewer": "reviewer", "implementer": "executor",
+        "reviewed_at": "2026-09-03", "model": r.model,
+        "view_signature": r.view_signature(),
+    }))
+    # An independent verdict still cannot certify images that do not exist.
+    with pytest.raises(ValueError, match="without images is not a review"):
+        bless(r, FLUX, corpus_dir=str(tmp_path), review_verdict=verdict,
+              implementer="executor")
     # CLEAN with a STALE gallery (files deleted since review) -> refused.
     r.gallery = [str(tmp_path / "gone" / "00__architecture.png")]
     with pytest.raises(ValueError, match="missing on disk|gallery/view"):
-        bless(r, FLUX, corpus_dir=str(tmp_path))
+        bless(r, FLUX, corpus_dir=str(tmp_path), review_verdict=verdict,
+              implementer="executor")
     # CLEAN with a PARTIAL gallery (count != distinct views) -> refused.
     partial = tmp_path / "partial"; partial.mkdir()
     one = partial / "00__architecture.png"; one.write_bytes(b"png")
     r.gallery = [str(one)]
     if len(r.view_hashes) != 1:
         with pytest.raises(ValueError, match="gallery/view mismatch"):
-            bless(r, FLUX, corpus_dir=str(tmp_path))
+            bless(r, FLUX, corpus_dir=str(tmp_path), review_verdict=verdict,
+                  implementer="executor")
+
+
+def test_bless_refuses_a_non_independent_verdict(tmp_path):
+    """The implementer cannot act as the persisted reviewer."""
+    r = sable(FLUX, render_images=False)
+    verdict = tmp_path / "self-verdict.json"
+    verdict.write_text(json.dumps({
+        "decision": "ACCEPT", "reviewer": "executor", "implementer": "executor",
+        "reviewed_at": "2026-09-03", "model": r.model,
+        "view_signature": r.view_signature(),
+    }))
+    with pytest.raises(ValueError, match="reviewer must be independent"):
+        bless(r, FLUX, corpus_dir=str(tmp_path), review_verdict=verdict,
+              implementer="executor")
+
+
+def test_labeled_view_signature_changes_when_only_the_label_changes():
+    """A hash multiset cannot hide a renamed or reassigned drill view."""
+    from model_unfolder.sable import SableReport
+
+    before = SableReport("model", [], [("attention", "same-svg")])
+    after = SableReport("model", [], [("ffn", "same-svg")])
+    assert before.hash_signature() == after.hash_signature()
+    assert before.view_signature() != after.view_signature()
+
+
+def test_regression_gate_rejects_a_label_only_change(monkeypatch):
+    """Poison the real fixture join, not merely the signature helper."""
+    import importlib
+    from model_unfolder.sable import SableReport, check_regression
+
+    sable_module = importlib.import_module("model_unfolder.sable")
+    current = SableReport(
+        "model", [], [("ffn", "same-svg")], oracle="present",
+        proven_facts=["decoder.ffn.activation"],
+    )
+    monkeypatch.setattr(sable_module, "sable", lambda *_args, **_kwargs: current)
+    fixture = {
+        "config": {"model_type": "poison"},
+        "hash_signature": ["same-svg"],
+        "view_signature": [{"label": "attention", "hash": "same-svg"}],
+        "proven_facts": ["decoder.ffn.activation"],
+    }
+    assert check_regression(fixture) == [
+        "labeled view drift — a view label or its exact SVG changed; "
+        "re-review and re-bless if intended"
+    ]
+
+
+def test_recall_ratchet_names_a_proven_fact_that_disappears():
+    """Proven-to-unresolved is directional debt, never an ordinary re-bless."""
+    from model_unfolder.sable import _recall_findings
+
+    assert _recall_findings(
+        ["decoder.attention.kind", "decoder.ffn.activation"],
+        ["decoder.ffn.activation"],
+    ) == [
+        "recall regression: proven fact 'decoder.attention.kind' became "
+        "unresolved or disappeared — provide a named re-proof and visible chip "
+        "before updating the reviewed baseline"
+    ]
+
+
+def test_regression_gate_rejects_proven_to_unresolved(monkeypatch):
+    """A real fixture cannot lose one proven fact behind unchanged pixels."""
+    import importlib
+    from model_unfolder.sable import SableReport, check_regression
+
+    sable_module = importlib.import_module("model_unfolder.sable")
+    current = SableReport(
+        "model", [], [("architecture", "same-svg")], oracle="present",
+        proven_facts=["decoder.ffn.activation"],
+    )
+    monkeypatch.setattr(sable_module, "sable", lambda *_args, **_kwargs: current)
+    fixture = {
+        "config": {"model_type": "poison"},
+        "hash_signature": ["same-svg"],
+        "view_signature": [
+            {"label": "architecture", "hash": "same-svg"},
+        ],
+        "proven_facts": [
+            "decoder.attention.mechanism", "decoder.ffn.activation",
+        ],
+    }
+    assert check_regression(fixture) == [
+        "recall regression: proven fact 'decoder.attention.mechanism' became "
+        "unresolved or disappeared — provide a named re-proof and visible "
+        "chip before updating the reviewed baseline"
+    ]
+
+
+def test_zero_asserted_census_reraises_unexpected_parser_failures(monkeypatch):
+    """The ablation census may skip a typed refusal, never an implementation bug."""
+    from model_unfolder import parser as parser_module
+    from model_unfolder.sable import _zero_asserted_census_findings
+
+    def explode(*_args, **_kwargs):
+        raise RuntimeError("poison parser failure")
+
+    monkeypatch.setattr(parser_module, "config_to_ir", explode)
+    with pytest.raises(RuntimeError, match="poison parser failure"):
+        _zero_asserted_census_findings({"hidden_size": 64}, "local")
 
 
 def test_bless_reuses_the_existing_fixture_for_an_identical_frozen_config(tmp_path):
@@ -542,8 +700,14 @@ def test_bless_round_trips_with_real_gallery_and_records_supersession(tmp_path):
     r = sable(FLUX, outdir=str(tmp_path / "gallery"))
     assert r.gallery and len(r.gallery) == len(r.view_hashes)
     assert (tmp_path / "gallery" / "MANIFEST.txt").exists()
-    r.visual_review = "CLEAN"
-    path = bless(r, FLUX, corpus_dir=str(tmp_path))
+    verdict = tmp_path / "verdict.json"
+    verdict.write_text(json.dumps({
+        "decision": "ACCEPT", "reviewer": "reviewer", "implementer": "executor",
+        "reviewed_at": "2026-09-03", "model": r.model,
+        "view_signature": r.view_signature(),
+    }))
+    path = bless(r, FLUX, corpus_dir=str(tmp_path), review_verdict=verdict,
+                 implementer="executor")
     fixture = json.loads(open(path).read())
     assert check_regression(fixture) == []
     assert fixture["visual_evidence"]["png_count"] == len(r.view_hashes)
@@ -562,7 +726,8 @@ def test_bless_round_trips_with_real_gallery_and_records_supersession(tmp_path):
     gallery_home = tmp_path / "galleries" / fixture["model"]
     review = gallery_home / "her_eyes_review.md"
     review.write_text("human review evidence must survive a re-bless\n")
-    path2 = bless(r, FLUX, corpus_dir=str(tmp_path))
+    path2 = bless(r, FLUX, corpus_dir=str(tmp_path), review_verdict=verdict,
+                  implementer="executor")
     refreshed = json.loads(open(path2).read())
     assert refreshed["hash_signature"] == fixture["hash_signature"]
     assert refreshed["superseded_hash_signature"] == tampered["hash_signature"]

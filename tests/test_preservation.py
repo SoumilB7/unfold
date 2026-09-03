@@ -87,16 +87,26 @@ def test_poison_identical_witnesses_are_clean():
 
 
 def test_poison_corpus_input_change_is_detected():
-    """§7.7.8 — a changed corpus input hash mismatches the committed manifest."""
-    import hashlib
+    """§7.7.8 — config changes fire; review metadata changes do not."""
     manifest = json.loads(
         (pathlib.Path(mu.__file__).parent.parent /
          "tests" / "preservation_expected_manifest.json").read_text())
     slug, row = next(iter(sorted(manifest["witnesses"].items())))
     recorded = row["input_sha256"]
-    original = (_CORPUS / f"{slug}.json").read_bytes()
-    assert hashlib.sha256(original).hexdigest() == recorded  # inputs intact
-    assert hashlib.sha256(original + b"\n{}").hexdigest() != recorded
+    path = _CORPUS / f"{slug}.json"
+    assert P.input_sha256(path) == recorded
+
+    payload = json.loads(path.read_text())
+    payload["view_signature"] = [{"label": "metadata-only", "hash": "x"}]
+    metadata_only = path.parent / f".{slug}-metadata-poison.json"
+    try:
+        metadata_only.write_text(json.dumps(payload))
+        assert P.input_sha256(metadata_only) == recorded
+        payload["config"]["input_poison"] = 1
+        metadata_only.write_text(json.dumps(payload))
+        assert P.input_sha256(metadata_only) != recorded
+    finally:
+        metadata_only.unlink(missing_ok=True)
 
 
 # --------------------------------------------------------------------------- #
@@ -213,8 +223,8 @@ def test_poison_manifest_violations_fail(tmp_path, mutate, expect):
     elif mutate == "none_hash":
         key = next(iter(doc["witnesses"][slugs[0]]["surfaces"]))
         doc["witnesses"][slugs[0]]["surfaces"][key] = None
-        doc["witnesses"][slugs[0]]["input_sha256"] = P.hashlib.sha256(
-            (corpus / f"{slugs[0]}.json").read_bytes()).hexdigest()
+        doc["witnesses"][slugs[0]]["input_sha256"] = P.input_sha256(
+            corpus / f"{slugs[0]}.json")
     elif mutate == "mutate_view":
         views = doc["witnesses"][slugs[0]]["views"]
         views[0]["sha256"] = "f" * 12

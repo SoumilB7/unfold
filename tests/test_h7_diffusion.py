@@ -134,7 +134,12 @@ def test_diffusion_consumed_census_is_non_empty_and_exact():
 
 
 def test_conflicting_diffusion_aliases_block_not_default():
-    """A familiar but source-unused head spelling stays powerless and visible."""
+    """A familiar but source-unused head spelling stays powerless and visible.
+
+    S4 closes the no-silence gate with the exact shipped receipt; the original
+    finding remains countable in ``ship_findings`` rather than appearing as an
+    unsurfaced Sable failure.
+    """
     from model_unfolder.sable import sable
 
     cfg = {**FLUX, "n_heads": 16}   # FLUX declares num_attention_heads=24
@@ -142,8 +147,11 @@ def test_conflicting_diffusion_aliases_block_not_default():
     amb = next(c for c in rep.checks if c.name == "config_ambiguity")
     assert amb.blocking and not amb.findings
     audit = next(c for c in rep.checks if c.name == "config_field_audit")
-    assert any("n_heads" in f for f in audit.findings)
-    assert not rep.mechanical_passed
+    assert audit.blocking and not audit.findings
+    rows = rep.coverage["flagged_findings"]
+    assert any(row.startswith("config_field_audit:") and "n_heads" in row
+               for row in rows)
+    assert rep.coverage["silent"] == 0
 
 
 def test_absent_head_geometry_stays_unknown_not_zero_as_known():

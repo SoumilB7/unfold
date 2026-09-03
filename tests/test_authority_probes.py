@@ -414,7 +414,10 @@ def test_audit_incomplete_names_unmigrated_owners():
         (starved.get("_scheduler_config") or {}).pop(consumed_key, None)
     rep2 = sable(starved, render_images=False)
     check2 = next(c for c in rep2.checks if c.name == "config_audit_incomplete")
-    assert "root.scheduler" in check2.findings, check2.findings
+    assert check2.blocking and not check2.findings
+    assert "config_audit_incomplete: root.scheduler" in \
+        rep2.coverage["flagged_findings"]
+    assert rep2.coverage["silent"] == 0
 
 
 def test_zero_consumption_owner_with_exact_debt_is_not_vacuously_incomplete():
@@ -489,17 +492,30 @@ def test_cor3_activation_rivals_author_nothing_and_block():
     sys.path.insert(0, str(pathlib.Path(mu.__file__).parent.parent))
     from model_unfolder.sable import sable
     from test_support import FLUX
-    from test_support.preservation import html_meta
 
     conflicted = {**FLUX, "hidden_act": "gelu", "act_fn": "silu"}
-    control = html_meta(mu.unfold(FLUX).to_html(standalone=True))
-    actual = html_meta(mu.unfold(conflicted).to_html(standalone=True))
-    assert actual["structural_sha256"] == control["structural_sha256"]
+    control = mu.unfold(FLUX).to_ir()
+    actual_diagram = mu.unfold(conflicted)
+    actual = actual_diagram.to_ir()
+    # The unused declarations still author no architecture. S4 intentionally
+    # adds only their exact visible audit receipts, so byte-identical HTML is
+    # no longer the lawful assertion here.
+    assert actual["layers"] == control["layers"]
+    assert actual["params"] == control["params"]
+    rows = (actual["extras"].get("ship_findings") or [])
+    config_rows = [row for row in rows
+                   if row.get("check") == "config_field_audit"]
+    assert len(config_rows) == 2
+    assert any("'hidden_act'" in row["message"] for row in config_rows)
+    assert any("'act_fn'" in row["message"] for row in config_rows)
+    html = actual_diagram.to_html(standalone=True)
+    assert "unresolved evidence" in html and "partial config" not in html
     rep = sable(conflicted, render_images=False)
-    assert not rep.mechanical_passed
+    assert rep.mechanical_passed
     audit = next(c for c in rep.checks if c.name == "config_field_audit")
-    assert any("hidden_act" in f for f in audit.findings)
-    assert any("act_fn" in f for f in audit.findings)
+    assert not audit.findings
+    assert any("hidden_act" in row for row in rep.coverage["flagged_findings"])
+    assert any("act_fn" in row for row in rep.coverage["flagged_findings"])
     ambiguity = next(c for c in rep.checks if c.name == "config_ambiguity")
     assert ambiguity.passed
 

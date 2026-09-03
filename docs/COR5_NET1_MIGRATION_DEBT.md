@@ -61,7 +61,7 @@ that keeps the key host-independent, so a claim binding matches the same
 mechanism whether a model is parsed standalone or embedded in a pipeline.
 Prefix a row with its document to address the value in the witness file.
 
-## PENDING occurrences (dispositioned, exact debt rows): 16
+## PENDING occurrences (dispositioned, exact debt rows): 13
 
 Each row here is EXCUSED by one exact config_read StructuralDebt row
 (evidence/structural_debt.py): owner + exact path + U3-U14 unit +
@@ -73,9 +73,9 @@ standing UNCLASSIFIED reads, and never a family-wide excuse.
 
 `embedding_multiplier` (1w, U14), `logits_scaling` (1w, U14)
 
-### `root.denoiser` — 14 pending rows
+### `root.denoiser` — 11 pending rows
 
-`activation_fn` (4w, U10), `addition_embed_type` (1w, U11), `addition_time_embed_dim` (1w, U11), `attention_bias` (4w, U10), `block_out_channels` (1w, U11), `down_block_types` (1w, U11), `layers_per_block` (1w, U11), `mid_block_type` (1w, U11), `projection_class_embeddings_input_dim` (1w, U11), `qk_norm` (5w, U10), `rope_theta` (2w, U10), `transformer_layers_per_block` (1w, U11), `up_block_types` (1w, U11), `use_rotary_positional_embeddings` (1w, U10)
+`addition_embed_type` (1w, U11), `addition_time_embed_dim` (1w, U11), `block_out_channels` (1w, U11), `down_block_types` (1w, U11), `encoder_hid_dim` (1w, U11), `encoder_hid_dim_type` (1w, U11), `layers_per_block` (1w, U11), `mid_block_type` (1w, U11), `projection_class_embeddings_input_dim` (1w, U11), `transformer_layers_per_block` (1w, U11), `up_block_types` (1w, U11)
 
 ## Reads whose LOCATION is unknown: 0
 
@@ -115,7 +115,6 @@ class-supplied `layer_types` IS a mask schedule. The open question for
 each is not "what does this declaration mean" but "may the class decide
 this, and does the fact it authors say so".
 
-- `root.denoiser` — 3: `_repo_id` [loader_metadata] (14w), `_text_encoder_configs` [loader_metadata] (15w), `_vae_config` [loader_metadata] (14w)
-- `root.scheduler` — 1: `_scheduler_config` [loader_metadata] (15w)
+- `root.denoiser` — 4: `_repo_id` [loader_metadata] (14w), `_scheduler_config` [loader_metadata] (15w), `_text_encoder_configs` [loader_metadata] (15w), `_vae_config` [loader_metadata] (14w)
 - `root.vae` — 1: `_vae_config` [loader_metadata] (14w)
 

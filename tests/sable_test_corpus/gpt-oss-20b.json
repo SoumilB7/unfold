@@ -130,6 +130,32 @@
     "f3df89820579dc3b4bf7ee5b51fc79e9"
   ],
   "model": "gpt-oss-20b",
+  "proven_facts": [
+    "decoder.attention.bias",
+    "decoder.attention.cached",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mask",
+    "decoder.attention.mask_schedule",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.output_projection",
+    "decoder.attention.position_schedule",
+    "decoder.attention.projection_mode",
+    "decoder.attention.rope_initialization",
+    "decoder.attention.rope_theta",
+    "decoder.attention.scores_scale",
+    "decoder.attention.sinks",
+    "decoder.ffn.expert.expert_activation_formula",
+    "decoder.ffn.expert.expert_intermediate_size",
+    "decoder.ffn.expert.expert_projection_mode",
+    "decoder.ffn.ffn_schedule",
+    "decoder.ffn.routing_policy",
+    "decoder.layer.norm_kind",
+    "decoder.layer.norm_placement",
+    "decoder.layer.residual_topology",
+    "model.final_norm_kind",
+    "model.tie_word_embeddings"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "19f54d71ceafc7386057dea86cbd0031",
@@ -140,6 +166,40 @@
     "617ce03749b7fbeb4ed3b7ef445ab849",
     "9c61b6c1799a8a0e41ca220558ade62f",
     "f3df89820579dc3b4bf7ee5b51fc79e9"
+  ],
+  "view_signature": [
+    {
+      "hash": "9c61b6c1799a8a0e41ca220558ade62f",
+      "label": "architecture"
+    },
+    {
+      "hash": "f3df89820579dc3b4bf7ee5b51fc79e9",
+      "label": "architecture"
+    },
+    {
+      "hash": "19f54d71ceafc7386057dea86cbd0031",
+      "label": "architecture_v1"
+    },
+    {
+      "hash": "0ff52a453ed4cd94123b0a276ee074d8",
+      "label": "attn"
+    },
+    {
+      "hash": "335dc4a5c8ffd40fc2e4b5cb87d8d71d",
+      "label": "attn"
+    },
+    {
+      "hash": "5649037dd75f6c481afb2ae7124aaf39",
+      "label": "expert_1"
+    },
+    {
+      "hash": "5b1391184ca2e87a94708a850e6a8ad9",
+      "label": "ffn"
+    },
+    {
+      "hash": "617ce03749b7fbeb4ed3b7ef445ab849",
+      "label": "router"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/gpt-oss-20b",

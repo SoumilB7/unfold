@@ -7,7 +7,7 @@
  "witness_count": 29,
  "witnesses": {
   "auraflow-v0-3": {
-   "input_sha256": "2eea8eded57b14806d0845ba009a92b544d9f14584fe32c0177292317d8d8b23",
+   "input_sha256": "2fd52b165c9a4ac45ad0320de924685e1db03bd7b322802de94620cde37666db",
    "surfaces": {
     "expanded": "da09eead8e9a17f1a2435cfd60d11a6a198536337576e6ebe3ff7bdf5a980750",
     "gallery": "1ce9642a7fa42ed079c992b6509663bc8adc6059bd689524a6ea1fb9c1214fdf",
@@ -81,7 +81,7 @@
    ]
   },
   "bloom": {
-   "input_sha256": "ce4c705515ddb8681681269cfd662290d5e594bdcab9d6ac9862e90b743087f6",
+   "input_sha256": "eeececc1c43f2e91a513d3e970fdc7bc20e8dd984432464a94e6aef1dddabac0",
    "surfaces": {
     "expanded": "cc26a1dfa4641f13b9653a7a80fae0e087dc5f5193b3566a6cc1638b7b3112c1",
     "gallery": "0e259a9a42ac5d6af1a1abfb04a4ea7ac7068c6151cf4b131de0147a24eb0a30",
@@ -111,7 +111,7 @@
    ]
   },
   "cogvideox-5b": {
-   "input_sha256": "168eae6f18fde92fd91baa43524097cd5472ffdfd4743b79d195ede0da586044",
+   "input_sha256": "98c43e5a1e52ac08217bbf059792b259c50eee75872e488d890e6f34691acb1e",
    "surfaces": {
     "expanded": "8661b9553f1fdfa6aeb48f42f065c053d2a340b772dbeca42bc352893074fcc6",
     "gallery": "9a2c01e567ec4cb05c1376dad08c4cdb305c31c1529f394acb2d6ceffd67d028",
@@ -185,7 +185,7 @@
    ]
   },
   "dbrx-base": {
-   "input_sha256": "046c6ed9201ad0c5bb1151f9270985fae12deb0e888184109f8592df48d0183d",
+   "input_sha256": "5af6ade4f3f084dfffb11ebe5f69e548476f774a0a2423b15581bf8e107cd44f",
    "surfaces": {
     "expanded": "dbfd7af9608bcee465b0b2ca2acc476074d4438ce3d7eab6ee475d4c5ebc4431",
     "gallery": "348d19b884c2b1c4088337e8fda6e6133caa683d976ed26152dea247417dc4fe",
@@ -223,7 +223,7 @@
    ]
   },
   "deepseek-v3": {
-   "input_sha256": "c5ef37d59174eda4591111ae010325207a3ac9b7a60233c5bcb5eec1344c7b38",
+   "input_sha256": "c537a3b8a2ac6d5bb55c71a44daf203ece0978aa1372dc24d9e88c7832f5dd0e",
    "surfaces": {
     "expanded": "e949a15a9e7f3a95276e907fdf88914189a27e27988bf197b7dddf39df08f9f8",
     "gallery": "88dd433d2e5af379189491e27d3d71322f2ebcf73b46c463301df125a0660fb6",
@@ -281,7 +281,7 @@
    ]
   },
   "flux-2-dev": {
-   "input_sha256": "4a952c4efc0c5bdd1e91ff7beca07c444fc6e00439663cb5358631f125e4d683",
+   "input_sha256": "6b2db1a30cfc42253f142e759926b2b6ce92b27fe28429ff11bb691b7a7c3bd9",
    "surfaces": {
     "expanded": "58a6a269f37a76c2d605f7584b31db185fc26309ad290ea0b827b730be8d0b15",
     "gallery": "c04b25d96c3e91e661836080c6bf69d49228254cd97139bccb9be6e7cc9f31f5",
@@ -359,7 +359,7 @@
    ]
   },
   "fluxtransformer2dmodel": {
-   "input_sha256": "477f83780c7b2654f8281ebc361b0782de5121dedfc13348e0a89c4f929e1e75",
+   "input_sha256": "fd25deced9c84d1981cc6dd371cb8610466e0ffb1b93e5dc6f172818ad9b4986",
    "surfaces": {
     "expanded": "dcf21b340d84cb6c3a4de598c375213d4da92852c8ba623463520a4436389712",
     "gallery": "5b5ae8c6c811e0d9353f4fe787ae8a20e4b0610c58e616b75a4880901b42e396",
@@ -453,7 +453,7 @@
    ]
   },
   "gemma-2-2b-it": {
-   "input_sha256": "a64c53c1e94a7aa70f4083a2471d5839745ba24e9ac24fc0cd19e5c7ac64787f",
+   "input_sha256": "fac62bd74d4b40283b6a1ba24702067f8064278f3e25442e55a6a79dad3f2f14",
    "surfaces": {
     "expanded": "9f78a84bf3bf0a62cc6e933bd5d4b049731c8a2bd47400d16fc39728f805d8c5",
     "gallery": "bcb7a70197eb91055f39baa03c8decb23066791e2c4c7cf4c56c385dddc8c42c",
@@ -491,7 +491,7 @@
    ]
   },
   "glm-4-5": {
-   "input_sha256": "190771c54fe09f896fd362a7d404cf07d0a300c325509148494b555c9d34bdb0",
+   "input_sha256": "5299d4506ac6d5ddebcb6bfc2f94d599f6890db50476722866d4a5285310ee37",
    "surfaces": {
     "expanded": "c6dc7e3af5134b46979ca77ae7e7c25216e855c4b9150510c6aebcb4987a68c2",
     "gallery": "0fdf3de732f09638b7fe51b1ff2dce2774d7186d1953d85455fd09e6865f6c6d",
@@ -541,7 +541,7 @@
    ]
   },
   "gpt-oss-20b": {
-   "input_sha256": "f4c3450539d38b35ee75b36c63f8d107a3aded3d9b5fbcb469923ed640b1454f",
+   "input_sha256": "f0674dd09395797f13e4cc920a3720aab014d5423a118d7158caef5133e88ece",
    "surfaces": {
     "expanded": "77267e358c81072ee8e695e266cbd10578f041db45cf997c87d1a3c9c59862ce",
     "gallery": "ea8d4e3b86999dedbc83f797a29ff3d3be5b0dbe3569bd1fd1d8587227387aa9",
@@ -587,7 +587,7 @@
    ]
   },
   "granite-3-0-8b-instruct": {
-   "input_sha256": "1e3b1fab0f9bde2083c44bdb1a4af74bc6de8e2cdfa2a867d9342ff058abc447",
+   "input_sha256": "efa95f28e1c85369e50ea060677d52fd71b2712b9c7fabd249b3d2985fbde6ee",
    "surfaces": {
     "expanded": "4ed7fea5dac2316065528ea3bfb341f8fefacfe161c8c0f5c9d3e453590c44f0",
     "gallery": "365f4e56ced8d5f50bf64a7a131a8b7f99f25db32609830babcc430ef48d3a50",
@@ -617,7 +617,7 @@
    ]
   },
   "hunyuanvideo": {
-   "input_sha256": "818f31eff24092dc5fd093bd6d5f17e5dabbd72272e54caede87000d35bb4c70",
+   "input_sha256": "55c6fec69956e7fcb037a27666903eb9517f03df73d276770e2d23be1c4b64b7",
    "surfaces": {
     "expanded": "d5d0c1e61b13fe3840180ff83ef90f74490517b9a876e7182d75a736a5a224f3",
     "gallery": "c97f3cb15519ca9abf705403e4da272075c8cc47093c20f4bdfe07f0019679c1",
@@ -711,7 +711,7 @@
    ]
   },
   "llama-7b": {
-   "input_sha256": "bd32afb7296e91053c5def441cbda872d7cd89317940d74df2540cad5a799921",
+   "input_sha256": "e5c5361c13175608d270859419a52e83e2d1c5f50bdaddb3984f897a91bd6ea0",
    "surfaces": {
     "expanded": "2675c8349080fa39e5cc1fa77e77b48f2c48edb9f1b435e5a06806f06600b0a0",
     "gallery": "b639c0daf9a06c8ec77fe3ca19729dc48952c26bcac6ce58509b08c9ba8d8535",
@@ -741,7 +741,7 @@
    ]
   },
   "ltx-video": {
-   "input_sha256": "e5b2624412485d16adfa96d9b6f71e5c6da6a38a5263bad38aad974d53350953",
+   "input_sha256": "29d528c55dab8bd0b1f90ce88dce626a09b02cae9fdde7f1a7c13b3d54b03a12",
    "surfaces": {
     "expanded": "22fe99884a9ae55119c9d100089396772d50c26d69865a41653b7b918b6904b5",
     "gallery": "3a120acf073413a4b8789789c2e9704f6b3c5f5ed12140edb107307751c2af55",
@@ -803,7 +803,7 @@
    ]
   },
   "lumina-image-2-0": {
-   "input_sha256": "f8c798cd6b5cadd82b49bcb41ec821c11b5dd583524ac4cea00220ada7d67fdf",
+   "input_sha256": "4724ec06ef7568b049d971a1aeaf89631a36eabcdaaff9ba7b0112f7f0d53c97",
    "surfaces": {
     "expanded": "b52b3e34d6c2e6051d0d20289400fa1df7c0b94a9c0b6741bd351b7fc3034241",
     "gallery": "f5fc86fc159d8058eb034c6d6c8dbf53f4a4b10382bae241b17768014d84bbc4",
@@ -881,7 +881,7 @@
    ]
   },
   "mochi-1-preview": {
-   "input_sha256": "fb654b36f7cdfb71f7a397043367eb95547e691aebb820544b7547df31b94a2b",
+   "input_sha256": "0f43260bb708c7ca1ad6e3a0bead10a4f16278955f5625c14bfb9febada5d786",
    "surfaces": {
     "expanded": "d53eeaf14d478d6b8f0e5daf0b17b545d4f3c27021ce7e45f3d6d6d9e34762dc",
     "gallery": "0a3422f4987e062ef8b0cf20d42829ee8fdfb87c03c97e5b26a104add67d0528",
@@ -931,7 +931,7 @@
    ]
   },
   "musicgen-small": {
-   "input_sha256": "e1dd8c76c1633a01dd3e9dfd4e75c224b6caf2a2a6795670ad0e0372687c6ee8",
+   "input_sha256": "59bd0ebe679a0f02a04f579c58b5c0dcd42e3ae0e1967468ebfbe8d91bbb31f8",
    "surfaces": {
     "expanded": "02fc07dc215a8b7b5e13be875f556355dfe8e90decb179592200516413046016",
     "gallery": "a0e5a253b4fe8d5f9c7cb2ca19f08dc8d47ee0e8998042dc7ab7daaac7266485",
@@ -977,7 +977,7 @@
    ]
   },
   "olmo-2-1124-7b": {
-   "input_sha256": "352020542402dc49be20f0b5515d037724f27c2f4a5f53a948c6838bfedad0bf",
+   "input_sha256": "4c01e79069f3f323a7371ec479efd297d2094c617125738c0e26b9dc71d9115c",
    "surfaces": {
     "expanded": "afbb07247015f34f57f57f2a1b1fb57f3042d24e48a89a95d549b3a1b7c5d9aa",
     "gallery": "cb7565d82f8909e441bb6ad99312243171265d07efaf3755a4cf3634839cde6a",
@@ -1007,7 +1007,7 @@
    ]
   },
   "pixart-sigma-xl-2-1024-ms": {
-   "input_sha256": "8b36b14703c0027b41756457fe6d076a292e6acd9bca3e88f6f300d4ce71db96",
+   "input_sha256": "40d5671a5a0f359256d75c826cc879a15dc42707ff759d91a6f0a0a277d6d714",
    "surfaces": {
     "expanded": "4a9dbdb0be78fa21e3cd1fd1bfc983d6225ab452c44efbc5407bd11d1e3362d7",
     "gallery": "6d4a2a882d8f0d93b6d06877a716685492a675e75f871c8e853d4f77df3a93ae",
@@ -1073,7 +1073,7 @@
    ]
   },
   "prxpixel-t2i": {
-   "input_sha256": "a769bfa992841a1528e60dc6f25326a2d7b6bf9e27e38f08769ddf605de6b36a",
+   "input_sha256": "9db1f3ac576f2f363e02c8cdcbfa9f550a2225f0049210a0f810275f06e5435a",
    "surfaces": {
     "expanded": "4834265d7417753dabf18c43459e6aaba200b555368ce6dfd924a9a9ebcfd47e",
     "gallery": "f9f3ff978bf8b071849dd611f6e3feaad7af95ac3d1d61ad7f3f88d311f1de64",
@@ -1123,7 +1123,7 @@
    ]
   },
   "qwen-image": {
-   "input_sha256": "c0ff0327edf2f42cd91bc1ae38517ea3c725024a5792a87311b02421473ba032",
+   "input_sha256": "1a1daa1f89f87b911e912fc0e6b9cf01d43cf61948679ede2e94134ceda11036",
    "surfaces": {
     "expanded": "abc8952d6eb06eec9383393d3647fac925286f2adbff49e39361db72239bc7a4",
     "gallery": "416121825fcd8694b99cc9992006dfb26dbcf006c579726cecbdc686c067aafd",
@@ -1189,7 +1189,7 @@
    ]
   },
   "qwen2-vl-7b-instruct": {
-   "input_sha256": "52948c319ea958a543f32bd8e660a53dd612ea899da61ee38bf91e041e5bfc05",
+   "input_sha256": "8920a8d0e2cf72f5d95859a23505e5d0df6ec62d06e5a31098eb93d7d120a30b",
    "surfaces": {
     "expanded": "3f73c14c83c9bc4e9e637519324ad979037883c847be1916acedd60cee9571cc",
     "gallery": "63ee4102662bc7f71c0a5d82b1c98da836b919ecd82f74f6f6ae8f21089d6d17",
@@ -1247,7 +1247,7 @@
    ]
   },
   "qwen3-5-27b-text": {
-   "input_sha256": "3e960d967788aefec9c252225ae072e338c49666469c47eaa7d89eae5e4319af",
+   "input_sha256": "c3532d5a53e8a0a3e630904abbb8d42d545d19a991082ee4e82e826dd46b3f97",
    "surfaces": {
     "expanded": "09a3b9685257651ee869252074226276a6289ba30cb194f40cdfa4cb7060fb4b",
     "gallery": "da40f2cea257f42a25c102c83a8d94f6d73dc04f5093a8b3d23a664352ca59e8",
@@ -1285,7 +1285,7 @@
    ]
   },
   "qwen3-8b": {
-   "input_sha256": "0e5555eb8cfffe44b07b3d879ef0a4c95acfd61942ec95e169f40aa630a1424f",
+   "input_sha256": "64e30e9f25fb34dc75f0ea24ded9dfec7503f36945d00f0290655ed6a31dff82",
    "surfaces": {
     "expanded": "4d177c24926a415d7ad585995a2188e2eddb9d6552ceeb00d1892325d566ed8d",
     "gallery": "5bdae5c3ca7b31409b4354bbff4ef3039fb3ccca086a8c542bb729f04838c6a5",
@@ -1315,7 +1315,7 @@
    ]
   },
   "sana-1600m-1024px-diffusers": {
-   "input_sha256": "566c78dcffa0e2e736c86bed27d932d62825349da830630bfaf9aaae0c3a3e38",
+   "input_sha256": "d923ab60e0cec42e253fa8d373c786163d5254ac53cb576586a17d30f9edd440",
    "surfaces": {
     "expanded": "5f775f77cb9acc7c06ac626ae6b6530ed824319324f14037425d24841c52dddd",
     "gallery": "404ad2fb4f0fd656503c49adf0094e03a56f8c8983a9cc1623ed5373864e6633",
@@ -1377,7 +1377,7 @@
    ]
   },
   "stable-diffusion-3-5-large": {
-   "input_sha256": "923d87253ff781a99a67e833a86a2387632a80d300523382c03484f281b05146",
+   "input_sha256": "1a3cdaafa2c2aabe41cad52320163463c1fbb57b2fd82829dac43c678d7cd2ee",
    "surfaces": {
     "expanded": "660193aaca0100b59ae27ae87a5b72421f8c3c6c7791aeb0539af09c7b1b8f5f",
     "gallery": "15ecd5f13f1851c448e65676f9ec8f102deb8f595e4a234357139263a486ff3b",
@@ -1467,7 +1467,7 @@
    ]
   },
   "stable-diffusion-xl-base-1-0": {
-   "input_sha256": "f6c8e738960d6dc39cc47162b116c0cd673bf862d026d414622d74f423e05929",
+   "input_sha256": "52be2be1c491ad6bc1ec707f3a63893b18adfbca8b95b29f35ca5d803fb6db74",
    "surfaces": {
     "expanded": "522054224cc7fe9127c0b5b950d3b3ffebdb6803c7e2945edeea541164d2c1be",
     "gallery": "12ef07a27e382d942a62a2ab1d574850d3d8658170b16c7293851c2bc4920eaf",
@@ -1597,7 +1597,7 @@
    ]
   },
   "stablelm-2-1-6b": {
-   "input_sha256": "41df1db7502c63becec3c78373a80d80dc71ef7775830081c6ea22b1be35feba",
+   "input_sha256": "fac78593024b21c2407123b03897e713759220be6c9880257da92e98caa19927",
    "surfaces": {
     "expanded": "f2af6fc65a842e5a2b160fa4caff3fa933c18568cb45e81fe97488b0b0a72449",
     "gallery": "b2c088fffef71234078d89a76fd5d094afb689667624c11412c065437dd0514e",
@@ -1627,7 +1627,7 @@
    ]
   },
   "wan2-2-t2v-a14b-diffusers": {
-   "input_sha256": "726e2c060058ddf9efc11577d35c86cb8ae2f1938b535b91b8235f55979920e3",
+   "input_sha256": "0dec40e4d5a7aa598132bab0d057ca203144220851235672417dbbb68f2bca52",
    "surfaces": {
     "expanded": "d780ab9551329e04f422e37ac880150d946d382c54a3c8f6be73fd26c55ee7c3",
     "gallery": "d4d82b4664ea629cd81e7d523290af9d8ef17cced7f091652cd4fdafa1c7e1d9",

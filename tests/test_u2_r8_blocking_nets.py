@@ -27,9 +27,8 @@ def _check(rep, name):
 
 
 def test_all_u2_nets_are_blocking_on_a_live_witness():
-    """The R8 cutover: no U2 net is advisory anymore (asserted_facts is the
-    B5 hunt-list, not one of the ten; accessed_unprojected stays the advisory
-    read-but-not-yet-receipted census outside receipted scopes by doctrine)."""
+    """The R8 gates stay blocking; S4 separately promotes the asserted-fact
+    and accessed-unprojected hunt lists under visible-receipt semantics."""
     rep = sable(_cfg("qwen2-vl-7b-instruct"), render_images=False)
     for name in ("document_boundary_completeness", "config_standing_unconsumed",
                  "structural_debt_register", "config_audit_incomplete",
@@ -52,7 +51,6 @@ def test_poison_net1_boundary_completeness_fires_on_ledger_rows():
     ex = ir.setdefault("extras", {}).setdefault("config_access", {})
     ex["accessed_unresolved_path"] = ["root:ghost_field"]
     ex["unestablished_provenance"] = ["root:ghost_origin"]
-    from model_unfolder.sable import SableCheck  # the assembly reads extras
     findings = ([f"unlocated read: {row}" for row in
                  ex.get("accessed_unresolved_path")]
                 + [f"unestablished origin: {row}" for row in

@@ -11,9 +11,9 @@ op-conformance (diagram vs the code's
 op-kinds), wiring-conformance (drawn conditioning vs the code's forward args),
 fact-conformance (the same-op-kind / different-semantics dimensions op-presence is
 blind to: positional scheme = fabricated NoPE, attention algorithm = linear vs
-softmax), and label-lint.  It also emits the staged, non-blocking
-``config_field_audit`` coverage warning: every unread owned config field must be
-triaged even though known backlog prevents that net from gating CI yet.  Sable then
+softmax), and label-lint.  It also emits the blocking, visibly-dispositioned
+``config_field_audit`` finding: every unread owned config field must be
+triaged and its exact finding must be visible on the shipped diagram.  Sable then
 renders every distinct view to a PNG gallery for the
 one net that can't be automated: a human/agent **visual** review against
 :data:`VISUAL_RUBRIC`.
@@ -76,6 +76,8 @@ class SableReport:
     oracle: str = "present"              # present | MISSING (conformance degraded)
     visual_review: str = "PENDING"       # PENDING | CLEAN | <findings text>
     rubric: list[str] = field(default_factory=lambda: list(VISUAL_RUBRIC))
+    proven_facts: list[str] = field(default_factory=list)
+    coverage: dict = field(default_factory=dict)
 
     @property
     def mechanical_passed(self) -> bool:
@@ -83,16 +85,25 @@ class SableReport:
 
     @property
     def blessable(self) -> bool:
-        """Lockable only when every mechanical net passed, the code oracle was
-        PRESENT (conformance actually ran — a skipped conformance must never be
-        locked as "verified"), AND the visual review was explicitly marked clean
-        (never freeze a model no eye has approved)."""
-        return (self.mechanical_passed and self.oracle == "present"
-                and self.visual_review == "CLEAN")
+        """Legacy pre-verdict eligibility view.
+
+        This property cannot certify a blessing: only :func:`bless` can join a
+        mechanically clean report to a persisted independent verdict.  Keep the
+        compatibility surface as a conservative hint for callers, while making
+        the actual write boundary the sole authority.
+        """
+        return self.mechanical_passed and self.oracle == "present"
 
     def hash_signature(self) -> list[str]:
         """The order-independent multiset of per-view SVG hashes — the CI lock key."""
         return sorted(h for _, h in self.view_hashes)
+
+    def view_signature(self) -> list[dict[str, str]]:
+        """The labeled view lock; unlike the legacy hash set, labels matter."""
+        return [
+            {"label": label, "hash": visual_hash}
+            for label, visual_hash in sorted(self.view_hashes)
+        ]
 
     def summary(self) -> str:
         lines = [f"SABLE · {self.model}",
@@ -115,71 +126,18 @@ class SableReport:
 
 
 def _asserted_fact_findings(ir: dict) -> list[str]:
-    """ADVISORY list of facts whose value fell through to a generic default —
+    """Facts whose value fell through to a generic default —
     the spec-level `asserted` tuples (B5: defaults distinguishable-from-
     declared).  One line per distinct (group, component, fact) so a render
     states its conventions instead of wearing them silently."""
-    findings: list[str] = []
-    seen: set[tuple] = set()
-    for idx, layer in enumerate(ir.get("layers") or []):
-        for component in ("attention", "ffn"):
-            spec = layer.get(component) if isinstance(layer, dict) else None
-            for fact in (spec or {}).get("asserted") or []:
-                key = (component, str(fact))
-                if key in seen:
-                    continue
-                seen.add(key)
-                findings.append(
-                    f"layer[{idx}].{component}: '{fact}' is a generic default "
-                    "(no config declaration and no code verdict backs it)")
-    return findings
+    from .evidence.ship_findings import asserted_fact_findings
+    return asserted_fact_findings(ir)
 
 
 def _ambiguous_evidence_findings(ir: dict) -> list[str]:
-    """Every block whose ``detail.evidence`` envelope reports ``ambiguous``.
-
-    ``ambiguous`` means the rail SCANNED installed source and could not resolve
-    the callable — so the drawn stub is an extractor/vocabulary gap, not an
-    honest absence (that is ``oracle_missing``, which stays exempt).  Walks the
-    same block tree every projection renders: layer blocks + the model-level
-    ``model_blocks`` / ``loop_blocks`` skeleton, recursively through children.
-    """
-    findings: list[str] = []
-
-    def _walk(block, path: str) -> None:
-        if not isinstance(block, dict):
-            return
-        here = f"{path}/{block.get('id') or block.get('label') or '?'}"
-        detail = block.get("detail") if isinstance(block.get("detail"), dict) else {}
-        evidence = detail.get("evidence") if isinstance(detail.get("evidence"), dict) else {}
-        if str(evidence.get("status") or "") == "ambiguous":
-            reason = str(evidence.get("reason") or "unresolved")
-            component = str(evidence.get("component") or "root")
-            findings.append(
-                f"{here}: {component} evidence is ambiguous ({reason}) while the "
-                "modeling source is installed — the drill renders an honest stub; "
-                "extend the shared extractor or everchanging/ vocabulary"
-            )
-        for child in (block.get("children") or []):
-            _walk(child, here)
-
-    for i, layer in enumerate(ir.get("layers") or []):
-        for block in (layer.get("blocks") or []):
-            _walk(block, f"layer{i}")
-    render = ((ir.get("extras") or {}).get("render") or {})
-    for key in ("model_blocks", "loop_blocks"):
-        for block in (render.get(key) or []):
-            _walk(block, key)
-    # Dedupe identical repeated-layer findings while keeping order.
-    seen: set[str] = set()
-    unique = []
-    for item in findings:
-        normalized = re.sub(r"^layer\d+", "layerN", item)
-        if normalized in seen:
-            continue
-        seen.add(normalized)
-        unique.append(item)
-    return unique
+    """Compatibility wrapper around the shipping evidence audit."""
+    from .evidence.ship_findings import ambiguous_evidence_findings
+    return ambiguous_evidence_findings(ir)
 
 
 # U2 P4 net #13 — flip to blocking once the whole corpus witnesses every
@@ -288,8 +246,6 @@ def _zero_asserted_census_findings(cfg, source: str) -> list[str]:
         config_to_ir(stripped, parse_context=context)
     except UnfoldError:
         return []              # numbers-only cannot reconstruct this model — nothing asserted
-    except Exception:          # a synthetic parse must never crash a bless; degrade to skip
-        return []
     findings: list[str] = []
     seen: set[str] = set()
     for key in context.facts.asserted():
@@ -308,19 +264,8 @@ def _standing_unconsumed_findings(ir: dict) -> list[str]:
     """U2-R8 net 3: every accessed-but-unconsumed occurrence must be excused
     by an EXACT pending debt row (owner + dotted path); ledger-ignored reads
     never reach this list, so what remains is a real disposition gap."""
-    from .evidence.structural_debt import (
-        pending_classification_paths, pending_projection_paths,
-    )
-    pending = pending_projection_paths() | pending_classification_paths()
-    rows = (((ir.get("extras") or {}).get("config_access") or {})
-            .get("accessed_unconsumed_exact") or [])
-    return [
-        f"{row.get('component')}:{row.get('path')} (as "
-        f"{row.get('spelling')}) — accessed but neither consumed, "
-        "scoped-ignored, nor exact pending debt"
-        for row in rows
-        if (row.get("component"), row.get("path")) not in pending
-    ]
+    from .evidence.ship_findings import standing_unconsumed_findings
+    return standing_unconsumed_findings(ir)
 
 
 def _structural_debt_findings() -> list[str]:
@@ -340,21 +285,26 @@ def _structural_debt_findings() -> list[str]:
 
 
 def _accessed_unprojected_findings(ir: dict) -> list[str]:
-    """ADVISORY: config occurrences accessed/bound but neither CONSUMED into a
+    """Config occurrences accessed/bound but neither CONSUMED into a
     spec field NOR scoped-ignored — the looked-up-but-unused class (granite
     multipliers).  §16.5 net 1; fourth vet (§10 correction 3): findings come
     from the OCCURRENCE-EXACT view (component + exact dotted path + actual
     spelling), so two paths sharing a canonical leaf are two findings — the
     (owner, canonical) summary is compatibility display only and authors no
     row here."""
-    ca = (ir.get("extras") or {}).get("config_access") or {}
-    return [
-        f"config occurrence {row['component']}:{row['path']!r} "
-        f"(spelled {row['spelling']!r}) was accessed but never consumed into a "
-        "spec field — it drove a branch or was discarded; wire it to a "
-        "spec/ledger fact, or record it inspected-only / scoped-ignored"
-        for row in (ca.get("accessed_unconsumed_exact") or [])
-    ]
+    from .evidence.ship_findings import accessed_unprojected_findings
+    return accessed_unprojected_findings(ir)
+
+
+def _ship_gate_findings(ir: dict, name: str, findings) -> list[str]:
+    """Blocking no-silence join for findings the ship path may surface.
+
+    The audit remains blocking: deleting or altering the exact visible receipt
+    makes the original finding return immediately.  A chip is not a proof and
+    does not change the underlying fact; it is the required honest disposition.
+    """
+    from .evidence.ship_findings import unsurfaced_findings
+    return unsurfaced_findings(ir, name, findings)
 
 
 def sable(model_or_id, *, token=None, source: str = "local",
@@ -398,13 +348,40 @@ def sable(model_or_id, *, token=None, source: str = "local",
     # a direct view call in the same process. Capture this model in an explicit
     # call-local context so another model's drills cannot enter conformance.
     from .renderers.html.render_context import RenderContext, activate_render_context
-    render_context = RenderContext(
-        theme=str((((ir.get("extras") or {}).get("render") or {}).get("theme")) or "teal"),
-        fact_rows=dict((ir.get("extras") or {}).get("fact_provenance") or {}),
-    )
-    with activate_render_context(render_context):
-        html = diagram.to_html(standalone=True)
+    def render_current():
+        render_context = RenderContext(
+            theme=str((((diagram.to_ir().get("extras") or {}).get("render") or {})
+                       .get("theme")) or "teal"),
+            fact_rows=dict((diagram.to_ir().get("extras") or {}).get(
+                "fact_provenance") or {}),
+        )
+        with activate_render_context(render_context):
+            rendered = diagram.to_html(standalone=True)
+        return rendered, render_context
+
+    html, render_context = render_current()
     render_log = list(render_context.events)
+
+    # Nested conformance is the one shipping audit whose evidence exists only
+    # after real drill consumers have rendered and emitted their call-local
+    # events.  Transport its exact findings, invalidate the caches, and render
+    # once more so the gallery/product inspected by Sable contains the chip.
+    # This does not reinterpret the finding or make the mechanism known.
+    _nested_probs = (check_nested_conformance(
+        cfg, render_log, source=source, bundle=context.source_bundle,
+        fact_rows=(ir.get("extras") or {}).get("fact_provenance") or {},
+    ) if context.source_bundle.files else [])
+    if _nested_probs:
+        from .evidence.ship_findings import ShipFinding, apply_ship_findings
+        apply_ship_findings(diagram.ir, tuple(
+            ShipFinding("nested_conformance", problem.message, "nested_drill")
+            for problem in _nested_probs))
+        diagram._ir_cache = None
+        diagram._html_cache.clear()
+        diagram._render_contexts.clear()
+        ir = diagram.to_ir()
+        html, render_context = render_current()
+        render_log = list(render_context.events)
 
     # U2 receipts: union the typed projection receipts the render emitted, then
     # run Net 2 (occurrence -> target -> receipt) and reverse-fabrication.  Both
@@ -431,6 +408,28 @@ def sable(model_or_id, *, token=None, source: str = "local",
     _net2_findings = join_obligation_receipts(
         _obligations, _receipts, _fact_rows,
         context_token=render_context.context_token)
+    if _net2_findings["findings"]:
+        from .evidence.ship_findings import ShipFinding, apply_ship_findings
+        apply_ship_findings(diagram.ir, tuple(
+            ShipFinding("config_consumed_unreceipted", message,
+                        "config_occurrence")
+            for message in _net2_findings["findings"]))
+        diagram._ir_cache = None
+        diagram._html_cache.clear()
+        diagram._render_contexts.clear()
+        ir = diagram.to_ir()
+        html, render_context = render_current()
+        render_log = list(render_context.events)
+        _receipts = [receipt for event in render_log
+                     for receipt in getattr(event, "receipts", ()) or ()]
+        _receipts.extend(stamp_context(
+            tuple(context.projection_receipts), render_context.context_token))
+        _fact_rows = ((ir.get("extras") or {}).get("fact_provenance") or {})
+        _obligations = (((ir.get("extras") or {}).get("config_access") or {})
+                        .get("projection_obligations") or [])
+        _net2_findings = join_obligation_receipts(
+            _obligations, _receipts, _fact_rows,
+            context_token=render_context.context_token)
     _claimed_targets = {(b.target.owner, b.target.fact_key)
                         for c in MIGRATED_SCOPES for b in c.bindings}
     # Soumil's final vet: the debt-key lane is DELETED — pending config
@@ -458,40 +457,44 @@ def sable(model_or_id, *, token=None, source: str = "local",
         # A vocabulary table may never clear this gate or author a chip.
         SableCheck(
             "config_field_audit",
-            [
+            _ship_gate_findings(ir, "config_field_audit", [
                 f"unread config field {path!r} — bind it to exact source-backed "
                 "evidence, register exact owner/path debt, or scoped-ignore it "
                 "with a non-architectural reason"
                 for path in ((ir.get("extras") or {}).get("config_audit") or {}).get("unread", [])
-            ],
+            ]),
         ),
         SableCheck("op_conformance",
-                   [p.message for p in op_probs if p.kind in ("missing", "fabricated", "stale")],
+                   _ship_gate_findings(
+                       ir, "op_conformance",
+                       [p.message for p in op_probs
+                        if p.kind in ("missing", "fabricated", "stale")]),
                    note="" if oracle_files else "skipped — no code oracle"),
         SableCheck("wiring_conformance",
+                   _ship_gate_findings(ir, "wiring_conformance",
                    [p.message for p in (check_wiring_conformance(
                        cfg, ir, source=source, bundle=context.source_bundle
-                   ) if oracle_files else [])],
+                   ) if oracle_files else [])]),
                    note="" if oracle_files else "skipped — no code oracle"),
         # Fact-conformance: the SAME-op-kind, different-SEMANTICS dimensions that
         # op-presence is blind to — positional scheme (fabricated NoPE) and attention
         # algorithm (linear vs softmax). The two classes I kept catching by EYE.
         SableCheck("fact_conformance",
+                   _ship_gate_findings(ir, "fact_conformance",
                    [p.message for p in (check_fact_conformance(
                        cfg, ir, source=source, bundle=context.source_bundle,
                        program_index=context.program_index(),
                        parse_context=context,
-                   ) if oracle_files else [])],
+                   ) if oracle_files else [])]),
                    note="" if oracle_files else "skipped — no code oracle"),
         # Nested-conformance: recurse INTO each leaf-compute drill (attention / FFN /
         # expert internals) and diff its DRAWN op-set against the TRANSITIVE forward()
         # closure of the backing sub-module (following sdpa / rotary / the diffusers
         # processor / the FeedForward ModuleList). One altitude below op_conformance.
         SableCheck("nested_conformance",
-                   [p.message for p in (check_nested_conformance(
-                       cfg, render_log, source=source, bundle=context.source_bundle,
-                       fact_rows=_fact_rows,
-                   ) if oracle_files else [])],
+                   _ship_gate_findings(
+                       ir, "nested_conformance",
+                       [p.message for p in _nested_probs]),
                    note="" if oracle_files else "skipped — no code oracle"),
         SableCheck("label_lint", lint_labels(ir)),
         # Present-but-ambiguous evidence (eradication-plan invariant #3): a block
@@ -505,16 +508,16 @@ def sable(model_or_id, *, token=None, source: str = "local",
         # resolve the callable — an extractor/vocabulary gap, never shippable.
         SableCheck(
             "evidence_ambiguity",
-            _ambiguous_evidence_findings(ir),
+            _ship_gate_findings(ir, "evidence_ambiguity",
+                                _ambiguous_evidence_findings(ir)),
         ),
-        # ADVISORY (non-blocking): every fact whose value fell through to a
-        # generic default (spec `asserted` tuples, B5) — the per-render view
-        # of the generic-assertion hunt-list.  mask="causal" on plain
-        # decoders is expected; anything else deserves a look before bless.
+        # Every fact whose value fell through to a generic default (spec
+        # `asserted` tuples, B5).  S4 makes this blocking unless its exact
+        # unresolved finding is visible on the shipped diagram.
         SableCheck(
             "asserted_facts",
-            _asserted_fact_findings(ir),
-            blocking=False,
+            _ship_gate_findings(ir, "asserted_facts",
+                                _asserted_fact_findings(ir)),
         ),
         # U2 P4 net #13 — projection-audit: every code/config-proven structural
         # fact on a drawable family must have a DRAWN witness (a
@@ -534,7 +537,8 @@ def sable(model_or_id, *, token=None, source: str = "local",
         # A registered leaf with no instance fact, or a mismatch, blocks.
         SableCheck(
             "qualified_projection_values",
-            _qualified_projection_findings(ir),
+            _ship_gate_findings(ir, "qualified_projection_values",
+                                _qualified_projection_findings(ir)),
         ),
         # U2 P4 net #14 — zero-asserted census (the permanent measuring stick):
         # strip this model's config to numbers+address, re-parse against an EMPTY
@@ -546,12 +550,12 @@ def sable(model_or_id, *, token=None, source: str = "local",
             _zero_asserted_census_findings(cfg, source),
         ),
         # U2 P4 config_field_audit upgrade — accessed-but-unprojected: a config
-        # field looked up but never consumed into a spec field.  ADVISORY and
-        # inert until the consumed rail is populated (see helper).
+        # field looked up but never consumed into a spec field.  S4 makes this
+        # blocking unless its exact finding is visible on the shipped diagram.
         SableCheck(
             "config_accessed_unprojected",
-            _accessed_unprojected_findings(ir),
-            blocking=False,
+            _ship_gate_findings(ir, "config_accessed_unprojected",
+                                _accessed_unprojected_findings(ir)),
         ),
         # COR-5 (§10): Net 1 for CLAIMED scopes — a migration claim names its
         # exact (owner, mechanism, paths) and every violation inside a claimed
@@ -561,10 +565,10 @@ def sable(model_or_id, *, token=None, source: str = "local",
         # never vacuous.
         SableCheck(
             "config_migration_claims",
-            [violation
+            _ship_gate_findings(ir, "config_migration_claims", [violation
              for row in (((ir.get("extras") or {}).get("config_access") or {})
                          .get("migration_claims") or [])
-             for violation in row.get("violations") or []],
+             for violation in row.get("violations") or []]),
         ),
         # U2 net-2 — consumed-but-unreceipted, joined occurrence -> target ->
         # RECEIPT.  For a receipted (owner, mechanism) scope every consumption
@@ -574,7 +578,9 @@ def sable(model_or_id, *, token=None, source: str = "local",
         # mechanism can never make an unrelated obligation blocking.
         SableCheck(
             "config_consumed_unreceipted",
-            _net2_findings["findings"],
+            _ship_gate_findings(
+                ir, "config_consumed_unreceipted",
+                _net2_findings["findings"]),
             note=("advisory for un-migrated scopes; blocking only inside "
                   "receipted scopes" if not _net2_findings["findings"] else ""),
         ),
@@ -596,8 +602,10 @@ def sable(model_or_id, *, token=None, source: str = "local",
         # with zero consumed events is a regression, not a migration gap.
         SableCheck(
             "config_audit_incomplete",
-            list(((ir.get("extras") or {}).get("config_access") or {})
-                 .get("audit_incomplete") or []),
+            _ship_gate_findings(
+                ir, "config_audit_incomplete",
+                list(((ir.get("extras") or {}).get("config_access") or {})
+                     .get("audit_incomplete") or [])),
         ),
         # U2-R8 net 1 — prepared-document boundary completeness: a read whose
         # LOCATION was never named or whose document ORIGIN was never
@@ -605,12 +613,14 @@ def sable(model_or_id, *, token=None, source: str = "local",
         # both to zero, so any reappearance blocks at its first witness.
         SableCheck(
             "document_boundary_completeness",
+            _ship_gate_findings(ir, "document_boundary_completeness",
             [f"unlocated read: {row}" for row in
              (((ir.get("extras") or {}).get("config_access") or {})
               .get("accessed_unresolved_path") or [])]
             + [f"unestablished origin: {row}" for row in
                (((ir.get("extras") or {}).get("config_access") or {})
                 .get("unestablished_provenance") or [])],
+            ),
         ),
         # U2-R8 net 3 — accessed but neither consumed, scoped-ignored, nor
         # exact pending debt: the R7 standing-zero state, locked per model.
@@ -618,7 +628,8 @@ def sable(model_or_id, *, token=None, source: str = "local",
         # StructuralDebt register — never a bare leaf or family prefix.
         SableCheck(
             "config_standing_unconsumed",
-            _standing_unconsumed_findings(ir),
+            _ship_gate_findings(ir, "config_standing_unconsumed",
+                                _standing_unconsumed_findings(ir)),
         ),
         # U2-R8 nets 7+8 — structural writers and the debt register, at
         # render time: a writer the census does not know, a census key the
@@ -631,8 +642,10 @@ def sable(model_or_id, *, token=None, source: str = "local",
         ),
         SableCheck(
             "config_ambiguity",
-            [f"{row['component']}: {row['reason']}"
-             for row in ((ir.get("extras") or {}).get("config_ambiguity") or [])],
+            _ship_gate_findings(
+                ir, "config_ambiguity",
+                [f"{row['component']}: {row['reason']}"
+                 for row in ((ir.get("extras") or {}).get("config_ambiguity") or [])]),
         ),
     ]
 
@@ -656,31 +669,113 @@ def sable(model_or_id, *, token=None, source: str = "local",
             gallery = []
             checks.append(SableCheck("gallery", [], note=f"PNGs skipped: {type(exc).__name__}: {exc}"))
 
+    from .renderers.html.fact_projection import PROJECTED_STATUSES
+    proven_facts = sorted(
+        key for key, row in _fact_rows.items()
+        if (row or {}).get("status") in PROJECTED_STATUSES)
+    ship_rows = ((ir.get("extras") or {}).get("ship_findings") or [])
+    side_reader_flags = {
+        warning for warning in (ir.get("warnings") or ())
+        if any(f"{reader} evidence unresolved" in warning
+               for reader in ("projector", "fusion", "modality"))
+    }
+    silent_findings = [
+        f"{check.name}: {message}"
+        for check in checks if check.blocking
+        for message in check.findings
+    ]
+    if not oracle_files:
+        silent_findings.append(
+            "source_oracle: modeling source is unavailable; mechanism checks "
+            "did not run")
+    coverage = {
+        "proven": len(proven_facts),
+        "flagged": len(ship_rows) + len(side_reader_flags),
+        "silent": len(silent_findings),
+        "flagged_findings": [
+            f"{row.get('check')}: {row.get('message')}"
+            for row in ship_rows if isinstance(row, dict)
+        ] + sorted(side_reader_flags),
+        "silent_findings": silent_findings,
+    }
     return SableReport(model=diagram.ir.name, checks=checks,
-                       view_hashes=view_hashes, gallery=gallery, oracle=oracle)
+                       view_hashes=view_hashes, gallery=gallery, oracle=oracle,
+                       proven_facts=proven_facts, coverage=coverage)
 
 
 # ---------------------------------------------------------------------------
 # CI lock — freeze a visually-approved model so it can never silently regress
 # ---------------------------------------------------------------------------
 
+def _load_review_verdict(path, report: SableReport, implementer: str) -> dict:
+    """Validate the persisted independent verdict required by S4 law 5."""
+    if path is None:
+        raise ValueError(
+            "independent persisted review verdict required; self-set CLEAN is "
+            "not review evidence")
+    verdict_path = Path(path)
+    if not verdict_path.is_file():
+        raise ValueError(f"review verdict does not exist: {verdict_path}")
+    try:
+        verdict = json.loads(verdict_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise ValueError("review verdict must be persisted JSON") from exc
+    required = {"decision", "reviewer", "implementer", "reviewed_at",
+                "model", "view_signature"}
+    missing = sorted(required - set(verdict))
+    if missing:
+        raise ValueError(f"review verdict missing fields: {missing}")
+    for verdict_field in ("reviewer", "implementer", "reviewed_at", "model"):
+        if (not isinstance(verdict[verdict_field], str)
+                or not verdict[verdict_field].strip()):
+            raise ValueError(
+                f"review verdict {verdict_field} must be a non-empty string")
+    if not isinstance(verdict["view_signature"], list):
+        raise ValueError("review verdict view_signature must be a list")
+    if verdict["decision"] != "ACCEPT":
+        raise ValueError("review verdict must explicitly ACCEPT the render")
+    if not implementer or verdict["implementer"] != implementer:
+        raise ValueError("review verdict implementer does not match this bless")
+    if verdict["reviewer"] == implementer:
+        raise ValueError("reviewer must be independent from the implementer")
+    if verdict["model"] != report.model:
+        raise ValueError("review verdict names a different model")
+    if verdict["view_signature"] != report.view_signature():
+        raise ValueError("review verdict does not cover this labeled render")
+    return verdict
+
+
+def _recall_findings(locked_facts, current_facts) -> list[str]:
+    """Name every formerly-proven fact that is no longer proven.
+
+    This is deliberately directional: discovering a new fact is allowed, while
+    losing an already reviewed fact requires a named re-proof and visible
+    unresolved disposition before the lock can move.
+    """
+    current = set(current_facts or ())
+    return [
+        f"recall regression: proven fact {key!r} became unresolved or "
+        "disappeared — provide a named re-proof and visible chip before "
+        "updating the reviewed baseline"
+        for key in sorted(set(locked_facts or ()) - current)
+    ]
+
+
 def bless(report: SableReport, model_or_id, *, token=None, source: str = "local",
-          corpus_dir=None) -> str:
+          corpus_dir=None, review_verdict=None, implementer: str = "") -> str:
     """Freeze a PASSING, visually-approved model into the regression corpus.
 
     Writes ``<slug>.json`` = the frozen config + the locked per-view SVG-hash
     signature + the mechanical verdicts.  Refuses unless the report is
-    ``blessable`` (mechanical clean AND the visual review explicitly marked
-    ``CLEAN`` — never lock a model no eye approved) AND the frozen config
-    REPRODUCES the same views offline (a fixture that can't re-render from its own
-    JSON is a worthless lock — diffusion pipeline wiring that isn't self-contained
-    is rejected here, honestly, instead of silently)."""
-    if not report.blessable:
+    mechanically clean, backed by a persisted verdict from an independent
+    reviewer, and the frozen config REPRODUCES the same views offline (a fixture
+    that cannot re-render from its own JSON is a worthless lock)."""
+    if not report.mechanical_passed or report.oracle != "present":
         raise ValueError(
             f"not blessable: mechanical_passed={report.mechanical_passed}, "
             f"oracle={report.oracle!r}, visual_review={report.visual_review!r} — clear "
-            "findings, install the modeling source so conformance runs, and mark the "
-            "visual review CLEAN first.")
+            "findings and install the modeling source so conformance runs.")
+    verdict = _load_review_verdict(review_verdict, report, implementer)
     # A CLEAN visual review must be BACKED BY ARTIFACTS, not a string an eager
     # caller sets: the gallery PNGs must exist on disk and their count must
     # match the distinct-view count (one image per distinct diagram is exactly
@@ -713,6 +808,14 @@ def bless(report: SableReport, model_or_id, *, token=None, source: str = "local"
     if repro.hash_signature() != report.hash_signature():
         raise ValueError("frozen config does not reproduce the same views offline "
                          "(pipeline wiring not self-contained?) — not lockable.")
+    if repro.view_signature() != report.view_signature():
+        raise ValueError(
+            "frozen config does not reproduce the same labeled views offline — "
+            "not lockable")
+    if repro.proven_facts != report.proven_facts:
+        raise ValueError(
+            "frozen config does not reproduce the same proven-fact baseline "
+            "offline — not lockable")
     corpus = Path(corpus_dir) if corpus_dir else DEFAULT_CORPUS
     corpus.mkdir(parents=True, exist_ok=True)
     path = _fixture_path_for_config(corpus, report.model, cfg_dict)
@@ -768,7 +871,10 @@ def bless(report: SableReport, model_or_id, *, token=None, source: str = "local"
         "source": source,
         "config": cfg_dict,
         "hash_signature": report.hash_signature(),
+        "view_signature": report.view_signature(),
+        "proven_facts": report.proven_facts,
         "checks": {c.name: c.passed for c in report.checks},
+        "review_verdict": verdict,
         "visual_evidence": {
             "gallery_dir": str(gallery_home.relative_to(corpus)),
             "png_count": len(gallery),
@@ -832,6 +938,17 @@ def check_regression(fixture: dict) -> list[str]:
     if rep.hash_signature() != locked:
         out.append(f"view drift: {len(locked)} locked view(s) -> {len(rep.view_hashes)} now "
                    "— the diagram changed; re-review the gallery and re-bless if intended.")
+    locked_views = fixture.get("view_signature")
+    if locked_views is None:
+        out.append("view signature missing labels — migrate this fixture before release")
+    elif rep.view_signature() != locked_views:
+        out.append("labeled view drift — a view label or its exact SVG changed; "
+                   "re-review and re-bless if intended")
+    locked_facts = set(fixture.get("proven_facts") or ())
+    if "proven_facts" not in fixture:
+        out.append("recall baseline missing — migrate this fixture before release")
+    else:
+        out.extend(_recall_findings(locked_facts, rep.proven_facts))
     return out
 
 

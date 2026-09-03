@@ -391,6 +391,13 @@ def config_to_ir(
         # the census is not yet available for this adapter/path.
         if consumed:
             ir.extras["config_consumed"] = consumed
+    # S4: an evidence audit that already knows a shipped claim is unresolved
+    # must travel on ordinary ``unfold`` output.  Evidence authors the finding;
+    # renderers merely display the IR warning and never reinterpret it.
+    from .evidence.ship_findings import (
+        apply_ship_findings, collect_ship_findings)
+    apply_ship_findings(
+        ir, collect_ship_findings(cfg, ir, parse_context, source="local"))
     _ensure_parsable(ir, cfg_or_id)
     _debug_validate_blocks(ir)
     if inspect_code:

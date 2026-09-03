@@ -66,12 +66,56 @@
     "f376dac6afe792efff0fa70af99d2a58"
   ],
   "model": "granite-3.0-8b-instruct",
+  "proven_facts": [
+    "decoder.attention.bias",
+    "decoder.attention.cached",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mask",
+    "decoder.attention.mask_schedule",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.output_projection",
+    "decoder.attention.position_schedule",
+    "decoder.attention.projection_mode",
+    "decoder.attention.rope_initialization",
+    "decoder.attention.rope_theta",
+    "decoder.attention.scores_scale",
+    "decoder.ffn.activation",
+    "decoder.ffn.ffn_schedule",
+    "decoder.ffn.gated",
+    "decoder.ffn.intermediate_size",
+    "decoder.ffn.projection_mode",
+    "decoder.layer.norm_kind",
+    "decoder.layer.norm_placement",
+    "decoder.layer.residual_scale",
+    "decoder.layer.residual_topology",
+    "model.final_norm_kind",
+    "model.tie_word_embeddings"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "154318821bfdf4e94f21004e6cfdff94",
     "b9d53f917b41a0bafc1fbe12bed67e26",
     "d1d530f72fec8999b870279effde1a6b",
     "f376dac6afe792efff0fa70af99d2a58"
+  ],
+  "view_signature": [
+    {
+      "hash": "154318821bfdf4e94f21004e6cfdff94",
+      "label": "architecture"
+    },
+    {
+      "hash": "b9bd7e832832ab39a70a21e88c847e0b",
+      "label": "architecture"
+    },
+    {
+      "hash": "f376dac6afe792efff0fa70af99d2a58",
+      "label": "attn"
+    },
+    {
+      "hash": "b9d53f917b41a0bafc1fbe12bed67e26",
+      "label": "ffn"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/granite-3-0-8b-instruct",

@@ -199,6 +199,9 @@
     "f8c0f6c893ff6bc3aa7f3e8490d60356"
   ],
   "model": "PixArt-Sigma-XL-2-1024-MS",
+  "proven_facts": [
+    "root.denoiser.diffusion_root_topology"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "1e6e37015517da680f7d22555b019a11",
@@ -214,6 +217,60 @@
     "b31abab691626c72dde789ac736cc3b0",
     "ce4276f46dba476afde22a503130a082",
     "f8c0f6c893ff6bc3aa7f3e8490d60356"
+  ],
+  "view_signature": [
+    {
+      "hash": "47dfb1b7a4e47f1dd756a38b96fc174a",
+      "label": "architecture"
+    },
+    {
+      "hash": "ce4276f46dba476afde22a503130a082",
+      "label": "architecture"
+    },
+    {
+      "hash": "cc77a166224a549beab3312ca2892fc0",
+      "label": "denoiser"
+    },
+    {
+      "hash": "9680b5f576b615bc5ee7a1dabc19b8ac",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "b31abab691626c72dde789ac736cc3b0",
+      "label": "encoder_0_g0_op_ffn"
+    },
+    {
+      "hash": "7b5219bb6f6212f9422861177d522259",
+      "label": "encoder_0_g0_op_selfattn"
+    },
+    {
+      "hash": "7cbe2600c93fa5f5550e1b4d4ae9c060",
+      "label": "encoder_0_g1_op_selfattn"
+    },
+    {
+      "hash": "f8c0f6c893ff6bc3aa7f3e8490d60356",
+      "label": "scheduler"
+    },
+    {
+      "hash": "b27da72d8797da4f23c882340fe81c3f",
+      "label": "vae_decode"
+    },
+    {
+      "hash": "3beb7e8dd3a1413548860328bb44ec02",
+      "label": "vae_decoder_block_1"
+    },
+    {
+      "hash": "9f198a62053f6939aaa6682f5757e736",
+      "label": "vae_decoder_block_2"
+    },
+    {
+      "hash": "1e6e37015517da680f7d22555b019a11",
+      "label": "vae_decoder_block_3"
+    },
+    {
+      "hash": "22e659b90c632ec031fd95f36399ee49",
+      "label": "vae_decoder_block_4"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/pixart-sigma-xl-2-1024-ms",

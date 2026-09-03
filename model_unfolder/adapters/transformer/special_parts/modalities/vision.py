@@ -36,6 +36,26 @@ def apply_projector_evidence(payload: dict | None, evidence, cfg: Any = None,
             _clear_projector_claim(path)
     if evidence is None:
         return payload
+    if getattr(evidence, "status", "") in {"failed", "ambiguous"}:
+        detail = "; ".join(
+            getattr(failure, "detail", "")
+            for failure in getattr(evidence, "failures", ())
+            if getattr(failure, "detail", ""))
+        for path in modalities.values():
+            if not isinstance(path, dict):
+                continue
+            # A failure may qualify an already-declared side block; it must
+            # never manufacture a projector merely so there is somewhere to
+            # display the finding.  When no projector block exists, the
+            # parser's model-level warning remains the visible receipt.
+            projector = path.get("projector")
+            if not isinstance(projector, dict):
+                continue
+            projector["kind"] = "code_defined_projector"
+            projector["evidence_unresolved"] = True
+            projector["evidence_failure"] = detail or getattr(
+                evidence, "status", "unresolved")
+        return payload
     records = _projector_records(evidence)
     for record in records:
         destinations = tuple(getattr(record, "modalities", ()) or ())

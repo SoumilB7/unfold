@@ -159,6 +159,30 @@
     "f833c45d1b7e9fa29156cf20fb4edff2"
   ],
   "model": "Qwen3.5-27B text component",
+  "proven_facts": [
+    "decoder.attention.bias",
+    "decoder.attention.cached",
+    "decoder.attention.gated_delta_geometry",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.output_gate",
+    "decoder.attention.output_projection",
+    "decoder.attention.projection_mode",
+    "decoder.attention.qk_norm",
+    "decoder.attention.qk_norm_schedule",
+    "decoder.attention.scores_scale",
+    "decoder.ffn.activation",
+    "decoder.ffn.ffn_schedule",
+    "decoder.ffn.gated",
+    "decoder.ffn.intermediate_size",
+    "decoder.ffn.projection_mode",
+    "decoder.layer.norm_kind",
+    "decoder.layer.norm_placement",
+    "decoder.layer.residual_topology",
+    "model.final_norm_kind",
+    "model.tie_word_embeddings"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "3fd382a6ac9b031836483d6014522a09",
@@ -167,6 +191,32 @@
     "a9d70cb5948adfa32ff4583669102d12",
     "c52f680f106cdb07f7b8a9e0a97907ef",
     "f833c45d1b7e9fa29156cf20fb4edff2"
+  ],
+  "view_signature": [
+    {
+      "hash": "3fd382a6ac9b031836483d6014522a09",
+      "label": "architecture"
+    },
+    {
+      "hash": "88688a1cd544bed199bf6e020abf197f",
+      "label": "architecture"
+    },
+    {
+      "hash": "c63ea70af3eb63a6c01e757802851151",
+      "label": "architecture_v1"
+    },
+    {
+      "hash": "71456442dff6a47c6b1fbfa9db9e1f0d",
+      "label": "attn"
+    },
+    {
+      "hash": "c52f680f106cdb07f7b8a9e0a97907ef",
+      "label": "attn"
+    },
+    {
+      "hash": "f833c45d1b7e9fa29156cf20fb4edff2",
+      "label": "ffn"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/qwen3-5-27b-text",

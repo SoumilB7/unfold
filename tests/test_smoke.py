@@ -768,8 +768,16 @@ def test_omni_nested_thinker_text_config_unwrapped():
     # U2: this stripped-down synthetic inner config leaves several code-owned
     # facts honestly unresolved — that banner line is expected; anything else
     # (missing geometry, dropped nesting) is a real unwrap failure.
+    shipped = {
+        "Unresolved evidence — "
+        f"{row['check']} evidence unresolved: {row['message']}"
+        for row in ir["extras"].get("ship_findings", [])
+    }
     assert not [w for w in ir.get("warnings", [])
-                if not w.startswith("Unresolved code-defined facts")]
+                if not w.startswith("Unresolved code-defined facts")
+                and w not in shipped
+                and "projector evidence unresolved" not in w]
+    assert shipped
 
 
 def test_unbound_attention_bias_and_rope_theta_are_architecturally_powerless():
@@ -1431,10 +1439,13 @@ def test_qwen2_audio_sparse_text_config_keeps_only_source_bound_structure():
     d = unfold(QWEN2_AUDIO_SPARSE_CONFIG)
     ir = d.to_ir()
 
-    assert all(
-        warning.startswith("Unresolved code-defined facts")
-        for warning in ir["warnings"]
-    )
+    shipped = {
+        "Unresolved evidence — "
+        f"{row['check']} evidence unresolved: {row['message']}"
+        for row in ir["extras"].get("ship_findings", [])
+    }
+    assert all(warning.startswith("Unresolved code-defined facts")
+               or warning in shipped for warning in ir["warnings"])
     assert ir["name"] == "Qwen2-Audio-7B"
     assert ir["hidden_size"] == 4096
     assert ir["vocab_size"] == 156032
@@ -1471,10 +1482,13 @@ def test_qwen2_audio_code_evidence_does_not_mark_config_partial():
     d = unfold(QWEN2_AUDIO_SPARSE_CONFIG, inspect_code=True)
     ir = d.to_ir()
 
-    assert all(
-        warning.startswith("Unresolved code-defined facts")
-        for warning in ir["warnings"]
-    )
+    shipped = {
+        "Unresolved evidence — "
+        f"{row['check']} evidence unresolved: {row['message']}"
+        for row in ir["extras"].get("ship_findings", [])
+    }
+    assert all(warning.startswith("Unresolved code-defined facts")
+               or warning in shipped for warning in ir["warnings"])
     assert ir["extras"]["code_evidence"]["provenance"]["model_type"] == "qwen2_audio"
     assert ir["extras"]["code_evidence"]["provenance"]["files"]
 
@@ -1598,8 +1612,14 @@ def test_new_should_support_family_routes():
         # U2: the honest "Unresolved code-defined facts" banner line is an
         # EXPECTED companion for configs whose bias/gating the source can't
         # prove — only other warning classes indicate a routing problem here.
+        shipped = {
+            "Unresolved evidence — "
+            f"{row['check']} evidence unresolved: {row['message']}"
+            for row in ir["extras"].get("ship_findings", [])
+        }
         hard = [w for w in ir["warnings"]
-                if not w.startswith("Unresolved code-defined facts")]
+                if not w.startswith("Unresolved code-defined facts")
+                and w not in shipped]
         if cfg is YI_34B_CONFIG:
             assert hard == [
                 "Modeling source is unavailable; the positional scheme remains unknown."

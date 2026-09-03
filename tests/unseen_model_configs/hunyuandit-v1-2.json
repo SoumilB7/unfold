@@ -1,0 +1,190 @@
+{
+  "config": {
+    "_class_name": "HunyuanDiT2DModel",
+    "_diffusers_version": "0.30.0.dev0",
+    "_name_or_path": "Tencent-Hunyuan/HunyuanDiT-v1.2-Diffusers",
+    "_pipeline_class_name": "HunyuanDiTPipeline",
+    "_repo_id": "Tencent-Hunyuan/HunyuanDiT-v1.2-Diffusers",
+    "_scheduler_config": {
+      "_class_name": "DDPMScheduler",
+      "_diffusers_version": "0.30.0.dev0",
+      "beta_end": 0.018,
+      "beta_schedule": "scaled_linear",
+      "beta_start": 0.00085,
+      "clip_sample": false,
+      "clip_sample_range": 1.0,
+      "dynamic_thresholding_ratio": 0.995,
+      "num_train_timesteps": 1000,
+      "prediction_type": "v_prediction",
+      "rescale_betas_zero_snr": false,
+      "sample_max_value": 1.0,
+      "set_alpha_to_one": false,
+      "skip_prk_steps": true,
+      "steps_offset": 1,
+      "thresholding": false,
+      "timestep_spacing": "leading",
+      "trained_betas": null,
+      "variance_type": "fixed_small"
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_repo_id": "Tencent-Hunyuan/HunyuanDiT-v1.2-Diffusers",
+        "architectures": [
+          "BertModel"
+        ],
+        "attention_probs_dropout_prob": 0.1,
+        "bos_token_id": 0,
+        "classifier_dropout": null,
+        "directionality": "bidi",
+        "eos_token_id": 2,
+        "hidden_act": "gelu",
+        "hidden_dropout_prob": 0.1,
+        "hidden_size": 1024,
+        "initializer_range": 0.02,
+        "intermediate_size": 4096,
+        "layer_norm_eps": 1e-12,
+        "max_position_embeddings": 512,
+        "model_type": "bert",
+        "num_attention_heads": 16,
+        "num_hidden_layers": 24,
+        "output_past": true,
+        "pad_token_id": 0,
+        "pooler_fc_size": 768,
+        "pooler_num_attention_heads": 12,
+        "pooler_num_fc_layers": 3,
+        "pooler_size_per_head": 128,
+        "pooler_type": "first_token_transform",
+        "position_embedding_type": "absolute",
+        "torch_dtype": "float32",
+        "transformers_version": "4.41.1",
+        "type_vocab_size": 2,
+        "use_cache": true,
+        "vocab_size": 47020
+      },
+      "text_encoder_2": {
+        "_repo_id": "Tencent-Hunyuan/HunyuanDiT-v1.2-Diffusers",
+        "architectures": [
+          "T5EncoderModel"
+        ],
+        "classifier_dropout": 0.0,
+        "d_ff": 5120,
+        "d_kv": 64,
+        "d_model": 2048,
+        "decoder_start_token_id": 0,
+        "dense_act_fn": "gelu_new",
+        "dropout_rate": 0.1,
+        "eos_token_id": 1,
+        "feed_forward_proj": "gated-gelu",
+        "initializer_factor": 1.0,
+        "is_encoder_decoder": true,
+        "is_gated_act": true,
+        "layer_norm_epsilon": 1e-06,
+        "model_type": "t5",
+        "num_decoder_layers": 24,
+        "num_heads": 32,
+        "num_layers": 24,
+        "output_past": true,
+        "pad_token_id": 0,
+        "relative_attention_max_distance": 128,
+        "relative_attention_num_buckets": 32,
+        "tie_word_embeddings": false,
+        "tokenizer_class": "T5Tokenizer",
+        "torch_dtype": "float32",
+        "transformers_version": "4.41.1",
+        "use_cache": true,
+        "vocab_size": 250112
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKL",
+      "_diffusers_version": "0.30.0.dev0",
+      "act_fn": "silu",
+      "block_out_channels": [
+        128,
+        256,
+        512,
+        512
+      ],
+      "down_block_types": [
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D"
+      ],
+      "force_upcast": false,
+      "in_channels": 3,
+      "latent_channels": 4,
+      "latents_mean": null,
+      "latents_std": null,
+      "layers_per_block": 2,
+      "norm_num_groups": 32,
+      "out_channels": 3,
+      "sample_size": 512,
+      "scaling_factor": 0.13025,
+      "shift_factor": null,
+      "up_block_types": [
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D"
+      ],
+      "use_post_quant_conv": true,
+      "use_quant_conv": true
+    },
+    "activation_fn": "gelu-approximate",
+    "attention_head_dim": 88,
+    "cross_attention_dim": 1024,
+    "cross_attention_dim_t5": 2048,
+    "feature_extractor": [
+      null,
+      null
+    ],
+    "hidden_size": 1408,
+    "in_channels": 4,
+    "learn_sigma": true,
+    "mlp_ratio": 4.3637,
+    "norm_type": "layer_norm",
+    "num_attention_heads": 16,
+    "num_layers": 40,
+    "patch_size": 2,
+    "pooled_projection_dim": 1024,
+    "requires_safety_checker": true,
+    "safety_checker": [
+      null,
+      null
+    ],
+    "sample_size": 128,
+    "scheduler": [
+      "diffusers",
+      "DDPMScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "BertModel"
+    ],
+    "text_encoder_2": [
+      "transformers",
+      "T5EncoderModel"
+    ],
+    "text_len": 77,
+    "text_len_t5": 256,
+    "tokenizer": [
+      "transformers",
+      "BertTokenizer"
+    ],
+    "tokenizer_2": [
+      "transformers",
+      "T5Tokenizer"
+    ],
+    "transformer": [
+      "diffusers",
+      "HunyuanDiT2DModel"
+    ],
+    "use_style_cond_and_image_meta_size": false,
+    "vae": [
+      "diffusers",
+      "AutoencoderKL"
+    ]
+  },
+  "model_id": "Tencent-Hunyuan/HunyuanDiT-v1.2-Diffusers"
+}

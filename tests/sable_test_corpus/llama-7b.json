@@ -81,12 +81,55 @@
     "e52c423d42c8caa434948f640344f933"
   ],
   "model": "llama-7b",
+  "proven_facts": [
+    "decoder.attention.bias",
+    "decoder.attention.cached",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mask",
+    "decoder.attention.mask_schedule",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.output_projection",
+    "decoder.attention.position_schedule",
+    "decoder.attention.projection_mode",
+    "decoder.attention.rope_initialization",
+    "decoder.attention.rope_theta",
+    "decoder.attention.scores_scale",
+    "decoder.ffn.activation",
+    "decoder.ffn.ffn_schedule",
+    "decoder.ffn.gated",
+    "decoder.ffn.intermediate_size",
+    "decoder.ffn.projection_mode",
+    "decoder.layer.norm_kind",
+    "decoder.layer.norm_placement",
+    "decoder.layer.residual_topology",
+    "model.final_norm_kind",
+    "model.tie_word_embeddings"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "0906417b9411abb79f795df485b1719c",
     "41a47e30c51924971a62bf1ce94346ba",
     "d3314cccdb744f3767be47b560187b9c",
     "e52c423d42c8caa434948f640344f933"
+  ],
+  "view_signature": [
+    {
+      "hash": "4015be3286774c4c736600061e47ed51",
+      "label": "architecture"
+    },
+    {
+      "hash": "e52c423d42c8caa434948f640344f933",
+      "label": "architecture"
+    },
+    {
+      "hash": "41a47e30c51924971a62bf1ce94346ba",
+      "label": "attn"
+    },
+    {
+      "hash": "d3314cccdb744f3767be47b560187b9c",
+      "label": "ffn"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/llama-7b",

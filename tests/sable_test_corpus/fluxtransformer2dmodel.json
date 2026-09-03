@@ -119,6 +119,17 @@
     "f9cd9d6b2d90fbb0fe4c826bad7ef102"
   ],
   "model": "FluxTransformer2DModel",
+  "proven_facts": [
+    "root.denoiser.diffusion_bookend_geometry",
+    "root.denoiser.diffusion_bookend_operations",
+    "root.denoiser.diffusion_root_topology",
+    "root.denoiser.stacks[0].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
+    "root.denoiser.stacks[0].diffusion_stack_depth",
+    "root.denoiser.stacks[1].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[1].diffusion_stack_depth",
+    "root.denoiser.stacks[1].ffn.diffusion_ffn_mechanism"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "0751c0064be790891edf52f8bed807bb",
@@ -140,6 +151,88 @@
     "ecfc076a5de5fdabf3744363aaa85405",
     "f3b14960315185f1921ac056d77d57be",
     "f9cd9d6b2d90fbb0fe4c826bad7ef102"
+  ],
+  "view_signature": [
+    {
+      "hash": "798d7657951c666b91dc4d411529dfd5",
+      "label": "architecture"
+    },
+    {
+      "hash": "824ef6a6013d508dcb66c674d9211636",
+      "label": "architecture"
+    },
+    {
+      "hash": "bf7b50ecd75684e8a39b4248976719b8",
+      "label": "attn"
+    },
+    {
+      "hash": "c30d1a27a0b953075257e7927338eb7a",
+      "label": "denoiser"
+    },
+    {
+      "hash": "ee6745e71c8107ec9f61595788134b3a",
+      "label": "denoiser"
+    },
+    {
+      "hash": "395f5467388ed1bdadb8c91c7e5e96c7",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "f3b14960315185f1921ac056d77d57be",
+      "label": "encoder_0_op_ffn"
+    },
+    {
+      "hash": "ba0a8422185c20fb776481aa67bfa522",
+      "label": "encoder_0_op_selfattn"
+    },
+    {
+      "hash": "9680b5f576b615bc5ee7a1dabc19b8ac",
+      "label": "encoder_1"
+    },
+    {
+      "hash": "f9cd9d6b2d90fbb0fe4c826bad7ef102",
+      "label": "encoder_1_g0_op_ffn"
+    },
+    {
+      "hash": "c9cee6b79d339d76616db6a1f685c359",
+      "label": "encoder_1_g0_op_selfattn"
+    },
+    {
+      "hash": "d5bf84f9a38ff56360a296307e6402ed",
+      "label": "encoder_1_g1_op_selfattn"
+    },
+    {
+      "hash": "38766bf823a11655b9a3fe1023fbe297",
+      "label": "ffn"
+    },
+    {
+      "hash": "4e6b754b82db1df486b8a21c3e488ad1",
+      "label": "ffn"
+    },
+    {
+      "hash": "b354d4cb12016360e1a9612e0000ac6e",
+      "label": "scheduler"
+    },
+    {
+      "hash": "0751c0064be790891edf52f8bed807bb",
+      "label": "vae_decode"
+    },
+    {
+      "hash": "a90de20e846dafb09ac1ab7b744f0556",
+      "label": "vae_decoder_block_1"
+    },
+    {
+      "hash": "48125ea1e7d6a56703533d06cb377d75",
+      "label": "vae_decoder_block_2"
+    },
+    {
+      "hash": "565270f4d8543fb166a76073d87e00cc",
+      "label": "vae_decoder_block_3"
+    },
+    {
+      "hash": "badaa1497d2255d8845e9ce6ea4314aa",
+      "label": "vae_decoder_block_4"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/fluxtransformer2dmodel",

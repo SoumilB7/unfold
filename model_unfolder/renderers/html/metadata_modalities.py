@@ -992,10 +992,22 @@ def _projector_card_fields(projector: dict, owner: str | None = None) -> dict:
         str(projector.get("activation") or ""),
         f"{_fmt_int(projector.get('num_latents'))} latent queries" if projector.get("num_latents") else "",
         "learned latent queries" if projector.get("learned_queries") else "",
+        "projector evidence unresolved"
+        if projector.get("evidence_unresolved") else "",
     ) if f]
     fields = {
-        "title": _PROJECTOR_TITLES.get(kind, kind.replace("_", " ").capitalize()),
-        "description": _PROJECTOR_DESCS.get(kind, "Projects encoder features into the decoder's embedding space."),
+        "title": ("Projector evidence unresolved"
+                  if projector.get("evidence_unresolved") else
+                  _PROJECTOR_TITLES.get(
+                      kind, kind.replace("_", " ").capitalize())),
+        "description": (
+            "The side-reader could not attach the projector to an exact owner; "
+            "the proven main stack remains visible and no projector mechanism "
+            "is invented."
+            if projector.get("evidence_unresolved") else
+            _PROJECTOR_DESCS.get(
+                kind,
+                "Projects encoder features into the decoder's embedding space.")),
         "facts": facts,
     }
     ops = _projector_ops(projector)
@@ -1151,6 +1163,7 @@ def _fusion_children(fusion: dict, inputs: dict) -> list[dict]:
         return _unified_fusion_children(fusion, inputs)
 
     vision = inputs.get("vision") or {}
+    video = inputs.get("video") or {}
     audio = inputs.get("audio") or {}
     tokens = vision.get("tokens") or {}
     audio_tokens = audio.get("tokens") or {}
@@ -1228,8 +1241,16 @@ def _fusion_children(fusion: dict, inputs: dict) -> list[dict]:
             "title": "Soft visual tokens",
             "description": f"{visual_span}; produced by the vision pathway before fusion.",
         })
-    if audio:
+    if video:
         children.insert(2 if vision else 1, {
+            "id": "video_path",
+            "title": "Video grid tokens",
+            "description": (
+                "Video features produced by the source-declared video pathway "
+                "before placeholder fusion."),
+        })
+    if audio:
+        children.insert(1 + bool(vision) + bool(video), {
             "id": "audio_path",
             "title": "Soft audio tokens",
             "description": f"{audio_span_desc}; produced by the audio pathway before fusion.",

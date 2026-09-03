@@ -77,12 +77,57 @@
     "f0d17fa4a2e99755bf631734911bbc50"
   ],
   "model": "OLMo-2-1124-7B",
+  "proven_facts": [
+    "decoder.attention.bias",
+    "decoder.attention.cached",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mask",
+    "decoder.attention.mask_schedule",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.output_projection",
+    "decoder.attention.position_schedule",
+    "decoder.attention.projection_mode",
+    "decoder.attention.qk_norm",
+    "decoder.attention.qk_norm_schedule",
+    "decoder.attention.rope_initialization",
+    "decoder.attention.rope_theta",
+    "decoder.attention.scores_scale",
+    "decoder.ffn.activation",
+    "decoder.ffn.ffn_schedule",
+    "decoder.ffn.gated",
+    "decoder.ffn.intermediate_size",
+    "decoder.ffn.projection_mode",
+    "decoder.layer.norm_kind",
+    "decoder.layer.norm_placement",
+    "decoder.layer.residual_topology",
+    "model.final_norm_kind",
+    "model.tie_word_embeddings"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "1ae3e6e5656fd8d7a8df14271e75d850",
     "375ae74c9482f6208152cd7e1e00c56b",
     "d666bddcd4b65fb7b24c84d32815ae72",
     "f0d17fa4a2e99755bf631734911bbc50"
+  ],
+  "view_signature": [
+    {
+      "hash": "a0f349144aaa167b84345f9edd5eae4c",
+      "label": "architecture"
+    },
+    {
+      "hash": "d666bddcd4b65fb7b24c84d32815ae72",
+      "label": "architecture"
+    },
+    {
+      "hash": "f0d17fa4a2e99755bf631734911bbc50",
+      "label": "attn"
+    },
+    {
+      "hash": "1ae3e6e5656fd8d7a8df14271e75d850",
+      "label": "ffn"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/olmo-2-1124-7b",

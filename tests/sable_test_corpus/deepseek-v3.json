@@ -128,6 +128,33 @@
     "fe7dbad6aaa0ecd58090855148c95349"
   ],
   "model": "DeepSeek-V3",
+  "proven_facts": [
+    "decoder.attention.bias",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mask",
+    "decoder.attention.mask_schedule",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.output_projection",
+    "decoder.attention.position_schedule",
+    "decoder.attention.rope_initialization",
+    "decoder.attention.rope_theta",
+    "decoder.attention.scores_scale",
+    "decoder.ffn.activation",
+    "decoder.ffn.expert.expert_activation_formula",
+    "decoder.ffn.expert.expert_intermediate_size",
+    "decoder.ffn.expert.expert_projection_mode",
+    "decoder.ffn.expert.shared_expert_count",
+    "decoder.ffn.ffn_schedule",
+    "decoder.ffn.gated",
+    "decoder.ffn.projection_mode",
+    "decoder.ffn.routing_policy",
+    "decoder.layer.norm_kind",
+    "decoder.layer.norm_placement",
+    "decoder.layer.residual_topology",
+    "model.final_norm_kind",
+    "model.tie_word_embeddings"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "0d62405c9f25c10421e350c162c03419",
@@ -141,6 +168,52 @@
     "dabf1599258da7e9cac35423b6af665a",
     "f81f29a8d6da195b64df83582a7b82ee",
     "fe7dbad6aaa0ecd58090855148c95349"
+  ],
+  "view_signature": [
+    {
+      "hash": "416d725caccdd424f1705abacf2d35ee",
+      "label": "architecture"
+    },
+    {
+      "hash": "ca026191feecce8406387cba4e5995c9",
+      "label": "architecture"
+    },
+    {
+      "hash": "2d40684da4d9cf65c1e52ec90ef37e4d",
+      "label": "architecture_v1"
+    },
+    {
+      "hash": "f81f29a8d6da195b64df83582a7b82ee",
+      "label": "attn"
+    },
+    {
+      "hash": "8885e3fd637c1ca9929d34e303ca0d79",
+      "label": "expert_1"
+    },
+    {
+      "hash": "de7213a6eaa4c7f502da0289d968a99e",
+      "label": "ffn"
+    },
+    {
+      "hash": "fe7dbad6aaa0ecd58090855148c95349",
+      "label": "ffn"
+    },
+    {
+      "hash": "0d62405c9f25c10421e350c162c03419",
+      "label": "g_topk"
+    },
+    {
+      "hash": "957109c7d03856fac96f612ceb3694e8",
+      "label": "mla_kv_path"
+    },
+    {
+      "hash": "dabf1599258da7e9cac35423b6af665a",
+      "label": "mla_query_path"
+    },
+    {
+      "hash": "987f778581b3af9ef0a802b9c788612f",
+      "label": "router"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/deepseek-v3",

@@ -290,6 +290,7 @@
     "f2e1233e250891e2de39c5c057476f4b"
   ],
   "model": "stable-diffusion-xl-base-1.0",
+  "proven_facts": [],
   "source": "local",
   "superseded_hash_signature": [
     "0850c4e36b23a250337f084246890fd0",
@@ -321,6 +322,124 @@
     "cdf43b8ecc2ac51d8d827ac14dbd6dae",
     "d74b41718aa9142aa76f0525bc5d86e2",
     "f2e1233e250891e2de39c5c057476f4b"
+  ],
+  "view_signature": [
+    {
+      "hash": "5df8a4eda034ca7f242d0fb47b632e22",
+      "label": "architecture"
+    },
+    {
+      "hash": "cdf43b8ecc2ac51d8d827ac14dbd6dae",
+      "label": "denoiser"
+    },
+    {
+      "hash": "f227a5818dd73ae2cb101218f719250a",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "1f44c23d07a67ae2e7f392b093ff5cf8",
+      "label": "encoder_0_op_ffn"
+    },
+    {
+      "hash": "8039bda2aac9986de2094b82f76b73cc",
+      "label": "encoder_0_op_selfattn"
+    },
+    {
+      "hash": "b280f4ff4ac4c8a4288b5a63d0af5271",
+      "label": "encoder_1"
+    },
+    {
+      "hash": "bc6f7241f63e806321d67186218d8f87",
+      "label": "encoder_1_op_ffn"
+    },
+    {
+      "hash": "ae24e5f955ac82cfe38f3fe21cd0c556",
+      "label": "encoder_1_op_selfattn"
+    },
+    {
+      "hash": "2989690d90d82dded5881dedfe9065ca",
+      "label": "scheduler"
+    },
+    {
+      "hash": "09d273d6022ab07158f8dc7b09698e33",
+      "label": "unet_down_0"
+    },
+    {
+      "hash": "64d6cd9b58140f0e4a7ec3412116dd93",
+      "label": "unet_down_0__resnet"
+    },
+    {
+      "hash": "b75b8f3ce3d358907036ee12b22cbbc2",
+      "label": "unet_down_1"
+    },
+    {
+      "hash": "d74b41718aa9142aa76f0525bc5d86e2",
+      "label": "unet_down_1__crossattn"
+    },
+    {
+      "hash": "89e2b1caaac398f3d1f6631a6ae9c7b9",
+      "label": "unet_down_1__ff"
+    },
+    {
+      "hash": "8874936fa4778a9d44c1cf1a7d0bc752",
+      "label": "unet_down_1__resnet"
+    },
+    {
+      "hash": "40325d6d1106b458996838748a7df14b",
+      "label": "unet_down_1__transformer"
+    },
+    {
+      "hash": "9ad20efcf870037eef9d1cb50c0bc390",
+      "label": "unet_down_2"
+    },
+    {
+      "hash": "0850c4e36b23a250337f084246890fd0",
+      "label": "unet_down_2__resnet"
+    },
+    {
+      "hash": "2f1629970ce23e018d4bc9220f3384f7",
+      "label": "unet_down_2__transformer"
+    },
+    {
+      "hash": "8870ec2d1f94d18d07b8440da8b9ab4b",
+      "label": "unet_mid"
+    },
+    {
+      "hash": "b32f612f227252073a08e66d082113c1",
+      "label": "unet_text_cond"
+    },
+    {
+      "hash": "c60a86c043f8d2be68bca7e5df2215e7",
+      "label": "unet_up_0"
+    },
+    {
+      "hash": "1f259e59ffa9b85c128e90153526ddfa",
+      "label": "unet_up_1"
+    },
+    {
+      "hash": "f2e1233e250891e2de39c5c057476f4b",
+      "label": "unet_up_2"
+    },
+    {
+      "hash": "19881dbe26ee6e9c28298b4f00967617",
+      "label": "vae_decode"
+    },
+    {
+      "hash": "4b53d426a3dbc8f0c6e315f0d2a12cad",
+      "label": "vae_decoder_block_1"
+    },
+    {
+      "hash": "498f27eac22f32eb6d48d602da830a91",
+      "label": "vae_decoder_block_2"
+    },
+    {
+      "hash": "8d24f016deed8cbc7b7e8e5bd234dc2e",
+      "label": "vae_decoder_block_3"
+    },
+    {
+      "hash": "c47dd23a8c0eb8df389dc310acb4ccac",
+      "label": "vae_decoder_block_4"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/stable-diffusion-xl-base-1-0",

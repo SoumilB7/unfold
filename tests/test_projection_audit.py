@@ -204,7 +204,7 @@ def test_census_has_no_allowed_architecture_convention():
 
 
 # --------------------------------------------------------------------------- #
-# config_field_audit upgrade — accessed-but-unprojected (advisory)
+# config_field_audit upgrade — accessed-but-unprojected (S4 blocking)
 # --------------------------------------------------------------------------- #
 
 def test_accessed_unprojected_is_inert_without_a_consumed_census():
@@ -251,10 +251,11 @@ def test_accessed_unprojected_fires_once_a_consumed_census_exists():
     assert any("'vision_config.sub.hidden_size'" in f for f in findings)
 
 
-def test_accessed_unprojected_is_wired_advisory_not_blocking():
+def test_accessed_unprojected_is_blocking_and_requires_an_exact_ship_receipt():
     report = sable(LLAMA, render_images=False)
     check = next(c for c in report.checks if c.name == "config_accessed_unprojected")
-    assert check.blocking is False
+    assert check.blocking is True
+    assert check.findings == []
 
 
 # --------------------------------------------------------------------------- #
@@ -282,9 +283,8 @@ def test_cor5_migration_claim_constructor_rejects_empty_declarations():
         ClaimBinding("a.b", ProjectionTarget("root.vision", ""))
 
 
-def test_cor5_poison_claimed_scope_with_unconsumed_read_blocks(monkeypatch):
-    """POISON: a claim over a path the parse reads without consuming MUST fire
-    — proves the blocking net cannot be vacuously green."""
+def test_cor5_claim_violation_is_blocking_but_exactly_surfaced(monkeypatch):
+    """An exact visible receipt disposes the violation without erasing it."""
     from model_unfolder.evidence import registry as reg
 
     poisoned = (reg.MigrationClaim(
@@ -296,9 +296,11 @@ def test_cor5_poison_claimed_scope_with_unconsumed_read_blocks(monkeypatch):
     rep = sable(LLAMA, render_images=False)
     check = next(c for c in rep.checks if c.name == "config_migration_claims")
     assert check.blocking
-    assert not check.passed
-    assert any("rms_norm_eps" in f for f in check.findings)
-    assert not rep.mechanical_passed
+    assert check.passed
+    assert any(
+        row["check"] == "config_migration_claims"
+        and "rms_norm_eps" in row["message"]
+        for row in mu.unfold(LLAMA).to_ir()["extras"]["ship_findings"])
 
 
 def test_cor5_poison_unconsumed_read_in_claimed_scope_is_a_violation(monkeypatch):
@@ -407,13 +409,21 @@ def test_cor5_net2_is_scope_gated_not_globally_gated(monkeypatch):
 
     # POISON: declare a scope receipted but drop its receipts -> must block.
     from model_unfolder.evidence import receipts as receipts_mod
+    from model_unfolder.evidence import ship_findings as ship_mod
 
     real_join = receipts_mod.join_obligation_receipts
+    real_apply = ship_mod.apply_ship_findings
 
     def blind_join(obligations, receipts, facts=None, **kwargs):
         # render drew nothing — the receipts are dropped, everything else rides
         # through unchanged (U2-R5 signature: facts + context_token/scopes/routes)
         return real_join(obligations, [], facts, **kwargs)
+
+    def hide_net2_receipt(ir, findings):
+        """POISON the ship boundary after the audit has found the omission."""
+        return real_apply(ir, tuple(
+            finding for finding in findings
+            if finding.check != "config_consumed_unreceipted"))
 
     import json
     import pathlib
@@ -421,6 +431,7 @@ def test_cor5_net2_is_scope_gated_not_globally_gated(monkeypatch):
     corpus = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
     qwen = json.loads((corpus / "qwen2-vl-7b-instruct.json").read_text())["config"]
     monkeypatch.setattr(receipts_mod, "join_obligation_receipts", blind_join)
+    monkeypatch.setattr(ship_mod, "apply_ship_findings", hide_net2_receipt)
     rep2 = sable(qwen, render_images=False)
     net2b = next(c for c in rep2.checks if c.name == "config_consumed_unreceipted")
     assert net2b.blocking is True
@@ -463,7 +474,32 @@ def test_cor5_poison_right_path_consumed_into_wrong_fact_blocks(monkeypatch):
     assert rows[0]["target_matches"] == 0
     rep = sable(_qwen2vl_cfg(), render_images=False)
     check = next(c for c in rep.checks if c.name == "config_migration_claims")
-    assert check.blocking and not check.passed
+    assert check.blocking and check.passed
+
+
+def test_ship_receipt_poison_missing_or_wrong_receipt_keeps_gate_red(monkeypatch):
+    """No generic or mismatched chip can launder an exact audit finding."""
+    from model_unfolder.evidence import registry as reg
+    from model_unfolder.sable import _ship_gate_findings
+
+    poisoned = (reg.MigrationClaim(
+        "root", "norm_epsilon", "POISON",
+        (reg.ClaimBinding("rms_norm_eps",
+                          _config_access.ProjectionTarget("root", "norm_eps")),),
+    ),)
+    monkeypatch.setattr(reg, "MIGRATED_SCOPES", poisoned)
+    ir = mu.unfold(LLAMA).to_ir()
+    violations = ir["extras"]["config_access"]["migration_claims"][0]["violations"]
+    assert violations
+    assert _ship_gate_findings(ir, "config_migration_claims", violations) == []
+
+    ir["extras"]["ship_findings"] = [{
+        "check": "some_other_check",
+        "message": violations[0],
+        "surface": "model",
+    }]
+    assert _ship_gate_findings(
+        ir, "config_migration_claims", violations) == violations
 
 
 def _claim_rows_of(cfg):

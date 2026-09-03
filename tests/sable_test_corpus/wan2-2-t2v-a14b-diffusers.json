@@ -229,6 +229,12 @@
     "f5ed400ab571892a69eefebdf8baaa93"
   ],
   "model": "Wan2.2-T2V-A14B-Diffusers",
+  "proven_facts": [
+    "root.denoiser.diffusion_bookend_geometry",
+    "root.denoiser.diffusion_bookend_operations",
+    "root.denoiser.diffusion_root_topology",
+    "root.denoiser.stacks[0].diffusion_stack_depth"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "273c67b8e41bcbaf59ebb258dcbace9a",
@@ -245,6 +251,56 @@
     "dc3e5c72971f1901cc882d098b09b739",
     "eb435e44e6c5fcdfc06bff8743f3e93f",
     "f5ed400ab571892a69eefebdf8baaa93"
+  ],
+  "view_signature": [
+    {
+      "hash": "44f9b21c56bf92214df12f40270f61ec",
+      "label": "architecture"
+    },
+    {
+      "hash": "e16e1436c6595c19425f4be8020e587d",
+      "label": "architecture"
+    },
+    {
+      "hash": "a3816b31eabc655a42b1babbf979e2ed",
+      "label": "denoiser"
+    },
+    {
+      "hash": "233bf3d1111aa040940edb49a84a4b9d",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "aa4f7268539d28a234b33d9a01b0ddc6",
+      "label": "encoder_0_op_ffn"
+    },
+    {
+      "hash": "b2bbd72a624c2dfe682e5c26cba9dd5b",
+      "label": "encoder_0_op_selfattn"
+    },
+    {
+      "hash": "28e39454c95b30e92cf798c97768cfdd",
+      "label": "scheduler"
+    },
+    {
+      "hash": "2fafa21f0f504acbc36cae0d02e0897f",
+      "label": "vae_decode"
+    },
+    {
+      "hash": "7f8caa8f54b3a432dbdb16095095ff0d",
+      "label": "vae_decoder_block_1"
+    },
+    {
+      "hash": "b81d64f599b43794abcc2478c65ece53",
+      "label": "vae_decoder_block_2"
+    },
+    {
+      "hash": "f5ed400ab571892a69eefebdf8baaa93",
+      "label": "vae_decoder_block_3"
+    },
+    {
+      "hash": "89e5d1f408fe8c72264a1fe18f58492e",
+      "label": "vae_decoder_block_4"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/wan2-2-t2v-a14b-diffusers",

@@ -159,6 +159,7 @@ def test_preservation_is_clean_checkout_reproducible(tmp_path):
     import hashlib
     import json
     import subprocess
+    from test_support import preservation
 
     root = pathlib.Path(__file__).resolve().parent.parent
     export = tmp_path / "export"
@@ -173,7 +174,7 @@ def test_preservation_is_clean_checkout_reproducible(tmp_path):
     assert len(inputs) == 29, f"clean checkout carries {len(inputs)} inputs"
     for path in inputs:
         row = manifest["witnesses"][path.stem]
-        assert hashlib.sha256(path.read_bytes()).hexdigest() == row["input_sha256"]
+        assert preservation.input_sha256(path) == row["input_sha256"]
         assert all(row["surfaces"].values()) and row["views"]
         # Gallery bytes are human-reviewed preservation evidence, not a local
         # cache.  Reconstruct the canonical gallery document from the archive

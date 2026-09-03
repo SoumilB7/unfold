@@ -119,12 +119,57 @@
     "c8e5aa1a15542c375c24f3617591d104"
   ],
   "model": "Qwen3-8B",
+  "proven_facts": [
+    "decoder.attention.bias",
+    "decoder.attention.cached",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mask",
+    "decoder.attention.mask_schedule",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.output_projection",
+    "decoder.attention.position_schedule",
+    "decoder.attention.projection_mode",
+    "decoder.attention.qk_norm",
+    "decoder.attention.qk_norm_schedule",
+    "decoder.attention.rope_initialization",
+    "decoder.attention.rope_theta",
+    "decoder.attention.scores_scale",
+    "decoder.ffn.activation",
+    "decoder.ffn.ffn_schedule",
+    "decoder.ffn.gated",
+    "decoder.ffn.intermediate_size",
+    "decoder.ffn.projection_mode",
+    "decoder.layer.norm_kind",
+    "decoder.layer.norm_placement",
+    "decoder.layer.residual_topology",
+    "model.final_norm_kind",
+    "model.tie_word_embeddings"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "069fdfe1cc0759670a1717944c1c8071",
     "12b1bdce7140cb545f7989138979cbfe",
     "b4bd3816cdf9f112b262e9982bb785b0",
     "f9c16fdd17c8ff0fe852745adbfee5ad"
+  ],
+  "view_signature": [
+    {
+      "hash": "069fdfe1cc0759670a1717944c1c8071",
+      "label": "architecture"
+    },
+    {
+      "hash": "c8e5aa1a15542c375c24f3617591d104",
+      "label": "architecture"
+    },
+    {
+      "hash": "b4bd3816cdf9f112b262e9982bb785b0",
+      "label": "attn"
+    },
+    {
+      "hash": "12b1bdce7140cb545f7989138979cbfe",
+      "label": "ffn"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/qwen3-8b",

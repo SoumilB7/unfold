@@ -295,6 +295,15 @@
     "e8dcb9875790ae898ed6b47b4d76810c"
   ],
   "model": "Qwen-Image",
+  "proven_facts": [
+    "root.denoiser.diffusion_bookend_geometry",
+    "root.denoiser.diffusion_bookend_operations",
+    "root.denoiser.diffusion_root_topology",
+    "root.denoiser.stacks[0].attention[0].diffusion_attention_head_dim",
+    "root.denoiser.stacks[0].attention[0].diffusion_attention_head_protocol",
+    "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
+    "root.denoiser.stacks[0].diffusion_stack_depth"
+  ],
   "source": "local",
   "superseded_hash_signature": [
     "1e58438e40005161df8d5109c200f77a",
@@ -311,6 +320,60 @@
     "bdd81d368bf59ce20a6ac9cd400f917d",
     "c42470bb064f1f176b6efece5ccc2353",
     "eeff7084747029722a3e5f82c1da7799"
+  ],
+  "view_signature": [
+    {
+      "hash": "8b2186f92c2513348ed190b47cc83a68",
+      "label": "architecture"
+    },
+    {
+      "hash": "bffeb36bdbcb899a9b7c4cb2ff4ab759",
+      "label": "architecture"
+    },
+    {
+      "hash": "7971836ffdbcd94804b0c77b9f555d67",
+      "label": "attn"
+    },
+    {
+      "hash": "ce1353b7fc7865ce338424217feebd28",
+      "label": "denoiser"
+    },
+    {
+      "hash": "e8dcb9875790ae898ed6b47b4d76810c",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "bdd81d368bf59ce20a6ac9cd400f917d",
+      "label": "encoder_0_op_selfattn"
+    },
+    {
+      "hash": "7f41627be6aa078212fb696cf99a7cc6",
+      "label": "ffn"
+    },
+    {
+      "hash": "3130960a49a7b5755a03df71c863676c",
+      "label": "scheduler"
+    },
+    {
+      "hash": "c42470bb064f1f176b6efece5ccc2353",
+      "label": "vae_decode"
+    },
+    {
+      "hash": "5287cc8501c929c34e6d0b43d7731cf3",
+      "label": "vae_decoder_block_1"
+    },
+    {
+      "hash": "bca741a288ebc432209718d9d589178d",
+      "label": "vae_decoder_block_2"
+    },
+    {
+      "hash": "4b43fdd076d4dd5d6a6b852d96353ec3",
+      "label": "vae_decoder_block_3"
+    },
+    {
+      "hash": "bb58470aeb416484a80788857c79da0f",
+      "label": "vae_decoder_block_4"
+    }
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/qwen-image",
