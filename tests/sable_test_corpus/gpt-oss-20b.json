@@ -120,11 +120,11 @@
     "vocab_size": 201088
   },
   "hash_signature": [
+    "0ff52a453ed4cd94123b0a276ee074d8",
     "19f54d71ceafc7386057dea86cbd0031",
-    "1ecde1de24e3672114dc67e2d1478bd2",
     "335dc4a5c8ffd40fc2e4b5cb87d8d71d",
-    "50db28fc1d577733f8359144c130243f",
     "5649037dd75f6c481afb2ae7124aaf39",
+    "5b1391184ca2e87a94708a850e6a8ad9",
     "617ce03749b7fbeb4ed3b7ef445ab849",
     "9c61b6c1799a8a0e41ca220558ade62f",
     "f3df89820579dc3b4bf7ee5b51fc79e9"
@@ -132,13 +132,13 @@
   "model": "gpt-oss-20b",
   "source": "local",
   "superseded_hash_signature": [
+    "19f54d71ceafc7386057dea86cbd0031",
     "1ecde1de24e3672114dc67e2d1478bd2",
     "335dc4a5c8ffd40fc2e4b5cb87d8d71d",
     "50db28fc1d577733f8359144c130243f",
     "5649037dd75f6c481afb2ae7124aaf39",
     "617ce03749b7fbeb4ed3b7ef445ab849",
-    "83c8fe154dcb28363220709618b13902",
-    "c60a53f2855d5be4f7f54c6cc0fb7484",
+    "9c61b6c1799a8a0e41ca220558ade62f",
     "f3df89820579dc3b4bf7ee5b51fc79e9"
   ],
   "visual_evidence": {
