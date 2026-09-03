@@ -1,0 +1,607 @@
+bringing up nodes...
+bringing up nodes...
+
+..............FFF.FFFFFFFFFFFFFFF..FFFF..FFFF.FF..F.                     [100%]
+=================================== FAILURES ===================================
+___ test_expected_witness_zero_drift_zero_skip[sana-1600m-1024px-diffusers] ____
+[gw3] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'sana-1600m-1024px-diffusers'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: sana-1600m-1024px-diffusers/sable: hash mismatch
+E       assert ['sana-1600m-...ash mismatch'] == []
+E         
+E         Left contains one more item: 'sana-1600m-1024px-diffusers/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+__________ test_expected_witness_zero_drift_zero_skip[auraflow-v0-3] ___________
+[gw1] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'auraflow-v0-3'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: auraflow-v0-3/sable: hash mismatch
+E       assert ['auraflow-v0...ash mismatch'] == []
+E         
+E         Left contains one more item: 'auraflow-v0-3/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+___________ test_expected_witness_zero_drift_zero_skip[hunyuanvideo] ___________
+[gw2] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'hunyuanvideo'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: hunyuanvideo/sable: hash mismatch
+E       assert ['hunyuanvide...ash mismatch'] == []
+E         
+E         Left contains one more item: 'hunyuanvideo/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+______________ test_expected_witness_zero_drift_zero_skip[bloom] _______________
+[gw1] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'bloom'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: bloom/sable: hash mismatch
+E       assert ['bloom/sable: hash mismatch'] == []
+E         
+E         Left contains one more item: 'bloom/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+____ test_expected_witness_zero_drift_zero_skip[stable-diffusion-3-5-large] ____
+[gw3] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'stable-diffusion-3-5-large'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: stable-diffusion-3-5-large/sable: hash mismatch
+E       assert ['stable-diff...ash mismatch'] == []
+E         
+E         Left contains one more item: 'stable-diffusion-3-5-large/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+_____________ test_expected_witness_zero_drift_zero_skip[llama-7b] _____________
+[gw2] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'llama-7b'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: llama-7b/sable: hash mismatch
+E       assert ['llama-7b/sa...ash mismatch'] == []
+E         
+E         Left contains one more item: 'llama-7b/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+____ test_expected_witness_zero_drift_zero_skip[pixart-sigma-xl-2-1024-ms] _____
+[gw0] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'pixart-sigma-xl-2-1024-ms'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: pixart-sigma-xl-2-1024-ms/sable: hash mismatch
+E       assert ['pixart-sigm...ash mismatch'] == []
+E         
+E         Left contains one more item: 'pixart-sigma-xl-2-1024-ms/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+___________ test_expected_witness_zero_drift_zero_skip[cogvideox-5b] ___________
+[gw1] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'cogvideox-5b'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: cogvideox-5b/sable: hash mismatch
+E       assert ['cogvideox-5...ash mismatch'] == []
+E         
+E         Left contains one more item: 'cogvideox-5b/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+____________ test_expected_witness_zero_drift_zero_skip[ltx-video] _____________
+[gw2] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'ltx-video'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: ltx-video/sable: hash mismatch
+E       assert ['ltx-video/s...ash mismatch'] == []
+E         
+E         Left contains one more item: 'ltx-video/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+___ test_expected_witness_zero_drift_zero_skip[stable-diffusion-xl-base-1-0] ___
+[gw3] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'stable-diffusion-xl-base-1-0'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: stable-diffusion-xl-base-1-0/expanded: hash mismatch
+E         stable-diffusion-xl-base-1-0/html_meta: hash mismatch
+E         stable-diffusion-xl-base-1-0/ir: hash mismatch
+E         stable-diffusion-xl-base-1-0/sable: hash mismatch
+E       assert ['stable-diff...ash mismatch'] == []
+E         
+E         Left contains 4 more items, first extra item: 'stable-diffusion-xl-base-1-0/expanded: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+___________ test_expected_witness_zero_drift_zero_skip[prxpixel-t2i] ___________
+[gw0] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'prxpixel-t2i'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: prxpixel-t2i/sable: hash mismatch
+E       assert ['prxpixel-t2...ash mismatch'] == []
+E         
+E         Left contains one more item: 'prxpixel-t2i/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+____________ test_expected_witness_zero_drift_zero_skip[dbrx-base] _____________
+[gw1] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'dbrx-base'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: dbrx-base/sable: hash mismatch
+E       assert ['dbrx-base/s...ash mismatch'] == []
+E         
+E         Left contains one more item: 'dbrx-base/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+_________ test_expected_witness_zero_drift_zero_skip[stablelm-2-1-6b] __________
+[gw3] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'stablelm-2-1-6b'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: stablelm-2-1-6b/sable: hash mismatch
+E       assert ['stablelm-2-...ash mismatch'] == []
+E         
+E         Left contains one more item: 'stablelm-2-1-6b/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+_________ test_expected_witness_zero_drift_zero_skip[lumina-image-2-0] _________
+[gw2] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'lumina-image-2-0'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: lumina-image-2-0/sable: hash mismatch
+E       assert ['lumina-imag...ash mismatch'] == []
+E         
+E         Left contains one more item: 'lumina-image-2-0/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+___________ test_expected_witness_zero_drift_zero_skip[deepseek-v3] ____________
+[gw1] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'deepseek-v3'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: deepseek-v3/sable: hash mismatch
+E       assert ['deepseek-v3...ash mismatch'] == []
+E         
+E         Left contains one more item: 'deepseek-v3/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+____________ test_expected_witness_zero_drift_zero_skip[qwen-image] ____________
+[gw0] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'qwen-image'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: qwen-image/sable: hash mismatch
+E       assert ['qwen-image/...ash mismatch'] == []
+E         
+E         Left contains one more item: 'qwen-image/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+_________ test_expected_witness_zero_drift_zero_skip[mochi-1-preview] __________
+[gw2] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'mochi-1-preview'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: mochi-1-preview/sable: hash mismatch
+E       assert ['mochi-1-pre...ash mismatch'] == []
+E         
+E         Left contains one more item: 'mochi-1-preview/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+____ test_expected_witness_zero_drift_zero_skip[wan2-2-t2v-a14b-diffusers] _____
+[gw3] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'wan2-2-t2v-a14b-diffusers'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: wan2-2-t2v-a14b-diffusers/sable: hash mismatch
+E       assert ['wan2-2-t2v-...ash mismatch'] == []
+E         
+E         Left contains one more item: 'wan2-2-t2v-a14b-diffusers/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+_______ test_expected_witness_zero_drift_zero_skip[qwen2-vl-7b-instruct] _______
+[gw0] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'qwen2-vl-7b-instruct'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: qwen2-vl-7b-instruct/sable: hash mismatch
+E       assert ['qwen2-vl-7b...ash mismatch'] == []
+E         
+E         Left contains one more item: 'qwen2-vl-7b-instruct/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+__________ test_expected_witness_zero_drift_zero_skip[musicgen-small] __________
+[gw2] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'musicgen-small'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: musicgen-small/sable: hash mismatch
+E       assert ['musicgen-sm...ash mismatch'] == []
+E         
+E         Left contains one more item: 'musicgen-small/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+----------------------------- Captured stderr call -----------------------------
+[transformers] Model config: pad_token_id must be `None` or an integer within the vocabulary (between 0 and 2047), got 2048. This may result in unexpected behavior.
+[transformers] Model config: bos_token_id must be `None` or an integer within the vocabulary (between 0 and 2047), got 2048. This may result in unexpected behavior.
+____________ test_expected_witness_zero_drift_zero_skip[flux-2-dev] ____________
+[gw1] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'flux-2-dev'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: flux-2-dev/sable: hash mismatch
+E       assert ['flux-2-dev/...ash mismatch'] == []
+E         
+E         Left contains one more item: 'flux-2-dev/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+__________ test_expected_witness_zero_drift_zero_skip[olmo-2-1124-7b] __________
+[gw2] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'olmo-2-1124-7b'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: olmo-2-1124-7b/sable: hash mismatch
+E       assert ['olmo-2-1124...ash mismatch'] == []
+E         
+E         Left contains one more item: 'olmo-2-1124-7b/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+_________ test_expected_witness_zero_drift_zero_skip[qwen3-5-27b-text] _________
+[gw0] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'qwen3-5-27b-text'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: qwen3-5-27b-text/sable: hash mismatch
+E       assert ['qwen3-5-27b...ash mismatch'] == []
+E         
+E         Left contains one more item: 'qwen3-5-27b-text/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+_____________ test_expected_witness_zero_drift_zero_skip[glm-4-5] ______________
+[gw2] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'glm-4-5'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: glm-4-5/sable: hash mismatch
+E       assert ['glm-4-5/sab...ash mismatch'] == []
+E         
+E         Left contains one more item: 'glm-4-5/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+______ test_expected_witness_zero_drift_zero_skip[fluxtransformer2dmodel] ______
+[gw1] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'fluxtransformer2dmodel'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: fluxtransformer2dmodel/sable: hash mismatch
+E       assert ['fluxtransfo...ash mismatch'] == []
+E         
+E         Left contains one more item: 'fluxtransformer2dmodel/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+_____________ test_expected_witness_zero_drift_zero_skip[qwen3-8b] _____________
+[gw0] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'qwen3-8b'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: qwen3-8b/sable: hash mismatch
+E       assert ['qwen3-8b/sa...ash mismatch'] == []
+E         
+E         Left contains one more item: 'qwen3-8b/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+___________ test_expected_witness_zero_drift_zero_skip[gpt-oss-20b] ____________
+[gw2] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'gpt-oss-20b'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: gpt-oss-20b/sable: hash mismatch
+E       assert ['gpt-oss-20b...ash mismatch'] == []
+E         
+E         Left contains one more item: 'gpt-oss-20b/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+__________ test_expected_witness_zero_drift_zero_skip[gemma-2-2b-it] ___________
+[gw1] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'gemma-2-2b-it'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: gemma-2-2b-it/sable: hash mismatch
+E       assert ['gemma-2-2b-...ash mismatch'] == []
+E         
+E         Left contains one more item: 'gemma-2-2b-it/sable: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+_____ test_expected_witness_zero_drift_zero_skip[granite-3-0-8b-instruct] ______
+[gw2] darwin -- Python 3.12.10 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+slug = 'granite-3-0-8b-instruct'
+
+    @pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+    def test_expected_witness_zero_drift_zero_skip(slug):
+        """Regenerate one witness so parallel workers can share the expensive
+        preservation bracket while retaining exact per-model failure attribution."""
+        manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+        findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
+>       assert findings == [], "\n".join(findings[:20])
+E       AssertionError: granite-3-0-8b-instruct/expanded: hash mismatch
+E         granite-3-0-8b-instruct/html_meta: hash mismatch
+E         granite-3-0-8b-instruct/ir: hash mismatch
+E         granite-3-0-8b-instruct/sable: hash mismatch
+E       assert ['granite-3-0...ash mismatch'] == []
+E         
+E         Left contains 4 more items, first extra item: 'granite-3-0-8b-instruct/expanded: hash mismatch'
+E         Use -v to get more diff
+
+tests/test_preservation.py:188: AssertionError
+============================= slowest 10 durations =============================
+116.22s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[flux-2-dev]
+77.38s call     tests/test_preservation.py::test_canonical_surfaces_are_deterministic_end_to_end
+74.61s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[hunyuanvideo]
+71.72s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[qwen-image]
+65.00s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[stable-diffusion-xl-base-1-0]
+63.05s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[qwen2-vl-7b-instruct]
+62.51s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[auraflow-v0-3]
+61.73s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[sana-1600m-1024px-diffusers]
+61.53s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[fluxtransformer2dmodel]
+60.18s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[musicgen-small]
+=========================== short test summary info ============================
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[sana-1600m-1024px-diffusers]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[auraflow-v0-3]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[hunyuanvideo]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[bloom]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[stable-diffusion-3-5-large]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[llama-7b]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[pixart-sigma-xl-2-1024-ms]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[cogvideox-5b]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[ltx-video]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[stable-diffusion-xl-base-1-0]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[prxpixel-t2i]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[dbrx-base]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[stablelm-2-1-6b]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[lumina-image-2-0]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[deepseek-v3]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[qwen-image]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[mochi-1-preview]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[wan2-2-t2v-a14b-diffusers]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[qwen2-vl-7b-instruct]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[musicgen-small]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[flux-2-dev]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[olmo-2-1124-7b]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[qwen3-5-27b-text]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[glm-4-5]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[fluxtransformer2dmodel]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[qwen3-8b]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[gpt-oss-20b]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[gemma-2-2b-it]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[granite-3-0-8b-instruct]
+29 failed, 23 passed in 523.45s (0:08:43)

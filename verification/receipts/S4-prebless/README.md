@@ -3,6 +3,12 @@
 Status: **mechanically implemented; independent S4 review required before any
 manifest or gallery bless**.
 
+Committed-tree pre-bless receipt: **`d7f78f17ca`**, implementation tree
+**`8f9862ed2a0937f34f862c0564a22bf59542a914`**.  The machine receipt is
+[`receipt.json`](receipt.json), with all six original lane logs under
+[`lanes/`](lanes/).  The anti-vacuous mutation outcomes are indexed in
+[`poisons.md`](poisons.md).
+
 This directory records the S4 boundary before approval.  The authoritative
 product denominator is [`coverage.json`](../../../coverage.json): 29 reviewed
 corpus witnesses plus the 15 frozen unseen-model inputs.  Its current totals
@@ -82,5 +88,10 @@ unblessed ledger and also exposed seven stale tests whose old contract required
 an unresolved finding to remain both visibly receipted and unsurfaced.  Those
 tests now retain their no-fabrication assertions while joining the exact
 `ship_findings` receipt; no architecture fact, support-set row, or coverage
-count changed.  The corrected bracket receipt is recorded with the S4
-completion sheet after it runs on the amended committed tree.
+count changed.  The corrected bracket collected **4,057** tests, passed **208**
+focused and **44** U2-authority tests, and passed the **3,961-test** bounded
+full bracket.  All coordinator, artifact, and lane fingerprints were identical
+before/after.  Preservation was the sole red lane: all 29 witnesses changed on
+`sable`; only Granite and SDXL additionally changed `ir`, `expanded`, and
+`html_meta`, exactly as enumerated above.  This is the required independent
+review stop, not a blessing failure to suppress.
