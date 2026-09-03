@@ -774,19 +774,12 @@ def attention_label(attention: AttentionSpec) -> list[str]:
                 # a third line overflows the block.
                 return [label[0], "(unresolved)"]
         if attention.cross_attention:
-            # Cross-attention is the typed role we know.  The K/V source stays
-            # in its own typed fact/card; never recover a source modality by
-            # searching prose here.
-            return _prefixed_label(prefix, "Cross-Attention", "(unresolved)")
+            return _cross_attention_label(attention, prefix)
         return _prefixed_label(prefix, "Attention", "(mechanism unresolved)")
     if attention.variant and attention.variant.get("label"):
         return list(attention.variant["label"])
     if attention.cross_attention:
-        # ``cross_kv_source`` is explanatory prose, not a typed modality enum.
-        # Searching its words used to turn every non-prompt string into
-        # "Vision".  Preserve the proven cross-attention role while leaving
-        # the side-source classification explicitly unresolved.
-        return _prefixed_label(prefix, "Cross-Attention", "(K/V source unresolved)")
+        return _cross_attention_label(attention, prefix)
     if kind == "mla":
         return _prefixed_label(prefix, "Multi-Head Latent", "Attention")
     if kind == "mqa":
@@ -821,6 +814,22 @@ def attention_label(attention: AttentionSpec) -> list[str]:
     if tags:
         return ["Multi-Head Attn", f"({', '.join(tags)})"]
     return ["Multi-Head", "Attention"]
+
+
+def _cross_attention_label(attention: AttentionSpec,
+                           prefix: str | None) -> list[str]:
+    """Project only the closed source role carried by ``AttentionSpec``.
+
+    ``cross_kv_source`` remains explanatory prose and is deliberately ignored.
+    An absent typed role is the only route to the unresolved label.
+    """
+    source = {
+        "conditioning_encoder": "(prompt encoder K/V)",
+        "vision": "(vision K/V)",
+        "audio": "(audio K/V)",
+        "external": "(external K/V)",
+    }.get(attention.cross_kv_source_kind, "(K/V source unresolved)")
+    return _prefixed_label(prefix, "Cross-Attention", source)
 
 
 def _spec_partial_rope(attention: AttentionSpec) -> bool:

@@ -12,6 +12,11 @@ import math
 from typing import Optional
 
 
+CROSS_KV_SOURCE_KINDS = frozenset({
+    "conditioning_encoder", "vision", "audio", "external",
+})
+
+
 @dataclass
 class AttentionSpec:
     """Specification of an attention/token-mixer block within a layer."""
@@ -91,6 +96,12 @@ class AttentionSpec:
                                     # cross_attention is set — e.g. "encoded text
                                     # prompt" (DiT/UNet) vs "projected image states"
                                     # (vision). Drives the diagram's external node.
+    cross_kv_source_kind: Optional[str] = None  # closed typed source role;
+                                    # absent means the external K/V source is
+                                    # unresolved. Never derived from prose.
+    cross_kv_source_evidence: Optional[dict] = None  # serialized exact
+                                    # source-proven FusionEvidence that decided
+                                    # cross_kv_source_kind.
     compress_ratio: Optional[int] = None   # compressed sparse / hierarchical compressed attention
     index_topk: Optional[int] = None        # sparse-attention indexer fan-in (keys kept per query)
     index_n_heads: Optional[int] = None     # DeepSeek-V3.2 DSA lightning-indexer head count
@@ -119,6 +130,44 @@ class AttentionSpec:
     # machine-readable line between declared/read facts and asserted
     # conventions (Part 4 §6).  Emitted only when non-empty.
     asserted: tuple = ()
+
+    def __post_init__(self):
+        source_kind = self.cross_kv_source_kind
+        evidence = self.cross_kv_source_evidence
+        if source_kind is None:
+            if evidence is not None:
+                raise ValueError(
+                    "cross-K/V provenance cannot exist without a typed source")
+            return
+        if source_kind not in CROSS_KV_SOURCE_KINDS:
+            raise ValueError(f"unknown cross-K/V source kind: {source_kind}")
+        if not self.cross_attention:
+            raise ValueError(
+                "a typed cross-K/V source requires cross_attention=True")
+        if not isinstance(evidence, dict):
+            raise TypeError(
+                "a typed cross-K/V source requires FusionEvidence provenance")
+        if evidence.get("status") != "proven" \
+                or evidence.get("kind") != "cross_attention":
+            raise ValueError(
+                "cross-K/V source provenance must prove cross-attention")
+        if not evidence.get("owner_class") or not evidence.get("source_file") \
+                or not isinstance(evidence.get("line"), int):
+            raise ValueError(
+                "cross-K/V source provenance requires owner, file and line")
+        route_modalities = {
+            route.get("modality") for route in evidence.get("routes", ())
+            if isinstance(route, dict)
+        }
+        expected_modality = {
+            "conditioning_encoder": "conditioning",
+            "vision": "vision",
+            "audio": "audio",
+            "external": "external",
+        }[source_kind]
+        if route_modalities != {expected_modality}:
+            raise ValueError(
+                "cross-K/V source kind must match the proven fusion route")
 
 
 @dataclass
@@ -268,7 +317,9 @@ class LayerSpec:
         return layer_signature(self)
 
 
-_NON_STRUCTURAL_FACT_FIELDS = frozenset({"asserted"})
+_NON_STRUCTURAL_FACT_FIELDS = frozenset({
+    "asserted", "cross_kv_source_evidence",
+})
 _BLOCK_STRUCTURAL_FIELDS = (
     "id", "role", "kind", "view", "lane", "branch_side", "residual_from",
     "diffusion_stage", "feeds", "also_feeds", "target", "resolved",
@@ -542,6 +593,9 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "output_projection": a.output_projection,
         "cross_attention": a.cross_attention,
         "cross_kv_source": a.cross_kv_source,
+        **({"cross_kv_source_kind": a.cross_kv_source_kind,
+            "cross_kv_source_evidence": dict(a.cross_kv_source_evidence)}
+           if a.cross_kv_source_kind is not None else {}),
         "compress_ratio": a.compress_ratio,
         "index_topk": a.index_topk,
         "index_n_heads": a.index_n_heads,

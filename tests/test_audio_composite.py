@@ -64,6 +64,12 @@ def test_musicgen_cross_attention_is_construction_proven_and_additive():
     cross = ir.layers[0].cross_attention
     assert cross.cross_attention is True and cross.mask == "full"
     assert cross.cross_kv_source == "encoded prompt states (the conditioning encoder tower)"
+    assert cross.cross_kv_source_kind == "conditioning_encoder"
+    assert cross.cross_kv_source_evidence["status"] == "proven"
+    assert cross.cross_kv_source_evidence["kind"] == "cross_attention"
+    assert {route["modality"]
+            for route in cross.cross_kv_source_evidence["routes"]} \
+        == {"conditioning"}
     # The drawn cell has BOTH sublayers, in constructed order, and the side
     # states feed the CROSS block.
     ids = [b["id"] for b in ir.layers[0].blocks]
@@ -77,7 +83,9 @@ def test_musicgen_cross_attention_is_construction_proven_and_additive():
     # renderer must not recover it by searching prose.
     cross_block = next(b for b in ir.layers[0].blocks if b["id"] == "cross_attn")
     assert "Vision" not in " ".join(cross_block["label"])
-    assert "Cross-Attention" in " ".join(cross_block["label"])
+    assert cross_block["label"] == [
+        "Cross-Attention", "(prompt encoder K/V)"]
+    assert any(fact.endswith(":1440") for fact in cross_block["facts"])
 
 
 def test_musicgen_conditioning_tower_rides_the_universal_roundtrip():

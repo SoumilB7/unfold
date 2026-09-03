@@ -1,6 +1,8 @@
 """Reusable decoder-layer topology declarations."""
 from __future__ import annotations
 
+from pathlib import Path
+
 from ....block_schema import Block
 from ....ir import AttentionSpec, FFNSpec
 from ..common import format_dim as _fmt
@@ -432,6 +434,11 @@ def single_stream_decoder_layer_blocks(
 def _attention_block(attention: AttentionSpec, hidden_size: int,
                      block_id: str = "attn") -> Block:
     desc, facts = attention_summary(attention_detail(attention))
+    evidence = attention.cross_kv_source_evidence or {}
+    if attention.cross_kv_source_kind is not None:
+        source_file = str(evidence["source_file"])
+        facts.append(
+            f"source {Path(source_file).name}:{evidence['line']}")
     return {
         "id": block_id,
         "role": "attention",

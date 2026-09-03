@@ -846,7 +846,7 @@ _TAINT_STRUCT_KEYS = frozenset({
     "cell", "kind", "mixer", "norm_kind", "norm_placement", "gated", "activation",
     "mask", "projection_mode", "attention_kind", "ffn_kind", "fusion_kind",
     "position_kind", "self_attn_kind", "output_gate", "cross_kv_source",
-    "cross_attention",
+    "cross_kv_source_kind", "cross_kv_source_evidence", "cross_attention",
 })
 _TAINT_SPEC_CTORS = frozenset({"AttentionSpec", "FFNSpec", "LayerSpec", "Op", "Region"})
 

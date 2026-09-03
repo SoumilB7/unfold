@@ -235,6 +235,15 @@ def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
     if op.kind == "linear":
         return Node(op.id, "linear", op.label or "Linear", static=static,
                     cache_ports=bool(op.meta.get("cached")))
+    if op.kind == "output":
+        return Node(op.id, "port", op.label or "out", static=True,
+                    meta=dict(op.meta))
+    if op.kind == "norm":
+        # ``norm`` is a closed, source-authored opgraph kind.  It used to be
+        # rendered accidentally by the generic fall-through; keep the same
+        # proven glyph through an explicit branch so a genuinely new kind can
+        # still fall through to the visible unknown below.
+        return Node(op.id, "norm", op.label, static=static)
     if op.kind == "activation":
         # fn=None means the activation's IDENTITY is unproven (source-proven
         # dense structure with an unnamed activation) — a bare "Activation"

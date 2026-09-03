@@ -15,7 +15,7 @@ from model_unfolder.adapters.diffusor.blocks import _encoder_norm_card
 from model_unfolder.ir import AttentionSpec
 from model_unfolder.labels import attention_label
 from model_unfolder.evidence.conformance import diagram_op_set
-from model_unfolder.opgraph import Edge, Op, Region
+from model_unfolder.opgraph import OP_KINDS, Edge, Op, Region
 from model_unfolder.renderers.html.block_views.attention import (
     _apply_presentation,
 )
@@ -55,6 +55,16 @@ def test_unknown_op_kind_projects_to_an_unresolved_operation():
     assert node.resolved is False
     assert node.static is True
     assert node.meta == {"source_kind": "future_operation"}
+
+
+def test_every_declared_op_kind_has_an_explicit_renderer_projection():
+    """The canonical op alphabet must never reach the unknown fall-through."""
+    for kind in OP_KINDS:
+        op = Op(f"op-{kind}", kind, kind)
+        region = Region(f"region-{kind}", "test", kind, [op], [])
+        node = region_to_graph(region).by_id()[op.id]
+        assert node.kind != "unknown", kind
+        assert node.meta.get("source_kind") != kind
 
 
 def test_visible_unknown_is_a_censused_non_compute_presentation_kind():
@@ -131,6 +141,39 @@ def test_cross_attention_label_does_not_classify_kv_source_from_prose():
     assert attention_label(prompt) == attention_label(arbitrary) == [
         "Cross-Attention", "(K/V source unresolved)",
     ]
+
+
+def test_cross_attention_label_projects_only_the_closed_typed_source():
+    evidence = {
+        "status": "proven", "kind": "cross_attention",
+        "owner_class": "Wrapper", "source_file": "/tmp/modeling.py",
+        "line": 41, "routes": [{"modality": "conditioning"}],
+    }
+    attention = AttentionSpec(
+        "mha", 8, cross_attention=True,
+        cross_kv_source="arbitrary prose that names no modality",
+        cross_kv_source_kind="conditioning_encoder",
+        cross_kv_source_evidence=evidence,
+    )
+    assert attention_label(attention) == [
+        "Cross-Attention", "(prompt encoder K/V)",
+    ]
+    # Mechanism and source are independent axes: an unresolved attention
+    # mechanism does not erase a separately proven external K/V source.
+    unknown_mechanism = AttentionSpec(
+        None, 8, cross_attention=True,
+        cross_kv_source_kind="conditioning_encoder",
+        cross_kv_source_evidence=evidence,
+    )
+    assert attention_label(unknown_mechanism) == [
+        "Cross-Attention", "(prompt encoder K/V)",
+    ]
+    with pytest.raises(ValueError, match="match the proven fusion route"):
+        AttentionSpec(
+            "mha", 8, cross_attention=True,
+            cross_kv_source_kind="vision",
+            cross_kv_source_evidence=evidence,
+        )
 
 
 def test_block_diffusion_missing_values_stay_visible_and_unresolved():

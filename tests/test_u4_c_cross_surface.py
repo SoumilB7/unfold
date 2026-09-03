@@ -126,6 +126,7 @@ _ATTENTION_MUTATIONS = {
     "output_projection": True,
     "cross_attention": True,
     "cross_kv_source": "encoded states",
+    "cross_kv_source_kind": "conditioning_encoder",
     "compress_ratio": 2,
     "index_topk": 4,
     "index_n_heads": 2,
@@ -143,10 +144,22 @@ _ATTENTION_MUTATIONS = {
 def test_every_attention_architecture_field_changes_every_grouping_consumer():
     base = _layer()
     baseline = base.signature()
-    structural = {item.name for item in fields(AttentionSpec)} - {"asserted"}
+    structural = {item.name for item in fields(AttentionSpec)} - {
+        "asserted", "cross_kv_source_evidence",
+    }
     assert structural == set(_ATTENTION_MUTATIONS)
     for name, value in _ATTENTION_MUTATIONS.items():
         updates = {name: value}
+        if name == "cross_kv_source_kind":
+            updates.update(
+                cross_attention=True,
+                cross_kv_source_evidence={
+                    "status": "proven", "kind": "cross_attention",
+                    "owner_class": "Wrapper",
+                    "source_file": "/tmp/modeling.py", "line": 41,
+                    "routes": [{"modality": "conditioning"}],
+                },
+            )
         candidate = replace(base, attention=replace(base.attention, **updates))
         signatures = _all_signatures(candidate)
         assert signatures.count(signatures[0]) == len(signatures), name
@@ -155,6 +168,28 @@ def test_every_attention_architecture_field_changes_every_grouping_consumer():
     assert replace(
         base, attention=replace(base.attention, asserted=("legacy",))
     ).signature() == baseline
+    # Exact evidence locations are provenance, not architecture: they must not
+    # split otherwise identical repeated layers into separate groups.
+    typed = replace(
+        base.attention,
+        cross_attention=True,
+        cross_kv_source_kind="conditioning_encoder",
+        cross_kv_source_evidence={
+            "status": "proven", "kind": "cross_attention",
+            "owner_class": "Wrapper", "source_file": "/tmp/a.py", "line": 1,
+            "routes": [{"modality": "conditioning"}],
+        },
+    )
+    relocated = replace(
+        typed,
+        cross_kv_source_evidence={
+            "status": "proven", "kind": "cross_attention",
+            "owner_class": "Wrapper", "source_file": "/tmp/b.py", "line": 9,
+            "routes": [{"modality": "conditioning"}],
+        },
+    )
+    assert replace(base, attention=typed).signature() \
+        == replace(base, attention=relocated).signature()
 
 
 _FFN_MUTATIONS = {

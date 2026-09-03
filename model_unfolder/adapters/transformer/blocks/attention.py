@@ -52,6 +52,10 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "output_projection": attention.output_projection,
         "cross_attention": attention.cross_attention,
         "cross_kv_source": attention.cross_kv_source,
+        **({"cross_kv_source_kind": attention.cross_kv_source_kind,
+            "cross_kv_source_evidence": dict(
+                attention.cross_kv_source_evidence)}
+           if attention.cross_kv_source_kind is not None else {}),
         "compress_ratio": attention.compress_ratio,
         "index_topk": attention.index_topk,
         "index_n_heads": attention.index_n_heads,

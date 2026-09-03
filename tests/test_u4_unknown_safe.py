@@ -70,7 +70,7 @@ def test_typed_unknown_cross_attention_stays_cross_but_not_mha():
     attention = _unknown_attention(cross_attention=True)
     assert attention_label(attention) == [
         "Cross-Attention",
-        "(unresolved)",
+        "(K/V source unresolved)",
     ]
     assert attention_title(attention) == "Cross-attention mechanism unresolved"
     assert kind_short({"kind": None, "cross_attention": True}) == "XAttn unresolved"

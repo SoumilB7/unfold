@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 import math
+from pathlib import Path
 from typing import Any
 
 from . import debug
@@ -3960,11 +3961,16 @@ def parse(cfg: Any, context=None) -> ModelIR:
             reason=("each decoder layer retains an exact selected block and "
                     "Q/K/V lineage, or an exact additive dual-attention proof"),
         )
-    has_vision_side_state = (_g(cfg, "vision_config") is not None
-                             or _g(cfg, "vision_model_config") is not None)
-    has_cross_attention_side_state = bool(
-        cross_attn_layer_set and (has_vision_side_state or composite_encoder_type)
-    )
+    # One source-proven fusion object owns the K/V source enum, its explanatory
+    # prose, the side-input lane and the modality projection below. Config
+    # presence and prose never classify the source.
+    from ...evidence.fusion import fusion_evidence
+    _fusion_evidence = (
+        fusion_evidence(cfg, parse_context=context)
+        if cross_attn_layer_set else None)
+    (_cross_kv_source_kind, _cross_kv_source_text,
+     _cross_kv_source_evidence) = _cross_kv_source_projection(
+         _fusion_evidence)
 
     # Declared decoder-scope flags (Parler/MusicGen lineage): read them so the
     # ownership audit sees them; each is folded only where it is a proven fact.
@@ -4081,14 +4087,18 @@ def parse(cfg: Any, context=None) -> ModelIR:
             bias=use_attention_bias,
             no_rope=_position_projection["no_rope"],
             cross_attention=is_cross_attn_layer and not cross_attention_additive,
-            cross_kv_source=(("projected image states"
-                              if has_vision_side_state and has_cross_attention_side_state
-                              else "encoded prompt states (the "
-                                   "conditioning encoder tower)"
-                              if has_cross_attention_side_state else
-                              "external encoder states (encoder not in this config)")
-                             if is_cross_attn_layer and not cross_attention_additive
-                             else None),
+            cross_kv_source=(
+                _cross_kv_source_text
+                if is_cross_attn_layer and not cross_attention_additive
+                else None),
+            cross_kv_source_kind=(
+                _cross_kv_source_kind
+                if is_cross_attn_layer and not cross_attention_additive
+                else None),
+            cross_kv_source_evidence=(
+                _cross_kv_source_evidence
+                if is_cross_attn_layer and not cross_attention_additive
+                else None),
             compress_ratio=compress_ratio,
             # Sparse-attention indexer fan-in. CSA declares it alongside a
             # compress_ratio; DeepSeek-V3.2 DSA declares its own indexer geometry
@@ -4193,8 +4203,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 # U2-R9: structural prose, identity-free — the slot's declared
                 # type is a display LABEL on the tower card, never in the
                 # wiring description (name-blind law).
-                cross_kv_source=("encoded prompt states (the "
-                                 "conditioning encoder tower)"),
+                cross_kv_source=_cross_kv_source_text,
+                cross_kv_source_kind=_cross_kv_source_kind,
+                cross_kv_source_evidence=_cross_kv_source_evidence,
             )
 
         extra_blocks = list(
@@ -4202,10 +4213,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
         ) if ple_dim else []
         if is_cross_attn_layer:
             extra_blocks.append(_cross_attention_states_side_block(
-                "conditioning" if (composite_encoder_type and not has_vision_side_state)
-                else "vision",
+                _cross_kv_source_kind,
                 encoder_type=composite_encoder_type,
                 feeds="cross_attn" if cross_spec is not None else "attn",
+                evidence=_cross_kv_source_evidence,
             ))
 
         if use_parallel_residual:
@@ -4277,7 +4288,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
             return True, node, "config_declared"
 
         from ...evidence.component_tower import recursive_component_mechanisms
-        from ...evidence.fusion import fusion_evidence
         from ...evidence.multiaxis_position import \
             multimodal_multiaxis_position_result
         from ...evidence.projector import projector_result_for_context
@@ -4304,7 +4314,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
             modality_extras, _feature_result)
         modality_extras = apply_fusion_evidence(
             modality_extras,
-            fusion_evidence(cfg, parse_context=context),
+            (_fusion_evidence
+             if _fusion_evidence is not None
+             else fusion_evidence(cfg, parse_context=context)),
             cross_layers=sorted(cross_attn_layer_set),
             multiaxis_result=_multiaxis_result,
         )
@@ -4961,16 +4973,47 @@ def _norm_kind_evidence_src(cfg: Any, explicit_norm_type: Any = None,
     return None, None
 
 
-def _cross_attention_states_side_block(source_kind: str = "vision",
+def _cross_kv_source_projection(evidence):
+    """Project one exact fusion route into the closed AttentionSpec enum."""
+    generic = "external encoder states (source unresolved)"
+    if evidence is None or evidence.status != "proven" \
+            or evidence.kind != "cross_attention":
+        return None, generic, None
+    modalities = {route.modality for route in evidence.routes}
+    if len(modalities) != 1:
+        return None, generic, None
+    modality = next(iter(modalities))
+    source_kind = {
+        "conditioning": "conditioning_encoder",
+        "vision": "vision",
+        "audio": "audio",
+        "external": "external",
+    }.get(modality)
+    if source_kind is None:
+        return None, generic, None
+    description = {
+        "conditioning_encoder": (
+            "encoded prompt states (the conditioning encoder tower)"),
+        "vision": "projected image states",
+        "audio": "encoded audio states",
+        "external": "external encoder states",
+    }[source_kind]
+    return source_kind, description, evidence.to_dict()
+
+
+def _cross_attention_states_side_block(source_kind: str | None = None,
                                        encoder_type: str | None = None,
-                                       feeds: str = "attn") -> dict:
+                                       feeds: str = "attn",
+                                       evidence: dict | None = None) -> dict:
     """Layer-local external states read by cross-attention layers.
 
-    ``source_kind`` follows the SAME evidence that words ``cross_kv_source``:
-    a vision sibling ⇒ projected image states; a declared encoder-role
-    composite slot (MusicGen's t5) ⇒ the encoder's prompt states.  ``feeds``
-    targets the ADDITIVE cross sublayer's own block when one exists."""
-    if source_kind == "conditioning":
+    ``source_kind`` and ``evidence`` are the same typed source projection used
+    by ``AttentionSpec``. ``feeds`` targets the additive cross sublayer's own
+    block when one exists."""
+    source_fact = ({"facts": [
+        f"source {Path(str(evidence['source_file'])).name}:{evidence['line']}"
+    ]} if evidence else {})
+    if source_kind == "conditioning_encoder":
         return {
             "id": "cross_attention_states",
             "role": "conditioning",
@@ -4992,13 +5035,55 @@ def _cross_attention_states_side_block(source_kind: str = "vision",
             "w": 250,
             "h": 50,
             "font": 15,
+            **source_fact,
+        }
+    if source_kind is None:
+        return {
+            "id": "cross_attention_states",
+            "role": "external",
+            "kind": "source",
+            "lane": "external_left",
+            "feeds": feeds,
+            "offset_y": 0,
+            "label": ["External K/V", "source unresolved"],
+            "title": "Cross-attention source unresolved",
+            "description": (
+                "Source proves this layer consumes external K/V states, but "
+                "the exact supplying modality was not resolved."),
+            "resolved": False,
+            "w": 250,
+            "h": 50,
+            "font": 15,
+        }
+    if source_kind in {"audio", "external"}:
+        source_label = (
+            ["Encoded audio", "states"] if source_kind == "audio"
+            else ["External encoder", "states"])
+        return {
+            "id": "cross_attention_states",
+            "role": source_kind,
+            "kind": "source",
+            "lane": "external_left",
+            "feeds": feeds,
+            "offset_y": 0,
+            "label": source_label,
+            "title": (
+                "Encoded audio states" if source_kind == "audio"
+                else "External encoder states"),
+            "description": (
+                "The source-proven external state supplies K/V to this exact "
+                "cross-attention lane."),
+            "w": 250,
+            "h": 50,
+            "font": 15,
+            **source_fact,
         }
     return {
         "id": "cross_attention_states",
         "role": "vision",
         "kind": "vision",
         "lane": "external_left",
-        "feeds": "attn",
+        "feeds": feeds,
         "offset_y": 0,
         "label": ["Projected image", "states"],
         "title": "Projected image states",
@@ -5009,4 +5094,5 @@ def _cross_attention_states_side_block(source_kind: str = "vision",
         "w": 250,
         "h": 50,
         "font": 15,
+        **source_fact,
     }
