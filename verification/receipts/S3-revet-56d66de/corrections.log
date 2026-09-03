@@ -1,0 +1,27 @@
+S3 R1/R2 correction evidence
+commit: 56d66de699f9ca9b540fc7ae0767b6c03f533444
+
+R1 named-witness distinct-view comparison against the unmodified manifest:
+olmo-2-1124-7b: expected=4 actual=4 changed=[]
+qwen3-8b: expected=4 actual=4 changed=[]
+qwen3-5-27b-text: expected=6 actual=6 changed=[]
+qwen2-vl-7b-instruct: expected=11 actual=11 changed=[]
+lumina-image-2-0: expected=16 actual=16 changed=[(7, encoder_0_g0_op_selfattn, encoder_0_g0_op_selfattn)]
+prxpixel-t2i: expected=9 actual=9 changed=[]
+sana-1600m-1024px-diffusers: expected=12 actual=12 changed=[(8, encoder_0_g0_op_selfattn, encoder_0_g0_op_selfattn)]
+
+The two remaining named views were diffed independently. Both changes are the
+fixed-strip to symbolic sliding-window correction. No op-render difference
+remains in either view.
+
+R2 real MusicGen control:
+- cross_attention=True
+- cross_kv_source_kind=conditioning_encoder
+- cross_kv_source_evidence.status=proven
+- cross_kv_source_evidence.kind=cross_attention
+- fusion-route modalities={conditioning}
+- rendered label=[Cross-Attention, (prompt encoder K/V)]
+- rendered fact includes source modeling_musicgen.py:1440
+
+The focused receipt includes the permanent positive, absent, prose-independence,
+wrong-enum/evidence, unresolved-mechanism, and complete OP_KINDS closure tests.
