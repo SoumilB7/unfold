@@ -1,0 +1,238 @@
+{
+  "models": [
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/auraflow-v0-3.json",
+      "model": "AuraFlow-v0.3",
+      "slug": "auraflow-v0-3"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/bloom.json",
+      "model": "bloom",
+      "slug": "bloom"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/cogvideox-5b.json",
+      "model": "CogVideoX-5b",
+      "slug": "cogvideox-5b"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/dbrx-base.json",
+      "model": "dbrx-base",
+      "slug": "dbrx-base"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/deepseek-v3.json",
+      "model": "DeepSeek-V3",
+      "slug": "deepseek-v3"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/flux-2-dev.json",
+      "model": "FLUX.2-dev",
+      "slug": "flux-2-dev"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/fluxtransformer2dmodel.json",
+      "model": "FluxTransformer2DModel",
+      "slug": "fluxtransformer2dmodel"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/gemma-2-2b-it.json",
+      "model": "gemma-2-2b-it",
+      "slug": "gemma-2-2b-it"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/glm-4-5.json",
+      "model": "GLM-4.5",
+      "slug": "glm-4-5"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/gpt-oss-20b.json",
+      "model": "gpt-oss-20b",
+      "slug": "gpt-oss-20b"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/granite-3-0-8b-instruct.json",
+      "model": "granite-3.0-8b-instruct",
+      "slug": "granite-3-0-8b-instruct"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/hunyuanvideo.json",
+      "model": "HunyuanVideo",
+      "slug": "hunyuanvideo"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/llama-7b.json",
+      "model": "llama-7b",
+      "slug": "llama-7b"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/ltx-video.json",
+      "model": "LTX-Video",
+      "slug": "ltx-video"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/lumina-image-2-0.json",
+      "model": "Lumina-Image-2.0",
+      "slug": "lumina-image-2-0"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/mochi-1-preview.json",
+      "model": "mochi-1-preview",
+      "slug": "mochi-1-preview"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/musicgen-small.json",
+      "model": "musicgen-small",
+      "slug": "musicgen-small"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/olmo-2-1124-7b.json",
+      "model": "OLMo-2-1124-7B",
+      "slug": "olmo-2-1124-7b"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/pixart-sigma-xl-2-1024-ms.json",
+      "model": "PixArt-Sigma-XL-2-1024-MS",
+      "slug": "pixart-sigma-xl-2-1024-ms"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/prxpixel-t2i.json",
+      "model": "prxpixel-t2i",
+      "slug": "prxpixel-t2i"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/qwen-image.json",
+      "model": "Qwen-Image",
+      "slug": "qwen-image"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/qwen2-vl-7b-instruct.json",
+      "model": "Qwen2-VL-7B-Instruct",
+      "slug": "qwen2-vl-7b-instruct"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/qwen3-5-27b-text.json",
+      "model": "Qwen3.5-27B text component",
+      "slug": "qwen3-5-27b-text"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/qwen3-8b.json",
+      "model": "Qwen3-8B",
+      "slug": "qwen3-8b"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/sana-1600m-1024px-diffusers.json",
+      "model": "Sana_1600M_1024px_diffusers",
+      "slug": "sana-1600m-1024px-diffusers"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/stable-diffusion-3-5-large.json",
+      "model": "stable-diffusion-3.5-large",
+      "slug": "stable-diffusion-3-5-large"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json",
+      "model": "stable-diffusion-xl-base-1.0",
+      "slug": "stable-diffusion-xl-base-1-0"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/stablelm-2-1-6b.json",
+      "model": "stablelm-2-1_6b",
+      "slug": "stablelm-2-1-6b"
+    },
+    {
+      "cohort": "corpus",
+      "input": "tests/sable_test_corpus/wan2-2-t2v-a14b-diffusers.json",
+      "model": "Wan2.2-T2V-A14B-Diffusers",
+      "slug": "wan2-2-t2v-a14b-diffusers"
+    },
+    {
+      "cohort": "to_serve",
+      "input": "tests/unseen_model_configs/command-a-03-2025.json",
+      "model": "CohereLabs/c4ai-command-a-03-2025",
+      "slug": "command-a-03-2025"
+    },
+    {
+      "cohort": "to_serve",
+      "input": "tests/unseen_model_configs/deepseek-coder-v2-lite.json",
+      "model": "deepseek-ai/DeepSeek-Coder-V2-Lite-Base",
+      "slug": "deepseek-coder-v2-lite"
+    },
+    {
+      "cohort": "to_serve",
+      "input": "verification/s7/inputs/deepseek-v4-flash.json",
+      "model": "deepseek-ai/DeepSeek-V4-Flash",
+      "slug": "deepseek-v4-flash"
+    },
+    {
+      "cohort": "to_serve",
+      "input": "verification/s7/inputs/gemma-3n-e2b.json",
+      "model": "google/gemma-3n-E2B",
+      "slug": "gemma-3n-e2b"
+    },
+    {
+      "cohort": "to_serve",
+      "input": "tests/unseen_model_configs/jamba-v0-1.json",
+      "model": "ai21labs/Jamba-v0.1",
+      "slug": "jamba-v0-1"
+    },
+    {
+      "cohort": "to_serve",
+      "input": "tests/unseen_model_configs/lfm2-1-2b.json",
+      "model": "LiquidAI/LFM2-1.2B",
+      "slug": "lfm2-1-2b"
+    },
+    {
+      "cohort": "to_serve",
+      "input": "verification/s7/inputs/nemotron-h-8b.json",
+      "model": "nvidia/Nemotron-H-8B-Base-8K",
+      "slug": "nemotron-h-8b"
+    },
+    {
+      "cohort": "to_serve",
+      "input": "tests/unseen_model_configs/qwen3-5-27b-full.json",
+      "model": "Qwen/Qwen3.5-27B",
+      "slug": "qwen3-5-27b"
+    },
+    {
+      "cohort": "to_serve",
+      "input": "tests/unseen_model_configs/qwen3-omni-30b.json",
+      "model": "Qwen/Qwen3-Omni-30B-A3B-Instruct",
+      "slug": "qwen3-omni-30b"
+    },
+    {
+      "cohort": "to_serve",
+      "input": "tests/unseen_model_configs/qwen3-vl-235b.json",
+      "model": "Qwen/Qwen3-VL-235B-A22B-Instruct",
+      "slug": "qwen3-vl-235b"
+    }
+  ]
+}

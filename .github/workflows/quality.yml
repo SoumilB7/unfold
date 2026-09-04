@@ -22,3 +22,13 @@ jobs:
         run: python scripts/coverage.py --check
       - name: Reviewed release examples are byte-current
         run: python scripts/generate_examples.py --check
+      - name: S7 Linux OS network sandbox is real
+        env:
+          UNFOLD_LINUX_NETWORK_SANDBOX: sudo-unshare
+        run: python scripts/verify_linux_network_sandbox.py
+      - name: S7 29+10 shadow artifacts are current
+        run: python scripts/generate_s7_shadow.py --check
+      - name: S7 29+10 shadow runs behind the Linux network namespace
+        env:
+          UNFOLD_LINUX_NETWORK_SANDBOX: sudo-unshare
+        run: python scripts/generate_s7_shadow.py --ci-shadow

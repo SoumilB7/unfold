@@ -6,7 +6,6 @@ import hashlib
 import importlib
 import importlib.metadata
 import json
-import os
 from pathlib import Path
 import sys
 
