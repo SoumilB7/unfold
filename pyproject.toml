@@ -30,7 +30,7 @@ Repository = "https://github.com/SoumilB7/unfold"
 
 [project.optional-dependencies]
 hf = []
-dev = ["pytest>=7", "pytest-xdist>=3,<4", "transformers>=4.40"]
+dev = ["pytest>=7", "pytest-xdist>=3,<4", "transformers>=4.40", "psutil>=5,<8"]
 
 [tool.pytest.ini_options]
 # Put the package root on sys.path so the importable top-level `test_support`

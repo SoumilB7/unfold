@@ -1,0 +1,246 @@
+{
+  "build_flags": {},
+  "config": {
+    "_class_name": "UNet2DConditionModel",
+    "_diffusers_version": "0.19.0.dev0",
+    "_name_or_path": "stabilityai/stable-diffusion-xl-base-1.0",
+    "_pipeline_class_name": "StableDiffusionXLPipeline",
+    "_repo_id": "stabilityai/stable-diffusion-xl-base-1.0",
+    "_scheduler_config": {
+      "_class_name": "EulerDiscreteScheduler",
+      "_diffusers_version": "0.19.0.dev0",
+      "beta_end": 0.012,
+      "beta_schedule": "scaled_linear",
+      "beta_start": 0.00085,
+      "clip_sample": false,
+      "interpolation_type": "linear",
+      "num_train_timesteps": 1000,
+      "prediction_type": "epsilon",
+      "sample_max_value": 1.0,
+      "set_alpha_to_one": false,
+      "skip_prk_steps": true,
+      "steps_offset": 1,
+      "timestep_spacing": "leading",
+      "trained_betas": null,
+      "use_karras_sigmas": false
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_name_or_path": "",
+        "architectures": [
+          "CLIPTextModel"
+        ],
+        "attention_dropout": 0.0,
+        "bos_token_id": 0,
+        "chunk_size_feed_forward": 0,
+        "dropout": 0.0,
+        "dtype": "float16",
+        "eos_token_id": 2,
+        "hidden_act": "quick_gelu",
+        "hidden_size": 768,
+        "id2label": {
+          "0": "LABEL_0",
+          "1": "LABEL_1"
+        },
+        "initializer_factor": 1.0,
+        "initializer_range": 0.02,
+        "intermediate_size": 3072,
+        "is_encoder_decoder": false,
+        "label2id": {
+          "LABEL_0": 0,
+          "LABEL_1": 1
+        },
+        "layer_norm_eps": 1e-05,
+        "max_position_embeddings": 77,
+        "model_type": "clip_text_model",
+        "num_attention_heads": 12,
+        "num_hidden_layers": 12,
+        "output_attentions": false,
+        "output_hidden_states": false,
+        "pad_token_id": 1,
+        "problem_type": null,
+        "projection_dim": 768,
+        "return_dict": true,
+        "transformers_version": "5.12.1",
+        "vocab_size": 49408
+      },
+      "text_encoder_2": {
+        "_name_or_path": "",
+        "architectures": [
+          "CLIPTextModelWithProjection"
+        ],
+        "attention_dropout": 0.0,
+        "bos_token_id": 0,
+        "chunk_size_feed_forward": 0,
+        "dropout": 0.0,
+        "dtype": "float16",
+        "eos_token_id": 2,
+        "hidden_act": "gelu",
+        "hidden_size": 1280,
+        "id2label": {
+          "0": "LABEL_0",
+          "1": "LABEL_1"
+        },
+        "initializer_factor": 1.0,
+        "initializer_range": 0.02,
+        "intermediate_size": 5120,
+        "is_encoder_decoder": false,
+        "label2id": {
+          "LABEL_0": 0,
+          "LABEL_1": 1
+        },
+        "layer_norm_eps": 1e-05,
+        "max_position_embeddings": 77,
+        "model_type": "clip_text_model",
+        "num_attention_heads": 20,
+        "num_hidden_layers": 32,
+        "output_attentions": false,
+        "output_hidden_states": false,
+        "pad_token_id": 1,
+        "problem_type": null,
+        "projection_dim": 1280,
+        "return_dict": true,
+        "transformers_version": "5.12.1",
+        "vocab_size": 49408
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKL",
+      "_diffusers_version": "0.20.0.dev0",
+      "_name_or_path": "../sdxl-vae/",
+      "act_fn": "silu",
+      "block_out_channels": [
+        128,
+        256,
+        512,
+        512
+      ],
+      "down_block_types": [
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D"
+      ],
+      "force_upcast": true,
+      "in_channels": 3,
+      "latent_channels": 4,
+      "layers_per_block": 2,
+      "norm_num_groups": 32,
+      "out_channels": 3,
+      "sample_size": 1024,
+      "scaling_factor": 0.13025,
+      "up_block_types": [
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D"
+      ]
+    },
+    "act_fn": "silu",
+    "add_watermarker": null,
+    "addition_embed_type": "text_time",
+    "addition_embed_type_num_heads": 64,
+    "addition_time_embed_dim": 256,
+    "attention_head_dim": [
+      5,
+      10,
+      20
+    ],
+    "block_out_channels": [
+      320,
+      640,
+      1280
+    ],
+    "center_input_sample": false,
+    "class_embed_type": null,
+    "class_embeddings_concat": false,
+    "conv_in_kernel": 3,
+    "conv_out_kernel": 3,
+    "cross_attention_dim": 2048,
+    "cross_attention_norm": null,
+    "down_block_types": [
+      "DownBlock2D",
+      "CrossAttnDownBlock2D",
+      "CrossAttnDownBlock2D"
+    ],
+    "downsample_padding": 1,
+    "dual_cross_attention": false,
+    "encoder_hid_dim": null,
+    "encoder_hid_dim_type": null,
+    "flip_sin_to_cos": true,
+    "force_zeros_for_empty_prompt": true,
+    "freq_shift": 0,
+    "in_channels": 4,
+    "layers_per_block": 2,
+    "mid_block_only_cross_attention": null,
+    "mid_block_scale_factor": 1,
+    "mid_block_type": "UNetMidBlock2DCrossAttn",
+    "norm_eps": 1e-05,
+    "norm_num_groups": 32,
+    "num_attention_heads": null,
+    "num_class_embeds": null,
+    "only_cross_attention": false,
+    "out_channels": 4,
+    "projection_class_embeddings_input_dim": 2816,
+    "resnet_out_scale_factor": 1.0,
+    "resnet_skip_time_act": false,
+    "resnet_time_scale_shift": "default",
+    "sample_size": 128,
+    "scheduler": [
+      "diffusers",
+      "EulerDiscreteScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "CLIPTextModel"
+    ],
+    "text_encoder_2": [
+      "transformers",
+      "CLIPTextModelWithProjection"
+    ],
+    "time_cond_proj_dim": null,
+    "time_embedding_act_fn": null,
+    "time_embedding_dim": null,
+    "time_embedding_type": "positional",
+    "timestep_post_act": null,
+    "tokenizer": [
+      "transformers",
+      "CLIPTokenizer"
+    ],
+    "tokenizer_2": [
+      "transformers",
+      "CLIPTokenizer"
+    ],
+    "transformer_layers_per_block": [
+      1,
+      2,
+      10
+    ],
+    "unet": [
+      "diffusers",
+      "UNet2DConditionModel"
+    ],
+    "up_block_types": [
+      "CrossAttnUpBlock2D",
+      "CrossAttnUpBlock2D",
+      "UpBlock2D"
+    ],
+    "upcast_attention": null,
+    "use_linear_projection": true,
+    "vae": [
+      "diffusers",
+      "AutoencoderKL"
+    ]
+  },
+  "config_method": null,
+  "config_module": null,
+  "config_qualname": null,
+  "factory_method": "from_config",
+  "factory_module": "diffusers",
+  "factory_qualname": "UNet2DConditionModel",
+  "framework": "diffusers",
+  "import_paths": [],
+  "label": "stable-diffusion-xl-base-1-0",
+  "memory_limit_bytes": 17179869184,
+  "timeout_seconds": 240
+}
