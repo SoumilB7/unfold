@@ -31,6 +31,52 @@ def test_shadow_denominator_and_artifact_hashes_are_current():
     assert matrix["denominator"] == {"corpus": 29, "to_serve": 10}
     assert len(matrix["models"]) == 39
     assert len(matrix["artifacts"]) == 39
+    assert len(matrix["observation_artifacts"]) == 39
+
+
+def test_every_model_has_a_typed_signature_attempt_and_split_execution_counts():
+    for summary in _matrix()["models"]:
+        assert summary["no_recipe_attempted"] == 0, summary["slug"]
+        assert summary["execution_unresolved"] == (
+            summary["no_recipe_attempted"]
+            + summary["unobserved_no_static_proof"])
+        with gzip.open(
+                S7 / "observations" / f"{summary['slug']}.json.gz", "rt",
+                encoding="utf-8") as stream:
+            result = json.load(stream)
+        assert result["recipe"]["flags"]["source"] == \
+            "resolved_callable_signature"
+        assert result["status"] in {"ok", "failed"}
+
+
+def test_projection_categories_partition_denominator_and_keep_unknown_exact():
+    for summary in _matrix()["models"]:
+        assert summary["occurrences"] == (
+            summary["rendered"] + summary["grouped"]
+            + summary["non_architectural_container"]
+            + summary["projection_unresolved"]), summary["slug"]
+        for row in _artifact(summary["slug"])["table"]["occurrences"]:
+            projection = row["projection"]
+            if projection["kind"] == "projection_unresolved":
+                assert projection["reason"] == \
+                    "no product block or fact cites this occurrence"
+
+    llama = next(row for row in _matrix()["models"]
+                 if row["slug"] == "llama-7b")
+    assert llama["rendered"] > 0
+    assert llama["grouped"] > 0
+    assert llama["projection_unresolved"] < llama["occurrences"]
+
+
+def test_closed_torch_types_always_carry_exact_framework_meaning():
+    for summary in _matrix()["models"]:
+        for row in _artifact(summary["slug"])["table"]["occurrences"]:
+            runtime = row["provenance"]["runtime_class"]
+            if runtime is None or not runtime["module"].startswith(
+                    "torch.nn.modules."):
+                continue
+            meaning = row["provenance"]["meaning"]
+            assert meaning["framework_primitive"] == runtime
 
 
 def test_every_inventory_occurrence_has_exactly_three_axes_and_no_silent_drop():

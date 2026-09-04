@@ -3,11 +3,15 @@ from __future__ import annotations
 
 import dataclasses
 import hashlib
+from pathlib import Path
 
 import pytest
 
 from model_unfolder.evidence.document import PreparedDocument
 from model_unfolder.evidence.facts import EvidenceFact, SourceSpan as FactSpan
+from model_unfolder.evidence.program_index import (
+    ClassRecord, ProgramIndex, SourceFileNode, SourceId, SourceSpan, SymbolId,
+)
 from model_unfolder.evidence.reconciliation import (
     AUTHORITY_MATRIX,
     ConstructionAxis,
@@ -23,13 +27,16 @@ from model_unfolder.evidence.reconciliation import (
     StaticOccurrenceClaim,
     StaticOccurrenceRef,
     authority_for,
+    projection_claims_from_product,
     reconcile,
     relation_rows_from_evidence,
     unresolved_axis_findings,
 )
 from model_unfolder.evidence.relation_source import StaticRelationProof
+from model_unfolder.ir import ModelIR
+from model_unfolder.renderers.html.render_context import RenderEvent
 from physics.execution_observation import (
-    ExecutionObservation, ExecutionRecipe, TensorArgument,
+    ExecutionObservation, ExecutionRecipe, ObservationResult, TensorArgument,
 )
 from physics.instance_inventory import (
     InstanceInventory,
@@ -113,6 +120,38 @@ def _projection(path="blocks.0"):
     )
 
 
+def _product_index():
+    source = SourceId(str(Path("model.py").resolve()), FP, "root")
+    symbol = SymbolId(source, "Block")
+    return ProgramIndex(
+        "fixture", source_nodes=(SourceFileNode(source),),
+        classes=(ClassRecord(
+            symbol, span=SourceSpan(source, 1, 0, 20, 0)),),
+        fingerprint="f" * 64,
+    )
+
+
+def _product_ir(*, head=True):
+    blocks = [{"id": "head", "kind": "output", "label": "Output"}] \
+        if head else []
+    return ModelIR(
+        "fixture", "Fixture", 8, 4, None, None, [],
+        extras={"render": {"model_blocks": blocks}},
+    )
+
+
+def _inventory_with_head():
+    inventory = _inventory()
+    root, *rest = inventory.modules
+    root = dataclasses.replace(root, children=(*root.children, "head"))
+    head = ModuleNode(
+        "head", ResolvedClass("torch.nn.modules.linear", "Linear"),
+        "torch.nn.modules.linear",
+        (ResolvedClass("torch.nn.modules.linear", "Linear"),),
+        (), (), {}, ())
+    return dataclasses.replace(inventory, modules=(root, *rest, head))
+
+
 def test_axes_and_authority_vocabulary_are_closed():
     assert len({row.question for row in AUTHORITY_MATRIX}) == len(AUTHORITY_MATRIX)
     assert authority_for("constructed_modules").primary == "meta_instance_inventory"
@@ -122,6 +161,8 @@ def test_axes_and_authority_vocabulary_are_closed():
         ConstructionAxis("probably_constructed")
     with pytest.raises(ValueError):
         ExecutionAxis("observed")
+    with pytest.raises(ValueError, match="closed visible reason"):
+        ExecutionAxis("execution_unresolved", reason="something plausible")
     with pytest.raises(ValueError):
         ProjectionAxis("rendered")
 
@@ -224,6 +265,27 @@ def test_trace_alias_does_not_claim_which_occurrence_path_executed():
     assert axes["blocks.1"].kind == "execution_unresolved"
 
 
+def test_execution_unresolved_separates_no_attempt_from_unobserved_attempt():
+    no_attempt = reconcile(
+        model="fixture", inventory=_inventory(), observations=(),
+        config_document=_document())
+    assert {row.execution.reason for row in no_attempt.occurrences} == {
+        "no_recipe_attempted"}
+
+    recipe = ExecutionRecipe(
+        "attempted", "callable_signature", "eval", "disabled", "unspecified",
+        False, "float32", {"fixture": "1"})
+    failed = ObservationResult(
+        "failed", recipe=recipe,
+        failure=__import__("physics.instance_inventory", fromlist=["Failure"])
+        .Failure("ExecutionFailed", "execute", "fixture rejection"))
+    attempted = reconcile(
+        model="fixture", inventory=_inventory(), observations=(failed,),
+        config_document=_document())
+    assert {row.execution.reason for row in attempted.occurrences} == {
+        "unobserved_no_static_proof"}
+
+
 def test_relation_requires_source_explanation_or_stays_unresolved():
     with pytest.raises(ValueError, match="source explanation"):
         RelationRow("mix", "multi_stream_residual", ("blocks.0",), ("blocks.1",),
@@ -284,7 +346,7 @@ def test_table_rejects_foreign_relation_occurrences():
             "", RuntimeClassRef("m", "C"), CONFIG_HASH,
             MeaningProvenance()),
         ConstructionAxis("eager_constructed"),
-        ExecutionAxis("execution_unresolved", reason="no trace"),
+        ExecutionAxis("execution_unresolved", reason="no_recipe_attempted"),
         ProjectionAxis("projection_unresolved", reason="no fact"),
     )
     relation = RelationRow(
@@ -303,6 +365,76 @@ def test_projection_claim_cannot_name_a_fact_it_does_not_carry():
                            fact_keys=("root.fabricated",)),
             (fact,),
         )
+
+
+def test_product_fact_joins_exact_source_class_to_runtime_occurrences():
+    fact = _fact()
+    event = RenderEvent(
+        "architecture", (), "root", "", "", "", None,
+        frozenset(), frozenset({"q_proj"}),
+        facts_projected=frozenset({fact.ledger_key()}))
+    claims = projection_claims_from_product(
+        index=_product_index(), inventory=_inventory(),
+        static_claims=(_static(),), ir=_product_ir(),
+        facts={fact.ledger_key(): fact}, render_events=(event,))
+    by_path = {row.instance_path: row for row in claims}
+    assert by_path["blocks.0"].axis.kind == "rendered"
+    assert by_path["blocks.1"].axis.kind == "rendered"
+    assert by_path["blocks"].axis == ProjectionAxis(
+        "non_architectural", reason="container")
+
+
+def test_removing_product_block_flips_exact_primitive_to_unresolved():
+    inventory = _inventory_with_head()
+    with_block = projection_claims_from_product(
+        index=_product_index(), inventory=inventory, static_claims=(),
+        ir=_product_ir(head=True), facts={}, render_events=())
+    without_block = projection_claims_from_product(
+        index=_product_index(), inventory=inventory, static_claims=(),
+        ir=_product_ir(head=False), facts={}, render_events=())
+    assert {row.instance_path: row.axis.kind for row in with_block}["head"] \
+        == "rendered"
+    assert "head" not in {row.instance_path for row in without_block}
+
+    table = reconcile(
+        model="fixture", inventory=inventory, observations=(),
+        config_document=_document(), projection_claims=without_block)
+    row = next(row for row in table.occurrences
+               if row.provenance.instance_path == "head")
+    assert row.projection == ProjectionAxis(
+        "projection_unresolved",
+        reason="no product block or fact cites this occurrence")
+    assert row.provenance.meaning.framework_primitive == RuntimeClassRef(
+        "torch.nn.modules.linear", "Linear")
+
+
+def test_closed_framework_child_groups_only_under_exact_drawn_parent_node():
+    inventory = _inventory()
+    modules = list(inventory.modules)
+    block = modules[2]
+    modules[2] = dataclasses.replace(block, children=("q_proj",))
+    modules.append(ModuleNode(
+        "blocks.0.q_proj",
+        ResolvedClass("torch.nn.modules.linear", "Linear"),
+        "torch.nn.modules.linear",
+        (ResolvedClass("torch.nn.modules.linear", "Linear"),),
+        (), (), {}, ()))
+    inventory = dataclasses.replace(inventory, modules=tuple(modules))
+    fact = _fact()
+    event = RenderEvent(
+        "ffn", ("ffn",), "root", "", "", "", None,
+        frozenset(), frozenset({"q_proj"}),
+        facts_projected=frozenset({fact.ledger_key()}))
+    claims = projection_claims_from_product(
+        index=_product_index(), inventory=inventory,
+        static_claims=(_static(),), ir=_product_ir(),
+        facts={fact.ledger_key(): fact}, render_events=(event,))
+    grouped = {row.instance_path: row.axis for row in claims}[
+        "blocks.0.q_proj"]
+    assert grouped == ProjectionAxis(
+        "grouped", parent="blocks.0",
+        rule="exact parent attribute equals a drawn child id",
+        block_ids=("q_proj",))
 
 
 def test_reconciliation_refuses_duck_typed_authorities_and_self_grouping():

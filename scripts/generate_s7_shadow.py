@@ -21,13 +21,14 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from model_unfolder import config_to_ir
+from model_unfolder.diagram import Diagram
 from model_unfolder.evidence.component_owner import resolve_component_root
 from model_unfolder.evidence.context import ParseContext
 from model_unfolder.evidence.document import prepare_document
 from model_unfolder.evidence.program_index import build_program_index
 from model_unfolder.evidence.reconciliation import (
-    reconcile, relation_rows_from_evidence, static_claims_from_owner_graph,
-    unresolved_axis_findings,
+    projection_claims_from_product, reconcile, relation_rows_from_evidence,
+    static_claims_from_owner_graph, unresolved_axis_findings,
 )
 from model_unfolder.evidence.relation_source import (
     prove_post_stack_collapse, prove_recurrent_state_mix,
@@ -35,6 +36,7 @@ from model_unfolder.evidence.relation_source import (
 from model_unfolder.ir import detect_layer_period, distinct_layer_groups
 from physics.execution_observation import (
     ExecutionRecipe, ObservationResult, TensorArgument,
+    observe_in_subprocess,
 )
 from physics.instance_inventory import (
     BuildRequest, InventoryResult, inventory_in_subprocess,
@@ -213,6 +215,87 @@ def _s6_inventory(slug: str, config_hash: str) -> InventoryResult | None:
     return None
 
 
+def _s6_request(slug: str, config_hash: str) -> BuildRequest | None:
+    path = ROOT / "verification" / "s6" / "pilots" / slug / "request.json"
+    if not path.exists():
+        return None
+    request = BuildRequest.from_dict(json.loads(path.read_text()))
+    digest = _sha256(json.dumps(
+        dict(request.config), sort_keys=True, separators=(",", ":"),
+        ensure_ascii=True).encode("utf-8"))
+    return request if digest == config_hash else None
+
+
+_SIGNATURE_TENSORS = {
+    "input_ids": ((1, 2), "long"),
+    "decoder_input_ids": ((1, 2), "long"),
+    "attention_mask": ((1, 2), "long"),
+    "decoder_attention_mask": ((1, 2), "long"),
+    "pixel_values": ((1, 3, 4, 4), "float32"),
+    "input_values": ((1, 16), "float32"),
+    "hidden_states": ((1, 2, 4), "float32"),
+    "encoder_hidden_states": ((1, 2, 4), "float32"),
+    "sample": ((1, 4, 4, 4), "float32"),
+    "x": ((1, 2, 4), "float32"),
+    "timestep": ((1,), "float32"),
+    "timesteps": ((1,), "float32"),
+    "guidance": ((1,), "float32"),
+    "pooled_projections": ((1, 4), "float32"),
+}
+
+
+def _signature_recipe(index: Any, root: Any, inventory: Any) -> ExecutionRecipe:
+    """One neutral forward attempt derived only from the resolved signature.
+
+    Parameter spellings are callable addresses, not family identities.  The
+    tiny shapes are deliberately generic probes; incompatibility becomes the
+    typed ExecutionFailed/ExecutionUnresolved result required by S7, never a
+    reason to introduce a model-specific recipe table.
+    """
+    symbol = root.graph.root.symbol if root.address_resolved else None
+    forwards = tuple(
+        row for row in (index.callables_of(symbol) if symbol is not None else ())
+        if row.symbol.qualified_name == f"{symbol.qualified_name}.forward")
+    parameters = tuple(
+        row for row in (forwards[0].params if len(forwards) == 1 else ())
+        if row.name != "self" and row.kind not in {"vararg", "kwarg"})
+    required = tuple(row for row in parameters if not row.has_default)
+    selected = list(required)
+    if not required:
+        primary = next((row for row in parameters
+                        if row.name in _SIGNATURE_TENSORS), None)
+        if primary is not None:
+            selected.append(primary)
+    tensor_arguments = tuple(
+        TensorArgument(row.name, *_SIGNATURE_TENSORS[row.name])
+        for row in selected if row.name in _SIGNATURE_TENSORS)
+    parameter_rows = tuple((row.name, row.kind, row.has_default)
+                           for row in parameters)
+    digest = _sha256(json.dumps(
+        parameter_rows, sort_keys=True, separators=(",", ":")).encode())[:16]
+    versions = {row.package: row.version
+                for row in inventory.provenance.packages}
+    literal_arguments = {
+        row.name: False for row in parameters
+        if row.name in {"use_cache", "return_dict", "output_attentions",
+                        "output_hidden_states"}
+    }
+    return ExecutionRecipe(
+        f"signature-{digest}", "callable_signature", "eval", "disabled",
+        "unspecified", False, "float32", versions,
+        tensor_arguments=tensor_arguments,
+        literal_arguments=literal_arguments,
+        flags={
+            "source": "resolved_callable_signature",
+            "resolution": ("exact" if len(forwards) == 1
+                           else "absent" if not forwards else "ambiguous"),
+            "callable": (forwards[0].symbol.qualified_name
+                         if len(forwards) == 1 else "unresolved"),
+            "parameters": [list(row) for row in parameter_rows],
+        },
+    )
+
+
 def _source_inputs(config: dict[str, Any], inventory: Any):
     context = ParseContext.build(config)
     bundle = context.source_bundle
@@ -346,19 +429,24 @@ def _readme(matrix: Mapping[str, Any]) -> str:
         "mechanism meanings require exact resolved source and existing facts.",
         "",
         "Every occurrence has construction, execution and projection axes. "
-        "Unresolved axes are intentionally blocking; S7 does not relabel them "
-        "as non-architectural to improve a score. Full per-occurrence tables are "
-        "the deterministic gzip JSON files under `models/`.",
+        "`no_recipe_attempted` identifies our missing probe; "
+        "`unobserved_no_static_proof` identifies an attempted recipe that did "
+        "not prove this occurrence. S7 does not relabel either as a known "
+        "mechanism. Full per-occurrence tables are the deterministic gzip JSON "
+        "files under `models/`.",
         "",
-        "| cohort | model | occurrences | construction conflicts | execution "
-        "unresolved | projection unresolved | relations |",
-        "|---|---|---:|---:|---:|---:|---|",
+        "| cohort | model | occurrences | construction conflicts | no recipe | "
+        "attempted-unobserved | rendered | grouped | containers | projection "
+        "unresolved | relations |",
+        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---|",
     ]
     for row in matrix["models"]:
         relations = ", ".join(row["relation_kinds"]) or "none"
         lines.append(
             f"| {row['cohort']} | {row['model']} | {row['occurrences']} | "
-            f"{row['construction_conflicts']} | {row['execution_unresolved']} | "
+            f"{row['construction_conflicts']} | {row['no_recipe_attempted']} | "
+            f"{row['unobserved_no_static_proof']} | {row['rendered']} | "
+            f"{row['grouped']} | {row['non_architectural_container']} | "
             f"{row['projection_unresolved']} | {relations} |")
     return "\n".join(lines) + "\n"
 
@@ -367,10 +455,11 @@ def _one(target: Mapping[str, Any], *, write_relations: bool,
          output: Path = OUTPUT) -> dict[str, Any]:
     input_path = ROOT / target["input"]
     _label, config = _read_payload(input_path)
-    request = _request(config, target["slug"])
     config_hash = _sha256(json.dumps(
         config, sort_keys=True, separators=(",", ":"),
         ensure_ascii=True).encode("utf-8"))
+    request = (_s6_request(target["slug"], config_hash)
+               or _request(config, target["slug"]))
     inventory_result = (_s6_inventory(target["slug"], config_hash)
                         or inventory_in_subprocess(request))
     if inventory_result.status != "ok":
@@ -379,6 +468,16 @@ def _one(target: Mapping[str, Any], *, write_relations: bool,
     inventory = inventory_result.inventory
     assert inventory is not None
     context, index, root, static_claims, ir = _source_inputs(config, inventory)
+
+    # Every target receives one neutral, signature-derived attempt.  A failed
+    # invocation is still a typed attempt and is materially different from the
+    # generator never trying the model at all.
+    signature_recipe = _signature_recipe(index, root, inventory)
+    signature_result = observe_in_subprocess(request, signature_recipe)
+    if write_relations:
+        _write_gzip_json(
+            output / "observations" / f"{target['slug']}.json.gz",
+            signature_result.to_dict())
 
     relation_result = None
     recipe_spec = _relation_recipe(target["slug"])
@@ -396,9 +495,14 @@ def _one(target: Mapping[str, Any], *, write_relations: bool,
 
     execution_rows = _s6_observations(
         target["slug"], inventory.provenance.config_sha256)
-    all_observations = (*execution_rows,
+    all_observations = (*execution_rows, signature_result,
                         *((relation_result,) if relation_result else ()))
     facts = context.facts.typed_records()
+    diagram = Diagram(ir)
+    diagram.to_html(standalone=True)
+    projection_claims = projection_claims_from_product(
+        index=index, inventory=inventory, static_claims=static_claims,
+        ir=ir, facts=facts, render_events=diagram.render_events())
     proofs = _static_relation_proofs(index, inventory, relation_result)
     relation_rows = relation_rows_from_evidence(
         inventory=inventory,
@@ -408,7 +512,8 @@ def _one(target: Mapping[str, Any], *, write_relations: bool,
         model=target["model"], inventory=inventory,
         observations=all_observations,
         config_document=prepare_document(config, merge=False),
-        static_claims=static_claims, relation_rows=relation_rows)
+        static_claims=static_claims, projection_claims=projection_claims,
+        relation_rows=relation_rows)
     findings = unresolved_axis_findings(table)
     return {
         "schema_version": 1,
@@ -429,6 +534,7 @@ def generate(*, output: Path = OUTPUT, ci_shadow: bool = False) -> dict[str, Any
     targets = _targets()
     rows = []
     artifact_hashes = {}
+    observation_hashes = {}
     for target in targets:
         print(f"S7 shadow {target['cohort']} {target['slug']}", file=sys.stderr,
               flush=True)
@@ -443,6 +549,22 @@ def generate(*, output: Path = OUTPUT, ci_shadow: bool = False) -> dict[str, Any
                 for row in table["occurrences"]),
             "execution_unresolved": sum(
                 row["execution"]["kind"] == "execution_unresolved"
+                for row in table["occurrences"]),
+            "no_recipe_attempted": sum(
+                row["execution"]["kind"] == "execution_unresolved"
+                and row["execution"]["reason"] == "no_recipe_attempted"
+                for row in table["occurrences"]),
+            "unobserved_no_static_proof": sum(
+                row["execution"]["kind"] == "execution_unresolved"
+                and row["execution"]["reason"] == "unobserved_no_static_proof"
+                for row in table["occurrences"]),
+            "rendered": sum(row["projection"]["kind"] == "rendered"
+                            for row in table["occurrences"]),
+            "grouped": sum(row["projection"]["kind"] == "grouped"
+                           for row in table["occurrences"]),
+            "non_architectural_container": sum(
+                row["projection"]["kind"] == "non_architectural"
+                and row["projection"]["reason"] == "container"
                 for row in table["occurrences"]),
             "projection_unresolved": sum(
                 row["projection"]["kind"] == "projection_unresolved"
@@ -460,6 +582,11 @@ def generate(*, output: Path = OUTPUT, ci_shadow: bool = False) -> dict[str, Any
             _write_gzip_json(path, artifact)
             artifact_hashes[path.relative_to(output).as_posix()] = _sha256(
                 path.read_bytes())
+            observation_path = (
+                output / "observations" / f"{target['slug']}.json.gz")
+            observation_hashes[
+                observation_path.relative_to(output).as_posix()] = _sha256(
+                    observation_path.read_bytes())
     result = {
         "schema_version": 1,
         "denominator": {"corpus": 29, "to_serve": 10},
@@ -474,6 +601,7 @@ def generate(*, output: Path = OUTPUT, ci_shadow: bool = False) -> dict[str, Any
         },
         "models": rows,
         "artifacts": artifact_hashes,
+        "observation_artifacts": observation_hashes,
     }
     if not ci_shadow:
         _write_json(output / "targets.json", {"models": list(targets)})
@@ -509,6 +637,19 @@ def check(output: Path = OUTPUT) -> None:
         if not artifact.get("blocking_findings"):
             raise ValueError(
                 f"S7 unresolved-axis gate vacuously green in shadow: {relative}")
+    if len(matrix.get("observation_artifacts") or {}) != 39:
+        raise ValueError("S7 matrix needs one typed signature attempt per target")
+    for relative, digest in matrix["observation_artifacts"].items():
+        path = output / relative
+        if _sha256(path.read_bytes()) != digest:
+            raise ValueError(f"S7 observation hash mismatch: {relative}")
+        with gzip.open(path, "rt", encoding="utf-8") as stream:
+            observation = ObservationResult.from_dict(json.load(stream))
+        if observation.recipe is None \
+                or observation.recipe.flags.get("source") != \
+                "resolved_callable_signature":
+            raise ValueError(
+                f"S7 observation is not a signature-derived attempt: {relative}")
 
 
 def main() -> int:

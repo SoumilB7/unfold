@@ -157,6 +157,7 @@ class MeaningProvenance:
     """
 
     static_occurrence: StaticOccurrenceRef | None = None
+    framework_primitive: RuntimeClassRef | None = None
     config_paths: tuple[str, ...] = ()
     source_spans: tuple[str, ...] = ()
     fact_keys: tuple[str, ...] = ()
@@ -165,6 +166,9 @@ class MeaningProvenance:
         if self.static_occurrence is not None and not isinstance(
                 self.static_occurrence, StaticOccurrenceRef):
             raise TypeError("meaning provenance carries a typed static occurrence")
+        if self.framework_primitive is not None and not isinstance(
+                self.framework_primitive, RuntimeClassRef):
+            raise TypeError("framework primitive provenance carries its exact type")
         for field_name in ("config_paths", "source_spans", "fact_keys"):
             values = getattr(self, field_name)
             if tuple(sorted(set(values))) != values:
@@ -221,6 +225,7 @@ class ExecutionAxis:
     kind: str
     recipe_ids: tuple[str, ...] = ()
     reason: str = ""
+    detail: str = ""
 
     def __post_init__(self) -> None:
         if self.kind not in EXECUTION_KINDS:
@@ -228,34 +233,52 @@ class ExecutionAxis:
         if tuple(sorted(set(self.recipe_ids))) != self.recipe_ids:
             raise ValueError("recipe ids must be unique and sorted")
         if self.kind == "observed":
-            if not self.recipe_ids or self.reason:
+            if not self.recipe_ids or self.reason or self.detail:
                 raise ValueError("observed execution carries recipe ids only")
         elif self.recipe_ids:
             raise ValueError("only observed execution carries recipe ids")
-        if self.kind == "execution_unresolved" and not self.reason:
-            raise ValueError("execution_unresolved requires a visible reason")
+        if self.kind == "execution_unresolved":
+            if self.reason not in {
+                    "no_recipe_attempted", "unobserved_no_static_proof"}:
+                raise ValueError(
+                    "execution_unresolved requires a closed visible reason")
+        elif self.reason or self.detail:
+            raise ValueError("only execution_unresolved carries reason/detail")
 
 
 @dataclass(frozen=True)
 class ProjectionAxis:
     kind: str
-    parent: str = ""
+    parent: str | None = None
     rule: str = ""
     reason: str = ""
     fact_keys: tuple[str, ...] = ()
+    block_ids: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         if self.kind not in PROJECTION_KINDS:
             raise ValueError(f"unknown projection axis {self.kind!r}")
         if tuple(sorted(set(self.fact_keys))) != self.fact_keys:
             raise ValueError("projection fact keys must be unique and sorted")
-        if self.kind == "rendered" and (not self.fact_keys or self.parent or self.reason):
-            raise ValueError("rendered requires facts and carries no parent/reason")
-        if self.kind == "grouped" and (not self.parent or not self.rule or self.reason):
+        if tuple(sorted(set(self.block_ids))) != self.block_ids:
+            raise ValueError("projection block ids must be unique and sorted")
+        if self.parent is not None and not isinstance(self.parent, str):
+            raise TypeError("projection parent is an exact instance path")
+        if self.kind == "rendered" and (
+                not (self.fact_keys or self.block_ids)
+                or self.parent is not None or self.reason or self.rule):
+            raise ValueError(
+                "rendered requires a product fact/block and carries no parent/rule/reason")
+        if self.kind == "grouped" and (
+                self.parent is None or not self.rule or self.reason):
             raise ValueError("grouped requires parent + rule and carries no reason")
-        if self.kind == "non_architectural" and (not self.reason or self.parent):
+        if self.kind == "non_architectural" and (
+                not self.reason or self.parent is not None or self.rule
+                or self.fact_keys or self.block_ids):
             raise ValueError("non_architectural requires a reason only")
-        if self.kind == "projection_unresolved" and (not self.reason or self.parent):
+        if self.kind == "projection_unresolved" and (
+                not self.reason or self.parent is not None or self.rule
+                or self.fact_keys or self.block_ids):
             raise ValueError("projection_unresolved requires a visible reason")
 
 
@@ -404,6 +427,232 @@ class ProjectionClaim:
             raise ValueError("a grouped projection must name a distinct parent")
 
 
+_TORCH_CONTAINER_TYPES = frozenset({
+    ("torch.nn.modules.container", "ModuleList"),
+    ("torch.nn.modules.container", "Sequential"),
+    ("torch.nn.modules.container", "ModuleDict"),
+})
+_NO_PRODUCT_CITATION = "no product block or fact cites this occurrence"
+
+
+def _is_framework_primitive(class_ref: Any) -> bool:
+    """Whether the exact runtime type belongs to torch.nn's closed primitives.
+
+    This is a framework ownership/address test, never a mechanism classifier.
+    The exact module + qualname remain in :class:`MeaningProvenance`; no class
+    spelling is translated into an architectural role.
+    """
+    return (isinstance(getattr(class_ref, "module", None), str)
+            and class_ref.module.startswith("torch.nn.modules.")
+            and isinstance(getattr(class_ref, "qualname", None), str)
+            and bool(class_ref.qualname))
+
+
+def _structural_block_ids(ir: Any) -> frozenset[str]:
+    """Return exact ids from canonical block-shaped IR records.
+
+    A record is block-shaped only when it has ``id`` plus a presentation
+    discriminator.  Merely finding a string elsewhere in extras is not enough.
+    This intentionally observes product output; it does not interpret the id.
+    """
+    from ..ir import ModelIR
+
+    if not isinstance(ir, ModelIR):
+        raise TypeError("product projection requires the canonical ModelIR")
+    result: set[str] = set()
+
+    def visit(value: Any) -> None:
+        if isinstance(value, Mapping):
+            block_id = value.get("id")
+            if (isinstance(block_id, str) and block_id
+                    and any(key in value for key in (
+                        "kind", "role", "view", "children", "label"))):
+                result.add(block_id)
+            for child in value.values():
+                visit(child)
+        elif isinstance(value, (list, tuple)):
+            for child in value:
+                visit(child)
+
+    visit(ir.to_dict())
+    return frozenset(result)
+
+
+def _fact_static_claims(
+    index: Any,
+    fact: EvidenceFact,
+    static_claims: Sequence[StaticOccurrenceClaim],
+) -> tuple[StaticOccurrenceClaim, ...]:
+    """Join fact source spans to exact indexed class spans.
+
+    The join is content/source/line based.  Owner names and ledger-key words do
+    not participate, so a renamed class or fact key cannot change the result.
+    """
+    source_by_path: dict[str, Any] = {}
+    for node in getattr(index, "source_nodes", ()):
+        canonical = str(Path(node.source_id.canonical_path).resolve())
+        source_by_path[canonical] = node.source_id
+    classes_by_key: dict[tuple[str, str], list[Any]] = {}
+    for record in getattr(index, "classes", ()):
+        span = record.span
+        if span is None:
+            continue
+        key = (record.symbol.source.content_fingerprint,
+               record.symbol.qualified_name)
+        classes_by_key.setdefault(key, []).append(record)
+    matched: set[StaticOccurrenceClaim] = set()
+    for span in fact.source_spans:
+        if not span.file or not span.line:
+            continue
+        source = source_by_path.get(str(Path(span.file).resolve()))
+        if source is None:
+            continue
+        for claim in static_claims:
+            if claim.class_source_fingerprint != source.content_fingerprint:
+                continue
+            records = classes_by_key.get((claim.class_source_fingerprint,
+                                          claim.class_qualname), ())
+            if any(record.span.line <= span.line <= record.span.end_line
+                   for record in records):
+                matched.add(claim)
+    return tuple(sorted(matched, key=lambda row: (
+        row.path_pattern, row.class_source_fingerprint, row.class_qualname)))
+
+
+def projection_claims_from_product(
+    *,
+    index: Any,
+    inventory: Any,
+    static_claims: Sequence[StaticOccurrenceClaim],
+    ir: Any,
+    facts: Mapping[str, EvidenceFact],
+    render_events: Sequence[Any],
+) -> tuple[ProjectionClaim, ...]:
+    """Build occurrence projection claims from the existing product only.
+
+    Custom occurrences enter through an exact fact-source -> static-owner ->
+    runtime-path join.  Closed torch.nn primitives may additionally join by the
+    exact attribute spelling under a proven parent to an id the product really
+    drew.  Pure containers receive only their definitional non-architectural
+    disposition.  No runtime/class/model name supplies mechanism meaning.
+    """
+    if any(not isinstance(value, EvidenceFact) for value in facts.values()):
+        raise TypeError("product projection consumes typed EvidenceFact rows")
+    if any(key != value.ledger_key() for key, value in facts.items()):
+        raise ValueError("product fact mapping keys must equal typed ledger keys")
+    event_type = ("model_unfolder.renderers.html.render_context", "RenderEvent")
+    for event in render_events:
+        if (type(event).__module__, type(event).__qualname__) != event_type:
+            raise TypeError("product projection consumes exact RenderEvent rows")
+    modules = tuple(getattr(inventory, "modules", ()))
+    paths = tuple(row.path for row in modules)
+    if len(paths) != len(set(paths)):
+        raise ValueError("product projection needs an exact inventory denominator")
+    block_ids = _structural_block_ids(ir)
+
+    rendered_facts: dict[str, dict[str, EvidenceFact]] = {}
+    grouped_facts: dict[str, dict[str, dict[str, EvidenceFact]]] = {}
+    nodes_by_parent: dict[str, set[str]] = {}
+    fact_claim_cache: dict[str, tuple[StaticOccurrenceClaim, ...]] = {}
+    for event in render_events:
+        event_facts = tuple(sorted(event.facts_projected))
+        missing = tuple(key for key in event_facts if key not in facts)
+        if missing:
+            raise ValueError(
+                f"render event cites facts absent from the typed ledger: {missing}")
+        candidates: dict[str, dict[str, EvidenceFact]] = {}
+        for key in event_facts:
+            fact = facts[key]
+            claims = fact_claim_cache.setdefault(
+                key, _fact_static_claims(index, fact, static_claims))
+            for claim in claims:
+                for path in paths:
+                    if not _path_matches(path, claim.path_pattern):
+                        continue
+                    candidates.setdefault(path, {})[key] = fact
+
+        # A drill's own custom occurrence is identified mechanically by the
+        # exact runtime child attributes that its event drew.  Other candidate
+        # occurrences below that anchor are grouped within its drill.  For an
+        # architecture-level event (empty block path), the outermost evidenced
+        # occurrence is the own block and evidenced descendants are grouped.
+        anchors = {
+            path for path in candidates
+            if any(
+                child.rpartition(".")[2] in event.node_ids
+                for child in paths
+                if child.rpartition(".")[0] == path)
+        }
+        if not anchors and not event.block_path:
+            anchors = {
+                path for path in candidates
+                if not any(path.startswith(other + ".")
+                           for other in candidates if other != path)
+            }
+        for path, path_facts in candidates.items():
+            if path in anchors:
+                rendered_facts.setdefault(path, {}).update(path_facts)
+                nodes_by_parent.setdefault(path, set()).update(event.node_ids)
+                continue
+            parents = tuple(sorted(
+                (anchor for anchor in anchors
+                 if path.startswith(anchor + ".")),
+                key=lambda value: (-value.count("."), value)))
+            if parents:
+                grouped_facts.setdefault(path, {}).setdefault(
+                    parents[0], {}).update(path_facts)
+
+    claims_by_path: dict[str, ProjectionClaim] = {}
+    # A fact projected by the product and joined to this exact occurrence is a
+    # direct rendered claim.  Block ids are supplementary, never the proof.
+    for path, path_facts in rendered_facts.items():
+        ordered_facts = tuple(path_facts[key] for key in sorted(path_facts))
+        claims_by_path[path] = ProjectionClaim(
+            path,
+            ProjectionAxis(
+                "rendered",
+                fact_keys=tuple(fact.ledger_key() for fact in ordered_facts)),
+            ordered_facts,
+        )
+    for path, parent_rows in grouped_facts.items():
+        if path in claims_by_path or len(parent_rows) != 1:
+            continue
+        parent, path_facts = next(iter(parent_rows.items()))
+        ordered_facts = tuple(path_facts[key] for key in sorted(path_facts))
+        claims_by_path[path] = ProjectionClaim(
+            path,
+            ProjectionAxis(
+                "grouped", parent=parent,
+                rule="fact source occurrence is drawn inside its proven parent",
+                fact_keys=tuple(fact.ledger_key() for fact in ordered_facts)),
+            ordered_facts,
+        )
+
+    module_by_path = {row.path: row for row in modules}
+    for path, module in module_by_path.items():
+        exact_type = (module.class_ref.module, module.class_ref.qualname)
+        if exact_type in _TORCH_CONTAINER_TYPES:
+            claims_by_path[path] = ProjectionClaim(
+                path, ProjectionAxis("non_architectural", reason="container"))
+            continue
+        if not _is_framework_primitive(module.class_ref) or not path:
+            continue
+        parent, _, attribute = path.rpartition(".")
+        if attribute in block_ids:
+            claims_by_path[path] = ProjectionClaim(
+                path, ProjectionAxis("rendered", block_ids=(attribute,)))
+            continue
+        if attribute in nodes_by_parent.get(parent, ()):
+            claims_by_path[path] = ProjectionClaim(
+                path, ProjectionAxis(
+                    "grouped", parent=parent,
+                    rule="exact parent attribute equals a drawn child id",
+                    block_ids=(attribute,)))
+
+    return tuple(claims_by_path[path] for path in sorted(
+        claims_by_path, key=lambda value: (value.count("."), value)))
+
+
 def _path_matches(path: str, pattern: tuple[str, ...]) -> bool:
     parts = tuple(path.split(".")) if path else ()
     return len(parts) == len(pattern) and all(
@@ -431,6 +680,15 @@ def _call_paths(observations: Sequence[Any]) -> tuple[dict[str, set[str]], set[s
                      *getattr(observation, "sibling_calls", ())):
             exact.setdefault(call.path, set()).add(recipe_id)
     return exact, ambiguous
+
+
+def _attempted_recipe_ids(observations: Sequence[Any]) -> tuple[str, ...]:
+    """All recipe ids that reached the typed execution boundary, success or not."""
+    ids = {
+        result.recipe.recipe_id for result in observations
+        if getattr(result, "recipe", None) is not None
+    }
+    return tuple(sorted(ids))
 
 
 def reconcile(
@@ -488,6 +746,7 @@ def reconcile(
         claims_by_path[claim.instance_path] = claim
 
     observed, alias_ambiguous = _call_paths(observations)
+    attempted_recipe_ids = _attempted_recipe_ids(observations)
     lazy: dict[str, Any] = {}
     for result in observations:
         obs = getattr(result, "observation", None)
@@ -535,16 +794,20 @@ def reconcile(
         elif path in alias_ambiguous:
             execution = ExecutionAxis(
                 "execution_unresolved",
-                reason="trace observed an aliased object but not this exact address")
+                reason="unobserved_no_static_proof",
+                detail="trace observed an aliased object but not this exact address")
+        elif not attempted_recipe_ids:
+            execution = ExecutionAxis(
+                "execution_unresolved", reason="no_recipe_attempted")
         else:
             execution = ExecutionAxis(
                 "execution_unresolved",
-                reason="no recipe observation or closed static reachability proof")
+                reason="unobserved_no_static_proof")
 
         projection_claim = claims_by_path.get(path)
         projection = (projection_claim.axis if projection_claim else ProjectionAxis(
             "projection_unresolved",
-            reason="no exact existing-fact projection claim for this occurrence"))
+            reason=_NO_PRODUCT_CITATION))
         facts = projection_claim.facts if projection_claim else ()
         fact_paths = tuple(sorted({item for fact in facts
                                   for item in fact.config_paths}))
@@ -553,8 +816,12 @@ def reconcile(
             for fact in facts for span in fact.source_spans
         }))
         static_meaning = static.occurrence if static is not None else None
+        primitive_meaning = (runtime_class
+                             if _is_framework_primitive(module.class_ref)
+                             else None)
         meaning = MeaningProvenance(
             static_occurrence=static_meaning,
+            framework_primitive=primitive_meaning,
             config_paths=tuple(sorted(set(
                 fact_paths + (static.config_paths if static else ())))),
             source_spans=tuple(sorted(set(
@@ -602,7 +869,7 @@ def reconcile(
                 ExecutionAxis("proven_inactive"),
                 ProjectionAxis(
                     "projection_unresolved",
-                    reason="guarded construction negative has no canonical projection"),
+                    reason=_NO_PRODUCT_CITATION),
             ))
 
     rows.sort(key=lambda row: (
@@ -1061,7 +1328,8 @@ __all__ = [
     "OccurrenceProvenance", "OccurrenceRow", "ProjectionAxis",
     "ProjectionClaim", "ReconciliationTable", "RelationRow",
     "RuntimeClassRef", "StaticOccurrenceClaim", "StaticOccurrenceRef",
-    "authority_for", "reconcile", "relation_rows_from_evidence",
+    "authority_for", "projection_claims_from_product", "reconcile",
+    "relation_rows_from_evidence",
     "static_claims_from_owner_graph",
     "unresolved_axis_findings",
 ]
