@@ -110,3 +110,33 @@ class TupleInputModel(nn.Module):
 
     def forward(self, pair, nested):
         return pair[0] + pair[1] + nested["value"]
+
+
+class RelationLayer(nn.Module):
+    def __init__(self, width):
+        super().__init__()
+        self.linear = nn.Linear(width, width)
+
+    def forward(self, hidden_states, reused=None):
+        hidden_states = self.linear(hidden_states)
+        if reused is not None:
+            hidden_states = hidden_states + reused
+        return hidden_states, hidden_states * 2
+
+
+class RelationFixture(nn.Module):
+    """Generic repeated stack with one non-primary cross-layer tensor."""
+
+    def __init__(self, config):
+        super().__init__()
+        width = int(config.get("width", 4))
+        self.layers = nn.ModuleList([RelationLayer(width) for _ in range(3)])
+        self.collapse = nn.Linear(width, width)
+
+    def forward(self, x):
+        reused = None
+        for index, layer in enumerate(self.layers):
+            x, side = layer(x, reused=reused if index == 2 else None)
+            if index == 0:
+                reused = side
+        return self.collapse(x)

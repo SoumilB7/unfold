@@ -649,6 +649,22 @@ def sable(model_or_id, *, token=None, source: str = "local",
         ),
     ]
 
+    # S7 shadow cutover guard.  The reconciler is not a production authority
+    # yet, so ordinary S7 parses deliberately carry no table and remain byte-
+    # identical.  Once a reviewed family cutover publishes a table into the
+    # canonical IR, every unresolved/conflicting axis blocks immediately.
+    # Absence is reported in the note rather than treated as green coverage;
+    # the anti-vacuous artifact gate validates every persisted S7 table.
+    _reconciliation = ((ir.get("extras") or {}).get("reconciliation"))
+    if _reconciliation is not None:
+        from .evidence.reconciliation import unresolved_axis_findings
+        checks.append(SableCheck(
+            "reconciliation_axes",
+            _ship_gate_findings(
+                ir, "reconciliation_axes",
+                unresolved_axis_findings(_reconciliation)),
+        ))
+
     # Deterministic per-view SVG hashes (the CI-lock key) — dedup by visual hash so
     # identical per-layer-group copies collapse to one, exactly like the gallery.
     view_hashes: list[tuple[str, str]] = []

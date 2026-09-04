@@ -637,6 +637,25 @@ def _network_isolated_command(command: list[str], env: dict[str, str]) -> list[s
         env["UNFOLD_NETWORK_SANDBOX"] = "macos-sandbox-exec+python-audit-hook"
         return [sandbox, "-p", "(version 1) (allow default) (deny network*)",
                 *command]
+    if sys.platform.startswith("linux"):
+        # CI explicitly opts into a root-owned network namespace.  ``unshare``
+        # is the OS boundary; the audit hook remains defence in depth.  We do
+        # not silently call an unavailable/denied namespace equivalent to this
+        # mode: the S7 Linux preflight runs the wrapper and fails before shadow
+        # generation when the runner cannot create it.
+        requested = env.get("UNFOLD_LINUX_NETWORK_SANDBOX", "")
+        unshare = shutil.which("unshare")
+        if requested == "sudo-unshare" and unshare:
+            sudo = shutil.which("sudo")
+            if not sudo:
+                raise RuntimeError("sudo-unshare requested but sudo is unavailable")
+            env["UNFOLD_NETWORK_SANDBOX"] = (
+                "linux-sudo-unshare-net+python-audit-hook")
+            return [sudo, "-n", unshare, "--net", "--", *command]
+        if requested == "root-unshare" and unshare:
+            env["UNFOLD_NETWORK_SANDBOX"] = (
+                "linux-root-unshare-net+python-audit-hook")
+            return [unshare, "--net", "--", *command]
     # The audit hook and offline variables still block in-process Python
     # clients. The recorded value makes the missing OS boundary explicit; a
     # later productionisation unit must add the host-specific wrapper rather

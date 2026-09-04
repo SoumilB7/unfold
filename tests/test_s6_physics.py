@@ -6,7 +6,9 @@ import hashlib
 import importlib
 import importlib.metadata
 import json
+import os
 from pathlib import Path
+import sys
 
 import pytest
 
@@ -16,7 +18,7 @@ from physics.execution_observation import (
 )
 from physics.instance_inventory import (
     BuildRequest, Failure, InventoryResult, PackageVersion, ResolvedClass,
-    SourceFile, inventory_in_subprocess,
+    SourceFile, _network_isolated_command, inventory_in_subprocess,
 )
 
 
@@ -91,6 +93,25 @@ def test_constructor_network_attempt_is_typed_network_refused():
     assert escaped.status == "failed"
     assert escaped.failure and escaped.failure.kind == "NetworkRefused"
     assert "network client process refused" in escaped.failure.detail
+
+
+def test_linux_os_sandbox_command_is_explicit_never_audit_hook_laundered(
+        monkeypatch):
+    monkeypatch.setattr(sys, "platform", "linux")
+    monkeypatch.setattr("physics.instance_inventory.shutil.which",
+                        lambda name: f"/usr/bin/{name}")
+    env = {"UNFOLD_LINUX_NETWORK_SANDBOX": "sudo-unshare"}
+    command = _network_isolated_command(["python", "worker.py"], env)
+    assert command == [
+        "/usr/bin/sudo", "-n", "/usr/bin/unshare", "--net", "--",
+        "python", "worker.py"]
+    assert env["UNFOLD_NETWORK_SANDBOX"] == (
+        "linux-sudo-unshare-net+python-audit-hook")
+
+    # No opt-in is honestly recorded as audit-only, never as OS-isolated.
+    env = {}
+    assert _network_isolated_command(["python"], env) == ["python"]
+    assert env["UNFOLD_NETWORK_SANDBOX"] == "python-audit-hook-only"
 
 
 def test_constructor_timeout_is_typed_and_child_is_killed():
