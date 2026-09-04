@@ -1,6 +1,7 @@
 """Reusable HTML sections and header fragments."""
 from __future__ import annotations
 
+from ...ir import EvidenceWarning
 from .metadata import _arch_badges
 from .utils import _attr, _fmt_int, _html
 
@@ -24,6 +25,25 @@ def _msg_bar(css_class: str, messages: list[str]) -> str:
     return f'<div class="uf-msg-bar {css_class}">{lines}</div>'
 
 
+def _warning_bar(messages: list[str], groups: list[EvidenceWarning]) -> str:
+    """Render producer-authored summaries; exact receipts stay disclosed."""
+    lines = [f'<div class="uf-msg-line">{_html(message)}</div>'
+             for message in messages]
+    for group in groups:
+        summary = group.summary
+        details = group.details
+        detail_lines = "".join(
+            f'<div class="uf-msg-line">{_html(detail)}</div>'
+            for detail in details)
+        lines.append(
+            '<details class="uf-evidence-disclosure" style="margin-top:7px">'
+            f'<summary style="cursor:pointer;font-weight:650">{_html(summary)}</summary>'
+            '<div class="uf-evidence-details" '
+            f'style="margin:7px 0 0 16px;opacity:.9">{detail_lines}</div>'
+            '</details>')
+    return f'<div class="uf-msg-bar uf-msg-bar-warn">{"".join(lines)}</div>'
+
+
 def _header(ir: dict, info: dict, mount_id: str) -> str:
     # No hover anywhere: badges carry no `title` tooltip.  The two message
     # badges (config gaps, advisory notes) instead CLICK to open a full-width
@@ -39,15 +59,23 @@ def _header(ir: dict, info: dict, mount_id: str) -> str:
     bars: list[str] = []
     # Only genuine config GAPS warrant the "partial config" alarm; by-design
     # advisories (e.g. a CFG twin we deliberately don't draw twice) are notes.
-    warnings = ir.get("warnings") or []
-    if warnings:
+    warning_rows = ir.get("warnings") or []
+    groups_by_check = {}
+    for warning in warning_rows:
+        if isinstance(warning, EvidenceWarning):
+            groups_by_check.setdefault(warning.check, warning)
+    groups = list(groups_by_check.values())
+    warnings = [str(warning) for warning in warning_rows
+                if isinstance(warning, str)
+                and not isinstance(warning, EvidenceWarning)]
+    if warnings or groups:
         wid = f"{mount_id}-msg-warn"
         toggles.append(f'<input type="checkbox" id="{_attr(wid)}" class="uf-msg-toggle" hidden>')
-        bars.append(_msg_bar("uf-msg-bar-warn", warnings))
+        bars.append(_warning_bar(warnings, groups))
         # Evidence producers mark their diagnostic class explicitly. The
         # renderer only maps that transport prefix to display text; it neither
         # inspects raw evidence extras nor infers a mechanism from prose.
-        typed_unresolved = any(
+        typed_unresolved = bool(groups) or any(
             warning.startswith("Unresolved evidence — ")
             for warning in warnings
         )

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Parallel, committed-tree verification for one model-unfolder revision.
+"""Committed-tree verification for one model-unfolder revision.
 
 The old U3 receipts ran focused, U2, preservation, the full suite, and an
-isolated checkout one after another.  That repeated the same expensive corpus
-work serially.  This coordinator preserves every boundary while running each
-lane in its own detached worktree.  Cheap/authority lanes form a fail-fast
-preflight; after they release their workers, the exhaustive full and
-preservation partitions receive the whole bounded CPU budget.  The full
-remainder is collected once and run in fresh file processes: exact coverage
-without persistent-worker memory accumulation.
+isolated checkout as partially redundant campaigns. This coordinator keeps
+each required lane in its own detached worktree, but schedules lanes strictly
+one at a time: the execution law forbids overlapping pytest campaigns because
+resource contention makes timing and failures non-reproducible. Parallelism is
+bounded *inside* a lane (xdist or the file bracket), never across lanes. The
+full remainder is collected once and run in fresh file processes: exact
+coverage without persistent-worker memory accumulation.
 
 Example::
 
@@ -23,7 +23,6 @@ tree manifest is byte-identical before/after.  Detached worktrees also make the
 from __future__ import annotations
 
 import argparse
-import concurrent.futures
 import dataclasses
 import hashlib
 import importlib.util
@@ -234,15 +233,7 @@ def _parser() -> argparse.ArgumentParser:
 
 def _worker_plan(cpu_count: int,
                  override: int | None = None) -> tuple[int, int, int, int]:
-    """Allocate bounded workers for the staged receipt.
-
-    Preflight and exhaustive lanes never overlap, so their allocations are
-    separate budgets.  In the heavy phase, full + preservation equals the host
-    budget (unless ``--workers`` deliberately caps full).  This avoids the
-    previous fixed allocation, which left released authority/focused CPUs idle
-    for most of a long full-suite run.  Focused tests keep one worker because
-    xdist startup normally costs more than it saves.
-    """
+    """Allocate bounded *intra-lane* workers for the serial receipt."""
     cpu_count = max(4, cpu_count)
     focused = 1
     authority = min(4, max(2, cpu_count // 3))
@@ -262,11 +253,7 @@ def _worker_plan(cpu_count: int,
         preservation = 3
     else:
         preservation = 4
-    if override is not None:
-        full = min(max(1, override),
-                   max(1, cpu_count - preservation))
-    else:
-        full = max(1, cpu_count - preservation)
+    full = min(max(1, override), cpu_count) if override is not None else cpu_count
     return full, preservation, authority, focused
 
 
@@ -292,28 +279,23 @@ def _partitioned_full_command(pytest_base, workers: int) -> tuple[str, ...]:
 
 def _run_phase(lanes: tuple[Lane, ...], worktrees: dict[str, pathlib.Path],
                log_dir: pathlib.Path) -> list[LaneResult]:
+    """Run lanes sequentially; a lane may parallelize its own exact partition."""
     results: list[LaneResult] = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=len(lanes)) as pool:
-        futures = {
-            pool.submit(_run_lane, lane, worktrees[lane.name], log_dir): lane
-            for lane in lanes
-        }
-        for future in concurrent.futures.as_completed(futures):
-            lane = futures[future]
-            try:
-                result = future.result()
-            except Exception as exc:
-                log_path = log_dir / f"{lane.name}.log"
-                with log_path.open("a", encoding="utf-8") as output:
-                    output.write(
-                        f"\ncoordinator error: {type(exc).__name__}: {exc}\n")
-                result = LaneResult(lane.name, 125, 0.0,
-                                    "ERROR", "ERROR", "ERROR", "ERROR",
-                                    log_path)
-            results.append(result)
-            state = "PASS" if result.passed else "FAIL"
-            print(f"[{state}] {result.name}: {result.duration:.1f}s")
-            print(_tail(result.log_path))
+    for lane in lanes:
+        try:
+            result = _run_lane(lane, worktrees[lane.name], log_dir)
+        except Exception as exc:
+            log_path = log_dir / f"{lane.name}.log"
+            with log_path.open("a", encoding="utf-8") as output:
+                output.write(
+                    f"\ncoordinator error: {type(exc).__name__}: {exc}\n")
+            result = LaneResult(lane.name, 125, 0.0,
+                                "ERROR", "ERROR", "ERROR", "ERROR",
+                                log_path)
+        results.append(result)
+        state = "PASS" if result.passed else "FAIL"
+        print(f"[{state}] {result.name}: {result.duration:.1f}s")
+        print(_tail(result.log_path))
     return results
 
 
@@ -402,6 +384,7 @@ def main(argv: list[str] | None = None) -> int:
         "preservation_workers": preservation_workers,
         "authority_workers": authority_workers,
         "focused_workers": focused_workers,
+        "lane_schedule": "serial",
         "missing_lanes": missing,
         "failed_lanes": failed,
         "source_artifacts_before": source_artifacts_before,

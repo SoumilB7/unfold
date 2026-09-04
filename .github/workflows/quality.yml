@@ -20,3 +20,5 @@ jobs:
         run: python scripts/census.py --check
       - name: Declared 29+15 support denominator has no silent failures
         run: python scripts/coverage.py --check
+      - name: Reviewed release examples are byte-current
+        run: python scripts/generate_examples.py --check

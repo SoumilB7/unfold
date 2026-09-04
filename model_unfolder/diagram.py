@@ -68,8 +68,19 @@ class Diagram:
 
     @property
     def warnings(self) -> list[str]:
-        """Adapter-emitted warnings — unknown model types, unrecognised layer types, etc."""
-        return list(self.ir.warnings)
+        """Human-readable summaries for every product-visible warning."""
+        from .ir import EvidenceWarning
+        result = []
+        summarized = set()
+        for warning in self.ir.warnings:
+            if isinstance(warning, EvidenceWarning):
+                if warning.check in summarized:
+                    continue
+                summarized.add(warning.check)
+                result.append(f"Unresolved evidence — {warning.summary}")
+            else:
+                result.append(str(warning))
+        return result
 
     def wiring_problems(self) -> list[str]:
         """Dable's dangling-connector flag — first-class, like click-coupling.
@@ -191,5 +202,5 @@ class Diagram:
             + ">"
         )
         if self.ir.warnings:
-            s += "\n" + "\n".join(f"  ⚠ {w}" for w in self.ir.warnings)
+            s += "\n" + "\n".join(f"  ⚠ {w}" for w in self.warnings)
         return s

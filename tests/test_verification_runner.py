@@ -233,16 +233,38 @@ def test_serial_full_flag_is_explicit_and_defaults_off():
 
 def test_worker_plan_fills_ten_core_host_without_oversubscription():
     full, preservation, authority, focused = verify._worker_plan(10)
-    assert (full, preservation, authority, focused) == (6, 4, 3, 1)
-    assert full + preservation == 10
+    assert (full, preservation, authority, focused) == (10, 4, 3, 1)
     assert authority + focused <= 10
 
 
 def test_worker_plan_scales_down_and_honors_override():
-    assert verify._worker_plan(12) == (8, 4, 4, 1)
-    assert verify._worker_plan(8) == (5, 3, 2, 1)
-    assert verify._worker_plan(4) == (3, 1, 2, 1)
+    assert verify._worker_plan(12) == (12, 4, 4, 1)
+    assert verify._worker_plan(8) == (8, 3, 2, 1)
+    assert verify._worker_plan(4) == (4, 1, 2, 1)
     assert verify._worker_plan(10, 5) == (5, 4, 3, 1)
+
+
+def test_coordinator_runs_lanes_strictly_one_at_a_time(monkeypatch, tmp_path):
+    calls = []
+
+    def run_lane(lane, worktree, log_dir):
+        calls.append(("start", lane.name))
+        assert calls.count(("start", lane.name)) == 1
+        log = log_dir / f"{lane.name}.log"
+        log.write_text("pass\n")
+        calls.append(("finish", lane.name))
+        return verify.LaneResult(
+            lane.name, 0, 0.0, "same", "same", "same", "same", log)
+
+    monkeypatch.setattr(verify, "_run_lane", run_lane)
+    lanes = (verify.Lane("first", ("one",)), verify.Lane("second", ("two",)))
+    results = verify._run_phase(
+        lanes, {"first": tmp_path, "second": tmp_path}, tmp_path)
+    assert [result.name for result in results] == ["first", "second"]
+    assert calls == [
+        ("start", "first"), ("finish", "first"),
+        ("start", "second"), ("finish", "second"),
+    ]
 
 
 def test_single_worker_omits_xdist_overhead():

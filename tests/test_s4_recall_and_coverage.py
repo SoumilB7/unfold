@@ -79,7 +79,10 @@ def test_hard_model_conformance_findings_are_visible_in_plain_unfold(slug, check
     diagram = unfold(_unseen(slug))
     rows = diagram.to_ir()["extras"]["ship_findings"]
     assert any(row["check"] == check for row in rows)
-    assert f"{check} evidence unresolved" in diagram.to_html()
+    html = diagram.to_html()
+    assert "unresolved evidence" in html
+    exact = [row["message"] for row in rows if row["check"] == check]
+    assert exact and all(message in html for message in exact)
 
 
 def test_typed_ship_finding_is_never_mislabeled_as_partial_config():

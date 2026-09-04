@@ -76,6 +76,12 @@ def _spellings(canonical: str) -> list[str]:
     return list(dict.fromkeys([canonical, *_ALIASES.get(canonical, ())]))
 
 
+def _unique_failure_detail(failures) -> str:
+    """Join each typed side-reader failure detail once, in source order."""
+    return "; ".join(dict.fromkeys(
+        failure.detail for failure in failures if failure.detail))
+
+
 def _carries(cfg: Any, canonical: str) -> bool:
     """Pure OCCURRENCE-membership probe (no value read, no event) — used for
     adapter-shape dispatch, never for a value decision (REC-3 §9.2: the
@@ -4328,8 +4334,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             # failure cannot erase a separately-proven main text stack.  The
             # failure is retained on the side card and in the visible banner;
             # main-stack failures still use ConfigParseError.
-            detail = "; ".join(
-                failure.detail for failure in _projector_result.failures)
+            detail = _unique_failure_detail(_projector_result.failures)
             warnings.append(
                 "Unresolved evidence — projector evidence unresolved"
                 + (f": {detail}" if detail else ""))

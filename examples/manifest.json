@@ -1,0 +1,57 @@
+{
+  "examples": [
+    {
+      "file": "deepseek-v3.html",
+      "fixture": "tests/sable_test_corpus/deepseek-v3.json",
+      "rendered_name": "DeepSeek-V3",
+      "sha256": "41bc1d436787830559d654f03af323b4c4f7dbeb597d05881a00cd990b11150f"
+    },
+    {
+      "file": "granite-3-0-8b-instruct.html",
+      "fixture": "tests/sable_test_corpus/granite-3-0-8b-instruct.json",
+      "rendered_name": "granite-3.0-8b-instruct",
+      "sha256": "4f62803603a73449725dd0c93d31b690d7b5c815ea85af45e994cfabcc6bf373"
+    },
+    {
+      "file": "hunyuanvideo.html",
+      "fixture": "tests/sable_test_corpus/hunyuanvideo.json",
+      "rendered_name": "HunyuanVideo",
+      "sha256": "ffffb01c4b16146c717fe924c5b615bb39d55b13dbe5e2aeb37fd3c2db4ba53d"
+    },
+    {
+      "file": "llama-7b.html",
+      "fixture": "tests/sable_test_corpus/llama-7b.json",
+      "hero_png": {
+        "file": "images/llama-7b.png",
+        "sha256": "a6774a6f0ab46ec0f77d6624d87aab950ea04815e087c99d3759feff1ba82d69"
+      },
+      "rendered_name": "llama-7b",
+      "sha256": "499f0f4dd20328c0a3d030049fdbeed4a1afa2013b7bc1158f82d8d1e7a01bea"
+    },
+    {
+      "file": "musicgen-small.html",
+      "fixture": "tests/sable_test_corpus/musicgen-small.json",
+      "rendered_name": "MusicgenForConditionalGeneration",
+      "sha256": "386b3ae6078a0e4511daaeeef3e21cb4212a60f29471de8b48d438c825b73856"
+    },
+    {
+      "file": "pixart-sigma-xl-2-1024-ms.html",
+      "fixture": "tests/sable_test_corpus/pixart-sigma-xl-2-1024-ms.json",
+      "rendered_name": "PixArt-Sigma-XL-2-1024-MS",
+      "sha256": "2ab8e728897fcfb57d3755fc0a7a7a44943ec56817a85163c5a10e0e114c23ea"
+    },
+    {
+      "file": "qwen2-vl-7b-instruct.html",
+      "fixture": "tests/sable_test_corpus/qwen2-vl-7b-instruct.json",
+      "rendered_name": "Qwen2-VL-7B-Instruct",
+      "sha256": "3daecd4c607d5f9bb62c167c84e74cf2aff0b221b809840222626f0433ff1f8d"
+    },
+    {
+      "file": "stable-diffusion-xl-base-1-0.html",
+      "fixture": "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json",
+      "rendered_name": "stable-diffusion-xl-base-1.0",
+      "sha256": "09e92b1d8c02e3a519617bc7bbc4b8cd64cb73c8e71f8487e9d7e6c7e2ef6a4b"
+    }
+  ],
+  "schema": 1
+}

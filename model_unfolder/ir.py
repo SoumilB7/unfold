@@ -446,6 +446,45 @@ class CrossLayerEdge:
     shared: list = field(default_factory=list)    # ["K", "V"]
 
 
+class EvidenceWarning(str):
+    """Exact legacy warning text carrying typed display metadata in memory.
+
+    The public IR contract remains ``list[str]`` and JSON keeps the exact audit
+    receipt. The subtype lets the renderer group those rows using metadata
+    authored by the evidence producer, without reading an evidence ledger or
+    interpreting the receipt prose.
+    """
+
+    def __new__(cls, check: str, summary: str, details: tuple[str, ...],
+                detail: str):
+        if not check or not summary or not details:
+            raise ValueError(
+                "an evidence warning requires check, summary and details")
+        if any(not isinstance(row, str) or not row for row in details):
+            raise TypeError("evidence warning details are non-empty exact text")
+        if len(set(details)) != len(details):
+            raise ValueError("evidence warning details are occurrence-deduplicated")
+        if detail not in details:
+            raise ValueError("evidence warning detail must belong to its group")
+        text = f"Unresolved evidence — {check} evidence unresolved: {detail}"
+        obj = super().__new__(cls, text)
+        obj.check = check
+        obj.summary = summary
+        obj.details = details
+        obj.detail = detail
+        obj._sealed = True
+        return obj
+
+    def __setattr__(self, name, value) -> None:
+        if getattr(self, "_sealed", False):
+            raise AttributeError("EvidenceWarning is immutable")
+        super().__setattr__(name, value)
+
+    def __getnewargs__(self):
+        """Preserve typed metadata across copy/deepcopy/pickle reconstruction."""
+        return self.check, self.summary, self.details, self.detail
+
+
 @dataclass
 class ModelIR:
     """Top-level IR for a complete model."""
@@ -469,7 +508,9 @@ class ModelIR:
     final_norm_kind: Optional[str] = None
     cross_layer_edges: list = field(default_factory=list)
     extras: dict = field(default_factory=dict)
-    warnings: list = field(default_factory=list)  # config GAPS / unknowns → "⚠ partial config"
+    # Product-visible unresolved evidence. Typed rows remain real strings for
+    # API/JSON compatibility while carrying display-only metadata in memory.
+    warnings: list = field(default_factory=list)
     notes: list = field(default_factory=list)     # by-design advisories (not deficiencies) → neutral ⓘ
 
     def __post_init__(self) -> None:
@@ -478,13 +519,15 @@ class ModelIR:
             if value not in {None, "rmsnorm", "layernorm", "unknown"}:
                 raise ValueError(
                     f"unknown model-stage norm kind {field_name}={value!r}")
+        if any(not isinstance(warning, str) for warning in self.warnings):
+            raise TypeError("warnings must remain string-compatible")
 
     def to_dict(self) -> dict:
         # Avoid dataclasses.asdict here: it recursively deepcopy()s every
         # nested dict/list, including repeated render block metadata for every
         # layer.  The IR is treated as immutable after parsing, so a direct
         # structural projection is much cheaper and enough for rendering.
-        return {
+        document = {
             "name": self.name,
             "architecture": self.architecture,
             "vocab_size": self.vocab_size,
@@ -499,6 +542,7 @@ class ModelIR:
             "warnings": self.warnings,
             "notes": self.notes,
         }
+        return document
 
     @property
     def num_layers(self) -> int:

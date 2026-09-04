@@ -217,7 +217,11 @@ def test_config_field_audit_is_blocking_and_visible_on_the_ship_path():
     assert audit.blocking is True
     assert audit.passed
     diagram = mu.unfold(cfg)
-    assert "config_field_audit evidence unresolved" in diagram.to_html()
+    html = diagram.to_html()
+    assert "configuration fields are not yet interpreted" in html
+    exact = [row["message"] for row in diagram.to_ir()["extras"]["ship_findings"]
+             if row["check"] == "config_field_audit"]
+    assert exact and all(message in html for message in exact)
     assert any(
         row["check"] == "config_field_audit"
         and "brand_new_architecture_switch" in row["message"]

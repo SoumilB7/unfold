@@ -1,6 +1,6 @@
 {
  "versions": {
-  "model_unfolder": "0.2.15",
+  "model_unfolder": "0.3.0",
   "python": "3.12.10",
   "transformers": "5.12.1"
  },

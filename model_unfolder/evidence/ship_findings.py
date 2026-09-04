@@ -188,7 +188,7 @@ def collect_ship_findings(target, ir, context, *, source: str = "local") \
 
 
 def apply_ship_findings(ir, findings: tuple[ShipFinding, ...]) -> None:
-    """Transport findings into typed IR diagnostics and the visible header."""
+    """Transport exact receipts and producer-authored presentation groups."""
     if not findings:
         return
     existing = list(ir.extras.get("ship_findings") or ())
@@ -202,13 +202,54 @@ def apply_ship_findings(ir, findings: tuple[ShipFinding, ...]) -> None:
             existing.append(finding.to_dict())
             seen.add(key)
     ir.extras["ship_findings"] = existing
-    for finding in findings:
-        warning = (
-            "Unresolved evidence — "
-            f"{finding.check} evidence unresolved: {finding.message}"
-        )
-        if warning not in ir.warnings:
-            ir.warnings.append(warning)
+    from ..ir import EvidenceWarning
+
+    by_check: dict[str, list[str]] = {}
+    for row in existing:
+        if not isinstance(row, dict):
+            continue
+        check = str(row.get("check") or "")
+        message = str(row.get("message") or "")
+        if check and message and message not in by_check.setdefault(check, []):
+            by_check[check].append(message)
+
+    # ``warnings`` is the canonical product diagnostic channel. Preserve its
+    # ordinary strings and replace only typed evidence rows. Each typed row is
+    # still equal to its historical exact string; its metadata groups display.
+    for warning in tuple(ir.warnings):
+        if isinstance(warning, EvidenceWarning):
+            ir.warnings.remove(warning)
+    for check, details in by_check.items():
+        exact = tuple(details)
+        summary = _finding_summary(check, len(exact))
+        for detail in exact:
+            ir.warnings.append(EvidenceWarning(check, summary, exact, detail))
+
+
+def _finding_summary(check: str, count: int) -> str:
+    """One human sentence per audit check, authored by the producer."""
+    noun = "item" if count == 1 else "items"
+    templates = {
+        "config_field_audit": "configuration fields are not yet interpreted",
+        "op_conformance": "source operations do not yet match the drawing",
+        "wiring_conformance": "source wiring is not yet represented",
+        "fact_conformance": "drawn facts do not yet match resolved source",
+        "asserted_facts": "structural facts still rely on an unproved default",
+        "evidence_ambiguity": "source evidence has unresolved alternatives",
+        "config_accessed_unprojected": (
+            "configuration values are read but not yet proven into the drawing"),
+        "config_standing_unconsumed": (
+            "configuration reads do not yet have a structural disposition"),
+        "qualified_projection_values": (
+            "proved values are not yet projected on every required surface"),
+        "config_migration_claims": "configuration migration claims are incomplete",
+        "config_audit_incomplete": "configuration audit coverage is incomplete",
+        "document_boundary_completeness": (
+            "configuration reads have incomplete source provenance"),
+        "config_ambiguity": "configuration aliases disagree",
+    }
+    description = templates.get(check, f"{check.replace('_', ' ')} remain unresolved")
+    return f"{count} {noun}: {description}."
 
 
 __all__ = [
