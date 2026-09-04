@@ -16,6 +16,7 @@ from model_unfolder.evidence.reconciliation import (
     AUTHORITY_MATRIX,
     ConstructionAxis,
     ExecutionAxis,
+    InvestigationRecord,
     MeaningProvenance,
     OccurrenceProvenance,
     OccurrenceRow,
@@ -31,6 +32,7 @@ from model_unfolder.evidence.reconciliation import (
     reconcile,
     relation_rows_from_evidence,
     unresolved_axis_findings,
+    unresolved_reason_class_counts,
 )
 from model_unfolder.evidence.relation_source import StaticRelationProof
 from model_unfolder.ir import ModelIR
@@ -161,8 +163,18 @@ def test_axes_and_authority_vocabulary_are_closed():
         ConstructionAxis("probably_constructed")
     with pytest.raises(ValueError):
         ExecutionAxis("observed")
+    with pytest.raises(ValueError, match="exactly one reason class"):
+        ExecutionAxis("execution_unresolved", reason="no_recipe_attempted")
     with pytest.raises(ValueError, match="closed visible reason"):
-        ExecutionAxis("execution_unresolved", reason="something plausible")
+        ExecutionAxis(
+            "execution_unresolved", reason="something plausible",
+            reason_class="investigation_missing")
+    with pytest.raises(ValueError, match="requires an investigation record"):
+        ExecutionAxis(
+            "execution_unresolved", reason="unobserved_no_static_proof",
+            reason_class="mechanism_unresolved")
+    with pytest.raises(ValueError, match="concrete unresolved reason is closed"):
+        InvestigationRecord("reader_ran", ("reader",), "probably_missing")
     with pytest.raises(ValueError):
         ProjectionAxis("rendered")
 
@@ -271,6 +283,8 @@ def test_execution_unresolved_separates_no_attempt_from_unobserved_attempt():
         config_document=_document())
     assert {row.execution.reason for row in no_attempt.occurrences} == {
         "no_recipe_attempted"}
+    assert {row.execution.reason_class for row in no_attempt.occurrences} == {
+        "investigation_missing"}
 
     recipe = ExecutionRecipe(
         "attempted", "callable_signature", "eval", "disabled", "unspecified",
@@ -284,6 +298,10 @@ def test_execution_unresolved_separates_no_attempt_from_unobserved_attempt():
         config_document=_document())
     assert {row.execution.reason for row in attempted.occurrences} == {
         "unobserved_no_static_proof"}
+    # A recipe attempt proves only what happened.  Static reachability closure
+    # was not built, so §1g still classifies the negative-proof gap as ours.
+    assert {row.execution.reason_class for row in attempted.occurrences} == {
+        "investigation_missing"}
 
 
 def test_relation_requires_source_explanation_or_stays_unresolved():
@@ -296,8 +314,69 @@ def test_relation_requires_source_explanation_or_stays_unresolved():
     assert tied.kind == "param_share"
     unresolved = RelationRow(
         "tie", "relation_unresolved", ("blocks.0",), ("blocks.1",),
-        {"reason": "source assignment not resolved"}, ("parameter identity",))
+        {"reason": "source assignment not resolved"}, ("parameter identity",),
+        reason_class="mechanism_unresolved",
+        investigation=InvestigationRecord(
+            "reader_ran", ("tie_reader",), "source_missing"))
     assert unresolved.kind == "relation_unresolved"
+
+
+def test_reason_classes_are_closed_and_class_three_needs_real_investigation():
+    with pytest.raises(ValueError, match="exactly one reason class"):
+        ProjectionAxis("projection_unresolved", reason="not drawn")
+    with pytest.raises(ValueError, match="requires an investigation record"):
+        ProjectionAxis(
+            "projection_unresolved", reason="ambiguous path",
+            reason_class="mechanism_unresolved")
+    with pytest.raises(ValueError, match="cannot masquerade"):
+        ProjectionAxis(
+            "projection_unresolved", reason="not drawn",
+            reason_class="structure_unaccounted",
+            investigation=InvestigationRecord(
+                "reader_ran", ("projection_reader",), "source_missing"))
+    axis = ProjectionAxis(
+        "projection_unresolved", reason="ambiguous path",
+        reason_class="mechanism_unresolved",
+        investigation=InvestigationRecord(
+            "reader_ran", ("projection_reader",), "ambiguous_alternatives"))
+    assert axis.reason_class == "mechanism_unresolved"
+
+
+def test_serialized_class_three_without_investigation_is_a_blocking_finding():
+    table = reconcile(
+        model="fixture", inventory=_inventory(), observations=(),
+        config_document=_document())
+    payload = table.to_dict()
+    payload["occurrences"][0]["projection"]["reason_class"] = \
+        "mechanism_unresolved"
+    payload["occurrences"][0]["projection"]["investigation"] = None
+    assert any("lacks an investigation record" in finding
+               for finding in unresolved_axis_findings(payload))
+    with pytest.raises(ValueError, match="invalid projection unresolved reason"):
+        unresolved_reason_class_counts(payload)
+
+
+def test_execution_observation_never_authors_mechanism_evidence():
+    recipe = ExecutionRecipe(
+        "observed", "tokens", "eval", "disabled", "decoder", False,
+        "float32", {"fixture": "1"})
+    observation = ExecutionObservation(
+        1, _inventory().provenance, recipe,
+        (__import__("physics.execution_observation", fromlist=["ModuleCall"])
+         .ModuleCall(0, "blocks.0", CLASS),), (), ())
+    result_type = __import__(
+        "physics.execution_observation", fromlist=["ObservationResult"])
+    result = result_type.ObservationResult(
+        "ok", recipe=recipe, observation=observation,
+        provenance=_inventory().provenance)
+    table = reconcile(
+        model="fixture", inventory=_inventory(), observations=(result,),
+        config_document=_document())
+    axis = next(row.execution for row in table.occurrences
+                if row.provenance.instance_path == "blocks.0")
+    assert axis.kind == "observed"
+    assert axis.reason_class is None and axis.investigation is None
+    assert not ({"mechanism", "fact_keys"} & set(dataclasses.asdict(axis)))
 
 
 def test_sable_net_is_anti_vacuous_and_blocks_every_unresolved_axis():
@@ -310,6 +389,24 @@ def test_sable_net_is_anti_vacuous_and_blocks_every_unresolved_axis():
     findings = unresolved_axis_findings(table)
     assert any(": execution=execution_unresolved" in item for item in findings)
     assert any(": projection=projection_unresolved" in item for item in findings)
+
+
+def test_investigated_mechanism_unknown_is_visible_but_not_s7_blocking():
+    table = reconcile(
+        model="fixture", inventory=_inventory(), observations=(),
+        config_document=_document(), projection_claims=(_projection(),))
+    payload = table.to_dict()
+    row = payload["occurrences"][2]
+    row["execution"] = dataclasses.asdict(ExecutionAxis(
+        "execution_unresolved", reason="unobserved_no_static_proof",
+        detail="source closure found data-dependent dispatch",
+        reason_class="mechanism_unresolved",
+        investigation=InvestigationRecord(
+            "closure_built", ("Block.forward",), "data_dependent")))
+    findings = unresolved_axis_findings(payload)
+    path = row["provenance"]["instance_path"]
+    assert not any(item.startswith(f"{path}: execution=") for item in findings)
+    assert unresolved_reason_class_counts(payload)["mechanism_unresolved"] == 1
 
 
 def test_unresolved_reconciliation_is_wired_into_sable_as_blocking(monkeypatch):
@@ -346,12 +443,19 @@ def test_table_rejects_foreign_relation_occurrences():
             "", RuntimeClassRef("m", "C"), CONFIG_HASH,
             MeaningProvenance()),
         ConstructionAxis("eager_constructed"),
-        ExecutionAxis("execution_unresolved", reason="no_recipe_attempted"),
-        ProjectionAxis("projection_unresolved", reason="no fact"),
+        ExecutionAxis(
+            "execution_unresolved", reason="no_recipe_attempted",
+            reason_class="investigation_missing"),
+        ProjectionAxis(
+            "projection_unresolved", reason="no fact",
+            reason_class="structure_unaccounted"),
     )
     relation = RelationRow(
         "r", "relation_unresolved", ("",), ("foreign",),
-        {"reason": "unbound"}, ("trace:r",))
+        {"reason": "unbound"}, ("trace:r",),
+        reason_class="mechanism_unresolved",
+        investigation=InvestigationRecord(
+            "reader_ran", ("relation_reader",), "source_missing"))
     with pytest.raises(ValueError, match="outside the denominator"):
         ReconciliationTable(1, "x", CONFIG_HASH, (base,), (relation,))
 
@@ -403,7 +507,8 @@ def test_removing_product_block_flips_exact_primitive_to_unresolved():
                if row.provenance.instance_path == "head")
     assert row.projection == ProjectionAxis(
         "projection_unresolved",
-        reason="no product block or fact cites this occurrence")
+        reason="no product block or fact cites this occurrence",
+        reason_class="structure_unaccounted")
     assert row.provenance.meaning.framework_primitive == RuntimeClassRef(
         "torch.nn.modules.linear", "Linear")
 

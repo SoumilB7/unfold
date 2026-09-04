@@ -7,8 +7,10 @@ from pathlib import Path
 
 import pytest
 
-from model_unfolder.evidence.reconciliation import unresolved_axis_findings
-from scripts.generate_s7_shadow import check
+from model_unfolder.evidence.reconciliation import (
+    unresolved_axis_findings, unresolved_reason_class_counts,
+)
+from scripts.generate_s7_shadow import _stable_observation_payload, check
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,6 +25,26 @@ def _artifact(slug: str):
     with gzip.open(S7 / "models" / f"{slug}.json.gz", "rt",
                    encoding="utf-8") as stream:
         return json.load(stream)
+
+
+def test_observation_diagnostics_drop_only_volatile_torch_prefix_metadata():
+    class Result:
+        def __init__(self, stderr: str):
+            self.stderr = stderr
+
+        def to_dict(self):
+            return {"stdout": "", "stderr": self.stderr,
+                    "failure": {"detail": "RuntimeError: shape mismatch"}}
+
+    first = _stable_observation_payload(Result(
+        "E0905 01:12:46.242000 2526 site.py:7] shape mismatch\n"))
+    second = _stable_observation_payload(Result(
+        "E0905 03:16:59.411000 11254 site.py:7] shape mismatch\n"))
+    changed = _stable_observation_payload(Result(
+        "E0905 03:16:59.411000 11254 site.py:7] dtype mismatch\n"))
+    assert first == second
+    assert first != changed
+    assert first["failure"]["detail"] == "RuntimeError: shape mismatch"
 
 
 def test_shadow_denominator_and_artifact_hashes_are_current():
@@ -60,12 +82,47 @@ def test_projection_categories_partition_denominator_and_keep_unknown_exact():
             if projection["kind"] == "projection_unresolved":
                 assert projection["reason"] == \
                     "no product block or fact cites this occurrence"
+                assert projection["reason_class"] == "structure_unaccounted"
 
     llama = next(row for row in _matrix()["models"]
                  if row["slug"] == "llama-7b")
     assert llama["rendered"] > 0
     assert llama["grouped"] > 0
     assert llama["projection_unresolved"] < llama["occurrences"]
+
+
+def test_every_unresolved_axis_has_exactly_one_v26_reason_class():
+    classes = {
+        "investigation_missing", "structure_unaccounted",
+        "mechanism_unresolved",
+    }
+    unresolved_kinds = {
+        "construction": "construction_conflict",
+        "execution": "execution_unresolved",
+        "projection": "projection_unresolved",
+    }
+    for summary in _matrix()["models"]:
+        table = _artifact(summary["slug"])["table"]
+        counts = unresolved_reason_class_counts(table)
+        assert counts == {name: summary[name] for name in sorted(classes)}
+        for row in table["occurrences"]:
+            for axis, unresolved_kind in unresolved_kinds.items():
+                value = row[axis]
+                if value["kind"] == unresolved_kind:
+                    assert value["reason_class"] in classes
+                    if value["reason_class"] == "mechanism_unresolved":
+                        assert value["investigation"] is not None
+                else:
+                    assert value["reason_class"] is None
+                    assert value["investigation"] is None
+        for relation in table["relations"]:
+            if relation["kind"] == "relation_unresolved":
+                assert relation["reason_class"] in classes
+                if relation["reason_class"] == "mechanism_unresolved":
+                    assert relation["investigation"] is not None
+            else:
+                assert relation["reason_class"] is None
+                assert relation["investigation"] is None
 
 
 def test_closed_torch_types_always_carry_exact_framework_meaning():

@@ -13,6 +13,7 @@ import hashlib
 import importlib.metadata
 import json
 from pathlib import Path
+import re
 import sys
 from typing import Any, Mapping
 
@@ -29,6 +30,7 @@ from model_unfolder.evidence.program_index import build_program_index
 from model_unfolder.evidence.reconciliation import (
     projection_claims_from_product, reconcile, relation_rows_from_evidence,
     static_claims_from_owner_graph, unresolved_axis_findings,
+    unresolved_reason_class_counts,
 )
 from model_unfolder.evidence.relation_source import (
     prove_post_stack_collapse, prove_recurrent_state_mix,
@@ -49,6 +51,28 @@ from physics.relation_observation import (
 CORPUS = ROOT / "tests" / "sable_test_corpus"
 UNSEEN = ROOT / "tests" / "unseen_model_configs"
 OUTPUT = ROOT / "verification" / "s7"
+
+
+_TORCH_LOG_PREFIX = re.compile(
+    r"(?m)^([A-Z])\d{4} \d{2}:\d{2}:\d{2}\.\d+ \d+ ")
+
+
+def _stable_observation_payload(result: ObservationResult) -> dict[str, Any]:
+    """Remove process-local metadata from captured diagnostics only.
+
+    Torch's structured stderr prefix embeds month/day, wall time and PID.  It
+    is not execution evidence, while the log level, source location, traceback
+    and exception are.  Persisting the volatile prefix made two identical S7
+    observations hash differently, so normalize exactly that prefix and no
+    diagnostic content after it.
+    """
+    payload = result.to_dict()
+    for field in ("stdout", "stderr"):
+        value = payload.get(field)
+        if isinstance(value, str):
+            payload[field] = _TORCH_LOG_PREFIX.sub(
+                r"\1<date> <time> <pid> ", value)
+    return payload
 GIB = 1024 ** 3
 
 # Exact, frozen S7 out-of-corpus denominator.  Reusing seven S4 inputs avoids
@@ -431,14 +455,18 @@ def _readme(matrix: Mapping[str, Any]) -> str:
         "Every occurrence has construction, execution and projection axes. "
         "`no_recipe_attempted` identifies our missing probe; "
         "`unobserved_no_static_proof` identifies an attempted recipe that did "
-        "not prove this occurrence. S7 does not relabel either as a known "
-        "mechanism. Full per-occurrence tables are the deterministic gzip JSON "
-        "files under `models/`.",
+        "not prove this occurrence. Under v2.6, every unresolved value is "
+        "classified as `investigation_missing`, `structure_unaccounted`, or "
+        "`mechanism_unresolved`; the last is legal only with its typed "
+        "investigation receipt and concrete reason. S7 does not relabel an "
+        "execution observation as a known mechanism. Full per-occurrence "
+        "tables are the deterministic gzip JSON files under `models/`.",
         "",
         "| cohort | model | occurrences | construction conflicts | no recipe | "
         "attempted-unobserved | rendered | grouped | containers | projection "
+        "unresolved | investigation missing | structure unaccounted | mechanism "
         "unresolved | relations |",
-        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---|",
+        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|",
     ]
     for row in matrix["models"]:
         relations = ", ".join(row["relation_kinds"]) or "none"
@@ -447,7 +475,9 @@ def _readme(matrix: Mapping[str, Any]) -> str:
             f"{row['construction_conflicts']} | {row['no_recipe_attempted']} | "
             f"{row['unobserved_no_static_proof']} | {row['rendered']} | "
             f"{row['grouped']} | {row['non_architectural_container']} | "
-            f"{row['projection_unresolved']} | {relations} |")
+            f"{row['projection_unresolved']} | {row['investigation_missing']} | "
+            f"{row['structure_unaccounted']} | {row['mechanism_unresolved']} | "
+            f"{relations} |")
     return "\n".join(lines) + "\n"
 
 
@@ -477,7 +507,7 @@ def _one(target: Mapping[str, Any], *, write_relations: bool,
     if write_relations:
         _write_gzip_json(
             output / "observations" / f"{target['slug']}.json.gz",
-            signature_result.to_dict())
+            _stable_observation_payload(signature_result))
 
     relation_result = None
     recipe_spec = _relation_recipe(target["slug"])
@@ -540,6 +570,7 @@ def generate(*, output: Path = OUTPUT, ci_shadow: bool = False) -> dict[str, Any
               flush=True)
         artifact = _one(target, write_relations=not ci_shadow, output=output)
         table = artifact["table"]
+        reason_counts = unresolved_reason_class_counts(table)
         summary = {
             **dict(target),
             "occurrences": len(table["occurrences"]),
@@ -569,6 +600,9 @@ def generate(*, output: Path = OUTPUT, ci_shadow: bool = False) -> dict[str, Any
             "projection_unresolved": sum(
                 row["projection"]["kind"] == "projection_unresolved"
                 for row in table["occurrences"]),
+            "investigation_missing": reason_counts["investigation_missing"],
+            "structure_unaccounted": reason_counts["structure_unaccounted"],
+            "mechanism_unresolved": reason_counts["mechanism_unresolved"],
             "relation_kinds": sorted({row["kind"] for row in table["relations"]}),
             "blocking_findings": len(artifact["blocking_findings"]),
             "root_resolution": artifact["root_resolution"],
@@ -630,10 +664,19 @@ def check(output: Path = OUTPUT) -> None:
         table = artifact.get("table") or {}
         if not table.get("occurrences"):
             raise ValueError(f"S7 artifact has an empty denominator: {relative}")
-        if len(table["occurrences"]) != next(
-                row["occurrences"] for row in matrix["models"]
-                if row["slug"] == artifact["target"]["slug"]):
+        summary = next(
+            row for row in matrix["models"]
+            if row["slug"] == artifact["target"]["slug"])
+        if len(table["occurrences"]) != summary["occurrences"]:
             raise ValueError(f"S7 artifact silently dropped occurrences: {relative}")
+        reason_counts = unresolved_reason_class_counts(table)
+        if any(summary.get(key) != value
+               for key, value in reason_counts.items()):
+            raise ValueError(
+                f"S7 unresolved reason-class counts drifted: {relative}")
+        if artifact.get("blocking_findings") != unresolved_axis_findings(table):
+            raise ValueError(
+                f"S7 blocking findings drifted from reason classes: {relative}")
         if not artifact.get("blocking_findings"):
             raise ValueError(
                 f"S7 unresolved-axis gate vacuously green in shadow: {relative}")

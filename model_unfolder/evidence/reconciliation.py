@@ -42,6 +42,19 @@ RELATION_KINDS = frozenset({
     "per_layer_side_input", "intra_layer_shortcut", "layer_reuse",
     "conditional_skip", "side_head", "relation_unresolved",
 })
+UNRESOLVED_REASON_CLASSES = frozenset({
+    "investigation_missing", "structure_unaccounted", "mechanism_unresolved",
+})
+INVESTIGATION_KINDS = frozenset({
+    "recipe_attempted", "reader_ran", "closure_built",
+})
+CONCRETE_UNRESOLVED_REASONS = frozenset({
+    "data_dependent", "source_missing", "ambiguous_alternatives",
+    "out_of_support",
+})
+BLOCKING_UNRESOLVED_REASON_CLASSES = frozenset({
+    "investigation_missing", "structure_unaccounted",
+})
 
 
 def _sha256(value: Any) -> str:
@@ -53,6 +66,15 @@ def _sha256(value: Any) -> str:
 def _closed_text(value: str, *, field: str) -> None:
     if not isinstance(value, str) or not value:
         raise ValueError(f"{field} must be non-empty text")
+
+
+def _reader_investigation(
+    identifier: str,
+    concrete_reason: str = "source_missing",
+) -> InvestigationRecord:
+    """Create the explicit reader receipt required for a class-3 unknown."""
+    return InvestigationRecord(
+        "reader_ran", (identifier,), concrete_reason)
 
 
 @dataclass(frozen=True)
@@ -201,10 +223,60 @@ class OccurrenceProvenance:
 
 
 @dataclass(frozen=True)
+class InvestigationRecord:
+    """The exact attempt that makes a legitimate unknown non-vacuous.
+
+    This record is deliberately evidence-kind neutral: an execution axis cites
+    recipes, while a mechanism/relation axis cites the reader or static closure
+    it actually ran.  It never turns an observation into mechanism evidence.
+    """
+
+    kind: str
+    identifiers: tuple[str, ...]
+    concrete_reason: str
+
+    def __post_init__(self) -> None:
+        if self.kind not in INVESTIGATION_KINDS:
+            raise ValueError("investigation kind is closed")
+        if (not self.identifiers
+                or tuple(sorted(set(self.identifiers))) != self.identifiers
+                or any(not isinstance(item, str) or not item
+                       for item in self.identifiers)):
+            raise ValueError("investigation identifiers are non-empty and canonical")
+        if self.concrete_reason not in CONCRETE_UNRESOLVED_REASONS:
+            raise ValueError("concrete unresolved reason is closed")
+
+
+def _validate_unresolved_class(
+    *,
+    unresolved: bool,
+    reason_class: str | None,
+    investigation: InvestigationRecord | None,
+    field: str,
+) -> None:
+    """Enforce §1g's exact-one-class law at every typed boundary."""
+    if not unresolved:
+        if reason_class is not None or investigation is not None:
+            raise ValueError(f"only unresolved {field} carries reason-class evidence")
+        return
+    if reason_class not in UNRESOLVED_REASON_CLASSES:
+        raise ValueError(f"unresolved {field} requires exactly one reason class")
+    if reason_class == "mechanism_unresolved":
+        if not isinstance(investigation, InvestigationRecord):
+            raise ValueError(
+                f"mechanism-unresolved {field} requires an investigation record")
+    elif investigation is not None:
+        raise ValueError(
+            f"{reason_class} {field} cannot masquerade as a completed investigation")
+
+
+@dataclass(frozen=True)
 class ConstructionAxis:
     kind: str
     guard: str = ""
     conflicts: tuple[str, ...] = ()
+    reason_class: str | None = None
+    investigation: InvestigationRecord | None = None
 
     def __post_init__(self) -> None:
         if self.kind not in CONSTRUCTION_KINDS:
@@ -218,6 +290,10 @@ class ConstructionAxis:
             raise ValueError("not_constructed requires the exact source guard")
         if self.kind != "not_constructed" and self.guard:
             raise ValueError("only not_constructed carries a guard")
+        _validate_unresolved_class(
+            unresolved=self.kind == "construction_conflict",
+            reason_class=self.reason_class, investigation=self.investigation,
+            field="construction axis")
 
 
 @dataclass(frozen=True)
@@ -226,6 +302,8 @@ class ExecutionAxis:
     recipe_ids: tuple[str, ...] = ()
     reason: str = ""
     detail: str = ""
+    reason_class: str | None = None
+    investigation: InvestigationRecord | None = None
 
     def __post_init__(self) -> None:
         if self.kind not in EXECUTION_KINDS:
@@ -244,6 +322,10 @@ class ExecutionAxis:
                     "execution_unresolved requires a closed visible reason")
         elif self.reason or self.detail:
             raise ValueError("only execution_unresolved carries reason/detail")
+        _validate_unresolved_class(
+            unresolved=self.kind == "execution_unresolved",
+            reason_class=self.reason_class, investigation=self.investigation,
+            field="execution axis")
 
 
 @dataclass(frozen=True)
@@ -254,6 +336,8 @@ class ProjectionAxis:
     reason: str = ""
     fact_keys: tuple[str, ...] = ()
     block_ids: tuple[str, ...] = ()
+    reason_class: str | None = None
+    investigation: InvestigationRecord | None = None
 
     def __post_init__(self) -> None:
         if self.kind not in PROJECTION_KINDS:
@@ -280,6 +364,10 @@ class ProjectionAxis:
                 not self.reason or self.parent is not None or self.rule
                 or self.fact_keys or self.block_ids):
             raise ValueError("projection_unresolved requires a visible reason")
+        _validate_unresolved_class(
+            unresolved=self.kind == "projection_unresolved",
+            reason_class=self.reason_class, investigation=self.investigation,
+            field="projection axis")
 
 
 @dataclass(frozen=True)
@@ -311,6 +399,8 @@ class RelationRow:
     static_evidence: tuple[str, ...] = ()
     config_paths: tuple[str, ...] = ()
     fact_keys: tuple[str, ...] = ()
+    reason_class: str | None = None
+    investigation: InvestigationRecord | None = None
 
     def __post_init__(self) -> None:
         _closed_text(self.relation_id, field="relation id")
@@ -333,6 +423,10 @@ class RelationRow:
                 raise ValueError(
                     "a runtime-detected relation needs an exact source explanation; "
                     "otherwise use relation_unresolved")
+        _validate_unresolved_class(
+            unresolved=self.kind == "relation_unresolved",
+            reason_class=self.reason_class, investigation=self.investigation,
+            field="relation")
         json.dumps(dict(self.detail), sort_keys=True)
 
 
@@ -783,7 +877,8 @@ def reconcile(
                 "instance runtime class disagrees with the exact static owner")
         if conflicts:
             construction = ConstructionAxis(
-                "construction_conflict", conflicts=tuple(sorted(conflicts)))
+                "construction_conflict", conflicts=tuple(sorted(conflicts)),
+                reason_class="structure_unaccounted")
         else:
             construction = ConstructionAxis(
                 "lazy_observed" if path in lazy else "eager_constructed")
@@ -795,19 +890,23 @@ def reconcile(
             execution = ExecutionAxis(
                 "execution_unresolved",
                 reason="unobserved_no_static_proof",
-                detail="trace observed an aliased object but not this exact address")
+                detail="trace observed an aliased object but not this exact address",
+                reason_class="investigation_missing")
         elif not attempted_recipe_ids:
             execution = ExecutionAxis(
-                "execution_unresolved", reason="no_recipe_attempted")
+                "execution_unresolved", reason="no_recipe_attempted",
+                reason_class="investigation_missing")
         else:
             execution = ExecutionAxis(
                 "execution_unresolved",
-                reason="unobserved_no_static_proof")
+                reason="unobserved_no_static_proof",
+                reason_class="investigation_missing")
 
         projection_claim = claims_by_path.get(path)
         projection = (projection_claim.axis if projection_claim else ProjectionAxis(
             "projection_unresolved",
-            reason=_NO_PRODUCT_CITATION))
+            reason=_NO_PRODUCT_CITATION,
+            reason_class="structure_unaccounted"))
         facts = projection_claim.facts if projection_claim else ()
         fact_paths = tuple(sorted({item for fact in facts
                                   for item in fact.config_paths}))
@@ -869,7 +968,8 @@ def reconcile(
                 ExecutionAxis("proven_inactive"),
                 ProjectionAxis(
                     "projection_unresolved",
-                    reason=_NO_PRODUCT_CITATION),
+                    reason=_NO_PRODUCT_CITATION,
+                    reason_class="structure_unaccounted"),
             ))
 
     rows.sort(key=lambda row: (
@@ -901,7 +1001,8 @@ def reconcile(
             row = mutable[path]
             mutable[path] = dataclasses.replace(
                 row, construction=ConstructionAxis(
-                    "construction_conflict", conflicts=(detail,)))
+                    "construction_conflict", conflicts=(detail,),
+                    reason_class="structure_unaccounted"))
     rows = sorted(mutable.values(), key=lambda row: (
         row.provenance.instance_path.count("."), row.provenance.instance_path))
 
@@ -1110,14 +1211,20 @@ def relation_rows_from_evidence(
                           "to_layer": target_index}
                 spans = _fact_source_keys(kv_fact, inventory)
                 kind = "activation_reuse" if spans else "relation_unresolved"
+                investigation = None
                 if not spans:
                     detail["reason"] = "cross-layer tensor use lacks source proof"
+                    investigation = _reader_investigation(
+                        "relation_rows_from_evidence:kv_sharing_schedule")
                 rows.append(RelationRow(
                     _relation_id(kind, (source.path,), (target.path,), detail), kind,
                     (source.path,), (target.path,), detail,
                     (f"trace:{recipe}:{traced.consumer_argument}",), spans,
                     tuple(sorted(kv_fact.config_paths)),
-                    (kv_fact.ledger_key(),)))
+                    (kv_fact.ledger_key(),),
+                    reason_class=("mechanism_unresolved"
+                                  if investigation is not None else None),
+                    investigation=investigation))
 
         stream = _stream_count(observation)
         if stream is not None:
@@ -1136,13 +1243,19 @@ def relation_rows_from_evidence(
                 kind = "relation_unresolved"
                 detail["reason"] = "rank-4 layer state lacks an exact mixing proof"
                 spans = ()
+                investigation = _reader_investigation(
+                    "relation_source:recurrent_state_mix")
             else:
                 kind = "multi_stream_residual"
                 spans = tuple(proof.spans)
+                investigation = None
             rows.append(RelationRow(
                 _relation_id(kind, source_paths, source_paths, detail), kind,
                 source_paths, source_paths, detail,
-                (f"trace:{recipe}:rank4-shape-preserving-boundaries",), spans))
+                (f"trace:{recipe}:rank4-shape-preserving-boundaries",), spans,
+                reason_class=("mechanism_unresolved"
+                              if investigation is not None else None),
+                investigation=investigation))
 
         if side_fact is not None and observation.boundaries:
             first_order = min(row.call_order for row in observation.boundaries)
@@ -1191,15 +1304,21 @@ def relation_rows_from_evidence(
                                            for shape in sorted(side_shapes)]}
                 kind = "per_layer_side_input" if spans and targets \
                     else "relation_unresolved"
+                investigation = None
                 if kind == "relation_unresolved":
                     detail["reason"] = "side-input candidate lacks exact source/targets"
+                    investigation = _reader_investigation(
+                        "relation_rows_from_evidence:per_layer_embedding_pathway")
                 rows.append(RelationRow(
                     _relation_id(kind, (sibling.path,), targets or (sibling.path,),
                                  detail), kind, (sibling.path,),
                     targets or (sibling.path,), detail,
                     (f"trace:{recipe}:pre-stack-shape-lineage",), spans,
                     tuple(sorted(side_fact.config_paths)),
-                    (side_fact.ledger_key(),)))
+                    (side_fact.ledger_key(),),
+                    reason_class=("mechanism_unresolved"
+                                  if investigation is not None else None),
+                    investigation=investigation))
 
         if observation.boundaries:
             last = max(row.call_order for row in observation.boundaries)
@@ -1222,14 +1341,20 @@ def relation_rows_from_evidence(
                     kind = "relation_unresolved"
                     detail["reason"] = "post-stack rank collapse lacks source proof"
                     spans = ()
+                    investigation = _reader_investigation(
+                        "relation_source:post_stack_collapse")
                 else:
                     kind = "side_head"
                     spans = tuple(proof.spans)
+                    investigation = None
                 source_paths = tuple(sorted(row.path for row in observation.boundaries))
                 rows.append(RelationRow(
                     _relation_id(kind, source_paths, (sibling.path,), detail), kind,
                     source_paths, (sibling.path,), detail,
-                    (f"trace:{recipe}:post-stack-rank-collapse",), spans))
+                    (f"trace:{recipe}:post-stack-rank-collapse",), spans,
+                    reason_class=("mechanism_unresolved"
+                                  if investigation is not None else None),
+                    investigation=investigation))
 
     ordered = tuple(sorted(rows, key=lambda row: row.relation_id))
     if len({row.relation_id for row in ordered}) != len(ordered):
@@ -1293,10 +1418,13 @@ def static_claims_from_owner_graph(
 
 
 def unresolved_axis_findings(table: ReconciliationTable | Mapping[str, Any]) -> list[str]:
-    """Blocking Sable-net payload for every unresolved/conflicting axis.
+    """Blocking Sable payload for §1g classes 1 and 2.
 
     Mapping input supports the persisted shadow artifact.  Missing/empty rows
     are findings, so an empty register cannot make the net vacuously green.
+    A legitimate class-3 unknown is not blocking here, but its serialized
+    investigation receipt is revalidated so the class cannot become an escape
+    hatch around the typed constructor.
     """
     data = table.to_dict() if isinstance(table, ReconciliationTable) else dict(table)
     occurrences = data.get("occurrences")
@@ -1305,26 +1433,115 @@ def unresolved_axis_findings(table: ReconciliationTable | Mapping[str, Any]) -> 
     if not occurrences:
         return ["reconciliation occurrence denominator is empty"]
     findings: list[str] = []
+    unresolved_kinds = {
+        "construction": "construction_conflict",
+        "execution": "execution_unresolved",
+        "projection": "projection_unresolved",
+    }
     for row in occurrences:
         provenance = row.get("provenance", {}) if isinstance(row, Mapping) else {}
         path = provenance.get("instance_path", "<missing>")
         for axis in ("construction", "execution", "projection"):
             value = row.get(axis, {}) if isinstance(row, Mapping) else {}
             kind = value.get("kind") if isinstance(value, Mapping) else None
-            if kind in {"construction_conflict", "execution_unresolved",
-                        "projection_unresolved"} or kind is None:
-                findings.append(f"{path}: {axis}={kind or 'missing'}")
+            if kind is None:
+                findings.append(f"{path}: {axis}=missing")
+                continue
+            reason_class = value.get("reason_class")
+            investigation = value.get("investigation")
+            if kind != unresolved_kinds[axis]:
+                if reason_class is not None or investigation is not None:
+                    findings.append(
+                        f"{path}: {axis}={kind} carries unresolved evidence")
+                continue
+            issue = _serialized_reason_class_issue(reason_class, investigation)
+            if issue:
+                findings.append(f"{path}: {axis}={kind}: {issue}")
+            elif reason_class in BLOCKING_UNRESOLVED_REASON_CLASSES:
+                findings.append(
+                    f"{path}: {axis}={kind} ({reason_class})")
     for relation in data.get("relations") or ():
         if relation.get("kind") == "relation_unresolved":
+            reason_class = relation.get("reason_class")
+            issue = _serialized_reason_class_issue(
+                reason_class, relation.get("investigation"))
+            prefix = f"relation {relation.get('relation_id', '<missing>')}: unresolved"
+            if issue:
+                findings.append(f"{prefix}: {issue}")
+            elif reason_class in BLOCKING_UNRESOLVED_REASON_CLASSES:
+                findings.append(f"{prefix} ({reason_class})")
+        elif relation.get("reason_class") is not None \
+                or relation.get("investigation") is not None:
             findings.append(
-                f"relation {relation.get('relation_id', '<missing>')}: unresolved")
+                f"relation {relation.get('relation_id', '<missing>')}: "
+                "resolved row carries unresolved evidence")
     return sorted(findings)
+
+
+def _serialized_reason_class_issue(
+    reason_class: Any,
+    investigation: Any,
+) -> str:
+    if reason_class not in UNRESOLVED_REASON_CLASSES:
+        return "missing or invalid reason class"
+    if reason_class != "mechanism_unresolved":
+        return ("non-mechanism reason class carries an investigation record"
+                if investigation is not None else "")
+    expected_fields = {"kind", "identifiers", "concrete_reason"}
+    if (not isinstance(investigation, Mapping)
+            or set(investigation) != expected_fields
+            or not isinstance(investigation.get("identifiers"), (list, tuple))):
+        return "mechanism_unresolved lacks an investigation record"
+    try:
+        InvestigationRecord(
+            investigation.get("kind"),
+            tuple(investigation.get("identifiers") or ()),
+            investigation.get("concrete_reason"),
+        )
+    except (TypeError, ValueError):
+        return "mechanism_unresolved carries an invalid investigation record"
+    return ""
+
+
+def unresolved_reason_class_counts(
+    table: ReconciliationTable | Mapping[str, Any],
+) -> dict[str, int]:
+    """Count all unresolved axes by the three closed §1g classes."""
+    data = table.to_dict() if isinstance(table, ReconciliationTable) else dict(table)
+    counts = {key: 0 for key in sorted(UNRESOLVED_REASON_CLASSES)}
+    unresolved_kinds = {
+        "construction": "construction_conflict",
+        "execution": "execution_unresolved",
+        "projection": "projection_unresolved",
+    }
+    for row in data.get("occurrences") or ():
+        for axis, unresolved_kind in unresolved_kinds.items():
+            value = row.get(axis, {})
+            if value.get("kind") != unresolved_kind:
+                continue
+            reason_class = value.get("reason_class")
+            issue = _serialized_reason_class_issue(
+                reason_class, value.get("investigation"))
+            if issue:
+                raise ValueError(f"invalid {axis} unresolved reason: {issue}")
+            counts[reason_class] += 1
+    for relation in data.get("relations") or ():
+        if relation.get("kind") != "relation_unresolved":
+            continue
+        reason_class = relation.get("reason_class")
+        issue = _serialized_reason_class_issue(
+            reason_class, relation.get("investigation"))
+        if issue:
+            raise ValueError(f"invalid relation unresolved reason: {issue}")
+        counts[reason_class] += 1
+    return counts
 
 
 __all__ = [
     "AUTHORITY_MATRIX", "CONSTRUCTION_KINDS", "EXECUTION_KINDS",
-    "PROJECTION_KINDS", "RELATION_KINDS", "AuthorityRule",
-    "ConstructionAxis", "ExecutionAxis", "MeaningProvenance",
+    "PROJECTION_KINDS", "RELATION_KINDS", "UNRESOLVED_REASON_CLASSES",
+    "AuthorityRule", "ConstructionAxis", "ExecutionAxis",
+    "InvestigationRecord", "MeaningProvenance",
     "OccurrenceProvenance", "OccurrenceRow", "ProjectionAxis",
     "ProjectionClaim", "ReconciliationTable", "RelationRow",
     "RuntimeClassRef", "StaticOccurrenceClaim", "StaticOccurrenceRef",
@@ -1332,4 +1549,5 @@ __all__ = [
     "relation_rows_from_evidence",
     "static_claims_from_owner_graph",
     "unresolved_axis_findings",
+    "unresolved_reason_class_counts",
 ]
