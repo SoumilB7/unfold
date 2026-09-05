@@ -13,6 +13,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install native release-example renderer
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes librsvg2-bin
       - run: >-
           python -m pip install -e '.[dev]'
           transformers==5.12.1 diffusers==0.38.0 huggingface_hub==1.10.1

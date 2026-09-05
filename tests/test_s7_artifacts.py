@@ -788,3 +788,14 @@ def test_yaml_only_change_makes_dependency_surface_gate_red(monkeypatch):
                         lambda _targets: changed)
     with pytest.raises(ValueError, match="dependency surface is stale"):
         check()
+
+
+def test_quality_workflow_installs_renderer_before_example_check():
+    """The Linux receipt must execute the example gate, not fail its setup."""
+    workflow = (ROOT / ".github" / "workflows" / "quality.yml").read_text(
+        encoding="utf-8")
+    install = "sudo apt-get install --yes librsvg2-bin"
+    example_check = "python scripts/generate_examples.py --check"
+    assert workflow.count(install) == 1
+    assert workflow.count(example_check) == 1
+    assert workflow.index(install) < workflow.index(example_check)
