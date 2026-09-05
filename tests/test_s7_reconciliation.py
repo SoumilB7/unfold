@@ -3,15 +3,25 @@ from __future__ import annotations
 
 import dataclasses
 import hashlib
+import json
 from pathlib import Path
 
 import pytest
 
-import model_unfolder.evidence.reconciliation as reconciliation_module
-from model_unfolder.evidence.document import PreparedDocument
+from model_unfolder.evidence.claim_evidence import (
+    ConfigValueClaimProof,
+    ConstructorExistenceClaimProof,
+    qualify_config_value_fact,
+)
+from model_unfolder.evidence.config_access import (
+    ConfigAccessEvent, bound_document, checkpoint_fingerprint,
+    prepared_document_token,
+)
+from model_unfolder.evidence.document import DocumentBinding, PreparedDocument
 from model_unfolder.evidence.facts import EvidenceFact, SourceSpan as FactSpan
 from model_unfolder.evidence.program_index import (
-    ClassRecord, ProgramIndex, SourceFileNode, SourceId, SourceSpan, SymbolId,
+    ClassRecord, ConstructionSite, ConstructionSiteId, ExprNode, ProgramIndex,
+    SourceFileNode, SourceId, SourceSpan, SymbolId,
 )
 from model_unfolder.evidence.reconciliation import (
     AUTHORITY_MATRIX,
@@ -24,8 +34,7 @@ from model_unfolder.evidence.reconciliation import (
     ProjectionAxis,
     ProjectionClaim,
     ProjectionFactCitation,
-    FactClaimDeclaration,
-    FACT_CLAIM_DECLARATIONS,
+    FACT_CLAIM_REQUIREMENTS,
     ReconciliationTable,
     RelationRow,
     RuntimeClassRef,
@@ -39,7 +48,7 @@ from model_unfolder.evidence.reconciliation import (
     unresolved_reason_class_counts,
 )
 from model_unfolder.evidence.registry import REGISTRY
-from model_unfolder.evidence.relation_source import StaticRelationProof
+from model_unfolder.evidence.receipts import value_status_hash
 from model_unfolder.ir import ModelIR
 from model_unfolder.renderers.html.render_context import RenderEvent
 from physics.execution_observation import (
@@ -55,8 +64,8 @@ from physics.instance_inventory import (
     SourceFile,
 )
 from physics.relation_observation import (
-    LayerBoundaryObservation, RelationObservation, RelationObservationResult,
-    TensorShape,
+    LayerBoundaryObservation, MatrixContractionObservation,
+    RelationObservation, RelationObservationResult, TensorShape,
 )
 
 
@@ -109,48 +118,114 @@ def _static(*, expected_count=None):
         expected_count=expected_count)
 
 
-def _fact():
+def _raw_fact():
     return EvidenceFact(
-        "mechanism", "decoder.attention", "mha", "code_and_config",
+        "diffusion_stack_depth", "root.denoiser", 4, "code_and_config",
         completeness="presence_only",
         source_spans=(FactSpan("root", file="model.py", line=10),),
-        config_paths=("width",), reason="fixture proof")
+        config_paths=("width",), reason="fixture proof",
+        claim_kind="value", claim_readers=("fixture.depth",))
+
+
+def _value_event(fact, document, *, reader="fixture.depth"):
+    fingerprint = checkpoint_fingerprint(document.checkpoint)
+    with bound_document(DocumentBinding("root", (), document)):
+        token = prepared_document_token(document, fingerprint)
+    return ConfigAccessEvent(
+        "root", "width", "width", None, True, "consumed",
+        fact_owner=fact.owner, fact_key=fact.key, reader=reader,
+        provenance="checkpoint_declared",
+        value_status_hash=value_status_hash(fact.value, fact.status),
+        document_fingerprint=fingerprint,
+        document_token=token)
+
+
+def _fact():
+    fact = _raw_fact()
+    document = _document()
+    return qualify_config_value_fact(
+        fact, (_value_event(fact, document),), document)
 
 
 def _projection(path="blocks.0"):
     fact = _fact()
-    citation = ProjectionFactCitation(
-        fact, FactClaimDeclaration("mechanism", "connection", "forward_dataflow"))
+    citation = ProjectionFactCitation(fact)
     return ProjectionClaim(
         path,
         ProjectionAxis("grouped", parent="blocks", rule="typed-fact drill",
                        fact_keys=(fact.ledger_key(),),
-                       fact_claim_kinds=((fact.ledger_key(), "connection"),)),
-        (citation,),
+                       fact_claim_kinds=((fact.ledger_key(), "value"),),
+                       fact_claim_proofs=(citation.summary,)),
+        (citation,), (fact,),
     )
 
 
-def test_s7_bridge_declarations_are_registered_mechanism_facts():
-    """The temporary S7 bridge cannot create a parallel fact vocabulary."""
-    assert FACT_CLAIM_DECLARATIONS
-    assert set(FACT_CLAIM_DECLARATIONS) <= set(REGISTRY)
-    assert all(key == declaration.fact_key
-               for key, declaration in FACT_CLAIM_DECLARATIONS.items())
+def test_s7_requirements_are_consumer_contracts_for_registered_facts():
+    """Requirements name needed strength; they never supply that strength."""
+    assert FACT_CLAIM_REQUIREMENTS
+    assert set(FACT_CLAIM_REQUIREMENTS) <= set(REGISTRY)
 
 
-def test_a_projected_fact_without_a_reader_declaration_blocks(monkeypatch):
-    fact = _fact()
+def test_a_projected_fact_without_typed_proof_is_visible_unresolved():
+    fact = _raw_fact()
     event = RenderEvent(
         "architecture", (), "root", "", "", "", None,
         frozenset(), frozenset({"q_proj"}),
         facts_projected=frozenset({fact.ledger_key()}))
-    monkeypatch.delitem(
-        reconciliation_module.FACT_CLAIM_DECLARATIONS, fact.key)
-    with pytest.raises(ValueError, match="no reader claim-kind declaration"):
-        projection_claims_from_product(
-            index=_product_index(), inventory=_inventory(),
-            static_claims=(_static(),), ir=_product_ir(),
-            facts={fact.ledger_key(): fact}, render_events=(event,))
+    claims = projection_claims_from_product(
+        index=_product_index(), inventory=_inventory(),
+        static_claims=(_static(),), ir=_product_ir(),
+        facts={fact.ledger_key(): fact}, render_events=(event,))
+    claim = next(row for row in claims if row.instance_path == "blocks.0")
+    assert claim.axis.kind == "projection_unresolved"
+    assert claim.axis.unqualified_fact_keys == (fact.ledger_key(),)
+    assert claim.axis.fact_claim_kinds == ((fact.ledger_key(), "value"),)
+    assert claim.axis.undeclared_fact_keys == ()
+    assert claim.axis.declared_unproven_fact_keys == (fact.ledger_key(),)
+
+
+def test_one_qualified_fact_cannot_hide_an_unqualified_sibling():
+    qualified = _fact()
+    unqualified = EvidenceFact(
+        "mechanism", "root.denoiser.attention", "mha", "code_proven",
+        source_spans=(FactSpan("root", file="model.py", line=10),))
+    event = RenderEvent(
+        "architecture", (), "root", "", "", "", None,
+        frozenset(), frozenset({"q_proj"}),
+        facts_projected=frozenset({qualified.ledger_key(),
+                                   unqualified.ledger_key()}))
+    facts = {fact.ledger_key(): fact for fact in (qualified, unqualified)}
+    claim = next(row for row in projection_claims_from_product(
+        index=_product_index(), inventory=_inventory(),
+        static_claims=(_static(),), ir=_product_ir(), facts=facts,
+        render_events=(event,)) if row.instance_path == "blocks.0")
+    assert claim.axis.kind == "projection_unresolved"
+    assert claim.axis.fact_keys == (qualified.ledger_key(),)
+    assert claim.axis.unqualified_fact_keys == (unqualified.ledger_key(),)
+    assert claim.axis.undeclared_fact_keys == (unqualified.ledger_key(),)
+    assert claim.axis.declared_unproven_fact_keys == ()
+    assert claim.axis.fact_claim_proofs[0].fact_id == qualified.ledger_key()
+
+
+def test_missing_declaration_is_distinct_from_declared_missing_proof():
+    declared = _raw_fact()
+    undeclared = EvidenceFact(
+        "mechanism", "root.denoiser.attention", "mha", "code_proven",
+        source_spans=(FactSpan("root", file="model.py", line=10),))
+    event = RenderEvent(
+        "architecture", (), "root", "", "", "", None,
+        frozenset(), frozenset({"q_proj"}),
+        facts_projected=frozenset({declared.ledger_key(),
+                                   undeclared.ledger_key()}))
+    claim = next(row for row in projection_claims_from_product(
+        index=_product_index(), inventory=_inventory(),
+        static_claims=(_static(),), ir=_product_ir(),
+        facts={fact.ledger_key(): fact for fact in (declared, undeclared)},
+        render_events=(event,)) if row.instance_path == "blocks.0")
+    assert claim.axis.undeclared_fact_keys == (undeclared.ledger_key(),)
+    assert claim.axis.declared_unproven_fact_keys == (declared.ledger_key(),)
+    assert claim.axis.unqualified_fact_keys == tuple(sorted((
+        declared.ledger_key(), undeclared.ledger_key())))
 
 
 def _product_index():
@@ -493,32 +568,250 @@ def test_table_rejects_foreign_relation_occurrences():
 
 def test_projection_claim_cannot_name_a_fact_it_does_not_carry():
     fact = _fact()
-    citation = ProjectionFactCitation(
-        fact, FactClaimDeclaration("mechanism", "connection", "forward_dataflow"))
-    with pytest.raises(ValueError, match="must equal"):
+    citation = ProjectionFactCitation(fact)
+    with pytest.raises(ValueError, match="exact proof receipt"):
         ProjectionClaim(
             "blocks.0",
             ProjectionAxis("grouped", parent="blocks", rule="x",
                            fact_keys=("root.fabricated",),
-                           fact_claim_kinds=(("root.fabricated", "connection"),)),
+                           fact_claim_kinds=(("root.fabricated", "value"),),
+                           fact_claim_proofs=(citation.summary,)),
             (citation,),
+            (fact,),
         )
 
 
+def _constructor_fixture():
+    source = SourceId(str(Path("model.py").resolve()), FP, "root")
+    owner = SymbolId(source, "Block")
+    callable_symbol = SymbolId(source, "Block.__init__")
+    span = SourceSpan(source, 10, 0, 10, 8)
+    site = ConstructionSite(
+        ConstructionSiteId(owner, callable_symbol, span), owner,
+        callable_symbol, "field", "bias",
+        ExprNode("call", span=span), span=span)
+    index = ProgramIndex(
+        "fixture", source_nodes=(SourceFileNode(source),),
+        classes=(ClassRecord(owner, span=SourceSpan(source, 1, 0, 20, 0)),),
+        construction_sites=(site,), fingerprint="f" * 64)
+    return source, owner, callable_symbol, span, site, index
+
+
 def test_existence_only_evidence_cannot_certify_a_connection_claim():
-    with pytest.raises(ValueError, match="cannot prove a connection"):
-        FactClaimDeclaration("mechanism", "connection", "constructor")
+    source, owner, callable_symbol, span, site, index = _constructor_fixture()
+    proof = ConstructorExistenceClaimProof(
+        "root.block.bias", ("fixture.bias",), index, owner, "field", "bias",
+        (site,))
+    with pytest.raises(ValueError, match="another fact or semantic kind"):
+        EvidenceFact(
+            "bias", "root.block", True, "code_proven",
+            source_spans=(FactSpan(
+                "root", class_name="Block", method="Block.__init__",
+                file=source.canonical_path, line=10),),
+            claim_kind="connection", claim_readers=("fixture.bias",),
+            claim_evidence=proof)
+
+
+def test_constructor_existence_proof_has_a_lawful_positive_control():
+    source, owner, _callable, _span, site, index = _constructor_fixture()
+    proof = ConstructorExistenceClaimProof(
+        "root.block.bias", ("fixture.bias",), index, owner, "field", "bias",
+        (site,))
+    fact = EvidenceFact(
+        "bias", "root.block", True, "code_proven",
+        source_spans=(FactSpan(
+            "root", class_name="Block", method="Block.__init__",
+            file=source.canonical_path, line=10),),
+        claim_kind="existence", claim_readers=("fixture.bias",),
+        claim_evidence=proof)
+    assert ProjectionFactCitation(fact).summary.index_fingerprints == \
+        (index.fingerprint,)
+    [reference] = ProjectionFactCitation(fact).summary.evidence_refs
+    assert "|root|" in reference
+    assert "|Block|Block.__init__|field|bias|" in reference
+
+
+def test_constructor_proof_rejects_same_line_wrong_owner():
+    source, owner, callable_symbol, span, _site, index = _constructor_fixture()
+    wrong_owner = SymbolId(source, "OtherBlock")
+    wrong = ConstructionSite(
+        ConstructionSiteId(wrong_owner, callable_symbol, span), wrong_owner,
+        callable_symbol, "field", "bias", ExprNode("call", span=span),
+        span=span)
+    with pytest.raises(ValueError, match="exact owner/field/target"):
+        ConstructorExistenceClaimProof(
+            "root.block.bias", ("fixture.bias",), index, owner, "field", "bias",
+            (wrong,))
+
+
+def test_constructor_proof_rejects_consistently_wrong_same_line_owner():
+    source, owner, callable_symbol, span, site, index = _constructor_fixture()
+    wrong_owner = SymbolId(source, "OtherBlock")
+    wrong_callable = SymbolId(source, "OtherBlock.__init__")
+    wrong = ConstructionSite(
+        ConstructionSiteId(wrong_owner, wrong_callable, span), wrong_owner,
+        wrong_callable, "field", "bias", ExprNode("call", span=span),
+        span=span)
+    wrong_index = dataclasses.replace(
+        index,
+        classes=(*index.classes, ClassRecord(
+            wrong_owner, span=SourceSpan(source, 1, 0, 20, 0))),
+        construction_sites=(site, wrong))
+    proof = ConstructorExistenceClaimProof(
+        "root.block.bias", ("fixture.bias",), wrong_index, wrong_owner,
+        "field", "bias", (wrong,))
+    with pytest.raises(ValueError, match="cited by the fact"):
+        EvidenceFact(
+            "bias", "root.block", True, "code_proven",
+            source_spans=(FactSpan(
+                "root", class_name="Block", method="Block.__init__",
+                file=source.canonical_path, line=10),),
+            claim_kind="existence", claim_readers=("fixture.bias",),
+            claim_evidence=proof)
+
+
+def test_constructor_proof_rejects_same_line_wrong_field():
+    source, owner, callable_symbol, span, _site, index = _constructor_fixture()
+    wrong = ConstructionSite(
+        ConstructionSiteId(owner, callable_symbol, span), owner,
+        callable_symbol, "field", "weight", ExprNode("call", span=span),
+        span=span)
+    with pytest.raises(ValueError, match="exact owner/field/target"):
+        ConstructorExistenceClaimProof(
+            "root.block.bias", ("fixture.bias",), index, owner, "field", "bias",
+            (wrong,))
+
+
+def test_constructor_proof_rejects_equal_but_nonindexed_site_object():
+    _source, owner, _callable, _span, site, index = _constructor_fixture()
+    copied_site = dataclasses.replace(site)
+    assert copied_site == site and copied_site is not site
+    with pytest.raises(ValueError, match="authoritative indexed object"):
+        ConstructorExistenceClaimProof(
+            "root.block.bias", ("fixture.bias",), index, owner, "field", "bias",
+            (copied_site,))
 
 
 def test_config_value_cannot_certify_an_applied_function_claim():
-    config_only = dataclasses.replace(
-        _fact(), status="config_declared", source_spans=(),
-        config_paths=("width",))
-    with pytest.raises(ValueError, match="lacks code evidence"):
-        ProjectionFactCitation(
-            config_only,
-            FactClaimDeclaration(
-                "mechanism", "applied_function", "function_application"))
+    proof = _fact().claim_evidence
+    with pytest.raises(ValueError, match="another fact or semantic kind"):
+        dataclasses.replace(
+            _raw_fact(), claim_kind="applied_function", claim_evidence=proof)
+
+
+def test_consumer_expected_hash_cannot_rewrite_the_checkpoint_value():
+    fact = dataclasses.replace(_raw_fact(), value=8)
+    document = _document()
+    # Deliberately caller-authored expectation matches the fact, not raw 4;
+    # unlike the old poison, this event has a lawful document seal so rejection
+    # can only come from the raw checkpoint comparison under test.
+    event = _value_event(fact, document)
+    qualified = qualify_config_value_fact(fact, (event,), document)
+    assert qualified.claim_kind == "value"
+    assert qualified.claim_evidence is None
+
+
+def test_caller_cannot_forge_a_config_proof_with_matching_fake_seals():
+    fact = _raw_fact()
+    document = _document()  # deliberately never enters bound_document
+    event = ConfigAccessEvent(
+        "root", "width", "width", None, True, "consumed",
+        fact_owner=fact.owner, fact_key=fact.key, reader="fixture.depth",
+        provenance="checkpoint_declared",
+        value_status_hash=value_status_hash(fact.value, fact.status),
+        document_fingerprint="a" * 64, document_token="b" * 64)
+    with pytest.raises(ValueError, match="was not issued"):
+        ConfigValueClaimProof(
+            fact.ledger_key(), fact.status, fact.claim_readers, (event,),
+            (value_status_hash(fact.value, fact.status),),
+            "a" * 64, "b" * 64, document)
+
+
+def test_valid_document_seal_cannot_certify_a_false_raw_value():
+    fact = dataclasses.replace(_raw_fact(), value=8)
+    document = _document()  # checkpoint width is 4
+    event = _value_event(fact, document)
+    fingerprint = checkpoint_fingerprint(document.checkpoint)
+    token = prepared_document_token(document, fingerprint)
+    forged_hash = value_status_hash(fact.value, fact.status)
+    with pytest.raises(ValueError, match="not the checkpoint value"):
+        ConfigValueClaimProof(
+            fact.ledger_key(), fact.status, fact.claim_readers, (event,),
+            (forged_hash,), fingerprint, token, document)
+
+
+def test_config_proof_recomputes_checkpoint_fingerprint_on_use():
+    fact = _raw_fact()
+    document = _document()
+    qualified = qualify_config_value_fact(
+        fact, (_value_event(fact, document),), document)
+    assert qualified.claim_evidence is not None
+    document.checkpoint["width"] = 99
+    with pytest.raises(ValueError, match="document changed"):
+        qualified.claim_evidence.summary()
+
+
+def test_config_value_proof_rejects_same_valued_foreign_document():
+    fact = _raw_fact()
+    first_document = _document()
+    foreign_document = _document()
+    first = qualify_config_value_fact(
+        fact, (_value_event(fact, first_document),), first_document)
+    # Reusing the first document's event cannot qualify the equal-valued
+    # foreign document.
+    assert qualify_config_value_fact(
+        fact, (_value_event(fact, first_document),),
+        foreign_document).claim_evidence is None
+    foreign = qualify_config_value_fact(
+        fact, (_value_event(fact, foreign_document),), foreign_document)
+    assert first.claim_evidence.checkpoint_fingerprint == \
+        foreign.claim_evidence.checkpoint_fingerprint
+    assert first.claim_document_token != foreign.claim_document_token
+    with pytest.raises(ValueError, match="another prepared document"):
+        dataclasses.replace(first, claim_evidence=foreign.claim_evidence)
+
+
+def test_config_summary_retains_exact_reader_target_and_provenance():
+    fact = _fact()
+    [reference] = fact.claim_evidence.summary().evidence_refs
+    assert "|fixture.depth|root.denoiser|diffusion_stack_depth|" in reference
+    assert "|checkpoint_declared|" in reference
+    assert value_status_hash(fact.value, fact.status) in reference
+
+
+def test_config_proof_summary_is_portable_and_never_contains_process_token():
+    fact = _fact()
+    proof = fact.claim_evidence
+    summary_payload = dataclasses.asdict(proof.summary())
+    serialized = json.dumps(summary_payload, sort_keys=True)
+    assert proof.prepared_document_token not in serialized
+    assert "token" not in serialized.lower()
+    assert proof.prepared_document_token not in repr(proof)
+
+
+def test_value_qualification_never_invents_a_reader_claim_kind():
+    fact = dataclasses.replace(
+        _raw_fact(), claim_kind=None, claim_readers=())
+    event = ConfigAccessEvent(
+        "root", "width", "width", None, True, "consumed",
+        fact_owner=fact.owner, fact_key=fact.key, reader="fixture.depth",
+        provenance="checkpoint_declared",
+        value_status_hash=value_status_hash(fact.value, fact.status))
+    result = qualify_config_value_fact(fact, (event,), _document())
+    assert result.claim_kind is None
+    assert result.claim_evidence is None
+
+
+def test_value_proof_cannot_satisfy_a_relation_consumer():
+    fact = dataclasses.replace(
+        _raw_fact(), key="diffusion_bookend_geometry")
+    document = _document()
+    event = _value_event(fact, document)
+    qualified = qualify_config_value_fact(fact, (event,), document)
+    assert qualified.claim_kind == "value"
+    assert qualified.claim_evidence is not None
+    with pytest.raises(ValueError, match="qualified relation proof"):
+        ProjectionFactCitation(qualified)
 
 
 def test_product_fact_joins_exact_source_class_to_runtime_occurrences():
@@ -597,15 +890,16 @@ def test_reconciliation_refuses_duck_typed_authorities_and_self_grouping():
         reconcile(model="fixture", inventory=object(), observations=(),
                   config_document=_document())
     fact = _fact()
-    citation = ProjectionFactCitation(
-        fact, FactClaimDeclaration("mechanism", "connection", "forward_dataflow"))
+    citation = ProjectionFactCitation(fact)
     with pytest.raises(ValueError, match="distinct parent"):
         ProjectionClaim(
             "blocks.0",
             ProjectionAxis("grouped", parent="blocks.0", rule="x",
                            fact_keys=(fact.ledger_key(),),
-                           fact_claim_kinds=((fact.ledger_key(), "connection"),)),
+                           fact_claim_kinds=((fact.ledger_key(), "value"),),
+                           fact_claim_proofs=(citation.summary,)),
             (citation,),
+            (fact,),
         )
 
 
@@ -618,28 +912,66 @@ def test_relation_join_needs_trace_shape_and_exact_class_source_proof():
     shape = TensorShape("hidden_states", (1, 8, 4, 4096), "torch.float32")
     boundaries = tuple(LayerBoundaryObservation(
         index, f"blocks.{index}", index, (shape,),
-        (TensorShape("output", shape.shape, shape.dtype),))
+        (TensorShape("output", shape.shape, shape.dtype),), ("input_ids",))
         for index in range(2))
     observation = RelationObservation(
-        1, inventory.provenance, recipe, "blocks", boundaries, (), ())
+        3, inventory.provenance, recipe, "blocks", boundaries, (), ())
     result = RelationObservationResult(
         "ok", recipe, observation, inventory.provenance)
     unresolved = relation_rows_from_evidence(
         inventory=inventory, relation_observations=(result,), facts={})
     assert [row.kind for row in unresolved] == ["relation_unresolved"]
 
-    proof = StaticRelationProof(
-        "recurrent_state_mix", "fixture.model", "Block", FP,
-        "Block.forward", (f"sha256:{FP}:10:0:12:1",), "exact algebra")
+    contractions = tuple(MatrixContractionObservation(
+        index, f"blocks.{index}", index, "matmul", 1, 2, 2, 4,
+        ((4, 4), (1, 8, 4, 4096)), (1, 8, 4, 4096), FP, 10 + index)
+        for index in range(2))
+    observation = dataclasses.replace(
+        observation, matrix_contractions=contractions)
+    result = dataclasses.replace(result, observation=observation)
     resolved = relation_rows_from_evidence(
-        inventory=inventory, relation_observations=(result,), facts={},
-        static_proofs=(proof,))
+        inventory=inventory, relation_observations=(result,), facts={})
     assert [row.kind for row in resolved] == ["multi_stream_residual"]
     assert resolved[0].detail == {"stream_axis": 2, "stream_count": 4}
 
-    foreign = dataclasses.replace(
-        proof, class_module="other.model")
+    foreign = dataclasses.replace(contractions[0], source_fingerprint="b" * 64)
+    with pytest.raises(ValueError):
+        dataclasses.replace(observation,
+                            matrix_contractions=(foreign, contractions[1]))
+    result = dataclasses.replace(
+        result, observation=dataclasses.replace(
+            observation, matrix_contractions=contractions[:1]))
     unresolved = relation_rows_from_evidence(
-        inventory=inventory, relation_observations=(result,), facts={},
-        static_proofs=(foreign,))
+        inventory=inventory, relation_observations=(result,), facts={})
     assert unresolved[0].kind == "relation_unresolved"
+
+
+def test_multi_stream_shape_requires_exact_recipe_lineage_and_unique_axis():
+    inventory = _inventory()
+    def rows(recipe_shape, boundary_shape, origins):
+        recipe = ExecutionRecipe(
+            "streams", "tokens", "eval", "disabled", "decoder", False,
+            "float32", {"fixture": "1"},
+            tensor_arguments=(TensorArgument("tokens", recipe_shape, "long"),))
+        shape = TensorShape("hidden_states", boundary_shape, "torch.float32")
+        boundaries = tuple(LayerBoundaryObservation(
+            index, f"blocks.{index}", index, (shape,),
+            (TensorShape("output", boundary_shape, shape.dtype),), origins)
+            for index in range(2))
+        contractions = tuple(MatrixContractionObservation(
+            index, f"blocks.{index}", index, "matmul", 1, 2, 2,
+            boundary_shape[2],
+            ((boundary_shape[2], boundary_shape[2]), boundary_shape),
+            boundary_shape, FP, 20 + index) for index in range(2))
+        observation = RelationObservation(
+            3, inventory.provenance, recipe, "blocks", boundaries, (), (),
+            contractions)
+        result = RelationObservationResult(
+            "ok", recipe, observation, inventory.provenance)
+        return relation_rows_from_evidence(
+            inventory=inventory, relation_observations=(result,), facts={})
+
+    # Equal numbers without lineage cannot borrow the recipe's authority.
+    assert rows((1, 8), (1, 8, 4, 4096), ()) == ()
+    # Two equal candidate axes make the residual axis ambiguous.
+    assert rows((1, 4), (1, 4, 4, 4096), ("tokens",)) == ()

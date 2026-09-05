@@ -712,6 +712,10 @@ class _OperandConsumer:
                             line=span.line)
                         if converted not in spans:
                             spans.append(converted)
+                claim_readers = tuple(sorted({
+                    operand.reader for operand in operands
+                    if operand.reader
+                })) if fact_key == "diffusion_stack_depth" else ()
                 facts.record_typed(EvidenceFact(
                     key=fact_key, owner=owner, value=expected,
                     status="code_and_config", completeness="complete",
@@ -720,7 +724,9 @@ class _OperandConsumer:
                     legacy_source=(" + ".join(config_paths)
                                    + " + exact diffusion source"),
                     reason=("U10 source occurrence and exact checkpoint operand "
-                            "author one typed diffusion spec field")))
+                            "author one typed diffusion spec field"),
+                    claim_kind=("value" if claim_readers else None),
+                    claim_readers=claim_readers))
                 if context is not None:
                     for mechanism in row["mechanisms"]:
                         actual = self.projected[(owner, fact_key, mechanism)]

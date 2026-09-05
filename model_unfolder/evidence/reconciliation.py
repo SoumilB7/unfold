@@ -23,6 +23,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+from .claim_evidence import CLAIM_KINDS, ClaimProofSummary
 from .facts import EvidenceFact
 
 
@@ -337,6 +338,10 @@ class ProjectionAxis:
     fact_keys: tuple[str, ...] = ()
     block_ids: tuple[str, ...] = ()
     fact_claim_kinds: tuple[tuple[str, str], ...] = ()
+    fact_claim_proofs: tuple[ClaimProofSummary, ...] = ()
+    unqualified_fact_keys: tuple[str, ...] = ()
+    undeclared_fact_keys: tuple[str, ...] = ()
+    declared_unproven_fact_keys: tuple[str, ...] = ()
     reason_class: str | None = None
     investigation: InvestigationRecord | None = None
 
@@ -355,26 +360,59 @@ class ProjectionAxis:
             raise ValueError("projection fact claim kinds must be unique and sorted")
         if any(kind not in CLAIM_KINDS for _key, kind in self.fact_claim_kinds):
             raise ValueError("projection fact claim kind is outside the closed vocabulary")
-        if tuple(key for key, _kind in self.fact_claim_kinds) != self.fact_keys:
-            raise ValueError("every projected fact has exactly one claim kind")
+        known_fact_keys = set(self.fact_keys) | set(self.unqualified_fact_keys)
+        if not {key for key, _kind in self.fact_claim_kinds} <= known_fact_keys:
+            raise ValueError("claim declarations must belong to observed facts")
+        if any(not isinstance(row, ClaimProofSummary)
+               for row in self.fact_claim_proofs):
+            raise TypeError("projection fact proofs are typed summaries")
+        if tuple(row.fact_id for row in self.fact_claim_proofs) != self.fact_keys:
+            raise ValueError("every projected fact retains its exact proof receipt")
+        declarations = dict(self.fact_claim_kinds)
+        if any(declarations.get(row.fact_id) != row.claim_kind
+               for row in self.fact_claim_proofs):
+            raise ValueError("projection proof strength must equal its reader declaration")
+        if tuple(sorted(set(self.unqualified_fact_keys))) \
+                != self.unqualified_fact_keys:
+            raise ValueError("unqualified fact keys are unique and canonical")
+        for field_name in (
+                "undeclared_fact_keys", "declared_unproven_fact_keys"):
+            values = getattr(self, field_name)
+            if tuple(sorted(set(values))) != values:
+                raise ValueError(f"{field_name} must be unique and canonical")
+        if set(self.undeclared_fact_keys) & set(self.declared_unproven_fact_keys):
+            raise ValueError("undeclared and declared-unproven facts are disjoint")
+        if tuple(sorted((*self.undeclared_fact_keys,
+                         *self.declared_unproven_fact_keys))) \
+                != self.unqualified_fact_keys:
+            raise ValueError(
+                "unqualified facts partition into undeclared and declared-unproven")
         if self.parent is not None and not isinstance(self.parent, str):
             raise TypeError("projection parent is an exact instance path")
         if self.kind == "rendered" and (
                 not (self.fact_keys or self.block_ids)
-                or self.parent is not None or self.reason or self.rule):
+                or self.parent is not None or self.reason or self.rule
+                or self.unqualified_fact_keys):
             raise ValueError(
                 "rendered requires a product fact/block and carries no parent/rule/reason")
         if self.kind == "grouped" and (
-                self.parent is None or not self.rule or self.reason):
+                self.parent is None or not self.rule or self.reason
+                or self.unqualified_fact_keys):
             raise ValueError("grouped requires parent + rule and carries no reason")
         if self.kind == "non_architectural" and (
                 not self.reason or self.parent is not None or self.rule
-                or self.fact_keys or self.block_ids or self.fact_claim_kinds):
+                or self.fact_keys or self.block_ids or self.fact_claim_kinds
+                or self.fact_claim_proofs or self.unqualified_fact_keys
+                or self.undeclared_fact_keys
+                or self.declared_unproven_fact_keys):
             raise ValueError("non_architectural requires a reason only")
         if self.kind == "projection_unresolved" and (
                 not self.reason or self.parent is not None or self.rule
-                or self.fact_keys or self.block_ids or self.fact_claim_kinds):
+                or self.block_ids):
             raise ValueError("projection_unresolved requires a visible reason")
+        if self.unqualified_fact_keys and self.reason != \
+                "product cites facts without typed semantic proof":
+            raise ValueError("unqualified facts require the exact proof-gap reason")
         _validate_unresolved_class(
             unresolved=self.kind == "projection_unresolved",
             reason_class=self.reason_class, investigation=self.investigation,
@@ -510,122 +548,56 @@ class StaticOccurrenceClaim:
         _closed_text(self.class_qualname, field="static class qualified name")
 
 
-@dataclass(frozen=True)
-class FactClaimDeclaration:
-    """Temporary S7 declaration of what one existing reader fact proves.
-
-    S9 moves this field onto the reader-authored :class:`EvidenceFact`.  Until
-    then this exact, mechanism-keyed table is the declaration boundary; the
-    projection join may copy it but may not reinterpret it.
-    """
-
-    fact_key: str
-    claim_kind: str
-    support_kind: str
-
-    def __post_init__(self) -> None:
-        if not isinstance(self.fact_key, str) or not self.fact_key:
-            raise ValueError("fact claim declaration needs one mechanism key")
-        if self.claim_kind not in CLAIM_KINDS:
-            raise ValueError("fact claim kind is outside the closed vocabulary")
-        if self.support_kind not in CLAIM_SUPPORT_KINDS:
-            raise ValueError("fact support kind is outside the closed vocabulary")
-        if CLAIM_KIND_FOR_SUPPORT[self.support_kind] != self.claim_kind:
-            raise ValueError(
-                f"{self.support_kind} evidence cannot prove a "
-                f"{self.claim_kind} claim")
-
-
-CLAIM_KINDS = frozenset({
-    "existence", "connection", "applied_function", "value", "relation",
-})
-CLAIM_SUPPORT_KINDS = frozenset({
-    "constructor", "forward_dataflow", "function_application",
-    "value_resolution", "cross_occurrence_relation",
-})
-CLAIM_KIND_FOR_SUPPORT = {
-    "constructor": "existence",
-    "forward_dataflow": "connection",
-    "function_application": "applied_function",
-    "value_resolution": "value",
-    "cross_occurrence_relation": "relation",
+# Consumer requirements only: this table says what semantic kind the product
+# claim NEEDS.  It is not evidence and cannot qualify a fact.  Qualification
+# comes exclusively from the typed proof carried by that exact EvidenceFact.
+FACT_CLAIM_REQUIREMENTS = {
+    "diffusion_root_topology": "connection",
+    "diffusion_bookend_operations": "connection",
+    # Composite payloads require a stronger typed derivation/relationship proof;
+    # a matching scalar input must never qualify the whole structure.
+    "diffusion_bookend_geometry": "relation",
+    "diffusion_norm_mechanism": "applied_function",
+    "diffusion_conditioning_applications": "connection",
+    "diffusion_stack_depth": "value",
+    "diffusion_stack_variant": "relation",
+    "intermediate_size": "value", "ffn_schedule": "relation",
+    "bias": "existence", "mechanism": "connection",
+    "head_geometry": "relation", "mask": "applied_function",
+    "mask_schedule": "relation", "position_schedule": "relation",
+    "rope_theta": "value", "rope_initialization": "applied_function",
+    "mixer_schedule": "relation", "cross_attention_schedule": "relation",
+    "logit_softcap": "applied_function", "qk_norm": "applied_function",
+    "qk_norm_schedule": "relation", "kv_sharing_schedule": "relation",
+    "cached": "connection", "output_projection": "connection",
+    "output_gate": "applied_function", "norm_placement": "connection",
+    "residual_topology": "connection",
+    "parallel_norm_count": "applied_function",
+    "residual_scale": "applied_function", "final_norm_kind": "applied_function",
+    "codebook_streams": "relation", "per_layer_embedding_pathway": "relation",
 }
-
-
-def _claim(fact_key: str, claim_kind: str, support_kind: str) -> FactClaimDeclaration:
-    return FactClaimDeclaration(fact_key, claim_kind, support_kind)
-
-
-# S7 bridge only.  These are declarations for the exact existing facts which
-# the current product projects in the 39-model shadow denominator.  They are
-# mechanism keyed (never model/class keyed), deliberately explicit, and S9
-# deletes the bridge as each reader stamps its own EvidenceFact.
-_FACT_CLAIM_DECLARATION_ROWS = (
-        _claim("diffusion_root_topology", "connection", "forward_dataflow"),
-        _claim("diffusion_bookend_operations", "connection", "forward_dataflow"),
-        _claim("diffusion_bookend_geometry", "value", "value_resolution"),
-        _claim("diffusion_norm_mechanism", "applied_function", "function_application"),
-        _claim("diffusion_conditioning_applications", "connection", "forward_dataflow"),
-        _claim("diffusion_stack_depth", "value", "value_resolution"),
-        _claim("diffusion_stack_variant", "value", "value_resolution"),
-        _claim("intermediate_size", "value", "value_resolution"),
-        _claim("ffn_schedule", "relation", "cross_occurrence_relation"),
-        _claim("bias", "existence", "constructor"),
-        _claim("mechanism", "connection", "forward_dataflow"),
-        _claim("head_geometry", "value", "value_resolution"),
-        _claim("mask", "applied_function", "function_application"),
-        _claim("mask_schedule", "relation", "cross_occurrence_relation"),
-        _claim("position_schedule", "relation", "cross_occurrence_relation"),
-        _claim("rope_theta", "value", "value_resolution"),
-        _claim("rope_initialization", "applied_function", "function_application"),
-        _claim("mixer_schedule", "relation", "cross_occurrence_relation"),
-        _claim("cross_attention_schedule", "relation", "cross_occurrence_relation"),
-        _claim("logit_softcap", "applied_function", "function_application"),
-        _claim("qk_norm", "applied_function", "function_application"),
-        _claim("qk_norm_schedule", "relation", "cross_occurrence_relation"),
-        _claim("kv_sharing_schedule", "relation", "cross_occurrence_relation"),
-        _claim("cached", "connection", "forward_dataflow"),
-        _claim("output_projection", "connection", "forward_dataflow"),
-        _claim("output_gate", "applied_function", "function_application"),
-        _claim("norm_placement", "connection", "forward_dataflow"),
-        _claim("residual_topology", "connection", "forward_dataflow"),
-        _claim("parallel_norm_count", "existence", "constructor"),
-        _claim("residual_scale", "applied_function", "function_application"),
-        _claim("final_norm_kind", "applied_function", "function_application"),
-        _claim("codebook_streams", "relation", "cross_occurrence_relation"),
-        _claim("per_layer_embedding_pathway", "relation", "cross_occurrence_relation"),
-)
-FACT_CLAIM_DECLARATIONS = {
-    row.fact_key: row for row in _FACT_CLAIM_DECLARATION_ROWS
-}
-if len(FACT_CLAIM_DECLARATIONS) != len(_FACT_CLAIM_DECLARATION_ROWS):
-    raise ValueError("duplicate fact claim-kind declaration")
 
 
 @dataclass(frozen=True)
 class ProjectionFactCitation:
-    """One particular projected fact and the reader evidence kind it carries."""
+    """One projected fact whose own typed proof meets the product requirement."""
 
     fact: EvidenceFact
-    declaration: FactClaimDeclaration
 
     def __post_init__(self) -> None:
         if not isinstance(self.fact, EvidenceFact):
             raise TypeError("projection citations carry an EvidenceFact")
-        if not isinstance(self.declaration, FactClaimDeclaration):
-            raise TypeError("projection citations carry a reader declaration")
-        if self.fact.key != self.declaration.fact_key:
-            raise ValueError("projection citation declaration names another fact")
-        # Mechanism claims need code provenance.  A config value can select an
-        # operand, but cannot prove wiring or an applied function.
-        if self.declaration.claim_kind in {
-                "existence", "connection", "applied_function", "relation"}:
-            if (self.fact.status not in {"code_proven", "code_and_config"}
-                    or not self.fact.source_spans):
-                raise ValueError(
-                    f"{self.declaration.claim_kind} claim lacks code evidence")
-        elif not (self.fact.config_paths or self.fact.source_spans):
-            raise ValueError("value claim lacks a value provenance path")
+        required = FACT_CLAIM_REQUIREMENTS.get(self.fact.key)
+        if required is None:
+            raise ValueError(f"projected fact {self.fact.key!r} has no claim requirement")
+        if self.fact.claim_kind != required or self.fact.claim_evidence is None:
+            raise ValueError(
+                f"projected fact {self.fact.ledger_key()!r} lacks a "
+                f"qualified {required} proof")
+
+    @property
+    def summary(self) -> ClaimProofSummary:
+        return self.fact.claim_evidence.summary()
 
 
 @dataclass(frozen=True)
@@ -635,6 +607,7 @@ class ProjectionClaim:
     instance_path: str
     axis: ProjectionAxis
     fact_citations: tuple[ProjectionFactCitation, ...] = ()
+    observed_facts: tuple[EvidenceFact, ...] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.instance_path, str):
@@ -644,31 +617,63 @@ class ProjectionClaim:
         if any(not isinstance(row, ProjectionFactCitation)
                for row in self.fact_citations):
             raise TypeError("projection claims cite typed per-fact declarations")
+        if any(not isinstance(row, EvidenceFact) for row in self.observed_facts):
+            raise TypeError("projection claims retain exact observed facts")
+        observed_keys = tuple(sorted(
+            row.ledger_key() for row in self.observed_facts))
+        if len(observed_keys) != len(set(observed_keys)):
+            raise ValueError("observed projection facts are occurrence-unique")
+        if observed_keys != tuple(sorted(
+                (*self.axis.fact_keys, *self.axis.unqualified_fact_keys))):
+            raise ValueError(
+                "observed facts equal qualified plus unqualified fact keys")
         keys = tuple(sorted(row.fact.ledger_key() for row in self.fact_citations))
         if self.axis.fact_keys != keys:
             raise ValueError("projection fact keys must equal the cited fact objects")
         kinds = tuple(sorted(
-            (row.fact.ledger_key(), row.declaration.claim_kind)
-            for row in self.fact_citations))
+            (row.ledger_key(), row.claim_kind)
+            for row in self.observed_facts if row.claim_kind is not None))
         if self.axis.fact_claim_kinds != kinds:
-            raise ValueError("projection claim kinds must equal cited reader declarations")
+            raise ValueError("projection claim retains every reader declaration")
+        undeclared = tuple(sorted(
+            row.ledger_key() for row in self.observed_facts
+            if row.claim_kind is None))
+        declared_unproven = tuple(sorted(
+            row.ledger_key() for row in self.observed_facts
+            if row.claim_kind is not None
+            and row.ledger_key() in self.axis.unqualified_fact_keys))
+        if self.axis.undeclared_fact_keys != undeclared:
+            raise ValueError("projection claim retains every missing declaration")
+        if self.axis.declared_unproven_fact_keys != declared_unproven:
+            raise ValueError("projection claim retains every declared proof gap")
+        if self.axis.fact_claim_proofs != tuple(
+                row.summary for row in self.fact_citations):
+            raise ValueError("projection claim retains every typed proof receipt")
         if self.axis.kind == "grouped" and self.axis.parent == self.instance_path:
             raise ValueError("a grouped projection must name a distinct parent")
 
     @property
     def facts(self) -> tuple[EvidenceFact, ...]:
-        return tuple(row.fact for row in self.fact_citations)
+        return self.observed_facts
 
 
-def _projection_citations(facts: Sequence[EvidenceFact]) -> tuple[ProjectionFactCitation, ...]:
-    rows = []
-    for fact in facts:
-        declaration = FACT_CLAIM_DECLARATIONS.get(fact.key)
-        if declaration is None:
-            raise ValueError(
-                f"projected fact {fact.key!r} has no reader claim-kind declaration")
-        rows.append(ProjectionFactCitation(fact, declaration))
-    return tuple(rows)
+def _projection_citations(facts: Sequence[EvidenceFact]) \
+        -> tuple[ProjectionFactCitation, ...]:
+    return tuple(ProjectionFactCitation(fact) for fact in facts)
+
+
+def _claim_gap_partition(facts: Sequence[EvidenceFact]) \
+        -> tuple[tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
+    """Explicitly distinguish a missing declaration from a missing proof."""
+    undeclared = tuple(sorted(
+        fact.ledger_key() for fact in facts if fact.claim_kind is None))
+    declared_unproven = tuple(sorted(
+        fact.ledger_key() for fact in facts
+        if fact.claim_kind is not None and (
+            fact.claim_kind != FACT_CLAIM_REQUIREMENTS.get(fact.key)
+            or fact.claim_evidence is None)))
+    return (tuple(sorted((*undeclared, *declared_unproven))),
+            undeclared, declared_unproven)
 
 
 _TORCH_CONTAINER_TYPES = frozenset({
@@ -851,6 +856,36 @@ def projection_claims_from_product(
     # direct rendered claim.  Block ids are supplementary, never the proof.
     for path, path_facts in rendered_facts.items():
         ordered_facts = tuple(path_facts[key] for key in sorted(path_facts))
+        unqualified, undeclared, declared_unproven = \
+            _claim_gap_partition(ordered_facts)
+        if unqualified:
+            qualified_facts = tuple(
+                fact for fact in ordered_facts
+                if fact.ledger_key() not in set(unqualified))
+            citations = _projection_citations(qualified_facts)
+            claims_by_path[path] = ProjectionClaim(
+                path,
+                ProjectionAxis(
+                    "projection_unresolved",
+                    reason="product cites facts without typed semantic proof",
+                    fact_keys=tuple(
+                        fact.ledger_key() for fact in qualified_facts),
+                    fact_claim_kinds=tuple(
+                        (fact.ledger_key(), fact.claim_kind)
+                        for fact in ordered_facts
+                        if fact.claim_kind is not None),
+                    fact_claim_proofs=tuple(
+                        row.summary for row in citations),
+                    unqualified_fact_keys=unqualified,
+                    undeclared_fact_keys=undeclared,
+                    declared_unproven_fact_keys=declared_unproven,
+                    reason_class="mechanism_unresolved",
+                    investigation=_reader_investigation(
+                        "projection_fact_proof", "out_of_support")),
+                fact_citations=citations,
+                observed_facts=ordered_facts,
+            )
+            continue
         citations = _projection_citations(ordered_facts)
         claims_by_path[path] = ProjectionClaim(
             path,
@@ -858,15 +893,47 @@ def projection_claims_from_product(
                 "rendered",
                 fact_keys=tuple(fact.ledger_key() for fact in ordered_facts),
                 fact_claim_kinds=tuple(
-                    (row.fact.ledger_key(), row.declaration.claim_kind)
-                    for row in citations)),
-            citations,
+                    (fact.ledger_key(), fact.claim_kind)
+                    for fact in ordered_facts
+                    if fact.claim_kind is not None),
+                fact_claim_proofs=tuple(row.summary for row in citations)),
+            citations, ordered_facts,
         )
     for path, parent_rows in grouped_facts.items():
         if path in claims_by_path or len(parent_rows) != 1:
             continue
         parent, path_facts = next(iter(parent_rows.items()))
         ordered_facts = tuple(path_facts[key] for key in sorted(path_facts))
+        unqualified, undeclared, declared_unproven = \
+            _claim_gap_partition(ordered_facts)
+        if unqualified:
+            qualified_facts = tuple(
+                fact for fact in ordered_facts
+                if fact.ledger_key() not in set(unqualified))
+            citations = _projection_citations(qualified_facts)
+            claims_by_path[path] = ProjectionClaim(
+                path,
+                ProjectionAxis(
+                    "projection_unresolved",
+                    reason="product cites facts without typed semantic proof",
+                    fact_keys=tuple(
+                        fact.ledger_key() for fact in qualified_facts),
+                    fact_claim_kinds=tuple(
+                        (fact.ledger_key(), fact.claim_kind)
+                        for fact in ordered_facts
+                        if fact.claim_kind is not None),
+                    fact_claim_proofs=tuple(
+                        row.summary for row in citations),
+                    unqualified_fact_keys=unqualified,
+                    undeclared_fact_keys=undeclared,
+                    declared_unproven_fact_keys=declared_unproven,
+                    reason_class="mechanism_unresolved",
+                    investigation=_reader_investigation(
+                        "projection_fact_proof", "out_of_support")),
+                fact_citations=citations,
+                observed_facts=ordered_facts,
+            )
+            continue
         citations = _projection_citations(ordered_facts)
         claims_by_path[path] = ProjectionClaim(
             path,
@@ -875,9 +942,11 @@ def projection_claims_from_product(
                 rule="fact source occurrence is drawn inside its proven parent",
                 fact_keys=tuple(fact.ledger_key() for fact in ordered_facts),
                 fact_claim_kinds=tuple(
-                    (row.fact.ledger_key(), row.declaration.claim_kind)
-                    for row in citations)),
-            citations,
+                    (fact.ledger_key(), fact.claim_kind)
+                    for fact in ordered_facts
+                    if fact.claim_kind is not None),
+                fact_claim_proofs=tuple(row.summary for row in citations)),
+            citations, ordered_facts,
         )
 
     module_by_path = {row.path: row for row in modules}
@@ -1083,7 +1152,8 @@ def reconcile(
                 fact_paths + (static.config_paths if static else ())))),
             source_spans=tuple(sorted(set(
                 source_spans + (static.source_spans if static else ())))),
-            fact_keys=projection.fact_keys,
+            fact_keys=tuple(sorted((
+                *projection.fact_keys, *projection.unqualified_fact_keys))),
         )
         rows.append(OccurrenceRow(
             OccurrenceProvenance(path, runtime_class, config_hash, meaning),
@@ -1247,37 +1317,63 @@ def _primary_shape(boundary: Any, *, output: bool = False) -> tuple[int, ...] | 
 
 
 def _stream_count(observation: Any) -> tuple[int, int] | None:
-    """Return (axis, count) when the recipe leaves one extra rank-4 axis.
+    """Return (axis, count) for one lineage-bound, unambiguous extra axis.
 
-    The recipe supplies the input batch/sequence dimensions.  We remove those
-    exact dimensions once from the layer-boundary prefix; the sole remainder
-    is an observed stream axis.  Ambiguity stays unresolved.
+    Shape coincidence is not lineage.  The boundary primary input must carry
+    exactly one positive origin from the named recipe tensor.  We then enumerate
+    every order-preserving alignment of the recipe prefix into the boundary
+    prefix; only one common remainder is a proof.  Repeated equal dimensions
+    that admit different axes are unresolved rather than selected by position.
     """
     if not observation.boundaries or not observation.recipe.tensor_arguments:
         return None
     shape = _primary_shape(observation.boundaries[0])
     output = _primary_shape(observation.boundaries[0], output=True)
-    recipe_shape = tuple(observation.recipe.tensor_arguments[0].shape)
+    origins = tuple(observation.boundaries[0].primary_input_origins)
+    if len(origins) != 1:
+        return None
+    arguments = tuple(row for row in observation.recipe.tensor_arguments
+                      if row.name == origins[0])
+    if len(arguments) != 1:
+        return None
+    recipe_shape = tuple(arguments[0].shape)
     if (shape is None or output is None or len(shape) != 4 or shape != output
             or len(recipe_shape) < 2):
         return None
-    remaining = list(enumerate(shape[:-1]))
-    for dimension in recipe_shape[:2]:
-        match = next((index for index, (_axis, value) in enumerate(remaining)
-                      if value == dimension), None)
-        if match is None:
-            return None
-        remaining.pop(match)
+    prefix = shape[:-1]
+    needle = recipe_shape[:2]
+    alignments: list[tuple[int, ...]] = []
+
+    def align(start: int, chosen: tuple[int, ...]) -> None:
+        if len(chosen) == len(needle):
+            alignments.append(chosen)
+            return
+        value = needle[len(chosen)]
+        for index in range(start, len(prefix)):
+            if prefix[index] == value:
+                align(index + 1, (*chosen, index))
+
+    align(0, ())
+    remainders = {
+        tuple((axis, value) for axis, value in enumerate(prefix)
+              if axis not in selected)
+        for selected in alignments
+    }
+    if len(remainders) != 1:
+        return None
+    remaining = next(iter(remainders))
     if len(remaining) != 1 or remaining[0][1] <= 1:
         return None
     if any(_primary_shape(row) != shape
-           or _primary_shape(row, output=True) != shape
-           for row in observation.boundaries):
+            or _primary_shape(row, output=True) != shape
+            or tuple(row.primary_input_origins) != origins
+            for row in observation.boundaries):
         return None
     return remaining[0]
 
 
 def _proof_matches(proof: Any, class_refs: Sequence[Any], inventory: Any) -> bool:
+    """Close an exact static proof against runtime class/source provenance."""
     if proof is None or not class_refs:
         return False
     classes = {(item.module, item.qualname) for item in class_refs}
@@ -1314,12 +1410,7 @@ def relation_rows_from_evidence(
         raise TypeError("relation reconciliation consumes existing EvidenceFact rows")
     observations = _relation_observations(relation_observations, inventory)
     paths = frozenset(row.path for row in inventory.modules)
-    proofs: dict[str, Any] = {}
-    for proof in static_proofs:
-        kind = getattr(proof, "kind", None)
-        if kind in proofs:
-            raise ValueError(f"rival static relation proofs for {kind}")
-        proofs[kind] = proof
+    proofs = tuple(static_proofs)
     rows: list[RelationRow] = []
 
     # Parameter sharing is definitionally proven by object identity.  The
@@ -1386,31 +1477,37 @@ def relation_rows_from_evidence(
 
         stream = _stream_count(observation)
         if stream is not None:
-            proof = proofs.get("recurrent_state_mix")
-            module_by_path = {row.path: row for row in inventory.modules}
-            layer_classes = tuple({
-                (module_by_path[row.path].class_ref.module,
-                 module_by_path[row.path].class_ref.qualname):
-                module_by_path[row.path].class_ref
-                for row in observation.boundaries
-                if row.path in module_by_path
-            }.values())
             source_paths = tuple(sorted(row.path for row in observation.boundaries))
             detail = {"stream_axis": stream[0], "stream_count": stream[1]}
-            if not _proof_matches(proof, layer_classes, inventory):
+            contractions = tuple(
+                row for row in observation.matrix_contractions
+                if row.extent == stream[1]
+                and row.layer_path in source_paths)
+            covered_layers = {row.layer_path for row in contractions}
+            if covered_layers != set(source_paths):
                 kind = "relation_unresolved"
-                detail["reason"] = "rank-4 layer state lacks an exact mixing proof"
+                detail["reason"] = (
+                    "rank-4 layer state lacks an output-reaching matrix "
+                    "contraction for every exact layer occurrence")
                 spans = ()
                 investigation = _reader_investigation(
-                    "relation_source:recurrent_state_mix")
+                    "relation_observation:matrix_contractions")
             else:
                 kind = "multi_stream_residual"
-                spans = tuple(proof.spans)
+                spans = tuple(sorted({
+                    f"sha256:{row.source_fingerprint}:"
+                    f"{row.source_line}:0:{row.source_line}:0"
+                    for row in contractions
+                }))
                 investigation = None
             rows.append(RelationRow(
                 _relation_id(kind, source_paths, source_paths, detail), kind,
                 source_paths, source_paths, detail,
-                (f"trace:{recipe}:rank4-shape-preserving-boundaries",), spans,
+                tuple(sorted((
+                    f"trace:{recipe}:rank4-shape-preserving-boundaries",
+                    f"trace:{recipe}:output-reaching-stream-matrix-contractions",
+                ))),
+                spans,
                 reason_class=("mechanism_unresolved"
                               if investigation is not None else None),
                 investigation=investigation))
@@ -1488,20 +1585,24 @@ def relation_rows_from_evidence(
                                and len(sibling.outputs[0].shape) < len(final_shape or ()))
             if len(candidates) == 1:
                 sibling = candidates[0]
-                proof = proofs.get("post_stack_collapse")
                 detail = {"input_shape": list(sibling.inputs[0].shape),
                           "output_shape": list(sibling.outputs[0].shape)}
                 parent_path = observation.stack_path.rpartition(".")[0]
                 parent_module = next((row for row in inventory.modules
                                       if row.path == parent_path), None)
                 parent_classes = (parent_module.class_ref,) if parent_module else ()
-                if not _proof_matches(proof, parent_classes, inventory):
+                matching_proofs = tuple(
+                    proof for proof in proofs
+                    if getattr(proof, "kind", None) == "post_stack_collapse"
+                    and _proof_matches(proof, parent_classes, inventory))
+                if len(matching_proofs) != 1:
                     kind = "relation_unresolved"
                     detail["reason"] = "post-stack rank collapse lacks source proof"
                     spans = ()
                     investigation = _reader_investigation(
                         "relation_source:post_stack_collapse")
                 else:
+                    proof = matching_proofs[0]
                     kind = "side_head"
                     spans = tuple(proof.spans)
                     investigation = None
@@ -1699,8 +1800,8 @@ __all__ = [
     "AUTHORITY_MATRIX", "CONSTRUCTION_KINDS", "EXECUTION_KINDS",
     "PROJECTION_KINDS", "RELATION_KINDS", "UNRESOLVED_REASON_CLASSES",
     "AuthorityRule", "ConstructionAxis", "ExecutionAxis",
-    "FactClaimDeclaration", "ProjectionFactCitation",
-    "FACT_CLAIM_DECLARATIONS", "InvestigationRecord", "MeaningProvenance",
+    "ProjectionFactCitation", "FACT_CLAIM_REQUIREMENTS",
+    "InvestigationRecord", "MeaningProvenance",
     "OccurrenceProvenance", "OccurrenceRow", "ProjectionAxis",
     "ProjectionClaim", "ReconciliationTable", "RelationRow",
     "RuntimeClassRef", "StaticOccurrenceClaim", "StaticOccurrenceRef",

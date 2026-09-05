@@ -1,10 +1,10 @@
-"""Exact-source support proofs for S7 runtime relation candidates.
+"""Closed exact-source support for S7 relation observations.
 
-The trace/instance is primary for the relation it definitionally observes.  A
-custom mechanism still needs an explanation in the model's resolved code.  The
-readers here start from an exact runtime class plus the already-built
-``ProgramIndex`` and return only source spans; they never inspect a model id,
-class-name substring, field-role vocabulary, or config value.
+The former generic ``recurrent_state_mix`` evaluator was removed deliberately:
+dependency recombination is not proof of cross-stream mixing.  S7 now obtains
+that positive mechanism evidence from exact, source-bound runtime matrix
+contractions in :mod:`physics.relation_observation`.  This module retains only
+the independent post-stack-collapse proof used for side-head reconciliation.
 """
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ class StaticRelationProof:
     detail: str
 
     def __post_init__(self) -> None:
-        if self.kind not in {"recurrent_state_mix", "post_stack_collapse"}:
+        if self.kind != "post_stack_collapse":
             raise ValueError("static relation proof kind is closed")
         if (not self.class_module or not self.class_qualname or not self.callable
                 or not self.detail or not self.spans):
@@ -64,8 +64,6 @@ def _exact_forward(index: ProgramIndex, runtime_class: Any,
         if item.symbol.qualified_name == f"{qualname}.forward"
         and item.symbol.source.content_fingerprint in allowed
     ]
-    # The same physical source may be indexed under several config components.
-    # That is one code definition, not rival mechanism evidence.
     by_physical = {}
     for item in candidates:
         span = item.span
@@ -82,70 +80,6 @@ def _target_names(expression: ExprNode) -> tuple[str, ...]:
         return tuple(
             name for child in expression.children for name in _target_names(child))
     return ()
-
-
-def _flow(expression: ExprNode | None, env: dict[str, tuple[bool, bool]],
-          state_name: str) -> tuple[bool, bool]:
-    """Return (depends-on-state, recombines-two-state-derived-branches)."""
-    if expression is None:
-        return False, False
-    if expression.kind == "name":
-        return env.get(expression.name, (expression.name == state_name, False))
-    children = tuple(child for child in expression.children
-                     if isinstance(child, ExprNode)) + tuple(
-        child for _key, child in expression.keyword_children
-        if isinstance(child, ExprNode))
-    states = tuple(_flow(child, env, state_name) for child in children)
-    depends = any(item[0] for item in states)
-    mixed = any(item[1] for item in states)
-    state_branches = sum(1 for item in states if item[0])
-    if expression.kind in {"binop", "call"} and state_branches >= 2:
-        mixed = True
-    return depends, mixed
-
-
-def prove_recurrent_state_mix(index: ProgramIndex, runtime_class: Any,
-                               source_hashes: Iterable[str]) \
-        -> StaticRelationProof | None:
-    """Prove one forward returns a recombination of its incoming state.
-
-    This does not call the state a residual or infer its rank.  S7 combines the
-    proof with a rank-4, shape-preserving layer-boundary trace before naming a
-    ``multi_stream_residual`` relation.
-    """
-    forward = _exact_forward(index, runtime_class, source_hashes)
-    if forward is None:
-        return None
-    params = tuple(item.name for item in forward.params if item.name != "self")
-    if not params:
-        return None
-    state = params[0]
-    env: dict[str, tuple[bool, bool]] = {state: (True, False)}
-    evidence: list[SourceSpan] = []
-    bindings = sorted(index.bindings_in(forward.symbol), key=lambda item: (
-        item.span.line, item.span.col))
-    for binding in bindings:
-        value = _flow(binding.value, env, state)
-        for target in binding.targets:
-            for name in _target_names(target):
-                env[name] = value
-        if value[0] and binding.span is not None:
-            evidence.append(binding.span)
-    resolved_returns = []
-    for row in index.return_observations_in(forward.symbol):
-        value = _flow(row.value, env, state)
-        if value == (True, True) and row.span is not None:
-            resolved_returns.append(row.span)
-    if not resolved_returns:
-        return None
-    spans = tuple(sorted({_span_key(item) for item in (*evidence, *resolved_returns)}))
-    return StaticRelationProof(
-        "recurrent_state_mix", runtime_class.module, runtime_class.qualname,
-        forward.symbol.source.content_fingerprint,
-        forward.symbol.qualified_name, spans,
-        "the exact layer forward returns a recombination of two or more "
-        "state-derived branches",
-    )
 
 
 def _self_field(expression: ExprNode | None) -> str | None:
@@ -192,9 +126,10 @@ def prove_post_stack_collapse(index: ProgramIndex, runtime_class: Any,
                               source_hashes: Iterable[str], *,
                               stack_field: str, head_field: str) \
         -> StaticRelationProof | None:
-    """Prove an exact sibling call occurs after an exact container loop and
-    contributes to the returned value.  Field spellings are supplied as exact
-    runtime addresses; they are never classified by their names.
+    """Prove one sibling call follows a container loop and reaches return.
+
+    Both fields arrive as exact runtime addresses.  The reader never classifies
+    either field by spelling and refuses ambiguous loops, calls, and returns.
     """
     if not stack_field or not head_field:
         raise ValueError("post-stack proof needs exact address fields")
@@ -239,7 +174,4 @@ def prove_post_stack_collapse(index: ProgramIndex, runtime_class: Any,
     )
 
 
-__all__ = [
-    "StaticRelationProof", "prove_post_stack_collapse",
-    "prove_recurrent_state_mix",
-]
+__all__ = ["StaticRelationProof", "prove_post_stack_collapse"]

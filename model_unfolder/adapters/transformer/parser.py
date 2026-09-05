@@ -947,7 +947,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
 
     def _note_typed_fact(
             *, key, owner, value, status, reader_result, config_paths, reader,
-            reason, completeness="complete"):
+            reason, completeness="complete", claim_kind=None,
+            claim_readers=()):
         """One native typed-fact writer shared by exact U6 evidence joins.
 
         Keeping the registry-validated write here prevents every migrated
@@ -976,6 +977,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             config_paths=tuple(".".join(path) for path in config_paths),
             legacy_source=reader,
             reason=reason,
+            claim_kind=claim_kind,
+            claim_readers=tuple(claim_readers),
         ))
 
     _unknown_status = "ambiguous" if _source_present else "oracle_missing"
@@ -1210,7 +1213,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             field, exact_path, *, fact_key=None,
             fact_owner="decoder.attention",
             mechanism="attention_mechanism", status=None,
-            expected_value=_config_access.MISSING):
+            expected_value=_config_access.MISSING,
+            reader="adapters.transformer.parser.parse"):
         """Consume only when U1 selected the exact path proven by source code."""
         exact = tuple(exact_path)
         # The source may read an audited input spelling directly (BLOOM's
@@ -1265,7 +1269,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             return None
         _attention_operand_resolutions[exact] = res
         decision = res.consume_decision(
-            reader="adapters.transformer.parser.parse",
+            reader=reader,
             fact_owner=fact_owner,
             fact_key=fact_key or field,
             mechanism=mechanism,
@@ -1416,6 +1420,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 reader="decoder_ffn_intermediate_width_for_path",
                 reason=("the exact FFN output-projection input expression "
                         "evaluates from the cited config operands"),
+                claim_kind="value",
+                claim_readers=("decoder_ffn_intermediate_width_for_path",),
             )
     if intermediate_size is None:
         # Preserve an exact audit disposition for a declared candidate without
@@ -1826,7 +1832,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
                     _path[-1], _path, fact_key="rope_theta",
                     mechanism="position_frequency_initialization",
                     status=_theta_status,
-                    expected_value=_initialization.base_value)
+                    expected_value=_initialization.base_value,
+                    reader="position_frequency_initialization")
                 if _actual != _expected:
                     _theta_join_ok = False
             for _path, _kind, _expected in \
@@ -1840,7 +1847,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
                     _path[-1], _path, fact_key="rope_initialization",
                     mechanism="position_frequency_initialization",
                     status=_theta_status,
-                    expected_value=_rope_initialization)
+                    expected_value=_rope_initialization,
+                    reader="position_frequency_initialization")
                 if _actual != _expected:
                     _theta_join_ok = False
             if _theta_join_ok:
@@ -1866,6 +1874,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
                             "inverse-power base stored into the frequency "
                             "state consumed by the proved Q/K rotation"),
                     completeness="presence_only",
+                    claim_kind="value",
+                    claim_readers=("position_frequency_initialization",),
                 )
                 _classify_exact_nested_alias_group(
                     "rope_parameter_selector",

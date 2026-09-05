@@ -21,6 +21,7 @@ from pathlib import Path
 import platform
 import shutil
 import signal
+import secrets
 import subprocess
 import sys
 import tempfile
@@ -590,6 +591,7 @@ def _failure(kind: str, stage: str, exc: BaseException) -> InventoryResult:
 
 
 def _worker(request_path: Path, result_path: Path) -> int:
+    _write_network_attestation()
     _install_network_guard()
     try:
         request = BuildRequest.from_dict(json.loads(request_path.read_text()))
@@ -638,7 +640,7 @@ def _network_isolated_command(command: list[str], env: dict[str, str]) -> list[s
         return [sandbox, "-p", "(version 1) (allow default) (deny network*)",
                 *command]
     if sys.platform.startswith("linux"):
-        # CI explicitly opts into a root-owned network namespace.  ``unshare``
+        # CI explicitly opts into a network namespace.  ``unshare``
         # is the OS boundary; the audit hook remains defence in depth.  We do
         # not silently call an unavailable/denied namespace equivalent to this
         # mode: the S7 Linux preflight runs the wrapper and fails before shadow
@@ -647,21 +649,164 @@ def _network_isolated_command(command: list[str], env: dict[str, str]) -> list[s
         unshare = shutil.which("unshare")
         if requested == "sudo-unshare" and unshare:
             sudo = shutil.which("sudo")
-            if not sudo:
-                raise RuntimeError("sudo-unshare requested but sudo is unavailable")
+            env_tool = shutil.which("env")
+            if not sudo or not env_tool:
+                raise RuntimeError("sudo-unshare requires sudo and env")
+            uid, gid = os.getuid(), os.getgid()
+            if uid == 0 or gid == 0:
+                raise RuntimeError(
+                    "sudo-unshare requires a non-root invoking uid/gid")
             env["UNFOLD_NETWORK_SANDBOX"] = (
                 "linux-sudo-unshare-net+python-audit-hook")
-            return [sudo, "-n", unshare, "--net", "--", *command]
-        if requested == "root-unshare" and unshare:
-            env["UNFOLD_NETWORK_SANDBOX"] = (
-                "linux-root-unshare-net+python-audit-hook")
-            return [unshare, "--net", "--", *command]
+            forwarded = {
+                key: env[key] for key in (
+                    "PYTHONHASHSEED", "PYTHONPATH", "HF_HUB_OFFLINE",
+                    "TRANSFORMERS_OFFLINE", "DIFFUSERS_OFFLINE",
+                    "TOKENIZERS_PARALLELISM", "UNFOLD_NETWORK_SANDBOX",
+                    _ATTEST_PATH, _ATTEST_NONCE, _ATTEST_PARENT,
+                    _ATTEST_UID, _ATTEST_GID, _ATTEST_ACK,
+                ) if key in env
+            }
+            return [
+                sudo, "-n", unshare, "--net",
+                "--setgid", str(gid), "--setuid", str(uid), "--",
+                env_tool, "-i",
+                *(f"{key}={forwarded[key]}" for key in sorted(forwarded)),
+                *command,
+            ]
+        if requested == "root-unshare":
+            raise RuntimeError(
+                "root-unshare leaves untrusted model code privileged")
     # The audit hook and offline variables still block in-process Python
     # clients. The recorded value makes the missing OS boundary explicit; a
     # later productionisation unit must add the host-specific wrapper rather
     # than silently calling this equivalent to the macOS pilot.
     env["UNFOLD_NETWORK_SANDBOX"] = "python-audit-hook-only"
     return command
+
+
+_ATTEST_PATH = "UNFOLD_NETWORK_ATTESTATION_PATH"
+_ATTEST_NONCE = "UNFOLD_NETWORK_ATTESTATION_NONCE"
+_ATTEST_PARENT = "UNFOLD_NETWORK_ATTESTATION_PARENT_NETNS"
+_ATTEST_UID = "UNFOLD_NETWORK_ATTESTATION_UID"
+_ATTEST_GID = "UNFOLD_NETWORK_ATTESTATION_GID"
+_ATTEST_ACK = "UNFOLD_NETWORK_ATTESTATION_ACK"
+
+
+def _prepare_network_attestation(root: Path, env: dict[str, str]) \
+        -> tuple[Path, Path, str, str, int, int] | None:
+    """Prepare a parent/worker kernel-network-namespace handshake."""
+    if not sys.platform.startswith("linux") or env.get(
+            "UNFOLD_LINUX_NETWORK_SANDBOX") != "sudo-unshare":
+        return None
+    parent = os.readlink("/proc/self/ns/net")
+    nonce = secrets.token_hex(32)
+    path = root / "network-attestation.json"
+    ack = root / "network-attestation.ack"
+    env.update({_ATTEST_PATH: str(path), _ATTEST_NONCE: nonce,
+                _ATTEST_PARENT: parent, _ATTEST_UID: str(os.getuid()),
+                _ATTEST_GID: str(os.getgid()), _ATTEST_ACK: str(ack)})
+    return path, ack, nonce, parent, os.getuid(), os.getgid()
+
+
+def _write_network_attestation() -> None:
+    """Worker-side entry receipt, written before importing model code."""
+    path = os.environ.get(_ATTEST_PATH)
+    nonce = os.environ.get(_ATTEST_NONCE)
+    parent = os.environ.get(_ATTEST_PARENT)
+    uid = os.environ.get(_ATTEST_UID)
+    gid = os.environ.get(_ATTEST_GID)
+    ack = os.environ.get(_ATTEST_ACK)
+    if not any((path, nonce, parent, uid, gid, ack)):
+        return
+    if not all((path, nonce, parent, uid, gid, ack)):
+        raise RuntimeError("incomplete Linux network attestation request")
+    receipt_path = Path(path)
+    # Publish the receipt atomically.  The parent must never observe a
+    # half-written JSON document and misclassify a correct isolated worker as
+    # an infrastructure failure.  The nonce makes the same-directory staging
+    # name unique to this handshake; os.replace is atomic on that filesystem.
+    staging_path = receipt_path.with_name(
+        f".{receipt_path.name}.{nonce}.tmp")
+    payload = json.dumps({
+        "schema_version": 1,
+        "nonce": nonce,
+        "parent_netns": parent,
+        "child_netns": os.readlink("/proc/self/ns/net"),
+        "euid": os.geteuid(),
+        "egid": os.getegid(),
+    }, sort_keys=True)
+    try:
+        staging_path.write_text(payload, encoding="utf-8")
+        os.replace(staging_path, receipt_path)
+    finally:
+        try:
+            staging_path.unlink()
+        except FileNotFoundError:
+            pass
+    deadline = time.monotonic() + 5
+    ack_path = Path(ack)
+    while not ack_path.exists():
+        if time.monotonic() >= deadline:
+            raise RuntimeError("parent did not acknowledge network attestation")
+        time.sleep(0.01)
+    ack_path.unlink()
+
+
+def _require_network_attestation(
+    expected: tuple[Path, Path, str, str, int, int] | None,
+) -> None:
+    """Refuse to launder wrapper failure as a typed model failure."""
+    if expected is None:
+        return
+    path, ack, nonce, parent, uid, gid = expected
+    deadline = time.monotonic() + 5
+    while not path.exists():
+        if time.monotonic() >= deadline:
+            raise RuntimeError("Linux network namespace attestation is missing")
+        time.sleep(0.01)
+    try:
+        row = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
+        raise RuntimeError("Linux network namespace attestation is missing") from exc
+    if not isinstance(row, dict):
+        raise RuntimeError("Linux network namespace attestation is invalid")
+    child = row.get("child_netns")
+    if (set(row) != {"schema_version", "nonce", "parent_netns", "child_netns",
+                     "euid", "egid"}
+            or row.get("schema_version") != 1 or row.get("nonce") != nonce
+            or row.get("parent_netns") != parent
+            or not isinstance(child, str) or not child or child == parent
+            or row.get("euid") != uid or row.get("egid") != gid
+            or row.get("euid") == 0 or row.get("egid") == 0):
+        raise RuntimeError("Linux network namespace attestation is invalid")
+    path.unlink()
+    ack.write_text("accepted", encoding="utf-8")
+
+
+def _authorize_network_worker(
+    process: subprocess.Popen,
+    expected: tuple[Path, Path, str, str, int, int] | None,
+) -> None:
+    """Validate and release the isolated worker before model code can run.
+
+    The child writes its kernel receipt and then waits for the acknowledgement.
+    Consequently this handshake must finish before RSS/wall-time supervision:
+    supervising first would deadlock until the worker's timeout.  A bad wrapper
+    is infrastructure failure, not model evidence, so it is raised after the
+    still-blocked child is killed rather than translated into a typed model
+    failure.
+    """
+    try:
+        _require_network_attestation(expected)
+    except (OSError, RuntimeError, ValueError):
+        _kill_group(process)
+        try:
+            process.communicate(timeout=2)
+        except subprocess.TimeoutExpired:
+            _kill_group(process)
+            process.wait()
+        raise
 
 
 def _communicate_bounded(process: subprocess.Popen, *, timeout: float,
@@ -709,8 +854,11 @@ def _communicate_bounded(process: subprocess.Popen, *, timeout: float,
             processes = (root, *root.children(recursive=True))
             rss = sum(item.memory_info().rss for item in processes
                       if item.is_running())
-        except (psutil.NoSuchProcess, psutil.AccessDenied):
+        except psutil.NoSuchProcess:
             rss = 0
+        except (psutil.AccessDenied, PermissionError) as exc:
+            _kill_group(process)
+            return finish(f"monitor_unavailable:{exc}")
         if rss > memory_limit:
             _kill_group(process)
             return finish(f"memory:{rss}")
@@ -728,6 +876,7 @@ def inventory_in_subprocess(request: BuildRequest) -> InventoryResult:
         env.update({"PYTHONHASHSEED": "0", "HF_HUB_OFFLINE": "1",
                     "TRANSFORMERS_OFFLINE": "1", "DIFFUSERS_OFFLINE": "1",
                     "TOKENIZERS_PARALLELISM": "false"})
+        attestation = _prepare_network_attestation(root, env)
         cmd = [sys.executable, "-m", "physics.instance_inventory", "--worker",
                str(request_path), str(result_path)]
         cmd = _network_isolated_command(cmd, env)
@@ -735,6 +884,7 @@ def inventory_in_subprocess(request: BuildRequest) -> InventoryResult:
             cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
             encoding="utf-8", errors="replace",
             env=env, start_new_session=True)
+        _authorize_network_worker(process, attestation)
         stdout, stderr, termination = _communicate_bounded(
             process, timeout=request.timeout_seconds,
             memory_limit=request.memory_limit_bytes)

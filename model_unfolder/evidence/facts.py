@@ -152,6 +152,20 @@ class EvidenceFact:
     # regardless of this flat label.
     legacy_source: str = ""
     failure_kind: str | None = None
+    # v2.6.2: the READER declaration and its proof qualification are separate.
+    # ``claim_kind`` says what the exact reader says it has established;
+    # ``claim_evidence`` says whether it supplied the typed evidence capable of
+    # establishing it.  Keeping the declaration when evidence is absent is how
+    # reconciliation reports a proof gap without a central fact-key table
+    # silently inventing the reader's semantics.
+    claim_kind: str | None = None
+    claim_readers: tuple[str, ...] = ()
+    claim_evidence: Any = None
+    # Process-local binding between a config proof and the exact prepared
+    # checkpoint document it qualified.  It is intentionally absent from the
+    # stable proof summary: object identity is a validation seal, not portable
+    # provenance.
+    claim_document_token: str = field(default="", repr=False, compare=False)
     # migrated_legacy is INTERNAL provenance, NOT a constructor parameter
     # (``init=False``): a native caller therefore CANNOT pass
     # ``migrated_legacy=True`` to opt out of the negative-proof law (§16.3).
@@ -206,6 +220,23 @@ class EvidenceFact:
                 raise ValueError(
                     f"{self.key}: a typed reader failure ({self.failure_kind}) can "
                     f"only ride {sorted(_FAILURE_STATUSES)}, not {self.status!r} (I-9)")
+        if self.claim_kind is None:
+            if self.claim_readers or self.claim_evidence is not None \
+                    or self.claim_document_token:
+                raise ValueError(
+                    "claim readers/evidence/document require a reader declaration")
+        else:
+            from .claim_evidence import CLAIM_KINDS, validate_fact_claim
+            if self.claim_kind not in CLAIM_KINDS:
+                raise ValueError("fact claim kind is outside the closed vocabulary")
+            if tuple(sorted(set(self.claim_readers))) != self.claim_readers \
+                    or not self.claim_readers:
+                raise ValueError(
+                    "a reader claim declaration needs canonical exact readers")
+            if self.claim_evidence is not None:
+                validate_fact_claim(self, self.claim_evidence)
+            elif self.claim_document_token:
+                raise ValueError("an unqualified claim cannot carry a document seal")
 
     def __bool__(self) -> bool:
         raise TypeError(
@@ -258,6 +289,10 @@ class EvidenceFact:
         object.__setattr__(obj, "reason", "")
         object.__setattr__(obj, "legacy_source", legacy_source)
         object.__setattr__(obj, "failure_kind", None)
+        object.__setattr__(obj, "claim_kind", None)
+        object.__setattr__(obj, "claim_readers", ())
+        object.__setattr__(obj, "claim_evidence", None)
+        object.__setattr__(obj, "claim_document_token", "")
         object.__setattr__(obj, "migrated_legacy", True)
         obj._validate(migrated=True)
         return obj

@@ -20,6 +20,12 @@ accessor wiring and the net cutover land incrementally on top (as H1/H2 did).
 from __future__ import annotations
 
 import functools
+import hashlib
+import json
+import math
+import secrets
+import threading
+import weakref
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
@@ -58,6 +64,23 @@ current_container: ContextVar[tuple] = ContextVar(
 # stable, host-independent join key.
 current_document: ContextVar[tuple] = ContextVar(
     "model_unfolder_config_document", default=((), None))
+
+# The exact prepared document whose object/provenance pair is active.  This is
+# deliberately separate from ``current_document``: that older context retains
+# compatibility address state, while this value is the unforgeable producer
+# boundary used by semantic claim receipts.
+current_prepared_document: ContextVar[object | None] = ContextVar(
+    "model_unfolder_prepared_document", default=None)
+
+# S7 §1i: a string computed from ``id()`` is caller-reproducible metadata, not
+# authority.  Seals are issued only when a PreparedDocument enters the one
+# lawful document scope.  The registry retains a weak reference to that exact
+# preparation and the exact document/checkpoint objects; proof validation then
+# recomputes the checkpoint fingerprint and checks object identity.  The random
+# token is validation-only and never enters a portable artifact.
+_DOCUMENT_SEAL_LOCK = threading.RLock()
+_DOCUMENT_SEALS_BY_ID: dict[int, tuple[str, weakref.ReferenceType, int, int, str]] = {}
+_DOCUMENT_SEALS_BY_TOKEN: dict[str, tuple[weakref.ReferenceType, int, int, str]] = {}
 
 
 # U2.2a vet: WHERE A FIELD CAME FROM.  A parsed document is not always the
@@ -407,6 +430,11 @@ class ConfigAccessEvent:
     # AT the consumption.  Net 2 compares a receipt against this, so a renderer
     # can never manufacture its own expectation.
     value_status_hash: str = ""
+    # S7 v2.6.2: exact document binding stamped where the read is emitted.
+    # The stable fingerprint is portable evidence; the token is process-local
+    # object identity and therefore validation-only (never serialized).
+    document_fingerprint: str = field(default="", repr=False, compare=False)
+    document_token: str = field(default="", repr=False, compare=False)
 
     def __post_init__(self) -> None:
         if self.intent not in INTENTS:
@@ -433,6 +461,17 @@ class ConfigAccessEvent:
             raise ValueError(f"{self.canonical}: cannot {self.intent} a missing "
                              "occurrence — only present, unambiguous evidence "
                              "may be consumed or consciously ignored (COR-1)")
+        if bool(self.document_fingerprint) != bool(self.document_token):
+            raise ValueError(
+                "document fingerprint and token are an inseparable evidence seal")
+        if self.document_fingerprint and (
+                len(self.document_fingerprint) != 64
+                or len(self.document_token) != 64
+                or any(char not in "0123456789abcdef"
+                       for char in self.document_fingerprint)
+                or any(char not in "0123456789abcdef"
+                       for char in self.document_token)):
+            raise ValueError("document evidence seals are SHA-256 hex digests")
 
     @property
     def owner_field(self) -> tuple[str, str]:
@@ -934,7 +973,7 @@ class ConfigResolution:
     # -- explicit transitions (Contract A.5) ---------------------------------
     def consume(self, fact_owner: str = "", fact_key: str = "",
                 mechanism: str = "", status: str = "",
-                expected_value: Any = MISSING) -> Any:
+                expected_value: Any = MISSING, reader: str = "") -> Any:
         """The value reached a fact/geometry decision.  PRESENT consumes are
         recorded under the SELECTED SPELLING (never a fictional canonical
         read); an ABSENT consume is an ``absent_default`` PREMISE with the same
@@ -972,6 +1011,7 @@ class ConfigResolution:
              intent="consumed" if self.state == "present" else "absent_default",
              present=self.state == "present", alias=self.selected_alias,
              fact_owner=self._target_owner(fact_owner), fact_key=fact_key,
+             reader=reader,
              mechanism=mechanism, value_status_hash=expected,
              component=self.component, config_path=self.selected_path,
              source_obj_id=self._source_obj_id,
@@ -998,7 +1038,7 @@ class ConfigResolution:
                 f"{self.component!r}: {self.reason}")
         self.consume(fact_owner=fact_owner, fact_key=fact_key,
                      mechanism=mechanism, status=status or "",
-                     expected_value=expected_value)
+                     expected_value=expected_value, reader=reader)
         occurrence = None
         if self.state == "present" and self.selected_path is not None:
             occurrence = ConfigOccurrenceKey(
@@ -1315,9 +1355,139 @@ def bound_document(binding):
     object and an unrelated map that drift apart.  Object identity is the
     binding's own invariant (it refuses a preparation that does not describe
     its document), so entering it cannot mislabel a foreign object's reads."""
-    with _enter_document(binding.document_path, obj=binding.document,
-                         provenance=binding.provenance):
-        yield
+    # Issue authority at the preparation boundary, never from a later claim
+    # builder.  Non-canonical documents remain readable but deliberately cannot
+    # author portable checkpoint-value evidence.
+    try:
+        _issue_prepared_document_seal(
+            binding.prepared,
+            checkpoint_fingerprint(binding.prepared.checkpoint))
+    except (TypeError, ValueError):
+        pass
+    token = current_prepared_document.set(binding.prepared)
+    try:
+        with _enter_document(binding.document_path, obj=binding.document,
+                             provenance=binding.provenance):
+            yield
+    finally:
+        current_prepared_document.reset(token)
+
+
+def checkpoint_fingerprint(checkpoint) -> str:
+    """Stable serialized-content identity for one checkpoint snapshot."""
+    if not isinstance(checkpoint, dict):
+        raise TypeError("checkpoint claim evidence requires a mapping snapshot")
+
+    def canonical(value):
+        if value is None:
+            return ["none"]
+        if isinstance(value, bool):
+            return ["bool", value]
+        if isinstance(value, int):
+            return ["int", str(value)]
+        if isinstance(value, float):
+            return ["float", repr(value) if math.isfinite(value) else (
+                "nan" if math.isnan(value) else
+                "inf" if value > 0 else "-inf")]
+        if isinstance(value, str):
+            return ["str", value]
+        if isinstance(value, dict):
+            if any(not isinstance(key, str) for key in value):
+                raise TypeError("checkpoint claim mappings require string keys")
+            return ["dict", [[key, canonical(value[key])]
+                             for key in sorted(value)]]
+        if isinstance(value, list):
+            return ["list", [canonical(item) for item in value]]
+        if isinstance(value, tuple):
+            return ["tuple", [canonical(item) for item in value]]
+        raise TypeError(
+            f"checkpoint claim value {type(value).__name__} is not canonical")
+
+    payload = json.dumps(
+        canonical(checkpoint), sort_keys=True, separators=(",", ":"),
+        ensure_ascii=False, allow_nan=False).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _issue_prepared_document_seal(prepared, fingerprint: str) -> str:
+    """Issue/reuse the opaque seal for one exact preparation boundary."""
+    prepared_id = id(prepared)
+    with _DOCUMENT_SEAL_LOCK:
+        existing = _DOCUMENT_SEALS_BY_ID.get(prepared_id)
+        if existing is not None:
+            token, reference, document_id, checkpoint_id, recorded = existing
+            if (reference() is prepared and document_id == id(prepared.document)
+                    and checkpoint_id == id(prepared.checkpoint)
+                    and recorded == fingerprint):
+                return token
+            _DOCUMENT_SEALS_BY_TOKEN.pop(token, None)
+
+        token = secrets.token_hex(32)
+
+        def expired(_reference, *, _prepared_id=prepared_id, _token=token):
+            with _DOCUMENT_SEAL_LOCK:
+                current = _DOCUMENT_SEALS_BY_ID.get(_prepared_id)
+                if current is not None and current[0] == _token:
+                    _DOCUMENT_SEALS_BY_ID.pop(_prepared_id, None)
+                _DOCUMENT_SEALS_BY_TOKEN.pop(_token, None)
+
+        reference = weakref.ref(prepared, expired)
+        record = (reference, id(prepared.document), id(prepared.checkpoint),
+                  fingerprint)
+        _DOCUMENT_SEALS_BY_ID[prepared_id] = (token, *record)
+        _DOCUMENT_SEALS_BY_TOKEN[token] = record
+        return token
+
+
+def verify_prepared_document_token(
+        prepared, fingerprint: str, token: str) -> bool:
+    """Recompute and verify a seal against its exact live preparation."""
+    if not token or not fingerprint:
+        return False
+    try:
+        actual = checkpoint_fingerprint(prepared.checkpoint)
+    except (AttributeError, TypeError, ValueError):
+        return False
+    if actual != fingerprint:
+        return False
+    with _DOCUMENT_SEAL_LOCK:
+        record = _DOCUMENT_SEALS_BY_TOKEN.get(token)
+        if record is None:
+            return False
+        reference, document_id, checkpoint_id, recorded = record
+        return (reference() is prepared
+                and document_id == id(prepared.document)
+                and checkpoint_id == id(prepared.checkpoint)
+                and recorded == fingerprint)
+
+
+def prepared_document_token(prepared, fingerprint: str) -> str:
+    """Return a previously issued exact-document seal; never mint one here."""
+    with _DOCUMENT_SEAL_LOCK:
+        row = _DOCUMENT_SEALS_BY_ID.get(id(prepared))
+        if row is None:
+            raise ValueError("prepared document has not entered a bound scope")
+        token = row[0]
+    if not verify_prepared_document_token(prepared, fingerprint, token):
+        raise ValueError("prepared document seal no longer matches its checkpoint")
+    return token
+
+
+def _current_document_seal() -> tuple[str, str]:
+    prepared = current_prepared_document.get()
+    if prepared is None or not isinstance(prepared.checkpoint, dict):
+        return "", ""
+    try:
+        fingerprint = checkpoint_fingerprint(prepared.checkpoint)
+    except (TypeError, ValueError):
+        # Non-canonical input remains parseable but cannot become portable
+        # checkpoint-value proof.  The claim stays visibly unqualified.
+        return "", ""
+    try:
+        token = prepared_document_token(prepared, fingerprint)
+    except ValueError:
+        return "", ""
+    return fingerprint, token
 
 
 @contextmanager
@@ -1504,6 +1674,7 @@ def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None
             "at that address.  A producer may not author an address the "
             "document disproves, and a real path may not be borrowed by an "
             "unrelated object")
+    _document_fingerprint, _document_token = _current_document_seal()
     event = ConfigAccessEvent(
         component=owner,
         config_path=_path,
@@ -1524,7 +1695,9 @@ def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None
         reader=reader, reason=reason,
         value_state=(value_state if value_state is not None
                      else ("value" if present else "missing")),
-        mechanism=mechanism, value_status_hash=value_status_hash)
+        mechanism=mechanism, value_status_hash=value_status_hash,
+        document_fingerprint=_document_fingerprint,
+        document_token=_document_token)
     for ledger in ledgers:
         ledger.record(event)
 
@@ -1535,7 +1708,8 @@ __all__ = [
     "ConfigOccurrenceKey", "ConfigResolution", "INTENTS", "MISSING",
     "ProjectionObligation", "ProjectionTarget",
     "config_container", "container_scoped", "current_container",
-    "bound_document", "current_document",
+    "bound_document", "current_document", "current_prepared_document",
+    "checkpoint_fingerprint",
     "present_spelling",
     "current_provenance", "resolve_priority", "provenance_of",
     "CHECKPOINT_DECLARED", "CLASS_DEFAULT", "CLASS_NORMALIZED_ALIAS",

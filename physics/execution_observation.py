@@ -21,8 +21,10 @@ from .instance_inventory import (
     BuildRequest, Failure, NetworkRefused, PackageVersion, Provenance,
     ResolvedClass, SourceFile,
     _CAPTURE_LIMIT, _construct,
-    _communicate_bounded, _install_network_guard, _network_isolated_command,
-    inventory_model,
+    _authorize_network_worker, _communicate_bounded, _install_network_guard,
+    _network_isolated_command,
+    _prepare_network_attestation,
+    _write_network_attestation, inventory_model,
 )
 
 
@@ -389,6 +391,7 @@ def _is_data_dependent(exc: BaseException) -> bool:
 
 
 def _worker(request_path: Path, recipe_path: Path, result_path: Path) -> int:
+    _write_network_attestation()
     _install_network_guard()
     try:
         request = BuildRequest.from_dict(json.loads(request_path.read_text()))
@@ -460,6 +463,7 @@ def observe_in_subprocess(request: BuildRequest,
         env.update({"PYTHONHASHSEED": "0", "HF_HUB_OFFLINE": "1",
                     "TRANSFORMERS_OFFLINE": "1", "DIFFUSERS_OFFLINE": "1",
                     "TOKENIZERS_PARALLELISM": "false"})
+        attestation = _prepare_network_attestation(root, env)
         command = [sys.executable, "-m", "physics.execution_observation", "--worker",
                    str(request_path), str(recipe_path), str(result_path)]
         command = _network_isolated_command(command, env)
@@ -467,6 +471,7 @@ def observe_in_subprocess(request: BuildRequest,
             command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
             encoding="utf-8", errors="replace",
             env=env, start_new_session=True)
+        _authorize_network_worker(process, attestation)
         stdout, stderr, termination = _communicate_bounded(
             process, timeout=request.timeout_seconds,
             memory_limit=request.memory_limit_bytes)
@@ -496,13 +501,21 @@ def observe_in_subprocess(request: BuildRequest,
                                             recipe=recipe)
         else:
             detail = stderr[-2000:] or f"worker exited {process.returncode} without a result"
-            kind = "MemoryLimitExceeded" if request.memory_limit_bytes else "WorkerFailed"
             result = ObservationResult("failed", recipe=recipe,
-                                       failure=Failure(kind, "worker_exit", detail))
+                                       failure=_worker_exit_failure(detail))
         if result.recipe is None:
             result = dataclasses.replace(result, recipe=recipe)
         return dataclasses.replace(result, stdout=stdout[-_CAPTURE_LIMIT:],
                                    stderr=stderr[-_CAPTURE_LIMIT:])
+
+
+def _worker_exit_failure(detail: str) -> Failure:
+    """A missing result is never evidence that the memory cap fired.
+
+    Only the supervisor's measured ``memory:<rss>`` termination may author a
+    MemoryLimitExceeded result.
+    """
+    return Failure("WorkerFailed", "worker_exit", detail)
 
 
 def main(argv: list[str] | None = None) -> int:

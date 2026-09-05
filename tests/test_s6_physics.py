@@ -6,6 +6,7 @@ import hashlib
 import importlib
 import importlib.metadata
 import json
+import os
 from pathlib import Path
 import sys
 
@@ -13,11 +14,13 @@ import pytest
 
 from physics.execution_observation import (
     ExecutionRecipe, FunctionalOp, ModuleCall, ObservationResult, TensorArgument,
-    observe_in_subprocess,
+    observe_in_subprocess, _worker_exit_failure,
 )
 from physics.instance_inventory import (
     BuildRequest, Failure, InventoryResult, PackageVersion, ResolvedClass,
-    SourceFile, _network_isolated_command, inventory_in_subprocess,
+    SourceFile, _network_isolated_command, _prepare_network_attestation,
+    _require_network_attestation, _write_network_attestation,
+    inventory_in_subprocess,
 )
 
 
@@ -99,18 +102,125 @@ def test_linux_os_sandbox_command_is_explicit_never_audit_hook_laundered(
     monkeypatch.setattr(sys, "platform", "linux")
     monkeypatch.setattr("physics.instance_inventory.shutil.which",
                         lambda name: f"/usr/bin/{name}")
-    env = {"UNFOLD_LINUX_NETWORK_SANDBOX": "sudo-unshare"}
+    monkeypatch.setattr("physics.instance_inventory.os.getuid", lambda: 501)
+    monkeypatch.setattr("physics.instance_inventory.os.getgid", lambda: 20)
+    env = {"UNFOLD_LINUX_NETWORK_SANDBOX": "sudo-unshare",
+           "PYTHONHASHSEED": "0", "PYTHONPATH": "/repo"}
     command = _network_isolated_command(["python", "worker.py"], env)
-    assert command == [
-        "/usr/bin/sudo", "-n", "/usr/bin/unshare", "--net", "--",
-        "python", "worker.py"]
+    assert command[:9] == [
+        "/usr/bin/sudo", "-n", "/usr/bin/unshare", "--net",
+        "--setgid", "20", "--setuid", "501", "--"]
+    assert "/usr/bin/env" in command and "-i" in command
+    assert command[-2:] == ["python", "worker.py"]
+    assert "PYTHONPATH=/repo" in command
     assert env["UNFOLD_NETWORK_SANDBOX"] == (
         "linux-sudo-unshare-net+python-audit-hook")
+
+    with pytest.raises(RuntimeError, match="leaves untrusted model code"):
+        _network_isolated_command(
+            ["python"], {"UNFOLD_LINUX_NETWORK_SANDBOX": "root-unshare"})
 
     # No opt-in is honestly recorded as audit-only, never as OS-isolated.
     env = {}
     assert _network_isolated_command(["python"], env) == ["python"]
     assert env["UNFOLD_NETWORK_SANDBOX"] == "python-audit-hook-only"
+
+
+def test_linux_worker_attestation_is_nonce_bound_and_requires_a_new_namespace(
+        monkeypatch, tmp_path):
+    monkeypatch.setattr(sys, "platform", "linux")
+    monkeypatch.setattr("physics.instance_inventory.os.readlink",
+                        lambda _path: "net:[parent]")
+    monkeypatch.setattr("physics.instance_inventory.os.getuid", lambda: 501)
+    monkeypatch.setattr("physics.instance_inventory.os.getgid", lambda: 20)
+    env = {"UNFOLD_LINUX_NETWORK_SANDBOX": "sudo-unshare"}
+    expected = _prepare_network_attestation(tmp_path, env)
+    assert expected is not None
+    path, ack, nonce, parent, uid, gid = expected
+
+    monkeypatch.setenv("UNFOLD_NETWORK_ATTESTATION_PATH", str(path))
+    monkeypatch.setenv("UNFOLD_NETWORK_ATTESTATION_NONCE", nonce)
+    monkeypatch.setenv("UNFOLD_NETWORK_ATTESTATION_PARENT_NETNS", parent)
+    monkeypatch.setenv("UNFOLD_NETWORK_ATTESTATION_UID", str(uid))
+    monkeypatch.setenv("UNFOLD_NETWORK_ATTESTATION_GID", str(gid))
+    monkeypatch.setenv("UNFOLD_NETWORK_ATTESTATION_ACK", str(ack))
+    monkeypatch.setattr("physics.instance_inventory.os.readlink",
+                        lambda _path: "net:[child]")
+    monkeypatch.setattr("physics.instance_inventory.os.geteuid", lambda: uid)
+    monkeypatch.setattr("physics.instance_inventory.os.getegid", lambda: gid)
+    # The production parent creates this only after validating the receipt.
+    # Pre-creating it lets this single-threaded unit exercise the worker half.
+    ack.write_text("accepted")
+    _write_network_attestation()
+    _require_network_attestation(expected)
+
+    row = {"schema_version": 1, "nonce": nonce, "parent_netns": parent,
+           "child_netns": "net:[child]", "euid": uid, "egid": gid}
+    row["nonce"] = "forged"
+    path.write_text(json.dumps(row))
+    with pytest.raises(RuntimeError, match="attestation is invalid"):
+        _require_network_attestation(expected)
+
+    row["nonce"] = nonce
+    row["child_netns"] = parent
+    path.write_text(json.dumps(row))
+    with pytest.raises(RuntimeError, match="attestation is invalid"):
+        _require_network_attestation(expected)
+
+    row["child_netns"] = "net:[child]"
+    row["euid"] = 0
+    path.write_text(json.dumps(row))
+    with pytest.raises(RuntimeError, match="attestation is invalid"):
+        _require_network_attestation(expected)
+
+    path.unlink()
+    with pytest.raises(RuntimeError, match="attestation is missing"):
+        _require_network_attestation(expected)
+
+
+def test_linux_worker_attestation_is_published_by_atomic_replace(
+        monkeypatch, tmp_path):
+    path = tmp_path / "receipt.json"
+    ack = tmp_path / "receipt.ack"
+    nonce = "a" * 64
+    monkeypatch.setenv("UNFOLD_NETWORK_ATTESTATION_PATH", str(path))
+    monkeypatch.setenv("UNFOLD_NETWORK_ATTESTATION_NONCE", nonce)
+    monkeypatch.setenv("UNFOLD_NETWORK_ATTESTATION_PARENT_NETNS", "net:[parent]")
+    monkeypatch.setenv("UNFOLD_NETWORK_ATTESTATION_UID", "501")
+    monkeypatch.setenv("UNFOLD_NETWORK_ATTESTATION_GID", "20")
+    monkeypatch.setenv("UNFOLD_NETWORK_ATTESTATION_ACK", str(ack))
+    monkeypatch.setattr("physics.instance_inventory.os.readlink",
+                        lambda _path: "net:[child]")
+    monkeypatch.setattr("physics.instance_inventory.os.geteuid", lambda: 501)
+    monkeypatch.setattr("physics.instance_inventory.os.getegid", lambda: 20)
+    ack.write_text("accepted")
+    calls = []
+    real_replace = os.replace
+
+    def replace(source, destination):
+        calls.append((Path(source), Path(destination)))
+        assert Path(source).parent == path.parent
+        assert Path(source) != path
+        assert not path.exists()
+        return real_replace(source, destination)
+
+    monkeypatch.setattr("physics.instance_inventory.os.replace", replace)
+    _write_network_attestation()
+
+    assert calls == [(tmp_path / f".receipt.json.{nonce}.tmp", path)]
+    assert json.loads(path.read_text())["nonce"] == nonce
+    assert not calls[0][0].exists()
+
+
+@pytest.mark.parametrize("payload", ["[]", "null", "1", '"text"'])
+def test_linux_worker_attestation_rejects_non_object_json(
+        monkeypatch, tmp_path, payload):
+    path = tmp_path / "receipt.json"
+    ack = tmp_path / "receipt.ack"
+    path.write_text(payload)
+    with pytest.raises(RuntimeError, match="attestation is invalid"):
+        _require_network_attestation(
+            (path, ack, "nonce", "net:[parent]", 501, 20))
 
 
 def test_constructor_timeout_is_typed_and_child_is_killed():
@@ -184,6 +294,12 @@ def test_recipe_with_false_library_version_is_rejected():
     assert result.status == "failed"
     assert result.failure and result.failure.kind == "ExecutionFailed"
     assert "library version mismatch" in result.failure.detail
+
+
+def test_missing_worker_result_is_not_laundered_as_memory_exhaustion():
+    failure = _worker_exit_failure("worker exited 7 without a result")
+    assert failure.kind == "WorkerFailed"
+    assert failure.stage == "worker_exit"
 
 
 def test_result_dtos_are_closed():
