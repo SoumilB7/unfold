@@ -790,12 +790,16 @@ def test_yaml_only_change_makes_dependency_surface_gate_red(monkeypatch):
         check()
 
 
-def test_quality_workflow_installs_renderer_before_example_check():
-    """The Linux receipt must execute the example gate, not fail its setup."""
+def test_quality_workflow_checks_examples_without_platform_rasterization():
+    """Linux checks source-bound artifacts without re-rasterizing them."""
     workflow = (ROOT / ".github" / "workflows" / "quality.yml").read_text(
         encoding="utf-8")
     install = "sudo apt-get install --yes librsvg2-bin"
     example_check = "python scripts/generate_examples.py --check"
-    assert workflow.count(install) == 1
+    assert install not in workflow
     assert workflow.count(example_check) == 1
-    assert workflow.index(install) < workflow.index(example_check)
+    source = (ROOT / "scripts" / "generate_examples.py").read_text(
+        encoding="utf-8")
+    check_body = source.split("def check(", 1)[1].split("def main(", 1)[0]
+    assert "rasterize_hero=False" in check_body
+    assert "svg_to_png(" not in check_body

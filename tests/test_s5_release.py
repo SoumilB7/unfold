@@ -6,11 +6,13 @@ import copy
 import json
 from pathlib import Path
 import re
+import shutil
 
 from model_unfolder import Diagram
 from model_unfolder.adapters.transformer.parser import _unique_failure_detail
 from model_unfolder.evidence.ship_findings import ShipFinding, apply_ship_findings
 from model_unfolder.ir import EvidenceWarning, ModelIR
+from scripts import generate_examples
 
 
 ROOT = Path(__file__).parent.parent
@@ -134,7 +136,7 @@ def test_readme_support_set_and_counts_are_exactly_coverage_json():
 
 def test_generated_examples_are_reviewed_and_deepseek_is_really_deepseek():
     manifest = json.loads((ROOT / "examples" / "manifest.json").read_text())
-    assert manifest["schema"] == 1
+    assert manifest["schema"] == 2
     assert len(manifest["examples"]) == 8
     for row in manifest["examples"]:
         page = (ROOT / "examples" / row["file"]).read_text()
@@ -144,3 +146,60 @@ def test_generated_examples_are_reviewed_and_deepseek_is_really_deepseek():
     assert "DeepSeek-V3" in deepseek
     assert "DeepseekV3ForCausalLM" in deepseek
     assert "gemma-4-E2B" not in deepseek
+
+
+def _example_validation_fixture(tmp_path):
+    expected = tmp_path / "expected"
+    candidate = tmp_path / "candidate"
+    shutil.copytree(ROOT / "examples", expected)
+    candidate.mkdir()
+    for page in (ROOT / "examples").glob("*.html"):
+        shutil.copy2(page, candidate / page.name)
+    rows = json.loads((expected / "manifest.json").read_text())["examples"]
+    return expected, candidate, generate_examples._candidate_projection(rows)
+
+
+def test_hero_svg_change_without_new_reviewed_png_is_stale(tmp_path):
+    expected, candidate, rows = _example_validation_fixture(tmp_path)
+    hero = next(row for row in rows if "hero_png" in row)
+    hero["hero_png"]["source_svg_sha256"] = "0" * 64
+    assert "manifest metadata or hero SVG-input seal is stale" in \
+        generate_examples._validation_errors(expected, candidate, rows)
+
+
+def test_reviewed_png_byte_change_is_stale(tmp_path):
+    expected, candidate, rows = _example_validation_fixture(tmp_path)
+    hero = next(row for row in rows if "hero_png" in row)["hero_png"]
+    path = expected / hero["file"]
+    data = bytearray(path.read_bytes())
+    data[-1] ^= 1
+    path.write_bytes(data)
+    assert "reviewed hero PNG bytes do not match their manifest seal" in \
+        generate_examples._validation_errors(expected, candidate, rows)
+
+
+def test_forged_png_manifest_hash_is_stale(tmp_path):
+    expected, candidate, rows = _example_validation_fixture(tmp_path)
+    manifest_path = expected / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    next(row for row in manifest["examples"] if "hero_png" in row)[
+        "hero_png"]["sha256"] = "0" * 64
+    manifest_path.write_text(json.dumps(manifest))
+    assert "reviewed hero PNG bytes do not match their manifest seal" in \
+        generate_examples._validation_errors(expected, candidate, rows)
+
+
+def test_deterministic_html_change_is_stale(tmp_path):
+    expected, candidate, rows = _example_validation_fixture(tmp_path)
+    page = candidate / "llama-7b.html"
+    page.write_text(page.read_text() + "changed")
+    assert "deterministic HTML is stale: llama-7b.html" in \
+        generate_examples._validation_errors(expected, candidate, rows)
+
+
+def test_example_check_never_invokes_platform_rasterizer(monkeypatch):
+    monkeypatch.setattr(
+        generate_examples, "svg_to_png",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("verification invoked the platform rasterizer")))
+    assert generate_examples.check() == 0
