@@ -124,6 +124,54 @@ def _json_bytes(value: Any) -> bytes:
             + "\n").encode("utf-8")
 
 
+def _portable_source_index_fingerprint(index: Any) -> str:
+    """Content-address the static source closure without host install paths.
+
+    ``ProgramIndex.fingerprint`` deliberately includes absolute paths because
+    they are part of its process-local address identity.  Persisted S7 evidence
+    crosses machines, so its index seal instead retains the complete source
+    multiset using component/import provenance, filename and content hash.  A
+    rename, ownership change, external provenance change or byte change still
+    changes the seal; relocating the same environment does not.
+    """
+    sources = [node.source_id for node in getattr(index, "source_nodes", ())]
+    sources.extend(
+        failure.source for failure in getattr(index, "parse_failures", ()))
+    if not sources:
+        raise ValueError("portable source-index fingerprint needs a source census")
+    paths = tuple(sorted(set(source.canonical_path for source in sources)))
+
+    def parts(path: str) -> tuple[str, ...]:
+        values = tuple(part for part in path.replace("\\", "/").split("/")
+                       if part and not part.endswith(":"))
+        if not values:
+            raise ValueError("a source-index entry has no portable path parts")
+        return values
+
+    path_parts = {path: parts(path) for path in paths}
+
+    def logical_locator(path: str) -> str:
+        value = path_parts[path]
+        for width in range(1, len(value) + 1):
+            suffix = value[-width:]
+            if sum(other[-width:] == suffix for other in path_parts.values()
+                   if len(other) >= width) == 1:
+                return "/".join(suffix)
+        # A relative one-part path can be a suffix of an absolute path.  Mark
+        # that exact logical-root case instead of importing an installation
+        # prefix merely to make it different.
+        return "@source-root/" + "/".join(value)
+
+    rows = sorted((
+        source.component_key or "",
+        "1" if source.external else "0",
+        source.external_provenance,
+        logical_locator(source.canonical_path),
+        source.content_fingerprint,
+    ) for source in sources)
+    return _sha256(_json_bytes(rows))
+
+
 _SEMANTIC_ENVIRONMENT_PATHS = frozenset({
     ("inventory_provenance", "environment"),
     ("attempts", "*", "observation", "provenance", "environment"),
@@ -1150,13 +1198,13 @@ def _one(target: Mapping[str, Any], *, write_relations: bool,
         proofs.update(_static_relation_proofs(
             index, inventory, relation_result))
     relation_rows = relation_rows_from_evidence(
-        inventory=inventory,
+        inventory=inventory, program_index=index,
         relation_observations=relation_results,
         facts=facts, static_proofs=tuple(proofs))
     table = reconcile(
         model=target["model"], inventory=inventory,
         observations=all_observations,
-        config_document=prepared,
+        config_document=prepared, program_index=index,
         static_claims=static_claims, projection_claims=projection_claims,
         relation_rows=relation_rows)
     findings = unresolved_axis_findings(table)
@@ -1165,7 +1213,7 @@ def _one(target: Mapping[str, Any], *, write_relations: bool,
         "target": dict(target),
         "inventory_provenance": dataclasses.asdict(inventory.provenance),
         "root_resolution": root.status,
-        "source_index_fingerprint": index.fingerprint,
+        "source_index_fingerprint": _portable_source_index_fingerprint(index),
         "fact_keys_consumed": sorted({key for relation in relation_rows
                                       for key in relation.fact_keys}),
         "product_layer_schedule": _layer_schedule(ir),

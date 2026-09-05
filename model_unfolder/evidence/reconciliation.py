@@ -25,6 +25,7 @@ from typing import Any, Mapping, Sequence
 
 from .claim_evidence import CLAIM_KINDS, ClaimProofSummary
 from .facts import EvidenceFact
+from .program_index import ProgramIndex
 
 
 CONSTRUCTION_KINDS = frozenset({
@@ -1018,6 +1019,7 @@ def reconcile(
     inventory: Any,
     observations: Sequence[Any],
     config_document: Any,
+    program_index: ProgramIndex,
     static_claims: Sequence[StaticOccurrenceClaim] = (),
     projection_claims: Sequence[ProjectionClaim] = (),
     relation_rows: Sequence[RelationRow] = (),
@@ -1038,6 +1040,8 @@ def reconcile(
         raise TypeError("reconcile requires an InstanceInventory")
     if not isinstance(config_document, PreparedDocument):
         raise TypeError("reconcile requires a PreparedDocument")
+    if not isinstance(program_index, ProgramIndex):
+        raise TypeError("reconcile requires the exact ProgramIndex source census")
     modules = tuple(getattr(inventory, "modules", ()))
     provenance = getattr(inventory, "provenance", None)
     config_hash = getattr(provenance, "config_sha256", "")
@@ -1137,9 +1141,16 @@ def reconcile(
         facts = projection_claim.facts if projection_claim else ()
         fact_paths = tuple(sorted({item for fact in facts
                                   for item in fact.config_paths}))
+        # Facts predate the portable S7 artifact boundary and therefore retain
+        # the exact local filename used while parsing.  Persist the content
+        # address carried by the static ProgramIndex, not a macOS/Linux
+        # installation prefix.  This is still exact provenance: source bytes
+        # (SHA-256) + line.  A missing or conflicting address blocks generation
+        # rather than choosing a familiar file or silently dropping the claim.
         source_spans = tuple(sorted({
-            f"{span.file or ''}:{span.line or 0}"
-            for fact in facts for span in fact.source_spans
+            source_key
+            for fact in facts
+            for source_key in _fact_source_keys(fact, program_index)
         }))
         static_meaning = static.occurrence if static is not None else None
         primitive_meaning = (runtime_class
@@ -1271,22 +1282,48 @@ def _relation_id(kind: str, sources: tuple[str, ...], targets: tuple[str, ...],
     return f"{kind}:{digest}"
 
 
-def _fact_source_keys(fact: EvidenceFact, inventory: Any) -> tuple[str, ...]:
+def _fact_source_keys(fact: EvidenceFact, program_index: ProgramIndex) \
+        -> tuple[str, ...]:
     """Normalize a fact's source spans to content addresses.
 
-    Fact spans predate S7 and may contain absolute local paths.  The inventory
-    already carries the authoritative source bytes, so persisted S7 artifacts
-    use the matching source hash and line rather than a machine-specific path.
+    Fact spans predate S7 and may contain absolute local paths.  The ProgramIndex
+    is their static-source authority (and includes supporting files that need not
+    occur in an instance MRO), so persisted S7 artifacts use its matching source
+    hash and line rather than a machine-specific path.
     """
-    files = tuple(inventory.provenance.source_files)
+    if not isinstance(program_index, ProgramIndex):
+        raise TypeError("fact-source normalization requires a ProgramIndex")
+    sources = tuple(node.source_id for node in program_index.source_nodes)
     rows: set[str] = set()
     for span in fact.source_spans:
         if not span.file or not span.line:
             continue
-        name = Path(span.file).name
-        matches = tuple(item for item in files if Path(item.path).name == name)
-        if len(matches) == 1:
-            rows.add(f"sha256:{matches[0].sha256}:{span.line}")
+        try:
+            source_path = str(Path(span.file).resolve())
+        except (OSError, ValueError) as exc:
+            raise ValueError(
+                f"fact {fact.ledger_key()!r} has an unresolvable source span "
+                f"{span.file!r}:{span.line}: {exc}") from exc
+        exact = tuple(source for source in sources
+                      if str(Path(source.canonical_path).resolve()) == source_path)
+        matches = exact
+        if not matches:
+            name = Path(source_path).name
+            matches = tuple(source for source in sources
+                            if Path(source.canonical_path).name == name)
+        fingerprints = tuple(sorted(set(
+            source.content_fingerprint for source in matches)))
+        if len(fingerprints) != 1:
+            candidates = tuple(sorted(
+                (source.component_key or source.external_provenance,
+                 source.canonical_path, source.content_fingerprint)
+                for source in matches))
+            raise ValueError(
+                f"fact {fact.ledger_key()!r} source span "
+                f"{span.file!r}:{span.line} has "
+                f"{'no' if not matches else 'conflicting'} ProgramIndex source "
+                f"address: {candidates!r}")
+        rows.add(f"sha256:{fingerprints[0]}:{span.line}")
     return tuple(sorted(rows))
 
 
@@ -1391,6 +1428,7 @@ def _proof_matches(proof: Any, class_refs: Sequence[Any], inventory: Any) -> boo
 def relation_rows_from_evidence(
     *,
     inventory: Any,
+    program_index: ProgramIndex,
     relation_observations: Sequence[Any],
     facts: Mapping[str, EvidenceFact],
     static_proofs: Sequence[Any] = (),
@@ -1408,6 +1446,8 @@ def relation_rows_from_evidence(
         raise TypeError("relation reconciliation requires InstanceInventory")
     if any(not isinstance(value, EvidenceFact) for value in facts.values()):
         raise TypeError("relation reconciliation consumes existing EvidenceFact rows")
+    if not isinstance(program_index, ProgramIndex):
+        raise TypeError("relation reconciliation requires the exact ProgramIndex")
     observations = _relation_observations(relation_observations, inventory)
     paths = frozenset(row.path for row in inventory.modules)
     proofs = tuple(static_proofs)
@@ -1423,7 +1463,7 @@ def relation_rows_from_evidence(
         }))
         if len(endpoints) < 2:
             continue
-        source_support = (_fact_source_keys(tie_fact, inventory)
+        source_support = (_fact_source_keys(tie_fact, program_index)
                           if tie_fact is not None else ())
         config_support = tuple(sorted(tie_fact.config_paths)) \
             if tie_fact is not None and tie_fact.value is True else ()
@@ -1448,17 +1488,17 @@ def relation_rows_from_evidence(
                          for row in observation.cross_layer_uses}
 
         if kv_fact is not None and isinstance(kv_fact.value, (tuple, list)):
-            for target_index, source_index in enumerate(kv_fact.value):
-                if source_index is None:
+            for target_index, source_layer_index in enumerate(kv_fact.value):
+                if source_layer_index is None:
                     continue
-                source = boundary_by_index.get(source_index)
+                source = boundary_by_index.get(source_layer_index)
                 target = boundary_by_index.get(target_index)
-                traced = cross_by_pair.get((source_index, target_index))
+                traced = cross_by_pair.get((source_layer_index, target_index))
                 if source is None or target is None or traced is None:
                     continue
-                detail = {"what": "key_value", "from_layer": source_index,
+                detail = {"what": "key_value", "from_layer": source_layer_index,
                           "to_layer": target_index}
-                spans = _fact_source_keys(kv_fact, inventory)
+                spans = _fact_source_keys(kv_fact, program_index)
                 kind = "activation_reuse" if spans else "relation_unresolved"
                 investigation = None
                 if not spans:
@@ -1554,7 +1594,7 @@ def relation_rows_from_evidence(
                     boundary.path for boundary in observation.boundaries
                     if any(tuple(item.shape) in side_shapes
                            for item in boundary.inputs[1:])))
-                spans = _fact_source_keys(side_fact, inventory)
+                spans = _fact_source_keys(side_fact, program_index)
                 detail = {"input_shapes": [list(shape)
                                            for shape in sorted(side_shapes)]}
                 kind = "per_layer_side_input" if spans and targets \

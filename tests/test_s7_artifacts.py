@@ -18,7 +18,8 @@ from scripts.generate_s7_shadow import (
     RecipeAttemptBundle, RecipeResolution, _assert_live_shadow_matches,
     _assert_logical_payload_matches, _assert_model_summary_matches,
     _bf16_retry, _execution_rows_for_run, _generation_sources,
-    _inventory_for_run, _semantic_payload, _signature_recipe,
+    _inventory_for_run, _portable_source_index_fingerprint, _semantic_payload,
+    _signature_recipe,
     _require_schema_version, _source_hashes, _stable_observation_payload, _targets,
     _validate_relation_cross_file, _validate_relation_payload,
     _validate_target_metadata, check,
@@ -493,6 +494,57 @@ def test_semantic_live_hash_normalizes_only_host_metadata_and_diagnostics():
     attempts_changed = {
         "attempts": [{"stdout": "other noise", "stderr": "other error"}]}
     assert _semantic_payload(attempts) == _semantic_payload(attempts_changed)
+
+
+def test_persisted_source_index_seal_is_path_independent_but_evidence_sensitive():
+    def source(path, *, fingerprint="a" * 64, component="root",
+               external=False, provenance=""):
+        return SimpleNamespace(
+            canonical_path=path, content_fingerprint=fingerprint,
+            component_key=None if external else component,
+            external=external, external_provenance=provenance)
+
+    def index(*sources):
+        return SimpleNamespace(
+            source_nodes=tuple(SimpleNamespace(source_id=row)
+                               for row in sources),
+            parse_failures=())
+
+    mac = index(
+        source("/Library/Python/site-packages/pkg/a/modeling_x.py",
+               external=True, provenance="pkg.a.modeling_x"),
+        source("/Library/Python/site-packages/pkg/b/modeling_x.py",
+               fingerprint="b" * 64, external=True,
+               provenance="pkg.b.modeling_x"),
+    )
+    linux = index(
+        source("/opt/python/site-packages/pkg/b/modeling_x.py",
+               fingerprint="b" * 64, external=True,
+               provenance="pkg.b.modeling_x"),
+        source("/opt/python/site-packages/pkg/a/modeling_x.py",
+               external=True, provenance="pkg.a.modeling_x"),
+    )
+    expected = _portable_source_index_fingerprint(mac)
+    assert _portable_source_index_fingerprint(linux) == expected
+    second = source("/opt/python/site-packages/pkg/b/modeling_x.py",
+                    fingerprint="b" * 64, external=True,
+                    provenance="pkg.b.modeling_x")
+    for changed in (
+        index(source("/opt/python/site-packages/pkg/a/modeling_x.py",
+                     fingerprint="c" * 64, external=True,
+                     provenance="pkg.a.modeling_x"), second),
+        index(source("/opt/python/site-packages/pkg/a/modeling_x.py",
+                     external=True, provenance="other.modeling_x"), second),
+        index(source("/opt/python/site-packages/pkg/a/renamed.py",
+                     external=True, provenance="pkg.a.modeling_x"), second),
+        index(source("/opt/python/site-packages/pkg/a/modeling_x.py",
+                     component="vision"), second),
+        index(source("/opt/python/site-packages/pkg/a/modeling_x.py",
+                     external=True, provenance="pkg.a.modeling_x"),
+              source("/opt/python/site-packages/pkg/a/modeling_x.py",
+                     external=True, provenance="pkg.a.modeling_x"), second),
+    ):
+        assert _portable_source_index_fingerprint(changed) != expected
 
 
 def test_class_default_dtype_is_not_recorded_as_checkpoint_deployment_fact(

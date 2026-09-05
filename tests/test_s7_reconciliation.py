@@ -42,8 +42,8 @@ from model_unfolder.evidence.reconciliation import (
     StaticOccurrenceRef,
     authority_for,
     projection_claims_from_product,
-    reconcile,
-    relation_rows_from_evidence,
+    reconcile as _reconcile_under_test,
+    relation_rows_from_evidence as _relation_rows_under_test,
     unresolved_axis_findings,
     unresolved_reason_class_counts,
 )
@@ -64,7 +64,7 @@ from physics.instance_inventory import (
     SourceFile,
 )
 from physics.relation_observation import (
-    LayerBoundaryObservation, MatrixContractionObservation,
+    CrossLayerTensorUse, LayerBoundaryObservation, MatrixContractionObservation,
     RelationObservation, RelationObservationResult, TensorShape,
 )
 
@@ -239,6 +239,17 @@ def _product_index():
     )
 
 
+def reconcile(**kwargs):
+    """Keep every fixture reconciliation on one explicit source census."""
+    kwargs.setdefault("program_index", _product_index())
+    return _reconcile_under_test(**kwargs)
+
+
+def relation_rows_from_evidence(**kwargs):
+    kwargs.setdefault("program_index", _product_index())
+    return _relation_rows_under_test(**kwargs)
+
+
 def _product_ir(*, head=True):
     blocks = [{"id": "head", "kind": "output", "label": "Output"}] \
         if head else []
@@ -360,6 +371,118 @@ def test_two_key_provenance_never_uses_runtime_class_as_meaning():
     assert row.provenance.meaning.static_occurrence == _static().occurrence
     assert row.provenance.meaning.config_paths == ("width",)
     assert row.provenance.meaning.fact_keys == (_fact().ledger_key(),)
+
+
+def test_fact_source_provenance_is_content_addressed_not_host_addressed():
+    supporting_source = SourceId(
+        "/host/site-packages/transformers/modeling_rope_utils.py", FP, "root")
+    source_index = ProgramIndex(
+        "fixture", source_nodes=(SourceFileNode(supporting_source),),
+        fingerprint="c" * 64)
+    document = _document()
+    raw = dataclasses.replace(
+        _raw_fact(),
+        source_spans=(FactSpan(
+            "root",
+            file="/host/site-packages/transformers/modeling_rope_utils.py",
+            line=10),),
+    )
+    fact = qualify_config_value_fact(
+        raw, (_value_event(raw, document),), document)
+    citation = ProjectionFactCitation(fact)
+    claim = ProjectionClaim(
+        "blocks.0",
+        ProjectionAxis(
+            "grouped", parent="blocks", rule="typed-fact drill",
+            fact_keys=(fact.ledger_key(),),
+            fact_claim_kinds=((fact.ledger_key(), "value"),),
+            fact_claim_proofs=(citation.summary,)),
+        (citation,), (fact,),
+    )
+    table = reconcile(
+        model="fixture", inventory=_inventory(), observations=(),
+        config_document=document, program_index=source_index,
+        projection_claims=(claim,))
+    row = next(item for item in table.occurrences
+               if item.provenance.instance_path == "blocks.0")
+    assert row.provenance.meaning.source_spans == (f"sha256:{FP}:10",)
+    assert "/host/" not in row.provenance.meaning.source_spans[0]
+
+
+def test_fact_source_mapping_never_chooses_a_duplicate_basename():
+    fixture_source = SourceId(
+        "/host/site-packages/fixture/normalization.py", FP, "root")
+    other_source = SourceId(
+        "/host/site-packages/other/normalization.py", "b" * 64, "root")
+    source_index = ProgramIndex(
+        "fixture",
+        source_nodes=(SourceFileNode(fixture_source),
+                      SourceFileNode(other_source)),
+        fingerprint="c" * 64,
+    )
+    document = _document()
+    raw = dataclasses.replace(
+        _raw_fact(),
+        source_spans=(FactSpan(
+            "root", file="/host/site-packages/fixture/normalization.py",
+            line=12),),
+    )
+    fact = qualify_config_value_fact(
+        raw, (_value_event(raw, document),), document)
+    citation = ProjectionFactCitation(fact)
+    claim = ProjectionClaim(
+        "blocks.0",
+        ProjectionAxis(
+            "grouped", parent="blocks", rule="typed-fact drill",
+            fact_keys=(fact.ledger_key(),),
+            fact_claim_kinds=((fact.ledger_key(), "value"),),
+            fact_claim_proofs=(citation.summary,)),
+        (citation,), (fact,),
+    )
+    table = reconcile(
+        model="fixture", inventory=_inventory(), observations=(),
+        config_document=document, program_index=source_index,
+        projection_claims=(claim,))
+    row = next(item for item in table.occurrences
+               if item.provenance.instance_path == "blocks.0")
+    assert row.provenance.meaning.source_spans == (f"sha256:{FP}:12",)
+
+
+def test_ambiguous_or_missing_fact_source_provenance_blocks():
+    sources = (
+        SourceId("/one/normalization.py", FP, "root"),
+        SourceId("/two/normalization.py", "b" * 64, "root"),
+    )
+    source_index = ProgramIndex(
+        "fixture", source_nodes=tuple(SourceFileNode(row) for row in sources),
+        fingerprint="c" * 64)
+    document = _document()
+
+    def claim_for(file):
+        raw = dataclasses.replace(
+            _raw_fact(), source_spans=(FactSpan("root", file=file, line=12),))
+        fact = qualify_config_value_fact(
+            raw, (_value_event(raw, document),), document)
+        citation = ProjectionFactCitation(fact)
+        return ProjectionClaim(
+            "blocks.0",
+            ProjectionAxis(
+                "grouped", parent="blocks", rule="typed-fact drill",
+                fact_keys=(fact.ledger_key(),),
+                fact_claim_kinds=((fact.ledger_key(), "value"),),
+                fact_claim_proofs=(citation.summary,)),
+            (citation,), (fact,))
+
+    with pytest.raises(ValueError, match="conflicting ProgramIndex source address"):
+        reconcile(
+            model="fixture", inventory=_inventory(), observations=(),
+            config_document=document, program_index=source_index,
+            projection_claims=(claim_for("/unknown/normalization.py"),))
+    with pytest.raises(ValueError, match="no ProgramIndex source address"):
+        reconcile(
+            model="fixture", inventory=_inventory(), observations=(),
+            config_document=document, program_index=source_index,
+            projection_claims=(claim_for("/unknown/missing.py"),))
 
 
 def test_trace_alias_does_not_claim_which_occurrence_path_executed():
@@ -944,6 +1067,34 @@ def test_relation_join_needs_trace_shape_and_exact_class_source_proof():
     unresolved = relation_rows_from_evidence(
         inventory=inventory, relation_observations=(result,), facts={})
     assert unresolved[0].kind == "relation_unresolved"
+
+
+def test_kv_reuse_source_census_cannot_be_shadowed_by_layer_index():
+    inventory = _inventory()
+    recipe = ExecutionRecipe(
+        "reuse", "tokens", "eval", "disabled", "decoder", False,
+        "float32", {"fixture": "1"})
+    shape = TensorShape("hidden", (1, 8, 4), "torch.float32")
+    boundaries = tuple(LayerBoundaryObservation(
+        index, f"blocks.{index}", index, (shape,),
+        (TensorShape("output", shape.shape, shape.dtype),), ())
+        for index in range(2))
+    cross = CrossLayerTensorUse(
+        0, "blocks.0", 1, "blocks.1", "past_key_value", shape.shape)
+    observation = RelationObservation(
+        3, inventory.provenance, recipe, "blocks", boundaries, (cross,), ())
+    result = RelationObservationResult(
+        "ok", recipe, observation, inventory.provenance)
+    fact = EvidenceFact(
+        "kv_sharing_schedule", "decoder.attention", (None, 0), "code_proven",
+        completeness="complete",
+        source_spans=(FactSpan("root", file="model.py", line=10),),
+        reason="fixture exact reuse schedule")
+    rows = relation_rows_from_evidence(
+        inventory=inventory, relation_observations=(result,),
+        facts={fact.ledger_key(): fact})
+    assert len(rows) == 1 and rows[0].kind == "activation_reuse"
+    assert rows[0].static_evidence == (f"sha256:{FP}:10",)
 
 
 def test_multi_stream_shape_requires_exact_recipe_lineage_and_unique_axis():
