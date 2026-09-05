@@ -523,8 +523,6 @@ def test_config_value_cannot_certify_an_applied_function_claim():
 
 def test_product_fact_joins_exact_source_class_to_runtime_occurrences():
     fact = _fact()
-    citation = ProjectionFactCitation(
-        fact, FactClaimDeclaration("mechanism", "connection", "forward_dataflow"))
     event = RenderEvent(
         "architecture", (), "root", "", "", "", None,
         frozenset(), frozenset({"q_proj"}),

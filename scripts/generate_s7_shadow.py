@@ -756,7 +756,6 @@ def _one(target: Mapping[str, Any], *, write_relations: bool,
     # generator never trying the model at all.
     recipe_resolution = _signature_recipe(index, root, inventory, config)
     signature_bundle = _run_signature_recipe(request, recipe_resolution)
-    signature_result = signature_bundle.final
     if write_relations:
         _write_gzip_json(
             output / "observations" / f"{target['slug']}.json.gz",
