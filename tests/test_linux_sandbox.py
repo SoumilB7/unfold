@@ -74,6 +74,9 @@ def test_linux_preflight_precedes_expensive_model_denominator():
     workflow = (ROOT / ".github" / "workflows" / "quality.yml").read_text()
     preflight = "python scripts/verify_linux_network_sandbox.py"
     denominator = "python scripts/coverage.py --check"
+    shadow = "python scripts/generate_s7_shadow.py --ci-shadow"
     assert workflow.count(preflight) == 1
     assert workflow.count(denominator) == 1
+    assert workflow.count(shadow) == 1
     assert workflow.index(preflight) < workflow.index(denominator)
+    assert workflow.index(shadow) < workflow.index(denominator)

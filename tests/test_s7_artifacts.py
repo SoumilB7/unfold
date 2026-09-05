@@ -16,6 +16,7 @@ from model_unfolder.evidence.reconciliation import (
 )
 from scripts.generate_s7_shadow import (
     RecipeAttemptBundle, RecipeResolution, _assert_live_shadow_matches,
+    _assert_model_summary_matches,
     _bf16_retry, _generation_sources, _semantic_payload, _signature_recipe,
     _require_schema_version, _source_hashes, _stable_observation_payload, _targets,
     _validate_relation_cross_file, _validate_relation_payload,
@@ -384,6 +385,18 @@ def test_live_shadow_must_equal_committed_logical_artifacts():
         "observations/x.json.gz": "5"}}
     with pytest.raises(ValueError, match="logical_observation_artifacts"):
         _assert_live_shadow_matches(changed_observation, committed)
+
+
+def test_live_shadow_model_mismatch_names_slug_field_and_both_values():
+    committed = {"slug": "model-a", "recipe_status": "failed", "relations": 2}
+    live = {"slug": "model-a", "recipe_status": "ok", "relations": 2}
+    with pytest.raises(ValueError) as captured:
+        _assert_model_summary_matches(live, committed)
+    detail = str(captured.value)
+    assert "model-a" in detail
+    assert "recipe_status" in detail
+    assert "committed='failed'" in detail
+    assert "live='ok'" in detail
 
 
 def test_semantic_live_hash_normalizes_only_host_metadata_and_diagnostics():

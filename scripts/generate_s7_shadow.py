@@ -1165,7 +1165,27 @@ def _one(target: Mapping[str, Any], *, write_relations: bool,
     }, signature_bundle.to_dict(), relation_payload
 
 
-def generate(*, output: Path = OUTPUT, ci_shadow: bool = False) -> dict[str, Any]:
+def _assert_model_summary_matches(actual: Mapping[str, Any],
+                                  expected: Mapping[str, Any]) -> None:
+    """Fail at the first exact model field that differs across environments."""
+    slug = actual.get("slug")
+    if slug != expected.get("slug"):
+        raise ValueError(
+            f"live Linux S7 shadow expected slug {expected.get('slug')!r}, "
+            f"got {slug!r}")
+    keys = sorted(set(actual) | set(expected))
+    changed = [key for key in keys if actual.get(key) != expected.get(key)]
+    if changed:
+        detail = "; ".join(
+            f"{key}: committed={expected.get(key)!r}, live={actual.get(key)!r}"
+            for key in changed)
+        raise ValueError(
+            f"live Linux S7 shadow model {slug!r} disagrees: {detail}")
+
+
+def generate(*, output: Path = OUTPUT, ci_shadow: bool = False,
+             expected_models: Mapping[str, Mapping[str, Any]] | None = None,
+             ) -> dict[str, Any]:
     targets = _targets()
     rows = []
     artifact_hashes = {}
@@ -1255,6 +1275,13 @@ def generate(*, output: Path = OUTPUT, ci_shadow: bool = False) -> dict[str, Any
                 artifact["construction_schedules"]),
         }
         rows.append(summary)
+        if ci_shadow and expected_models is not None:
+            expected = expected_models.get(target["slug"])
+            if expected is None:
+                raise ValueError(
+                    f"live Linux S7 shadow has no committed model row for "
+                    f"{target['slug']!r}")
+            _assert_model_summary_matches(summary, expected)
         if not ci_shadow:
             path = output / "models" / f"{target['slug']}.json.gz"
             _write_gzip_json(path, artifact)
@@ -1614,11 +1641,20 @@ def main() -> int:
     if args.check:
         check()
     elif args.ci_shadow:
-        result = generate(ci_shadow=True)
-        if len(result["models"]) != 39:
-            raise ValueError("Linux S7 shadow did not execute all 39 targets")
         committed = json.loads(
             (OUTPUT / "matrix.json").read_text(encoding="utf-8"))
+        expected_rows = committed.get("models")
+        if not isinstance(expected_rows, list):
+            raise ValueError("committed S7 matrix has no model rows")
+        expected_models = {
+            row.get("slug"): row for row in expected_rows
+            if isinstance(row, Mapping) and isinstance(row.get("slug"), str)}
+        if len(expected_models) != 39:
+            raise ValueError("committed S7 matrix does not contain 39 unique slugs")
+        result = generate(
+            ci_shadow=True, expected_models=expected_models)
+        if len(result["models"]) != 39:
+            raise ValueError("Linux S7 shadow did not execute all 39 targets")
         _assert_live_shadow_matches(result, committed)
     else:
         generate()

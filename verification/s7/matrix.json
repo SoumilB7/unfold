@@ -6402,7 +6402,7 @@
     "physics/execution_observation.py": "a48f1f86a1e7c4bef29baf6baa9b6df0916a507a0cd4859601b9b5d5911a38ac",
     "physics/instance_inventory.py": "4315986c1db7cd83bdba56f1ec75a41134af1a1321c699f46b0ff1f9f1d32303",
     "physics/relation_observation.py": "16e38f8c45da13f0b328b1c2abcf115f4b9ed32f2dffe512a35d253bb6d0752c",
-    "scripts/generate_s7_shadow.py": "9ad4ae5a7cdc10551214824306ce7e7ff7f5760f314832c5a1abe91d6e850374",
+    "scripts/generate_s7_shadow.py": "ac606f80f233b2e4b6335c9e3d85ed34f7714de92f0cada1338dd446bca015ef",
     "tests/sable_test_corpus/auraflow-v0-3.json": "105bbd65a8575c0f50e92f3090b7bf1089e7f3bd5c3802d76cd06844d4e5d73c",
     "tests/sable_test_corpus/bloom.json": "ec3c45693cfa29ebab32657ca294ab592fce04aedbca0dc1d7aef13ea6371eaa",
     "tests/sable_test_corpus/cogvideox-5b.json": "8da9cccfafce3e9735601aea8fcc3783247a0ed7a68773d42650871e5437847e",
