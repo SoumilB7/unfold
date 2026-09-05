@@ -1,409 +1,473 @@
 """Exact multimodal projector/merger evidence from qualified HF source."""
 from __future__ import annotations
 
-import ast
-from pathlib import Path
+from dataclasses import dataclass
 from typing import Any
 
-from .ast_scanner import _call_name
-from .forward_ops import _method, _role_of, _self_field
+from .component_owner import resolve_component_root
 from .models import ProjectorEvidence, SourceBundle, SourceOp
 from .sources import resolve_source_files
-from .transitive import resolve_architecture_anchor,  CallableInfo, build_registry
+from .program_index import ProgramIndex
+from .projector_lineage import projector_lineage_result
+from .projector_chain import ACTIVATION_REGISTRY_PROTOCOLS
+from .construction_calls import resolve_import_reference
+from .expression_eval import constructor_argument_env
+from .ffn_mechanism import ffn_mechanism_at_block
+from .repeated_projector import (
+    repeated_projector_pipeline_at_owner,
+    repeated_projector_pipeline_for_candidate,
+)
+from .projector_width import ProjectorWidthEvidence, WidthOperand, projector_width_evidence
+from .reader_result import ReaderFailure, ReaderResult
 
-_EXPLICIT_FIELD_MARKERS = ("projector", "merger", "connector", "resampler")
-_MODALITY_FIELD_MARKERS = ("vision", "image", "visual", "multimodal", "multi_modal")
+@dataclass(frozen=True)
+class ProjectorEvidenceInventory:
+    """Per-destination projector facts proven from exact fusion operands."""
+
+    projectors: tuple[ProjectorEvidence, ...]
+
+    def __post_init__(self):
+        if not self.projectors:
+            raise ValueError("a resolved projector inventory is non-empty")
+        modalities = tuple(
+            modality for item in self.projectors for modality in item.modalities)
+        if any(item.status != "proven" or not item.modalities
+               for item in self.projectors):
+            raise ValueError("inventory entries are proven and destination-qualified")
+        if len(modalities) != len(set(modalities)):
+            raise ValueError("one destination modality has one projector mechanism")
+
+    def to_dict(self):
+        return {"projectors": [item.to_dict() for item in self.projectors]}
 
 
 def projector_evidence(target: Any, *, source: str = "local",
-                       bundle: SourceBundle | None = None) -> ProjectorEvidence:
+                       bundle: SourceBundle | None = None,
+                       index: ProgramIndex | None = None,
+                       parse_context=None,
+                       config_selector=None) -> ProjectorEvidence:
+    """Compatibility projection of the exact producer-lineage result.
+
+    This public entry point no longer has a second whole-file AST authority.
+    Supplying only a config still builds the same ProgramIndex and exact owner
+    graph used by parser/conformance.
+    """
+    if parse_context is not None:
+        from .context import ParseContext
+        if not isinstance(parse_context, ParseContext):
+            raise TypeError("parse_context must be a ParseContext")
+        return _projector_result_value(projector_result_for_context(
+            parse_context,
+            config_document=target,
+            config_selector=config_selector or _document_selector(target)))
     bundle = bundle or resolve_source_files(target, source=source)
     if not bundle.files:
         return ProjectorEvidence("oracle_missing", reason="no modeling source")
-    registry = build_registry(bundle.files)
-    root = resolve_architecture_anchor(
-        registry, bundle.architecture or (bundle.component_architectures or {}).get("root"))
-    candidates = _reachable_projectors(root, registry)
-    if not candidates:
-        return ProjectorEvidence("ambiguous", owner_class=root or "",
-                                 reason="no exact projector field resolved")
-    # Prefer the shallowest wrapper-owned connector; ties prefer a concrete
-    # callable over a primitive so nested Mistral/Qwen mergers remain expandable.
-    owner, field, cls, depth = sorted(
-        candidates,
-        key=lambda item: (item[3], _field_rank(item[1]), item[0], item[1]),
-    )[0]
-    owner_info = registry[owner]
-    callable_cls = owner if _is_projection_wrapper(field, cls, owner_info, registry) else cls
-    info = registry.get(callable_cls)
-    if info:
-        ops = _callable_ops(
-            callable_cls, info, registry, set(),
-            activation=_activation_value(target),
-            repeat=_resampler_depth(target),
+    from .program_index import build_program_index
+    result = projector_result(
+        index or build_program_index(bundle), bundle,
+        config_document=target,
+        config_selector=config_selector or _document_selector(target))
+    return _projector_result_value(result)
+
+
+def projector_result_for_context(context, *, config_document=None,
+                                 config_selector=None):
+    """The one call-local projector result shared by parser and conformance."""
+    from .context import ParseContext
+    if not isinstance(context, ParseContext):
+        raise TypeError("projector_result_for_context requires a ParseContext")
+    key = ("root.projector", ())
+    result = context.reader_results.get(key)
+    if result is None:
+        if config_selector is None and config_document is not None:
+            config_selector = _document_selector(config_document)
+        result = projector_result(
+            context.program_index(), context.source_bundle,
+            config_document=config_document,
+            config_selector=config_selector)
+        context.reader_results[key] = result
+    return result
+
+
+def projector_result_for_target(target, *, source="local", bundle=None,
+                                index=None):
+    """Build the same typed result when no call-local parse context exists."""
+    bundle = bundle or resolve_source_files(target, source=source)
+    if not bundle.files:
+        return ReaderResult.failed(None, (ReaderFailure(
+            "source_missing", "no modeling source"),))
+    if index is None:
+        from .program_index import build_program_index
+        index = build_program_index(bundle)
+    return projector_result(
+        index, bundle, config_document=target,
+        config_selector=_document_selector(target))
+
+
+def projector_result(index: ProgramIndex, bundle: SourceBundle, *,
+                     config_document=None, config_selector=None):
+    """Resolve per-destination projector facts from exact fusion operands."""
+    if not isinstance(index, ProgramIndex) or not isinstance(bundle, SourceBundle):
+        raise TypeError("projector_result requires ProgramIndex + SourceBundle")
+    lineage = projector_lineage_result(
+        index, bundle, config_selector=config_selector)
+    if lineage.status == "absent":
+        return ReaderResult.absent(lineage.owner)
+    if lineage.status == "ambiguous":
+        return ReaderResult.ambiguous(lineage.owner, lineage.ambiguity)
+    if lineage.status == "failed":
+        return ReaderResult.failed(lineage.owner, lineage.failures)
+
+    root = resolve_component_root(index, bundle, "root")
+    candidates = lineage.value.candidates
+    # A lineage candidate may be exact within its local graph while its caller
+    # is not addressable in the component-root graph.  That is a typed evidence
+    # failure, not permission to dereference ``None`` (the Qwen3.x
+    # ForConditionalGeneration crash) or to borrow another owner.
+    missing_callers = tuple(
+        item.caller_occurrence for item in candidates
+        if root.graph is None
+        or root.graph.node_for(item.caller_occurrence) is None
+    )
+    if missing_callers:
+        return ReaderResult.failed(lineage.owner, (ReaderFailure(
+            "out_of_owner",
+            "projector caller occurrence is not addressable in the exact "
+            "component-root owner graph",
+        ),))
+    groups = {}
+    for candidate in candidates:
+        signature = tuple(
+            (op.kind, op.label, op.fn) for op in candidate.chain.operations)
+        groups.setdefault(signature, []).append(candidate)
+    projectors = tuple(
+        _projector_evidence_for_candidates(
+            index, root, tuple(group),
+            nested_config_addresses=lineage.value.nested_config_addresses,
+            config_document=config_document,
+            config_selector=config_selector)
+        for _signature, group in groups.items())
+    inventory = ProjectorEvidenceInventory(projectors)
+    if lineage.status == "incomplete":
+        return ReaderResult.incomplete(
+            lineage.owner, inventory, failures=lineage.failures,
+            provenance=lineage.provenance)
+    return ReaderResult.resolved(
+        lineage.owner, inventory, provenance=lineage.provenance)
+
+
+def _projector_evidence_for_candidates(
+    index, root, candidates, *, nested_config_addresses=(),
+    config_document=None, config_selector=None,
+):
+    chains = tuple(item.chain for item in candidates)
+    widths = tuple(projector_width_evidence(
+                       index, item.owner_graph, item,
+                       nested_config_addresses=nested_config_addresses)
+                   for item in candidates)
+    width = ProjectorWidthEvidence(
+        _common_width_operand(widths, "input"),
+        _common_width_operand(widths, "output"),
+    )
+    caller_names = tuple(dict.fromkeys(
+        root.graph.node_for(item.caller_occurrence).symbol.qualified_name
+        for item in candidates))
+    fields = tuple(dict.fromkeys(item.field for item in candidates))
+    projector_names = tuple(dict.fromkeys(
+        (item.chain.owner_symbol.qualified_name
+         if item.constructed_occurrence is not None
+         # A primitive has no constructed class occurrence of its own.  Keep
+         # the compatibility/display field at the operation's code-derived
+         # label; the fully-qualified primitive remains in SourceOp.fn.
+         else item.chain.operations[-1].label)
+        for item in candidates))
+    repeated = tuple(
+        (repeated_projector_pipeline_at_owner(
+            index, root, item.constructed_occurrence,
+            config_document=config_document,
+            config_selector=config_selector)
+         if item.constructed_occurrence is not None
+         else repeated_projector_pipeline_for_candidate(
+             index, root, item,
+             config_document=config_document,
+             config_selector=config_selector))
+        for item in candidates)
+    repeated_values = tuple(
+        item.value for item in repeated if item.status == "resolved")
+    if repeated_values and len(repeated_values) != len(candidates):
+        return ProjectorEvidence(
+            "ambiguous",
+            modalities=tuple(dict.fromkeys(
+                modality for item in candidates
+                for modality in item.destination_modalities)),
+            reason=("equivalent affine producers disagree on whether an exact "
+                    "repeated stage follows them"),
         )
-        source_file, line = info.source_file, info.line
+    if repeated_values:
+        signatures = tuple(_repeated_signature(item) for item in repeated_values)
+        if any(item != signatures[0] for item in signatures[1:]):
+            return ProjectorEvidence(
+                "ambiguous",
+                modalities=tuple(dict.fromkeys(
+                    modality for item in candidates
+                    for modality in item.destination_modalities)),
+                reason="destination-equivalent repeated projectors disagree",
+            )
+        ops = _repeated_projector_ops(
+            index, root, repeated_values[0],
+            config_document=config_document,
+            config_selector=config_selector)
+        learned_queries = all(
+            item.learned_query is not None for item in repeated_values)
     else:
-        ops = [SourceOp(_primitive_kind(cls), cls, owner,
-                        registry[owner].source_file, registry[owner].line)]
-        source_file, line = registry[owner].source_file, registry[owner].line
-    learned_queries = _has_reachable_parameter(callable_cls, registry)
-    kind = _derive_kind(ops, learned_queries=learned_queries)
+        ops = chains[0].operations
+        learned_queries = False
     return ProjectorEvidence(
-        "proven", owner_class=owner, field_name=field, projector_class=callable_cls,
-        source_file=source_file, line=line, ops=tuple(ops), kind=kind,
-        learned_queries=(kind == "perceiver_resampler" and learned_queries),
+        "proven",
+        modalities=tuple(dict.fromkeys(
+            modality for item in candidates
+            for modality in item.destination_modalities)),
+        owner_class=caller_names[0] if len(caller_names) == 1 else "",
+        field_name=fields[0] if len(fields) == 1 else "",
+        projector_class=(
+            root.graph.node_for(repeated_values[0].owner_occurrence)
+                .symbol.qualified_name
+            if repeated_values
+            else projector_names[0] if len(projector_names) == 1
+            else "Code-defined projector"),
+        source_file=ops[0].source_file,
+        line=ops[0].line,
+        ops=ops,
+        kind=("perceiver_resampler" if learned_queries
+              else "repeated_attention_projector" if repeated_values
+              else _derive_kind(list(ops))),
+        learned_queries=learned_queries,
+        out_width_source=width.output.source,
+        out_width_path=width.output.path,
+        out_width_value=width.output.value,
+        in_width_source=width.input.source,
+        in_width_path=width.input.path,
+        in_width_value=width.input.value,
     )
 
 
-def _reachable_projectors(root: str | None, registry: dict[str, CallableInfo]):
-    if not root or root not in registry:
-        return []
-    out = []
-    seen = set()
-    queue = [(root, 0)]
-    while queue:
-        name, depth = queue.pop(0)
-        if name in seen or name not in registry:
+def _repeated_signature(pipeline):
+    mechanism = pipeline.mechanisms
+    attention = mechanism.attention.compute.protocol
+    ffn = mechanism.ffn
+    return (
+        tuple((item.kind, item.label, item.fn) for item in pipeline.operations),
+        attention,
+        getattr(ffn, "gated", None),
+        mechanism.block_norm_kind,
+        mechanism.final_norm_kind,
+        mechanism.count_config_path,
+        pipeline.learned_query is not None,
+    )
+
+
+def _repeated_projector_ops(
+    index, root, pipeline, *, config_document=None, config_selector=None,
+):
+    mechanism = pipeline.mechanisms
+    count = "N"
+    if mechanism.count_config_path and config_selector is not None:
+        present, value, _status = config_selector(mechanism.count_config_path)
+        if present and isinstance(value, int) and not isinstance(value, bool) \
+                and value > 0:
+            count = value
+    ffn = mechanism.ffn
+    ffn_label = "gated FFN" if getattr(ffn, "gated", None) is True else "FFN"
+    attention_label = "attention"
+    description = (
+        f"Repeated {attention_label} + {ffn_label} stage with "
+        f"{_norm_display(mechanism.block_norm_kind)} normalization; "
+        "the exact repeat count is bound only when its source-named config "
+        "operand is present."
+    )
+    stage_span = mechanism.spans[0]
+    stage = SourceOp(
+        "opaque", f"Repeated {attention_label} + {ffn_label} stage",
+        mechanism.stage_symbol.qualified_name,
+        stage_span.source.canonical_path, stage_span.line,
+        repeat=count, description=description,
+    )
+    final_span = mechanism.spans[-1]
+    final_norm = SourceOp(
+        "norm", _norm_display(mechanism.final_norm_kind),
+        mechanism.stage_symbol.qualified_name,
+        final_span.source.canonical_path, final_span.line,
+    )
+    prefix_ops = tuple(
+        operation
+        for prefix in pipeline.prefixes
+        for operation in _qualified_prefix_ops(
+            index, root, prefix,
+            config_document=config_document,
+            config_selector=config_selector))
+    return (*prefix_ops, stage, final_norm)
+
+
+def _qualified_prefix_ops(
+    index, root, prefix, *, config_document=None, config_selector=None,
+):
+    """Retain exact gated-FFN lane labels for an affine prefix."""
+    ops = list(prefix.operations)
+    if prefix.callee_occurrence is None:
+        return tuple(ops)
+
+    def select_value(path):
+        if config_selector is None:
+            return None
+        selected = config_selector(path)
+        return selected[1] if selected[0] else None
+
+    mechanism = ffn_mechanism_at_block(
+        index, root, prefix.callee_occurrence,
+        config_selector=select_value if config_selector is not None else None)
+    if mechanism.status != "resolved" \
+            or getattr(mechanism.value, "gated", None) is not True:
+        return tuple(ops)
+    linear = [position for position, item in enumerate(ops)
+              if item.kind == "linear"]
+    kinds = tuple(item.kind for item in ops)
+    if len(linear) != 3 or "activation" not in kinds \
+            or "elementwise" not in kinds:
+        return tuple(ops)
+    for position, label in zip(
+            linear, ("Linear (gate)", "Linear (up)", "Linear (out)")):
+        ops[position] = _replace_op_label(ops[position], label)
+    # A gated FFN is a two-lane graph, not a misleading serial list.  The exact
+    # dataflow proof above establishes gate/up/output roles; present both input
+    # projections before the gate activation and merge.
+    activation_positions = [position for position, item in enumerate(ops)
+                            if item.kind == "activation"]
+    merge_positions = [position for position, item in enumerate(ops)
+                       if item.kind == "elementwise"]
+    if len(activation_positions) == 1 and len(merge_positions) == 1:
+        gate, up, output = (ops[position] for position in linear)
+        activation_op = ops[activation_positions[0]]
+        merge = ops[merge_positions[0]]
+        ops = [gate, up, activation_op, merge, output]
+    activation = _constructor_dispatched_activation(
+        index, root, prefix.callee_occurrence, config_document)
+    if activation is not None:
+        for position, item in enumerate(ops):
+            if item.kind == "activation":
+                ops[position] = SourceOp(
+                    item.kind, activation, item.class_name,
+                    item.source_file, item.line, fn=activation.lower(),
+                    repeat=item.repeat, description=item.description,
+                    op_id=item.op_id, inputs=item.inputs)
+    return tuple(ops)
+
+
+def _constructor_dispatched_activation(
+    index, root, occurrence, config_document,
+):
+    """Resolve an exact ACT2FN constructor operand without field vocabulary."""
+    if config_document is None:
+        return None
+    node = root.graph.node_for(occurrence)
+    if node is None:
+        return None
+    env = constructor_argument_env(
+        index, root.graph, occurrence, config_document)
+    forward = type(node.symbol)(
+        node.symbol.source, f"{node.symbol.qualified_name}.forward")
+    invoked = {
+        _expr_self_field(call.callee) for call in index.calls_in(forward)
+        if _expr_self_field(call.callee) is not None
+    }
+    values = []
+    for assignment in index.field_assigns_of(node.symbol):
+        expression = assignment.value
+        if assignment.field not in invoked or expression.kind != "subscript" \
+                or len(expression.children) != 2:
             continue
-        seen.add(name)
-        info = registry[name]
-        fields = {**info.field_types, **_factory_fields(name, info)}
-        for field, cls in fields.items():
-            if _is_projector_field(field, cls, info, registry):
-                out.append((name, field, cls, depth))
-            if cls in registry:
-                queue.append((cls, depth + 1))
-    return out
+        proof = resolve_import_reference(
+            index, node.symbol.source, assignment.enclosing_callable,
+            expression.children[0])
+        operand = expression.children[1]
+        if proof is None \
+                or proof.qualified_target not in ACTIVATION_REGISTRY_PROTOCOLS \
+                or operand.kind != "name" or operand.name not in env:
+            continue
+        resolved = env[operand.name]
+        if isinstance(resolved.value, str) and resolved.value:
+            values.append(resolved.value)
+    return values[0] if values and len(set(values)) == 1 else None
 
 
-def _callable_ops(name: str, info: CallableInfo, registry: dict[str, CallableInfo],
-                  seen: set[str], *, activation: str = "Activation",
-                  repeat: int | None = None,
-                  preserve_shape_chain: bool = False) -> list[SourceOp]:
-    if name in seen:
-        return []
-    seen = {*seen, name}
-    node = _class_node(info.source_file, name)
-    forward = _method(node, "forward") if node else None
-    if forward is None:
-        return []
-    gated = _gated_mlp_ops(name, info, forward, activation=activation)
-    if gated:
-        return gated
-    out = []
-    fields = {**info.field_types, **_factory_fields(name, info)}
-    loop_calls = _loop_callable_fields(forward)
-    parents = _parent_map(forward)
-    for call in _calls_in_order(forward):
-        field = _self_field(call.func)
-        cls = fields.get(field or "", "")
-        token = _call_name(call.func).lower()
-        role = _role_of(cls)
-        if role == "norm" or "norm" in cls.lower():
-            out.append(SourceOp("norm", _norm_label(cls), name, info.source_file, call.lineno))
-        elif cls in registry:
-            nested = _callable_ops(cls, registry[cls], registry, seen,
-                                   activation=activation, repeat=repeat,
-                                   preserve_shape_chain=preserve_shape_chain)
-            out.extend(nested or [SourceOp("opaque", cls, name, info.source_file, call.lineno)])
-        elif role == "linear" or "linear" in cls.lower():
-            out.append(SourceOp("linear", _linear_label(field), name,
-                                info.source_file, call.lineno))
-        elif role == "conv":
-            # Neutral structural noun — this builder serves projector AND
-            # audio towers, where "patch" would be the wrong word; the
-            # concrete backend (Conv2d/Conv3d) is provenance in the card.
-            _ctor = next(
-                (c for c in ast.walk(_class_node(info.source_file, name) or ast.Module(body=[], type_ignores=[]))
-                 if isinstance(c, ast.Call)
-                 and (getattr(c.func, "attr", None) or getattr(c.func, "id", "")) == cls),
-                None)
-            out.append(SourceOp(
-                "conv", _conv_flavor(_ctor), name,
-                info.source_file, call.lineno,
-                description=f"Implemented by {cls} in the modeling source."))
-        elif role == "embedding":
-            out.append(SourceOp("position", cls, name, info.source_file, call.lineno))
-        elif role == "attention":
-            out.append(SourceOp("attention_core", "Cross-attention", name, info.source_file, call.lineno))
-        elif token in loop_calls:
-            iter_field = loop_calls[token]
-            classes = info.sub_module_classes.get(iter_field, frozenset())
-            if any(_reaches_role(child, "attention", registry) for child in classes):
-                out.append(SourceOp(
-                    "opaque", "Perceiver layer", name, info.source_file,
-                    call.lineno, repeat=repeat if repeat is not None else "N",
-                    description=(
-                        "Repeated learned-query resampler layer: normalize latent queries "
-                        "and image context, cross-attend with its constructed mask, "
-                        "residual-add, normalize, apply "
-                        "the MLP, then residual-add again."
-                    ),
-                ))
+def _replace_op_label(op, label):
+    return SourceOp(
+        op.kind, label, op.class_name, op.source_file, op.line,
+        fn=op.fn, repeat=op.repeat, description=op.description,
+        op_id=op.op_id, inputs=op.inputs)
+
+
+def _expr_self_field(expression):
+    if expression is None or expression.kind != "attribute" \
+            or len(expression.children) != 1:
+        return None
+    base = expression.children[0]
+    return expression.name \
+        if base.kind == "name" and base.name == "self" else None
+
+
+def _norm_display(kind):
+    return "RMSNorm" if kind == "rmsnorm" else "LayerNorm"
+
+
+def _common_width_operand(widths, attribute):
+    if not widths:
+        return WidthOperand("unavailable")
+    values = tuple(getattr(item, attribute) for item in widths)
+    return values[0] if all(item == values[0] for item in values[1:]) \
+        else WidthOperand("unavailable")
+
+
+def _document_selector(target):
+    """Read one exact path for branch selection; no mechanism semantics."""
+    def select(path):
+        current = target
+        for part in tuple(path):
+            if isinstance(current, dict):
+                if part not in current:
+                    return False, None, ""
+                current = current[part]
+            elif hasattr(current, part):
+                current = getattr(current, part)
             else:
-                for child in classes:
-                    if child in registry:
-                        out.extend(_callable_ops(child, registry[child], registry, seen,
-                                                 activation=activation, repeat=repeat,
-                                                 preserve_shape_chain=preserve_shape_chain))
-        elif ((field and field.lower() in {"act", "activation", "act_fn"})
-              or token in {"gelu", "silu", "relu", "quick_gelu"}):
-            fn = str(activation if field else token)
-            out.append(SourceOp("activation", fn, name, info.source_file,
-                                call.lineno, fn=fn.lower()))
-        elif cls == "Sequential":
-            children = _sequential_classes(name, info, field or "")
-            linear_indices = [index for index, child in enumerate(children)
-                              if "linear" in child.lower()]
-            for index, child in enumerate(children):
-                low = child.lower()
-                kind = ("linear" if "linear" in low else "activation"
-                        if any(x in low for x in ("gelu", "silu", "relu")) else "opaque")
-                if kind == "linear" and len(linear_indices) > 1:
-                    label = "Linear (in)" if index == linear_indices[0] else "Linear (out)"
-                else:
-                    label = "Linear" if kind == "linear" else child
-                out.append(SourceOp(kind, label, name, info.source_file, call.lineno,
-                                    fn=low if kind == "activation" else ""))
-        elif token in {"view", "reshape", "flatten", "permute", "transpose",
-                       "unsqueeze", "t", "unfold", "split", "cat"}:
-            if not preserve_shape_chain and _nested_shape_receiver(call, parents):
-                continue
-            label = _shape_label(call)
-            if label == "Join attention masks":
-                # Mask construction is a side/control path into the repeated
-                # attention composite, not a transform of image features.
-                # Putting it on this ordered spine would draw a false edge.
-                continue
-            out.append(SourceOp("reshape", label, name, info.source_file, call.lineno))
-    if preserve_shape_chain:
-        return out
-    from .vision import _collapse_plumbing_runs
-    return _collapse_plumbing_runs(_dedupe(out))
+                return False, None, ""
+        return True, current, "config_declared"
+    return select
 
 
-def _is_projector_field(field: str, cls: str, info: CallableInfo,
-                        registry: dict[str, CallableInfo]) -> bool:
-    """Qualify a connector by its assigned component role, never owner identity.
-
-    Explicit connector fields are authoritative.  A generic ``*_projection``
-    field is accepted only when the field itself names a modality, or its
-    owner's forward proves a small projection wrapper (for example norm then
-    projection).  This excludes arbitrary decoder/attention projections.
-    """
-    low = field.lower()
-    if "per_layer" in low:
-        return False
-    if any(marker in low for marker in _EXPLICIT_FIELD_MARKERS):
-        return True
-    if "projection" not in low:
-        return False
-    if any(marker in low for marker in _MODALITY_FIELD_MARKERS):
-        return True
-    return _is_projection_wrapper(field, cls, info, registry)
-
-
-def _is_projection_wrapper(field: str, cls: str, info: CallableInfo,
-                           registry: dict[str, CallableInfo]) -> bool:
-    """Prove that ``field`` is the output projection of a tiny wrapper.
-
-    The proof is execution-shaped: the forward calls the projection and at
-    least one other typed normalization/activation operation.  No class or
-    model-family spelling participates.
-    """
-    if "projection" not in field.lower() or field not in info.self_field_calls:
-        return False
-    if _role_of(cls) != "linear" and "linear" not in cls.lower():
-        return False
-    fields = {**info.field_types, **_factory_fields(info.name, info)}
-    for other in info.self_field_calls - {field}:
-        other_cls = fields.get(other, "")
-        if _role_of(other_cls) in {"norm", "activation"} or any(
-            marker in other_cls.lower() for marker in ("norm", "activation")
-        ):
-            return True
-    return False
-
-
-def _loop_callable_fields(forward: ast.AST) -> dict[str, str]:
-    """Loop-variable call name -> the exact iterated ``self.<field>``."""
-    out: dict[str, str] = {}
-    for node in ast.walk(forward):
-        if not isinstance(node, (ast.For, ast.AsyncFor)):
-            continue
-        field = _self_field(node.iter)
-        if not field or not isinstance(node.target, ast.Name):
-            continue
-        if any(isinstance(item, ast.Call)
-               and isinstance(item.func, ast.Name)
-               and item.func.id == node.target.id for item in ast.walk(node)):
-            out[node.target.id.lower()] = field
-    return out
-
-
-def _parent_map(node: ast.AST) -> dict[ast.AST, ast.AST]:
-    return {child: parent for parent in ast.walk(node) for child in ast.iter_child_nodes(parent)}
-
-
-def _nested_shape_receiver(call: ast.Call, parents: dict[ast.AST, ast.AST]) -> bool:
-    """True when this call is an inner step of one fluent tensor-shape chain."""
-    parent = parents.get(call)
-    grand = parents.get(parent) if parent is not None else None
-    return (isinstance(parent, ast.Attribute) and parent.value is call
-            and isinstance(grand, ast.Call) and grand.func is parent)
-
-
-def _conv_flavor(ctor_call: ast.Call | None) -> str:
-    """Structural conv label from the CONSTRUCTION SITE's ``groups=`` kwarg —
-    never from words in the class name (the old ``Causal``→``Depthwise``
-    rename was a hardcoded pun that happened to be true, and a Conv subclass
-    may have no ``__init__`` of its own at all, so the caller's ctor call is
-    the only place the fact lives).  ``groups`` tied to a symbol (the channel
-    count) → depthwise; a literal >1 → grouped; absent/1 → plain."""
-    for kw in (getattr(ctor_call, "keywords", None) or []):
-        if kw.arg == "groups":
-            if isinstance(kw.value, ast.Constant):
-                return ("Convolution" if kw.value.value in (1, None)
-                        else "Grouped convolution")
-            return "Depthwise convolution"
-    return "Convolution"
-
-
-def _shape_label(call: ast.Call) -> str:
-    tokens: list[str] = []
-    current: ast.AST | None = call
-    while isinstance(current, ast.Call):
-        tokens.append(_call_name(current.func).lower())
-        func = current.func
-        current = func.value if isinstance(func, ast.Attribute) else None
-    token = tokens[0] if tokens else "reshape"
-    chain = set(tokens)
-    if token == "split":
-        text = ast.unparse(call).lower()
-        return "Split image sequences" if "image" in text else "Split sequences"
-    if token == "cat":
-        # A dynamic batch/list join has no fixed pair of semantic lanes.  It is
-        # shape plumbing, so retain a box rather than fabricate a two-input ‖.
-        text = ast.unparse(call).lower()
-        if "mask" in text:
-            return "Join attention masks"
-        return "Join image sequences" if any(word in text for word in ("image", "permuted")) else "Join sequences"
-    if token == "unfold":
-        return "Extract merge windows"
-    if token == "unsqueeze" and "permute" in chain:
-        return "Arrange spatial grid"
-    if token == "t" and ({"view", "reshape"} & chain):
-        return "Flatten merge windows"
-    if "flatten" in chain:
-        return "Flatten tokens"
-    if {"permute", "transpose", "t"} & chain:
-        return "Reorder tensor axes"
-    return "Reshape / merge patches"
-
-
-def _linear_label(field: str | None) -> str:
-    low = (field or "").lower()
-    if "merg" in low:
-        return "Patch merge"
-    if (low.endswith(("_1", "fc1", "in_proj", "input_proj", "up_proj"))
-            or low in {"linear1", "dense_h_to_4h"}):
-        return "Linear (in)"
-    if (low.endswith(("_2", "fc2", "out_proj", "output_proj", "down_proj"))
-            or low in {"linear2", "dense_4h_to_h"}):
-        return "Linear (out)"
-    return "Linear"
-
-
-def _gated_mlp_ops(name: str, info: CallableInfo, forward: ast.AST,
-                   *, activation: str) -> list[SourceOp]:
-    """Recognize the exact ``down(act(gate(x)) * up(x))`` expression graph."""
-    returned = next((node.value for node in ast.walk(forward)
-                     if isinstance(node, ast.Return) and isinstance(node.value, ast.Call)), None)
-    if not isinstance(returned, ast.Call) or not returned.args:
-        return []
-    down_field = _self_field(returned.func)
-    product = returned.args[0]
-    if not down_field or not isinstance(product, ast.BinOp) or not isinstance(product.op, ast.Mult):
-        return []
-    fields = {**info.field_types, **_factory_fields(name, info)}
-    if _role_of(fields.get(down_field, "")) != "linear":
-        return []
-
-    def activation_and_linear(node):
-        if not isinstance(node, ast.Call) or not node.args:
-            return None
-        act_field = _self_field(node.func)
-        inner = node.args[0]
-        inner_field = _self_field(inner.func) if isinstance(inner, ast.Call) else None
-        if not act_field or not inner_field:
-            return None
-        if _role_of(fields.get(inner_field, "")) != "linear":
-            return None
-        return act_field, inner_field
-
-    left = activation_and_linear(product.left)
-    right_field = _self_field(product.right.func) if isinstance(product.right, ast.Call) else None
-    if left is None or not right_field or _role_of(fields.get(right_field, "")) != "linear":
-        return []
-    _act_field, gate_field = left
-    prefix = "projector_gated"
-    entry = f"__entry__:{prefix}"
-    line = getattr(returned, "lineno", info.line)
-    return [
-        SourceOp("linear", "Linear (gate)", name, info.source_file, line,
-                 op_id=f"{prefix}_gate", inputs=(entry,)),
-        SourceOp("linear", "Linear (up)", name, info.source_file, line,
-                 op_id=f"{prefix}_up", inputs=(entry,)),
-        SourceOp("activation", activation, name,
-                 info.source_file, line, fn=activation.lower(),
-                 op_id=f"{prefix}_activation", inputs=(f"{prefix}_gate",)),
-        SourceOp("elementwise", "Multiply", name, info.source_file, line,
-                 fn="mul", op_id=f"{prefix}_multiply",
-                 inputs=(f"{prefix}_activation", f"{prefix}_up")),
-        SourceOp("linear", "Linear (out)", name, info.source_file, line,
-                 op_id=f"{prefix}_down", inputs=(f"{prefix}_multiply",)),
-    ]
-
-
-def _reaches_role(name: str, role: str, registry: dict[str, CallableInfo]) -> bool:
-    seen: set[str] = set()
-    queue = [name]
-    while queue and len(seen) < 64:
-        current = queue.pop()
-        if current in seen or current not in registry:
-            continue
-        seen.add(current)
-        info = registry[current]
-        fields = {**info.field_types, **_factory_fields(current, info)}
-        if any(_role_of(cls) == role for cls in fields.values()):
-            return True
-        queue.extend(cls for cls in fields.values() if cls in registry)
-        for classes in info.sub_module_classes.values():
-            queue.extend(cls for cls in classes if cls in registry)
-    return False
-
-
-def _has_reachable_parameter(name: str, registry: dict[str, CallableInfo]) -> bool:
-    """Whether the qualified connector owns a learned Parameter at any depth."""
-    seen: set[str] = set()
-    queue = [name]
-    while queue and len(seen) < 64:
-        current = queue.pop()
-        if current in seen or current not in registry:
-            continue
-        seen.add(current)
-        info = registry[current]
-        node = _class_node(info.source_file, current)
-        init = _method(node, "__init__") if node else None
-        if any(isinstance(item, ast.Call) and _call_name(item.func) == "Parameter"
-               for item in (ast.walk(init) if init else ())):
-            return True
-        fields = {**info.field_types, **_factory_fields(current, info)}
-        queue.extend(cls for cls in fields.values() if cls in registry)
-        for classes in info.sub_module_classes.values():
-            queue.extend(cls for cls in classes if cls in registry)
-    return False
+def _projector_result_value(result):
+    if result.status == "resolved":
+        if len(result.value.projectors) == 1:
+            return result.value.projectors[0]
+        return ProjectorEvidence(
+            "ambiguous", reason="multiple destination-specific projectors")
+    if result.status == "incomplete":
+        projectors = result.value.projectors
+        return ProjectorEvidence(
+            "ambiguous",
+            owner_class=(projectors[0].owner_class
+                         if len(projectors) == 1 else ""),
+            source_file=(projectors[0].source_file
+                         if len(projectors) == 1 else ""),
+            reason="; ".join(item.detail for item in result.failures))
+    if result.status == "ambiguous":
+        return ProjectorEvidence(
+            "ambiguous", reason="multiple non-equivalent exact projector producers")
+    if result.status == "absent":
+        return ProjectorEvidence(
+            "ambiguous", reason="no affine producer reaches a proven fusion operand")
+    return ProjectorEvidence(
+        "oracle_missing", reason="; ".join(item.detail for item in result.failures))
 
 
 def _derive_kind(ops: list[SourceOp], *, learned_queries: bool = False) -> str:
@@ -419,114 +483,8 @@ def _derive_kind(ops: list[SourceOp], *, learned_queries: bool = False) -> str:
     return "code_defined_projector"
 
 
-def _field_rank(field: str) -> int:
-    low = field.lower()
-    if "projector" in low or "merger" in low or "resampler" in low:
-        return 0
-    if low.endswith("projection") or low.endswith("_projection"):
-        return 1
-    return 2
 
-
-def _factory_fields(name: str, info: CallableInfo) -> dict[str, str]:
-    node = _class_node(info.source_file, name)
-    init = _method(node, "__init__") if node else None
-    out = {}
-    for stmt in ast.walk(init) if init else []:
-        if not isinstance(stmt, (ast.Assign, ast.AnnAssign)) or not isinstance(stmt.value, ast.Call):
-            continue
-        targets = stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target]
-        field = next((_self_field(target) for target in targets if _self_field(target)), None)
-        func = stmt.value.func
-        if (field and isinstance(func, ast.Attribute)
-                and func.attr.startswith("_from_") and isinstance(func.value, ast.Name)):
-            out[field] = func.value.id
-    return out
-
-
-def _sequential_classes(name: str, info: CallableInfo, field: str) -> list[str]:
-    node = _class_node(info.source_file, name)
-    init = _method(node, "__init__") if node else None
-    for stmt in ast.walk(init) if init else []:
-        if not isinstance(stmt, (ast.Assign, ast.AnnAssign)) or not isinstance(stmt.value, ast.Call):
-            continue
-        targets = stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target]
-        if field not in {_self_field(target) for target in targets}:
-            continue
-        if _call_name(stmt.value.func) != "Sequential":
-            continue
-        return [_call_name(arg.func) for arg in stmt.value.args if isinstance(arg, ast.Call)]
-    return []
-
-
-def _activation_value(target: Any) -> str:
-    scopes = [target]
-    if isinstance(target, dict):
-        scopes += [target.get("vision_config") or {}]
-    for scope in scopes:
-        if isinstance(scope, dict):
-            for key in ("projector_hidden_act", "hidden_act", "hidden_activation"):
-                if scope.get(key):
-                    return str(scope[key])
-    return "Activation"
-
-
-def _resampler_depth(target: Any) -> int | None:
-    scopes = [target]
-    if isinstance(target, dict):
-        scopes += [target.get("perceiver_config") or {}, target.get("resampler_config") or {}]
-    for scope in scopes:
-        if not isinstance(scope, dict):
-            continue
-        for key in ("resampler_depth", "depth", "num_hidden_layers", "num_layers"):
-            value = scope.get(key)
-            if value is None:
-                continue
-            try:
-                return int(value)
-            except (TypeError, ValueError):
-                pass
-    return None
-
-
-def _primitive_kind(cls: str) -> str:
-    return "linear" if "linear" in cls.lower() else "opaque"
-
-
-def _norm_label(cls: str) -> str:
-    return "RMSNorm" if "rms" in cls.lower() else "LayerNorm" if "layernorm" in cls.lower() else cls
-
-
-def _dedupe(ops):
-    out = []
-    for op in ops:
-        if out and (out[-1].kind, out[-1].label, out[-1].line) == (op.kind, op.label, op.line):
-            continue
-        out.append(op)
-    return out
-
-
-def _calls_in_order(node):
-    out = []
-    class Visitor(ast.NodeVisitor):
-        def visit_Call(self, call):
-            self.visit(call.func)
-            for arg in call.args:
-                self.visit(arg)
-            for keyword in call.keywords:
-                self.visit(keyword.value)
-            out.append(call)
-    Visitor().visit(node)
-    return out
-
-
-def _class_node(path, name):
-    try:
-        tree = ast.parse(Path(path).read_text(encoding="utf-8"))
-    except (OSError, SyntaxError, UnicodeDecodeError):
-        return None
-    return next((node for node in ast.walk(tree)
-                 if isinstance(node, ast.ClassDef) and node.name == name), None)
-
-
-__all__ = ["projector_evidence"]
+__all__ = [
+    "ProjectorEvidenceInventory", "projector_evidence", "projector_result",
+    "projector_result_for_context", "projector_result_for_target",
+]

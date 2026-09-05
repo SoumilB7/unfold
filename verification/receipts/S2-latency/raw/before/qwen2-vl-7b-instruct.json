@@ -1,0 +1,36 @@
+{
+  "combined_sha256": "d2191ff2f44be8e4699f0528217605237c571e0827d29ea53ab90165f4b4014e",
+  "config": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/qwen2-vl-7b-instruct.json",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 0.6617889171466231,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 0.5526983747258782,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 0.659035500138998,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    3.15966796875,
+    2.6318359375,
+    3.41064453125
+  ],
+  "mode": "fingerprint",
+  "name": "qwen2-vl-7b-instruct",
+  "parse_seconds": 34.67223829124123,
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "d778d46d6fadfad31427965e8bbfc0b61d422f77",
+  "surface_hashes": {
+    "expanded": "82d936cc47129c32a586168f4d0a3547a3738532bcf8d9fc03fb05108f963f2e",
+    "html_meta": "d4064b38a1b0da90c824ec145fcb551e1ba628554010417e51e86dcc1caf14ff",
+    "ir": "08eb9e9aeeaa56d38cd996e2d6b1f3df459412f43a329034c9bda43955682e3c",
+    "ledgers": "0874d3cfc4fac41e1c491623085a1c5c2bb75b1148162a2149a6a0592797822d",
+    "params": "4550dec2cc228b907404a1a953e0131ac09e7cc0b26377143d28ff22d5928d4d"
+  }
+}

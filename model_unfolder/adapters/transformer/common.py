@@ -10,12 +10,29 @@ def get_config_value(cfg: Any, name: str, default=None):
     """Get a config value from a dict or a HuggingFace config object.
 
     Every field lookup funnels through here, so this is where we record the
-    access for the unparsed-fields diagnostic (see :mod:`.debug`).
-    """
-    debug.note_access(name)
+    access for the config diagnostics (see :mod:`.debug`).
+
+    The access is recorded only when the field is actually PRESENT.  An alias
+    probe that misses (``_resolve`` tries several spellings until one hits) is
+    not a meaningful read: recording it inflated the accessed set with hundreds
+    of phantom alias spellings a model never carries, which drowned the
+    accessed-but-unconsumed signal (the granite-multiplier class) the H3 net
+    exists to surface.  The unread diagnostic is unchanged — an absent alias is
+    not in the config's present keys either way.  ``consume()`` marks its field
+    regardless of presence, because an ABSENT field can still decide a fact
+    (num_key_value_heads absent ⇒ MHA)."""
     if isinstance(cfg, dict):
-        return cfg.get(name, default)
-    return getattr(cfg, name, default)
+        present = name in cfg
+        value = cfg.get(name, default)
+    else:
+        present = hasattr(cfg, name)
+        value = getattr(cfg, name, default)
+    if present:
+        # U2.2a: the funnel reports WHICH object it read, so an ambient
+        # container scope can only prefix reads of the object it names.
+        debug.note_access(name, value_state=(
+            "explicit_null" if value is None else "value"), source_obj=cfg)
+    return value
 
 
 def architecture_name(cfg: Any, fallback: str) -> str:
@@ -50,3 +67,35 @@ TEXT_WRAPPER_KEYS = (
     "text_config", "language_config", "llm_config", "text_model_config",
     "thinker_config",  # Qwen-Omni nests the LM under thinker_config.text_config
 )
+
+
+def wrapper_path(root_cfg: Any, target: Any, _depth: int = 0) -> tuple:
+    """The EXACT container path of an unwrapped text config (Law B).
+
+    Identity-walked over the declared wrapper vocabulary — ``()`` when the
+    target IS the root (unwrapped), so a reader holding both a root and a
+    nested config can NAME where that config lives instead of emitting a bare
+    leaf whose location nobody can resolve.  Structural, never identity: it
+    finds the address by walking, not by knowing a model."""
+    if target is root_cfg or _depth > 3:
+        return ()
+    # Composite MAIN slots (MusicGen's bare ``decoder``) hide the LM exactly
+    # like a *_config wrapper does — same declared vocabulary
+    # (composite_slots.yaml), same identity walk, so the unwrapped stack's
+    # reads carry their real ``decoder.*`` addresses instead of bare leaves
+    # the audit can never join to the checkpoint's keys.
+    from ...everchanging import load_composite_slots
+    _main_slots = tuple(k for k, role in
+                        (load_composite_slots().get("slots") or {}).items()
+                        if role == "main")
+    for key in (*TEXT_WRAPPER_KEYS, *_main_slots):
+        sub = (root_cfg.get(key) if isinstance(root_cfg, dict)
+               else getattr(root_cfg, key, None))
+        if sub is None:
+            continue
+        if sub is target:
+            return (key,)
+        deeper = wrapper_path(sub, target, _depth + 1)
+        if deeper:
+            return (key, *deeper)
+    return ()

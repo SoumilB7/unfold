@@ -1,0 +1,36 @@
+{
+  "combined_sha256": "58e0de111a5aab80a7d901d3746b743198bb0f4d89322712fdbeb65d7560d62f",
+  "config": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/llama-7b.json",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 1.4704384156502783,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 1.1298714582808316,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 1.7599692912772298,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    5.560546875,
+    3.9921875,
+    3.5537109375
+  ],
+  "mode": "fingerprint",
+  "name": "llama-7b",
+  "parse_seconds": 2.810120790731162,
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "d778d46d6fadfad31427965e8bbfc0b61d422f77",
+  "surface_hashes": {
+    "expanded": "e19177c22ec44c9bd8b0992805492a867e9bfec158859d6c3cab34a483a9b62a",
+    "html_meta": "16eef44743af649b786dddc1268dc73cdf6741dad80f07f97136035920d91d09",
+    "ir": "cc26f6e3a594b94973fd3f3a2851c165a8521b216633f0534ca1a24b88816a11",
+    "ledgers": "16ed376a59ffe591e77a0f9ec2cda7408b174e9e94c9d85fa252159538b61c0e",
+    "params": "a6c7d2a183b37fb14ec513fd275f550f2d10c9afe2270e34cdac54117fbc2fb9"
+  }
+}

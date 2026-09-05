@@ -19,11 +19,15 @@ import pytest
 
 import model_unfolder as mu
 from model_unfolder.evidence import check_model_conformance, extract_forward_ops
-from model_unfolder.evidence.conformance import diff_conformance, resolve_view_code
+from model_unfolder.evidence.conformance import (
+    _typed_stream_relation_unknown,
+    diff_conformance,
+    resolve_view_code,
+)
 from model_unfolder.evidence.sources import resolve_source_files
 from model_unfolder.everchanging import load_conformance_abstractions, load_conformance_map
 
-from tests.test_diffusion import FLUX, PIXART
+from test_support import FLUX, PIXART
 from tests import test_coverage as tc
 
 
@@ -32,6 +36,16 @@ def _flux_forward_ops():
     if not bundle.files:
         pytest.skip("diffusers Flux modeling source not installed locally")
     return extract_forward_ops(bundle.files)
+
+
+def test_typed_unknown_stream_cannot_be_strengthened_by_legacy_param_presence():
+    assert _typed_stream_relation_unknown({
+        "attention": {"variant": {"stream_relation": None}},
+    }) is True
+    assert _typed_stream_relation_unknown({
+        "attention": {"variant": {"stream_relation": "single_state"}},
+    }) is False
+    assert _typed_stream_relation_unknown({"attention": {}}) is False
 
 
 # --------------------------------------------------------------------------
@@ -70,6 +84,33 @@ def test_flux_conformance_clean_both_directions():
     assert real == [], "\n".join(p.message for p in real)
 
 
+def test_source_join_relation_selects_single_stream_without_label_inference():
+    from model_unfolder.evidence.conformance import classify_group
+
+    spec = {"attention": {"variant": {
+        "stream_relation": "joined_inputs",
+        "tag": "presentation wording may change",
+    }}}
+    assert classify_group(spec) == "single_stream"
+    spec["attention"]["variant"]["stream_relation"] = "dual_state"
+    assert classify_group(spec) == "block"
+
+
+def test_source_join_relation_projects_the_concat_operation():
+    ir = mu.unfold(FLUX).to_ir()
+    joined = [layer for layer in ir["layers"]
+              if (layer.get("attention") or {}).get(
+                  "variant", {}).get("stream_relation") == "joined_inputs"]
+    assert joined
+    assert all(any(block.get("kind") == "concat"
+                   and block.get("feeds") == "attn"
+                   for block in layer["blocks"])
+               for layer in joined)
+    assert all(not any(block.get("kind") == "concat"
+                       for block in layer["blocks"])
+               for layer in ir["layers"] if layer not in joined)
+
+
 def test_negative_control_parallel_sum_rendering_is_caught():
     """THE pin: a GPT-J parallel-sum single-stream rendering (no concat, no gate)
     MUST fail the diff with both ops flagged missing — citing the forward()."""
@@ -82,21 +123,77 @@ def test_negative_control_parallel_sum_rendering_is_caught():
     assert any("transformer_flux" in p.source_file for p in problems if p.kind == "missing")
 
 
+def test_typed_unknown_cell_waives_only_its_wiring_operations():
+    """An honest topology abstention must be mechanically blessable without
+    becoming a blanket conformance escape hatch."""
+    code = _flux_forward_ops()["FluxSingleTransformerBlock"]
+    ab = load_conformance_abstractions()
+    drawn = frozenset({"attention", "ffn"})
+    spec = {
+        "norm_placement": "unknown",
+        "residual_topology": "unknown",
+    }
+    problems = diff_conformance(
+        drawn, code, "flux", "single_stream", ab, spec=spec,
+    )
+    missing = {p.op for p in problems if p.kind == "missing"}
+    assert not ({"norm", "gate_mul", "residual_add"} & missing)
+    # The typed abstention is narrow: unrelated code operations remain visible.
+    assert "concat" in missing
+
+
+def test_exact_opaque_cell_declares_the_whole_cell_abstraction():
+    """Only the closed U10 opaque-cell DTO may abstain on all internals."""
+    code = _flux_forward_ops()["FluxTransformerBlock"]
+    spec = {
+        "norm_placement": "unknown",
+        "residual_topology": "unknown",
+        "blocks": [{
+            "id": "cell_structure_unresolved",
+            "kind": "opaque",
+            "role": "opaque",
+            "resolved": False,
+        }],
+    }
+    assert diff_conformance(
+        frozenset(), code, "flux", "block",
+        load_conformance_abstractions(), spec=spec,
+    ) == []
+
+    # A lookalike opaque block is not an escape hatch.
+    forged = {**spec, "blocks": [{**spec["blocks"][0], "id": "anything"}]}
+    missing = {p.op for p in diff_conformance(
+        frozenset(), code, "flux", "block",
+        load_conformance_abstractions(), spec=forged,
+    ) if p.kind == "missing"}
+    assert {"attention", "ffn"} <= missing
+
+
+def test_absent_unknown_fields_grant_no_conformance_waiver():
+    code = _flux_forward_ops()["FluxTransformerBlock"]
+    problems = diff_conformance(
+        frozenset({"attention", "ffn"}), code, "flux", "block",
+        load_conformance_abstractions(), spec={},
+    )
+    missing = {p.op for p in problems if p.kind == "missing"}
+    assert {"norm", "gate_mul", "residual_add"} <= missing
+
+
 def test_negative_control_end_to_end_pipeline_catches_buggy_render():
-    """The FULL path (parser → IR → conformance) catches the bug: mutate Flux's
-    single-stream group back to the buggy parallel-sum (no concat/gate) and the
-    net flags both — classified by the parser's variant tag, so the mis-render
-    can't dodge the check by looking like a plain block."""
+    """A localized wiring unknown cannot launder known attention/FFN ops."""
     ir = mu.unfold(FLUX).to_ir()
-    mutated = False
-    for layer in ir["layers"]:
-        if "concat" in {b.get("kind") for b in (layer.get("blocks") or [])}:
-            layer["blocks"] = [{"id": "rms1", "kind": "norm"}, {"id": "attn", "kind": "attention"},
-                               {"id": "ffn", "kind": "ffn"}, {"id": "add1", "kind": "residual_add"}]
-            mutated = True
-    assert mutated, "no single-stream group to mutate — Flux fixture changed?"
+    partial = next((layer for layer in ir["layers"]
+                    if any(block.get("id") == "wiring_unresolved"
+                           for block in (layer.get("blocks") or []))), None)
+    assert partial is not None, "no localized Flux wiring unknown to attack"
+    # Preserve the narrow typed wiring abstention but erase the mechanisms
+    # source did prove.  The abstention must not become a whole-cell waiver.
+    partial["blocks"] = [
+        block for block in partial["blocks"]
+        if block.get("id") == "wiring_unresolved"
+    ]
     missing = {p.op for p in check_model_conformance(FLUX, ir) if p.kind == "missing"}
-    assert {"concat", "gate_mul"} <= missing, missing
+    assert {"attention", "ffn"} <= missing, missing
 
 
 # --------------------------------------------------------------------------
@@ -179,7 +276,6 @@ def test_component_scoped_evidence_keeps_text_and_vision_oracles_separate():
     SigLIP for the same composite model, with qualified provenance on both."""
     from model_unfolder.evidence import conformance as conf
     from model_unfolder.evidence.forward_ops import extract_forward_ops
-    from model_unfolder.evidence.transitive import build_registry
 
     cfg = {
         "model_type": "paligemma",
@@ -198,14 +294,17 @@ def test_component_scoped_evidence_keeps_text_and_vision_oracles_separate():
     assert text_code.component == "text_config"
     assert Path(text_code.source_file).name == "modeling_gemma2.py"
 
-    vision_component, vision_files = conf._component_source(bundle, "vision")
-    from model_unfolder.evidence.ffn import ffn_structure_evidence
-    vision_evidence = ffn_structure_evidence(
-        vision_files, component=vision_component,
-        architecture=(bundle.component_architectures or {}).get(vision_component))
-    assert vision_evidence.status == "proven", "SigLIP vision MLP did not resolve"
-    assert vision_evidence.component == "vision_config"
-    assert Path(vision_evidence.source_file).name == "modeling_siglip.py"
+    from model_unfolder.evidence.component_tower import \
+        recursive_component_mechanisms
+    from model_unfolder.evidence.program_index import build_program_index
+    mechanisms = recursive_component_mechanisms(
+        build_program_index(bundle), bundle, config_document=cfg,
+        config_selector=conf._exact_document_selector(cfg))
+    vision = [item for item in mechanisms.towers
+              if item.component.component_key == "vision_config"]
+    assert vision, "SigLIP vision tower did not resolve"
+    assert all(Path(item.stage_symbol.source.canonical_path).name
+               == "modeling_siglip.py" for item in vision)
 
 
 def test_shared_source_file_is_rooted_at_each_components_auto_model():
@@ -346,300 +445,21 @@ def test_indirect_construction_yields_real_ops_not_fabrications(tmp_path):
 # construction, never the config.)
 # --------------------------------------------------------------------------
 
-def test_diffusion_ffn_activation_from_construction_kwarg(tmp_path):
-    """A block that builds `FeedForward(activation_fn="geglu")` resolves to that
-    activation from the modeling source — the CogView4 shape (config is silent)."""
-    from model_unfolder.evidence.patterns import diffusion_ffn_activation_from_files
-    src = (
-        "class MyTransformerBlock:\n"
-        "    def __init__(self, dim):\n"
-        "        self.ff = FeedForward(dim=dim, activation_fn='geglu')\n"
-    )
-    f = tmp_path / "modeling_kwarg.py"
-    f.write_text(src)
-    assert diffusion_ffn_activation_from_files([str(f)]) == "geglu"
-
-
-def test_diffusion_ffn_activation_from_named_swiglu_class(tmp_path):
-    """A block that builds a structurally-gated SwiGLU FFN class (w1·w3·silu gate)
-    resolves to "swiglu" from the class body — the HiDream/Lumina shape, where the
-    activation is in the class structure, not a kwarg. No name token needed."""
-    from model_unfolder.evidence.patterns import diffusion_ffn_activation_from_files
-    src = (
-        "class MyFusedFFN:\n"
-        "    def __init__(self, dim, hidden):\n"
-        "        self.w1 = nn.Linear(dim, hidden)\n"
-        "        self.w2 = nn.Linear(hidden, dim)\n"
-        "        self.w3 = nn.Linear(dim, hidden)\n"
-        "    def forward(self, x):\n"
-        "        return self.w2(F.silu(self.w1(x)) * self.w3(x))\n"
-        "class MyTransformerBlock:\n"
-        "    def __init__(self, dim):\n"
-        "        self.feed_forward = MyFusedFFN(dim, 4 * dim)\n"
-    )
-    f = tmp_path / "modeling_struct.py"
-    f.write_text(src)
-    assert diffusion_ffn_activation_from_files([str(f)]) == "swiglu"
-
-
 def test_diffusion_source_resolves_for_dit_named_classes():
-    """A DiT denoiser named with "DiT" (not "Transformer"/"UNet") must still be
-    recognised as a diffusion class so its installed source resolves — else
-    conformance + the code-derived FFN silently skip (the HunyuanDiT/Lumina-Next
-    MISSING-oracle-on-installed-source bug). Detected by the general marker
-    vocabulary, never a hand-picked substring."""
-    from model_unfolder.evidence.sources import _looks_like_diffusion_class
-    assert _looks_like_diffusion_class("HunyuanDiT2DModel")
-    assert _looks_like_diffusion_class("LuminaNextDiT2DModel")
-    assert _looks_like_diffusion_class("FluxTransformer2DModel")
-    assert _looks_like_diffusion_class("StableCascadeUNet")
-    assert not _looks_like_diffusion_class("LlamaForCausalLM")
+    """Every exact installed Diffusers model class resolves without markers.
 
-
-def test_rope_read_from_source_uses_fact_conformance_evidence(tmp_path):
-    """RoPE presence is read from the SAME forward rotary evidence fact-conformance
-    reads (so the parser asserts rope exactly when the net would flag its absence as
-    a fabricated NoPE). A block whose forward applies rotary => rope; one with only
-    learned positions => no rope. Fixes the Allegro/Lumina fabricated-NoPE class."""
-    from model_unfolder.evidence.patterns import diffusion_rope_from_files
-    rope = (
-        "class RopeBlock:\n"
-        "    def forward(self, hidden_states, image_rotary_emb=None):\n"
-        "        return apply_rotary_emb(hidden_states, image_rotary_emb)\n"
+    This pins both directions: unfamiliar DiT/UNet spellings resolve because
+    the class definition exists, while a Transformers class cannot qualify by
+    a suggestive or familiar name.
+    """
+    from model_unfolder.evidence.sources import (
+        _installed_diffusers_model_class_file,
     )
-    learned = (
-        "class LearnedPosBlock:\n"
-        "    def forward(self, hidden_states):\n"
-        "        return self.attn(hidden_states + self.pos_embed)\n"
-    )
-    fr = tmp_path / "modeling_rope.py"; fr.write_text(rope)
-    fl = tmp_path / "modeling_learned.py"; fl.write_text(learned)
-    assert diffusion_rope_from_files([str(fr)]) is True
-    assert diffusion_rope_from_files([str(fl)]) is False
-
-
-def test_attn_kind_read_from_source_linear_processor(tmp_path):
-    """The attention ALGORITHM is read from the SAME *LinearAttn* processor signal
-    fact-conformance reads (init_class_refs): a block constructing a LinearAttn
-    processor => "linear"; a plain softmax block => None (caller's MHA default).
-    Sana's class lives in a per-model table no longer — this is the rail."""
-    from model_unfolder.evidence.patterns import diffusion_attn_kind_from_files
-    linear = (
-        "class MyBlock:\n"
-        "    def __init__(self, dim):\n"
-        "        self.attn = Attention(dim, processor=MyLinearAttnProcessor())\n"
-        "    def forward(self, x):\n"
-        "        return self.attn(x)\n"
-    )
-    softmax = (
-        "class MyBlock:\n"
-        "    def __init__(self, dim):\n"
-        "        self.attn = Attention(dim)\n"
-        "    def forward(self, x):\n"
-        "        return self.attn(x)\n"
-    )
-    fl = tmp_path / "modeling_lin.py"; fl.write_text(linear)
-    fs = tmp_path / "modeling_soft.py"; fs.write_text(softmax)
-    assert diffusion_attn_kind_from_files([str(fl)]) == "linear"
-    assert diffusion_attn_kind_from_files([str(fs)]) is None
-
-
-def test_ffn_kind_read_from_conv_glumbconv_construction(tmp_path):
-    """The FFN KIND is read from the block's constructed ff class (the SAME
-    init-construction evidence attn-kind reads): a block building GLUMBConv =>
-    "conv_glu" (Sana's gated conv Mix-FFN); a plain FeedForward => None (caller's
-    Linear-MLP default).  Replaces the per-model ffn_kind table."""
-    from model_unfolder.evidence.patterns import diffusion_ffn_kind_from_files
-    conv = (
-        "class MyBlock:\n"
-        "    def __init__(self, dim):\n"
-        "        self.ff = GLUMBConv(dim)\n"
-        "    def forward(self, x):\n"
-        "        return self.ff(x)\n"
-    )
-    mlp = conv.replace("GLUMBConv", "FeedForward")
-    fc = tmp_path / "m_conv.py"; fc.write_text(conv)
-    fm = tmp_path / "m_mlp.py"; fm.write_text(mlp)
-    assert diffusion_ffn_kind_from_files([str(fc)]) == "conv_glu"
-    assert diffusion_ffn_kind_from_files([str(fm)]) is None
-
-
-def test_gate_via_norm_distinguishes_gate_norm_from_film_norm(tmp_path):
-    """gate-via-norm (Mochi) is read STRUCTURALLY: a *Modulated*Norm class whose
-    forward gates the normed output by a scale (`*`) with NO additive FiLM shift
-    (`+`).  A standard AdaLN FiLM norm (`norm*(1+scale)+shift`, e.g. Sana's
-    SanaModulatedNorm) has the additive shift and is NOT gate-via-norm — the
-    distinction that stops Sana being falsely flipped."""
-    from model_unfolder.evidence.patterns import diffusion_gate_via_norm_from_files
-    gate = (
-        "class FooModulatedRMSNorm:\n"
-        "    def __init__(self, eps):\n"
-        "        self.norm = RMSNorm(eps)\n"
-        "    def forward(self, x, scale=None):\n"
-        "        x = self.norm(x)\n"
-        "        x = x * scale\n"
-        "        return x\n"
-    )
-    film = (
-        "class FooModulatedNorm:\n"
-        "    def __init__(self, dim):\n"
-        "        self.norm = LayerNorm(dim)\n"
-        "    def forward(self, x, temb, table):\n"
-        "        x = self.norm(x)\n"
-        "        shift, scale = (table[None] + temb).chunk(2, dim=1)\n"
-        "        x = x * (1 + scale) + shift\n"
-        "        return x\n"
-    )
-    fg = tmp_path / "m_gate.py"; fg.write_text(gate)
-    ff = tmp_path / "m_film.py"; ff.write_text(film)
-    assert diffusion_gate_via_norm_from_files([str(fg)]) is True
-    assert diffusion_gate_via_norm_from_files([str(ff)]) is False
-
-
-def test_qk_norm_type_read_from_four_code_spellings(tmp_path):
-    """The Q/K-norm TYPE is read from the four code spellings observed across the
-    DiT corpus: a norm_q field class, a literal kwarg, a variable kwarg resolved to
-    its param default, and an IfExp constant — each yielding rms_norm vs layer_norm.
-    Replaces the per-model qk_norm table (zero drift on all 7 corpus models)."""
-    from model_unfolder.evidence.patterns import diffusion_qk_norm_from_files
-    field_rms = (
-        "class A:\n"
-        "    def __init__(self):\n"
-        "        self.norm_q = RMSNorm(8)\n"
-        "        self.norm_added_q = RMSNorm(8)\n"
-        "    def forward(self, x):\n        return x\n"
-    )
-    literal_layer = (
-        "class B:\n"
-        "    def __init__(self):\n"
-        "        self.attn = Attention(8, qk_norm='fp32_layer_norm')\n"
-        "    def forward(self, x):\n        return x\n"
-    )
-    param_default = (
-        "class C:\n"
-        "    def __init__(self, qk_norm='rms_norm'):\n"
-        "        self.attn = Attention(8, qk_norm=qk_norm)\n"
-        "    def forward(self, x):\n        return x\n"
-    )
-    ifexp = (
-        "class D:\n"
-        "    def __init__(self, qk_norm=True):\n"
-        "        self.attn = Attention(8, qk_norm='layer_norm' if qk_norm else None)\n"
-        "    def forward(self, x):\n        return x\n"
-    )
-    plain = (
-        "class E:\n"
-        "    def __init__(self):\n"
-        "        self.attn = Attention(8)\n"
-        "    def forward(self, x):\n        return x\n"
-    )
-    def w(name, s):
-        f = tmp_path / name; f.write_text(s); return str(f)
-    assert diffusion_qk_norm_from_files([w("a.py", field_rms)]) == "rms_norm"
-    assert diffusion_qk_norm_from_files([w("b.py", literal_layer)]) == "layer_norm"
-    assert diffusion_qk_norm_from_files([w("c.py", param_default)]) == "rms_norm"
-    assert diffusion_qk_norm_from_files([w("d.py", ifexp)]) == "layer_norm"
-    assert diffusion_qk_norm_from_files([w("e.py", plain)]) is None
-
-
-def test_single_stream_fusion_anchored_to_built_block(tmp_path):
-    """single-stream fusion is read from the block the model BUILDS into a single_*
-    ModuleList (not any *Single* class): a real FFN submodule + no concat =>
-    sequential; concat + MLP linears => concat_fused; concat + fused parallel attn
-    => parallel.  A model that DEFINES a *Single* block but never stacks it (SD3) has
-    no single-stream blocks => None — the false-positive this anchoring prevents."""
-    from model_unfolder.evidence.patterns import diffusion_single_stream_fusion_from_files
-    sequential = (
-        "class FooSingleTransformerBlock:\n"
-        "    def __init__(self):\n"
-        "        self.norm1 = AdaLayerNormZero(8)\n"
-        "        self.attn = Attention(8)\n"
-        "        self.ff = FeedForward(8)\n"
-        "    def forward(self, x):\n        return self.ff(self.attn(x))\n"
-        "\nclass FooModel:\n"
-        "    def __init__(self):\n"
-        "        self.single_transformer_blocks = nn.ModuleList([FooSingleTransformerBlock() for _ in range(2)])\n"
-        "    def forward(self, x):\n        return x\n"
-    )
-    concat_fused = (
-        "class BarSingleTransformerBlock:\n"
-        "    def __init__(self):\n"
-        "        self.norm = AdaLayerNormZeroSingle(8)\n"
-        "        self.proj_mlp = nn.Linear(8, 32)\n"
-        "        self.proj_out = nn.Linear(40, 8)\n"
-        "        self.attn = Attention(8)\n"
-        "    def forward(self, x):\n        return self.proj_out(torch.cat([self.attn(x), self.proj_mlp(x)]))\n"
-        "\nclass BarModel:\n"
-        "    def __init__(self):\n"
-        "        self.single_transformer_blocks = nn.ModuleList([BarSingleTransformerBlock() for _ in range(2)])\n"
-        "    def forward(self, x):\n        return x\n"
-    )
-    # Defines a *Single* block but never stacks it -> not a single-stream model.
-    defined_unused = (
-        "class BazSingleTransformerBlock:\n"
-        "    def __init__(self):\n"
-        "        self.attn = Attention(8)\n"
-        "        self.ff = FeedForward(8)\n"
-        "    def forward(self, x):\n        return self.ff(self.attn(x))\n"
-        "\nclass BazModel:\n"
-        "    def __init__(self):\n"
-        "        self.transformer_blocks = nn.ModuleList([SomeDualBlock() for _ in range(2)])\n"
-        "    def forward(self, x):\n        return x\n"
-    )
-    def w(name, s):
-        f = tmp_path / name; f.write_text(s); return str(f)
-    assert diffusion_single_stream_fusion_from_files([w("seq.py", sequential)]) == "sequential"
-    assert diffusion_single_stream_fusion_from_files([w("cf.py", concat_fused)]) == "concat_fused"
-    assert diffusion_single_stream_fusion_from_files([w("unused.py", defined_unused)]) is None
-
-
-def test_axes_dims_rope_read_from_init_default(tmp_path):
-    """Axial-RoPE per-axis dims are read from the model __init__ default tuple
-    (Flux axes_dims_rope=(16,56,56)); a model without the param => None."""
-    from model_unfolder.evidence.patterns import diffusion_axes_dims_rope_from_files
-    axial = (
-        "class FooModel:\n"
-        "    def __init__(self, axes_dims_rope=(16, 56, 56)):\n"
-        "        self.x = 1\n"
-        "    def forward(self, x):\n        return x\n"
-    )
-    none = (
-        "class BarModel:\n"
-        "    def __init__(self, dim=8):\n"
-        "        self.x = 1\n"
-        "    def forward(self, x):\n        return x\n"
-    )
-    fa = tmp_path / "ax.py"; fa.write_text(axial)
-    fn = tmp_path / "no.py"; fn.write_text(none)
-    assert diffusion_axes_dims_rope_from_files([str(fa)]) == [16, 56, 56]
-    assert diffusion_axes_dims_rope_from_files([str(fn)]) is None
-
-
-def test_ffn_activation_reads_inline_standalone_act_field(tmp_path):
-    """A block whose FFN is INLINE (no FeedForward submodule) but builds a
-    standalone activation field — PRX's self.mlp_act = GELU(approximate='tanh') —
-    resolves to gelu-approximate; the fallback fires only when the standard FFN
-    scan finds nothing, so standard-FFN models are unaffected."""
-    from model_unfolder.evidence.patterns import diffusion_ffn_activation_from_files
-    inline = (
-        "class FooBlock:\n"
-        "    def __init__(self, dim):\n"
-        "        self.mlp_act = GELU(approximate='tanh')\n"
-        "        self.linear1 = nn.Linear(dim, dim)\n"
-        "    def forward(self, x):\n        return self.linear1(self.mlp_act(x))\n"
-    )
-    # a standard FeedForward block must still win via the normal scan, not the fallback
-    standard = (
-        "class BarBlock:\n"
-        "    def __init__(self, dim):\n"
-        "        self.ff = FeedForward(dim, activation_fn='geglu')\n"
-        "        self.extra_act = SiLU()\n"
-        "    def forward(self, x):\n        return self.ff(x)\n"
-    )
-    fi = tmp_path / "inline.py"; fi.write_text(inline)
-    fs = tmp_path / "std.py"; fs.write_text(standard)
-    assert diffusion_ffn_activation_from_files([str(fi)]) == "gelu-approximate"
-    assert diffusion_ffn_activation_from_files([str(fs)]) == "geglu"   # standard scan wins
+    assert _installed_diffusers_model_class_file("HunyuanDiT2DModel")
+    assert _installed_diffusers_model_class_file("LuminaNextDiT2DModel")
+    assert _installed_diffusers_model_class_file("FluxTransformer2DModel")
+    assert _installed_diffusers_model_class_file("StableCascadeUNet")
+    assert not _installed_diffusers_model_class_file("LlamaForCausalLM")
 
 
 def test_diffusor_class_defaults_mechanism_is_eradicated():
@@ -670,237 +490,6 @@ def test_diffusor_class_defaults_mechanism_is_eradicated():
 
 
 # ---------------------------------------------------------------------------
-# Decoder-layer MACRO-TOPOLOGY read from the forward() dataflow (code ->
-# structure), the general replacement for the layer_topology.yaml model_type
-# table. Asserts the GENERAL dataflow-classifier behavior on synthetic source,
-# never a single family.
-# ---------------------------------------------------------------------------
-
-_PRE_LAYER = (
-    "class FooDecoderLayer:\n"
-    "    def __init__(self):\n"
-    "        self.input_layernorm = RMSNorm(8)\n"
-    "        self.post_attention_layernorm = RMSNorm(8)\n"
-    "        self.self_attn = FooAttention(8)\n"
-    "        self.mlp = FooMLP(8)\n"
-    "    def forward(self, x, past_key_values=None):\n"
-    "        residual = x\n"
-    "        x = self.input_layernorm(x)\n"
-    "        x = self.self_attn(x)\n"
-    "        x = residual + x\n"
-    "        residual = x\n"
-    "        x = self.post_attention_layernorm(x)\n"
-    "        x = self.mlp(x)\n"
-    "        x = residual + x\n"
-    "        return x\n"
-)
-_DOUBLE_LAYER = (
-    "class FooDecoderLayer:\n"
-    "    def __init__(self):\n"
-    "        self.input_layernorm = RMSNorm(8)\n"
-    "        self.post_attention_layernorm = RMSNorm(8)\n"
-    "        self.pre_feedforward_layernorm = RMSNorm(8)\n"
-    "        self.post_feedforward_layernorm = RMSNorm(8)\n"
-    "        self.self_attn = FooAttention(8)\n"
-    "        self.mlp = FooMLP(8)\n"
-    "    def forward(self, x, past_key_values=None):\n"
-    "        residual = x\n"
-    "        x = self.input_layernorm(x)\n"
-    "        x = self.self_attn(x)\n"
-    "        x = self.post_attention_layernorm(x)\n"
-    "        x = residual + x\n"
-    "        residual = x\n"
-    "        x = self.pre_feedforward_layernorm(x)\n"
-    "        x = self.mlp(x)\n"
-    "        x = self.post_feedforward_layernorm(x)\n"
-    "        x = residual + x\n"
-    "        return x\n"
-)
-_POST_LAYER = (
-    "class FooDecoderLayer:\n"
-    "    def __init__(self):\n"
-    "        self.post_attention_layernorm = RMSNorm(8)\n"
-    "        self.post_feedforward_layernorm = RMSNorm(8)\n"
-    "        self.self_attn = FooAttention(8)\n"
-    "        self.mlp = FooMLP(8)\n"
-    "    def forward(self, x, past_key_values=None):\n"
-    "        residual = x\n"
-    "        x = self.self_attn(x)\n"
-    "        x = self.post_attention_layernorm(x)\n"
-    "        x = residual + x\n"
-    "        residual = x\n"
-    "        x = self.mlp(x)\n"
-    "        x = self.post_feedforward_layernorm(x)\n"
-    "        x = residual + x\n"
-    "        return x\n"
-)
-_PARALLEL_LAYER = (
-    "class FooDecoderLayer:\n"
-    "    def __init__(self):\n"
-    "        self.input_layernorm = LayerNorm(8)\n"
-    "        self.self_attn = FooAttention(8)\n"
-    "        self.mlp = FooMLP(8)\n"
-    "    def forward(self, x, past_key_values=None):\n"
-    "        residual = x\n"
-    "        x = self.input_layernorm(x)\n"
-    "        attn_out = self.self_attn(x)\n"
-    "        mlp_out = self.mlp(x)\n"
-    "        x = residual + attn_out + mlp_out\n"
-    "        return x\n"
-)
-
-
-def _topo(tmp_path, src):
-    from model_unfolder.evidence.patterns import decoder_layer_topology_from_files
-    f = tmp_path / "modeling_topo.py"
-    f.write_text(src)
-    return decoder_layer_topology_from_files([str(f)])
-
-
-def test_layer_topology_classifies_norm_placement_from_dataflow(tmp_path):
-    """norm placement is read from where the norms sit relative to each sublayer in
-    the forward() — not a model_type row. norm-before-sublayer => pre, norm-after =>
-    post, both => double (sandwich)."""
-    assert _topo(tmp_path, _PRE_LAYER)["norm_placement"] == "pre"
-    assert _topo(tmp_path, _DOUBLE_LAYER)["norm_placement"] == "double"
-    assert _topo(tmp_path, _POST_LAYER)["norm_placement"] == "post"
-
-
-def test_layer_topology_detects_parallel_residual_from_shared_input(tmp_path):
-    """parallel residual is read from the forward: attention and the FFN consumed in
-    one residual segment (one norm feeds both, one combined add) => parallel; the
-    sequential layer where the FFN follows the attention add => not parallel.
-    Catches GPT-J / Phi / Cohere, all flagless and all missed by the old table."""
-    assert _topo(tmp_path, _PARALLEL_LAYER)["parallel_residual"] is True
-    assert _topo(tmp_path, _PRE_LAYER)["parallel_residual"] is False
-
-
-def test_layer_topology_finds_decoder_not_encoder_in_multimodal_file(tmp_path):
-    """When a modeling file bundles several attention+ffn classes (a multimodal
-    file's vision/audio ENCODER layers + the text decoder), the decoder is picked
-    by its KV-cache forward parameter — an encoder doesn't cache. Without this the
-    first class (an encoder, often parallel) is misread as the decoder's topology."""
-    src = (
-        "class FooVisionEncoderLayer:\n"          # first, but an encoder (no cache)
-        "    def __init__(self):\n"
-        "        self.norm1 = LayerNorm(8)\n"
-        "        self.attn = FooAttention(8)\n"
-        "        self.mlp = FooMLP(8)\n"
-        "    def forward(self, x):\n"
-        "        residual = x\n"
-        "        a = self.attn(self.norm1(x))\n"
-        "        m = self.mlp(self.norm1(x))\n"
-        "        return residual + a + m\n"        # parallel — would mislead
-        "\n\n" + _PRE_LAYER
-    )
-    topo = _topo(tmp_path, src)
-    assert topo["norm_placement"] == "pre"
-    assert topo["parallel_residual"] is False     # decoder picked, not the encoder
-
-
-def test_layer_topology_real_families_match_code(tmp_path):
-    """The installed modeling source must classify each family as its known
-    structure — zero drift from the emptied table — and CATCH the flagless parallels
-    (GPT-J / Phi) the table never listed. Skips a family whose source isn't
-    installed (a gap, not a failure)."""
-    from model_unfolder.evidence.patterns import decoder_layer_topology_from_files
-    from model_unfolder.evidence.sources import resolve_source_files
-    expect = {
-        "llama": ("pre", False), "gemma2": ("double", False), "olmo2": ("post", False),
-        "cohere": ("pre", True), "gpt_j": ("pre", True), "phi": ("pre", True),
-        "phi3": ("pre", False), "bloom": ("pre", False),
-    }
-    seen = 0
-    for mt, (place, parallel) in expect.items():
-        files = resolve_source_files({"model_type": mt}, source="local").files
-        topo = decoder_layer_topology_from_files(files)
-        if topo is None:
-            continue
-        seen += 1
-        assert topo["norm_placement"] == place, f"{mt}: {topo} != {place}"
-        assert topo["parallel_residual"] is parallel, f"{mt}: {topo} parallel != {parallel}"
-    assert seen >= 4, "too few installed families exercised — resolver may be broken"
-
-
-def test_norm_kind_read_from_decoder_norm_class(tmp_path):
-    """config-silent norm KIND is read from the decoder's NORM submodule class
-    (RMSNorm vs LayerNorm), not a legacy model_type family-set.  An attention
-    HELPER class whose only attention signal is a flash-attn flag field (no norm)
-    must NOT be mistaken for the decoder layer."""
-    from model_unfolder.evidence.patterns import decoder_norm_kind_from_files
-    rms = (
-        "class FooDecoderLayer:\n"
-        "    def __init__(self):\n"
-        "        self.input_layernorm = FooRMSNorm(8)\n"
-        "        self.self_attn = FooAttention(8)\n"
-        "    def forward(self, x, past_key_values=None):\n"
-        "        return x\n"
-    )
-    ln = rms.replace("FooRMSNorm", "FooLayerNorm")
-    helper = (                                  # flash-attn flag matches 'attn', has no norm
-        "class FooFlashAttention2:\n"
-        "    def __init__(self):\n"
-        "        self._flag = flash_attn_supports_top_left_mask()\n"
-        "    def forward(self, x, past_key_values=None):\n"
-        "        return x\n"
-        "\n\n" + ln
-    )
-    fr = tmp_path / "m_rms.py"; fr.write_text(rms)
-    fl = tmp_path / "m_ln.py"; fl.write_text(ln)
-    fh = tmp_path / "m_helper.py"; fh.write_text(helper)
-    assert decoder_norm_kind_from_files([str(fr)]) == "rmsnorm"
-    assert decoder_norm_kind_from_files([str(fl)]) == "layernorm"
-    assert decoder_norm_kind_from_files([str(fh)]) == "layernorm"   # helper skipped
-
-
-def test_norm_kind_real_legacy_families_are_layernorm():
-    """The installed pre-RMSNorm decoders read LayerNorm from code (zero drift from
-    the deleted family-set), modern decoders RMSNorm — config-silently."""
-    from model_unfolder.evidence.patterns import decoder_norm_kind_from_files
-    from model_unfolder.evidence.sources import resolve_source_files
-    expect = {"gpt2": "layernorm", "opt": "layernorm", "bloom": "layernorm",
-              "gptj": "layernorm", "falcon": "layernorm", "phi": "layernorm",
-              "llama": "rmsnorm", "gemma2": "rmsnorm"}
-    seen = 0
-    for mt, kind in expect.items():
-        files = resolve_source_files({"model_type": mt}, source="local").files
-        got = decoder_norm_kind_from_files(files)
-        if got is None:
-            continue
-        seen += 1
-        assert got == kind, f"{mt}: {got} != {kind}"
-    assert seen >= 5
-
-
-def test_multi_variant_file_detected_by_layer_class_count(tmp_path):
-    """A multi-variant modeling file is detected by counting distinct LAYER classes
-    (attention + ffn/norm), not a hardcoded family name: one decoder layer => 1
-    (single tower), + a vision encoder layer => 2 (multi-variant)."""
-    from model_unfolder.evidence.patterns import layer_class_count_from_files
-    one = (
-        "class FooDecoderLayer:\n"
-        "    def __init__(self):\n"
-        "        self.input_layernorm = FooRMSNorm(8)\n"
-        "        self.self_attn = FooAttention(8)\n"
-        "        self.mlp = FooMLP(8)\n"
-        "    def forward(self, x, past_key_values=None):\n"
-        "        return x\n"
-    )
-    two = one + (
-        "\n\nclass FooVisionEncoderLayer:\n"
-        "    def __init__(self):\n"
-        "        self.norm1 = FooLayerNorm(8)\n"
-        "        self.attn = FooAttention(8)\n"
-        "        self.mlp = FooMLP(8)\n"
-        "    def forward(self, x):\n"
-        "        return x\n"
-    )
-    f1 = tmp_path / "m_one.py"; f1.write_text(one)
-    f2 = tmp_path / "m_two.py"; f2.write_text(two)
-    assert layer_class_count_from_files([str(f1)]) == 1
-    assert layer_class_count_from_files([str(f2)]) == 2
-
-
 def test_dormant_config_gated_op_is_not_required_but_an_active_one_is(tmp_path):
     """An op the code performs ONLY inside a positive config-gated ``if`` branch
     (PLE's ``hidden_states * per_layer_input`` under ``if self.flag:``) is not
@@ -1042,9 +631,19 @@ def _render_log(cfg):
 _EXPECTED_NESTED_UNRESOLVED = {
     # Several genuine source variants render one shared drill; exact variant
     # provenance must be carried by the render log before these can be proved.
-    "self_cond": {"gqa-attn", "ffn", "moe_router", "expert_1", "expert_k", "expert_kp1", "expert_n"},
-    # Synthetic wrapper fixture omits the delegated language config/source.
-    "audio": {"ffn"},
+    # Expert drills are intentionally absent here: their storage/mechanism is
+    # unknown, so they render the explicit one-node ``opaque`` view and make no
+    # decomposed compute claim for conformance to resolve.
+    # The attention drill is now source-resolved: the tuple/frozenset
+    # ForwardOps record-shape fix lets the conformance reader see the real
+    # rotary/signature evidence instead of silently abstaining.  FFN/router
+    # attribution remains genuinely unresolved.
+    # U4-C: config-only MoE/FFN identity no longer authors a drill, so there is
+    # no fabricated nested compute region to excuse.
+    "self_cond": set(),
+    # MusicGen's nested decoder is now joined to its exact component/config
+    # path and exact inline FFN owner; the former audio/ffn unresolved pin was
+    # retired by the shared U3 FFN result.
     # (UNet block factories resolved 2026-07-03: the string factory
     # ``get_down_block`` is followed generally — no unet pin remains.)
 }
@@ -1170,33 +769,34 @@ def test_opaque_drill_makes_no_claim(monkeypatch):
 
 
 def test_code_derived_ffn_gating_overrides_rmsnorm_heuristic():
-    """The dense-vs-gated FACT is code-derived: ``PhiMLP`` is dense (no gate_mul) so
-    a Phi config (RMSNorm + gelu_new) renders a DENSE FFN, NOT the gated FFN the
-    rmsnorm heuristic would have drawn — and ``LlamaMLP`` (gate_mul) stays gated.
-    This is what keeps the parser and the nested net from diverging."""
-    from model_unfolder.evidence.patterns import decoder_ffn_gated_from_files
+    """The exact selected FFN, not RMSNorm, controls the rendered mechanism."""
+    from transformers import AutoConfig
     for mt, expected in (("phi", False), ("llama", True)):
-        bundle = resolve_source_files({"model_type": mt}, source="local")
+        cfg = AutoConfig.for_model(mt).to_dict()
+        bundle = resolve_source_files(cfg, source="local")
         if not bundle.files:
             pytest.skip(f"transformers {mt} source not installed")
-        assert decoder_ffn_gated_from_files(bundle.files) is expected
+        assert mu.unfold(cfg).to_ir()["layers"][0]["ffn"]["gated"] is expected
 
 
 def test_bloom_dormant_tensor_parallel_multiply_is_not_an_ffn_gate():
     """BLOOM's disabled slow path multiplies slice indices/weights; that is not
     gate*up and must not turn its dense GELU MLP into a gated SiLU diagram."""
     from transformers import AutoConfig
-    from model_unfolder.evidence.patterns import (
-        decoder_ffn_activation_from_files,
-        decoder_ffn_gated_from_files,
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.evidence.ffn_mechanism import (
+        decoder_ffn_mechanism_for_path,
     )
 
     cfg = AutoConfig.for_model("bloom").to_dict()
-    bundle = resolve_source_files(cfg, source="local")
-    if not bundle.files:
+    context = ParseContext.build(cfg)
+    if not context.source_bundle.files:
         pytest.skip("transformers BLOOM source not installed")
-    assert decoder_ffn_gated_from_files(bundle.files, cfg=cfg) is False
-    assert decoder_ffn_activation_from_files(bundle.files) == "gelu"
+    exact = decoder_ffn_mechanism_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert exact.status == "resolved", exact.failures
+    assert exact.value.activation == "gelu"
     ffn = mu.unfold(cfg).to_ir()["layers"][0]["ffn"]
     assert ffn["gated"] is False
     assert ffn["activation"] == "gelu"
@@ -1324,6 +924,27 @@ def test_real_moe_models_nested_clean(mt):
     assert problems == [], "\n".join(p.message for p in problems)
 
 
+def test_parameter_matmul_expert_uses_exact_storage_proof_for_linear():
+    """DBRX stores three repeated expert Parameters and applies them with
+    ``matmul``.  A global dot-product→linear equivalence would be unsound for
+    attention; the exact routed-storage proof must close only this expert
+    occurrence, and every nested expert drill must remain conformance-clean.
+    """
+    fixture = Path(__file__).parent / "sable_test_corpus" / "dbrx-base.json"
+    cfg = __import__("json").loads(fixture.read_text())["config"]
+    if not resolve_source_files(cfg, source="local").files:
+        pytest.skip("transformers DBRX source not installed")
+    ir = mu.config_to_ir(cfg).to_dict()
+    facts = (ir.get("extras") or {}).get("fact_provenance") or {}
+    problems = check_nested_conformance(
+        cfg, _render_log(cfg), fact_rows=facts)
+    fabricated = [
+        problem for problem in problems
+        if problem.kind == "fabricated" and "expert" in problem.view
+    ]
+    assert fabricated == [], "\n".join(p.message for p in fabricated)
+
+
 # ---------------------------------------------------------------------------
 # storage / bookend fact conformance (fused-vs-split, embedding-stage norm)
 # ---------------------------------------------------------------------------
@@ -1376,14 +997,15 @@ def test_storage_conformance_flags_fused_experts_drawn_split():
     for layer in tampered["layers"]:
         if (layer.get("ffn") or {}).get("num_experts"):
             layer["ffn"]["expert_projection_mode"] = None
-    assert any(p.kind == "wrong_storage" and "expert gate/up" in p.op
+    assert any(p.kind == "wrong_storage" and "expert projection storage" in p.op
                for p in _fact_problems(cfg, tampered))
 
 
-def test_bookend_conformance_embed_norm_both_directions():
+def test_bookend_conformance_flags_missing_positive_but_never_invents_absence():
     """BLOOM normalizes the word-embedding output (a drawn bookend): removing the
-    drawn block is a MISSING bookend; injecting one into Llama (whose source has
-    no such signature) is FABRICATED."""
+    drawn block is a MISSING bookend.  The execution substrate is open, so
+    injecting one into Llama is not called fabricated until a future
+    reader-specific completeness proof can establish absence."""
     import copy
     from transformers import AutoConfig
 
@@ -1405,7 +1027,8 @@ def test_bookend_conformance_embed_norm_both_directions():
     fabricated["extras"]["render"]["model_blocks"] = (
         list(fabricated["extras"]["render"]["model_blocks"])
         + [{"id": "embed_norm", "role": "norm", "kind": "norm"}])
-    assert any(p.kind == "fabricated_bookend" for p in _fact_problems(clean_cfg, fabricated))
+    assert not any(p.kind == "fabricated_bookend"
+                   for p in _fact_problems(clean_cfg, fabricated))
 
 
 def test_component_storage_conformance_flags_encoder_tower_divergence():
@@ -1414,7 +1037,6 @@ def test_component_storage_conformance_flags_encoder_tower_divergence():
     the slot as the component; the honest parse is clean."""
     import copy
     import json
-    from pathlib import Path
     from model_unfolder.evidence.conformance import check_fact_conformance
 
     from model_unfolder.sable import DEFAULT_CORPUS

@@ -1,0 +1,591 @@
+<!-- data-generated-by=scripts/generate_examples.py source=tests/sable_test_corpus/musicgen-small.json input-sha256=5b7c26fd433caf5d0caf10f77179f69fdc7d3ec147f916c66e0001bbffc0d507 -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="generator" content="Unfold">
+<title>MusicgenForConditionalGeneration - unfolded</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&amp;display=swap">
+<style>
+  body { margin: 0; padding: 32px 24px; background: #F8FAFC; min-height: 100vh; }
+  .uf-frame { max-width: 820px; margin: 0 auto; }
+</style>
+</head>
+<body>
+  <div class="uf-frame">
+<div id="uf-example-musicgen-small" class="uf-root">
+<style>
+
+
+#uf-example-musicgen-small {
+  font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  color:#04342C;
+  max-width:720px;
+}
+#uf-example-musicgen-small .uf-card {
+  background:#FFFFFF;
+  border:1.5px solid #0F6E56;
+  border-radius:14px;
+  padding:20px 22px 18px;
+  box-shadow:0 1px 3px rgba(15,23,42,0.05);
+}
+#uf-example-musicgen-small .uf-header {
+  margin-bottom:14px;
+}
+#uf-example-musicgen-small .uf-name {
+  font-family:"Caveat","Patrick Hand","Comic Sans MS",cursive;
+  font-size:26px;
+  line-height:1;
+  color:#04342C;
+}
+#uf-example-musicgen-small .uf-arch {
+  color:#5F7C73;
+  font-size:11px;
+  margin-top:3px;
+  font-family:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+#uf-example-musicgen-small .uf-badges {
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:6px;
+}
+#uf-example-musicgen-small .uf-badge {
+  display:inline-flex;
+  align-items:center;
+  height:22px;
+  padding:0 9px;
+  background:#D6F1E4;
+  color:#0E5C48;
+  border-radius:11px;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.02em;
+}
+#uf-example-musicgen-small .uf-badge-warn {
+  background:#FEF3C7;
+  color:#92400E;
+  border:1px solid #FCD34D;
+  cursor:default;
+}
+#uf-example-musicgen-small .uf-badge-note {
+  background:#EFF6FF;
+  color:#1E40AF;
+  border:1px solid #BFDBFE;
+}
+/* The two message badges are <label>s toggling a hidden checkbox — clickable. */
+#uf-example-musicgen-small .uf-badge-warn, #uf-example-musicgen-small .uf-badge-note { cursor:pointer; }
+/* Click-to-open message line at the top of the card (no hover, pure CSS). */
+#uf-example-musicgen-small .uf-msg-bar {
+  display:none;
+  margin:0 0 12px;
+  padding:9px 13px;
+  border-radius:9px;
+  font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size:12px;
+  line-height:1.45;
+}
+#uf-example-musicgen-small .uf-msg-bar-warn { background:#FEF3C7; color:#92400E; border:1px solid #FCD34D; }
+#uf-example-musicgen-small .uf-msg-bar-note { background:#EFF6FF; color:#1E40AF; border:1px solid #BFDBFE; }
+#uf-example-musicgen-small .uf-msg-line + .uf-msg-line { margin-top:5px; }
+#uf-example-musicgen-small #uf-example-musicgen-small-msg-warn:checked ~ .uf-msg-bar-warn { display:block; }
+#uf-example-musicgen-small #uf-example-musicgen-small-msg-note:checked ~ .uf-msg-bar-note { display:block; }
+#uf-example-musicgen-small .uf-stats {
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:1px;
+  background:#B6DDCB;
+  border:0.5px solid #B6DDCB;
+  border-radius:8px;
+  overflow:hidden;
+  margin-bottom:18px;
+}
+#uf-example-musicgen-small .uf-stat {
+  padding:8px 12px;
+  background:#FFFFFF;
+}
+#uf-example-musicgen-small .uf-stat-key {
+  font-size:9.5px;
+  letter-spacing:0.12em;
+  color:#5F7C73;
+  font-weight:600;
+}
+#uf-example-musicgen-small .uf-stat-val {
+  font-family:"Caveat","Patrick Hand","Comic Sans MS",cursive;
+  font-size:19px;
+  color:#04342C;
+  margin-top:2px;
+  line-height:1.05;
+}
+#uf-example-musicgen-small .uf-section {
+  margin-top:14px;
+}
+#uf-example-musicgen-small .uf-section-head {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 12px;
+  background:#D6F1E4;
+  border:0.5px solid #B6DDCB;
+  border-radius:8px;
+  cursor:default;
+  user-select:none;
+  list-style:none;
+}
+#uf-example-musicgen-small .uf-section-collapsible > summary.uf-section-head {
+  cursor:pointer;
+  transition:background .15s;
+}
+#uf-example-musicgen-small .uf-section-collapsible > summary.uf-section-head:hover {
+  background:#C8E9D7;
+}
+#uf-example-musicgen-small .uf-section-head::-webkit-details-marker,
+#uf-example-musicgen-small summary.uf-section-head::-webkit-details-marker {
+  display:none;
+}
+#uf-example-musicgen-small .uf-section-label {
+  font-size:10.5px;
+  letter-spacing:0.14em;
+  font-weight:700;
+  color:#04342C;
+}
+#uf-example-musicgen-small .uf-section-sub {
+  font-size:11px;
+  color:#5F7C73;
+}
+#uf-example-musicgen-small .uf-chevron {
+  margin-left:auto;
+  font-size:18px;
+  color:#5F7C73;
+  transition:transform .15s ease;
+  transform:rotate(0deg);
+}
+#uf-example-musicgen-small details.uf-section[open] .uf-chevron {
+  transform:rotate(90deg);
+}
+#uf-example-musicgen-small .uf-section-body {
+  background:#F4FBF8;
+  border:0.5px solid #B6DDCB;
+  border-radius:10px;
+  padding:6px;
+  margin-top:6px;
+  animation:uf-fade .25s ease-out;
+}
+#uf-example-musicgen-small .uf-section-body svg {
+  display:block;
+  max-width:100%;
+  height:auto;
+}
+#uf-example-musicgen-small .uf-node rect,
+#uf-example-musicgen-small .uf-node circle {
+  transition:filter .15s, stroke .15s, stroke-width .15s;
+}
+#uf-example-musicgen-small .uf-section-arch .uf-node {
+  cursor:pointer;
+}
+#uf-example-musicgen-small .uf-section-arch .uf-node:hover rect,
+#uf-example-musicgen-small .uf-section-arch .uf-node:hover circle {
+  filter:brightness(1.1) drop-shadow(0 2px 4px rgba(0,0,0,.18));
+}
+#uf-example-musicgen-small .uf-node.uf-selected rect,
+#uf-example-musicgen-small .uf-node.uf-selected circle {
+  stroke:#FACC15;
+  stroke-width:2.5;
+}
+#uf-example-musicgen-small .uf-group-radio {
+  position:absolute;
+  width:0;height:0;
+  opacity:0;
+  pointer-events:none;
+}
+#uf-example-musicgen-small .uf-group-toggle {
+  display:inline-flex;
+  gap:3px;
+  padding:3px;
+  margin-bottom:8px;
+  background:#FFFFFF;
+  border:0.5px solid #B6DDCB;
+  border-radius:8px;
+  flex-wrap:wrap;
+}
+#uf-example-musicgen-small .uf-group-pill {
+  padding:5px 11px;
+  font-size:11px;
+  font-weight:600;
+  color:#5F7C73;
+  cursor:pointer;
+  border-radius:5px;
+  transition:background .15s,color .15s;
+  white-space:nowrap;
+  user-select:none;
+}
+#uf-example-musicgen-small .uf-group-pill:hover {
+  background:#D6F1E4;
+  color:#04342C;
+}
+#uf-example-musicgen-small .uf-arch-variant,
+#uf-example-musicgen-small .uf-l2-variant,
+#uf-example-musicgen-small .uf-nested-variant { display:none; }
+#uf-example-musicgen-small .uf-inspect-panel {
+  background:rgba(244,251,248,0.55);
+  border:0.5px solid #B6DDCB;
+  border-radius:9px;
+  animation:uf-fade .2s ease-out;
+}
+#uf-example-musicgen-small .uf-inspect {
+  display:none;
+  margin-top:10px;
+}
+#uf-example-musicgen-small .uf-section-arch[open] ~ .uf-inspect {
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+#uf-example-musicgen-small .uf-panel-hint,
+#uf-example-musicgen-small .uf-panel-compact {
+  min-height:64px;
+  padding:10px 12px;
+}
+#uf-example-musicgen-small .uf-panel-list {
+  min-height:96px;
+  padding:12px;
+}
+#uf-example-musicgen-small .uf-panel-diagram-compact {
+  min-height:0;
+  padding:12px 10px 14px;
+}
+#uf-example-musicgen-small .uf-panel-diagram {
+  min-height:0;
+  padding:14px 12px 16px;
+}
+#uf-example-musicgen-small .uf-panel-diagram-tall {
+  min-height:0;
+  padding:16px 14px 18px;
+}
+#uf-example-musicgen-small .uf-card-detail {
+  display:none;
+  width:100%;
+  animation:uf-fade .2s ease-out;
+}
+#uf-example-musicgen-small .uf-card-default {
+  display:block;
+}
+#uf-example-musicgen-small .uf-card-hint {
+  font-size:11px;
+  color:#5F7C73;
+  font-style:italic;
+  text-align:center;
+  padding:0;
+}
+#uf-example-musicgen-small .uf-nested-inspect {
+  display:none;
+  margin-top:8px;
+}
+#uf-example-musicgen-small .uf-section-arch[open] ~ .uf-nested-inspect.uf-nested-active {
+  display:block;
+}
+#uf-example-musicgen-small .uf-node.uf-nested-selected rect,
+#uf-example-musicgen-small .uf-node.uf-nested-selected circle {
+  stroke:#FACC15;
+  stroke-width:2.5;
+}
+#uf-example-musicgen-small .uf-card-title {
+  font-family:"Caveat","Patrick Hand","Comic Sans MS",cursive;
+  font-size:20px;
+  color:#04342C;
+  line-height:1.1;
+}
+#uf-example-musicgen-small .uf-card-desc {
+  font-size:13px;
+  color:#5F7C73;
+  margin-top:4px;
+  line-height:1.45;
+}
+#uf-example-musicgen-small .uf-card-facts {
+  margin-top:8px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+#uf-example-musicgen-small .uf-fact {
+  font-family:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  font-size:11px;
+  color:#04342C;
+  background:#D6F1E4;
+  border:0.5px solid #B6DDCB;
+  border-radius:999px;
+  padding:3px 10px;
+  white-space:nowrap;
+}
+#uf-example-musicgen-small .uf-card-svg {
+  margin-top:10px;
+  background:#FFFFFF;
+  border:0.5px solid #B6DDCB;
+  border-radius:8px;
+  padding:8px 6px 10px;
+}
+#uf-example-musicgen-small .uf-card-svg svg {
+  display:block;
+  width:100%;
+  max-width:100%;
+  height:auto;
+}
+#uf-example-musicgen-small .uf-evidence {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:6px;
+}
+#uf-example-musicgen-small .uf-evidence-summary {
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  color:#5F7C73;
+  font-size:11px;
+  font-family:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+#uf-example-musicgen-small .uf-evidence-summary span {
+  padding:5px 8px;
+  background:#FFFFFF;
+  border:0.5px solid #B6DDCB;
+  border-radius:6px;
+}
+#uf-example-musicgen-small .uf-evidence-grid {
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+#uf-example-musicgen-small .uf-evidence-row {
+  display:grid;
+  grid-template-columns:82px minmax(0,1fr);
+  align-items:start;
+  gap:8px;
+}
+#uf-example-musicgen-small .uf-evidence-kind {
+  color:#04342C;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  padding-top:5px;
+}
+#uf-example-musicgen-small .uf-evidence-chips {
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+}
+#uf-example-musicgen-small .uf-evidence-chip {
+  display:inline-flex;
+  align-items:center;
+  min-height:22px;
+  padding:0 8px;
+  background:#FFFFFF;
+  border:0.5px solid #B6DDCB;
+  border-radius:6px;
+  color:#0E5C48;
+  font-size:11px;
+  font-weight:600;
+}
+#uf-example-musicgen-small .uf-evidence-chip-muted {
+  color:#5F7C73;
+  font-family:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  font-weight:500;
+}
+#uf-example-musicgen-small .uf-evidence-warnings {
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+#uf-example-musicgen-small .uf-evidence-warning {
+  padding:7px 9px;
+  background:#FFFBEB;
+  border:0.5px solid #FCD34D;
+  border-radius:7px;
+  color:#92400E;
+  font-size:11px;
+  line-height:1.35;
+}
+
+#uf-example-musicgen-small .uf-attn-rows {
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+#uf-example-musicgen-small .uf-attn-row {
+  padding:9px 12px;
+  background:#FFFFFF;
+  border:0.5px solid #B6DDCB;
+  border-left:3px solid #0F6E56;
+  border-radius:8px;
+}
+#uf-example-musicgen-small .uf-attn-row-title {
+  font-family:"Caveat","Patrick Hand","Comic Sans MS",cursive;
+  font-size:16px;
+  color:#04342C;
+  line-height:1.15;
+}
+#uf-example-musicgen-small .uf-attn-row-detail {
+  margin-top:3px;
+  font-size:12px;
+  color:#5F7C73;
+  font-family:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+
+@keyframes uf-fade {
+  from { opacity:0; transform:translateY(2px); }
+  to   { opacity:1; transform:none; }
+}
+
+#uf-example-musicgen-small #uf-example-musicgen-small-g0:checked ~ .uf-card .uf-arch-variant-0,#uf-example-musicgen-small #uf-example-musicgen-small-g0:checked ~ .uf-card .uf-l2-variant-0,#uf-example-musicgen-small #uf-example-musicgen-small-g0:checked ~ .uf-card .uf-nested-variant-0 { display:block; }
+#uf-example-musicgen-small #uf-example-musicgen-small-g0:checked ~ .uf-card .uf-group-pill[for='uf-example-musicgen-small-g0'] { background:#0F6E56; color:#FFFFFF; }
+</style>
+<input type="radio" name="uf-example-musicgen-small-g" id="uf-example-musicgen-small-g0" class="uf-group-radio" checked>
+<div class="uf-card">
+
+<input type="checkbox" id="uf-example-musicgen-small-msg-warn" class="uf-msg-toggle" hidden>
+<div class="uf-msg-bar uf-msg-bar-warn"><div class="uf-msg-line">Audio codec (encodec) not drawn — it tokenizes/decodes the audio-token streams this decoder generates (waveform ↔ codebook tokens).</div><div class="uf-msg-line">Unresolved code-defined facts (drawn honestly, never asserted): bias, final norm kind, mask, norm placement, parallel norm count, residual topology — modeling source is present but unresolved.</div></div>
+<div class="uf-header">
+  <div class="uf-name">MusicgenForConditionalGeneration</div>
+  <div class="uf-arch">MusicgenForConditionalGeneration</div>
+  <div class="uf-badges"><span class="uf-badge">MHA</span><span class="uf-badge">FFN unresolved</span><label for="uf-example-musicgen-small-msg-warn" class="uf-badge uf-badge-warn">⚠ partial config</label></div>
+</div>
+
+<div class="uf-stats"><div class="uf-stat"><div class="uf-stat-key">LAYERS</div><div class="uf-stat-val">24</div></div><div class="uf-stat"><div class="uf-stat-key">HIDDEN</div><div class="uf-stat-val">1,024</div></div><div class="uf-stat"><div class="uf-stat-key">VOCAB</div><div class="uf-stat-val">2,048</div></div><div class="uf-stat"><div class="uf-stat-key">CONTEXT</div><div class="uf-stat-val">2,048</div></div><div class="uf-stat" title="estimate uses conventions for unknowns: embedding-stage normalization not proven — its parameters omitted; final-stage normalization unresolved — its parameters omitted; layer normalization parameters unresolved — omitted until kind, placement, and residual topology are owner-proven"><div class="uf-stat-key">PARAMS</div><div class="uf-stat-val">~306M*</div></div></div>
+<details class="uf-section uf-section-arch uf-section-collapsible" open><summary class="uf-section-head"><span class="uf-section-label">ARCHITECTURE</span><span class="uf-section-sub">Per-layer block · repeats × 24</span><span class="uf-chevron" aria-hidden="true">›</span></summary><div class="uf-section-body"><div class="uf-arch-variant uf-arch-variant-0"><svg width="100%" viewBox="0 0 960 934" role="img" aria-label="MusicgenForConditionalGeneration architecture" xmlns="http://www.w3.org/2000/svg"><defs><marker id="uf-example-musicgen-small-g0-arch-0-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker><filter id="uf-example-musicgen-small-g0-arch-0-shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1"/><feOffset dx="0" dy="1" result="off"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="40" y="26" width="880" height="882" rx="18" ry="18" fill="#E1F5EE" stroke="none" stroke-width="0"/><rect x="230" y="200" width="500" height="502" rx="18" ry="18" fill="#9FE1CB" stroke="none" stroke-width="0"/><g class="uf-node" data-id="tok_text"><rect x="375" y="832" width="210" height="42" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="480" y="841.5">Parallel token</text><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="480" y="864.5">streams</text></g><g class="uf-node" data-id="embed"><rect x="355" y="766" width="250" height="44" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="480" y="788">Token Embedding layer</text></g><line x1="480" y1="832" x2="480" y2="816" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-arch-0-arrow)" fill="none"/><g class="uf-node" data-id="final_rms"><rect x="354.8" y="106" width="250.4" height="70" rx="11" ry="11" fill="#D6F1E4" stroke="#B6DDCB" stroke-width="1" filter="url(#uf-example-musicgen-small-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="480" y="129.5">Pre-head path</text><text text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="480" y="152.5">unresolved</text></g><g class="uf-node" data-id="lm_head"><rect x="340.8" y="8" width="278.4" height="72" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="480" y="32">Parallel token</text><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="480" y="56">heads</text></g><g class="uf-node" data-id="attn"><rect x="365" y="570" width="230" height="72" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="480" y="594">Multi-Head</text><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="480" y="618">Attention</text></g><g class="uf-node" data-id="cross_attn"><rect x="288" y="466" width="384" height="72" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="480" y="490">Cross-Attention</text><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="480" y="514">(prompt encoder K/V)</text></g><g class="uf-node" data-id="wiring_unresolved"><rect x="321.2" y="364" width="317.6" height="70" rx="11" ry="11" fill="#D6F1E4" stroke="#B6DDCB" stroke-width="1" filter="url(#uf-example-musicgen-small-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="480" y="387.5">LayerNorm</text><text text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="480" y="410.5">wiring unresolved</text></g><g class="uf-node" data-id="ffn"><rect x="288" y="260" width="384" height="72" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="480" y="284">Feed-forward</text><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="480" y="308">mechanism unresolved</text></g><line x1="480" y1="766" x2="480" y2="648" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-arch-0-arrow)" fill="none"/><line x1="480" y1="570" x2="480" y2="544" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-arch-0-arrow)" fill="none"/><line x1="480" y1="466" x2="480" y2="440" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-arch-0-arrow)" fill="none"/><line x1="480" y1="364" x2="480" y2="338" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-arch-0-arrow)" fill="none"/><line x1="480" y1="260" x2="480" y2="182" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-arch-0-arrow)" fill="none"/><line x1="480" y1="106" x2="480" y2="86" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-arch-0-arrow)" fill="none"/><line x1="480" y1="8" x2="480" y2="-24" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-arch-0-arrow)" fill="none"/><g class="uf-node" data-id="cross_attention_states"><rect x="56" y="468" width="256" height="68" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="184" y="491">Encoded prompt</text><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="184" y="513">states</text></g><path d="M 312.0 502.0 L 238.0 502.0 L 238.0 502.0 L 282.0 502.0" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-musicgen-small-g0-arch-0-arrow)" fill="none"/><rect x="652" y="212" width="66" height="26" rx="13" ry="13" fill="rgba(255,255,255,0.65)" stroke="#B6DDCB" stroke-width="0.5"/><text text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" x="685" y="225">x 24</text></svg></div></div></details>
+<div class="uf-inspect uf-inspect-panel uf-panel-hint" data-depth="2"><div class="uf-l2-variant uf-l2-variant-0"><div class="uf-card-detail uf-card-hint uf-card-default" data-card-id="default" data-card-size="hint">Click a block above to inspect it</div><div class="uf-card-detail uf-card-tok_text" data-card-id="tok_text" data-card-size="compact"><div class="uf-card-title">Parallel token streams (×4)</div><div class="uf-card-desc">4 source-proven token-id streams feed independently constructed embedding tables whose outputs are summed.</div><div class="uf-card-facts"><span class="uf-fact">shape [batch, 4, seq_len]</span></div></div><div class="uf-card-detail uf-card-embed" data-card-id="embed" data-card-size="compact"><div class="uf-card-title">Parallel embedding banks (×4, summed)</div><div class="uf-card-desc">Each of the 4 streams has its own embedding table; the looked-up vectors are summed into one token vector (read from the decoder's construction and forward).</div><div class="uf-card-facts"><span class="uf-fact">4 × (2,048 vocab)</span><span class="uf-fact">1,024-d</span><span class="uf-fact">summed</span></div></div><div class="uf-card-detail uf-card-position_ids" data-card-id="position_ids" data-card-size="compact"><div class="uf-card-title">Position indices</div><div class="uf-card-desc">Sequence-position indices used to look up learned positional vectors.</div></div><div class="uf-card-detail uf-card-position_embed" data-card-id="position_embed" data-card-size="compact"><div class="uf-card-title">Fixed Position Encoding</div><div class="uf-card-desc">Selects a deterministic sinusoidal vector for each sequence position.</div></div><div class="uf-card-detail uf-card-position_add" data-card-id="position_add" data-card-size="compact"><div class="uf-card-title">Token + position embedding</div><div class="uf-card-desc">Adds the fixed positional vector to the token embedding before the decoder stack.</div></div><div class="uf-card-detail uf-card-conditioning_path" data-card-id="conditioning_path" data-card-size="diagram-compact" data-svg-width="720" data-svg-height="424"><div class="uf-card-title">Prompt conditioning encoder</div><div class="uf-card-desc">The conditioning encoder turns the text prompt into a sequence of states the decoder reads through cross-attention on every step.</div><div class="uf-card-facts"><span class="uf-fact">12 layers</span><span class="uf-fact">hidden 768</span><span class="uf-fact">projected to width 1,024</span></div><div class="uf-card-svg"><svg width="100%" viewBox="0 0 720 424" role="img" aria-label="MusicgenForConditionalGeneration prompt conditioning pathway" xmlns="http://www.w3.org/2000/svg"><defs><marker id="uf-example-musicgen-small-g0-conditioning-path-1-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker><filter id="uf-example-musicgen-small-g0-conditioning-path-1-shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1"/><feOffset dx="0" dy="1" result="off"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="30" y="30" width="660" height="364" rx="18" ry="18" fill="#E1F5EE" stroke="none" stroke-width="0"/><g class="uf-node" data-id="prompt_tokens"><rect x="240" y="322" width="240" height="46" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-conditioning-path-1-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="360" y="345">Prompt tokens</text></g><g class="uf-node" data-id="conditioning_encoder"><rect x="215" y="242" width="290" height="54" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-conditioning-path-1-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="360" y="269">Prompt encoder</text></g><g class="uf-node" data-id="conditioning_projector"><rect x="230" y="166" width="260" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-conditioning-path-1-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="360" y="191">Linear projection</text></g><g class="uf-node" data-id="cross_attention_states"><rect x="215" y="90" width="290" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-conditioning-path-1-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="360" y="115">Encoder states (K/V)</text></g><line x1="360" y1="322" x2="360" y2="308" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M 354.5 315 L 360.0 308 L 365.5 315" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="360" y1="242" x2="360" y2="228" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M 354.5 235 L 360.0 228 L 365.5 235" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="360" y1="166" x2="360" y2="152" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M 354.5 159 L 360.0 152 L 365.5 159" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="360" y1="90" x2="360" y2="56" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M 354.5 63 L 360.0 56 L 365.5 63" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div><div class="uf-card-detail uf-card-fusion" data-card-id="fusion" data-card-size="diagram-compact" data-svg-width="720" data-svg-height="492"><div class="uf-card-title">Encoder cross-attention</div><div class="uf-card-desc">Encoded prompt states condition the decoder layers through cross-attention — they stay a separate stream.</div><div class="uf-card-facts"><span class="uf-fact">24 cross-attention layers</span></div><div class="uf-card-svg"><svg width="100%" viewBox="0 0 720 492" role="img" aria-label="MusicgenForConditionalGeneration cross-attention layers" xmlns="http://www.w3.org/2000/svg"><defs><marker id="uf-example-musicgen-small-g0-cross-attention-fusion-2-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker><filter id="uf-example-musicgen-small-g0-cross-attention-fusion-2-shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1"/><feOffset dx="0" dy="1" result="off"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="16" y="16" width="688" height="460" rx="18" ry="18" fill="#E1F5EE" stroke="none" stroke-width="0"/><g transform="translate(3.0,-10)"><g class="uf-node" data-id="embed"><rect x="350" y="406" width="300" height="52" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-cross-attention-fusion-2-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="500" y="432">hidden_states</text></g><g class="uf-node" data-id="cross_attention_states"><rect x="64" y="250" width="220" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-cross-attention-fusion-2-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="174" y="264">Encoded prompt</text><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="174" y="286">states</text></g><g class="uf-node" data-id="cross_attention_adapter"><rect x="350" y="246" width="300" height="58" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-cross-attention-fusion-2-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="500" y="263">Cross-attention</text><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="500" y="287">layers</text></g><g class="uf-node" data-id="stack_input"><rect x="350" y="88" width="300" height="52" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-cross-attention-fusion-2-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="500" y="114">updated hidden_states</text></g><line x1="500" y1="406" x2="500" y2="310" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-cross-attention-fusion-2-arrow)" fill="none"/><path d="M 284 275 L 344 275" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-musicgen-small-g0-cross-attention-fusion-2-arrow)"/><line x1="500" y1="246" x2="500" y2="146" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-cross-attention-fusion-2-arrow)" fill="none"/><line x1="500" y1="88" x2="500" y2="54" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-cross-attention-fusion-2-arrow)" fill="none"/></g></svg></div></div><div class="uf-card-detail uf-card-attn" data-card-id="attn" data-card-size="diagram-tall" data-svg-width="764" data-svg-height="692"><div class="uf-card-title">Attention</div><div class="uf-card-desc">Multi-head self-attention — every head attends over the sequence.</div><div class="uf-card-facts"><span class="uf-fact">16 heads</span><span class="uf-fact">head dim 64</span><span class="uf-fact">position scheme unresolved</span><span class="uf-fact">mask unresolved</span><span class="uf-fact">bias unresolved</span><span class="uf-fact">QK norm unresolved</span><span class="uf-fact">cache unresolved</span><span class="uf-fact">position application unresolved</span><span class="uf-fact">in/out 1,024</span></div><div class="uf-card-svg"><svg width="100%" viewBox="0 0 764 692" role="img" aria-label="MusicgenForConditionalGeneration attention" xmlns="http://www.w3.org/2000/svg"><defs><marker id="uf-example-musicgen-small-g0-attn-3-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker><filter id="uf-example-musicgen-small-g0-attn-3-shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1"/><feOffset dx="0" dy="1" result="off"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="16" y="16" width="732" height="660" rx="18" ry="18" fill="#E1F5EE" stroke="none" stroke-width="0"/><g transform="translate(382.0,46.0)"><text text-anchor="middle" dominant-baseline="central" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="13" x="0" y="591">in (1,024)</text><g class="uf-node" data-id="scaled_scores"><rect x="-140" y="356" width="280" height="82" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-attn-3-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="24" pointer-events="none" x="0" y="382.24">Q K^T</text><line x1="-68" y1="398.64" x2="68" y2="398.64" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" pointer-events="none"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="0" y="415.86">sqrt(dim)</text></g><g class="uf-node" data-id="attn_softmax"><rect x="-100" y="280" width="200" height="46" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-attn-3-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="0" y="303">Softmax</text></g><g class="uf-node" data-id="attn_apply_v"><circle cx="0" cy="234" r="14" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-attn-3-shadow)"/><circle cx="0" cy="234" r="5" fill="none" stroke="#FFFFFF" stroke-width="2" pointer-events="none"/></g><g class="uf-node" data-id="concat_heads"><rect x="-112" y="134" width="224" height="54" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-attn-3-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="0" y="161">Concat heads</text></g><g class="uf-node" data-id="attention_output_unresolved"><rect x="-187.79999999999998" y="48" width="375.59999999999997" height="56" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-attn-3-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="0" y="76">Attention output path unresolved</text></g><line x1="0" y1="356" x2="0" y2="332" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-attn-3-arrow)" fill="none"/><line x1="0" y1="280" x2="0" y2="256" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-attn-3-arrow)" fill="none"/><line x1="0" y1="218" x2="0" y2="194" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-attn-3-arrow)" fill="none"/><line x1="0" y1="134" x2="0" y2="110" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-attn-3-arrow)" fill="none"/><line x1="0" y1="48" x2="0" y2="24" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-attn-3-arrow)" fill="none"/><line x1="0" y1="582" x2="0" y2="566" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" fill="none"/><circle cx="0" cy="566" r="3.2" fill="#0F6E56"/><g class="uf-node" data-id="q_proj"><rect x="-336" y="484" width="200" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-attn-3-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="-236" y="509">Linear (Q)</text></g><path d="M 0 566 L -226 566 Q -236 566 -236 556 L -236 540" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-musicgen-small-g0-attn-3-arrow)"/><path d="M -236 484 L -236 474 Q -236 464 -226 464 L -124 464 Q -114 464 -114 454 L -114 444" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-musicgen-small-g0-attn-3-arrow)"/><g class="uf-node" data-id="k_proj"><rect x="-100" y="484" width="200" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-attn-3-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="0" y="509">Linear (K)</text></g><path d="M 0 566 L 0 540" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-musicgen-small-g0-attn-3-arrow)"/><line x1="0" y1="484" x2="0" y2="444" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-attn-3-arrow)" fill="none"/><g class="uf-node" data-id="v_proj"><rect x="136" y="484" width="200" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-attn-3-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="236" y="509">Linear (V)</text></g><path d="M 0 566 L 226 566 Q 236 566 236 556 L 236 540" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-musicgen-small-g0-attn-3-arrow)"/><path d="M 236 484 L 236 244 Q 236 234 226 234 L 22 234" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-musicgen-small-g0-attn-3-arrow)"/></g></svg></div></div><div class="uf-card-detail uf-card-cross_attn" data-card-id="cross_attn" data-card-size="diagram-tall" data-svg-width="850" data-svg-height="698"><div class="uf-card-title">Multi-head cross-attention</div><div class="uf-card-desc">Cross-attention — decoder hidden states produce the queries; the projected image states produce K and V.</div><div class="uf-card-facts"><span class="uf-fact">16 Q heads</span><span class="uf-fact">16 KV heads</span><span class="uf-fact">head dim 64</span><span class="uf-fact">position scheme unresolved</span><span class="uf-fact">bias unresolved</span><span class="uf-fact">QK norm unresolved</span><span class="uf-fact">cache unresolved</span><span class="uf-fact">QKV storage unresolved</span><span class="uf-fact">score scaling unresolved</span><span class="uf-fact">position application unresolved</span><span class="uf-fact">source modeling_musicgen.py:1440</span><span class="uf-fact">in/out 1,024</span></div><div class="uf-card-svg"><svg width="100%" viewBox="0 0 850 698" role="img" aria-label="MusicgenForConditionalGeneration attention" xmlns="http://www.w3.org/2000/svg"><defs><marker id="uf-example-musicgen-small-g0-attn-4-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker><filter id="uf-example-musicgen-small-g0-attn-4-shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1"/><feOffset dx="0" dy="1" result="off"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="16" y="16" width="818" height="666" rx="18" ry="18" fill="#E1F5EE" stroke="none" stroke-width="0"/><g transform="translate(272.0,46.0)"><text text-anchor="middle" dominant-baseline="central" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="13" x="0" y="597">in (1,024)</text><g class="uf-node" data-id="qkv_projection_unresolved"><rect x="-220.2" y="502" width="440.4" height="56" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-attn-4-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="0" y="530">Q/K/V projections (storage unresolved)</text></g><g class="uf-node" data-id="scaled_scores"><rect x="-225.9" y="356" width="451.8" height="52" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-attn-4-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="0" y="382">Attention scores (scaling unresolved)</text></g><g class="uf-node" data-id="attn_softmax"><rect x="-100" y="280" width="200" height="46" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-attn-4-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="0" y="303">Softmax</text></g><g class="uf-node" data-id="attn_apply_v"><circle cx="0" cy="234" r="14" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-attn-4-shadow)"/><circle cx="0" cy="234" r="5" fill="none" stroke="#FFFFFF" stroke-width="2" pointer-events="none"/></g><g class="uf-node" data-id="concat_heads"><rect x="-112" y="134" width="224" height="54" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-attn-4-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="0" y="161">Concat heads</text></g><g class="uf-node" data-id="attention_output_unresolved"><rect x="-187.79999999999998" y="48" width="375.59999999999997" height="56" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-attn-4-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="0" y="76">Attention output path unresolved</text></g><line x1="0" y1="588" x2="0" y2="564" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-attn-4-arrow)" fill="none"/><line x1="0" y1="356" x2="0" y2="332" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-attn-4-arrow)" fill="none"/><line x1="0" y1="280" x2="0" y2="256" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-attn-4-arrow)" fill="none"/><line x1="0" y1="218" x2="0" y2="194" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-attn-4-arrow)" fill="none"/><line x1="0" y1="134" x2="0" y2="110" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-attn-4-arrow)" fill="none"/><line x1="0" y1="48" x2="0" y2="24" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-attn-4-arrow)" fill="none"/><g class="uf-node" data-id="cross_attention_states"><rect x="281.9" y="507" width="250" height="46" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-attn-4-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="406.9" y="530">Encoded text</text></g><line x1="281.9" y1="530" x2="224.2" y2="530" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-attn-4-arrow)" fill="none"/></g></svg></div></div><div class="uf-card-detail uf-card-wiring_unresolved" data-card-id="wiring_unresolved" data-card-size="compact"><div class="uf-card-title">Norm placement unresolved</div><div class="uf-card-desc">The source proves the repeated layer uses LayerNorm, but not where its normalization and residual wiring sit (pre / post / sandwich) and how the skips tap are NOT drawn rather than guessed.</div></div><div class="uf-card-detail uf-card-ffn" data-card-id="ffn" data-card-size="diagram-compact" data-svg-width="640" data-svg-height="200"><div class="uf-card-title">Feed-forward mechanism unresolved</div><div class="uf-card-desc">Feed-forward mechanism unresolved — known geometry is retained, but no dense, gated, projection-storage, or activation path is invented.</div><div class="uf-card-facts"><span class="uf-fact">mechanism unresolved</span><span class="uf-fact">hidden 4,096</span><span class="uf-fact">GELU</span><span class="uf-fact">in/out 1,024</span></div><div class="uf-card-svg"><svg width="100%" viewBox="0 0 640 200" role="img" aria-label="MusicgenForConditionalGeneration feed-forward block" xmlns="http://www.w3.org/2000/svg"><defs><marker id="uf-example-musicgen-small-g0-ffn-5-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker><filter id="uf-example-musicgen-small-g0-ffn-5-shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1"/><feOffset dx="0" dy="1" result="off"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="16" y="16" width="608" height="168" rx="18" ry="18" fill="#E1F5EE" stroke="none" stroke-width="0"/><g transform="translate(320.0,46.0)"><rect x="-128" y="48" width="256" height="60" rx="11" ry="11" fill="#D6F1E4" stroke="#B6DDCB" stroke-width="1" filter="url(#uf-example-musicgen-small-g0-ffn-5-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="0" y="67">Feed-forward</text><text text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="0" y="89">mechanism unresolved</text><line x1="0" y1="48" x2="0" y2="24" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-ffn-5-arrow)" fill="none"/></g></svg></div></div><div class="uf-card-detail uf-card-cross_attention_states" data-card-id="cross_attention_states" data-card-size="diagram-compact" data-svg-width="720" data-svg-height="424"><div class="uf-card-title">Encoded prompt states</div><div class="uf-card-desc">encoder_outputs: the conditioning encoder's output states (see the prompt-encoder panel); this tensor supplies K/V to the decoder's cross-attention layers.</div><div class="uf-card-facts"><span class="uf-fact">source modeling_musicgen.py:1440</span><span class="uf-fact">in/out 1,024</span></div><div class="uf-card-svg"><svg width="100%" viewBox="0 0 720 424" role="img" aria-label="MusicgenForConditionalGeneration prompt conditioning pathway" xmlns="http://www.w3.org/2000/svg"><defs><marker id="uf-example-musicgen-small-g0-conditioning-path-6-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker><filter id="uf-example-musicgen-small-g0-conditioning-path-6-shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1"/><feOffset dx="0" dy="1" result="off"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="30" y="30" width="660" height="364" rx="18" ry="18" fill="#E1F5EE" stroke="none" stroke-width="0"/><g class="uf-node" data-id="prompt_tokens"><rect x="240" y="322" width="240" height="46" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-conditioning-path-6-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="360" y="345">Prompt tokens</text></g><g class="uf-node" data-id="conditioning_encoder"><rect x="215" y="242" width="290" height="54" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-conditioning-path-6-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="360" y="269">Prompt encoder</text></g><g class="uf-node" data-id="conditioning_projector"><rect x="230" y="166" width="260" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-conditioning-path-6-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="360" y="191">Linear projection</text></g><g class="uf-node" data-id="cross_attention_states"><rect x="215" y="90" width="290" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-conditioning-path-6-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="360" y="115">Encoder states (K/V)</text></g><line x1="360" y1="322" x2="360" y2="308" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M 354.5 315 L 360.0 308 L 365.5 315" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="360" y1="242" x2="360" y2="228" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M 354.5 235 L 360.0 228 L 365.5 235" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="360" y1="166" x2="360" y2="152" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M 354.5 159 L 360.0 152 L 365.5 159" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="360" y1="90" x2="360" y2="56" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M 354.5 63 L 360.0 56 L 365.5 63" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div><div class="uf-card-detail uf-card-final_rms" data-card-id="final_rms" data-card-size="compact"><div class="uf-card-title">Pre-head path unresolved</div><div class="uf-card-desc">The repeated layer's normalization kind cannot prove that the model root applies a final normalization. The exact pre-head stage remains unresolved until its owner is read.</div></div><div class="uf-card-detail uf-card-lm_head" data-card-id="lm_head" data-card-size="compact"><div class="uf-card-title">Parallel token heads (×4)</div><div class="uf-card-desc">4 parallel linear heads project the final hidden state into per-stream logits, stacked [4, seq, 2,048] — one next-token distribution per stream each step (read from exact construction and forward).</div><div class="uf-card-facts"><span class="uf-fact">4 × (1,024 → 2,048)</span></div></div></div></div>
+<div class="uf-nested-inspect uf-inspect-panel uf-panel-compact" data-depth="3"><div class="uf-nested-variant uf-nested-variant-0"><div class="uf-card-detail" data-card-id="default" data-card-size="compact"><div class="uf-card-title"></div><div class="uf-card-desc"></div></div><div class="uf-card-detail" data-card-id="prompt_tokens" data-card-size="compact"><div class="uf-card-title">Prompt tokens</div><div class="uf-card-desc">The tokenized text prompt, input to the conditioning encoder.</div></div><div class="uf-card-detail" data-card-id="conditioning_encoder" data-card-size="compact"><div class="uf-card-title">Prompt conditioning encoder</div><div class="uf-card-desc">The conditioning encoder turns the text prompt into a sequence of states the decoder reads through cross-attention on every step.</div><div class="uf-card-facts"><span class="uf-fact">12 layers</span><span class="uf-fact">hidden 768</span></div></div><div class="uf-card-detail" data-card-id="conditioning_projector" data-card-size="diagram-compact" data-svg-width="640" data-svg-height="238"><div class="uf-card-title">Linear projection</div><div class="uf-card-desc">A single linear map from the encoder's width into the decoder's embedding space.</div><div class="uf-card-facts"><span class="uf-fact">768 → 1,024</span></div><div class="uf-card-svg"><svg width="100%" viewBox="0 0 640 238" role="img" aria-label="MusicgenForConditionalGeneration Linear projection" xmlns="http://www.w3.org/2000/svg"><defs><marker id="uf-example-musicgen-small-g0-ops_conditioning_projector-7-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker><filter id="uf-example-musicgen-small-g0-ops_conditioning_projector-7-shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1"/><feOffset dx="0" dy="1" result="off"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="16" y="16" width="608" height="206" rx="18" ry="18" fill="#E1F5EE" stroke="none" stroke-width="0"/><g transform="translate(320.0,46.0)"><text text-anchor="middle" dominant-baseline="central" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="13" x="0" y="137">in (768)</text><g class="uf-node" data-id="conditioning_projector_op0"><rect x="-100" y="48" width="200" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-musicgen-small-g0-ops_conditioning_projector-7-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="0" y="73">Linear</text></g><line x1="0" y1="128" x2="0" y2="104" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-ops_conditioning_projector-7-arrow)" fill="none"/><line x1="0" y1="48" x2="0" y2="24" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-musicgen-small-g0-ops_conditioning_projector-7-arrow)" fill="none"/></g></svg></div></div><div class="uf-card-detail" data-card-id="cross_attention_states" data-card-size="compact"><div class="uf-card-title">Encoder states (cross-attention K/V)</div><div class="uf-card-desc">The encoder's output sequence — the decoder's cross-attention layers read it as K/V at every generation step.</div><div class="uf-card-facts"><span class="uf-fact">width 1,024</span></div></div><div class="uf-card-detail" data-card-id="embed" data-card-size="compact"><div class="uf-card-title">hidden_states</div><div class="uf-card-desc">The main decoder stream supplies Q to its cross-attention layers.</div></div><div class="uf-card-detail" data-card-id="conditioning_path" data-card-size="compact"><div class="uf-card-title">Prompt to encoder states</div><div class="uf-card-desc">The text prompt is encoded (and width-projected) before cross-attention reads it.</div></div><div class="uf-card-detail" data-card-id="cross_attention_adapter" data-card-size="compact"><div class="uf-card-title">Cross-attention layers</div><div class="uf-card-desc">Encoded prompt states stay separate; the decoder layers read them with cross-attention instead of inserting them into the input sequence.</div></div><div class="uf-card-detail" data-card-id="stack_input" data-card-size="compact"><div class="uf-card-title">updated hidden_states</div><div class="uf-card-desc">Decoder hidden states after cross-attention has read the encoded prompt states.</div></div><div class="uf-card-detail" data-card-id="q_proj" data-card-size="compact"><div class="uf-card-title">Query projection</div><div class="uf-card-desc">Linear over the hidden state producing the per-head queries.</div><div class="uf-card-facts"><span class="uf-fact">1,024 → 1,024</span><span class="uf-fact">16 Q heads</span><span class="uf-fact">head dim 64</span></div></div><div class="uf-card-detail" data-card-id="k_proj" data-card-size="compact"><div class="uf-card-title">Key projection</div><div class="uf-card-desc">Linear over the hidden state producing the keys.</div><div class="uf-card-facts"><span class="uf-fact">1,024 → 1,024</span><span class="uf-fact">16 KV heads</span></div></div><div class="uf-card-detail" data-card-id="v_proj" data-card-size="compact"><div class="uf-card-title">Value projection</div><div class="uf-card-desc">Linear over the hidden state producing the values.</div><div class="uf-card-facts"><span class="uf-fact">1,024 → 1,024</span><span class="uf-fact">16 KV heads</span></div></div><div class="uf-card-detail" data-card-id="scaled_scores" data-card-size="compact"><div class="uf-card-title">Scaled attention scores</div><div class="uf-card-desc">Per head: QK^T / sqrt(dim) — dot-product scores scaled for numerical stability.</div><div class="uf-card-facts"><span class="uf-fact">16 Q heads</span><span class="uf-fact">16 KV heads</span><span class="uf-fact">1 Q per KV head</span></div></div><div class="uf-card-detail" data-card-id="attn_softmax" data-card-size="compact"><div class="uf-card-title">Softmax weights</div><div class="uf-card-desc">Normalize each query row into attention weights over source tokens.</div></div><div class="uf-card-detail" data-card-id="attn_apply_v" data-card-size="compact"><div class="uf-card-title">Matrix multiplication</div><div class="uf-card-desc">Matrix-multiplies the softmax attention weights by V (weights · V) — one context vector per head.</div></div><div class="uf-card-detail" data-card-id="concat_heads" data-card-size="compact"><div class="uf-card-title">Concatenate heads</div><div class="uf-card-desc">Stack the per-head context vectors back into one width.</div><div class="uf-card-facts"><span class="uf-fact">16 × 64</span><span class="uf-fact">→ 1,024</span></div></div><div class="uf-card-detail" data-card-id="attention_output_unresolved" data-card-size="compact"><div class="uf-card-title">Attention output path unresolved</div><div class="uf-card-desc">The attention result returns to the layer, but source evidence has not proven one exact Linear output projection.</div></div><div class="uf-card-detail" data-card-id="qkv_projection_unresolved" data-card-size="compact"><div class="uf-card-title">Q/K/V projection storage unresolved</div><div class="uf-card-desc">The attention mechanism uses query, key and value tensors, but the exact owner evidence has not resolved whether they come from separate projections, one fused projection, or another layout.</div></div><div class="uf-card-detail" data-card-id="block" data-card-size="compact"><div class="uf-card-title">Feed-forward (structure not declared)</div><div class="uf-card-desc">Expands the residual width to an inner width and projects back. The available source evidence does not prove this FFN's mechanism or gate topology. Known widths are retained, but no projection layout or activation path is invented.</div><div class="uf-card-facts"><span class="uf-fact">1,024 → 4,096 → 1,024</span></div></div></div></div><div class="uf-nested-inspect uf-inspect-panel uf-panel-compact" data-depth="4"><div class="uf-nested-variant uf-nested-variant-0"><div class="uf-card-detail" data-card-id="default" data-card-size="compact"><div class="uf-card-title"></div><div class="uf-card-desc"></div></div><div class="uf-card-detail" data-card-id="conditioning_projector_op0" data-card-size="compact"><div class="uf-card-title">Linear</div><div class="uf-card-desc">Linear projection (a learned weight matrix applied to every position).</div><div class="uf-card-facts"><span class="uf-fact">768 → 1,024</span></div></div></div></div>
+<details class="uf-section uf-section-collapsible"><summary class="uf-section-head"><span class="uf-section-label">LAYER MAP</span><span class="uf-section-sub">All layers structurally identical</span><span class="uf-chevron" aria-hidden="true">›</span></summary><div class="uf-section-body"><svg width="100%" viewBox="0 0 720 240" role="img" aria-label="MusicgenForConditionalGeneration layer map" xmlns="http://www.w3.org/2000/svg"><defs><marker id="uf-example-musicgen-small-map-8-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker><filter id="uf-example-musicgen-small-map-8-shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1"/><feOffset dx="0" dy="1" result="off"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><defs><pattern id="uf-uf-example-musicgen-small-hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="none"/><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(255,255,255,0.55)" stroke-width="2"/></pattern></defs><rect x="40" y="30" width="640" height="180" rx="18" ry="18" fill="#FFFFFF" stroke="#B6DDCB" stroke-width="0.5"/><rect x="80" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="103.33333333333333" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="126.66666666666666" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="150" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="173.33333333333331" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="196.66666666666666" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="220" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="243.33333333333331" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="266.66666666666663" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="290" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="313.3333333333333" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="336.66666666666663" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="360" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="383.3333333333333" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="406.66666666666663" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="430" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="453.3333333333333" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="476.66666666666663" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="500" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="523.3333333333333" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="546.6666666666666" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="570" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="593.3333333333333" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="616.6666666666666" y="90" width="22.833333333333332" height="36" fill="#0F6E56" opacity="0.95"/><rect x="80" y="90" width="560" height="36" fill="none" stroke="#04342C" stroke-width="0.4" rx="4" ry="4"/><text text-anchor="middle" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="12" x="91.66666666666667" y="142">L0</text><text text-anchor="middle" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="12" x="628.3333333333333" y="142">L23</text><text fill="#04342C" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="600" x="80" y="70">24 layers - 1 type</text><rect x="80" y="161" width="12" height="12" fill="#0F6E56" rx="2"/><text dominant-baseline="central" fill="#04342C" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, sans-serif" font-size="14" x="98" y="170">MHA + FFN unresolved (unresolved · position unresolved)  ·  L0–L23 · 24×</text></svg></div></details>
+
+</div>
+
+<script>
+(function() {
+  var root = document.getElementById('uf-example-musicgen-small');
+  if (!root) return;
+
+  var l1 = root.querySelectorAll('.uf-section-arch .uf-node');
+  if (!l1.length) l1 = root.querySelectorAll('.uf-section-body .uf-node');
+  var panels = Array.prototype.slice.call(root.querySelectorAll('.uf-inspect-panel'));
+  var panelSizes = [
+    'uf-panel-hint',
+    'uf-panel-compact',
+    'uf-panel-list',
+    'uf-panel-diagram-compact',
+    'uf-panel-diagram',
+    'uf-panel-diagram-tall'
+  ];
+
+  function sourcePanelFor(index) {
+    return index === 0 ? root.querySelector('.uf-section-arch') : panels[index - 1];
+  }
+
+  function sourceNodesFor(index) {
+    var source = sourcePanelFor(index);
+    if (!source) return [];
+    if (index === 0) return Array.prototype.slice.call(l1);
+    return Array.prototype.slice.call(source.querySelectorAll('.uf-card-svg .uf-node'));
+  }
+
+  function selectedClassFor(index) {
+    return index === 0 ? 'uf-selected' : 'uf-nested-selected';
+  }
+
+  function setPanelSize(panel, card) {
+    if (!panel) return;
+    panelSizes.forEach(function(cls) { panel.classList.remove(cls); });
+    var size = card && card.getAttribute('data-card-size') ? card.getAttribute('data-card-size') : 'compact';
+    panel.classList.add('uf-panel-' + size);
+    if (card && card.getAttribute('data-svg-width')) {
+      panel.style.setProperty('--uf-card-svg-width', card.getAttribute('data-svg-width'));
+      panel.style.setProperty('--uf-card-svg-height', card.getAttribute('data-svg-height') || '');
+    } else {
+      panel.style.removeProperty('--uf-card-svg-width');
+      panel.style.removeProperty('--uf-card-svg-height');
+    }
+  }
+
+  function clearPanelsFrom(index) {
+    for (var i = index; i < panels.length; i++) {
+      if (i > 0) panels[i].classList.remove('uf-nested-active');
+      panels[i].querySelectorAll('.uf-card-detail[data-card-id]').forEach(function(p) {
+        p.style.display = 'none';
+      });
+      setPanelSize(panels[i], null);
+      sourceNodesFor(i).forEach(function(n) {
+        n.classList.remove(selectedClassFor(i));
+      });
+    }
+  }
+
+  function showPanel(index, id) {
+    clearPanelsFrom(index + 1);
+    var panel = panels[index];
+    if (!panel) return;
+
+    var selectedClass = selectedClassFor(index);
+    sourceNodesFor(index).forEach(function(n) {
+      if (n.getAttribute('data-id') === id) n.classList.add(selectedClass);
+      else n.classList.remove(selectedClass);
+    });
+
+    var found = false;
+    var activeCard = null;
+    panel.querySelectorAll('.uf-card-detail[data-card-id]').forEach(function(p) {
+      var active = p.getAttribute('data-card-id') === id;
+      p.style.display = active ? 'block' : 'none';
+      if (active) {
+        found = true;
+        if (!activeCard) activeCard = p;
+      }
+    });
+
+    if (id === 'default' || !found) {
+      if (index > 0) panel.classList.remove('uf-nested-active');
+      if (!found) {
+        sourceNodesFor(index).forEach(function(n) {
+          n.classList.remove(selectedClass);
+        });
+      }
+      setPanelSize(panel, activeCard);
+    } else {
+      if (index > 0) panel.classList.add('uf-nested-active');
+      setPanelSize(panel, activeCard);
+    }
+  }
+
+  l1.forEach(function(n) {
+    n.style.cursor = 'pointer';
+    n.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (n.classList.contains('uf-selected')) { showPanel(0, 'default'); }
+      else { showPanel(0, n.getAttribute('data-id')); }
+    });
+  });
+
+  root.querySelectorAll('.uf-card-svg .uf-node').forEach(function(n) {
+    n.style.cursor = 'pointer';
+  });
+
+  root.addEventListener('click', function(e) {
+    var node = e.target.closest ? e.target.closest('.uf-card-svg .uf-node') : null;
+    if (!node || !root.contains(node)) return;
+
+    var sourcePanel = node.closest('.uf-inspect-panel');
+    var index = panels.indexOf(sourcePanel) + 1;
+    if (index <= 0 || index >= panels.length) return;
+
+    e.stopPropagation();
+    if (node.classList.contains('uf-nested-selected')) { showPanel(index, 'default'); }
+    else { showPanel(index, node.getAttribute('data-id')); }
+  });
+})();
+</script>
+
+</div>
+</div>
+</body>
+</html>

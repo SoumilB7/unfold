@@ -11,6 +11,7 @@ from __future__ import annotations
 from ....opgraph import ffn_region, rename_ops
 from ..graph import Graph, Lane, Node, Parallel
 from ..graph_engine import render_graph
+from ..fact_projection import ffn_facts
 from ..op_render import region_to_graph
 from .block_facts import ffn_from_block
 
@@ -23,16 +24,19 @@ def build_moe_view(ir: dict, info: dict, mount_id: str, block: dict | None = Non
     n_total = ffn.get("num_experts")
     k = ffn.get("num_experts_per_tok")
     n_shared = ffn.get("num_shared_experts") or 0
-    last = str(n_total) if n_total else "N"
-
-    experts = [("expert_1", "Expert 1"), ("expert_k", "Expert k"),
-               ("expert_kp1", "Expert k+1"), ("expert_n", f"Expert {last}")]
+    # This is one source-proven expert TEMPLATE repeated by routing.  Four
+    # decorative expert boxes used to look like four actual occurrences
+    # (including impossible k+1 and N lanes).  Keep one symbolic lane and state
+    # the repetition as a fact instead of fabricating occurrences.
+    selected = str(k) if k else "k"
+    experts = [("expert_1", ["Selected expert", f"template × {selected}"])]
     note = None
     if n_total:
         note = f"top-{k} of {n_total} experts active" if k else f"{n_total} experts"
         if n_shared:
             note += f" · +{n_shared} shared (always on)"
 
+    aggregation_known = isinstance(k, int) and not isinstance(k, bool) and k >= 2
     nodes = [
         Node("moe_hidden", "port",
              (f"in · {hidden:,}" if hidden else "in"), static=True),
@@ -40,7 +44,14 @@ def build_moe_view(ir: dict, info: dict, mount_id: str, block: dict | None = Non
         *[Node(nid, "expert", lbl) for nid, lbl in experts],
         # Tier-2 connector: weighted routed outputs (+ shared expert) join here;
         # its existing add_moe child card explains the operands.
-        Node("add_moe", "residual_add"),
+        Node(
+            "add_moe",
+            "residual_add" if aggregation_known or n_shared else "unknown",
+            None if aggregation_known or n_shared else
+            ["Expert aggregation", "multiplicity unresolved"],
+            resolved=bool(aggregation_known or n_shared),
+            meta=({"symbolic_inputs": k} if aggregation_known else {}),
+        ),
         Node("moe_out", "port", static=True),
     ]
     # Routed experts fan out from the router; the shared expert (always-on) taps
@@ -66,7 +77,10 @@ _EXPERT_IDS = {
     "up_proj": "expert_up_proj",
     "gate_up_proj": "expert_gate_up_proj",
     "gate_up_split": "expert_gate_up_split",
+    "gate_clip": "expert_gate_clip",
     "activation": "expert_act",
+    "up_clip": "expert_up_clip",
+    "up_offset": "expert_up_offset",
     "multiply": "expert_mul",
     "down_proj": "expert_down_proj",
 }
@@ -75,13 +89,27 @@ _EXPERT_IDS = {
 def build_moe_expert_view(ir: dict, info: dict, mount_id: str, child: dict) -> str:
     """Third-level view for the FFN that lives inside one MoE expert."""
     ffn = ffn_from_block(child, info)
+    # The expert is not the ordinary/shared FFN.  Only its own storage can
+    # certify its gate shape.  A fused gate+up projection is positive gating
+    # evidence; otherwise retain the expert's explicit tri-state verdict.
+    expert_gated = (
+        True if ffn.get("expert_projection_mode") in {
+            "fused_gate_up", "split"}
+        else False if ffn.get("expert_projection_mode") == "dense"
+        else None
+    )
     expert = rename_ops(
         ffn_region(
             {
                 "kind": "dense",
-                "gated": bool(ffn.get("gated", True)),
-                "activation": ffn.get("activation"),
-                "intermediate_size": ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"),
+                # U2: tri-state pass-through — an undeclared expert structure
+                # (gated None) draws the honest undeclared-FFN region, never a
+                # bool()-fabricated dense expert.
+                "gated": expert_gated,
+                "activation": (
+                    (ffn.get("expert_activation_formula") or {}).get("kind")),
+                "activation_formula": ffn.get("expert_activation_formula"),
+                "intermediate_size": ffn.get("expert_intermediate_size"),
                 # Code-proven fused gate_up storage flows into the expert drill —
                 # the fused projection + split IS the faithful picture.
                 "projection_mode": ffn.get("expert_projection_mode"),
@@ -91,7 +119,11 @@ def build_moe_expert_view(ir: dict, info: dict, mount_id: str, child: dict) -> s
         _EXPERT_IDS,
     )
     graph = region_to_graph(expert, clickable=True, out_label="→ weighted sum")
+    # The expert IS a dense FFN — it draws the same activation / gate / projection
+    # ops.  For an MoE-only model (gpt-oss draws no top-level ``ffn`` view) this is
+    # the surface that witnesses the FFN-family facts for net #13.
     return render_graph(
         graph, info, mount_id, child.get("id", "expert"),
         f"{ir.get('name', 'model')} MoE expert feed-forward", min_width=640,
+        facts_projected=ffn_facts(ir),
     )

@@ -1,0 +1,79 @@
+{
+  "authority_workers": 3,
+  "commit": "56d66de699f9ca9b540fc7ae0767b6c03f533444",
+  "coordinator_fingerprint_after": "266676c087ce815ca58b25437221b1ef4bec10a4bfccd061c621cee944d5bf1e",
+  "coordinator_fingerprint_before": "266676c087ce815ca58b25437221b1ef4bec10a4bfccd061c621cee944d5bf1e",
+  "failed_lanes": [
+    "full",
+    "preservation"
+  ],
+  "focused_workers": 1,
+  "full_workers": 6,
+  "lanes": {
+    "collect": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 15.746,
+      "fingerprint_after": "b9ba37cece5dbf856ee58b58c3f75836b91a0fa109181008f2fe0bfce4e845a7",
+      "fingerprint_before": "b9ba37cece5dbf856ee58b58c3f75836b91a0fa109181008f2fe0bfce4e845a7",
+      "log": "verification/receipts/S3-revet-56d66de/lanes/collect.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "focused": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 171.01,
+      "fingerprint_after": "e8c4ca740a1b9ae62b5869f3b89491c8effaff3ff406d31bc813c46bce17f5ce",
+      "fingerprint_before": "e8c4ca740a1b9ae62b5869f3b89491c8effaff3ff406d31bc813c46bce17f5ce",
+      "log": "verification/receipts/S3-revet-56d66de/lanes/focused.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "full": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 1089.659,
+      "fingerprint_after": "509b69341f4e58e2aeeaa5a66a6a8c57a3c3846cc811b0c081334ffac99f7511",
+      "fingerprint_before": "509b69341f4e58e2aeeaa5a66a6a8c57a3c3846cc811b0c081334ffac99f7511",
+      "log": "verification/receipts/S3-revet-56d66de/lanes/full.log",
+      "passed": false,
+      "returncode": 1
+    },
+    "preservation": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 529.424,
+      "fingerprint_after": "7976d6531fd88d703abd66d67cc876f415fcab6add614e2c0731172ad42d8aaf",
+      "fingerprint_before": "7976d6531fd88d703abd66d67cc876f415fcab6add614e2c0731172ad42d8aaf",
+      "log": "verification/receipts/S3-revet-56d66de/lanes/preservation.log",
+      "passed": false,
+      "returncode": 1
+    },
+    "static": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 0.407,
+      "fingerprint_after": "e2f33967d5f26d55e64a6eaaf8cec1ee5e33d0bf34113fa865bbd0e07f896152",
+      "fingerprint_before": "e2f33967d5f26d55e64a6eaaf8cec1ee5e33d0bf34113fa865bbd0e07f896152",
+      "log": "verification/receipts/S3-revet-56d66de/lanes/static.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "u2-authority": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 100.893,
+      "fingerprint_after": "2de643378a5e45f10e4fcbd0b83acc868b049d1a7245cc8b0b5f49c4967fef8a",
+      "fingerprint_before": "2de643378a5e45f10e4fcbd0b83acc868b049d1a7245cc8b0b5f49c4967fef8a",
+      "log": "verification/receipts/S3-revet-56d66de/lanes/u2-authority.log",
+      "passed": true,
+      "returncode": 0
+    }
+  },
+  "missing_lanes": [],
+  "preservation_workers": 4,
+  "source_artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+  "source_artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+  "wall_seconds": 1267.554
+}

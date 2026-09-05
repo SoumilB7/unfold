@@ -48,6 +48,8 @@ def region_to_json(region: Region, *, rename: dict[str, str] | None = None) -> d
         elif op.kind == "attention_core":
             if op.meta.get("formula"):
                 fields["formula"] = op.meta["formula"]
+            if op.meta.get("status"):
+                fields["status"] = op.meta["status"]
         elif op.kind == "cache":
             fields["stores"] = op.meta.get("stores")
         elif op.kind == "subgraph":
@@ -57,6 +59,7 @@ def region_to_json(region: Region, *, rename: dict[str, str] | None = None) -> d
                 nested_done.add(op.id)
         elif op.kind == "opaque":
             fields["class_name"] = op.meta.get("class_name")
+            fields["status"] = op.meta.get("status")
         inputs = [rid(i) for i in region.inputs_of(op.id)]
         nodes.append(node(rid(op.id), operation, inputs=inputs or None,
                           outputs=[rid(op.id)], **fields))

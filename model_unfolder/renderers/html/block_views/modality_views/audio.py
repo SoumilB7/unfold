@@ -9,7 +9,7 @@ from .common import audio_input
 
 
 def build_audio_path_view(ir: dict, info: dict, mount_id: str, _block: dict) -> str:
-    """Audio features -> encoder -> linear projection -> soft audio tokens."""
+    """Audio features through the source-qualified audio pathway."""
     view = StackView(info, mount_id, "audio-path", f"{ir.get('name', 'model')} audio pathway")
     audio = audio_input(ir)
     projector = audio.get("projector") or {}
@@ -17,7 +17,10 @@ def build_audio_path_view(ir: dict, info: dict, mount_id: str, _block: dict) -> 
     view.block("audio_features", "Audio features", w=240)
     view.block("audio_encoder", "Audio encoder", w=290, h=54)
     view.block("audio_projector", projector_label, w=260, h=50)
-    view.block("audio_tokens", "Soft audio tokens", w=290, h=50)
+    token_kind = (audio.get("tokens") or {}).get("kind")
+    view.block("audio_tokens", (
+        "Soft audio tokens" if token_kind == "soft_audio_tokens"
+        else "Code-defined audio output"), w=290, h=50)
     return view.render()
 
 
@@ -32,40 +35,27 @@ def build_audio_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict) 
 
 
 def encoder_tower_spec(encoder: dict, *, prefix: str = "enc") -> dict:
-    """A minimal honest tower for an encoder known only by depth/width/heads:
-    attention + feed-forward repeated, bare in/out ports.
+    """Render a source-qualified tower or one opaque repeated cell.
 
-    The attention node is a drill target when the config declares heads — its
-    card (declared per modality in ``metadata_modalities``) opens the ONE
-    canonical attention view.  The FFN stays static: no inner width is
-    recorded, so there is nothing honest to draw."""
+    Depth/width/head declarations are geometry, not proof that the cell is a
+    transformer attention+FFN pair.  Without qualified variants the only
+    honest rendering is opaque.
+    """
     sub_model = encoder.get("sub_model") if isinstance(encoder.get("sub_model"), dict) else {}
+    variants = encoder.get("variants") or []
+    if variants and not all(item.get("standard_cell") for item in variants):
+        return _source_audio_tower_spec(encoder, variants, prefix=prefix)
     if sub_model.get("groups"):
         return _audio_cell_tower_spec(encoder, sub_model, prefix=prefix)
-    variants = encoder.get("variants") or []
     if variants:
         return _source_audio_tower_spec(encoder, variants, prefix=prefix)
     hidden = encoder.get("hidden_size")
-    if encoder.get("evidence_status") in {"unresolved", "ambiguous", "oracle_missing"}:
-        return {
-            "source": {"id": f"{prefix}_in",
-                       "label": f"in ({_fmt_int(hidden)})" if hidden else None},
-            "cell": [{"id": f"{prefix}_opaque", "kind": "opaque",
-                      "label": "Code-defined audio cell", "static": True,
-                      "resolved": False}],
-            "repeat": encoder.get("num_layers"),
-            "output": {"id": f"{prefix}_out"},
-        }
-    has_attn_facts = bool(encoder.get("num_attention_heads"))
     return {
         "source": {"id": f"{prefix}_in",
-                   "label": (f"in ({_fmt_int(hidden)})" if hidden else None)},
-        "cell": [
-            {"id": f"{prefix}_attn", "kind": "attention", "label": "Self-attention",
-             "static": not has_attn_facts},
-            {"id": f"{prefix}_ffn", "kind": "ffn", "label": "Feed-forward",
-             "static": True},
-        ],
+                   "label": f"in ({_fmt_int(hidden)})" if hidden else None},
+        "cell": [{"id": f"{prefix}_opaque", "kind": "opaque",
+                  "label": "Code-defined audio cell", "static": True,
+                  "resolved": False}],
         "repeat": encoder.get("num_layers"),
         "output": {"id": f"{prefix}_out"},
     }
@@ -78,6 +68,7 @@ def _audio_cell_tower_spec(encoder: dict, sub_model: dict, *, prefix: str) -> di
     The per-op truth (fc1/activation/fc2, projections) lives at drill depth in
     the canonical attention/FFN views; dropout and fp16-clamp guards are
     inference no-ops the cell deliberately does not draw as blocks (Gate C)."""
+    from .....labels import attention_tower_label
     from ...tower import tower_cell
 
     hidden = encoder.get("hidden_size")
@@ -97,9 +88,10 @@ def _audio_cell_tower_spec(encoder: dict, sub_model: dict, *, prefix: str) -> di
         gate = group.get("residual_gate")
         cell = tower_cell(
             cell_prefix,
-            attn_label="Self-attention",
+            attn_label=attention_tower_label(group.get("attention") or {}),
             norm_label=group.get("norm") or "Norm",
             placement=placement if placement in ("pre", "post", "double") else "unknown",
+            ffn_fact=group.get("ffn") or {},
             attn_gate=gate,
             ffn_gate=gate,
             unknown_label="Code-defined audio block",
@@ -192,6 +184,7 @@ def _ops_to_blocks(
         block_kind = (
             "residual_add" if kind == "elementwise" and fn == "add" else
             "gate_mul" if kind == "elementwise" and fn == "mul" else
+            "conv" if kind in {"conv1d", "conv2d", "conv3d"} else
             "embedding" if kind == "position" else kind
         )
         block = {

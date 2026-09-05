@@ -1,41 +1,12 @@
-"""Patch-grid geometry -> display strings.
+"""Canonical patch-grid facts -> display strings.
 
-One formatter over the normalized ``grid`` object the parser emits
-(``modalities.inputs.vision.embedding.grid``).  Square, non-square,
-dynamic-resolution, temporal (video), and patch-merged towers all flow
-through the same functions instead of each needing a new branch in the
-renderer.  Every function degrades gracefully when fields are missing — it
-returns a generic phrase, never raises and never omits a node.
+The renderer formats only the normalized ``grid`` object the parser emits.  It
+does not synthesize a grid from image/patch scalar fields; establishing that
+those operands form a patchification mechanism belongs to U9 source evidence.
 """
 from __future__ import annotations
 
 from .utils import _fmt_int
-
-
-def coerce_grid(grid: dict | None, image_size=None, patch_size=None) -> dict | None:
-    """Return a grid object, synthesizing a minimal square one from scalars.
-
-    The parser now attaches ``grid`` directly; the scalar arguments are a
-    fallback for older/partial paths so callers never have to branch.
-    """
-    if grid:
-        return grid
-    p = _as_int(patch_size)
-    img = _as_int(image_size)
-    if p is None and img is None:
-        return None
-    tiles = None
-    inp = None
-    if img is not None:
-        inp = {"h": img, "w": img}
-        if p and img % p == 0:
-            tiles = {"h": img // p, "w": img // p}
-    return {
-        "kind": "static_patch_grid",
-        "patch": {"h": p, "w": p} if p else {},
-        "input": inp,
-        "tiles": tiles,
-    }
 
 
 def grid_title(grid: dict | None) -> str:
@@ -118,13 +89,4 @@ def _image_phrase(grid: dict) -> str | None:
     return None
 
 
-def _as_int(value) -> int | None:
-    if isinstance(value, (list, tuple)):
-        value = value[0] if value else None
-    try:
-        return int(value) if value is not None else None
-    except (TypeError, ValueError):
-        return None
-
-
-__all__ = ["coerce_grid", "grid_title", "grid_subtitle", "grid_card_phrase"]
+__all__ = ["grid_title", "grid_subtitle", "grid_card_phrase"]

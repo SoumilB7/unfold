@@ -1,0 +1,129 @@
+{
+  "checks": {
+    "asserted_facts": true,
+    "click_coupling": true,
+    "config_accessed_unprojected": true,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
+    "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
+    "dangling_connectors": true,
+    "document_boundary_completeness": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "projection_audit": true,
+    "qualified_projection_values": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true,
+    "zero_asserted_census": true
+  },
+  "config": {
+    "_name_or_path": "databricks/dbrx-base",
+    "architectures": [
+      "DbrxForCausalLM"
+    ],
+    "attn_config": {
+      "clip_qkv": 8,
+      "kv_n_heads": 8,
+      "rope_theta": 500000
+    },
+    "d_model": 6144,
+    "ffn_config": {
+      "ffn_act_fn": {
+        "name": "silu"
+      },
+      "ffn_hidden_size": 3584,
+      "moe_num_experts": 16,
+      "moe_top_k": 4
+    },
+    "max_seq_len": 32768,
+    "model_type": "dbrx",
+    "n_heads": 48,
+    "n_layers": 40,
+    "router_aux_loss_coef": 0.05,
+    "tie_word_embeddings": false,
+    "vocab_size": 100352
+  },
+  "hash_signature": [
+    "2c3e3357139af0916fcf15e9b15d8bb2",
+    "457c6853dedb78425e5c85c2cc171b63",
+    "7c73b6aeef876249dabbc347060d78fb",
+    "9bdbcf5d2def935a5841d12f719e4acd",
+    "feac69d7eb366a819fdf3a98fef2ddc7",
+    "ff13ffe154dd7f96056aadbbcdf40c13"
+  ],
+  "model": "dbrx-base",
+  "proven_facts": [
+    "decoder.attention.bias",
+    "decoder.attention.cached",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mask",
+    "decoder.attention.mask_schedule",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.output_projection",
+    "decoder.attention.position_schedule",
+    "decoder.attention.projection_mode",
+    "decoder.attention.qkv_clip",
+    "decoder.attention.rope_initialization",
+    "decoder.attention.rope_theta",
+    "decoder.attention.scores_scale",
+    "decoder.ffn.expert.expert_activation_formula",
+    "decoder.ffn.expert.expert_projection_mode",
+    "decoder.ffn.ffn_schedule",
+    "decoder.ffn.routing_policy",
+    "decoder.layer.norm_placement",
+    "decoder.layer.residual_topology",
+    "model.final_norm_kind",
+    "model.tie_word_embeddings"
+  ],
+  "source": "local",
+  "superseded_hash_signature": [
+    "172dd903895de84a46acdd979242decc",
+    "457c6853dedb78425e5c85c2cc171b63",
+    "7c73b6aeef876249dabbc347060d78fb",
+    "9bdbcf5d2def935a5841d12f719e4acd",
+    "feac69d7eb366a819fdf3a98fef2ddc7",
+    "ff13ffe154dd7f96056aadbbcdf40c13"
+  ],
+  "view_signature": [
+    {
+      "hash": "9bdbcf5d2def935a5841d12f719e4acd",
+      "label": "architecture"
+    },
+    {
+      "hash": "ff13ffe154dd7f96056aadbbcdf40c13",
+      "label": "architecture"
+    },
+    {
+      "hash": "feac69d7eb366a819fdf3a98fef2ddc7",
+      "label": "attn"
+    },
+    {
+      "hash": "7c73b6aeef876249dabbc347060d78fb",
+      "label": "expert_1"
+    },
+    {
+      "hash": "2c3e3357139af0916fcf15e9b15d8bb2",
+      "label": "ffn"
+    },
+    {
+      "hash": "457c6853dedb78425e5c85c2cc171b63",
+      "label": "router"
+    }
+  ],
+  "visual_evidence": {
+    "gallery_dir": "galleries/dbrx-base",
+    "manifest": true,
+    "png_count": 6
+  }
+}

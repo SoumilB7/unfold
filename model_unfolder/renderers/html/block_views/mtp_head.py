@@ -12,13 +12,17 @@ from ..theme import C, FONT_MONO
 def build_mtp_head_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
     """One MTP module, drawn bottom-to-top with its two inputs merging.
 
-    Two inputs — the trunk's previous hidden state (left) and the next-token
-    embedding (right) — are each RMSNorm'd, concatenated, projected ``2d -> d``
-    (``eh_proj``), passed through one transformer block, then the shared output
-    head. Every box is a clickable child of the MTP block.
+    Two inputs — the repeated-stage hidden state (left) and the embedding lane
+    (right) — are normalized, concatenated, projected ``2d -> d``, passed
+    through one exact-class-matched block, then an output head. Labels come
+    from the source-proven fact; this view does not assume RMSNorm or sharing.
     """
     detail = block.get("detail") or {}
     n = detail.get("num_modules") or 1
+    hnorm_kind = detail.get("hidden_norm_kind") or "Norm"
+    enorm_kind = detail.get("embedding_norm_kind") or "Norm"
+    shared_embedding = detail.get("shares_embedding") is True
+    shared_head = detail.get("shares_output_head") is True
     arrow_id, shadow_id = _ids(mount_id, "mtp-head")
     parts: list[str] = []
 
@@ -26,15 +30,15 @@ def build_mtp_head_view(ir: dict, info: dict, mount_id: str, block: dict) -> str
         return _block_label(info, node_id, default)
 
     # Centre column (merge -> output) and two input branches either side.
-    head   = _rect_block(parts, info, shadow_id, "mtp_head",   -120, -360, 240, 46, lbl("mtp_head", "Shared output head"))
-    tblock = _rect_block(parts, info, shadow_id, "mtp_block",  -120, -268, 240, 54, lbl("mtp_block", "Transformer block"))
+    head   = _rect_block(parts, info, shadow_id, "mtp_head",   -120, -360, 240, 46, lbl("mtp_head", "Shared output head" if shared_head else "Auxiliary output head"))
+    tblock = _rect_block(parts, info, shadow_id, "mtp_block",  -120, -268, 240, 54, lbl("mtp_block", "Repeated model block"))
     proj   = _rect_block(parts, info, shadow_id, "mtp_proj",   -110, -176, 220, 46, lbl("mtp_proj", "Linear  2d -> d"))
     # Joining the two RMSNorm'd lanes is a true two-lane merge → a ‖ connector
     # glyph (clickable, its card explains the concat), not a box.
     concat = _plus_block(parts, info, shadow_id, "mtp_concat", 0, -61, sym="‖")
-    hnorm  = _rect_block(parts, info, shadow_id, "mtp_hnorm",  -310,    0, 160, 46, lbl("mtp_hnorm", ["RMSNorm", "(hidden)"]))
-    enorm  = _rect_block(parts, info, shadow_id, "mtp_enorm",   150,    0, 160, 46, lbl("mtp_enorm", ["RMSNorm", "(embedding)"]))
-    emb    = _rect_block(parts, info, shadow_id, "mtp_emb",     135,   86, 190, 46, lbl("mtp_emb", ["Next-token", "embedding"]))
+    hnorm  = _rect_block(parts, info, shadow_id, "mtp_hnorm",  -310,    0, 160, 46, lbl("mtp_hnorm", [hnorm_kind, "(hidden)"]))
+    enorm  = _rect_block(parts, info, shadow_id, "mtp_enorm",   150,    0, 160, 46, lbl("mtp_enorm", [enorm_kind, "(embedding)"]))
+    emb    = _rect_block(parts, info, shadow_id, "mtp_emb",     135,   86, 190, 46, lbl("mtp_emb", ["Shared" if shared_embedding else "Auxiliary", "embedding"]))
 
     # Centre flow (bottom -> top) and the right embedding branch.
     parts.append(_v_line(concat, proj, arrow_id))
@@ -53,7 +57,7 @@ def build_mtp_head_view(ir: dict, info: dict, mount_id: str, block: dict) -> str
         "marker-end": f"url(#{arrow_id})", "fill": "none",
     }))
     parts.append(_svg_text(
-        head["cx"], head["top"] - 42, "logits  ->  token t+k+1",
+        head["cx"], head["top"] - 42, "auxiliary token logits",
         {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
     ))
 
@@ -84,32 +88,37 @@ def build_mtp_transformer_block_view(ir: dict, info: dict, mount_id: str, block:
     It *is* a decoder layer, so node ids/labels come from the real layer blocks
     handed to it as ``block['children']`` — the attention/FFN render through the
     same router and drill into the same MLA / MoE views as the main stack."""
+    # The adapter hands this view the representative layer's canonical blocks.
+    # Project them verbatim.  This renderer must not reconstruct a conventional
+    # two-norm/two-add cell from missing children, and it must not change an
+    # unrecognized child into a norm.  Known residual edges and aliases remain
+    # data carried by the child itself.
     children = block.get("children") or []
-    norms = [c for c in children if c.get("kind") == "norm"]
-    cn1 = norms[0] if norms else {}
-    cn2 = norms[1] if len(norms) > 1 else {}
-    ca = next((c for c in children if c.get("kind") == "attention"), {})
-    cf = next((c for c in children if c.get("kind") == "ffn"), {})
-    adds = [c for c in children if c.get("kind") == "residual_add"]
-
-    norm1_id = cn1.get("id", "mtp_block_norm1")
-    norm2_id = cn2.get("id", "mtp_block_norm2")
-    add1_id = adds[0].get("id", "mtp_block_add1") if adds else "mtp_block_add1"
-    add2_id = adds[1].get("id", "mtp_block_add2") if len(adds) > 1 else "mtp_block_add2"
+    cell = [
+        {
+            "id": child["id"],
+            "kind": child.get("kind") or "opaque",
+            "label": child.get("label") or child.get("title") or child["id"],
+            "resolved": child.get("resolved", True),
+            "static": child.get("static", False),
+            **({"sub": child["sub"]} if child.get("sub") is not None else {}),
+            **(
+                {"target": child["target"]}
+                if child.get("target") is not None else {}
+            ),
+            **(
+                {"residual_from": child["residual_from"]}
+                if child.get("residual_from") is not None else {}
+            ),
+            **({"w": child["w"]} if child.get("w") is not None else {}),
+            **({"h": child["h"]} if child.get("h") is not None else {}),
+        }
+        for child in children
+        if isinstance(child, dict) and child.get("id")
+    ]
     graph = tower_graph({
         "source": {"id": "mtp_block_in", "kind": "port", "label": "from eh_proj  (d)"},
-        "cell": [
-            {"id": norm1_id, "kind": "norm", "label": cn1.get("label") or "RMSNorm"},
-            {"id": ca.get("id", "mtp_block_attn"), "kind": "attention",
-             "label": ca.get("label") or "Attention"},
-            {"id": add1_id, "kind": "residual_add",
-             "residual_from": norm1_id},
-            {"id": norm2_id, "kind": "norm", "label": cn2.get("label") or "RMSNorm"},
-            {"id": cf.get("id", "mtp_block_ffn"), "kind": "ffn",
-             "label": cf.get("label") or "Feed-Forward"},
-            {"id": add2_id, "kind": "residual_add",
-             "residual_from": norm2_id},
-        ],
+        "cell": cell,
         # One MTP module owns exactly one decoder block.  Declaring repeat=1
         # suppresses both repeat frame and pill; "decoder layer" is a card title,
         # not a repetition count.

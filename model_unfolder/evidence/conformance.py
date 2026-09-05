@@ -39,7 +39,13 @@ _DIAGRAM_OP_KINDS = frozenset({
     "norm", "attention", "ffn", "concat", "linear",
     "gate_mul", "residual_add", "activation", "slice", "route", "reshape", "conv",
 })
-_NON_OP_KINDS = frozenset({"adaln", "conditioning", "source", "output", "port", "embedding"})
+_NON_OP_KINDS = frozenset({
+    "adaln", "conditioning", "source", "output", "port", "embedding",
+    # Presentation state, not a mechanism claim.  Unknown remains visible in
+    # the diagram but must not be compared to source as though the model
+    # literally executed an operation named ``unknown``.
+    "unknown",
+})
 
 
 @dataclass(frozen=True)
@@ -148,103 +154,68 @@ def check_model_conformance(
             problems.append(ConformanceProblem("unresolved", "", key))
             continue
         problems.extend(
-            diff_conformance(diagram_op_set(spec), code, family, view, abstractions, cfg=target)
+            diff_conformance(
+                diagram_op_set(spec), code, family, view, abstractions,
+                cfg=target, spec=spec,
+            )
         )
     return problems
 
 
-def _check_vision_facts(target, ir: dict, *, bundle: SourceBundle, source: str) -> list[ConformanceProblem]:
-    modalities = ((ir.get("extras") or {}).get("modalities") or {}).get("inputs") or {}
-    paths = [path for key, path in modalities.items()
-             if key in {"vision", "video"} and isinstance(path, dict)]
-    if not paths:
-        return []
-    from .vision import vision_tower_evidence
-    evidence = vision_tower_evidence(target, source=source, bundle=bundle)
-    view = f"{evidence.component}/vision"
-    if evidence.status in {"ambiguous", "oracle_missing"}:
-        return [ConformanceProblem("unresolved", "vision", view,
-                                   evidence.owner_class, evidence.source_file,
-                                   source_component=evidence.component)]
-    if evidence.status != "proven":
-        return []
-    out: list[ConformanceProblem] = []
-    for path in paths:
-        encoder = path.get("encoder") or {}
-        drawn_variants = encoder.get("variants") or []
-        expected = [variant.to_dict() for variant in evidence.variants]
-        checks = {
-            "position_kind": ((encoder.get("position_encoding") or {}).get("kind"),
-                              evidence.position_kind),
-            "input_position_kind": (encoder.get("input_position_kind"),
-                                    evidence.input_position_kind),
-            "final_norm_kind": (encoder.get("final_norm_kind"), evidence.final_norm_kind),
-            "variant_count": (len(drawn_variants), len(expected)),
-        }
-        for index, code_variant in enumerate(expected):
-            if index >= len(drawn_variants):
-                break
-            drawn = drawn_variants[index]
-            for field in ("block_class", "norm_kind", "norm_placement", "ffn_gated",
-                          "residual_gated", "projection_mode", "q_norm", "k_norm",
-                          "v_norm", "post_rope_scale", "position_kind",
-                          "attention_kind", "ffn_projection_mode"):
-                checks[f"variant[{index}].{field}"] = (drawn.get(field), code_variant.get(field))
-        exemplar = evidence.variants[0] if evidence.variants else None
-        for field, (drawn, code) in checks.items():
-            if drawn == code:
-                continue
-            out.append(ConformanceProblem(
-                "wrong_vision_fact", f"{field}: diagram={drawn!r}, code={code!r}", view,
-                getattr(exemplar, "block_class", evidence.owner_class),
-                getattr(exemplar, "source_file", evidence.source_file),
-                getattr(exemplar, "line", None), evidence.component,
-            ))
-    return out
-
-
 def _check_projector_facts(target, ir: dict, *, bundle: SourceBundle,
-                           source: str) -> list[ConformanceProblem]:
+                           source: str, program_index=None,
+                           parse_context=None) -> list[ConformanceProblem]:
     modalities = ((ir.get("extras") or {}).get("modalities") or {}).get("inputs") or {}
-    paths = [path for key, path in modalities.items()
-             if key in {"vision", "video"} and isinstance(path, dict)]
+    paths = [path for path in modalities.values() if isinstance(path, dict)]
     if not paths:
         return []
-    from .projector import projector_evidence
-    evidence = projector_evidence(target, source=source, bundle=bundle)
-    view = f"{evidence.component}/projector"
-    if evidence.status == "ambiguous":
+    from .projector import (
+        projector_result_for_context, projector_result_for_target,
+    )
+    result = (projector_result_for_context(
+                  parse_context, config_document=target)
+              if parse_context is not None else
+              projector_result_for_target(
+                  target, source=source, bundle=bundle, index=program_index))
+    if result.status == "ambiguous":
         return [ConformanceProblem(
-            "unresolved", "projector", view, evidence.owner_class,
-            evidence.source_file, source_component=evidence.component,
+            "unresolved", "projector", "root/projector",
+            source_component="root",
         )]
-    if evidence.status != "proven":
+    if result.status not in {"resolved", "incomplete"}:
         return []
 
-    expected_ops = [_projector_op_signature(op.to_dict()) for op in evidence.ops]
     out: list[ConformanceProblem] = []
-    for path_name, path in ((key, modalities.get(key)) for key in ("vision", "video")):
-        if not isinstance(path, dict):
-            continue
-        projector = path.get("projector") or {}
-        drawn_ops = [_projector_op_signature(op) for op in projector.get("ops") or []]
-        checks = {
-            "kind": (projector.get("kind"), evidence.kind),
-            "ops": (drawn_ops, expected_ops),
-            "learned_queries": (bool(projector.get("learned_queries")),
-                                evidence.learned_queries),
-            "source_class": (projector.get("source_class"), evidence.projector_class),
-            "source_field": (projector.get("source_field"), evidence.field_name),
-        }
-        for field, (drawn, code) in checks.items():
-            if drawn == code:
+    for evidence in result.value.projectors:
+        view = f"{evidence.component}/projector"
+        expected_ops = [
+            _projector_op_signature(op.to_dict()) for op in evidence.ops]
+        for path_name in evidence.modalities:
+            path = modalities.get(path_name)
+            if not isinstance(path, dict):
                 continue
-            out.append(ConformanceProblem(
-                "wrong_projector_fact",
-                f"{path_name}.{field}: diagram={drawn!r}, code={code!r}", view,
-                evidence.projector_class, evidence.source_file, evidence.line,
-                evidence.component,
-            ))
+            projector = path.get("projector") or {}
+            drawn_ops = [_projector_op_signature(op)
+                         for op in projector.get("ops") or []]
+            checks = {
+                "kind": (projector.get("kind"), evidence.kind),
+                "ops": (drawn_ops, expected_ops),
+                "learned_queries": (bool(projector.get("learned_queries")),
+                                    evidence.learned_queries),
+                "source_class": (projector.get("source_class"),
+                                 evidence.projector_class),
+                "source_field": (projector.get("source_field"),
+                                 evidence.field_name),
+            }
+            for field, (drawn, code) in checks.items():
+                if drawn == code:
+                    continue
+                out.append(ConformanceProblem(
+                    "wrong_projector_fact",
+                    f"{path_name}.{field}: diagram={drawn!r}, code={code!r}",
+                    view, evidence.projector_class, evidence.source_file,
+                    evidence.line, evidence.component,
+                ))
     return out
 
 
@@ -259,74 +230,139 @@ def _projector_op_signature(op: dict) -> tuple:
     )
 
 
-def _check_audio_facts(target, ir: dict, *, bundle: SourceBundle,
-                       source: str) -> list[ConformanceProblem]:
+def _check_recursive_component_facts(
+        target, ir, *, bundle, program_index=None, parse_context=None):
+    """Compare modality projections to the same recursive U9 tower result."""
     modalities = ((ir.get("extras") or {}).get("modalities") or {}).get("inputs") or {}
-    path = modalities.get("audio")
-    if not isinstance(path, dict):
+    if not modalities:
         return []
-    from .audio import audio_tower_evidence
-    evidence = audio_tower_evidence(target, source=source, bundle=bundle)
-    view = f"{evidence.component}/audio"
-    if evidence.status in {"ambiguous", "oracle_missing"}:
-        return [ConformanceProblem(
-            "unresolved", "audio", view, evidence.owner_class,
-            evidence.source_file, source_component=evidence.component,
-        )]
-    if evidence.status != "proven":
-        return []
-    encoder = path.get("encoder") or {}
-    projector = path.get("projector") or {}
-    drawn_variants = encoder.get("variants") or []
-    expected_variants = [item.to_dict() for item in evidence.variants]
-    signature = lambda values: [_projector_op_signature(op) for op in values or []]
-    checks = {
-        "source_owner": (encoder.get("source_owner"), evidence.owner_class),
-        "position.kind": ((encoder.get("position_encoding") or {}).get("kind"),
-                          evidence.position_kind),
-        "position.application": ((encoder.get("position_encoding") or {}).get("application"),
-                                 evidence.position_application),
-        "frontend_ops": (signature(encoder.get("frontend_ops")),
-                         signature(op.to_dict() for op in evidence.frontend_ops)),
-        "post_ops": (signature(encoder.get("post_ops")),
-                     signature(op.to_dict() for op in evidence.post_ops)),
-        "projector_ops": (signature(projector.get("ops")),
-                          signature(op.to_dict() for op in evidence.projector_ops)),
-        "variant_count": (len(drawn_variants), len(expected_variants)),
-    }
-    for index, expected in enumerate(expected_variants):
-        if index >= len(drawn_variants):
-            break
-        drawn = drawn_variants[index]
-        checks[f"variant[{index}].block_class"] = (
-            drawn.get("block_class"), expected.get("block_class"),
-        )
-        checks[f"variant[{index}].ops"] = (
-            signature(drawn.get("ops")), signature(expected.get("ops")),
-        )
+    from .component_tower import recursive_component_mechanisms
+    if parse_context is not None:
+        result = parse_context.reader_results.get(("root.recursive_components", ()))
+        if result is None:
+            document = target if isinstance(target, dict) else {}
+            result = recursive_component_mechanisms(
+                parse_context.program_index(), parse_context.source_bundle,
+                config_document=document,
+                config_selector=_exact_document_selector(document))
+    else:
+        if program_index is None:
+            from .program_index import build_program_index
+            program_index = build_program_index(bundle)
+        document = target if isinstance(target, dict) else {}
+        result = recursive_component_mechanisms(
+            program_index, bundle, config_document=document,
+            config_selector=_exact_document_selector(document))
+    towers_by_component = {}
+    for item in result.towers:
+        towers_by_component.setdefault(
+            item.component.component_key, []).append(item)
     out = []
-    exemplar = evidence.variants[0] if evidence.variants else None
-    for field, (drawn, code) in checks.items():
-        if drawn == code:
+    for modality, path in modalities.items():
+        if not isinstance(path, dict):
             continue
-        out.append(ConformanceProblem(
-            "wrong_audio_fact", f"{field}: diagram={drawn!r}, code={code!r}", view,
-            getattr(exemplar, "block_class", evidence.owner_class),
-            getattr(exemplar, "source_file", evidence.source_file),
-            getattr(exemplar, "line", None), evidence.component,
-        ))
+        encoder = path.get("encoder") or {}
+        towers = tuple(towers_by_component.get(
+            encoder.get("source_component"), ()))
+        if not towers:
+            continue
+        tower = towers[0]
+        kind = "wrong_audio_fact" if modality == "audio" else "wrong_vision_fact"
+        view = f"{tower.component.component_key}/{modality}"
+        owners = list(dict.fromkeys(
+            item.stage_symbol.qualified_name for item in towers))
+        positions = {
+            (item.position.kind, item.position.application) for item in towers}
+        position_kind, position_application = (
+            next(iter(positions)) if len(positions) == 1 else (None, None))
+        variant_records = tuple(
+            (item, variant_index, variant)
+            for item in towers
+            for variant_index, variant in enumerate(item.variants))
+        checks = {
+            "source_owner": (
+                encoder.get("source_owner"), owners[0] if len(towers) == 1 else None),
+            "source_owners": (
+                encoder.get("source_owners"), owners if len(towers) > 1 else None),
+            "position.kind": (
+                (encoder.get("position_encoding") or {}).get("kind"),
+                position_kind),
+            "position.application": (
+                (encoder.get("position_encoding") or {}).get("application"),
+                position_application),
+            "variant_count": (
+                len(encoder.get("variants") or ()), len(variant_records)),
+        }
+        drawn_variants = list(encoder.get("variants") or ())
+        for index, (variant_tower, variant_index, variant) in enumerate(
+                variant_records):
+            drawn = (drawn_variants[index]
+                     if index < len(drawn_variants) else {})
+            bound = variant.bound_attention
+            geometry = variant.attention_geometry
+            storage = variant.attention_storage
+            checks[f"variant[{index}].block_class"] = (
+                drawn.get("block_class"), variant.block_symbol.qualified_name)
+            checks[f"variant[{index}].attention_kind"] = (
+                drawn.get("attention_kind"),
+                bound.kind if bound is not None else None)
+            checks[f"variant[{index}].num_attention_heads"] = (
+                drawn.get("num_attention_heads"),
+                bound.num_heads if bound is not None else None)
+            checks[f"variant[{index}].num_key_value_heads"] = (
+                drawn.get("num_key_value_heads"),
+                bound.num_kv_heads if bound is not None else None)
+            checks[f"variant[{index}].head_dim"] = (
+                drawn.get("head_dim"),
+                geometry.head_dim if geometry is not None else None)
+            checks[f"variant[{index}].projection_mode"] = (
+                drawn.get("projection_mode"),
+                "split_qkv" if storage == "split" else storage)
+            checks[f"variant[{index}].position_kind"] = (
+                drawn.get("position_kind"),
+                variant_tower.position.kind_for(variant_index))
+            checks[f"variant[{index}].position_application"] = (
+                drawn.get("position_application"),
+                variant_tower.position.application_for(variant_index))
+            checks[f"variant[{index}].norm_kind"] = (
+                drawn.get("norm_kind"), variant.norm_kind)
+            checks[f"variant[{index}].ffn_gated"] = (
+                drawn.get("ffn_gated"),
+                variant.ffn.gated if variant.ffn is not None else None)
+        for field, (drawn, expected) in checks.items():
+            if drawn == expected:
+                continue
+            out.append(ConformanceProblem(
+                kind, f"{field}: diagram={drawn!r}, code={expected!r}",
+                view, tower.stage_symbol.qualified_name,
+                tower.stage_symbol.source.canonical_path,
+                source_component=tower.component.component_key))
     return out
 
 
+def _exact_document_selector(document):
+    def select(path):
+        node = document
+        for part in tuple(path):
+            if not isinstance(node, dict) or part not in node:
+                return False, None, ""
+            node = node[part]
+        return True, node, "config_declared"
+    return select
+
+
 def _check_fusion_facts(target, ir: dict, *, bundle: SourceBundle,
-                        source: str) -> list[ConformanceProblem]:
+                        source: str, program_index=None,
+                        parse_context=None) -> list[ConformanceProblem]:
     modalities = ((ir.get("extras") or {}).get("modalities") or {})
     inputs = modalities.get("inputs") or {}
     fusion = modalities.get("fusion")
     if not isinstance(fusion, dict):
         return []
     from .fusion import fusion_evidence
-    evidence = fusion_evidence(target, source=source, bundle=bundle)
+    evidence = fusion_evidence(
+        target, source=source, bundle=bundle, index=program_index,
+        parse_context=parse_context)
     view = f"{evidence.component}/fusion"
     if evidence.status == "ambiguous":
         return [ConformanceProblem(
@@ -336,13 +372,39 @@ def _check_fusion_facts(target, ir: dict, *, bundle: SourceBundle,
     if evidence.status != "proven":
         return []
 
+    # Placeholder replacement and multi-axis position construction are two
+    # independent code facts.  The parser joins them only at projection time;
+    # conformance must perform the same join from the same typed readers rather
+    # than asking the fusion reader to infer position structure from names.
+    from .multiaxis_position import multimodal_multiaxis_position_result
+    if parse_context is not None:
+        multiaxis = parse_context.cached_reader_result(
+            "root.multiaxis_position", (),
+            lambda: multimodal_multiaxis_position_result(
+                parse_context.program_index(), parse_context.source_bundle))
+    else:
+        if program_index is None:
+            from .program_index import build_program_index
+            program_index = build_program_index(bundle)
+        multiaxis = multimodal_multiaxis_position_result(program_index, bundle)
+    has_multiaxis = bool(
+        multiaxis.status == "resolved" and multiaxis.value)
+    expected_kind = (
+        "unified_multimodal_stream"
+        if evidence.kind == "placeholder_replace" and has_multiaxis
+        else evidence.kind)
+    expected_operation = (
+        "scatter_grid_tokens_into_placeholder_slots"
+        if expected_kind == "unified_multimodal_stream"
+        else evidence.operation)
+
     expected_routes = tuple(
         (route.modality, route.operation) for route in evidence.routes
         if route.modality in inputs
     )
     checks = {
-        "kind": (fusion.get("kind"), evidence.kind),
-        "operation": (fusion.get("operation"), evidence.operation),
+        "kind": (fusion.get("kind"), expected_kind),
+        "operation": (fusion.get("operation"), expected_operation),
         "routes": (_drawn_fusion_routes(fusion), expected_routes),
         "source_owner": (fusion.get("source_owner"), evidence.owner_class),
     }
@@ -414,6 +476,12 @@ def check_wiring_conformance(
         code = resolve_view_code(family, view, spec, forward_ops, cmap, architecture)
         if code is None:
             continue                    # op-conformance already flags 'unresolved'
+        # An explicitly opaque cell makes no internal wiring claim. Requiring a
+        # side rail here would turn source incompleteness into fabricated
+        # architecture, exactly what the opaque projection exists to prevent.
+        if any(block.get("kind") == "opaque"
+               for block in (spec.get("blocks") or [])):
+            continue
         params = " ".join(sorted(code.forward_params)).lower()
         drawn = _drawn_side_input_roles(spec, stage_role)
         # FABRICATED: a rail the block's forward() can't receive.
@@ -428,8 +496,10 @@ def check_wiring_conformance(
         # single-stream join, shown once) — a DROPPED text conditioning (PRX before
         # its fix). Text only: timestep always conditions and is drawn universally.
         text_subs = role_params.get("text") or []
+        typed_stream_unknown = _typed_stream_relation_unknown(spec)
         if (text_subs and "text" not in drawn and not _text_in_sequence(spec)
                 and any(s in params for s in text_subs)
+                and not typed_stream_unknown
                 and _config_field_value(target, "add_cross_attention") is not False):
             problems.append(ConformanceProblem(
                 "missing_input", "text", key,
@@ -439,6 +509,7 @@ def check_wiring_conformance(
 
 def check_fact_conformance(
     target, ir: dict, *, source: str = "local", bundle: SourceBundle | None = None,
+    program_index=None, parse_context=None,
 ) -> list[ConformanceProblem]:
     """Diff per-layer-group ARCHITECTURE FACTS that op-PRESENCE conformance is
     structurally blind to — the SAME op-kind with different SEMANTICS:
@@ -480,8 +551,12 @@ def check_fact_conformance(
     # evidence function; the net compares the resulting IR projection rather than
     # maintaining a second family/marker decision rail.
     problems.extend(_check_storage_facts(
-        family, ir, files, representatives, check_bookend=bool(_model_type(target))))
-    problems.extend(_check_component_storage_facts(family, ir, bundle))
+        family, ir, files, representatives,
+        check_bookend=bool(_model_type(target)),
+        bundle=bundle, program_index=program_index,
+        parse_context=parse_context, source_component=component))
+    problems.extend(_check_component_storage_facts(
+        family, ir, bundle, parse_context=parse_context, source=source))
     if _model_type(target):
         # Attention-KIND cross-check (Group-2 item 3, insurance): a code-MLA
         # whose config is silent on the latent ranks would draw GQA — the
@@ -506,30 +581,12 @@ def check_fact_conformance(
             problems.append(ConformanceProblem(
                 "fabricated_attention", "mla", f"{family}/attention_kind",
                 source_component=component))
-    if _model_type(target):
-        from .position import decoder_positional_evidence
-        position = decoder_positional_evidence(target, source=source, bundle=bundle)
-        if position.status == "ambiguous":
-            problems.append(ConformanceProblem(
-                "unresolved", "position", f"{family}/position",
-                source_component=position.component,
-            ))
-        elif position.status == "proven":
-            code_kinds = set(position.kinds)
-            drawn_kinds = _drawn_position_kinds(ir)
-            evidence = position.mechanisms[0] if position.mechanisms else None
-            for kind in sorted(drawn_kinds - code_kinds):
-                problems.append(ConformanceProblem(
-                    "fabricated_position", kind, f"{family}/position",
-                    getattr(evidence, "class_name", ""), getattr(evidence, "source_file", ""),
-                    getattr(evidence, "line", None), position.component,
-                ))
-            for kind in sorted(code_kinds - drawn_kinds):
-                problems.append(ConformanceProblem(
-                    "missing_position", kind, f"{family}/position",
-                    getattr(evidence, "class_name", ""), getattr(evidence, "source_file", ""),
-                    getattr(evidence, "line", None), position.component,
-                ))
+    # Position is deliberately not re-read here.  The parser's exact
+    # occurrence-qualified readers author ``decoder.attention.position_schedule``
+    # and Sable's blocking qualification net joins that same fact to every
+    # canonical layer projection.  The retired whole-file reader was a second
+    # architectural authority and could disagree with the parser's owner and
+    # selected occurrence.
     for key, spec in representatives.items():
         view = key.split("/", 1)[1]
         code = resolve_view_code(family, view, spec, forward_ops, cmap, architecture)
@@ -539,16 +596,27 @@ def check_fact_conformance(
 
         # Positional: a NoPE claim contradicted by rotary threaded through the block.
         if rotary_subs and attn.get("no_rope"):
-            toks = " ".join(code.forward_params | code.signature_tokens).lower()
+            toks = " ".join(
+                str(token)
+                for token in (*code.forward_params, *code.signature_tokens)
+            ).lower()
             if any(s in toks for s in rotary_subs):
                 problems.append(ConformanceProblem(
                     "missing_position", "rope", key,
                     code.class_name, code.source_file, code.forward_line, code.component))
 
-        # Attention algorithm: the drawn KIND vs a *LinearAttn* processor in __init__.
-        diagram_linear = attn.get("kind") == "linear"
+        # Attention algorithm: compare only two positively asserted mechanisms.
+        # ``None`` is U10's explicit unknown, not an implicit softmax default.
+        # Treating every non-linear value as softmax made an opaque Sana cell
+        # fail conformance for an architecture it did not draw.  Conversely, an
+        # explicit MHA/GQA/MQA/MLA claim still conflicts with a code-linear
+        # implementation, and an explicit linear claim still conflicts with a
+        # code-softmax implementation.
+        diagram_kind = attn.get("kind")
+        diagram_linear = diagram_kind == "linear"
+        diagram_softmax = diagram_kind in {"mha", "gqa", "mqa", "mla"}
         code_linear = any(m in r for r in code.init_class_refs for m in linear_subs)
-        if code_linear and not diagram_linear:
+        if code_linear and diagram_softmax:
             problems.append(ConformanceProblem(
                 "wrong_attention", "linear", key,
                 code.class_name, code.source_file, code.forward_line, code.component))
@@ -556,21 +624,25 @@ def check_fact_conformance(
             problems.append(ConformanceProblem(
                 "wrong_attention", "softmax", key,
                 code.class_name, code.source_file, code.forward_line, code.component))
-    problems.extend(_check_vision_facts(target, ir, bundle=bundle, source=source))
-    problems.extend(_check_projector_facts(target, ir, bundle=bundle, source=source))
-    problems.extend(_check_fusion_facts(target, ir, bundle=bundle, source=source))
-    problems.extend(_check_audio_facts(target, ir, bundle=bundle, source=source))
+    problems.extend(_check_recursive_component_facts(
+        target, ir, bundle=bundle, program_index=program_index,
+        parse_context=parse_context))
+    problems.extend(_check_projector_facts(
+        target, ir, bundle=bundle, source=source,
+        program_index=program_index, parse_context=parse_context))
+    problems.extend(_check_fusion_facts(
+        target, ir, bundle=bundle, source=source,
+        program_index=program_index, parse_context=parse_context))
     return problems
 
 
-def _storage_problems_for_spec(key: str, attn: dict, ffn: dict, files,
+def _storage_problems_for_spec(key: str, attn: dict, ffn: dict,
                                code_qkv, code_expert, *,
-                               component: str = "") -> list[ConformanceProblem]:
+                               component: str = "",
+                               code_ffn_mode=None) -> list[ConformanceProblem]:
     """The fused-vs-split comparisons for ONE layer/group spec — shared by the
     root pass and the per-pipeline-component pass so the vocabulary and rules
     can never diverge."""
-    from .ffn import ffn_structure_evidence
-
     problems: list[ConformanceProblem] = []
     if attn.get("kind") in ("mha", "gqa", "mqa") and code_qkv is not None:
         drawn_fused = attn.get("projection_mode") == "fused_qkv"
@@ -585,33 +657,43 @@ def _storage_problems_for_spec(key: str, attn: dict, ffn: dict, files,
     if not ffn:
         return problems
     if ffn.get("num_experts"):
-        drawn_fused = ffn.get("expert_projection_mode") == "fused_gate_up"
-        if code_expert is True and not drawn_fused:
+        drawn = ffn.get("expert_projection_mode")
+        if code_expert is not None and drawn != code_expert:
             problems.append(ConformanceProblem(
-                "wrong_storage", "expert gate/up is stored FUSED, drawn split", key,
+                "wrong_storage",
+                f"expert projection storage is {str(code_expert).upper()}, "
+                f"drawn {drawn}",
+                key,
                 source_component=component))
-        elif code_expert is False and drawn_fused:
+    elif code_ffn_mode is not None:
+        drawn = ffn.get("projection_mode")
+        if drawn != code_ffn_mode:
             problems.append(ConformanceProblem(
-                "wrong_storage", "expert gate/up is stored SPLIT, drawn fused", key,
-                source_component=component))
-    elif ffn.get("gated"):
-        evidence = ffn_structure_evidence(files, expected_gated=True)
-        if evidence.status == "proven" and evidence.projection_mode:
-            drawn = ffn.get("projection_mode") or "split"
-            if drawn != evidence.projection_mode:
-                problems.append(ConformanceProblem(
-                    "wrong_storage",
-                    f"FFN gate/up is stored {evidence.projection_mode.upper()}, "
-                    f"drawn {drawn}", key, source_component=component))
+                "wrong_storage",
+                f"FFN projection storage is {code_ffn_mode.upper()}, "
+                f"drawn {drawn}", key, source_component=component))
     return problems
 
 
-def _check_component_storage_facts(family: str, ir: dict, bundle) -> list[ConformanceProblem]:
+def _check_component_storage_facts(
+    family: str,
+    ir: dict,
+    bundle,
+    *,
+    parse_context=None,
+    source: str = "local",
+) -> list[ConformanceProblem]:
     """The SAME storage comparisons for every pipeline SLOT's encoder tower:
     the drawn facts live on the conditioning block's recursive ``sub_model``
-    spec, the code truth in the slot's own qualified files (whole subtree —
-    a wrapper encoder's delegated stack included)."""
-    from .patterns import attention_fused_qkv_from_files, expert_fused_gate_up_from_files
+    spec, while the code truth comes from the slot's exact selected decoder
+    block.  Parser and conformance therefore share the ProgramIndex/owner path;
+    no whole-subtree class union is allowed to vote."""
+    from .attention_storage import (
+        decoder_attention_projection_storage_for_path,
+    )
+    from .context import ParseContext, slot_parse_context
+    from .expert_storage import decoder_routed_expert_storage_for_path
+    from .ffn_mechanism import decoder_ffn_mechanism_for_path
 
     component_files = getattr(bundle, "component_files", {}) or {}
     slots = [s for s in (getattr(bundle, "pipeline_components", ()) or ())
@@ -622,6 +704,8 @@ def _check_component_storage_facts(family: str, ir: dict, bundle) -> list[Confor
               and block.get("diffusion_stage") == "text_encoder"
               and isinstance((block.get("detail") or {}).get("sub_model"), dict)]
     problems: list[ConformanceProblem] = []
+    root_context = parse_context or ParseContext(
+        source_bundle=bundle, source=source)
     for slot, block in zip(slots, towers):
         files: list[str] = []
         for key, group in component_files.items():
@@ -629,19 +713,50 @@ def _check_component_storage_facts(family: str, ir: dict, bundle) -> list[Confor
                 files.extend(f for f in group if f not in files)
         if not files:
             continue
-        code_qkv = attention_fused_qkv_from_files(files)
-        code_expert = expert_fused_gate_up_from_files(files)
+        context = slot_parse_context(root_context, slot)
+        if context is None:
+            continue
+        index = context.program_index()
+        storage = decoder_attention_projection_storage_for_path(
+            index, context.source_bundle, (), allow_root_stage=True)
+        code_qkv = (
+            storage.value == "fused_qkv"
+            if storage.status == "resolved" else None
+        )
+        ffn = decoder_ffn_mechanism_for_path(
+            index, context.source_bundle, (), allow_root_stage=True)
+        code_ffn_mode = (
+            ffn.value.projection_mode if ffn.status == "resolved" else None
+        )
         sub_model = block["detail"]["sub_model"]
+        has_experts = any(
+            bool((group.get("ffn") or {}).get("num_experts"))
+            for group in (sub_model.get("groups") or ()))
+        expert = (
+            decoder_routed_expert_storage_for_path(
+                index, context.source_bundle, (), allow_root_stage=True)
+            if has_experts else None
+        )
+        code_expert = (
+            expert.value.projection_mode
+            if expert is not None and expert.status == "resolved"
+            else None
+        )
         for i, group in enumerate(sub_model.get("groups") or []):
             problems.extend(_storage_problems_for_spec(
                 f"{family}/{block.get('id') or slot}/g{i}",
                 group.get("attention") or {}, group.get("ffn") or {},
-                files, code_qkv, code_expert, component=slot))
+                code_qkv, code_expert,
+                code_ffn_mode=code_ffn_mode,
+                component=slot))
     return problems
 
 
 def _check_storage_facts(family: str, ir: dict, files, representatives,
-                         *, check_bookend: bool = True) -> list[ConformanceProblem]:
+                         *, check_bookend: bool = True, bundle=None,
+                         program_index=None,
+                         parse_context=None,
+                         source_component: str = "root") -> list[ConformanceProblem]:
     """Projection-STORAGE and embedding-BOOKEND facts vs the modeling source —
     the fused-vs-split class (gpt-oss fused experts, Falcon fused ``query_key_
     value``, BLOOM's word-embedding LayerNorm) that op-PRESENCE conformance is
@@ -652,66 +767,129 @@ def _check_storage_facts(family: str, ir: dict, files, representatives,
     decoder domain; the per-component diffusion pass is the recorded follow-up.
     File-level verdicts are unanimous-or-None, so a heterogeneous stack with
     mixed storage abstains rather than guessing."""
-    from .patterns import (
-        attention_fused_qkv_from_files,
-        embedding_stage_norm_from_files,
-        expert_fused_gate_up_from_files,
+    from .attention_storage import (
+        decoder_attention_projection_storage_for_path,
     )
+    from .expert_storage import decoder_routed_expert_storage_for_path
 
     problems: list[ConformanceProblem] = []
-    code_qkv = attention_fused_qkv_from_files(files)
-    code_expert = expert_fused_gate_up_from_files(files)
-
+    path = _storage_config_path_for_conformance(
+        bundle, source_component, parse_context)
+    storage = None
+    if path is not None:
+        if program_index is None:
+            from .program_index import build_program_index
+            program_index = build_program_index(bundle)
+    if path is not None and parse_context is not None:
+        storage = parse_context.cached_reader_result(
+            "decoder.attention.projection_storage",
+            path,
+            lambda: decoder_attention_projection_storage_for_path(
+                program_index, bundle, path, allow_root_stage=True),
+        )
+    elif path is not None:
+        storage = decoder_attention_projection_storage_for_path(
+            program_index, bundle, path, allow_root_stage=True)
+    code_qkv = (
+        storage.value == "fused_qkv"
+        if storage is not None and storage.status == "resolved" else None
+    )
+    expert_storage = None
+    has_experts = any(
+        bool((spec.get("ffn") or {}).get("num_experts"))
+        for spec in representatives.values())
+    if has_experts and path is not None and parse_context is not None:
+        expert_storage = parse_context.cached_reader_result(
+            "decoder.ffn.expert_storage",
+            path,
+            lambda: decoder_routed_expert_storage_for_path(
+                program_index, bundle, path, allow_root_stage=True),
+        )
+    elif has_experts and path is not None:
+        expert_storage = decoder_routed_expert_storage_for_path(
+            program_index, bundle, path, allow_root_stage=True)
+    code_expert = (
+        expert_storage.value.projection_mode
+        if expert_storage is not None
+        and expert_storage.status == "resolved"
+        else None
+    )
+    from .ffn_mechanism import decoder_ffn_mechanism_for_path
+    ffn_result = None
+    if path is not None and parse_context is not None:
+        ffn_result = parse_context.cached_reader_result(
+            "decoder.ffn.mechanism",
+            path,
+            lambda: decoder_ffn_mechanism_for_path(
+                program_index, bundle, path, allow_root_stage=True),
+        )
+    elif path is not None:
+        ffn_result = decoder_ffn_mechanism_for_path(
+            program_index, bundle, path, allow_root_stage=True)
+    code_ffn_mode = (
+        ffn_result.value.projection_mode
+        if ffn_result is not None and ffn_result.status == "resolved"
+        else None
+    )
     for key, spec in representatives.items():
         # Vocabulary is the SPEC's own (ir.py): attention "fused_qkv" | None;
         # FFN/expert "fused_gate_up" | "split" | "dense" | None(=conventional).
         problems.extend(_storage_problems_for_spec(
             key, spec.get("attention") or {}, spec.get("ffn") or {},
-            files, code_qkv, code_expert))
+            code_qkv, code_expert,
+            code_ffn_mode=code_ffn_mode))
 
     if not check_bookend:
         return problems
+    if program_index is None:
+        from .program_index import build_program_index
+        program_index = build_program_index(bundle)
     drawn_bookend = any(
         isinstance(block, dict) and block.get("id") == "embed_norm"
         for block in (((ir.get("extras") or {}).get("render") or {}).get("model_blocks") or [])
     )
-    code_bookend = embedding_stage_norm_from_files(files)
+    from .embedding_bookend import embedding_stage_norm_evidence
+    bookend = embedding_stage_norm_evidence(
+        program_index, bundle, allow_root_stage=True)
+    code_bookend = bookend.value if bookend.status == "resolved" else None
     if code_bookend and not drawn_bookend:
         problems.append(ConformanceProblem(
             "missing_bookend", code_bookend, f"{family}/model"))
-    elif drawn_bookend and not code_bookend:
-        problems.append(ConformanceProblem(
-            "fabricated_bookend", "embed_norm", f"{family}/model"))
+    # The U3 execution substrate proves positive local relations but does not
+    # yet certify whole-callable absence.  A non-resolved reader therefore
+    # cannot accuse a drawn block of fabrication.  The old whole-file scan did
+    # exactly that unsound upgrade and has been deleted.
     return problems
 
 
-def _drawn_position_kinds(ir: dict) -> set[str]:
-    kinds: set[str] = set()
-    value = (ir.get("extras") or {}).get("position_encoding")
-    if isinstance(value, dict) and value.get("kind"):
-        kinds.add(str(value["kind"]))
-    elif isinstance(value, str):
-        kinds.add(value)
-    model_block_ids = {
-        block.get("id")
-        for block in (((ir.get("extras") or {}).get("render") or {}).get("model_blocks") or [])
-        if isinstance(block, dict)
-    }
-    if {"position_embed", "position_add"} <= model_block_ids and isinstance(value, dict):
-        for item in value.get("mechanisms") or []:
-            if isinstance(item, dict) and item.get("application") == "embedding_add":
-                kinds.add(str(item.get("kind")))
-    for layer in ir.get("layers") or []:
-        attn = layer.get("attention") or {}
-        if attn.get("position_kind"):
-            kinds.add(str(attn["position_kind"]))
-        elif attn.get("rope") and attn.get("kind") != "gated_delta":
-            kinds.add("rope")
-    return kinds
+def _storage_config_path_for_conformance(
+        bundle, source_component: str, parse_context=None):
+    """The exact parser-selected storage scope, or ``None`` to abstain.
+
+    Sable supplies the original :class:`ParseContext`, so parser and
+    conformance consume the identical cached owner-qualified result.  The
+    public standalone conformance API has no such decision receipt.  It may
+    therefore use ``root`` only for a root-only bundle, or an exact qualified
+    component address already selected by ``_component_source``.  A composite
+    whose source bundle contains several sibling scopes is deliberately
+    uncheckable without the parse context; silently assuming ``()`` could
+    compare a wrapper/vision mechanism against its nested text decoder.
+    """
+    if parse_context is not None:
+        selected = parse_context.selected_config_paths.get("transformer.main")
+        return tuple(selected) if selected is not None else None
+    groups = dict(getattr(bundle, "component_files", {}) or {})
+    if source_component != "root":
+        if source_component not in groups:
+            return None
+        path = tuple(part for part in source_component.split(".") if part)
+        return path or None
+    return () if not groups or set(groups) <= {"root"} else None
 
 
 def check_nested_conformance(
     target, render_log, *, source: str = "local", bundle: SourceBundle | None = None,
+    fact_rows=None,
 ) -> list[ConformanceProblem]:
     """Recurse INTO every drill view and diff its DRAWN op-set against the model's
     own code — one altitude below :func:`check_model_conformance` (which stops at
@@ -865,8 +1043,34 @@ def check_nested_conformance(
                         "unresolved", "", f"{family}/{view_key}", source_component=component))
                 continue
             ops, evidence = closure
+            # A parameterized expert may spell its affine projections as
+            # ``x.matmul(weight)`` rather than ``nn.Linear``.  The transitive
+            # scanner correctly sees ``dot_product`` and must NOT globally
+            # equate that with a linear layer (attention would launder through
+            # the same rule).  The parser's exact routed-storage fact is the
+            # positive proof that THIS expert's matmuls use the selected learned
+            # gate/up/down Parameters, so the checker consumes the same fact as
+            # the renderer and authorizes ``linear`` only at this expert drill.
+            if drill_role == "expert" and _expert_fact_proves_affine(fact_rows):
+                ops = frozenset({*ops, "linear"})
             problems.extend(_diff_drill(family, view_key, drill_role, drawn, ops, evidence, vocab, ab))
     return problems
+
+
+def _expert_fact_proves_affine(fact_rows) -> bool:
+    """Whether the native expert-storage fact proves learned projections.
+
+    This is deliberately a closed fact/status/value check.  A config assertion,
+    unknown fact, or missing ledger can never relax nested conformance.
+    """
+    if not isinstance(fact_rows, dict):
+        return False
+    row = fact_rows.get("decoder.ffn.expert.expert_projection_mode")
+    return (
+        isinstance(row, dict)
+        and row.get("status") in {"code_proven", "code_and_config"}
+        and row.get("value") in {"fused_gate_up", "split"}
+    )
 
 
 def _block_classes(registry) -> list[str]:
@@ -1425,10 +1629,17 @@ def _diff_composite(family, view_key, drawn, block_sets, vocab, ab) -> list[Conf
 
 
 def _text_in_sequence(spec: dict) -> bool:
-    """True when the diagram shows text as part of the JOINED sequence (a
-    concat-joint / single-stream join, shown once via the stack caption) rather
-    than a per-block rail — so a forward that takes text is NOT 'missing' it."""
+    """True when exact stream evidence represents the text-bearing state.
+
+    A joined-input lane carries text in one concatenated sequence; a dual-state
+    lane carries it as the second returned state.  Both are positive machine
+    relations, not label inference, so neither requires a duplicate side rail.
+    """
     variant = (spec.get("attention") or {}).get("variant") or {}
+    if variant.get("stream_relation") in {"joined_inputs", "dual_state"}:
+        return True
+    if variant.get("joined_sequence") is True:
+        return True
     if variant.get("stack_note"):
         return True
     tag = str(variant.get("tag") or "").lower()
@@ -1509,10 +1720,21 @@ def resolve_view_code(family: str, view: str, spec: dict,
     reachable = _reachable_forward_ops(architecture, forward_ops)
 
     # 1. General: the model names its block classes via ModuleLists in __init__.
+    #    EXACT ownership first — the architecture's OWN ModuleLists.  A shared
+    #    library shim can make another model's block "reachable" (diffusers
+    #    attention_processor imports transformer_flux), and since candidates
+    #    key by FIELD NAME, a foreign "transformer_blocks" entry can shadow
+    #    the true one (caught on Stable Audio at the rigorous gate).
     block_elems = {field: cls for fo in forward_ops.values()
                    for field, cls in fo.module_list_elems.items()
                    if _is_block_class(cls) and cls in forward_ops}
-    if reachable:
+    own = {field: cls
+           for field, cls in (forward_ops[architecture].module_list_elems.items()
+                              if architecture and architecture in forward_ops else ())
+           if _is_block_class(cls, forward_ops) and cls in forward_ops}
+    if own:
+        block_elems = own
+    elif reachable:
         anchored = {field: cls for fo in forward_ops.values()
                     if fo.class_name in reachable
                     for field, cls in fo.module_list_elems.items()
@@ -1528,7 +1750,12 @@ def resolve_view_code(family: str, view: str, spec: dict,
     if override and override.split(".")[0] in forward_ops:
         return forward_ops[override.split(".")[0]]
 
-    # 3. Name heuristic, disambiguated by the single-stream markers.
+    # 3. Name heuristic, disambiguated by the single-stream markers.  This
+    #    tier deliberately KEEPS the conservative name test: with no
+    #    module-list evidence at all (an uninstalled custom package — Parler),
+    #    the structural test would bind a sublayer WRAPPER from another
+    #    component's file (T5LayerSelfAttention); unresolved is the honest
+    #    state there.
     cands = [c for c in forward_ops if _is_block_class(c)
              and (any(m in c for m in markers) == (view == "single_stream"))]
     if reachable:
@@ -1562,13 +1789,45 @@ def _reachable_forward_ops(architecture: str | None,
 
 
 def diff_conformance(diagram: frozenset[str], code: ForwardOps,
-                     family: str, view: str, ab: dict, *, cfg=None) -> list[ConformanceProblem]:
+                     family: str, view: str, ab: dict, *, cfg=None,
+                     spec: dict | None = None) -> list[ConformanceProblem]:
     key = f"{family}/{view}"
     cset = code.op_kinds
     omit = ab["omit_global"] | ab["omit_scoped"].get(key, set())
     composite = ab["composite"]
     draw_extra = ab["draw_extra"].get(key, set())
     problems: list[ConformanceProblem] = []
+    # An explicit typed abstention is itself a declared abstraction boundary.
+    # It may cover ONLY the operations governed by that field:
+    #
+    # * unknown norm placement: the exact norm occurrence is withheld;
+    # * unknown residual topology: residual adds and sublayer-output gates are
+    #   withheld with the residual wiring.
+    #
+    # The rule is dataflow-neutral and identity-free.  Missing attention, FFN,
+    # linear, concat, etc. still fail, and an absent field grants no waiver.
+    typed_unknown_omissions: set[str] = set()
+    whole_cell_abstraction = False
+    if isinstance(spec, dict):
+        if spec.get("norm_placement") == "unknown":
+            typed_unknown_omissions.add("norm")
+        if spec.get("residual_topology") == "unknown":
+            typed_unknown_omissions.update({"gate_mul", "residual_add"})
+        # U10-F3 can prove a repeated cell occurrence and its count while the
+        # exact source graph still cannot close every internal branch.  That is
+        # represented by one *specific* typed opaque cell, never by an empty
+        # block list or an arbitrary opaque sibling.  It is a declared
+        # abstraction of the complete cell: conformance must not demand guessed
+        # attention/FFN boxes merely to mirror the forward's coarse op set.
+        blocks = spec.get("blocks") or []
+        whole_cell_abstraction = (
+            not diagram
+            and len(blocks) == 1
+            and blocks[0].get("id") == "cell_structure_unresolved"
+            and blocks[0].get("kind") == "opaque"
+            and blocks[0].get("role") == "opaque"
+            and blocks[0].get("resolved") is False
+        )
 
     def _prob(kind: str, op: str) -> ConformanceProblem:
         return ConformanceProblem(
@@ -1578,7 +1837,8 @@ def diff_conformance(diagram: frozenset[str], code: ForwardOps,
 
     # code -> diagram: missing
     for op in sorted(cset):
-        if op in diagram or op in omit:
+        if (whole_cell_abstraction or op in diagram or op in omit
+                or op in typed_unknown_omissions):
             continue
         if any(op in composite.get(drawn, ()) for drawn in diagram):   # subsumed by a drawn composite
             continue
@@ -1607,6 +1867,11 @@ def classify_group(spec: dict) -> str:
     wrong code). The variant tag is set from the conditioning topology, so it
     stays correct even when the drawing is wrong."""
     variant = (spec.get("attention") or {}).get("variant") or {}
+    # U10-F4: the source projector publishes a machine relation.  A joined
+    # input sequence is the single-stream view even when its presentation tag
+    # changes; conformance must not rediscover architecture from prose.
+    if variant.get("stream_relation") == "joined_inputs":
+        return "single_stream"
     tag = str(variant.get("tag") or variant.get("short") or "").lower()
     return "single_stream" if "single-stream" in tag or "single stream" in tag else "block"
 
@@ -1615,7 +1880,23 @@ def classify_group(spec: dict) -> str:
 # helpers
 # ---------------------------------------------------------------------------
 
-def _is_block_class(name: str) -> bool:
+def _is_block_class(name: str, forward_ops: dict | None = None) -> bool:
+    """A stack-block class, STRUCTURALLY when possible: it constructs an
+    attention-role submodule (what a transformer block IS).  The old
+    name-suffix test rejected StableAudioDiTBlock — the model's OWN block —
+    which let a shared-shim FluxTransformerBlock entry win the resolve
+    (caught at the rigorous gate).  Structural is used ONLY where ownership
+    is already exact (the architecture's OWN ModuleLists) — in the wider
+    anchored/global/name tiers the conservative suffix stands, because a
+    shim-reachable foreign block (IPAdapter's, another model's) could
+    otherwise shadow the true one under the same field name."""
+    if forward_ops is not None:
+        info = forward_ops.get(name)
+        if info is not None:
+            from .forward_ops import _role_of
+            if any(_role_of(c) == "attention"
+                   for c in (info.field_types or {}).values()):
+                return True
     return name.endswith(("DecoderLayer", "TransformerBlock"))
 
 
@@ -1692,6 +1973,18 @@ def _branch_inactive(gateset: frozenset[str], cfg) -> bool:
     return False
 
 
+def _typed_stream_relation_unknown(spec: dict) -> bool:
+    """Whether U10 explicitly withheld the lane's state/context relation.
+
+    Presence of the machine field distinguishes a typed unknown from an older
+    view that simply never published stream evidence.  The legacy parameter-
+    presence conformance rail may not strengthen the former into a text input.
+    """
+    variant = (spec.get("attention") or {}).get("variant") or {}
+    return ("stream_relation" in variant
+            and variant.get("stream_relation") is None)
+
+
 def _config_field_value(cfg, key: str):
     """The raw config value for ``key`` (top level or a text wrapper), or None
     when absent — None means 'cannot prove off', so the op stays required."""
@@ -1721,7 +2014,7 @@ def _as_mapping(cfg) -> dict:
             value = cfg.to_dict()
             if isinstance(value, dict):
                 return value
-        except Exception:
+        except (AttributeError, TypeError, ValueError):  # H5: typed, not blanket
             pass
     if hasattr(cfg, "__dict__"):
         return {k: v for k, v in vars(cfg).items() if not k.startswith("__")}

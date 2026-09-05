@@ -1,72 +1,14 @@
 """Source discovery for static Hugging Face modeling-code inspection."""
 from __future__ import annotations
 
+import dataclasses
 import functools
 import os
 import re
 from pathlib import Path
 from typing import Any
 
-from .models import SourceBundle
-
-
-MODEL_TYPE_TO_TRANSFORMERS_DIR = {
-    # Text-only transformer LMs
-    "baichuan": "baichuan",
-    "bloom": "bloom",
-    "dbrx": "dbrx",
-    "deepseek_v2": "deepseek_v2",
-    "deepseek_v3": "deepseek_v3",
-    "falcon": "falcon",
-    "gemma": "gemma",
-    "gemma2": "gemma2",
-    "gpt_bigcode": "gpt_bigcode",
-    "gpt_j": "gptj",
-    "gpt_neox": "gpt_neox",
-    "gpt_oss": "gpt_oss",
-    "llama": "llama",
-    "llama4": "llama4",
-    "mistral": "mistral",
-    "mixtral": "mixtral",
-    "mpt": "mpt",
-    "olmo": "olmo",
-    "olmo2": "olmo2",
-    "olmoe": "olmoe",
-    "openai-gpt": "openai",
-    "opt": "opt",
-    "phi": "phi",
-    "phi3": "phi3",
-    "qwen2": "qwen2",
-    "qwen2_moe": "qwen2_moe",
-    "qwen3": "qwen3",
-    "qwen3_moe": "qwen3_moe",
-    "stablelm": "stablelm",
-
-    # Multi-modal wrappers (transformer LM with vision/audio encoders).
-    # The wrapper directory contains both the LM and the modality pieces, so
-    # the evidence scanner sees attention/FFN/MoE patterns alongside the
-    # multimodal projector classes.
-    "gemma3":           "gemma3",
-    "gemma3_text":      "gemma3",
-    "gemma3n":          "gemma3n",
-    "gemma3n_text":     "gemma3n",
-    "gemma4":           "gemma4",
-    "gemma4_text":      "gemma4",
-    "mllama":           "mllama",
-    "llava":            "llava",
-    "llava_next":       "llava_next",
-    "llava_onevision":  "llava_onevision",
-    "paligemma":        "paligemma",
-    "qwen2_vl":         "qwen2_vl",
-    "qwen2_5_vl":       "qwen2_5_vl",
-    "qwen3_vl":         "qwen3_vl",
-    "idefics2":         "idefics2",
-    "idefics3":         "idefics3",
-    "smolvlm":          "smolvlm",
-    "internvl":         "internvl",
-    "pixtral":          "pixtral",
-    "fuyu":             "fuyu",
-}
+from .models import SourceBundle, SourceImportRoot
 
 
 def resolve_source_files(target: Any, *, source: str = "local", token: Any = None) -> SourceBundle:
@@ -120,6 +62,16 @@ def resolve_source_files(target: Any, *, source: str = "local", token: Any = Non
                         warnings=(f"remote-code source fetch failed: {exc}",))
                 if hub.files:
                     return hub
+                if hub.warnings:
+                    # A fileless hub bundle still knows the TRUE refusal cause
+                    # ("fetch failed: …" / "needs a model id") — surface it
+                    # beside the local fallback's warning instead of letting
+                    # the generic "no installed source" line mask it.
+                    fallback = diff if (diff is not None and diff.warnings) else local
+                    return dataclasses.replace(
+                        fallback,
+                        warnings=tuple(fallback.warnings) + tuple(hub.warnings),
+                    )
             return diff if (diff is not None and diff.warnings) else local
 
     if source in {"hub", "auto"}:
@@ -189,9 +141,11 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
         file = _transformers_file_for_class(str(models_root), architecture or "")
         if file:
             files = (file,)
+            supporting = _transformers_supporting_files(Path(file).parent)
             return SourceBundle(
                 source="local", files=files, architecture=architecture,
                 model_id=model_id, component_files={"root": files},
+                supporting_files={"root": supporting} if supporting else {},
                 component_architectures={"root": architecture} if architecture else {},
             )
         return SourceBundle(
@@ -202,6 +156,7 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
     warnings: list[str] = []
     seen_files: set[str] = set()
     component_files: dict[str, tuple[str, ...]] = {}
+    supporting_files: dict[str, tuple[str, ...]] = {}
     component_model_types: dict[str, str] = {}
     component_architectures: dict[str, str] = {}
 
@@ -245,11 +200,36 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
         component_paths = tuple(str(path) for path in modeling_files)
         if component_paths:
             component_files[component] = component_paths
+        support_paths = _transformers_supporting_files(models_root / family_dir)
+        if support_paths:
+            supporting_files[component] = support_paths
         for path in component_paths:
             value = path
             if value not in seen_files:
                 seen_files.add(value)
                 files.append(value)
+
+    if not files and architecture:
+        # A PRESENT-but-unregistered model_type (the rebrand pattern:
+        # ``kimi_k2`` running the installed ``DeepseekV3ForCausalLM``) must
+        # fall through to the same class-address lookup an ABSENT model_type
+        # already gets above — unknown is not evidence of absence. The class
+        # name only locates the file; AST evidence still decides structure.
+        class_file = _transformers_file_for_class(str(models_root), architecture)
+        if class_file:
+            class_files = (class_file,)
+            supporting = _transformers_supporting_files(Path(class_file).parent)
+            return SourceBundle(
+                source="local",
+                files=class_files,
+                model_type=model_type,
+                architecture=architecture,
+                model_id=model_id,
+                warnings=tuple(warnings),
+                component_files={"root": class_files},
+                supporting_files={"root": supporting} if supporting else {},
+                component_architectures={"root": architecture},
+            )
 
     return SourceBundle(
         source="local",
@@ -261,9 +241,69 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
             f"No modeling*.py files found for model_type={model_type!r}.",
         )),
         component_files=component_files,
+        supporting_files=supporting_files,
         component_model_types=component_model_types,
         component_architectures=component_architectures,
     )
+
+
+def _transformers_supporting_files(family_dir: Path) -> tuple[str, ...]:
+    """Exact support sources, kept off legacy modeling-file surfaces.
+
+    Configuration sources are always part of the component's address closure.
+    A framework source is added only when this exact installed modeling source
+    imports its closed interface.  This is source-address plumbing, not a
+    mechanism claim: readers still have to resolve the import, registry entry,
+    selected callable and its dataflow before any architecture fact exists.
+    """
+    paths = [path for path in sorted(family_dir.glob("configuration*.py"))
+             if path.is_file()]
+    framework_rope = family_dir.parent.parent / "modeling_rope_utils.py"
+    if framework_rope.is_file():
+        imported = False
+        for modeling in sorted(family_dir.glob("modeling*.py")):
+            try:
+                source = modeling.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue
+            if re.search(
+                    r"^from\s+\.{2,}modeling_rope_utils\s+import\s+",
+                    source, re.M):
+                imported = True
+                break
+        if imported:
+            paths.append(framework_rope)
+    framework_config = family_dir.parent.parent / "configuration_utils.py"
+    if framework_config.is_file():
+        imported = False
+        for configuration in sorted(family_dir.glob("configuration*.py")):
+            try:
+                source = configuration.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue
+            if re.search(
+                    r"^from\s+\.{2,}configuration_utils\s+import\s+",
+                    source, re.M):
+                imported = True
+                break
+        if imported:
+            paths.append(framework_config)
+    framework_auto = family_dir.parent / "auto" / "modeling_auto.py"
+    if framework_auto.is_file():
+        imported = False
+        for modeling in sorted(family_dir.glob("modeling*.py")):
+            try:
+                source = modeling.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue
+            if re.search(
+                    r"^\s*from\s+\.{2,}auto(?:\.modeling_auto)?\s+import\s+AutoModel",
+                    source, re.M):
+                imported = True
+                break
+        if imported:
+            paths.append(framework_auto)
+    return tuple(str(path) for path in dict.fromkeys(paths))
 
 
 @functools.lru_cache(maxsize=128)
@@ -285,11 +325,21 @@ def _transformers_file_for_class(models_root: str, class_name: str) -> str | Non
 def _component_configs(target: Any):
     """Yield ``(qualified_path, config)`` for root and nested component configs.
 
-    Only fields named ``*_config`` are traversed.  This follows Hugging Face's
-    composite-config contract without mistaking arbitrary dictionaries (rope
-    scaling, quantization settings, generation options) for model components.
+    Hugging Face's composite-config contract has TWO spellings, and both are
+    followed here without mistaking arbitrary dictionaries (rope scaling,
+    quantization settings, generation options) for model components:
+
+    * fields named ``*_config`` — traversed unconditionally (the suffix IS the
+      declaration), and
+    * bare slot names from the ``composite_slots`` vocabulary (MusicGen's
+      ``text_encoder``/``audio_encoder``/``decoder``, EncoderDecoderModel's
+      ``encoder``/``decoder``) — traversed only when the child itself declares
+      a ``model_type`` (the evidence, since the name alone is ambiguous).
+
     Object identity guards recursive/shared config objects.
     """
+    from ..everchanging import load_composite_slots
+    slot_names = set((load_composite_slots().get("slots") or {}))
     seen: set[int] = set()
 
     def walk(value: Any, path: str):
@@ -303,7 +353,11 @@ def _component_configs(target: Any):
         items = value.items() if isinstance(value, dict) else vars(value).items() \
             if hasattr(value, "__dict__") else ()
         for name, child in items:
-            if str(name).endswith("_config") and child is not None:
+            if child is None:
+                continue
+            if str(name).endswith("_config") or (
+                str(name) in slot_names and _own_model_type(child)
+            ):
                 child_path = str(name) if path == "root" else f"{path}.{name}"
                 yield from walk(child, child_path)
 
@@ -345,25 +399,55 @@ def _auto_model_architecture(model_type: str) -> str | None:
 
 
 def _transformers_family_dir(models_root: Path, model_type: str) -> str | None:
-    family_dir = MODEL_TYPE_TO_TRANSFORMERS_DIR.get(model_type)
-    if family_dir is not None and (models_root / family_dir).exists():
-        return family_dir
+    """Resolve a config type through installed Transformers metadata.
+
+    ``model_type_to_module_name`` is the same registry-backed normalization the
+    library uses to import its config module. We accept its answer only when the
+    installed directory exists. There is no project-owned type/family table and
+    no suffix guessing; an unknown type remains unresolved and may still use an
+    exact declared-class lookup later in the source ladder.
+    """
+    try:
+        from transformers.models.auto.configuration_auto import (
+            model_type_to_module_name,
+        )
+        declared_dir = model_type_to_module_name(model_type)
+    except (ImportError, AttributeError, KeyError, TypeError, ValueError):
+        declared_dir = None
+    if declared_dir and (models_root / declared_dir).exists():
+        return str(declared_dir)
     return _direct_transformers_family_dir(models_root, model_type)
 
 
-def _looks_like_diffusion_class(cls: str) -> bool:
-    """Whether ``cls`` names a diffusion denoiser — by the GENERAL marker vocabulary
-    (everchanging ``dit_class_markers`` + UNet), never a hand-picked substring. The
-    old narrow ``"Transformer"/"UNet"`` gate missed ``HunyuanDiT2DModel`` /
-    ``LuminaNextDiT2DModel`` (they carry "DiT", not "Transformer"), wrongly reporting
-    their installed source as MISSING and silently skipping conformance + the
-    code-derived FFN. Reuses the same markers the diffusor adapter detects on."""
-    from ..everchanging import load_diffusion_typing
-    markers = tuple(load_diffusion_typing().get("dit_class_markers") or ()) + ("UNet", "Transformer")
-    return any(m in cls for m in markers)
-
-
 from functools import lru_cache
+
+
+@lru_cache(maxsize=64)
+def _installed_diffusers_model_class_file(arch: str) -> str | None:
+    """Resolve one declared class to its exact installed Diffusers model file.
+
+    This is address evidence, not a class-name classifier: every spelling is
+    treated identically and succeeds only when an exact class definition exists
+    under the installed library's ``models/`` tree.
+    """
+    if not isinstance(arch, str) or not arch:
+        return None
+    try:
+        import diffusers
+    except (ImportError, ValueError):
+        return None
+    models_root = Path(diffusers.__file__).resolve().parent / "models"
+    if not models_root.exists():
+        return None
+    pat = re.compile(rf"^class {re.escape(arch)}\b", re.M)
+    for path in sorted(models_root.rglob("*.py")):
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        if pat.search(text):
+            return str(path)
+    return None
 
 
 @lru_cache(maxsize=64)
@@ -372,12 +456,19 @@ def _diffusers_class_file(arch: str) -> str | None:
     across models/ AND pipelines/ (supporting encoders live under pipelines)."""
     try:
         import diffusers
-    except ImportError:
+    except (ImportError, ValueError):
+        # Test/frozen environments may provide a deliberately minimal
+        # ``transformers`` module with no import spec.  Diffusers' optional
+        # dependency probe then raises ValueError from find_spec(); that means
+        # the diffusers address channel is unavailable, not that parsing the
+        # already-loaded transformer config should fail.
         return None
-    import re
+    model_file = _installed_diffusers_model_class_file(arch)
+    if model_file is not None:
+        return model_file
     root = Path(diffusers.__file__).resolve().parent
     pat = re.compile(rf"^class {re.escape(arch)}\b", re.M)
-    for sub in ("models", "pipelines"):
+    for sub in ("pipelines",):
         base = root / sub
         if not base.exists():
             continue
@@ -401,6 +492,7 @@ def _installed_diffusers_arch_bundle(target: Any) -> SourceBundle | None:
     path = _diffusers_class_file(arch)
     if path is None:
         return None
+    import_root = _source_import_root(path, "diffusers")
     return SourceBundle(
         source="local",
         files=(path,),
@@ -408,8 +500,30 @@ def _installed_diffusers_arch_bundle(target: Any) -> SourceBundle | None:
         architecture=arch,
         model_id=_model_id(target),
         component_files={"root": (path,)},
+        import_roots={"root": (import_root,)} if import_root else {},
         component_architectures={"root": arch},
     )
+
+
+def _source_import_root(path: str, package: str) -> SourceImportRoot | None:
+    """Return the exact installed package directory containing ``path``.
+
+    Package identity is source-address metadata.  This helper never searches
+    for a model/class and never infers a mechanism; it merely closes a path
+    already selected by the source resolver against the named installed
+    package directory.
+    """
+    resolved = Path(path).resolve()
+    matches = [index for index, part in enumerate(resolved.parts)
+               if part == package]
+    if not matches:
+        return None
+    root = Path(*resolved.parts[:matches[-1] + 1])
+    try:
+        resolved.relative_to(root)
+    except ValueError:
+        return None
+    return SourceImportRoot(package, str(root))
 
 
 def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
@@ -421,25 +535,22 @@ def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
     Returns ``None`` when the target isn't a diffusion class or diffusers is
     absent (so the caller falls back to the transformers bundle)."""
     cls = _string_value(target, "_class_name")
-    if not cls or not _looks_like_diffusion_class(cls):
+    class_file = _installed_diffusers_model_class_file(cls)
+    if class_file is None:
         return None
-    try:
-        import diffusers
-    except ImportError:
-        return None
-    import re
-    models_root = Path(diffusers.__file__).resolve().parent / "models"
-    if not models_root.exists():
-        return None
-    pat = re.compile(rf"^class {re.escape(cls)}\b", re.M)
     model_id = _model_id(target)
-    for f in sorted(models_root.rglob("*.py")):
+    for f in (Path(class_file),):
         try:
             text = f.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError):
             continue
-        if pat.search(text):
+        if re.search(rf"^class {re.escape(cls)}\b", text, re.M):
             component_files = {"root": (str(f),)}
+            supporting_files: dict[str, tuple[str, ...]] = {}
+            import_roots: dict[str, tuple[SourceImportRoot, ...]] = {}
+            root_import = _source_import_root(str(f), "diffusers")
+            if root_import is not None:
+                import_roots["root"] = (root_import,)
             component_model_types: dict = {}
             component_architectures = {"root": cls}
             files = [str(f)]
@@ -460,18 +571,40 @@ def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
                     key = enc_name if sub_key == "root" else f"{enc_name}.{sub_key}"
                     component_files[key] = tuple(sub_files)
                     files.extend(p for p in sub_files if p not in files)
+                for sub_key, sub_files in (
+                        enc_bundle.supporting_files or {}).items():
+                    key = enc_name if sub_key == "root" else f"{enc_name}.{sub_key}"
+                    supporting_files[key] = tuple(sub_files)
                 for sub_key, value in (enc_bundle.component_model_types or {}).items():
                     key = enc_name if sub_key == "root" else f"{enc_name}.{sub_key}"
                     component_model_types[key] = value
                 for sub_key, value in (enc_bundle.component_architectures or {}).items():
                     key = enc_name if sub_key == "root" else f"{enc_name}.{sub_key}"
                     component_architectures[key] = value
+            companion_components: list[str] = []
+            for slot, _companion_cfg, companion_arch in \
+                    _pipeline_companion_denoiser_components(target):
+                companion_path = _diffusers_class_file(companion_arch)
+                if companion_path is None:
+                    continue
+                companion_components.append(slot)
+                component_files[slot] = (companion_path,)
+                component_architectures[slot] = companion_arch
+                if companion_path not in files:
+                    files.append(companion_path)
+                companion_root = _source_import_root(
+                    companion_path, "diffusers")
+                if companion_root is not None:
+                    import_roots[slot] = (companion_root,)
             return SourceBundle(source="local", files=tuple(files),
                                 architecture=cls, model_id=model_id,
                                 component_files=component_files,
+                                supporting_files=supporting_files,
+                                import_roots=import_roots,
                                 component_model_types=component_model_types,
                                 component_architectures=component_architectures,
-                                pipeline_components=tuple(pipeline_components))
+                                pipeline_components=tuple(pipeline_components),
+                                companion_components=tuple(companion_components))
     return SourceBundle(
         source="local", architecture=cls, model_id=model_id,
         warnings=(f"No installed diffusers modeling file defines {cls!r}.",),
@@ -497,25 +630,23 @@ def _pipeline_text_encoder_components(target: Any):
             yield str(name), cfg, model_type or ""
 
 
-def _direct_transformers_family_dir(models_root: Path, model_type: str) -> str | None:
-    """Use the installed Transformers family directory when it matches directly.
+def _pipeline_companion_denoiser_components(target: Any):
+    """Yield exact loader-established companion denoiser addresses only."""
+    raw = _get_value(target, "_companion_denoiser_configs")
+    if not isinstance(raw, dict):
+        return
+    for slot, cfg in sorted(raw.items()):
+        if not isinstance(slot, str) or not slot or not isinstance(cfg, dict):
+            continue
+        architecture = _architecture(cfg) or _string_value(cfg, "_class_name")
+        if architecture:
+            yield slot, cfg, architecture
 
-    The explicit map above covers families whose model_type differs from the
-    package directory (for example ``gpt_j`` -> ``gptj``). Many newer wrappers
-    use the model_type as the directory name, so this keeps multimodal additions
-    like qwen2_audio from needing one-off source-map entries.
-    """
+
+def _direct_transformers_family_dir(models_root: Path, model_type: str) -> str | None:
+    """Conservative fallback for library versions without registry metadata."""
     normalized = model_type.replace("-", "_")
-    candidates = [model_type, normalized]
-    # Nested HF config types often describe the component role while sharing the
-    # parent's implementation package: qwen3_5_text -> qwen3_5,
-    # siglip_vision_model -> siglip.  Strip only recognized role suffixes and
-    # accept the result solely when that installed family directory exists.
-    for suffix in ("_vision_model", "_text_model", "_audio_model",
-                   "_vision", "_text", "_audio"):
-        if normalized.endswith(suffix):
-            candidates.append(normalized[:-len(suffix)])
-    for candidate in candidates:
+    for candidate in dict.fromkeys((model_type, normalized)):
         if candidate and (models_root / candidate).exists():
             return candidate
     return None
@@ -613,8 +744,19 @@ def _hub_bundle(target: Any, *, token: Any = None) -> SourceBundle:
     clean_token = _clean_token(token)
     if clean_token is not None:
         kwargs["token"] = clean_token
-    root = Path(snapshot_download(**kwargs))
-    files = tuple(str(p) for p in sorted(root.rglob("*.py")) if p.is_file())
+    # Cache-first: the hub client caches every snapshot, so an offline/gated
+    # session with the repo already on disk must still get its evidence. Fall
+    # to the network only when the cached snapshot carries no .py files (a
+    # config-only cache from an earlier hf_hub_download is common).
+    files: tuple[str, ...] = ()
+    try:
+        root = Path(snapshot_download(**kwargs, local_files_only=True))
+        files = tuple(str(p) for p in sorted(root.rglob("*.py")) if p.is_file())
+    except Exception:
+        files = ()
+    if not files:
+        root = Path(snapshot_download(**kwargs))
+        files = tuple(str(p) for p in sorted(root.rglob("*.py")) if p.is_file())
     return SourceBundle(
         source="hub",
         files=files,

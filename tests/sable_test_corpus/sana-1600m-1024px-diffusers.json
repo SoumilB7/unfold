@@ -1,0 +1,370 @@
+{
+  "checks": {
+    "asserted_facts": true,
+    "click_coupling": true,
+    "config_accessed_unprojected": true,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
+    "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
+    "dangling_connectors": true,
+    "document_boundary_completeness": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "projection_audit": true,
+    "qualified_projection_values": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true,
+    "zero_asserted_census": true
+  },
+  "config": {
+    "_class_name": "SanaTransformer2DModel",
+    "_diffusers_version": "0.32.0.dev0",
+    "_name_or_path": "Efficient-Large-Model/Sana_1600M_1024px_diffusers",
+    "_pipeline_class_name": "SanaPipeline",
+    "_repo_id": "Efficient-Large-Model/Sana_1600M_1024px_diffusers",
+    "_scheduler_config": {
+      "_class_name": "DPMSolverMultistepScheduler",
+      "_diffusers_version": "0.32.0.dev0",
+      "algorithm_type": "dpmsolver++",
+      "beta_end": 0.02,
+      "beta_schedule": "linear",
+      "beta_start": 0.0001,
+      "dynamic_thresholding_ratio": 0.995,
+      "euler_at_final": false,
+      "final_sigmas_type": "zero",
+      "flow_shift": 3.0,
+      "lambda_min_clipped": -Infinity,
+      "lower_order_final": true,
+      "num_train_timesteps": 1000,
+      "prediction_type": "flow_prediction",
+      "rescale_betas_zero_snr": false,
+      "sample_max_value": 1.0,
+      "solver_order": 2,
+      "solver_type": "midpoint",
+      "steps_offset": 0,
+      "thresholding": false,
+      "timestep_spacing": "linspace",
+      "trained_betas": null,
+      "use_beta_sigmas": false,
+      "use_exponential_sigmas": false,
+      "use_flow_sigmas": true,
+      "use_karras_sigmas": false,
+      "use_lu_lambdas": false,
+      "variance_type": null
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_name_or_path": "google/gemma-2-2b-it",
+        "architectures": [
+          "Gemma2Model"
+        ],
+        "attention_bias": false,
+        "attention_dropout": 0.0,
+        "attn_logit_softcapping": 50.0,
+        "bos_token_id": 2,
+        "cache_implementation": "hybrid",
+        "chunk_size_feed_forward": 0,
+        "dtype": "bfloat16",
+        "eos_token_id": [
+          1,
+          107
+        ],
+        "final_logit_softcapping": 30.0,
+        "head_dim": 256,
+        "hidden_act": "gelu_pytorch_tanh",
+        "hidden_activation": "gelu_pytorch_tanh",
+        "hidden_size": 2304,
+        "id2label": {
+          "0": "LABEL_0",
+          "1": "LABEL_1"
+        },
+        "initializer_range": 0.02,
+        "intermediate_size": 9216,
+        "is_encoder_decoder": false,
+        "label2id": {
+          "LABEL_0": 0,
+          "LABEL_1": 1
+        },
+        "layer_types": [
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention"
+        ],
+        "max_position_embeddings": 8192,
+        "model_type": "gemma2",
+        "num_attention_heads": 8,
+        "num_hidden_layers": 26,
+        "num_key_value_heads": 4,
+        "output_attentions": false,
+        "output_hidden_states": false,
+        "pad_token_id": 0,
+        "problem_type": null,
+        "query_pre_attn_scalar": 256,
+        "return_dict": true,
+        "rms_norm_eps": 1e-06,
+        "rope_parameters": {
+          "rope_theta": 10000.0,
+          "rope_type": "default"
+        },
+        "sliding_window": 4096,
+        "tie_word_embeddings": true,
+        "transformers_version": "5.12.1",
+        "use_bidirectional_attention": null,
+        "use_cache": true,
+        "vocab_size": 256000
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderDC",
+      "_diffusers_version": "0.32.0.dev0",
+      "_name_or_path": "mit-han-lab/dc-ae-f32c32-sana-1.0-diffusers",
+      "attention_head_dim": 32,
+      "decoder_act_fns": "silu",
+      "decoder_block_out_channels": [
+        128,
+        256,
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "decoder_block_types": [
+        "ResBlock",
+        "ResBlock",
+        "ResBlock",
+        "EfficientViTBlock",
+        "EfficientViTBlock",
+        "EfficientViTBlock"
+      ],
+      "decoder_layers_per_block": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "decoder_norm_types": "rms_norm",
+      "decoder_qkv_multiscales": [
+        [],
+        [],
+        [],
+        [
+          5
+        ],
+        [
+          5
+        ],
+        [
+          5
+        ]
+      ],
+      "downsample_block_type": "Conv",
+      "encoder_block_out_channels": [
+        128,
+        256,
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "encoder_block_types": [
+        "ResBlock",
+        "ResBlock",
+        "ResBlock",
+        "EfficientViTBlock",
+        "EfficientViTBlock",
+        "EfficientViTBlock"
+      ],
+      "encoder_layers_per_block": [
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ],
+      "encoder_qkv_multiscales": [
+        [],
+        [],
+        [],
+        [
+          5
+        ],
+        [
+          5
+        ],
+        [
+          5
+        ]
+      ],
+      "in_channels": 3,
+      "latent_channels": 32,
+      "scaling_factor": 0.41407,
+      "upsample_block_type": "interpolate"
+    },
+    "attention_bias": false,
+    "attention_head_dim": 32,
+    "caption_channels": 2304,
+    "cross_attention_dim": 2240,
+    "cross_attention_head_dim": 112,
+    "dropout": 0.0,
+    "in_channels": 32,
+    "mlp_ratio": 2.5,
+    "norm_elementwise_affine": false,
+    "norm_eps": 1e-06,
+    "num_attention_heads": 70,
+    "num_cross_attention_heads": 20,
+    "num_layers": 20,
+    "out_channels": 32,
+    "patch_size": 1,
+    "sample_size": 32,
+    "scheduler": [
+      "diffusers",
+      "DPMSolverMultistepScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "Gemma2Model"
+    ],
+    "tokenizer": [
+      "transformers",
+      "GemmaTokenizerFast"
+    ],
+    "transformer": [
+      "diffusers",
+      "SanaTransformer2DModel"
+    ],
+    "vae": [
+      "diffusers",
+      "AutoencoderDC"
+    ]
+  },
+  "hash_signature": [
+    "0f077fbbb987b06ff9dd52f8c0190d38",
+    "1c1bb3f942a941091573a63d28df04aa",
+    "2e7f2f09ae70365c0149d48dac399f3f",
+    "44214a47b62afb95cf44b9c9a99c6eae",
+    "4b28977d7e010f52eeee1f027e6c7d0e",
+    "6f3ff3d93134f0e32a666f32805babb4",
+    "88c41725caee80b8095553dd7841b6fd",
+    "8a360c4f1e446063bd592a6f7c329e78",
+    "8a4def6a3fe0f334e2b21a1a7bc1dc7d",
+    "a2dd49449d9b57dd41f5f488d286a55a",
+    "b74fdbf963bc0fe63f5964d2018e6e8e",
+    "d052e6ffcbec38cae3c36dd0b0dd66ec"
+  ],
+  "model": "Sana_1600M_1024px_diffusers",
+  "proven_facts": [
+    "root.denoiser.diffusion_bookend_operations",
+    "root.denoiser.diffusion_root_topology",
+    "root.denoiser.stacks[0].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[0].attention[1].diffusion_stream_relation",
+    "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+    "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
+    "root.denoiser.stacks[0].diffusion_stack_depth"
+  ],
+  "source": "local",
+  "superseded_hash_signature": [
+    "1c1bb3f942a941091573a63d28df04aa",
+    "2e7f2f09ae70365c0149d48dac399f3f",
+    "44214a47b62afb95cf44b9c9a99c6eae",
+    "4b28977d7e010f52eeee1f027e6c7d0e",
+    "6b3eea43201fd9ed8bf6789264e853e1",
+    "6f3ff3d93134f0e32a666f32805babb4",
+    "88c41725caee80b8095553dd7841b6fd",
+    "8a360c4f1e446063bd592a6f7c329e78",
+    "8a4def6a3fe0f334e2b21a1a7bc1dc7d",
+    "a2dd49449d9b57dd41f5f488d286a55a",
+    "b74fdbf963bc0fe63f5964d2018e6e8e",
+    "d052e6ffcbec38cae3c36dd0b0dd66ec"
+  ],
+  "view_signature": [
+    {
+      "hash": "2e7f2f09ae70365c0149d48dac399f3f",
+      "label": "architecture"
+    },
+    {
+      "hash": "b74fdbf963bc0fe63f5964d2018e6e8e",
+      "label": "architecture"
+    },
+    {
+      "hash": "4b28977d7e010f52eeee1f027e6c7d0e",
+      "label": "attn"
+    },
+    {
+      "hash": "d052e6ffcbec38cae3c36dd0b0dd66ec",
+      "label": "cross_attn"
+    },
+    {
+      "hash": "1c1bb3f942a941091573a63d28df04aa",
+      "label": "denoiser"
+    },
+    {
+      "hash": "a2dd49449d9b57dd41f5f488d286a55a",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "44214a47b62afb95cf44b9c9a99c6eae",
+      "label": "encoder_0_g0_op_ffn"
+    },
+    {
+      "hash": "0f077fbbb987b06ff9dd52f8c0190d38",
+      "label": "encoder_0_g0_op_selfattn"
+    },
+    {
+      "hash": "8a4def6a3fe0f334e2b21a1a7bc1dc7d",
+      "label": "encoder_0_g1_op_selfattn"
+    },
+    {
+      "hash": "88c41725caee80b8095553dd7841b6fd",
+      "label": "ffn"
+    },
+    {
+      "hash": "6f3ff3d93134f0e32a666f32805babb4",
+      "label": "scheduler"
+    },
+    {
+      "hash": "8a360c4f1e446063bd592a6f7c329e78",
+      "label": "vae_decode"
+    }
+  ],
+  "visual_evidence": {
+    "gallery_dir": "galleries/sana-1600m-1024px-diffusers",
+    "manifest": true,
+    "png_count": 12
+  }
+}

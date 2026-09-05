@@ -10,13 +10,14 @@ from __future__ import annotations
 import json
 from copy import deepcopy
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 import pytest
 
 import model_unfolder as mu
 from model_unfolder import lint_labels, sable, bless, check_regression, load_corpus
 from model_unfolder.evidence import check_fact_conformance, check_wiring_conformance
-from tests.test_diffusion import FLUX, PIXART, LLAMA
+from test_support import FLUX, PIXART, LLAMA, MUSICGEN_SMALL
 
 CORPUS = [("FLUX", FLUX), ("PIXART", PIXART), ("LLAMA", LLAMA)]
 
@@ -100,9 +101,12 @@ def test_render_events_carry_block_path_component_and_variant():
     attn = next(event for event in events
                 if event.view == "attn" and event.component == "root")
     assert attn.block_path == ("attn",)
-    assert "MM-DiT" in attn.variant
+    # Variant identity is the structural block signature.  A family/display
+    # title such as "MM-DiT" must not be the identity key.
+    assert "attention" in attn.variant
+    assert "MM-DiT" not in attn.variant
     assert attn.source_owner == "FluxTransformer2DModel"
-    assert "linear" in attn.drawn_ops
+    assert attn.drawn_ops == frozenset({"opaque", "port"})
     # The supporting text encoders now bake their OWN canonical attention drills,
     # each carrying its qualified component — never unioned with the denoiser's.
     encoder_attn = [event for event in events
@@ -179,35 +183,119 @@ def test_numeric_lint_separates_dimensions_from_topology_descriptors():
 
 
 def test_config_access_capture_survives_nested_reset_and_reports_dotted_paths():
-    """Sable's outer audit cannot be erased by a nested component parser."""
+    """Sable's outer audit cannot be erased by a nested component parser.
+
+    Post-H3 the capture is the owner-scoped ``capture_events()`` ledger and
+    ``debug.reset()`` is a no-op — so this is now a regression guard proving a
+    nested parser's legacy ``reset()`` still cannot erase the enclosing capture.
+    """
     from model_unfolder.adapters.transformer import debug
+    from model_unfolder.evidence.config_access import capture_events
 
     cfg = {
         "model_type": "outer",
         "vision_config": {"hidden_size": 128, "new_architecture_switch": True},
         "torch_dtype": "float16",  # intentionally ignored vocabulary
     }
-    with debug.capture_accesses() as touched:
+    with capture_events() as ledger:
         debug.note_access("model_type")
         debug.note_access("vision_config")
-        debug.reset()  # a nested parser's legacy reset must not erase capture
+        debug.reset()  # a nested parser's legacy reset() (now a no-op) must not erase the outer capture
         debug.note_access("hidden_size")
+    touched = ledger.touched_names()
     assert "model_type" in touched and "hidden_size" in touched
     assert debug.unparsed_fields([cfg], touched=touched, recursive=True) == [
         "vision_config.new_architecture_switch"
     ]
 
 
-def test_config_field_audit_is_blocking():
-    """Promoted 2026-07-04 (owned-field backlog reached zero): an unread config
-    switch now FAILS the mechanical pass — a new field must be parsed, chipped
-    via config_facts.yaml, or consciously declared ignored."""
+def test_config_field_audit_is_blocking_and_visible_on_the_ship_path():
+    """An unread field remains debt, but an exact chip makes it non-silent."""
     cfg = {**LLAMA, "brand_new_architecture_switch": True}
     report = sable(cfg, render_images=False)
     audit = next(c for c in report.checks if c.name == "config_field_audit")
     assert audit.blocking is True
-    assert any("brand_new_architecture_switch" in finding for finding in audit.findings)
+    assert audit.passed
+    diagram = mu.unfold(cfg)
+    html = diagram.to_html()
+    assert "configuration fields are not yet interpreted" in html
+    exact = [row["message"] for row in diagram.to_ir()["extras"]["ship_findings"]
+             if row["check"] == "config_field_audit"]
+    assert exact and all(message in html for message in exact)
+    assert any(
+        row["check"] == "config_field_audit"
+        and "brand_new_architecture_switch" in row["message"]
+        for row in diagram.to_ir()["extras"]["ship_findings"])
+
+
+def test_config_field_audit_poison_without_exact_chip_blocks(monkeypatch):
+    """Suppressing the exact receipt turns the same unread field gate red."""
+    from model_unfolder.evidence import ship_findings as ship_module
+
+    real_apply = ship_module.apply_ship_findings
+
+    def hide_config_field_receipt(ir, findings):
+        return real_apply(ir, tuple(
+            finding for finding in findings
+            if finding.check != "config_field_audit"))
+
+    monkeypatch.setattr(ship_module, "apply_ship_findings",
+                        hide_config_field_receipt)
+    report = sable(
+        {**LLAMA, "brand_new_architecture_switch": True},
+        render_images=False)
+    audit = next(c for c in report.checks if c.name == "config_field_audit")
+    assert any("brand_new_architecture_switch" in finding
+               for finding in audit.findings)
     assert not report.mechanical_passed
+
+
+def test_config_field_audit_clears_only_a_read_mapping_parent():
+    """An exact child read covers its address container, not its siblings."""
+    from model_unfolder.adapters.transformer import debug
+
+    cfg = {"rope_parameters": {"rope_theta": 10000, "factor": 8}}
+    assert debug.unparsed_fields(
+        [cfg], recursive=True,
+        owner_touched={"root": {"rope_theta"}}, root_owner="root",
+        owner_paths={"root": {"rope_parameters.rope_theta"}},
+        owner_exact_leaves={"root": {"rope_theta"}},
+    ) == ["rope_parameters.factor"]
+
+
+def test_u2_projection_and_census_nets_are_wired_blocking_and_clean():
+    """U2 P4: net #13 (projection-audit) and net #14 (zero-asserted census) are
+    both blocking mechanical nets and both pass on a real decoder; the
+    accessed-but-unprojected upgrade is blocking under S4's visible-receipt
+    contract."""
+    report = sable(LLAMA, render_images=False)
+    by_name = {c.name: c for c in report.checks}
+    assert by_name["projection_audit"].blocking is True
+    assert by_name["projection_audit"].passed, by_name["projection_audit"].findings
+    assert by_name["zero_asserted_census"].blocking is True
+    assert by_name["zero_asserted_census"].passed, by_name["zero_asserted_census"].findings
+    assert by_name["config_accessed_unprojected"].blocking is True
+
+
+def test_asserted_fact_gate_requires_its_exact_visible_receipt():
+    """S4 promotion is anti-vacuous even though the real corpus is clean."""
+    from types import SimpleNamespace
+    from model_unfolder.evidence.ship_findings import (
+        ShipFinding, apply_ship_findings)
+    from model_unfolder.sable import (
+        _asserted_fact_findings, _ship_gate_findings)
+
+    raw = {"layers": [{"attention": {"asserted": ["future_default"]}}]}
+    findings = _asserted_fact_findings(raw)
+    assert findings and "future_default" in findings[0]
+    assert _ship_gate_findings(raw, "asserted_facts", findings) == findings
+
+    holder = SimpleNamespace(extras={}, warnings=[])
+    apply_ship_findings(holder, (
+        ShipFinding("asserted_facts", findings[0], "repeated_layer"),
+    ))
+    surfaced = {"layers": raw["layers"], "extras": holder.extras}
+    assert _ship_gate_findings(surfaced, "asserted_facts", findings) == []
 
 
 # --------------------------------------------------------------------------- #
@@ -219,6 +307,13 @@ def test_wiring_conformance_clean_on_corpus(name, cfg):
     """Every conditioning rail the diffusion diagrams draw maps to a real forward
     argument (FLUX/PixArt blocks all take temb + encoder_hidden_states)."""
     ir = mu.unfold(cfg).to_ir()
+    if name == "FLUX":
+        relations = {
+            (layer.get("attention") or {}).get("variant", {}).get(
+                "stream_relation")
+            for layer in ir["layers"]
+        }
+        assert relations & {"dual_state", "joined_inputs"}
     assert [p.message for p in check_wiring_conformance(cfg, ir)] == []
 
 
@@ -243,11 +338,18 @@ def test_wiring_conformance_flags_missing_text_rail():
     This is the direction that caught PRX (text K/V concatenated, drawn as plain
     self-attention)."""
     ir = mu.unfold(FLUX).to_ir()
-    for L in ir["layers"]:                       # strip the rail from a dual-stream layer
-        tag = str((L.get("attention") or {}).get("variant", {}).get("tag") or "").lower()
-        if "dual-stream" in tag:
-            L["blocks"] = [b for b in L["blocks"] if b.get("id") != "text_cond"]
-            break
+    L = ir["layers"][0]
+    variant = (L.get("attention") or {}).get("variant", {})
+    # Forge a positive single-state relation while withholding both lawful
+    # text representations.  ``None`` is now the explicit typed abstention and
+    # must remain exempt; ``single_state`` is the positive claim this poison is
+    # meant to attack.
+    variant["stream_relation"] = "single_state"
+    variant["joined_sequence"] = False
+    variant["tag"] = "block negative control"
+    L["blocks"] = [{
+        "id": "attn", "role": "attention", "kind": "attention",
+    }]
     probs = check_wiring_conformance(FLUX, ir)
     assert any(p.kind == "missing_input" and p.op == "text" for p in probs), \
         [p.message for p in probs]
@@ -285,15 +387,21 @@ def test_fact_conformance_is_symmetric_for_fabricated_rope_and_missing_learned_p
 
     cfg = AutoConfig.for_model("gpt_bigcode").to_dict()
     ir = mu.unfold(cfg).to_ir()
-    ir["extras"].pop("position_encoding", None)
     for layer in ir["layers"]:
         attn = layer["attention"]
         attn["rope"] = True
         attn["position_kind"] = "rope"
         attn["position_application"] = "qk_rotation"
-    probs = check_fact_conformance(cfg, ir)
-    assert any(p.kind == "fabricated_position" and p.op == "rope" for p in probs)
-    assert any(p.kind == "missing_position" and p.op == "learned_absolute" for p in probs)
+    ir["extras"]["render"]["model_blocks"] = [
+        block for block in ir["extras"]["render"]["model_blocks"]
+        if block.get("id") not in {"position_ids", "position_embed", "position_add"}
+    ]
+    from model_unfolder.evidence.qualification import qualification_findings
+    findings = qualification_findings(ir)
+    assert any("decoder.attention.position_schedule projects" in item
+               for item in findings)
+    assert any("decoder.input.position_addition is ledgered" in item
+               for item in findings)
 
 
 def test_fact_conformance_flags_one_non_rope_scheme_substituted_for_another():
@@ -305,21 +413,36 @@ def test_fact_conformance_flags_one_non_rope_scheme_substituted_for_another():
     for layer in ir["layers"]:
         layer["attention"]["position_kind"] = "learned_absolute"
         layer["attention"]["position_application"] = "embedding_add"
-    probs = check_fact_conformance(cfg, ir)
-    assert any(p.kind == "fabricated_position" and p.op == "learned_absolute" for p in probs)
-    assert any(p.kind == "missing_position" and p.op == "alibi" for p in probs)
+    from model_unfolder.evidence.qualification import qualification_findings
+    findings = qualification_findings(ir)
+    assert any("decoder.attention.position_schedule fact schedule" in item
+               for item in findings)
 
 
-def test_present_but_ambiguous_position_is_blocking_unresolved(monkeypatch):
-    from model_unfolder.evidence.models import PositionalEvidence
-    from model_unfolder.evidence import position as position_module
+def test_position_schedule_without_its_exact_fact_is_blocking():
+    ir = mu.unfold(LLAMA).to_ir()
+    ir["extras"]["fact_provenance"].pop(
+        "decoder.attention.position_schedule", None)
+    from model_unfolder.evidence.qualification import qualification_findings
+    assert any("decoder.attention.position_schedule projects" in item
+               for item in qualification_findings(ir))
 
-    monkeypatch.setattr(
-        position_module, "decoder_positional_evidence",
-        lambda *a, **k: PositionalEvidence("ambiguous", reason="negative control"),
-    )
-    probs = check_fact_conformance(LLAMA, mu.unfold(LLAMA).to_ir())
-    assert any(p.kind == "unresolved" and p.op == "position" for p in probs)
+
+def test_unresolved_position_withheld_as_unknown_is_qualification_clean():
+    """Unknown is the honest projection of unresolved source, not a mismatch."""
+    ir = mu.unfold(LLAMA).to_ir()
+    ir["extras"]["fact_provenance"].pop(
+        "decoder.attention.position_schedule", None)
+    for layer in ir["layers"]:
+        attention = layer["attention"]
+        attention["rope"] = None
+        attention["no_rope"] = False
+        attention["position_kind"] = "unknown"
+        attention["position_application"] = "unknown"
+        attention["rope_dim"] = None
+    from model_unfolder.evidence.qualification import qualification_findings
+    assert not any("position_schedule" in item
+                   for item in qualification_findings(ir))
 
 
 def test_true_oracle_missing_remains_visible_in_sable_report():
@@ -343,6 +466,32 @@ def test_fact_conformance_flags_wrong_attention_kind():
     assert any(p.kind == "wrong_attention" for p in probs), [p.message for p in probs]
 
 
+def test_fact_conformance_does_not_call_opaque_attention_softmax():
+    """Unknown is abstention, not a hidden softmax architecture claim.
+
+    Sana's exact U10 occurrence is currently ambiguous and therefore opaque.
+    The old class-marker net still knows that some source class constructs a
+    linear processor, but it may only reject an explicit softmax drawing; it
+    cannot convert the opaque projection into one.
+    """
+    fixture = (Path(__file__).parent / "sable_test_corpus" /
+               "sana-1600m-1024px-diffusers.json")
+    cfg = json.loads(fixture.read_text())["config"]
+    ir = mu.unfold(cfg).to_ir()
+    assert {(layer.get("attention") or {}).get("kind")
+            for layer in ir["layers"]} == {None}
+    assert not [problem for problem in check_fact_conformance(cfg, ir)
+                if problem.kind == "wrong_attention"]
+
+    # The net remains anti-vacuous: explicitly asserting ordinary softmax for
+    # the same code-linear source is still a mismatch.
+    tampered = deepcopy(ir)
+    for layer in tampered["layers"]:
+        layer["attention"]["kind"] = "mha"
+    assert any(problem.kind == "wrong_attention" and problem.op == "linear"
+               for problem in check_fact_conformance(cfg, tampered))
+
+
 # --------------------------------------------------------------------------- #
 # the orchestrator
 # --------------------------------------------------------------------------- #
@@ -360,28 +509,189 @@ def test_sable_mechanical_pass_on_corpus(name, cfg):
 # the CI lock
 # --------------------------------------------------------------------------- #
 
-def test_bless_refuses_without_visual_artifacts(tmp_path):
-    """The visual gate is ARTIFACT-verified, in every environment:
-    a CLEAN string cannot bless without real on-disk evidence."""
+def test_bless_refuses_self_set_clean_and_missing_visual_artifacts(tmp_path):
+    """Neither a mutable CLEAN string nor missing pixels can bless a render."""
     r = sable(FLUX, render_images=False)
-    # mechanical-clean but visual PENDING -> NOT blessable.
-    with pytest.raises(ValueError):
-        bless(r, FLUX, corpus_dir=str(tmp_path))
-    # CLEAN with NO gallery (rsvg absent / render skipped) -> refused loudly.
+    # A report-producing process cannot bless its own output by mutating the
+    # legacy display field.  An independent persisted verdict is mandatory.
     r.visual_review = "CLEAN"
-    with pytest.raises(ValueError, match="without images is not a review"):
+    with pytest.raises(ValueError, match="independent persisted review verdict"):
         bless(r, FLUX, corpus_dir=str(tmp_path))
+    verdict = tmp_path / "verdict.json"
+    verdict.write_text(json.dumps({
+        "decision": "ACCEPT", "reviewer": "reviewer", "implementer": "executor",
+        "reviewed_at": "2026-09-03", "model": r.model,
+        "view_signature": r.view_signature(),
+    }))
+    # An independent verdict still cannot certify images that do not exist.
+    with pytest.raises(ValueError, match="without images is not a review"):
+        bless(r, FLUX, corpus_dir=str(tmp_path), review_verdict=verdict,
+              implementer="executor")
     # CLEAN with a STALE gallery (files deleted since review) -> refused.
     r.gallery = [str(tmp_path / "gone" / "00__architecture.png")]
     with pytest.raises(ValueError, match="missing on disk|gallery/view"):
-        bless(r, FLUX, corpus_dir=str(tmp_path))
+        bless(r, FLUX, corpus_dir=str(tmp_path), review_verdict=verdict,
+              implementer="executor")
     # CLEAN with a PARTIAL gallery (count != distinct views) -> refused.
     partial = tmp_path / "partial"; partial.mkdir()
     one = partial / "00__architecture.png"; one.write_bytes(b"png")
     r.gallery = [str(one)]
     if len(r.view_hashes) != 1:
         with pytest.raises(ValueError, match="gallery/view mismatch"):
-            bless(r, FLUX, corpus_dir=str(tmp_path))
+            bless(r, FLUX, corpus_dir=str(tmp_path), review_verdict=verdict,
+                  implementer="executor")
+
+
+def test_bless_refuses_a_non_independent_verdict(tmp_path):
+    """The implementer cannot act as the persisted reviewer."""
+    r = sable(FLUX, render_images=False)
+    verdict = tmp_path / "self-verdict.json"
+    verdict.write_text(json.dumps({
+        "decision": "ACCEPT", "reviewer": "executor", "implementer": "executor",
+        "reviewed_at": "2026-09-03", "model": r.model,
+        "view_signature": r.view_signature(),
+    }))
+    with pytest.raises(ValueError, match="reviewer must be independent"):
+        bless(r, FLUX, corpus_dir=str(tmp_path), review_verdict=verdict,
+              implementer="executor")
+
+
+def test_labeled_view_signature_changes_when_only_the_label_changes():
+    """A hash multiset cannot hide a renamed or reassigned drill view."""
+    from model_unfolder.sable import SableReport
+
+    before = SableReport("model", [], [("attention", "same-svg")])
+    after = SableReport("model", [], [("ffn", "same-svg")])
+    assert before.hash_signature() == after.hash_signature()
+    assert before.view_signature() != after.view_signature()
+
+
+def test_regression_gate_rejects_a_label_only_change(monkeypatch):
+    """Poison the real fixture join, not merely the signature helper."""
+    import importlib
+    from model_unfolder.sable import SableReport, check_regression
+
+    sable_module = importlib.import_module("model_unfolder.sable")
+    current = SableReport(
+        "model", [], [("ffn", "same-svg")], oracle="present",
+        proven_facts=["decoder.ffn.activation"],
+    )
+    monkeypatch.setattr(sable_module, "sable", lambda *_args, **_kwargs: current)
+    fixture = {
+        "config": {"model_type": "poison"},
+        "hash_signature": ["same-svg"],
+        "view_signature": [{"label": "attention", "hash": "same-svg"}],
+        "proven_facts": ["decoder.ffn.activation"],
+    }
+    assert check_regression(fixture) == [
+        "labeled view drift — a view label or its exact SVG changed; "
+        "re-review and re-bless if intended"
+    ]
+
+
+def test_recall_ratchet_names_a_proven_fact_that_disappears():
+    """Proven-to-unresolved is directional debt, never an ordinary re-bless."""
+    from model_unfolder.sable import _recall_findings
+
+    assert _recall_findings(
+        ["decoder.attention.kind", "decoder.ffn.activation"],
+        ["decoder.ffn.activation"],
+    ) == [
+        "recall regression: proven fact 'decoder.attention.kind' became "
+        "unresolved or disappeared — provide a named re-proof and visible chip "
+        "before updating the reviewed baseline"
+    ]
+
+
+def test_regression_gate_rejects_proven_to_unresolved(monkeypatch):
+    """A real fixture cannot lose one proven fact behind unchanged pixels."""
+    import importlib
+    from model_unfolder.sable import SableReport, check_regression
+
+    sable_module = importlib.import_module("model_unfolder.sable")
+    current = SableReport(
+        "model", [], [("architecture", "same-svg")], oracle="present",
+        proven_facts=["decoder.ffn.activation"],
+    )
+    monkeypatch.setattr(sable_module, "sable", lambda *_args, **_kwargs: current)
+    fixture = {
+        "config": {"model_type": "poison"},
+        "hash_signature": ["same-svg"],
+        "view_signature": [
+            {"label": "architecture", "hash": "same-svg"},
+        ],
+        "proven_facts": [
+            "decoder.attention.mechanism", "decoder.ffn.activation",
+        ],
+    }
+    assert check_regression(fixture) == [
+        "recall regression: proven fact 'decoder.attention.mechanism' became "
+        "unresolved or disappeared — provide a named re-proof and visible "
+        "chip before updating the reviewed baseline"
+    ]
+
+
+def test_zero_asserted_census_reraises_unexpected_parser_failures(monkeypatch):
+    """The ablation census may skip a typed refusal, never an implementation bug."""
+    from model_unfolder import parser as parser_module
+    from model_unfolder.sable import _zero_asserted_census_findings
+
+    def explode(*_args, **_kwargs):
+        raise RuntimeError("poison parser failure")
+
+    monkeypatch.setattr(parser_module, "config_to_ir", explode)
+    with pytest.raises(RuntimeError, match="poison parser failure"):
+        _zero_asserted_census_findings({"hidden_size": 64}, "local")
+
+
+def test_bless_reuses_the_existing_fixture_for_an_identical_frozen_config(tmp_path):
+    """A loader-lost display name cannot fork one input into two witnesses."""
+    from model_unfolder.sable import _fixture_path_for_config
+
+    legacy = tmp_path / "musicgen-small.json"
+    legacy.write_text(json.dumps({
+        "model": "musicgen-small",
+        "config": MUSICGEN_SMALL,
+        "hash_signature": ["old-lock"],
+    }))
+
+    selected = _fixture_path_for_config(
+        tmp_path, "MusicgenForConditionalGeneration", deepcopy(MUSICGEN_SMALL)
+    )
+
+    assert selected == legacy
+    assert not (tmp_path / "musicgenforconditionalgeneration.json").exists()
+
+
+def test_bless_refuses_two_fixture_paths_for_the_same_frozen_config(tmp_path):
+    """Divergent locks for one exact input are ambiguous, never auto-selected."""
+    from model_unfolder.sable import _fixture_path_for_config
+
+    for name in ("first.json", "second.json"):
+        (tmp_path / name).write_text(json.dumps({
+            "model": name,
+            "config": MUSICGEN_SMALL,
+            "hash_signature": [name],
+        }))
+
+    with pytest.raises(ValueError, match="duplicate corpus fixtures freeze the same config"):
+        _fixture_path_for_config(
+            tmp_path, "MusicgenForConditionalGeneration", deepcopy(MUSICGEN_SMALL)
+        )
+
+
+def test_corpus_has_one_fixture_per_exact_frozen_config():
+    """The CI lock has one verdict per exact input, never contradictory twins."""
+    seen: dict[str, str] = {}
+    for filename, fixture in load_corpus():
+        identity = json.dumps(
+            fixture.get("config"), sort_keys=True, separators=(",", ":"), default=str
+        )
+        assert identity not in seen, (
+            f"{filename} and {seen.get(identity)} freeze the same config; "
+            "keep one stable fixture and one visual verdict"
+        )
+        seen[identity] = filename
 
 
 def test_bless_round_trips_with_real_gallery_and_records_supersession(tmp_path):
@@ -394,8 +704,14 @@ def test_bless_round_trips_with_real_gallery_and_records_supersession(tmp_path):
     r = sable(FLUX, outdir=str(tmp_path / "gallery"))
     assert r.gallery and len(r.gallery) == len(r.view_hashes)
     assert (tmp_path / "gallery" / "MANIFEST.txt").exists()
-    r.visual_review = "CLEAN"
-    path = bless(r, FLUX, corpus_dir=str(tmp_path))
+    verdict = tmp_path / "verdict.json"
+    verdict.write_text(json.dumps({
+        "decision": "ACCEPT", "reviewer": "reviewer", "implementer": "executor",
+        "reviewed_at": "2026-09-03", "model": r.model,
+        "view_signature": r.view_signature(),
+    }))
+    path = bless(r, FLUX, corpus_dir=str(tmp_path), review_verdict=verdict,
+                 implementer="executor")
     fixture = json.loads(open(path).read())
     assert check_regression(fixture) == []
     assert fixture["visual_evidence"]["png_count"] == len(r.view_hashes)
@@ -403,15 +719,24 @@ def test_bless_round_trips_with_real_gallery_and_records_supersession(tmp_path):
     # Tamper the locked signature -> drift is detected.
     tampered = dict(fixture)
     tampered["hash_signature"] = ["deadbeef"] + fixture["hash_signature"][1:]
+    # The reviewed witness name may be a repository id that an offline config
+    # cannot reconstruct.  A same-config re-bless must preserve it.
+    tampered["model"] = "reviewed-flux-name"
     assert any("view drift" in m for m in check_regression(tampered))
     # Simulate an older lock with a different signature on disk, then re-bless:
     # the new fixture must carry the superseded signature.
     with open(path, "w") as fh:
         json.dump(tampered, fh)
-    path2 = bless(r, FLUX, corpus_dir=str(tmp_path))
+    gallery_home = tmp_path / "galleries" / fixture["model"]
+    review = gallery_home / "her_eyes_review.md"
+    review.write_text("human review evidence must survive a re-bless\n")
+    path2 = bless(r, FLUX, corpus_dir=str(tmp_path), review_verdict=verdict,
+                  implementer="executor")
     refreshed = json.loads(open(path2).read())
     assert refreshed["hash_signature"] == fixture["hash_signature"]
     assert refreshed["superseded_hash_signature"] == tampered["hash_signature"]
+    assert refreshed["model"] == "reviewed-flux-name"
+    assert review.read_text() == "human review evidence must survive a re-bless\n"
 
 
 def test_sable_regression_corpus():
@@ -489,7 +814,6 @@ def test_every_fixture_gallery_is_durable_and_complete():
     """The reviewed pixels are part of the lock: every fixture's visual_evidence
     must point INSIDE the corpus (galleries/<slug>, never a scratch/session
     directory), with the PNG count it certifies and the save_images MANIFEST."""
-    from pathlib import Path
     from model_unfolder.sable import DEFAULT_CORPUS, load_corpus
 
     for fname, fix in load_corpus():

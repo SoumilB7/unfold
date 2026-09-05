@@ -1,0 +1,172 @@
+{
+  "ast_get_source_segment_in_top20": false,
+  "ast_get_source_segment_rank": null,
+  "config": "tests/sable_test_corpus/llama-7b.json",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 1.4953841245733202,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 1.0260942913591862,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 1.6485872087068856,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    3.7451171875,
+    3.79833984375,
+    3.521484375
+  ],
+  "mode": "profile",
+  "name": "llama-7b",
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "profile_text": "/private/tmp/model-unfolder-verification/S2-latency/profile-llama.txt",
+  "python": "3.12.10",
+  "repo_commit": "d778d46d6fadfad31427965e8bbfc0b61d422f77",
+  "top20": [
+    {
+      "calls": 169,
+      "cumulative_seconds": 9.738691746,
+      "function": "__init__.py:1(<module>)",
+      "primitive_calls": 169,
+      "self_seconds": 0.003969402999999998
+    },
+    {
+      "calls": 1476,
+      "cumulative_seconds": 3.6571054180000004,
+      "function": "<frozen importlib._bootstrap>:911(_load_unlocked)",
+      "primitive_calls": 27,
+      "self_seconds": 0.0040769790000000005
+    },
+    {
+      "calls": 1314,
+      "cumulative_seconds": 3.656298456,
+      "function": "<frozen importlib._bootstrap_external>:993(exec_module)",
+      "primitive_calls": 27,
+      "self_seconds": 0.004570226
+    },
+    {
+      "calls": 3493,
+      "cumulative_seconds": 3.644342833,
+      "function": "<frozen importlib._bootstrap>:480(_call_with_frames_removed)",
+      "primitive_calls": 51,
+      "self_seconds": 0.003908832
+    },
+    {
+      "calls": 2240,
+      "cumulative_seconds": 3.639128791,
+      "function": "~:0(<built-in method builtins.exec>)",
+      "primitive_calls": 27,
+      "self_seconds": 0.07573937
+    },
+    {
+      "calls": 1775,
+      "cumulative_seconds": 2.884280046,
+      "function": "<frozen importlib._bootstrap>:1390(_handle_fromlist)",
+      "primitive_calls": 290,
+      "self_seconds": 0.002465727
+    },
+    {
+      "calls": 1,
+      "cumulative_seconds": 2.538648959,
+      "function": "configuration_llama.py:1(<module>)",
+      "primitive_calls": 1,
+      "self_seconds": 1.9835000000000002e-05
+    },
+    {
+      "calls": 356,
+      "cumulative_seconds": 2.447048499,
+      "function": "~:0(<built-in method builtins.__import__>)",
+      "primitive_calls": 7,
+      "self_seconds": 0.00072365
+    },
+    {
+      "calls": 15,
+      "cumulative_seconds": 2.2105846250000005,
+      "function": "utils.py:1(<module>)",
+      "primitive_calls": 15,
+      "self_seconds": 0.0005402430000000001
+    },
+    {
+      "calls": 178686,
+      "cumulative_seconds": 2.192523973,
+      "function": "~:0(<built-in method builtins.getattr>)",
+      "primitive_calls": 153436,
+      "self_seconds": 0.024650507000000002
+    },
+    {
+      "calls": 1,
+      "cumulative_seconds": 2.1764616670000003,
+      "function": "auto_docstring.py:4511(auto_docstring_decorator)",
+      "primitive_calls": 1,
+      "self_seconds": 2.0958e-05
+    },
+    {
+      "calls": 1,
+      "cumulative_seconds": 2.176440167,
+      "function": "auto_docstring.py:4174(auto_class_docstring)",
+      "primitive_calls": 1,
+      "self_seconds": 7.1957e-05
+    },
+    {
+      "calls": 1,
+      "cumulative_seconds": 2.170005083,
+      "function": "modeling_auto.py:1(<module>)",
+      "primitive_calls": 1,
+      "self_seconds": 0.00045666900000000004
+    },
+    {
+      "calls": 1,
+      "cumulative_seconds": 2.156233958,
+      "function": "auto_factory.py:1(<module>)",
+      "primitive_calls": 1,
+      "self_seconds": 3.0459e-05
+    },
+    {
+      "calls": 1,
+      "cumulative_seconds": 2.133466959,
+      "function": "candidate_generator.py:1(<module>)",
+      "primitive_calls": 1,
+      "self_seconds": 3.6707e-05
+    },
+    {
+      "calls": 14,
+      "cumulative_seconds": 1.986122002,
+      "function": "base.py:1(<module>)",
+      "primitive_calls": 14,
+      "self_seconds": 0.0003438730000000001
+    },
+    {
+      "calls": 1,
+      "cumulative_seconds": 1.9249147080000002,
+      "function": "_chunking.py:1(<module>)",
+      "primitive_calls": 1,
+      "self_seconds": 2.0541000000000002e-05
+    },
+    {
+      "calls": 1,
+      "cumulative_seconds": 1.9242245420000001,
+      "function": "_param_validation.py:1(<module>)",
+      "primitive_calls": 1,
+      "self_seconds": 3.2667000000000004e-05
+    },
+    {
+      "calls": 2,
+      "cumulative_seconds": 1.82494675,
+      "function": "_array_api.py:1(<module>)",
+      "primitive_calls": 2,
+      "self_seconds": 0.000136041
+    },
+    {
+      "calls": 1,
+      "cumulative_seconds": 1.794262417,
+      "function": "validation.py:1(<module>)",
+      "primitive_calls": 1,
+      "self_seconds": 7.4793e-05
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "combined_sha256": "8a82cf8d8f5afa9dec2e5839dd3577010f9679eb3bb5aa89024cc019aeb06253",
+  "config": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/deepseek-v3.json",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 0.7709756251424551,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 0.5599558749236166,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 0.6770905423909426,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    3.181640625,
+    2.61962890625,
+    3.41552734375
+  ],
+  "mode": "fingerprint",
+  "name": "deepseek-v3",
+  "parse_seconds": 8.284399666823447,
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "d778d46d6fadfad31427965e8bbfc0b61d422f77",
+  "surface_hashes": {
+    "expanded": "4065ba25a7470f1188781cdefeb9fb59b6c5c30138a051a23399e103c0aaf476",
+    "html_meta": "5083f6ecd5196009a30a6d22cf97b15cc23c3fca1d75d3f84c0688cedabf10ba",
+    "ir": "dd4b0b5c35b01cb048842ca9ece0d10e8e8b91da77b9c1e66aab43e74110b63a",
+    "ledgers": "3744499ea788e129464a494eef5032d8356c191814c0e2bacdbaf79cc506b43b",
+    "params": "1fc841f9522588d9af70d0cb4ef86a0bd64e19636541498601c2a44d43aef912"
+  }
+}

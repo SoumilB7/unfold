@@ -5,7 +5,7 @@ canonical :func:`...opgraph.attention_region`, the same region the HTML
 renderer draws (MLA's query/KV drill regions are embedded as nested
 ``subgraph`` graphs).  The schema keeps its published node names
 (``scores``/``softmax``/``context``) via an explicit rename of the region's
-ids, and the kv-cache node is spliced into the dataflow for cached SDPA kinds.
+ids; cached SDPA kinds project the canonical region's own K/V-cache node.
 
 Schema (per the test contract):
 
@@ -17,19 +17,29 @@ Schema (per the test contract):
 * ``projections``         — named linear specs (query, key, value, output | MLA: q_lora_*, kv_lora_*, output)
 * ``operation_graph``     — DAG of {id, operation, inputs, outputs, parameters?, formula?}
 * ``cache``               — kv-cache descriptor
-* ``trace``               — ir_path + code_finding_ids
+* ``trace``               — exact IR path. Finding ids remain empty until an
+                            owner-qualified fact receipt exists; global
+                            semantic buckets are not provenance.
 """
 from __future__ import annotations
 
 from typing import Any
 
 from ..opgraph import attention_region, mla_kv_region, mla_query_region
-from .ops import linear, node
+from .ops import linear
 from .region import region_to_json
 from .utils import drop_none
 
 
-def build_attention(attn: dict, hidden: int | None, group_path: str, evidence: dict | None) -> dict[str, Any]:
+def build_attention(attn: dict, hidden: int | None,
+                    group_path: str, evidence: dict | None = None) -> dict[str, Any]:
+    """Project canonical attention; ``evidence`` is ignored compatibility input.
+
+    The global diagnostic document has no owner identity, so consuming it here
+    would recreate the sibling-provenance bug. U14 may replace this argument
+    with a typed owner-qualified receipt; U5 deliberately does not reinterpret
+    it.
+    """
     kind = attn.get("kind")
     heads = _heads(attn, hidden)
     out: dict[str, Any] = {
@@ -39,14 +49,21 @@ def build_attention(attn: dict, hidden: int | None, group_path: str, evidence: d
         "projections":     _projections(attn, hidden, heads),
         "operation_graph": _operation_graph(attn, hidden, heads),
         "cache":           _cache(attn),
+        "qk_norm":         attn.get("qk_norm"),
+        "bias":            attn.get("bias"),
+        "rope":            attn.get("rope"),
+        "position_kind":   attn.get("position_kind"),
+        "position_application": attn.get("position_application"),
+        "projection_mode": attn.get("projection_mode"),
+        "output_projection": attn.get("output_projection"),
+        "scores_scaled":   attn.get("scores_scaled"),
         "trace": {
             "ir_path":          f"{group_path}.attention",
-            "code_finding_ids": _evidence_ids(evidence, "attention", _evidence_values(kind)),
+            "code_finding_ids": [],
         },
     }
     out.update(drop_none({
-        "qk_norm":         attn.get("qk_norm") or None,
-        "bias":            attn.get("bias") or None,
+        "qkv_clip":        attn.get("qkv_clip"),
         "shared":          attn.get("shared") or None,
         "no_rope":         attn.get("no_rope") or None,
         "kv_source_layer": attn.get("kv_source_layer"),
@@ -90,6 +107,23 @@ def _projections(attn: dict, hidden: int | None, heads: dict) -> dict[str, Any]:
             "kv_lora_b":    linear(attn.get("kv_lora_rank"), q_w),
             "output":       linear(q_w, residual_w),
         })
+    if attn.get("kind") not in {"mha", "gqa", "mqa", "linear"}:
+        # Geometry alone does not prove Q/K/V storage.  Unknown and non-SDPA
+        # mixers project their canonical region below; expanded JSON must not
+        # independently manufacture the conventional four Linears.  Linear
+        # attention is included because its canonical region explicitly
+        # contains Q/K/V/out projections (Sana's code-proven processor).
+        return {}
+    if attn.get("kind") in {"mha", "gqa", "mqa"} \
+            and attn.get("projection_mode") != "split_qkv":
+        if attn.get("projection_mode") == "fused_qkv":
+            return drop_none({
+                "fused_qkv": linear(hidden, q_w + 2 * kv_w
+                                    if q_w is not None and kv_w is not None
+                                    else None),
+                "output": linear(q_w, residual_w),
+            })
+        return {}
     return drop_none({
         "query":  linear(hidden, q_w),
         "key":    linear(hidden, kv_w),
@@ -100,14 +134,19 @@ def _projections(attn: dict, hidden: int | None, heads: dict) -> dict[str, Any]:
 
 def _cache(attn: dict) -> dict[str, Any]:
     kind = attn.get("kind")
-    if kind == "mla":
+    cached = attn.get("cached")
+    if cached is None and kind in {"mha", "gqa", "mqa", "mla"}:
+        return {"enabled": None, "status": "unresolved"}
+    if cached is False:
+        return {"enabled": False, "kind": "none"}
+    if kind == "mla" and cached is True:
         return {
             "enabled": True,
             "kind":    "latent_kv",
             "stores":  ["kv_latent"],
             "rank":    attn.get("kv_lora_rank"),
         }
-    if kind in {"mha", "gqa", "mqa"}:
+    if kind in {"mha", "gqa", "mqa"} and cached is True:
         return drop_none({
             "enabled":  True,
             "kind":     "kv",
@@ -115,7 +154,10 @@ def _cache(attn: dict) -> dict[str, Any]:
             "kv_heads": attn.get("num_kv_heads"),
             "head_dim": attn.get("head_dim"),
         })
-    return {"enabled": False}
+    # An unresolved or non-KV attention mechanism cannot carry a KV-cache
+    # verdict.  ``False`` is reserved for a code/config-proven uncached
+    # cache-capable mechanism; do not collapse not-applicable into that fact.
+    return {"enabled": None, "status": "not_applicable"}
 
 
 # ---------- operation graph (projected from the canonical region) ----------
@@ -127,9 +169,6 @@ _PUBLIC_IDS = {
     "attn_softmax": "softmax",
     "attn_apply_v": "context",
 }
-
-_CACHED_SDPA_KINDS = {"mha", "gqa", "mqa", None}
-
 
 def _operation_graph(attn: dict, hidden: int | None, heads: dict) -> dict[str, Any]:
     region = attention_region(attn, hidden)
@@ -143,57 +182,4 @@ def _operation_graph(attn: dict, hidden: int | None, heads: dict) -> dict[str, A
             if op.id in nested:
                 op.meta["region"] = nested[op.id]
     graph = region_to_json(region, rename=_PUBLIC_IDS)
-    if kind in _CACHED_SDPA_KINDS:
-        _splice_kv_cache(graph, attn)
     return graph
-
-
-def _splice_kv_cache(graph: dict[str, Any], attn: dict) -> None:
-    """Insert the kv-cache node into the K/V dataflow (write after the
-    projections, read by scores and context) — a cache-semantics enrichment of
-    the projected structure, not a second authoring of it."""
-    nodes = graph["nodes"]
-    ids = {n["id"] for n in nodes}
-    if not {"k_proj", "v_proj", "scores", "context"} <= ids:
-        return
-    cache = node("kv_cache", "cache", inputs=["k_proj", "v_proj"],
-                 outputs=["kv_cache"], stores=["key", "value"],
-                 kv_heads=attn.get("num_kv_heads"))
-    at = next(i for i, n in enumerate(nodes) if n["id"] == "v_proj") + 1
-    nodes.insert(at, cache)
-    for n in nodes:
-        if n["id"] in {"scores", "context"} and n.get("inputs"):
-            n["inputs"] = ["kv_cache" if i in {"k_proj", "v_proj"} else i
-                           for i in n["inputs"]]
-    graph["edges"] = [
-        e for e in graph["edges"]
-        if not (e["from"] in {"k_proj", "v_proj"} and e["to"] in {"scores", "context"})
-    ] + [
-        {"from": "k_proj", "to": "kv_cache"}, {"from": "v_proj", "to": "kv_cache"},
-        {"from": "kv_cache", "to": "scores"}, {"from": "kv_cache", "to": "context"},
-    ]
-
-
-# ---------- evidence linking ----------
-
-
-def _evidence_values(kind: str | None) -> list[str]:
-    if kind == "mla":
-        return ["mla", "grouped_kv_attention"]
-    if kind == "mqa":
-        return ["multi_query_attention", "grouped_kv_attention", "split_qkv_attention", "fused_qkv_attention"]
-    if kind == "gqa":
-        return ["grouped_kv_attention", "split_qkv_attention", "fused_qkv_attention"]
-    if kind == "mha":
-        return ["split_qkv_attention", "fused_qkv_attention"]
-    return [kind] if kind else []
-
-
-def _evidence_ids(evidence: dict | None, kind: str, values: list[str]) -> list[str]:
-    if not evidence:
-        return []
-    detections = evidence.get("detections") or {}
-    out: list[str] = []
-    for v in values:
-        out.extend(((detections.get(kind) or {}).get(v) or {}).get("finding_ids") or [])
-    return out

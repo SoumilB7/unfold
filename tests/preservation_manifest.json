@@ -1,0 +1,298 @@
+{
+ "corpus_inputs": {
+  "auraflow-v0-3.json": "96954b3a0c2f868aaa3f18fad934f6f2fa2f3f76957ac34a6c8cb52ad6de2c31",
+  "bloom.json": "d7d55184ee1d44e1c117987d49b4d0e887eafacf35f108de1b2f9757e14d00e9",
+  "cogvideox-5b.json": "474624c5b279de5cc8c31c357d3e3e8e316f310938c87b5b340bbc3d8d6b62f4",
+  "dbrx-base.json": "7f01d79c83a2dfb135f98bd551ffe1bf1382f7d410f7a3fcc81c5862aff487ac",
+  "deepseek-v3.json": "7fd0d36f7e3ae8419d99c0042379c48f93dd74559f107faa865649d4cc2baaaf",
+  "flux-2-dev.json": "fe24a9f05eefcc9493a142dd9452c32a546a6172418609e547267e474d80c619",
+  "fluxtransformer2dmodel.json": "f098e62e20b66fd3581de2840dfa5e4503aff628aac883d2337d0f58a7f116b1",
+  "gemma-2-2b-it.json": "5fe65807f398fdc156081cea139ba46384eb6010798098c07da3bf9decd4418e",
+  "glm-4-5.json": "308cf5781ad787438e05e06a74fb4800ed892903626d179844566c13fd6c20aa",
+  "gpt-oss-20b.json": "8371ec6ec8aa227c865141b7746f24b39f6b2ada3ff2cd8cd28319d2a6efdafd",
+  "granite-3-0-8b-instruct.json": "b08f5b7334cd5c213c307d722d2dfa199ff2e30d4db92266697a9cee568f573d",
+  "hunyuanvideo.json": "551e39a5c94f951bb485f916dd1beff644cac63cd23ff7081aee29910dff23e1",
+  "llama-7b.json": "38a388c6e4f7ee07b09211a045ff622b59f655aee78123ee8c1b98c0a0b3f8d0",
+  "ltx-video.json": "61e1ee4353ff4d96237f87512fd720325ef32d09e26292082540193f5f75eca8",
+  "lumina-image-2-0.json": "9398002fbef773720a90305ac602e1fd543136f2d08b31529792c444ff8acfdc",
+  "mochi-1-preview.json": "3cf3ebbbee069131c2675ccf215599362eab31a0de19d7651239d674d63cd72a",
+  "musicgen-small.json": "405298254b6127cd1bfccfb08d7618e010f2c994decf66a46c82e40e4f951749",
+  "olmo-2-1124-7b.json": "59d182121d8fa460336782d5aedeab3693cdf6801a1b16cf6eff07e2e8e57efe",
+  "pixart-sigma-xl-2-1024-ms.json": "4a4f6a9731d0ed4417205f0c48f9d6062887bc53fbe54b20eafa53cfab6ee6e3",
+  "prxpixel-t2i.json": "e8f37d22dab3f79665281d133d6787974e791724a1200c48ca9fda4a43387770",
+  "qwen-image.json": "d5597110137764eb896a1f67eaf88ea574138399af9748e88f972498f874a461",
+  "qwen2-vl-7b-instruct.json": "174e04e2b4c0faa31aa96dccdd104dd7464fab70ea35fa05889771f857ffd9fe",
+  "qwen3-5-27b-text.json": "7d5c226ec990bee036d0be3398cc16bb7e25e6fbc038fea26f755b30a1c9d9b8",
+  "qwen3-8b.json": "3ca021c4c10467b2ea5ccbd0a4ced922e7b202a3c6501e083f032f8ca95321d6",
+  "sana-1600m-1024px-diffusers.json": "97e219e718c4f9718dea6b55e045827f542aecb92dc13f5dda843f94c824c454",
+  "stable-diffusion-3-5-large.json": "3f34726bd9517a9e5499112952d7b7273fb31de78492fba293d796f2fafc3472",
+  "stable-diffusion-xl-base-1-0.json": "f6c8e738960d6dc39cc47162b116c0cd673bf862d026d414622d74f423e05929",
+  "stablelm-2-1-6b.json": "6591bd8ed4d3aa0a1612732194943652d3739330d461b4ceadf3c9243917737c",
+  "wan2-2-t2v-a14b-diffusers.json": "f6c9eda84cdf34893a15051dfee5b22575d5838770eb3375c486c683fd11c989"
+ },
+ "created_utc": "2026-08-13T19:02:30Z",
+ "failures": [],
+ "witnesses": {
+  "auraflow-v0-3": {
+   "expanded.json": "8f230017d82cbcdbabdf535cd51f27ee5b01fdb604de2a02de8b4498f678f3a0",
+   "gallery.json": "76941a592df84ea8dbe3eed7234002d0e8285c67d868b7d1255856c1441cb586",
+   "html_meta.json": "a3855f8958a8dd25f6d908546b83035bec2d26ad1147cb10074caff616142ee5",
+   "ir.json": "c9990dd5401d407b9d490b1a5a4b5e9a1681f3c0dfca8d8ceeb5b05a6a482364",
+   "ledgers.json": "8f14dfe29dd0d4ca433881324b22ed781a53c76d4d0078f821a813b9f2d9bc63",
+   "params.json": "b6c957e734dc745bd308586e9c8e8de375a5d1c52f30144cfe5a17c57bfd0dd0",
+   "sable.json": "2575deab1cd3d36efd83520c2926a6d40470d06ab80eaa6a2f6639300bc64985"
+  },
+  "bloom": {
+   "expanded.json": "620667c31aaac8fe297fd6e2b55d46432195a5f3f49e9539f3385e6f77f459f1",
+   "gallery.json": "ac9b0efab878210fd30f8de77dd12afd129594d5db8b4cd196ec9c85943a3f32",
+   "html_meta.json": "9f443793ca86b4db545ea715b2fe5a0e8899d5d8eb402c0660809eedb852e28a",
+   "ir.json": "79579b37f48de74a28d26d922aaf51f70eaf13af32aba1b511353303a91c7c7c",
+   "ledgers.json": "6958b0bd890192aef8d8d1ec8b9048ee917d71ed880649eca67e378a47107457",
+   "params.json": "d292a9ddb40fd830b18b25515a5499a7d23482c428e59a2095b5c94750edb496",
+   "sable.json": "2575deab1cd3d36efd83520c2926a6d40470d06ab80eaa6a2f6639300bc64985"
+  },
+  "cogvideox-5b": {
+   "expanded.json": "03880b797b6a5f043a4d075b733985f3643141b865b0318c80091047322bb9c2",
+   "gallery.json": "99fbf94a6e8975828f4819020164d6c55971dd7a65e3bc9e19a1e1a2ff2965f0",
+   "html_meta.json": "13890745d11ebe6e8516b3d213abefec1e0c4431febe18c0c1eaa39b65e86901",
+   "ir.json": "1f812598bbb18803ffde7eda7ab9d9be6c258b76380e474a82663e5c1931bc95",
+   "ledgers.json": "00b0429acd13a687a9d9992b229036f9ec9d1c1e5e5b568ff2f815431c77c122",
+   "params.json": "d7f2e553fea5c68100421fa3b1220b572826564bb35ee5b3b668f26a322139fd",
+   "sable.json": "faba334181f36baef180bbfdf3c16173bae9f2e6f2761fdaa9fb12ca4f05bc08"
+  },
+  "dbrx-base": {
+   "expanded.json": "dc53357e4fd2f14777d4c48bc62d5c08e23226a1f06918b556b0f3f447cbc11d",
+   "gallery.json": "9c6683cabfea4fa0e7c76beb9fc130727ac9ed519ea4195b17b22b8e2375e499",
+   "html_meta.json": "fc1d0e4a5f935ea0aa448e4379934d9daaea41a515d0ebe9afc8cb4e54569e28",
+   "ir.json": "99a2d01230a4bc19a4a59f6d592acbbbc4d093327f35bc3f4041742d4ee81597",
+   "ledgers.json": "bed5bfb94635444db0c9a4147e4bc2e24b66965b26596b2e99019cc5230effbc",
+   "params.json": "0980513e4656c40355c0ed205633c10c27a6c7caf5f6c56b0666ff983f5866e7",
+   "sable.json": "2575deab1cd3d36efd83520c2926a6d40470d06ab80eaa6a2f6639300bc64985"
+  },
+  "deepseek-v3": {
+   "expanded.json": "05c2ecd525b4698ef8037131a9ea4f76e6de229f35242edb68f39dc6e40599a4",
+   "gallery.json": "96f25099809ad2d73dcfb73e4c53280fc0212c6cfdbe3f302ac91cc13c42a8cf",
+   "html_meta.json": "96837a7271f837c3885a75cbadc4d1c5b5dbfccdb608f5aa0d352f2bd3d9eac6",
+   "ir.json": "537a550126f442f7b1866dab25879f9b16105cf065d43e0f22a49c99da70fcdc",
+   "ledgers.json": "a7e087d1d052c7d507c67781729072c848afc52170f1e8b41540279433a9fe42",
+   "params.json": "906eeef292820c59a027bfd6266b58dc3b00a6dbec9d5639a221f4c746e891b2",
+   "sable.json": "2575deab1cd3d36efd83520c2926a6d40470d06ab80eaa6a2f6639300bc64985"
+  },
+  "flux-2-dev": {
+   "expanded.json": "d284df5bed75f7c7420df771cb15feaf0ba272e218fba20aa299c7442332287e",
+   "gallery.json": "94d79dfdcd90e37927221b7ecd021ea1a492130729a82268729624844b06b277",
+   "html_meta.json": "d5c8d2c1a7b1e1f6d58465af068929d4e0e9b0b6880ed2c7357260dae185de40",
+   "ir.json": "c834f9eb86a55b1ed8bfd3b7945c2381ca0a42c4d643da5883884f3ac89760e0",
+   "ledgers.json": "7a279f5b32787025f90a7c288d62ea9928fa7e0dfbdc8d6facb150537d263ab3",
+   "params.json": "b7d8e1c751522949e65229c123715249121ae28204fe27a9c7c4cd638dc71ba3",
+   "sable.json": "e2f012ec14ea79d5ac8121ee9917b7bdca0811ff127ec2db29b6084ba9f05981"
+  },
+  "fluxtransformer2dmodel": {
+   "expanded.json": "2df11f679085bdafe192a77f00862a58f45ccb953ce7ca42ccb78d51bbeb486c",
+   "gallery.json": "5e6b9aaf25cd164af4c879ba0d19fb20fccf3fe31b420b6f2684041e64300172",
+   "html_meta.json": "987202e76a90da23bb48fb808c15ba8c09db3d780fd84219902ce02d63ec7b65",
+   "ir.json": "151d728c77cbcf5e37f237fcce32c241730ff31b072e508c6cf81e9783acd050",
+   "ledgers.json": "f1f8d5ef33023d3587ab95b2c9f94b8fff8532a94f4320efe72fe1bafce253e7",
+   "params.json": "7d768077f7ecd5f0e4d8e0bc2dfae2726e2a8fa6bc3d76cdc4d9a6a6636f96d3",
+   "sable.json": "2575deab1cd3d36efd83520c2926a6d40470d06ab80eaa6a2f6639300bc64985"
+  },
+  "gemma-2-2b-it": {
+   "expanded.json": "7f621878c60b346a88802573f58f4323856e16d87479e6d4de18ffaa0593ab87",
+   "gallery.json": "76fd44ede2a98d23cd0bf6d35d424c035bf9226fb87a7a578b768118bd5fe6be",
+   "html_meta.json": "022fe784328fcd52f8d62ce1885ae95230ebdd15ea39a29afbdd6ed78061d4d8",
+   "ir.json": "0f87b4cc164f16dcdcf3f896a65f46d3b760e6ae809460a0a80b2a6c895bdd71",
+   "ledgers.json": "12e9d5dd17df910ffaeafac37611dc2827b69e279926c4a83ff1c7eca55de8d2",
+   "params.json": "65fe0b4dc3b4ca82af3fb90a184ebd617d36d8fbceaaee169fb4453efb1895ac",
+   "sable.json": "2575deab1cd3d36efd83520c2926a6d40470d06ab80eaa6a2f6639300bc64985"
+  },
+  "glm-4-5": {
+   "expanded.json": "0f2c499d79480c2a62a0ebfa3509b9e3425691003cc5f267cfa7cb1ac29d7ac3",
+   "gallery.json": "b8a4b5edd203748af60df8712a589408f1d0550b30b6547389847edcb5bfdeda",
+   "html_meta.json": "936c08d21339c195abc3247e8bfd15dc52ad05c750f1f7d86d2a784b949964b4",
+   "ir.json": "56d14b72c54d9fa7e380869623a7127daea69dfec39a7652d1878909089c0e60",
+   "ledgers.json": "569a27027080de3f93012929f7bac380bdfed5b85eaf57e7bbe5ab4e30e7c561",
+   "params.json": "51486772c51ae294f9c5b3f0ab8766899bd49b7df4fe96c8f387bbbb928327e3",
+   "sable.json": "2575deab1cd3d36efd83520c2926a6d40470d06ab80eaa6a2f6639300bc64985"
+  },
+  "gpt-oss-20b": {
+   "expanded.json": "fb3a59b28dc68c0e548aba63dd82c85677be826b39c201a77fa13a68a9eb21a3",
+   "gallery.json": "7f461e0f688690a7ce968fce276c2509fa133d58b5ebbb64b9f69fecd442438c",
+   "html_meta.json": "8073fd2920f6c42c4bccd4341d481f9b0b3ddb3a665e14ae3574f576a2af1cc2",
+   "ir.json": "86817dbbbf13b02a6a38f0d701926246129e098cd1e2c3daed5a408bc625116f",
+   "ledgers.json": "37dfce305a6cf29ca6517a0feb8b0bab9e7601630afb0f555204cd42eb86897e",
+   "params.json": "41fedecb396438e44630baa6babef7e511b83852bbb2e1b40716aed5feafdaf4",
+   "sable.json": "2575deab1cd3d36efd83520c2926a6d40470d06ab80eaa6a2f6639300bc64985"
+  },
+  "granite-3-0-8b-instruct": {
+   "expanded.json": "ea34b93174b5e7e26c5e6647e72066fa0db703898761c7f46059cc15764c3133",
+   "gallery.json": "c9e442689a05ea641e2246e9716a70719c4a25d4220c59c91d948de916c682d8",
+   "html_meta.json": "37b77e790068d35edaa2c6feb98c9922edb8fb90a33811d1593fd1ec43bfb46c",
+   "ir.json": "56dc60312391d75fb034727aacb3a6468de21be96d1ba118de1e7b49ed2071a0",
+   "ledgers.json": "59354532a8d876d740c790eee68e2d9febc1a6694e6007a7117195c3c6613b70",
+   "params.json": "845bce403f4b72a39898d2a27babb5ee00b43855a28f70976ac25c8e0dc55020",
+   "sable.json": "12e33b4d844d7b8fda290cdd655c10b0b23a9d758d9f7b16f5453cc1bac3f32f"
+  },
+  "hunyuanvideo": {
+   "expanded.json": "791daa9567c5b9bc38b86de26e3f64007e376d390d9742dc27df626fced4889e",
+   "gallery.json": "0c3bcc25156659b11bd9995241304c082ee95f442380901e6771c229ecf5176d",
+   "html_meta.json": "a68f4998c1e706d08f7b864ff7e0acdb945d77b69889e6c643e3a0984973be9b",
+   "ir.json": "bdc24cd0295b5b5eaf8b3da21ad5eb7fb1d0180f7d1594ec95f3085a1df5478e",
+   "ledgers.json": "b73d04d48475c952ea4ce16f70b5236e830866558c90641d39e64fa0ecaf6b22",
+   "params.json": "aa9752fae55b1964d2172925e240e0522980f4b15e672f9491e18e7b6478c80f",
+   "sable.json": "a728d026e0e30588350e70fe8400325ed11ca58601a32318e0322567fbd54a64"
+  },
+  "llama-7b": {
+   "expanded.json": "ee17b19bb4dab6a05862f88cc52e58c6779cb4126645953a3f7612626a2c2336",
+   "gallery.json": "d75cd505f9677068c0daf2c34a23449fa343f92b323192e3a776b8be4bed4d62",
+   "html_meta.json": "abf2f32132ca504e61313317a67f94af0987099856178ec65935594a110b125c",
+   "ir.json": "df13abaa574cfb87b7905e6e8b41bd54480b21846092de45c47b1aa603ae9927",
+   "ledgers.json": "49c0f8530c1437ea37b7fe9fa36f41a777c424b049ba098612d6858261da8d1f",
+   "params.json": "572ad813212c71a94a2e9cb1ca8bb076a0504a1c343febc32a30fd852dcaab78",
+   "sable.json": "2575deab1cd3d36efd83520c2926a6d40470d06ab80eaa6a2f6639300bc64985"
+  },
+  "ltx-video": {
+   "expanded.json": "842cf3379516a6fbd71eef51e7db6aa4281d88f38e1452abce3d9ad7f9fe1df0",
+   "gallery.json": "b090150eaf3ba6bc485f9a98f27a9c6c52b746900fd1fcdf428a30f2f530d7c7",
+   "html_meta.json": "0f36820060b4e1707b5801cfff0057a161ece8ca8d68189d35279bf9cac534e4",
+   "ir.json": "8ac4f005a09a77a7086d5aea46817c99f38e96d3a34248895c0cdb15f0482232",
+   "ledgers.json": "a61625176ede28136d2d45c49abf19fbff4cdd773072883fc288603896ea987c",
+   "params.json": "d9b9b6c9cb4b68cdb9d3451522234f248dc408586aa55c6a55ec8a29419f9f00",
+   "sable.json": "35053c9cd4d41023141ab83244f1dc26fdf5d101b77a1ce2b0253708f8b692cb"
+  },
+  "lumina-image-2-0": {
+   "expanded.json": "e765867bb7e5de50059105113906033b9ace32e687424cccb7fc6c87de46996c",
+   "gallery.json": "1552e3468fbfa5183d3bfee6a469bdce04ce87b73425b5ea7a9a3abd18b18879",
+   "html_meta.json": "33f8d66341e29aea0da842da6743fc8031c24c24c87dcff0da8437c1707c2f55",
+   "ir.json": "bd7779794ad3f2b327c1b568a18daab6dedd90187a57a3e6ee4b2ffb4826cb81",
+   "ledgers.json": "1bfa41f84323ea5e5165d62f2a3f86d48a7e0a603e2a04cce22f5a389660bdef",
+   "params.json": "4335963cf9d289648260bdcc10cff306b9205a39c30a04b25c25b74f09686449",
+   "sable.json": "2575deab1cd3d36efd83520c2926a6d40470d06ab80eaa6a2f6639300bc64985"
+  },
+  "mochi-1-preview": {
+   "expanded.json": "ec6d687135a4cf673c881213f0d5eb8eed0f6036166aac1346a381832f828405",
+   "gallery.json": "55c1cfd6bf35c8ad9b91d156e6d1b8e2367d8d4333052723c066d534123f2664",
+   "html_meta.json": "01bfcd4d98818d7d28745d4c776b79aa58bdbeadd1b1cee2089de88377779c3f",
+   "ir.json": "e92a3d07f677d2192176c0af9b85a7b29222ef1bce198d56a30bd5bdc9f28261",
+   "ledgers.json": "d8bf0bbd7d6d09e4053211c84c6574725613786889f40d482a87b30280ba1fd3",
+   "params.json": "e56ed057ea125969812a01bb98c31e7c00dbe3e8f046dad26640bdd4afa8bcb5",
+   "sable.json": "80c17e335d0b07a8c640c4b2bac6b7fe0d828233fb3b9865812ed147415d5757"
+  },
+  "musicgen-small": {
+   "expanded.json": "2968f6bf8c649edfd8463c73d10465f6ea8ab5c1f7a8c2a09f9819d70f1caaa1",
+   "gallery.json": "f473fdd5b40065e33f3234c1d9856fa267eff061a0fb3278d33dd4dfa4b3614a",
+   "html_meta.json": "51062c5e60132936c7d654838a498eab50dc559012e9a2fe68dfb93508bfa2fd",
+   "ir.json": "1532e1cde1168aaa2dbe5db2dd6788c1cd8b26b152ca9e5d262d26d2160069b8",
+   "ledgers.json": "e40da24fb0695be5df395388c479547535aa82f91e62890e9766428203293ab5",
+   "params.json": "3a546418ffbf338e862dfc8d7df9c02287eaab1cee61e5d442636f24596b5667",
+   "sable.json": "b40580835ccbe3d123f05d5dbb094980ad9d4c2e913913bfac0020e95a112d45"
+  },
+  "olmo-2-1124-7b": {
+   "expanded.json": "afd59c4df13effc36ad60044da978a91bdee049ec70eec4e4ec3601e80104637",
+   "gallery.json": "ff6ab193377a0e8f1f3ba13935bae6fbca9e5658f874a9f23596a9b8fc008d96",
+   "html_meta.json": "93210b3c10f31fa6aea9345e62b996f262c122c317c2e6ada50137ff8fcd2ff2",
+   "ir.json": "e1365bb28bb3a95f68ff77b9af52c7347f589440ecd1cca7a0c638ab1584e8bc",
+   "ledgers.json": "7c754a587f192e265a338e0d91362882b1b6e7580e9bc99ff8e279e045def9df",
+   "params.json": "fb038ed8fc7e93cadca5e0a3441e4c219a6d99f3c4c35d1b72f9ee57dfde045f",
+   "sable.json": "2575deab1cd3d36efd83520c2926a6d40470d06ab80eaa6a2f6639300bc64985"
+  },
+  "pixart-sigma-xl-2-1024-ms": {
+   "expanded.json": "67f3c196b3b32cfb357800a0e9130fa29d9b6e473eb59057a8fa9bef994f290d",
+   "gallery.json": "267a6888b72fe1ed9c03dcd9b90d94bd2fd3d69356cb561b9ed4ec7fe8d890e0",
+   "html_meta.json": "4aea46cace2a82fe0ac7df2067d6e78c101ead6a103109628e10b8c51aaf25f7",
+   "ir.json": "f2edf6ed9426fe04cdc47f33ab24a54f7dbffa110d1736b5f4709f7e6b2cfad5",
+   "ledgers.json": "353b4ef304afc122fe2ac8b291b96fb3a7360765d4a2153ce6fd31534e8cb9cd",
+   "params.json": "d9b9b6c9cb4b68cdb9d3451522234f248dc408586aa55c6a55ec8a29419f9f00",
+   "sable.json": "30365f019bd8b0eda7af46b7b2c9816ebc40ce59e5c676beebd4dc56bd57d235"
+  },
+  "prxpixel-t2i": {
+   "expanded.json": "85422d744e4fceab16fc555d5a2c19847be67a5e900e4f1bc48ad7b2a2f17ceb",
+   "gallery.json": "5dd5df7440f29e95182fba8f17fda0a96598fd3a796cf66bc9f4d5246d099457",
+   "html_meta.json": "6c6ed732b058642accb0f0041c6df237dca5a1cf059b62eb18d522c1bd68374c",
+   "ir.json": "3bf6ba1effc1c23d28aa0c04d525fcf1f0bbdc65942c258bd8c6a0806711e37f",
+   "ledgers.json": "fa8dc0174cda5bf010d4a32d7a9c3ce3cdc1d73953ea9bfb26d207c9be2ead66",
+   "params.json": "2f9b7f54026f70fa8b4be3b064fc09f6af2ecac54fea31981984e1fe284a9b9d",
+   "sable.json": "2575deab1cd3d36efd83520c2926a6d40470d06ab80eaa6a2f6639300bc64985"
+  },
+  "qwen-image": {
+   "expanded.json": "6fead4144ee3d88b9749986220e8a1331f0cfbf46eeb368b24f54730fce9829a",
+   "gallery.json": "2bb8c7b1ee6ee6f43aaa682df9ada54bb3b9e4a5115435a18a4216fe7666c6b8",
+   "html_meta.json": "014fcc3be6e5409962755678ea43e221d54b95f6c7985c1847c03197d74079f8",
+   "ir.json": "73960aa6fa6e9443077006e26665f503fbe5f8ce3ab30b19dfea8c3b9834ee5c",
+   "ledgers.json": "facf15bfd206fc9e5dc9dd69b7d0c7cddc4c7daf114442bd40f4104b4878960f",
+   "params.json": "fbde62991429fb9b51c14a2d03942370b52c607554cb7cc624121a254b2396c2",
+   "sable.json": "bc15183bf21ce0dc2f2949a064492c71b23b1cb12e701a7877a86cb059ec06e2"
+  },
+  "qwen2-vl-7b-instruct": {
+   "expanded.json": "fe7f28abc75e099adca23c173dec2460b615b76abd14b013a8f30ec4aa758c7f",
+   "gallery.json": "3f8b7af696adb613cd85a6c5c0235cc23a314e4cab78608d785c680221c23234",
+   "html_meta.json": "a583d00afcade68942706b1689c60ca3db96c0a05573992f4014521d190b180e",
+   "ir.json": "8a78c0f3282692a507afd77907b730457c5cee5104c9a75a30080dc1f1fb4b0e",
+   "ledgers.json": "3b1994b495bce81fa5f79b4fd6557c023fbca7ab17e0678a6925862693bd9af8",
+   "params.json": "332877bd85092a15648c7ce6176067b3ba20796281e0f67ae53bdfa0c7ceae58",
+   "sable.json": "d20ce23e8938bb81e2737de5ac670939359647ab973320204b5a3aac59ef4f07"
+  },
+  "qwen3-5-27b-text": {
+   "expanded.json": "a5134372ad8b881093e0a3808f3c78859a9e124864d6fb6dbf74eab90a94b8fb",
+   "gallery.json": "f27e877f7c859ed99b3aab199b2fffd24f79069906658dd962797d2865e3487b",
+   "html_meta.json": "7ecdc5b2305ca9a3687aed1e3982cbb89e1721023dc20d961d98445706bd3837",
+   "ir.json": "999843be6e16c44adae593eb8605a548be2586a5477cc6fcfa04f8192bbf445e",
+   "ledgers.json": "3c0f855c73e52d01ef5a3eb582be47c8417317cd25d2f5ab3d570b982d9f5559",
+   "params.json": "ca510e080a95e3bace4c258266b6ad76644d0bee45626cd36f137c006b114b92",
+   "sable.json": "2575deab1cd3d36efd83520c2926a6d40470d06ab80eaa6a2f6639300bc64985"
+  },
+  "qwen3-8b": {
+   "expanded.json": "0cb5c80f52e53b8c8b3fdb7eb8ad3788d51c1fc39551f4cfa024905717ef6251",
+   "gallery.json": "af5976bf5dd1781ff4fb9fd0408f8b6c864cd7cabfd87f2661ead1cc9db6eb9a",
+   "html_meta.json": "1c33d023f5695b32af7f3c839e6469b4132d2e40fc1cc4a136a09cc90e488a27",
+   "ir.json": "e8a889421b92bd9ab451eee586d2b27cf80ec4cd5d5730f369e235db12bd011c",
+   "ledgers.json": "6c85fa8aee3a3f60307f4d9304641f29edd0f160330424ea4fac84fe6511de10",
+   "params.json": "9d82685fa110d41dadf566b0598c0e2cd991bd7b9816abe8884a7ae34a08019c",
+   "sable.json": "2575deab1cd3d36efd83520c2926a6d40470d06ab80eaa6a2f6639300bc64985"
+  },
+  "sana-1600m-1024px-diffusers": {
+   "expanded.json": "2fdd5dddd3641330c1fd52feb08d9f8efa06e97d4a794c9bf61141edfd48a0b5",
+   "gallery.json": "8b0eb53364da56f758b500826c9de57ca372d88a97bbd6f18e56d36a02784a0c",
+   "html_meta.json": "c2dd40b67f25e5358f8547db69eceabc593089672123ec8260a1688e33aa4b78",
+   "ir.json": "7e63d11a008c8c1eafae4aa1ea3fdf774f000fec03319a36986d4eb37b17ef96",
+   "ledgers.json": "39a503de9b097da13d8a1f56a674bbea292e797ecfef07cd7e9a3b3b2aaf301f",
+   "params.json": "cd725db8acea1e12bd26788e37749afae8f9ebe49490d961c7d8d2475245f2dc",
+   "sable.json": "610cfab76c22f04cc9637130238c2ebe2778c75551a427e0e61152e00dcaebda"
+  },
+  "stable-diffusion-3-5-large": {
+   "expanded.json": "4a5edb12e9c6bbd1406888eef3b666e244d594476e5b37855526ab9277249afb",
+   "gallery.json": "ad4553b17f6fd7df0c8bb09fc2d6faacde287e2b173b0fdec75fa33610e82c1e",
+   "html_meta.json": "8686c2b60eb8c67964a44554ca86c738682d999bb9bd3c1b7fcfe5066695e946",
+   "ir.json": "081c57d36ea33f62ad6a764a54d2f7721a61fe2a3a4dedb1df6799972d890162",
+   "ledgers.json": "88a9531cb5c347af859cece5fc211c8f88c1b285d1831c06b0e5b665d0048772",
+   "params.json": "f4da37ba3b26a13af123b7c89ce355bb88675f05878262bb1d932db7b4097d22",
+   "sable.json": "992002a93c8f53d0ada6fe18d325f26c16d1000f38d61ba282d515c065ed78c9"
+  },
+  "stable-diffusion-xl-base-1-0": {
+   "expanded.json": "0261a8de3c4cfe68c25a4d3772c650f377a39f4da926ef96926896a021f98add",
+   "gallery.json": "0a02170f6949d9ddf406d884b99f101476e8c3e5999befa373d755ac6799c762",
+   "html_meta.json": "9c90e3cdf3250a9c33a08cc53aa1c1c39626ac3efde187948f658410e23ed743",
+   "ir.json": "988325b5f16345f43658f29587ccbda3f93160f1919cdcc7d05c3ee43c2e6ac9",
+   "ledgers.json": "d4f4ad3152036eb406d2734fde2e2b65bada3e5a95d1bd4d5be1fe7ac425249b",
+   "params.json": "676746396bc129e8eb4b4f0673622670c131370d39e78bb46d3cd56168602295",
+   "sable.json": "db39089b6f4c69ff3dccf21b19d76520ad22001eab1982e132d92c4a58c205d5"
+  },
+  "stablelm-2-1-6b": {
+   "expanded.json": "4cf57612c2ebcc69c3906f91b6e87bdeb8edcb5bc17e82c567cc8de94268c255",
+   "gallery.json": "d2d799dc187fce1b00e782b1a9de326095c5d7cc0dfbd6f0a94d509de8eee872",
+   "html_meta.json": "175894daf2a3afd983d0204c36c7ac2b01a67007b61f6b22c0034ce9e38a118c",
+   "ir.json": "93921e8b24c0d5a5c965be9fffb5bc67b500807d8bcad5ea0266b4987ead7db7",
+   "ledgers.json": "0d91c83e14aa8177f48c54bb4af9cd9998896770eaada0193ff458e2266045bf",
+   "params.json": "85a264c6b276cbfb1f52a5e8c1c6b1caa4945db647231b977c617059663a5cbc",
+   "sable.json": "2575deab1cd3d36efd83520c2926a6d40470d06ab80eaa6a2f6639300bc64985"
+  },
+  "wan2-2-t2v-a14b-diffusers": {
+   "expanded.json": "61ede65e583baff79171ee4e6e19fa194ea9feadff78abe28b37007c1d6a23c8",
+   "gallery.json": "f1600a87ec62afb251c50b0169a1a487201fe6266bd84701b8b1fe4e5b659f69",
+   "html_meta.json": "08be379395751c341e42b27bf97b6b4e2ee4756e394cfb55118a8a0190afb12f",
+   "ir.json": "e335b970d72ba7599b6ee4009c37e22ecbdcac224095b4b9860d51ee1bb6b90e",
+   "ledgers.json": "520ee138933d1b49ce899ce6c30cb5bfe8abbff159baf1f5df99be67bb4ce772",
+   "params.json": "677e10064a0ef4fcd89709f4730711a0155ba829f4030c22454c4fdc9654c20a",
+   "sable.json": "992002a93c8f53d0ada6fe18d325f26c16d1000f38d61ba282d515c065ed78c9"
+  }
+ }
+}

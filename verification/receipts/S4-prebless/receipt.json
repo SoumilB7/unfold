@@ -1,0 +1,78 @@
+{
+  "authority_workers": 3,
+  "commit": "8f9862ed2a0937f34f862c0564a22bf59542a914",
+  "coordinator_fingerprint_after": "266676c087ce815ca58b25437221b1ef4bec10a4bfccd061c621cee944d5bf1e",
+  "coordinator_fingerprint_before": "266676c087ce815ca58b25437221b1ef4bec10a4bfccd061c621cee944d5bf1e",
+  "failed_lanes": [
+    "preservation"
+  ],
+  "focused_workers": 1,
+  "full_workers": 6,
+  "lanes": {
+    "collect": {
+      "artifacts_after": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "artifacts_before": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "duration_seconds": 17.206,
+      "fingerprint_after": "74d63cb0109fe61d846e6810d3fdce0d135022ed4d1f8caef7dd8470ba98c5fe",
+      "fingerprint_before": "74d63cb0109fe61d846e6810d3fdce0d135022ed4d1f8caef7dd8470ba98c5fe",
+      "log": "/private/tmp/model-unfolder-verification/d7f78f17ca/collect.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "focused": {
+      "artifacts_after": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "artifacts_before": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "duration_seconds": 91.151,
+      "fingerprint_after": "0ab12082ae3f67f705908f1a217ba0b49779d30982518c3c3121860b9d9272ab",
+      "fingerprint_before": "0ab12082ae3f67f705908f1a217ba0b49779d30982518c3c3121860b9d9272ab",
+      "log": "/private/tmp/model-unfolder-verification/d7f78f17ca/focused.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "full": {
+      "artifacts_after": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "artifacts_before": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "duration_seconds": 1473.202,
+      "fingerprint_after": "0fb5ef6056e2b52f5123c81de9e541491bb3877edae81b2e26e0109c6ddc6649",
+      "fingerprint_before": "0fb5ef6056e2b52f5123c81de9e541491bb3877edae81b2e26e0109c6ddc6649",
+      "log": "/private/tmp/model-unfolder-verification/d7f78f17ca/full.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "preservation": {
+      "artifacts_after": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "artifacts_before": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "duration_seconds": 525.544,
+      "fingerprint_after": "945052dd3e1c7fb224b58c8830d7340eb6ec85feeec05ee76403bc267e7d886a",
+      "fingerprint_before": "945052dd3e1c7fb224b58c8830d7340eb6ec85feeec05ee76403bc267e7d886a",
+      "log": "/private/tmp/model-unfolder-verification/d7f78f17ca/preservation.log",
+      "passed": false,
+      "returncode": 1
+    },
+    "static": {
+      "artifacts_after": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "artifacts_before": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "duration_seconds": 0.714,
+      "fingerprint_after": "ac735b79dd5ac2dbaf390765da674c4bc53fd8b5c092f7a2ce3c7f56abc69a70",
+      "fingerprint_before": "ac735b79dd5ac2dbaf390765da674c4bc53fd8b5c092f7a2ce3c7f56abc69a70",
+      "log": "/private/tmp/model-unfolder-verification/d7f78f17ca/static.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "u2-authority": {
+      "artifacts_after": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "artifacts_before": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "duration_seconds": 104.282,
+      "fingerprint_after": "e539fd03edf3062176f494a50156b3525c4d79d02c819656c74023d3748f1dba",
+      "fingerprint_before": "e539fd03edf3062176f494a50156b3525c4d79d02c819656c74023d3748f1dba",
+      "log": "/private/tmp/model-unfolder-verification/d7f78f17ca/u2-authority.log",
+      "passed": true,
+      "returncode": 0
+    }
+  },
+  "missing_lanes": [],
+  "preservation_workers": 4,
+  "source_artifacts_after": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+  "source_artifacts_before": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+  "wall_seconds": 1584.356
+}

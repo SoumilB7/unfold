@@ -1,6 +1,7 @@
 """Reusable HTML sections and header fragments."""
 from __future__ import annotations
 
+from ...ir import EvidenceWarning
 from .metadata import _arch_badges
 from .utils import _attr, _fmt_int, _html
 
@@ -24,6 +25,25 @@ def _msg_bar(css_class: str, messages: list[str]) -> str:
     return f'<div class="uf-msg-bar {css_class}">{lines}</div>'
 
 
+def _warning_bar(messages: list[str], groups: list[EvidenceWarning]) -> str:
+    """Render producer-authored summaries; exact receipts stay disclosed."""
+    lines = [f'<div class="uf-msg-line">{_html(message)}</div>'
+             for message in messages]
+    for group in groups:
+        summary = group.summary
+        details = group.details
+        detail_lines = "".join(
+            f'<div class="uf-msg-line">{_html(detail)}</div>'
+            for detail in details)
+        lines.append(
+            '<details class="uf-evidence-disclosure" style="margin-top:7px">'
+            f'<summary style="cursor:pointer;font-weight:650">{_html(summary)}</summary>'
+            '<div class="uf-evidence-details" '
+            f'style="margin:7px 0 0 16px;opacity:.9">{detail_lines}</div>'
+            '</details>')
+    return f'<div class="uf-msg-bar uf-msg-bar-warn">{"".join(lines)}</div>'
+
+
 def _header(ir: dict, info: dict, mount_id: str) -> str:
     # No hover anywhere: badges carry no `title` tooltip.  The two message
     # badges (config gaps, advisory notes) instead CLICK to open a full-width
@@ -39,13 +59,38 @@ def _header(ir: dict, info: dict, mount_id: str) -> str:
     bars: list[str] = []
     # Only genuine config GAPS warrant the "partial config" alarm; by-design
     # advisories (e.g. a CFG twin we deliberately don't draw twice) are notes.
-    warnings = ir.get("warnings") or []
-    if warnings:
+    warning_rows = ir.get("warnings") or []
+    groups_by_check = {}
+    for warning in warning_rows:
+        if isinstance(warning, EvidenceWarning):
+            groups_by_check.setdefault(warning.check, warning)
+    groups = list(groups_by_check.values())
+    warnings = [str(warning) for warning in warning_rows
+                if isinstance(warning, str)
+                and not isinstance(warning, EvidenceWarning)]
+    if warnings or groups:
         wid = f"{mount_id}-msg-warn"
         toggles.append(f'<input type="checkbox" id="{_attr(wid)}" class="uf-msg-toggle" hidden>')
-        bars.append(_msg_bar("uf-msg-bar-warn", warnings))
+        bars.append(_warning_bar(warnings, groups))
+        # Evidence producers mark their diagnostic class explicitly. The
+        # renderer only maps that transport prefix to display text; it neither
+        # inspects raw evidence extras nor infers a mechanism from prose.
+        typed_unresolved = bool(groups) or any(
+            warning.startswith("Unresolved evidence — ")
+            for warning in warnings
+        )
+        legacy_unresolved_only = all(
+            warning.startswith("Unresolved code-defined facts")
+            for warning in warnings
+        )
+        warning_label = (
+            "⚠ unresolved evidence"
+            if typed_unresolved or legacy_unresolved_only
+            else "⚠ partial config"
+        )
         badges.append(
-            f'<label for="{_attr(wid)}" class="uf-badge uf-badge-warn">⚠ partial config</label>'
+            f'<label for="{_attr(wid)}" class="uf-badge uf-badge-warn">'
+            f'{warning_label}</label>'
         )
 
     notes = ir.get("notes") or []
@@ -76,6 +121,12 @@ def _stats_banner(ir: dict) -> str:
         if params.get("is_sparse")
         else params.get("total_h", "?")
     )
+    # U2: an estimate that had to pick a counting convention for an UNKNOWN
+    # fact (tie / FFN gating) says so — starred value with the conventions in
+    # the hover title, never a silently-branched number.
+    _assumption_note = "; ".join(params.get("assumptions") or [])
+    if _assumption_note:
+        param_text = f"~{param_text}*"
     extras = ir.get("extras") or {}
     if (extras.get("render") or {}).get("family") == "diffusion":
         items = _diffusion_stats(ir, extras, param_text)
@@ -89,8 +140,10 @@ def _stats_banner(ir: dict) -> str:
         ]
     cells = []
     for key, value in items:
+        title = (f' title="{_attr("estimate uses conventions for unknowns: " + _assumption_note)}"'
+                 if (_assumption_note and value == param_text) else "")
         cells.append(
-            '<div class="uf-stat">'
+            f'<div class="uf-stat"{title}>'
             f'<div class="uf-stat-key">{_html(key.upper())}</div>'
             f'<div class="uf-stat-val">{_html(value)}</div>'
             "</div>"

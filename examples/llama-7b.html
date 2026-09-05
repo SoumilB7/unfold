@@ -1,0 +1,591 @@
+<!-- data-generated-by=scripts/generate_examples.py source=tests/sable_test_corpus/llama-7b.json input-sha256=9723e51009fc30c37b376e1a3c03a0a97022a111803010159ce5dc7b344007f9 -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="generator" content="Unfold">
+<title>llama-7b - unfolded</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&amp;display=swap">
+<style>
+  body { margin: 0; padding: 32px 24px; background: #F8FAFC; min-height: 100vh; }
+  .uf-frame { max-width: 820px; margin: 0 auto; }
+</style>
+</head>
+<body>
+  <div class="uf-frame">
+<div id="uf-example-llama-7b" class="uf-root">
+<style>
+
+
+#uf-example-llama-7b {
+  font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  color:#04342C;
+  max-width:720px;
+}
+#uf-example-llama-7b .uf-card {
+  background:#FFFFFF;
+  border:1.5px solid #0F6E56;
+  border-radius:14px;
+  padding:20px 22px 18px;
+  box-shadow:0 1px 3px rgba(15,23,42,0.05);
+}
+#uf-example-llama-7b .uf-header {
+  margin-bottom:14px;
+}
+#uf-example-llama-7b .uf-name {
+  font-family:"Caveat","Patrick Hand","Comic Sans MS",cursive;
+  font-size:26px;
+  line-height:1;
+  color:#04342C;
+}
+#uf-example-llama-7b .uf-arch {
+  color:#5F7C73;
+  font-size:11px;
+  margin-top:3px;
+  font-family:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+#uf-example-llama-7b .uf-badges {
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:6px;
+}
+#uf-example-llama-7b .uf-badge {
+  display:inline-flex;
+  align-items:center;
+  height:22px;
+  padding:0 9px;
+  background:#D6F1E4;
+  color:#0E5C48;
+  border-radius:11px;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.02em;
+}
+#uf-example-llama-7b .uf-badge-warn {
+  background:#FEF3C7;
+  color:#92400E;
+  border:1px solid #FCD34D;
+  cursor:default;
+}
+#uf-example-llama-7b .uf-badge-note {
+  background:#EFF6FF;
+  color:#1E40AF;
+  border:1px solid #BFDBFE;
+}
+/* The two message badges are <label>s toggling a hidden checkbox — clickable. */
+#uf-example-llama-7b .uf-badge-warn, #uf-example-llama-7b .uf-badge-note { cursor:pointer; }
+/* Click-to-open message line at the top of the card (no hover, pure CSS). */
+#uf-example-llama-7b .uf-msg-bar {
+  display:none;
+  margin:0 0 12px;
+  padding:9px 13px;
+  border-radius:9px;
+  font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size:12px;
+  line-height:1.45;
+}
+#uf-example-llama-7b .uf-msg-bar-warn { background:#FEF3C7; color:#92400E; border:1px solid #FCD34D; }
+#uf-example-llama-7b .uf-msg-bar-note { background:#EFF6FF; color:#1E40AF; border:1px solid #BFDBFE; }
+#uf-example-llama-7b .uf-msg-line + .uf-msg-line { margin-top:5px; }
+#uf-example-llama-7b #uf-example-llama-7b-msg-warn:checked ~ .uf-msg-bar-warn { display:block; }
+#uf-example-llama-7b #uf-example-llama-7b-msg-note:checked ~ .uf-msg-bar-note { display:block; }
+#uf-example-llama-7b .uf-stats {
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:1px;
+  background:#B6DDCB;
+  border:0.5px solid #B6DDCB;
+  border-radius:8px;
+  overflow:hidden;
+  margin-bottom:18px;
+}
+#uf-example-llama-7b .uf-stat {
+  padding:8px 12px;
+  background:#FFFFFF;
+}
+#uf-example-llama-7b .uf-stat-key {
+  font-size:9.5px;
+  letter-spacing:0.12em;
+  color:#5F7C73;
+  font-weight:600;
+}
+#uf-example-llama-7b .uf-stat-val {
+  font-family:"Caveat","Patrick Hand","Comic Sans MS",cursive;
+  font-size:19px;
+  color:#04342C;
+  margin-top:2px;
+  line-height:1.05;
+}
+#uf-example-llama-7b .uf-section {
+  margin-top:14px;
+}
+#uf-example-llama-7b .uf-section-head {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 12px;
+  background:#D6F1E4;
+  border:0.5px solid #B6DDCB;
+  border-radius:8px;
+  cursor:default;
+  user-select:none;
+  list-style:none;
+}
+#uf-example-llama-7b .uf-section-collapsible > summary.uf-section-head {
+  cursor:pointer;
+  transition:background .15s;
+}
+#uf-example-llama-7b .uf-section-collapsible > summary.uf-section-head:hover {
+  background:#C8E9D7;
+}
+#uf-example-llama-7b .uf-section-head::-webkit-details-marker,
+#uf-example-llama-7b summary.uf-section-head::-webkit-details-marker {
+  display:none;
+}
+#uf-example-llama-7b .uf-section-label {
+  font-size:10.5px;
+  letter-spacing:0.14em;
+  font-weight:700;
+  color:#04342C;
+}
+#uf-example-llama-7b .uf-section-sub {
+  font-size:11px;
+  color:#5F7C73;
+}
+#uf-example-llama-7b .uf-chevron {
+  margin-left:auto;
+  font-size:18px;
+  color:#5F7C73;
+  transition:transform .15s ease;
+  transform:rotate(0deg);
+}
+#uf-example-llama-7b details.uf-section[open] .uf-chevron {
+  transform:rotate(90deg);
+}
+#uf-example-llama-7b .uf-section-body {
+  background:#F4FBF8;
+  border:0.5px solid #B6DDCB;
+  border-radius:10px;
+  padding:6px;
+  margin-top:6px;
+  animation:uf-fade .25s ease-out;
+}
+#uf-example-llama-7b .uf-section-body svg {
+  display:block;
+  max-width:100%;
+  height:auto;
+}
+#uf-example-llama-7b .uf-node rect,
+#uf-example-llama-7b .uf-node circle {
+  transition:filter .15s, stroke .15s, stroke-width .15s;
+}
+#uf-example-llama-7b .uf-section-arch .uf-node {
+  cursor:pointer;
+}
+#uf-example-llama-7b .uf-section-arch .uf-node:hover rect,
+#uf-example-llama-7b .uf-section-arch .uf-node:hover circle {
+  filter:brightness(1.1) drop-shadow(0 2px 4px rgba(0,0,0,.18));
+}
+#uf-example-llama-7b .uf-node.uf-selected rect,
+#uf-example-llama-7b .uf-node.uf-selected circle {
+  stroke:#FACC15;
+  stroke-width:2.5;
+}
+#uf-example-llama-7b .uf-group-radio {
+  position:absolute;
+  width:0;height:0;
+  opacity:0;
+  pointer-events:none;
+}
+#uf-example-llama-7b .uf-group-toggle {
+  display:inline-flex;
+  gap:3px;
+  padding:3px;
+  margin-bottom:8px;
+  background:#FFFFFF;
+  border:0.5px solid #B6DDCB;
+  border-radius:8px;
+  flex-wrap:wrap;
+}
+#uf-example-llama-7b .uf-group-pill {
+  padding:5px 11px;
+  font-size:11px;
+  font-weight:600;
+  color:#5F7C73;
+  cursor:pointer;
+  border-radius:5px;
+  transition:background .15s,color .15s;
+  white-space:nowrap;
+  user-select:none;
+}
+#uf-example-llama-7b .uf-group-pill:hover {
+  background:#D6F1E4;
+  color:#04342C;
+}
+#uf-example-llama-7b .uf-arch-variant,
+#uf-example-llama-7b .uf-l2-variant,
+#uf-example-llama-7b .uf-nested-variant { display:none; }
+#uf-example-llama-7b .uf-inspect-panel {
+  background:rgba(244,251,248,0.55);
+  border:0.5px solid #B6DDCB;
+  border-radius:9px;
+  animation:uf-fade .2s ease-out;
+}
+#uf-example-llama-7b .uf-inspect {
+  display:none;
+  margin-top:10px;
+}
+#uf-example-llama-7b .uf-section-arch[open] ~ .uf-inspect {
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+#uf-example-llama-7b .uf-panel-hint,
+#uf-example-llama-7b .uf-panel-compact {
+  min-height:64px;
+  padding:10px 12px;
+}
+#uf-example-llama-7b .uf-panel-list {
+  min-height:96px;
+  padding:12px;
+}
+#uf-example-llama-7b .uf-panel-diagram-compact {
+  min-height:0;
+  padding:12px 10px 14px;
+}
+#uf-example-llama-7b .uf-panel-diagram {
+  min-height:0;
+  padding:14px 12px 16px;
+}
+#uf-example-llama-7b .uf-panel-diagram-tall {
+  min-height:0;
+  padding:16px 14px 18px;
+}
+#uf-example-llama-7b .uf-card-detail {
+  display:none;
+  width:100%;
+  animation:uf-fade .2s ease-out;
+}
+#uf-example-llama-7b .uf-card-default {
+  display:block;
+}
+#uf-example-llama-7b .uf-card-hint {
+  font-size:11px;
+  color:#5F7C73;
+  font-style:italic;
+  text-align:center;
+  padding:0;
+}
+#uf-example-llama-7b .uf-nested-inspect {
+  display:none;
+  margin-top:8px;
+}
+#uf-example-llama-7b .uf-section-arch[open] ~ .uf-nested-inspect.uf-nested-active {
+  display:block;
+}
+#uf-example-llama-7b .uf-node.uf-nested-selected rect,
+#uf-example-llama-7b .uf-node.uf-nested-selected circle {
+  stroke:#FACC15;
+  stroke-width:2.5;
+}
+#uf-example-llama-7b .uf-card-title {
+  font-family:"Caveat","Patrick Hand","Comic Sans MS",cursive;
+  font-size:20px;
+  color:#04342C;
+  line-height:1.1;
+}
+#uf-example-llama-7b .uf-card-desc {
+  font-size:13px;
+  color:#5F7C73;
+  margin-top:4px;
+  line-height:1.45;
+}
+#uf-example-llama-7b .uf-card-facts {
+  margin-top:8px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+#uf-example-llama-7b .uf-fact {
+  font-family:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  font-size:11px;
+  color:#04342C;
+  background:#D6F1E4;
+  border:0.5px solid #B6DDCB;
+  border-radius:999px;
+  padding:3px 10px;
+  white-space:nowrap;
+}
+#uf-example-llama-7b .uf-card-svg {
+  margin-top:10px;
+  background:#FFFFFF;
+  border:0.5px solid #B6DDCB;
+  border-radius:8px;
+  padding:8px 6px 10px;
+}
+#uf-example-llama-7b .uf-card-svg svg {
+  display:block;
+  width:100%;
+  max-width:100%;
+  height:auto;
+}
+#uf-example-llama-7b .uf-evidence {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:6px;
+}
+#uf-example-llama-7b .uf-evidence-summary {
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  color:#5F7C73;
+  font-size:11px;
+  font-family:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+#uf-example-llama-7b .uf-evidence-summary span {
+  padding:5px 8px;
+  background:#FFFFFF;
+  border:0.5px solid #B6DDCB;
+  border-radius:6px;
+}
+#uf-example-llama-7b .uf-evidence-grid {
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+#uf-example-llama-7b .uf-evidence-row {
+  display:grid;
+  grid-template-columns:82px minmax(0,1fr);
+  align-items:start;
+  gap:8px;
+}
+#uf-example-llama-7b .uf-evidence-kind {
+  color:#04342C;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  padding-top:5px;
+}
+#uf-example-llama-7b .uf-evidence-chips {
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+}
+#uf-example-llama-7b .uf-evidence-chip {
+  display:inline-flex;
+  align-items:center;
+  min-height:22px;
+  padding:0 8px;
+  background:#FFFFFF;
+  border:0.5px solid #B6DDCB;
+  border-radius:6px;
+  color:#0E5C48;
+  font-size:11px;
+  font-weight:600;
+}
+#uf-example-llama-7b .uf-evidence-chip-muted {
+  color:#5F7C73;
+  font-family:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  font-weight:500;
+}
+#uf-example-llama-7b .uf-evidence-warnings {
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+#uf-example-llama-7b .uf-evidence-warning {
+  padding:7px 9px;
+  background:#FFFBEB;
+  border:0.5px solid #FCD34D;
+  border-radius:7px;
+  color:#92400E;
+  font-size:11px;
+  line-height:1.35;
+}
+
+#uf-example-llama-7b .uf-attn-rows {
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+#uf-example-llama-7b .uf-attn-row {
+  padding:9px 12px;
+  background:#FFFFFF;
+  border:0.5px solid #B6DDCB;
+  border-left:3px solid #0F6E56;
+  border-radius:8px;
+}
+#uf-example-llama-7b .uf-attn-row-title {
+  font-family:"Caveat","Patrick Hand","Comic Sans MS",cursive;
+  font-size:16px;
+  color:#04342C;
+  line-height:1.15;
+}
+#uf-example-llama-7b .uf-attn-row-detail {
+  margin-top:3px;
+  font-size:12px;
+  color:#5F7C73;
+  font-family:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+
+@keyframes uf-fade {
+  from { opacity:0; transform:translateY(2px); }
+  to   { opacity:1; transform:none; }
+}
+
+#uf-example-llama-7b #uf-example-llama-7b-g0:checked ~ .uf-card .uf-arch-variant-0,#uf-example-llama-7b #uf-example-llama-7b-g0:checked ~ .uf-card .uf-l2-variant-0,#uf-example-llama-7b #uf-example-llama-7b-g0:checked ~ .uf-card .uf-nested-variant-0 { display:block; }
+#uf-example-llama-7b #uf-example-llama-7b-g0:checked ~ .uf-card .uf-group-pill[for='uf-example-llama-7b-g0'] { background:#0F6E56; color:#FFFFFF; }
+</style>
+<input type="radio" name="uf-example-llama-7b-g" id="uf-example-llama-7b-g0" class="uf-group-radio" checked>
+<div class="uf-card">
+
+<input type="checkbox" id="uf-example-llama-7b-msg-warn" class="uf-msg-toggle" hidden>
+<div class="uf-msg-bar uf-msg-bar-warn"><div class="uf-msg-line">Unresolved code-defined facts (drawn honestly, never asserted): parallel norm count — modeling source is present but unresolved.</div></div>
+<div class="uf-header">
+  <div class="uf-name">llama-7b</div>
+  <div class="uf-arch">LlamaForCausalLM</div>
+  <div class="uf-badges"><span class="uf-badge">MHA</span><span class="uf-badge">Gated FFN</span><label for="uf-example-llama-7b-msg-warn" class="uf-badge uf-badge-warn">⚠ unresolved evidence</label></div>
+</div>
+
+<div class="uf-stats"><div class="uf-stat"><div class="uf-stat-key">LAYERS</div><div class="uf-stat-val">32</div></div><div class="uf-stat"><div class="uf-stat-key">HIDDEN</div><div class="uf-stat-val">4,096</div></div><div class="uf-stat"><div class="uf-stat-key">VOCAB</div><div class="uf-stat-val">32,000</div></div><div class="uf-stat"><div class="uf-stat-key">CONTEXT</div><div class="uf-stat-val">2,048</div></div><div class="uf-stat" title="estimate uses conventions for unknowns: embedding-stage normalization not proven — its parameters omitted"><div class="uf-stat-key">PARAMS</div><div class="uf-stat-val">~6.74B*</div></div></div>
+<details class="uf-section uf-section-arch uf-section-collapsible" open><summary class="uf-section-head"><span class="uf-section-label">ARCHITECTURE</span><span class="uf-section-sub">Per-layer block · repeats × 32</span><span class="uf-chevron" aria-hidden="true">›</span></summary><div class="uf-section-body"><div class="uf-arch-variant uf-arch-variant-0"><svg width="100%" viewBox="0 0 720 956" role="img" aria-label="llama-7b architecture" xmlns="http://www.w3.org/2000/svg"><defs><marker id="uf-example-llama-7b-g0-arch-0-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker><filter id="uf-example-llama-7b-g0-arch-0-shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1"/><feOffset dx="0" dy="1" result="off"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="40" y="26" width="640" height="904" rx="18" ry="18" fill="#E1F5EE" stroke="none" stroke-width="0"/><rect x="110" y="200" width="500" height="524" rx="18" ry="18" fill="#9FE1CB" stroke="none" stroke-width="0"/><g class="uf-node" data-id="tok_text"><rect x="250" y="856" width="220" height="44" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="360" y="878">Tokenized text</text></g><g class="uf-node" data-id="embed"><rect x="230" y="788" width="260" height="44" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="360" y="810">Token Embedding layer</text></g><g class="uf-node" data-id="final_rms"><rect x="234.8" y="140" width="250.4" height="36" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="360" y="158">Final RMSNorm</text></g><g class="uf-node" data-id="lm_head"><rect x="176.79999999999998" y="70" width="366.40000000000003" height="44" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="360" y="92">Linear output layer</text></g><g class="uf-node" data-id="rms1"><rect x="280" y="628" width="160" height="36" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="360" y="646">RMSNorm</text></g><g class="uf-node" data-id="attn"><rect x="245" y="524" width="230" height="72" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="360" y="548">Multi-Head</text><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="360" y="572">Attention</text></g><g class="uf-node" data-id="add1"><circle cx="360" cy="478" r="14" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-arch-0-shadow)"/><line x1="355" y1="478" x2="365" y2="478" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" pointer-events="none"/><line x1="360" y1="473" x2="360" y2="483" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" pointer-events="none"/></g><g class="uf-node" data-id="rms2"><rect x="280" y="396" width="160" height="36" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="360" y="414">RMSNorm</text></g><g class="uf-node" data-id="ffn"><rect x="264.8" y="320" width="190.4" height="44" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-arch-0-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="360" y="342">Gated FFN</text></g><g class="uf-node" data-id="add2"><circle cx="360" cy="274" r="14" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-arch-0-shadow)"/><line x1="355" y1="274" x2="365" y2="274" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" pointer-events="none"/><line x1="360" y1="269" x2="360" y2="279" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" pointer-events="none"/></g><line x1="360" y1="856" x2="360" y2="838" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-arch-0-arrow)" fill="none"/><line x1="360" y1="788" x2="360" y2="670" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-arch-0-arrow)" fill="none"/><line x1="360" y1="628" x2="360" y2="602" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-arch-0-arrow)" fill="none"/><line x1="360" y1="524" x2="360" y2="498" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-arch-0-arrow)" fill="none"/><line x1="360" y1="464" x2="360" y2="438" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-arch-0-arrow)" fill="none"/><line x1="360" y1="396" x2="360" y2="370" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-arch-0-arrow)" fill="none"/><line x1="360" y1="320" x2="360" y2="294" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-arch-0-arrow)" fill="none"/><line x1="360" y1="260" x2="360" y2="182" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-arch-0-arrow)" fill="none"/><line x1="360" y1="140" x2="360" y2="120" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-arch-0-arrow)" fill="none"/><line x1="360" y1="70" x2="360" y2="38" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-arch-0-arrow)" fill="none"/><path d="M 360 686 L 570 686 Q 582 686 582 674 L 582 490 Q 582 478 570 478 L 380 478" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-llama-7b-g0-arch-0-arrow)"/><circle cx="360" cy="686" r="3.2" fill="#0F6E56"/><path d="M 360 454 L 570 454 Q 582 454 582 442 L 582 286 Q 582 274 570 274 L 380 274" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-llama-7b-g0-arch-0-arrow)"/><circle cx="360" cy="454" r="3.2" fill="#0F6E56"/><rect x="532" y="212" width="66" height="26" rx="13" ry="13" fill="rgba(255,255,255,0.65)" stroke="#B6DDCB" stroke-width="0.5"/><text text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" x="565" y="225">x 32</text></svg></div></div></details>
+<div class="uf-inspect uf-inspect-panel uf-panel-hint" data-depth="2"><div class="uf-l2-variant uf-l2-variant-0"><div class="uf-card-detail uf-card-hint uf-card-default" data-card-id="default" data-card-size="hint">Click a block above to inspect it</div><div class="uf-card-detail uf-card-tok_text" data-card-id="tok_text" data-card-size="compact"><div class="uf-card-title">Tokenized text</div><div class="uf-card-desc">Input token IDs.</div><div class="uf-card-facts"><span class="uf-fact">shape [batch, seq_len]</span></div></div><div class="uf-card-detail uf-card-embed" data-card-id="embed" data-card-size="compact"><div class="uf-card-title">Token embedding</div><div class="uf-card-desc">Maps each token id to its vector.</div><div class="uf-card-facts"><span class="uf-fact">32,000 vocab</span><span class="uf-fact">4,096-d</span></div></div><div class="uf-card-detail uf-card-rms1" data-card-id="rms1" data-card-size="compact"><div class="uf-card-title">Pre-attention norm</div><div class="uf-card-desc">RMSNorm keeps activation scales stable before attention.</div><div class="uf-card-facts"><span class="uf-fact">dim 4,096</span></div></div><div class="uf-card-detail uf-card-attn" data-card-id="attn" data-card-size="diagram-tall" data-svg-width="764" data-svg-height="946"><div class="uf-card-title">Attention</div><div class="uf-card-desc">Multi-head self-attention — every head attends over the sequence.</div><div class="uf-card-facts"><span class="uf-fact">32 heads</span><span class="uf-fact">head dim 128</span><span class="uf-fact">RoPE θ 10,000</span><span class="uf-fact">bias-free projections</span><span class="uf-fact">QK norm unresolved</span><span class="uf-fact">in/out 4,096</span></div><div class="uf-card-svg"><svg width="100%" viewBox="0 0 764 946" role="img" aria-label="llama-7b attention" xmlns="http://www.w3.org/2000/svg"><defs><marker id="uf-example-llama-7b-g0-attn-1-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker><filter id="uf-example-llama-7b-g0-attn-1-shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1"/><feOffset dx="0" dy="1" result="off"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="16" y="16" width="732" height="914" rx="18" ry="18" fill="#E1F5EE" stroke="none" stroke-width="0"/><g transform="translate(382.0,46.0)"><text text-anchor="middle" dominant-baseline="central" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="13" x="0" y="845">in (4,096)</text><g class="uf-node" data-id="kv_cache"><rect x="-115" y="526" width="230" height="60" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-attn-1-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="0" y="545">K/V cache</text><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="0" y="567">update + read</text></g><g class="uf-cache-ports" pointer-events="none" aria-hidden="true"><circle cx="85" cy="576" r="5.2" fill="#E1F5EE" stroke="#B6DDCB" stroke-width="0.7" pointer-events="none"/><path d="M 82.296 577.144 L 85 573.504 L 87.704 577.144" fill="none" stroke="#0F6E56" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/><circle cx="98" cy="576" r="5.2" fill="#E1F5EE" stroke="#B6DDCB" stroke-width="0.7" pointer-events="none"/><line x1="98" y1="573.4" x2="98" y2="578.184" stroke="#0F6E56" stroke-width="1.45" stroke-linecap="round" pointer-events="none"/><line x1="95.66" y1="578.184" x2="100.34" y2="578.184" stroke="#0F6E56" stroke-width="1.45" stroke-linecap="round" pointer-events="none"/></g><g class="uf-node" data-id="scaled_scores"><rect x="-140" y="350" width="280" height="82" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-attn-1-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="24" pointer-events="none" x="0" y="376.24">Q K^T</text><line x1="-68" y1="392.64" x2="68" y2="392.64" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" pointer-events="none"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="0" y="409.86">sqrt(dim)</text></g><g class="uf-node" data-id="attn_softmax"><rect x="-100" y="274" width="200" height="46" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-attn-1-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="0" y="297">Softmax</text></g><g class="uf-node" data-id="attn_apply_v"><circle cx="0" cy="228" r="14" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-attn-1-shadow)"/><circle cx="0" cy="228" r="5" fill="none" stroke="#FFFFFF" stroke-width="2" pointer-events="none"/></g><g class="uf-node" data-id="concat_heads"><rect x="-112" y="128" width="224" height="54" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-attn-1-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="0" y="155">Concat heads</text></g><g class="uf-node" data-id="o_proj"><rect x="-100" y="48" width="200" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-attn-1-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="0" y="73">Linear (out)</text></g><line x1="0" y1="350" x2="0" y2="326" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-attn-1-arrow)" fill="none"/><line x1="0" y1="274" x2="0" y2="250" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-attn-1-arrow)" fill="none"/><line x1="0" y1="212" x2="0" y2="188" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-attn-1-arrow)" fill="none"/><line x1="0" y1="128" x2="0" y2="104" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-attn-1-arrow)" fill="none"/><line x1="0" y1="48" x2="0" y2="24" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-attn-1-arrow)" fill="none"/><line x1="0" y1="836" x2="0" y2="820" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" fill="none"/><circle cx="0" cy="820" r="3.2" fill="#0F6E56"/><g class="uf-node" data-id="k_proj"><rect x="-336" y="738" width="200" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-attn-1-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="-236" y="763">Linear (K)</text></g><g class="uf-cache-ports" pointer-events="none" aria-hidden="true"><circle cx="-166" cy="778" r="5.2" fill="#E1F5EE" stroke="#B6DDCB" stroke-width="0.7" pointer-events="none"/><path d="M -168.704 779.144 L -166 775.504 L -163.296 779.144" fill="none" stroke="#0F6E56" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/><circle cx="-153" cy="778" r="5.2" fill="#E1F5EE" stroke="#B6DDCB" stroke-width="0.7" pointer-events="none"/><line x1="-153" y1="775.4" x2="-153" y2="780.184" stroke="#0F6E56" stroke-width="1.45" stroke-linecap="round" pointer-events="none"/><line x1="-155.34" y1="780.184" x2="-150.66" y2="780.184" stroke="#0F6E56" stroke-width="1.45" stroke-linecap="round" pointer-events="none"/></g><g class="uf-node" data-id="k_rope"><rect x="-331" y="632" width="190" height="82" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-attn-1-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="-236" y="651">apply RoPE</text><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="-236" y="673">K</text><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="-236" y="695">θ 10000</text></g><path d="M 0 820 L -226 820 Q -236 820 -236 810 L -236 794" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-llama-7b-g0-attn-1-arrow)"/><line x1="-236" y1="738" x2="-236" y2="720" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-attn-1-arrow)" fill="none"/><path d="M -236 632 L -236 622 Q -236 612 -226 612 L -99 612 Q -89 612 -89 602 L -89 592" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-llama-7b-g0-attn-1-arrow)"/><g class="uf-node" data-id="v_proj"><rect x="-100" y="738" width="200" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-attn-1-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="0" y="763">Linear (V)</text></g><g class="uf-cache-ports" pointer-events="none" aria-hidden="true"><circle cx="70" cy="778" r="5.2" fill="#E1F5EE" stroke="#B6DDCB" stroke-width="0.7" pointer-events="none"/><path d="M 67.296 779.144 L 70 775.504 L 72.704 779.144" fill="none" stroke="#0F6E56" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/><circle cx="83" cy="778" r="5.2" fill="#E1F5EE" stroke="#B6DDCB" stroke-width="0.7" pointer-events="none"/><line x1="83" y1="775.4" x2="83" y2="780.184" stroke="#0F6E56" stroke-width="1.45" stroke-linecap="round" pointer-events="none"/><line x1="80.66" y1="780.184" x2="85.34" y2="780.184" stroke="#0F6E56" stroke-width="1.45" stroke-linecap="round" pointer-events="none"/></g><path d="M 0 820 L 0 794" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-llama-7b-g0-attn-1-arrow)"/><line x1="0" y1="738" x2="0" y2="592" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-attn-1-arrow)" fill="none"/><g class="uf-node" data-id="q_proj"><rect x="136" y="738" width="200" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-attn-1-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="236" y="763">Linear (Q)</text></g><g class="uf-node" data-id="q_rope"><rect x="141" y="632" width="190" height="82" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-attn-1-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="236" y="651">apply RoPE</text><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="236" y="673">Q</text><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="236" y="695">θ 10000</text></g><path d="M 0 820 L 226 820 Q 236 820 236 810 L 236 794" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-llama-7b-g0-attn-1-arrow)"/><line x1="236" y1="738" x2="236" y2="720" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-attn-1-arrow)" fill="none"/><path d="M 236 632 L 236 401 Q 236 391 226 391 L 146 391" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-llama-7b-g0-attn-1-arrow)"/></g></svg></div></div><div class="uf-card-detail uf-card-add1" data-card-id="add1" data-card-size="compact"><div class="uf-card-title">Residual add</div><div class="uf-card-desc">block input + attention output</div></div><div class="uf-card-detail uf-card-rms2" data-card-id="rms2" data-card-size="compact"><div class="uf-card-title">Pre-FFN norm</div><div class="uf-card-desc">RMSNorm keeps activation scales stable before the FFN.</div><div class="uf-card-facts"><span class="uf-fact">dim 4,096</span></div></div><div class="uf-card-detail uf-card-ffn" data-card-id="ffn" data-card-size="diagram-compact" data-svg-width="640" data-svg-height="480"><div class="uf-card-title">Gated feed-forward</div><div class="uf-card-desc">Gated MLP — a gate path modulates the up projection before projecting back down.</div><div class="uf-card-facts"><span class="uf-fact">SiLU</span><span class="uf-fact">hidden 11,008</span><span class="uf-fact">split gate/up</span><span class="uf-fact">in/out 4,096</span></div><div class="uf-card-svg"><svg width="100%" viewBox="0 0 640 480" role="img" aria-label="llama-7b feed-forward block" xmlns="http://www.w3.org/2000/svg"><defs><marker id="uf-example-llama-7b-g0-ffn-2-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker><filter id="uf-example-llama-7b-g0-ffn-2-shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1"/><feOffset dx="0" dy="1" result="off"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="16" y="16" width="608" height="448" rx="18" ry="18" fill="#E1F5EE" stroke="none" stroke-width="0"/><g transform="translate(320.0,46.0)"><text text-anchor="middle" dominant-baseline="central" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="13" x="0" y="379">in (4,096)</text><g class="uf-node" data-id="multiply"><circle cx="0" cy="142" r="14" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-ffn-2-shadow)"/><line x1="-5" y1="137" x2="5" y2="147" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" pointer-events="none"/><line x1="-5" y1="147" x2="5" y2="137" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" pointer-events="none"/></g><g class="uf-node" data-id="down_proj"><rect x="-100" y="48" width="200" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-ffn-2-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="0" y="73">Linear (down)</text></g><line x1="0" y1="128" x2="0" y2="104" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-ffn-2-arrow)" fill="none"/><line x1="0" y1="48" x2="0" y2="24" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-ffn-2-arrow)" fill="none"/><line x1="0" y1="370" x2="0" y2="354" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" fill="none"/><circle cx="0" cy="354" r="3.2" fill="#0F6E56"/><g class="uf-node" data-id="gate_proj"><rect x="-218" y="272" width="200" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-ffn-2-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="-118" y="297">Linear (gate)</text></g><g class="uf-node" data-id="activation"><rect x="-218" y="202" width="200" height="46" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-ffn-2-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="-118" y="225">SiLU</text></g><path d="M 0 354 L -108 354 Q -118 354 -118 344 L -118 328" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-llama-7b-g0-ffn-2-arrow)"/><line x1="-118" y1="272" x2="-118" y2="254" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-example-llama-7b-g0-ffn-2-arrow)" fill="none"/><path d="M -118 202 L -118 152 Q -118 142 -108 142 L -20 142" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-llama-7b-g0-ffn-2-arrow)"/><g class="uf-node" data-id="up_proj"><rect x="18" y="272" width="200" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-example-llama-7b-g0-ffn-2-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="118" y="297">Linear (up)</text></g><path d="M 0 354 L 108 354 Q 118 354 118 344 L 118 328" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-llama-7b-g0-ffn-2-arrow)"/><path d="M 118 272 L 118 152 Q 118 142 108 142 L 20 142" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-example-llama-7b-g0-ffn-2-arrow)"/></g></svg></div></div><div class="uf-card-detail uf-card-add2" data-card-id="add2" data-card-size="compact"><div class="uf-card-title">Residual add</div><div class="uf-card-desc">post-attention + FFN output</div></div><div class="uf-card-detail uf-card-final_rms" data-card-id="final_rms" data-card-size="compact"><div class="uf-card-title">Final norm</div><div class="uf-card-desc">RMSNorm over the last hidden state before the output head.</div><div class="uf-card-facts"><span class="uf-fact">dim 4,096</span></div></div><div class="uf-card-detail uf-card-lm_head" data-card-id="lm_head" data-card-size="compact"><div class="uf-card-title">LM head</div><div class="uf-card-desc">Projects the final hidden state into vocabulary logits.</div><div class="uf-card-facts"><span class="uf-fact">4,096 → 32,000</span></div></div></div></div>
+<div class="uf-nested-inspect uf-inspect-panel uf-panel-compact" data-depth="3"><div class="uf-nested-variant uf-nested-variant-0"><div class="uf-card-detail" data-card-id="default" data-card-size="compact"><div class="uf-card-title"></div><div class="uf-card-desc"></div></div><div class="uf-card-detail" data-card-id="q_proj" data-card-size="compact"><div class="uf-card-title">Query projection</div><div class="uf-card-desc">Linear over the hidden state producing the per-head queries.</div><div class="uf-card-facts"><span class="uf-fact">4,096 → 4,096</span><span class="uf-fact">32 Q heads</span><span class="uf-fact">head dim 128</span></div></div><div class="uf-card-detail" data-card-id="k_proj" data-card-size="compact"><div class="uf-card-title">Key projection</div><div class="uf-card-desc">Linear over the hidden state producing the keys.</div><div class="uf-card-facts"><span class="uf-fact">4,096 → 4,096</span><span class="uf-fact">32 KV heads</span><span class="uf-fact">cache ports: ⌃ write · ⊥ read</span></div></div><div class="uf-card-detail" data-card-id="v_proj" data-card-size="compact"><div class="uf-card-title">Value projection</div><div class="uf-card-desc">Linear over the hidden state producing the values.</div><div class="uf-card-facts"><span class="uf-fact">4,096 → 4,096</span><span class="uf-fact">32 KV heads</span><span class="uf-fact">cache ports: ⌃ write · ⊥ read</span></div></div><div class="uf-card-detail" data-card-id="scaled_scores" data-card-size="compact"><div class="uf-card-title">Scaled attention scores</div><div class="uf-card-desc">Per head: QK^T / sqrt(dim) — dot-product scores scaled for numerical stability.</div><div class="uf-card-facts"><span class="uf-fact">32 Q heads</span><span class="uf-fact">32 KV heads</span><span class="uf-fact">1 Q per KV head</span></div></div><div class="uf-card-detail" data-card-id="attn_softmax" data-card-size="compact"><div class="uf-card-title">Softmax weights</div><div class="uf-card-desc">Normalize each query row into attention weights over source tokens.</div></div><div class="uf-card-detail" data-card-id="attn_apply_v" data-card-size="compact"><div class="uf-card-title">Matrix multiplication</div><div class="uf-card-desc">Matrix-multiplies the softmax attention weights by V (weights · V) — one context vector per head.</div></div><div class="uf-card-detail" data-card-id="concat_heads" data-card-size="compact"><div class="uf-card-title">Concatenate heads</div><div class="uf-card-desc">Stack the per-head context vectors back into one width.</div><div class="uf-card-facts"><span class="uf-fact">32 × 128</span><span class="uf-fact">→ 4,096</span></div></div><div class="uf-card-detail" data-card-id="o_proj" data-card-size="compact"><div class="uf-card-title">Output projection</div><div class="uf-card-desc">Linear mixing information across heads, back to the residual width.</div><div class="uf-card-facts"><span class="uf-fact">4,096 → 4,096</span></div></div><div class="uf-card-detail" data-card-id="kv_cache" data-card-size="compact"><div class="uf-card-title">K/V cache update and read</div><div class="uf-card-desc">Writes the newly projected key and value lanes into the caller's cache object and uses the returned accumulated K/V lanes for the selected attention computation. The node is shown only when this exact source path is proven.</div><div class="uf-card-facts"><span class="uf-fact">stores key + value</span><span class="uf-fact">source-proven cache path</span></div></div><div class="uf-card-detail" data-card-id="q_rope" data-card-size="compact"><div class="uf-card-title">Apply RoPE (Q)</div><div class="uf-card-desc">Rotary position embedding applied to the query heads before the scores. The exact initialized frequency base is θ=10000.</div><div class="uf-card-facts"><span class="uf-fact">frequency base θ=10000</span></div></div><div class="uf-card-detail" data-card-id="k_rope" data-card-size="compact"><div class="uf-card-title">Apply RoPE (K)</div><div class="uf-card-desc">Rotary position embedding applied to the key heads before the scores. The exact initialized frequency base is θ=10000.</div><div class="uf-card-facts"><span class="uf-fact">frequency base θ=10000</span></div></div><div class="uf-card-detail" data-card-id="gate_proj" data-card-size="compact"><div class="uf-card-title">Gate projection</div><div class="uf-card-desc">Linear producing the gate path (through SiLU).</div><div class="uf-card-facts"><span class="uf-fact">4,096 → 11,008</span></div></div><div class="uf-card-detail" data-card-id="up_proj" data-card-size="compact"><div class="uf-card-title">Up projection</div><div class="uf-card-desc">Linear into the FFN's inner width.</div><div class="uf-card-facts"><span class="uf-fact">4,096 → 11,008</span></div></div><div class="uf-card-detail" data-card-id="activation" data-card-size="compact"><div class="uf-card-title">SiLU</div><div class="uf-card-desc">Element-wise non-linearity applied to the gate path.</div></div><div class="uf-card-detail" data-card-id="multiply" data-card-size="compact"><div class="uf-card-title">Gate product</div><div class="uf-card-desc">SiLU(gate) × up — combines the gated and ungated paths.</div></div><div class="uf-card-detail" data-card-id="down_proj" data-card-size="compact"><div class="uf-card-title">Down projection</div><div class="uf-card-desc">Linear back to the residual width.</div><div class="uf-card-facts"><span class="uf-fact">11,008 → 4,096</span></div></div></div></div>
+<details class="uf-section uf-section-collapsible"><summary class="uf-section-head"><span class="uf-section-label">LAYER MAP</span><span class="uf-section-sub">All layers structurally identical</span><span class="uf-chevron" aria-hidden="true">›</span></summary><div class="uf-section-body"><svg width="100%" viewBox="0 0 720 240" role="img" aria-label="llama-7b layer map" xmlns="http://www.w3.org/2000/svg"><defs><marker id="uf-example-llama-7b-map-3-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker><filter id="uf-example-llama-7b-map-3-shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1"/><feOffset dx="0" dy="1" result="off"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><defs><pattern id="uf-uf-example-llama-7b-hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="none"/><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(255,255,255,0.55)" stroke-width="2"/></pattern></defs><rect x="40" y="30" width="640" height="180" rx="18" ry="18" fill="#FFFFFF" stroke="#B6DDCB" stroke-width="0.5"/><rect x="80" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="97.5" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="115" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="132.5" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="150" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="167.5" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="185" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="202.5" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="220" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="237.5" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="255" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="272.5" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="290" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="307.5" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="325" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="342.5" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="360" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="377.5" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="395" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="412.5" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="430" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="447.5" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="465" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="482.5" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="500" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="517.5" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="535" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="552.5" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="570" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="587.5" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="605" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="622.5" y="90" width="17" height="36" fill="#0F6E56" opacity="0.95"/><rect x="80" y="90" width="560" height="36" fill="none" stroke="#04342C" stroke-width="0.4" rx="4" ry="4"/><text text-anchor="middle" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="12" x="88.75" y="142">L0</text><text text-anchor="middle" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="12" x="631.25" y="142">L31</text><text fill="#04342C" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="600" x="80" y="70">32 layers - 1 type</text><rect x="80" y="161" width="12" height="12" fill="#0F6E56" rx="2"/><text dominant-baseline="central" fill="#04342C" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, sans-serif" font-size="14" x="98" y="170">MHA + Gated FFN (causal · RoPE)  ·  L0–L31 · 32×</text></svg></div></details>
+
+</div>
+
+<script>
+(function() {
+  var root = document.getElementById('uf-example-llama-7b');
+  if (!root) return;
+
+  var l1 = root.querySelectorAll('.uf-section-arch .uf-node');
+  if (!l1.length) l1 = root.querySelectorAll('.uf-section-body .uf-node');
+  var panels = Array.prototype.slice.call(root.querySelectorAll('.uf-inspect-panel'));
+  var panelSizes = [
+    'uf-panel-hint',
+    'uf-panel-compact',
+    'uf-panel-list',
+    'uf-panel-diagram-compact',
+    'uf-panel-diagram',
+    'uf-panel-diagram-tall'
+  ];
+
+  function sourcePanelFor(index) {
+    return index === 0 ? root.querySelector('.uf-section-arch') : panels[index - 1];
+  }
+
+  function sourceNodesFor(index) {
+    var source = sourcePanelFor(index);
+    if (!source) return [];
+    if (index === 0) return Array.prototype.slice.call(l1);
+    return Array.prototype.slice.call(source.querySelectorAll('.uf-card-svg .uf-node'));
+  }
+
+  function selectedClassFor(index) {
+    return index === 0 ? 'uf-selected' : 'uf-nested-selected';
+  }
+
+  function setPanelSize(panel, card) {
+    if (!panel) return;
+    panelSizes.forEach(function(cls) { panel.classList.remove(cls); });
+    var size = card && card.getAttribute('data-card-size') ? card.getAttribute('data-card-size') : 'compact';
+    panel.classList.add('uf-panel-' + size);
+    if (card && card.getAttribute('data-svg-width')) {
+      panel.style.setProperty('--uf-card-svg-width', card.getAttribute('data-svg-width'));
+      panel.style.setProperty('--uf-card-svg-height', card.getAttribute('data-svg-height') || '');
+    } else {
+      panel.style.removeProperty('--uf-card-svg-width');
+      panel.style.removeProperty('--uf-card-svg-height');
+    }
+  }
+
+  function clearPanelsFrom(index) {
+    for (var i = index; i < panels.length; i++) {
+      if (i > 0) panels[i].classList.remove('uf-nested-active');
+      panels[i].querySelectorAll('.uf-card-detail[data-card-id]').forEach(function(p) {
+        p.style.display = 'none';
+      });
+      setPanelSize(panels[i], null);
+      sourceNodesFor(i).forEach(function(n) {
+        n.classList.remove(selectedClassFor(i));
+      });
+    }
+  }
+
+  function showPanel(index, id) {
+    clearPanelsFrom(index + 1);
+    var panel = panels[index];
+    if (!panel) return;
+
+    var selectedClass = selectedClassFor(index);
+    sourceNodesFor(index).forEach(function(n) {
+      if (n.getAttribute('data-id') === id) n.classList.add(selectedClass);
+      else n.classList.remove(selectedClass);
+    });
+
+    var found = false;
+    var activeCard = null;
+    panel.querySelectorAll('.uf-card-detail[data-card-id]').forEach(function(p) {
+      var active = p.getAttribute('data-card-id') === id;
+      p.style.display = active ? 'block' : 'none';
+      if (active) {
+        found = true;
+        if (!activeCard) activeCard = p;
+      }
+    });
+
+    if (id === 'default' || !found) {
+      if (index > 0) panel.classList.remove('uf-nested-active');
+      if (!found) {
+        sourceNodesFor(index).forEach(function(n) {
+          n.classList.remove(selectedClass);
+        });
+      }
+      setPanelSize(panel, activeCard);
+    } else {
+      if (index > 0) panel.classList.add('uf-nested-active');
+      setPanelSize(panel, activeCard);
+    }
+  }
+
+  l1.forEach(function(n) {
+    n.style.cursor = 'pointer';
+    n.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (n.classList.contains('uf-selected')) { showPanel(0, 'default'); }
+      else { showPanel(0, n.getAttribute('data-id')); }
+    });
+  });
+
+  root.querySelectorAll('.uf-card-svg .uf-node').forEach(function(n) {
+    n.style.cursor = 'pointer';
+  });
+
+  root.addEventListener('click', function(e) {
+    var node = e.target.closest ? e.target.closest('.uf-card-svg .uf-node') : null;
+    if (!node || !root.contains(node)) return;
+
+    var sourcePanel = node.closest('.uf-inspect-panel');
+    var index = panels.indexOf(sourcePanel) + 1;
+    if (index <= 0 || index >= panels.length) return;
+
+    e.stopPropagation();
+    if (node.classList.contains('uf-nested-selected')) { showPanel(index, 'default'); }
+    else { showPanel(index, node.getAttribute('data-id')); }
+  });
+})();
+</script>
+
+</div>
+</div>
+</body>
+</html>

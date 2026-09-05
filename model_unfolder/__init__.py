@@ -23,8 +23,12 @@ from .errors import (
     ModelAccessError,
     ConfigParseError,
 )
+from importlib.metadata import PackageNotFoundError, version as _package_version
 
-__version__ = "0.2.15"
+try:
+    __version__ = _package_version("model-unfolder")
+except PackageNotFoundError:  # source checkout not installed as a distribution
+    __version__ = "unknown"
 
 __all__ = [
     "unfold",

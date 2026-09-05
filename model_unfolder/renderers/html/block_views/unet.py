@@ -30,14 +30,22 @@ def _text_source_label(ir: dict):
     one box is correct, but the label shows it is the concatenation of the N
     encoders, answering 'where did the second CLIP go?'."""
     extras = ir.get("extras") or {}
-    encs = (extras.get("diffusion") or {}).get("text_encoders") or []
+    diff = extras.get("diffusion") or {}
+    encs = diff.get("text_encoders") or []
+    cond = diff.get("conditioning") or {}
+    modality = cond.get("kv_modality")
+    # F1: when the declared cross-attention K/V is NOT text (image_proj / hint /
+    # unknown), the source label is the resolved modality's own — never "Encoded
+    # text" for a component the pipeline conditions on differently.
+    if modality and modality != "text":
+        return cond.get("kv_label") or "External conditioning"
     # The cross-attention width is a dim — it belongs on a card/chip, never on the
     # block label (design policy). The label shows only the structural origin: the
     # concatenation of N text encoders ("where did the second CLIP go?").
     if len(encs) >= 2:
         fam = "CLIP" if all("CLIP" in str(e) for e in encs) else "encoders"
         return ["Encoded text", f"{len(encs)}× {fam} (concat)"]
-    return "Encoded text"
+    return cond.get("kv_label") or "Encoded text"
 
 
 def build_unet_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
@@ -77,27 +85,45 @@ def build_unet_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
         down_g.append(stage(LX, y + DOWN_DROP, down[i], "down_stage"))
     regions += down_g + up_g
 
+    # F2: the mid (bottleneck) box is drawn ONLY when the denoiser class
+    # constructs one — a Kandinsky3-shape conv-U (conv_in -> down -> up -> conv_out,
+    # no bottleneck) draws NO mid, and the deepest down stage connects straight
+    # across to the deepest up stage.
+    has_mid = bool(mid)
     mid_cx = (LX + RX) / 2
-    mid_y = down_g[n - 1]["bottom"] + 26
-    mid_g = _box(parts, mid_cx, mid_y, sw + 44, sh, _stage_title(mid, "mid_stage"), shadow_id,
-                 resolved=mid.get("diffusion_part_kind") in DIFFUSION_PART_KINDS,
-                 node_id="unet_mid")
-    regions.append(mid_g)
+    if has_mid:
+        mid_y = down_g[n - 1]["bottom"] + 26
+        mid_g = _box(parts, mid_cx, mid_y, sw + 44, sh, _stage_title(mid, "mid_stage"), shadow_id,
+                     resolved=mid.get("diffusion_part_kind") in DIFFUSION_PART_KINDS,
+                     node_id="unet_mid")
+        regions.append(mid_g)
+        cross_y = mid_g["cy"]
+    else:
+        mid_g = None
+        cross_y = down_g[n - 1]["bottom"] + 26
 
     # --- DOWN path: conv_in -> down stages -> mid (the resolution change per
     # stage lives on the cards + the denoiser description, not on the diagram). ---
     parts.append(_v_seg(LX, conv_in["bottom"], down_g[0]["top"] - 6, arrow_id))
     for i in range(n - 1):
         parts.append(_v_seg(LX, down_g[i]["bottom"], down_g[i + 1]["top"] - 6, arrow_id))
-    parts.append(_path(f"M {LX} {down_g[n-1]['bottom']} L {LX} {mid_g['cy']} L {mid_g['left'] - 6} {mid_g['cy']}", arrow_id))
+    if has_mid:
+        parts.append(_path(f"M {LX} {down_g[n-1]['bottom']} L {LX} {cross_y} L {mid_g['left'] - 6} {cross_y}", arrow_id))
 
     # --- UP path: at EACH up stage, the skip from the matching down stage and the
     # features coming up from below MERGE at a concat connector (‖) just below the
     # stage, then go on up into it.  UNet skips concatenate along the channel axis
     # — two arrows in, one out; solid lines, ⊕ reserved for addition. ---
-    parts.append(_path(  # mid -> below the bottom up stage (into its concat)
-        f"M {mid_g['right']} {mid_g['cy']} L {RX} {mid_g['cy']} "
-        f"L {RX} {up_g[n-1]['bottom'] + MERGE_DROP + 11}", arrow_id))
+    if has_mid:
+        parts.append(_path(  # mid -> below the bottom up stage (into its concat)
+            f"M {mid_g['right']} {cross_y} L {RX} {cross_y} "
+            f"L {RX} {up_g[n-1]['bottom'] + MERGE_DROP + 11}", arrow_id))
+    else:
+        # no bottleneck: deepest down stage flows straight across to the deepest
+        # up stage's concat entry (the U's floor is a plain crossover).
+        parts.append(_path(
+            f"M {LX} {down_g[n-1]['bottom']} L {LX} {cross_y} L {RX} {cross_y} "
+            f"L {RX} {up_g[n-1]['bottom'] + MERGE_DROP + 11}", arrow_id))
     for i in range(n):
         b = up_g[i]
         my = b["bottom"] + MERGE_DROP              # == down_g[i] centre → straight skip
@@ -137,13 +163,17 @@ def _draw_text_conditioning(parts, regions, shadow_id, arrow_id, u, down, up,
     n = len(down)
     down_attn = [g for i, g in enumerate(down_g) if down[i].get("attn")]
     up_attn = [g for i, g in enumerate(up_g) if up[n - 1 - i].get("attn")]
-    mid_attn = bool(mid.get("attn"))
+    mid_attn = bool(mid.get("attn")) and mid_g is not None
     if not cad or not (down_attn or up_attn or mid_attn):
         return
 
     mid_cx = (LX + RX) / 2
     tb_h = 56.0 if isinstance(text_label, (list, tuple)) else 48.0
-    tb = _box(parts, mid_cx, mid_g["bottom"] + 44, 252.0, tb_h, text_label,
+    # Anchor the conditioning source below the bottleneck; with no mid block the
+    # floor of the U is the deepest down/up row.
+    floor = (mid_g["bottom"] if mid_g is not None
+             else max(down_g[n - 1]["bottom"], up_g[n - 1]["bottom"]))
+    tb = _box(parts, mid_cx, floor + 44, 252.0, tb_h, text_label,
               shadow_id, node_id="unet_text_cond")
     regions.append(tb)
     cy = tb["cy"]
@@ -200,23 +230,31 @@ def build_unet_stage_view(ir: dict, info: dict, mount_id: str, block: dict) -> s
     # resnet / transformer cards (matching _unet_stage_children), not the first
     # stage's deduped card.
     sid = block.get("id") or "unet_stage"
+    # F2: only a source-proven Transformer2D stage draws the "Transformer block";
+    # SimpleCrossAttn / code-defined / unresolved stages draw a plain attention
+    # cell (its card id is {sid}__crossattn), NEVER a fabricated Transformer2D.
+    akind = d.get("attn_kind")
+    tf2d = akind == "transformer2d"
+    attn_id = f"{sid}__transformer" if tf2d else f"{sid}__crossattn"
+    attn_label = ("Transformer block" if tf2d
+                  else "Attention" if akind == "code_defined"
+                  else "Cross-attention")
 
     if direction is None and d.get("attn"):
-        # Mid block: ResNet₀ → Transformer → ResNet₁ (UNetMidBlock2DCrossAttn.forward)
+        # Mid block: ResNet₀ → [attn] → ResNet₁ (UNetMidBlock2D*.forward)
         # Shown as a sequential ``pre`` chain — no repeat frame, no ×N badge.
         spec = {
             "source": {"id": "unet_stage_in", "label": f"in ({ch:,} ch)" if ch else "in"},
             "pre": [
                 {"id": f"{sid}__resnet_pre", "kind": "norm", "label": "ResNet block", **op},
-                {"id": f"{sid}__transformer", "kind": "attention",
-                 "label": "Transformer block", **op},
+                {"id": attn_id, "kind": "attention", "label": attn_label, **op},
                 {"id": f"{sid}__resnet_post", "kind": "norm", "label": "ResNet block", **op},
             ],
             "output": {"id": "unet_stage_out"},
             "side_inputs": [{
                 "node": {"id": "unet_stage_text", "kind": "embedding",
                          "label": _text_source_label(ir), "w": 210},
-                "target": f"{sid}__transformer",
+                "target": attn_id,
             }],
         }
         graph = tower_graph(spec)
@@ -229,8 +267,7 @@ def build_unet_stage_view(ir: dict, info: dict, mount_id: str, block: dict) -> s
     # the diagram block.
     cell = [{"id": f"{sid}__resnet", "kind": "norm", "label": "ResNet block", **op}]
     if d.get("attn"):
-        cell.append({"id": f"{sid}__transformer", "kind": "attention",
-                     "label": "Transformer block", **op})
+        cell.append({"id": attn_id, "kind": "attention", "label": attn_label, **op})
     post = ([{"id": f"{sid}__{'down' if direction == 'down' else 'up'}sample",
               "kind": "embedding",
               "label": "Downsample" if direction == "down" else "Upsample",
@@ -245,12 +282,12 @@ def build_unet_stage_view(ir: dict, info: dict, mount_id: str, block: dict) -> s
         "output": {"id": "unet_stage_out"},
     }
     if d.get("attn"):
-        # The encoded text enters the Transformer block (its cross-attention) — show
+        # The conditioning enters the attention cell (its cross-attention) — show
         # it feeding in from the side, the same conditioning seen one level up.
         spec["side_inputs"] = [{
             "node": {"id": "unet_stage_text", "kind": "embedding",
                      "label": _text_source_label(ir), "w": 210},
-            "target": f"{sid}__transformer",
+            "target": attn_id,
         }]
     graph = tower_graph(spec)
     return render_graph(graph, info, mount_id, f"unetstage_{block.get('id') or 'x'}",
@@ -260,28 +297,52 @@ def build_unet_stage_view(ir: dict, info: dict, mount_id: str, block: dict) -> s
 
 def build_unet_resnet_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
     """One ResNet block — the actual ResnetBlock2D.forward() cell:
-    in → GroupNorm+SiLU → Conv 3×3 → ⊕ timestep emb → GroupNorm+SiLU → Conv 3×3 → ⊕ → out.
+    in → GroupNorm+activation → Conv 3×3 → ⊕ timestep emb →
+    GroupNorm+activation → Conv 3×3 → ⊕ → out.
 
     The residual bypass (shortcut) goes around the ENTIRE cell from the raw block
     input — not from norm1.  The timestep embedding is injected between conv1 and
-    norm2 (the UNet's conditioning mechanism, as distinct from DiT/AdaLN)."""
-    ch = (block.get("detail") or {}).get("channels")
+    norm2 (the UNet's conditioning mechanism, as distinct from DiT/AdaLN).
+    The activation label is projected from the canonical child card; this renderer
+    never supplies a SiLU/GELU mechanism default."""
+    d = block.get("detail") or {}
+    ch = d.get("channels")
+    temporal = bool(d.get("temporal"))
+    child_by_id = {
+        child.get("id"): child
+        for child in (block.get("children") or [])
+        if isinstance(child, dict)
+    }
+    norm_activation = str(
+        (child_by_id.get("unet_op_norm1") or {}).get("title")
+        or "GroupNorm + Activation"
+    )
     op = {"w": 216, "h": 44}
     # A ResNet block is ONE residual cell, not a repeated stack (the per-stage
     # repeat = layers_per_block is shown one level up, on the stage). So its ops
     # are ``pre`` (a plain chain + residual loop), never a "× N" repeat-frame.
     # residual_from "unet_res_in" (the block's input port): the shortcut bypasses
-    # norm1 + SiLU + conv1 + temb_inject + norm2 + SiLU + conv2 — the whole cell.
+    # norm1 + activation + conv1 + temb_inject + norm2 + activation + conv2.
+    # F3: a spatio-temporal block appends the temporal 1-D-conv branch + AlphaBlender.
+    pre = [
+        {"id": "unet_op_norm1", "kind": "norm",
+         "label": norm_activation, **op},
+        {"id": "unet_op_conv1", "kind": "embedding", "label": "Conv 3×3", **op},
+        {"id": "unet_op_temb", "kind": "residual_add", "label": "⊕ Timestep emb"},
+        {"id": "unet_op_norm2", "kind": "norm",
+         "label": norm_activation, **op},
+        {"id": "unet_op_conv2", "kind": "embedding", "label": "Conv 3×3", **op},
+        {"id": "unet_op_residual", "kind": "residual_add", "residual_from": "unet_res_in"},
+    ]
+    if temporal:
+        pre += [
+            {"id": "unet_op_temporal", "kind": "embedding", "label": "Temporal conv",
+             "sub": "1-D over frames", **op},
+            {"id": "unet_op_alphablend", "kind": "residual_add", "label": "α AlphaBlender"},
+        ]
     graph = tower_graph({
         "source": {"id": "unet_res_in", "label": f"in ({ch:,} ch)" if ch else "in"},
-        "pre": [
-            {"id": "unet_op_norm1", "kind": "norm", "label": "GroupNorm + SiLU", **op},
-            {"id": "unet_op_conv1", "kind": "embedding", "label": "Conv 3×3", **op},
-            {"id": "unet_op_temb", "kind": "residual_add", "label": "⊕ Timestep emb"},
-            {"id": "unet_op_norm2", "kind": "norm", "label": "GroupNorm + SiLU", **op},
-            {"id": "unet_op_conv2", "kind": "embedding", "label": "Conv 3×3", **op},
-            {"id": "unet_op_residual", "kind": "residual_add", "residual_from": "unet_res_in"},
-        ],
+        "pre": pre,
         "output": {"id": "unet_res_out"},
         # The projected timestep embedding enters beside the injection node.
         "side_inputs": [{
@@ -300,16 +361,25 @@ def build_unet_transformer_view(ir: dict, info: dict, mount_id: str, block: dict
     attention / feed-forward view (the same opener a transformer layer uses)."""
     d = block.get("detail") or {}
     t = int(d.get("transformers") or 1)
+    temporal = bool(d.get("temporal"))
     # match the scoped sub-block ids built in _unet_transformer_subblocks
     sid = d.get("prefix") or block.get("id") or "unet"
     op = {"w": 232, "h": 46}
+    cell = [
+        {"id": f"{sid}__selfattn", "kind": "attention", "label": "Self-attention", **op},
+        {"id": f"{sid}__crossattn", "kind": "attention", "label": "Cross-attention (text)", **op},
+        {"id": f"{sid}__ff", "kind": "ffn", "label": "Feed-forward", **op},
+    ]
+    if temporal:
+        # F3: TransformerSpatioTemporalModel — a temporal transformer + AlphaBlender.
+        cell += [
+            {"id": f"{sid}__temporal_tf", "kind": "attention", "label": "Temporal transformer",
+             "sub": "attention over frames", **op},
+            {"id": f"{sid}__temporal_blend", "kind": "residual_add", "label": "α AlphaBlender"},
+        ]
     graph = tower_graph({
         "source": {"id": "unet_tf_in", "label": "in (latent tokens)"},
-        "cell": [
-            {"id": f"{sid}__selfattn", "kind": "attention", "label": "Self-attention", **op},
-            {"id": f"{sid}__crossattn", "kind": "attention", "label": "Cross-attention (text)", **op},
-            {"id": f"{sid}__ff", "kind": "ffn", "label": "Feed-forward", **op},
-        ],
+        "cell": cell,
         "repeat": t,
         "output": {"id": "unet_tf_out"},
         # The encoded text enters beside the cross-attention sub-block — it supplies

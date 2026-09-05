@@ -1,111 +1,133 @@
-# MODEL UNFOLDER
+# Model Unfolder
 
-> your one click model unfolder
-
-[![PyPI](https://img.shields.io/pypi/v/model-unfolder)](https://pypi.org/project/model-unfolder/)
+Turn a Hugging Face model ID or config into an interactive architecture
+explanation. Version **0.3.0** is an honesty and reliability release: it shows
+what the resolved model code and checkpoint config prove, and visibly labels
+what remains unresolved instead of filling gaps with a familiar architecture.
 
 ```python
 from model_unfolder import unfold
-unfold("meta-llama/Meta-Llama-3-8B")
+
+diagram = unfold("meta-llama/Meta-Llama-3-8B")
+diagram                         # renders inline in Jupyter
+diagram.save("model.html")     # standalone interactive HTML
+diagram.save("model.json")     # expanded architecture JSON
 ```
 
 <p align="center">
-  <a href="examples/llama-3-8b.html">
-    <img src="examples/images/llama-3-8b.png" width="540" alt="Meta-Llama-3-8B architecture diagram">
+  <a href="examples/llama-7b.html">
+    <img src="examples/images/llama-7b.png" width="540" alt="Llama architecture diagram">
   </a>
 </p>
-
----
 
 ## Install
 
 ```bash
-pip install model-unfolder
-
-# for local development
-pip install -e .
-pip install transformers   # only required to load by model ID
+pip install model-unfolder==0.3.0
 ```
 
-## Three ways to call it
-
-```python
-from model_unfolder import unfold
-
-# 1) by HuggingFace model ID — only config.json is downloaded, never weights
-unfold("meta-llama/Meta-Llama-3-8B")
-unfold("deepseek-ai/DeepSeek-V3")
-
-# 2) from a transformers AutoConfig
-from transformers import AutoConfig
-unfold(AutoConfig.from_pretrained("Qwen/Qwen2.5-7B", trust_remote_code=True))
-
-# 3) from a raw config.json dict — no transformers install needed
-import json
-unfold(json.load(open("config.json")))
-```
-
-## Built on `transformers`
-
-Pass a model ID and `unfold` calls `transformers.AutoConfig.from_pretrained(model_id)` under the hood ([parser.py](model_unfolder/parser.py)). It only retries with `trust_remote_code=True` when Transformers says the config requires remote code.
-
-## Auth-token from your environment
-
-Gated models (Llama-3, Mistral, Gemma, …) need a HuggingFace token. `unfold` reuses whatever `transformers` / `huggingface_hub` already see:
+The package includes the tested source-reading dependencies. Model weights are
+not downloaded. Gated/private repositories still require a Hugging Face token:
 
 ```bash
-# Either set an env var
-export HF_TOKEN="hf_xxxxxxxx"            # also accepted: HUGGING_FACE_HUB_TOKEN
-
-# or use the CLI cache (persists across sessions)
-huggingface-cli login
-
-# or load a .env in your notebook
-# >>> from dotenv import load_dotenv; load_dotenv()
+export HF_TOKEN="hf_..."
 ```
 
-No extra config in `model_unfolder` itself.
-
-## Save / export
+The library also accepts an already-loaded config or a raw `config.json` dict:
 
 ```python
-diagram = unfold(cfg)
-diagram.save("model.html")   # standalone interactive HTML
-diagram.save("model.json")   # expanded architecture JSON (no rendering)
-diagram.param_count()        # {"total": ..., "active": ..., "per_layer": [...]}
-diagram.to_ir()              # full IR dict
+from transformers import AutoConfig
+from model_unfolder import unfold
+
+unfold(AutoConfig.from_pretrained("Qwen/Qwen3-8B"))
+unfold({"architectures": ["LlamaForCausalLM"], "hidden_size": 4096, ...})
 ```
 
-Param estimates are close to published numbers — DeepSeek-V3 reports `~675B (~41B active)`, Llama-3-8B reports `8.03B`.
+Repository-provided remote Python is not executed in this release. A repository
+that cannot be understood without `trust_remote_code=True` receives a typed,
+actionable refusal rather than an interactive prompt or a guessed diagram.
 
-## Models supported
+## Evidence contract
 
-### Transformers
+Model Unfolder separates three questions:
 
-| Family | Models |
-|---|---|
-| DeepSeek | DeepSeek-V2, DeepSeek-V3 (+ MTP head), Kimi K2 |
-| Llama | Llama 3 / 3.1 / 3.2 / 3.3, OLMo-2, Llama 4 Scout / Maverick (MoE + iRoPE NoPE layers) |
-| Mistral | Mistral 7B, Mixtral 8x7B / 8x22B, Mistral Medium 3.5 |
-| Qwen | Qwen2 / 2.5, Qwen2-MoE, Qwen3, Qwen3-MoE, Qwen3.5 / 3.6 (+ MTP) |
-| Gemma | Gemma 2 9B / 27B (interleaved local+global), Gemma 3 / 3n (+ PLE), Gemma 4 31B / E2B / E4B (+ PLE), RecurrentGemma 2B / 9B (LRU + local attention) |
-| Cohere | Command R, Command R+, Command R7B (QK-Norm attention) |
-| Jamba | Jamba (SSM + attention hybrid, MoE) |
-| Zamba | Zamba 7B, Zamba2 2.7B / 7B (Mamba SSM + weight-shared attention) |
-| Mamba | Mamba 130M–2.8B, Mamba-2 (pure SSM, no attention) |
-| Falcon | Falcon 7B / 40B (parallel attn+FFN), Falcon-H1 (Mamba-2 SSM) |
-| MiniMax | MiniMax-Text-01 (lightning + softmax hybrid, MoE) |
-| RWKV | RWKV-4 / 5 / 6 (pure recurrent, no attention) |
+1. **Structure:** every shown component or relation must have an owner.
+2. **Mechanism:** it comes from the model's resolved code; unknown mechanisms
+   remain visibly unresolved.
+3. **Values:** numbers come from an exact config path, constructor expression,
+   or parameter shape.
 
-### Diffusors
+The flow is one-way: resolved sources and config values produce typed facts;
+facts produce the canonical IR; renderers only present it. A class name, model
+ID, config flag, renderer convention, or missing trace cannot silently select
+architecture.
 
-Coming soon.
+## Published coverage
 
-### Custom
+[`coverage.json`](coverage.json) is the machine-readable denominator for this
+release. Across its 29 reviewed corpus witnesses and 15 frozen unseen-model
+checks, the exact S4 receipt is:
 
-Drop a request in issues.
+| Proven | Visibly flagged | Silent |
+|---:|---:|---:|
+| **621** | **241** | **0** |
 
+`flagged` is not a hidden success: the drawing tells the reader which evidence
+is unresolved. `silent = 0` means no known blocking audit result or crash is
+hidden from the product. These counts measure the frozen inputs in
+`coverage.json`; they are not a promise that every Hugging Face model is fully
+understood.
+
+### Reviewed support set (29)
+
+This is exactly the `cohort: "corpus"` set in `coverage.json`:
+
+| | | |
+|---|---|---|
+| AuraFlow-v0.3 | bloom | CogVideoX-5b |
+| dbrx-base | DeepSeek-V3 | FLUX.2-dev |
+| FluxTransformer2DModel | gemma-2-2b-it | GLM-4.5 |
+| gpt-oss-20b | granite-3.0-8b-instruct | HunyuanVideo |
+| llama-7b | LTX-Video | Lumina-Image-2.0 |
+| mochi-1-preview | musicgen-small | OLMo-2-1124-7B |
+| PixArt-Sigma-XL-2-1024-MS | prxpixel-t2i | Qwen-Image |
+| Qwen2-VL-7B-Instruct | Qwen3.5-27B text component | Qwen3-8B |
+| Sana_1600M_1024px_diffusers | stable-diffusion-3.5-large | stable-diffusion-xl-base-1.0 |
+| stablelm-2-1_6b | Wan2.2-T2V-A14B-Diffusers | |
+
+The 15 `cohort: "unseen"` entries are a standing generalization/robustness
+gate, not additions to the reviewed support set.
+
+## Known incomplete structure
+
+- Stable Diffusion 3.5 and PixArt currently show the denoiser shell and an
+  explicit “repeated denoiser structure unresolved” warning; they do not invent
+  a conventional transformer stack.
+- SDXL exposes eleven exact denoiser config reads that are not yet proven into
+  the drawing. The exact rows are available under the warning disclosure.
+- The unseen Jamba control visibly reports that its current attention drawing
+  does not yet match every Mamba/attention layer; the warning is not a fix.
+- Some Qwen3.x multimodal configs preserve the proven text tower while showing
+  `projector evidence unresolved`; no projector mechanism is manufactured.
+- Parameter totals remain estimates until the later instance/parameter-shape
+  authority is connected. Any counting convention used for an unknown is shown.
+
+These are planned evidence gaps, not family-specific exceptions. Future work
+replaces each warning only when a general source/instance proof exists.
+
+## Export and diagnostics
+
+```python
+diagram.to_ir()          # canonical typed architecture, as a dict
+diagram.to_json()        # expanded consumer schema
+diagram.param_count()    # total / active / per-layer estimate
+diagram.warnings         # human summaries of every visible unresolved class
+```
+
+The warning bar presents one readable summary per check. Opening a summary
+reveals the exact audit rows, so friendly wording never erases the evidence
+receipt.
 
 ## License
 
-[Apache 2.0](LICENSE).
+[Apache 2.0](LICENSE)

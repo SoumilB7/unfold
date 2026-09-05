@@ -39,6 +39,9 @@ class Diagram:
             "total_h": humanize(p["total"]),
             "active_h": humanize(p["active"]),
             "is_sparse": p["is_sparse"],
+            # U2: unknown-tier counting conventions ride into the count card —
+            # only-when-present so resolved models stay byte-stable.
+            **({"assumptions": p["assumptions"]} if p.get("assumptions") else {}),
         }
         self._ir_cache = d
         return d
@@ -65,8 +68,19 @@ class Diagram:
 
     @property
     def warnings(self) -> list[str]:
-        """Adapter-emitted warnings — unknown model types, unrecognised layer types, etc."""
-        return list(self.ir.warnings)
+        """Human-readable summaries for every product-visible warning."""
+        from .ir import EvidenceWarning
+        result = []
+        summarized = set()
+        for warning in self.ir.warnings:
+            if isinstance(warning, EvidenceWarning):
+                if warning.check in summarized:
+                    continue
+                summarized.add(warning.check)
+                result.append(f"Unresolved evidence — {warning.summary}")
+            else:
+                result.append(str(warning))
+        return result
 
     def wiring_problems(self) -> list[str]:
         """Dable's dangling-connector flag — first-class, like click-coupling.
@@ -75,7 +89,10 @@ class Diagram:
         (⊕ / × / ⊙) drawn with a missing input (empty list = clean). Treat a
         non-empty result as a build-blocking bug, not a warning."""
         from .renderers.html.render_context import RenderContext, activate_render_context
-        context = RenderContext(theme=self._theme_name())
+        context = RenderContext(
+            theme=self._theme_name(), fact_rows=dict(
+                (self.to_ir().get("extras") or {}).get(
+                    "fact_provenance") or {}))
         self._html_cache.pop(True, None)         # force a fresh render so the detector runs
         with activate_render_context(context):
             self.to_html(standalone=True)
@@ -156,7 +173,10 @@ class Diagram:
             )
             context = current_render_context()
             if context is None:
-                context = RenderContext(theme=self._theme_name())
+                context = RenderContext(
+                    theme=self._theme_name(), fact_rows=dict(
+                        (self.to_ir().get("extras") or {}).get(
+                            "fact_provenance") or {}))
                 with activate_render_context(context):
                     rendered = (
                         render_document(self.to_ir(), self._mount_id) if standalone
@@ -182,5 +202,5 @@ class Diagram:
             + ">"
         )
         if self.ir.warnings:
-            s += "\n" + "\n".join(f"  ⚠ {w}" for w in self.ir.warnings)
+            s += "\n" + "\n".join(f"  ⚠ {w}" for w in self.warnings)
         return s

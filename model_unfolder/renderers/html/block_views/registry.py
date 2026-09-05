@@ -24,7 +24,7 @@ from .attention import (
 )
 from .block_facts import ffn_from_block, info_with_block_fact
 from .declared_ops import build_declared_ops_view
-from .feed_forward import build_dense_ffn_view, build_ffn_view
+from .feed_forward import build_ffn_view
 from .mixture_of_experts import build_moe_expert_view, build_moe_view
 from .moe_router import build_moe_router_view, build_topk_selection_view
 from .dsa_indexer import build_dsa_indexer_view
@@ -36,9 +36,9 @@ from .modalities import (
     build_vision_path_view,
 )
 from .modality_views.audio import build_audio_encoder_view
+from .modality_views.conditioning import build_conditioning_path_view
 from .modality_views.video import build_video_encoder_view
 from .modality_views.vision_details import build_vision_encoder_view
-from .refiner import build_refiner_tower_view
 from .mtp_head import build_mtp_head_view, build_mtp_transformer_block_view
 from .self_conditioning import build_self_conditioning_view
 from .per_layer_embedding import build_per_layer_embedding_view
@@ -152,12 +152,14 @@ def _from_block(fn: Callable[[dict, dict, str, dict], "str | None"]) -> ViewFn:
 
 
 def _render_ffn_detail(ir: dict, info: dict, mount_id: str, block: dict) -> str:
-    """Pick the right FFN detail variant for dense / gated / MoE blocks."""
+    """Render the clicked FFN from its canonical region.
+
+    Dense, gated and unresolved ordinary FFNs deliberately share the same
+    renderer: :func:`ffn_region` is the sole authority for their inner shape.
+    """
     ffn = ffn_from_block(block, info)
     if ffn.get("kind") == "moe":
         return build_moe_view(ir, info, mount_id, block)
-    if view_key(block) == "dense_ffn" or not ffn.get("gated", True):
-        return build_dense_ffn_view(ir, info, mount_id, block)
     return build_ffn_view(ir, info, mount_id, block)
 
 
@@ -191,11 +193,12 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     # Scheduler/sampler step: prediction → scale → combine with z_t → z_{t-1}.
     "scheduler_step": _from_block(build_scheduler_step_view),
     "gated_ffn": _from_block(build_ffn_view),
-    "dense_ffn": _from_block(build_dense_ffn_view),
+    "dense_ffn": _from_block(build_ffn_view),
     # Model-level / path / tower / merge layouts.
     "per_layer_embedding": _from_block(build_per_layer_embedding_view),
     "vision_path": _from_block(build_vision_path_view),
     "audio_path": _from_block(build_audio_path_view),
+    "conditioning_path": _from_block(build_conditioning_path_view),
     "audio_encoder": _from_block(build_audio_encoder_view),
     "video_path": _from_block(build_video_path_view),
     "video_encoder": _from_block(build_video_encoder_view),
@@ -223,6 +226,5 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     "mla_kv_cache_path": _from_block(build_mla_kv_cache_view),
     "moe_expert": _from_block(build_moe_expert_view),
     "vision_encoder": _from_block(build_vision_encoder_view),
-    "refiner_tower": _from_block(build_refiner_tower_view),
     "mtp_transformer_block": _from_block(build_mtp_transformer_block_view),
 }

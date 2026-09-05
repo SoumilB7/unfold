@@ -1,0 +1,62 @@
+{
+  "step": "S2",
+  "measurement_tree_base": "d778d46d6fadfad31427965e8bbfc0b61d422f77",
+  "mode": "one fresh process per target; torch, transformers and diffusers imported before timing",
+  "surface_set": ["ir", "ledgers", "expanded", "params", "html_meta"],
+  "all_surface_hashes_equal_before_after": true,
+  "targets": {
+    "llama-7b": {
+      "before_seconds": 7.483,
+      "after_seconds": 2.810,
+      "speedup": 2.7,
+      "combined_sha256": "58e0de111a5aab80a7d901d3746b743198bb0f4d89322712fdbeb65d7560d62f"
+    },
+    "deepseek-v3": {
+      "before_seconds": 8.284,
+      "after_seconds": 2.843,
+      "speedup": 2.9,
+      "combined_sha256": "8a82cf8d8f5afa9dec2e5839dd3577010f9679eb3bb5aa89024cc019aeb06253"
+    },
+    "qwen2-vl-7b-instruct": {
+      "before_seconds": 34.672,
+      "after_seconds": 3.850,
+      "speedup": 9.0,
+      "combined_sha256": "d2191ff2f44be8e4699f0528217605237c571e0827d29ea53ab90165f4b4014e"
+    },
+    "pixart-sigma-xl-2-1024-ms": {
+      "before_seconds": 17.877,
+      "after_seconds": 3.083,
+      "speedup": 5.8,
+      "combined_sha256": "9f807927da97c0dbfdfabd77e472b8ad33d56c014ba384850723b45079515d09"
+    },
+    "stable-diffusion-3-5-large": {
+      "before_seconds": 27.876,
+      "after_seconds": 3.616,
+      "speedup": 7.7,
+      "combined_sha256": "84756d7d2445a84231e8278f97943244cd2ff12ab3b0728efd5e570d921bc051"
+    },
+    "qwen3-omni-30b": {
+      "before_seconds": 549.712,
+      "after_seconds": 7.010,
+      "speedup": 78.4,
+      "combined_sha256": "6ad29a22d43c1d5e8f657861c952a28148a15770b3922ef7f83f7bd95822137d"
+    },
+    "musicgen-small": {
+      "before_seconds": 99.947,
+      "after_seconds": 4.145,
+      "speedup": 24.1,
+      "combined_sha256": "b1e34cd9581efe4829c534e103842c4cb44e3ea556131aaa78cb3ae4e1b4fcc1"
+    }
+  },
+  "profile": {
+    "target": "llama-7b",
+    "sort": "cumulative",
+    "ast_get_source_segment_rank": null,
+    "ast_get_source_segment_in_top20": false
+  },
+  "budgets": {
+    "path": "verification/latency_budgets.json",
+    "program_index_after_imports_seconds": 5.5,
+    "end_to_end_cold_seconds": 9.0
+  }
+}

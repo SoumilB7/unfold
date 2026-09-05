@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-09-02",
+  "method": "three sequential fresh processes per target; median; one repository measurement process at a time on a 10-core Apple Silicon host",
+  "library_imports_in_budget": false,
+  "library_versions": {
+    "python": "3.12.10",
+    "torch": "2.9.1",
+    "transformers": "5.12.1",
+    "diffusers": "0.38.0"
+  },
+  "program_index_after_imports": {
+    "budget_seconds": 5.5,
+    "budget_basis": "1.31 times the slowest target median (Qwen3-Omni, 4.198 seconds), rounded upward",
+    "samples_seconds": {
+      "llama-7b": [0.273, 0.239, 0.268],
+      "deepseek-v3": [0.267, 0.357, 0.293],
+      "qwen2-vl-7b-instruct": [0.923, 0.945, 1.229],
+      "pixart-sigma-xl-2-1024-ms": [0.268, 0.288, 0.277],
+      "stable-diffusion-3-5-large": [0.573, 0.584, 0.576],
+      "qwen3-omni-30b": [4.198, 3.983, 4.725],
+      "musicgen-small": [1.289, 0.961, 1.667]
+    },
+    "medians_seconds": {
+      "llama-7b": 0.268,
+      "deepseek-v3": 0.293,
+      "qwen2-vl-7b-instruct": 0.945,
+      "pixart-sigma-xl-2-1024-ms": 0.277,
+      "stable-diffusion-3-5-large": 0.576,
+      "qwen3-omni-30b": 4.198,
+      "musicgen-small": 1.289
+    }
+  },
+  "end_to_end_cold": {
+    "budget_seconds": 9.0,
+    "budget_basis": "1.30 times the slowest target median (Qwen3-Omni, 6.919 seconds), rounded upward",
+    "samples_seconds": {
+      "llama-7b": [2.411, 2.471, 2.433],
+      "deepseek-v3": [2.942, 2.837, 2.717],
+      "qwen2-vl-7b-instruct": [3.878, 3.866, 3.830],
+      "pixart-sigma-xl-2-1024-ms": [2.968, 3.119, 3.125],
+      "stable-diffusion-3-5-large": [3.943, 4.181, 3.768],
+      "qwen3-omni-30b": [6.919, 7.292, 6.873],
+      "musicgen-small": [4.127, 4.568, 4.214]
+    },
+    "medians_seconds": {
+      "llama-7b": 2.433,
+      "deepseek-v3": 2.837,
+      "qwen2-vl-7b-instruct": 3.866,
+      "pixart-sigma-xl-2-1024-ms": 3.119,
+      "stable-diffusion-3-5-large": 3.943,
+      "qwen3-omni-30b": 6.919,
+      "musicgen-small": 4.214
+    }
+  }
+}

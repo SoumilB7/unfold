@@ -1,0 +1,76 @@
+{
+  "authority_workers": 3,
+  "commit": "9a4e1e5edd9bcbbdc8254f311ed84367702a3875",
+  "coordinator_fingerprint_after": "266676c087ce815ca58b25437221b1ef4bec10a4bfccd061c621cee944d5bf1e",
+  "coordinator_fingerprint_before": "266676c087ce815ca58b25437221b1ef4bec10a4bfccd061c621cee944d5bf1e",
+  "failed_lanes": [],
+  "focused_workers": 1,
+  "full_workers": 6,
+  "lanes": {
+    "collect": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 10.403,
+      "fingerprint_after": "9e6c815f9e4b489846498b7395be4e53412764bebf7ba5be6e8ebcece076a268",
+      "fingerprint_before": "9e6c815f9e4b489846498b7395be4e53412764bebf7ba5be6e8ebcece076a268",
+      "log": "/private/tmp/model-unfolder-verification/9b8aa77d6b/collect.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "focused": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 442.355,
+      "fingerprint_after": "17b87d3e4d910f96900ebace15fc8ac576a0c97c4ecf148811152c4047bf5324",
+      "fingerprint_before": "17b87d3e4d910f96900ebace15fc8ac576a0c97c4ecf148811152c4047bf5324",
+      "log": "/private/tmp/model-unfolder-verification/9b8aa77d6b/focused.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "full": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 3020.419,
+      "fingerprint_after": "1846a31504997622a93e07197185a3a2e98995f7788190871d61ab99903bdbbc",
+      "fingerprint_before": "1846a31504997622a93e07197185a3a2e98995f7788190871d61ab99903bdbbc",
+      "log": "/private/tmp/model-unfolder-verification/9b8aa77d6b/full.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "preservation": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 587.499,
+      "fingerprint_after": "93691211b802603a0bc74c5183c2cf7083df32b24dbe59f5c752a0ecfe877999",
+      "fingerprint_before": "93691211b802603a0bc74c5183c2cf7083df32b24dbe59f5c752a0ecfe877999",
+      "log": "/private/tmp/model-unfolder-verification/9b8aa77d6b/preservation.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "static": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 0.231,
+      "fingerprint_after": "2dbeae2b05cc578902057ebd0b7ef12895ee988f4983f471de938aaa232a3d93",
+      "fingerprint_before": "2dbeae2b05cc578902057ebd0b7ef12895ee988f4983f471de938aaa232a3d93",
+      "log": "/private/tmp/model-unfolder-verification/9b8aa77d6b/static.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "u2-authority": {
+      "artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+      "duration_seconds": 387.413,
+      "fingerprint_after": "8cf72e2621303dab3f05c51c2dc8a31381661fc0414f94fb7ce5dec09c82509f",
+      "fingerprint_before": "8cf72e2621303dab3f05c51c2dc8a31381661fc0414f94fb7ce5dec09c82509f",
+      "log": "/private/tmp/model-unfolder-verification/9b8aa77d6b/u2-authority.log",
+      "passed": true,
+      "returncode": 0
+    }
+  },
+  "missing_lanes": [],
+  "preservation_workers": 4,
+  "source_artifacts_after": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+  "source_artifacts_before": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+  "wall_seconds": 3467.499
+}

@@ -30,10 +30,13 @@ from .svg import (
     _svg_text,
     _v_line,
     _v_seg,
-    _window_strip,
 )
 from .theme import C, FONT_HEAD, FONT_MONO, GAP
-from .render_context import ensure_render_context
+from .render_context import (
+    RenderContext,
+    activate_render_context,
+    current_render_context,
+)
 
 _FLOW_GAP = 30.0          # vertical gap between consecutive flow nodes
 _GROUP_PAD = 26.0         # padding between a repeat-frame and its members
@@ -66,15 +69,70 @@ def render_graph(
     *,
     min_width: int = 560,
     pad: int = 46,
+    facts_projected=frozenset(),
+    receipts=(),
 ) -> str:
-    context = ensure_render_context()
+    """Render one graph without leaking compatibility state across calls.
+
+    A document render activates its own :class:`RenderContext`, which this
+    function must reuse so all nested graph events reach the same audit rail.
+    A direct graph render has no such owner; give it a context whose lifetime
+    is exactly this call.  Installing an unowned context here used to let one
+    raw graph render contaminate the next unrelated diagram on the same thread
+    (and, in tests, the next case scheduled on an xdist worker).
+    """
+    context = current_render_context()
+    if context is not None:
+        return _render_graph_in_context(
+            graph, info, mount_id, view_key, title,
+            min_width=min_width, pad=pad,
+            facts_projected=facts_projected, receipts=receipts,
+            context=context,
+        )
+
+    context = RenderContext()
+    with activate_render_context(context):
+        return _render_graph_in_context(
+            graph, info, mount_id, view_key, title,
+            min_width=min_width, pad=pad,
+            facts_projected=facts_projected, receipts=receipts,
+            context=context,
+        )
+
+
+def _render_graph_in_context(
+    graph: Graph,
+    info: dict,
+    mount_id: str,
+    view_key: str,
+    title: str,
+    *,
+    min_width: int,
+    pad: int,
+    facts_projected,
+    receipts,
+    context: RenderContext,
+) -> str:
     by_id = graph.by_id()
     for _p in wiring_problems(graph):           # Dable: flag dangling connectors
         context.wiring_findings.append(f"{view_key}: {_p}")
+    # ``facts_projected`` (U2 P4 net #13): the ledger keys this graph visibly
+    # carries — the projection-audit net proves every code/config-proven fact
+    # reached a drawn surface (kills the read-but-never-drawn / granite-
+    # multiplier class).  ``receipts`` (U2) is the authoritative typed channel:
+    # the exact fact targets this graph drew, joined by Net 2 against the
+    # config-consumption obligations.  Both ride the render event, not the SVG.
     context.record_graph(
         view_key,
+        # Render events retain the COMPLETE presentation-kind census.  The
+        # conformance vocabulary classifies ``unknown`` as presentation-only,
+        # just like ports and formula nodes.  Keeping it here is important: an
+        # unknown-only drill with no source closure must still fail as
+        # unresolved instead of disappearing behind an empty event.
         (n.kind for n in graph.nodes),
         (n.id for n in graph.nodes),
+        facts_projected=facts_projected,
+        receipts=receipts,
     )
     arrow_id, shadow_id = _ids(mount_id, view_key)
     parts: list[str] = []
@@ -231,12 +289,9 @@ def _draw_node(parts, info, shadow_id, node, g) -> None:
     elif shape == "formula":
         _formula_block(parts, info, shadow_id, node.data_id(), g["left"], g["top"],
                        g["w"], g["h"],
-                       numerator=node.meta.get("numerator", "Q K^T"),
-                       denominator=node.meta.get("denominator", "sqrt(dim)"),
+                       numerator=node.meta.get("numerator") or "Scores",
+                       denominator=node.meta.get("denominator"),
                        clickable=not node.static)
-    elif shape == "window":
-        _window_strip(parts, g["left"], g["top"], g["w"], g["h"],
-                      node.meta.get("window_size"))
     elif shape == "port":
         heading = node.heading()
         text = heading if isinstance(heading, str) else " ".join(heading)
@@ -248,7 +303,8 @@ def _draw_node(parts, info, shadow_id, node, g) -> None:
     else:
         _rect_block(parts, info, shadow_id, node.data_id(), g["left"], g["top"],
                     g["w"], g["h"], node.heading(), font_size=node.font_size(),
-                    resolved=node.resolved, sub=node.sub, accent=node.glyph().accent,
+                    resolved=node.presentation_resolved(), sub=node.sub,
+                    accent=node.glyph().accent,
                     clickable=not node.static)
         if node.kind == "cache" or node.cache_ports:
             # one convention everywhere: the port pair sits bottom-right

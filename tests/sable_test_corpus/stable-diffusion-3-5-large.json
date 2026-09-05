@@ -1,0 +1,385 @@
+{
+  "checks": {
+    "asserted_facts": true,
+    "click_coupling": true,
+    "config_accessed_unprojected": true,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
+    "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
+    "dangling_connectors": true,
+    "document_boundary_completeness": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "projection_audit": true,
+    "qualified_projection_values": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true,
+    "zero_asserted_census": true
+  },
+  "config": {
+    "_class_name": "SD3Transformer2DModel",
+    "_diffusers_version": "0.31.0.dev0",
+    "_name_or_path": "stabilityai/stable-diffusion-3.5-large",
+    "_pipeline_class_name": "StableDiffusion3Pipeline",
+    "_repo_id": "stabilityai/stable-diffusion-3.5-large",
+    "_scheduler_config": {
+      "_class_name": "FlowMatchEulerDiscreteScheduler",
+      "_diffusers_version": "0.29.0.dev0",
+      "num_train_timesteps": 1000,
+      "shift": 3.0
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_name_or_path": "",
+        "architectures": [
+          "CLIPTextModelWithProjection"
+        ],
+        "attention_dropout": 0.0,
+        "bos_token_id": 0,
+        "chunk_size_feed_forward": 0,
+        "dropout": 0.0,
+        "dtype": "float16",
+        "eos_token_id": 2,
+        "hidden_act": "quick_gelu",
+        "hidden_size": 768,
+        "id2label": {
+          "0": "LABEL_0",
+          "1": "LABEL_1"
+        },
+        "initializer_factor": 1.0,
+        "initializer_range": 0.02,
+        "intermediate_size": 3072,
+        "is_encoder_decoder": false,
+        "label2id": {
+          "LABEL_0": 0,
+          "LABEL_1": 1
+        },
+        "layer_norm_eps": 1e-05,
+        "max_position_embeddings": 77,
+        "model_type": "clip_text_model",
+        "num_attention_heads": 12,
+        "num_hidden_layers": 12,
+        "output_attentions": false,
+        "output_hidden_states": false,
+        "pad_token_id": 1,
+        "problem_type": null,
+        "projection_dim": 768,
+        "return_dict": true,
+        "transformers_version": "5.12.1",
+        "vocab_size": 49408
+      },
+      "text_encoder_2": {
+        "_name_or_path": "",
+        "architectures": [
+          "CLIPTextModelWithProjection"
+        ],
+        "attention_dropout": 0.0,
+        "bos_token_id": 0,
+        "chunk_size_feed_forward": 0,
+        "dropout": 0.0,
+        "dtype": "float16",
+        "eos_token_id": 2,
+        "hidden_act": "gelu",
+        "hidden_size": 1280,
+        "id2label": {
+          "0": "LABEL_0",
+          "1": "LABEL_1"
+        },
+        "initializer_factor": 1.0,
+        "initializer_range": 0.02,
+        "intermediate_size": 5120,
+        "is_encoder_decoder": false,
+        "label2id": {
+          "LABEL_0": 0,
+          "LABEL_1": 1
+        },
+        "layer_norm_eps": 1e-05,
+        "max_position_embeddings": 77,
+        "model_type": "clip_text_model",
+        "num_attention_heads": 20,
+        "num_hidden_layers": 32,
+        "output_attentions": false,
+        "output_hidden_states": false,
+        "pad_token_id": 1,
+        "problem_type": null,
+        "projection_dim": 1280,
+        "return_dict": true,
+        "transformers_version": "5.12.1",
+        "vocab_size": 49408
+      },
+      "text_encoder_3": {
+        "_name_or_path": "",
+        "architectures": [
+          "T5EncoderModel"
+        ],
+        "chunk_size_feed_forward": 0,
+        "classifier_dropout": 0.0,
+        "d_ff": 10240,
+        "d_kv": 64,
+        "d_model": 4096,
+        "decoder_start_token_id": 0,
+        "dense_act_fn": "gelu_new",
+        "dropout_rate": 0.1,
+        "dtype": "float16",
+        "eos_token_id": 1,
+        "feed_forward_proj": "gated-gelu",
+        "id2label": {
+          "0": "LABEL_0",
+          "1": "LABEL_1"
+        },
+        "initializer_factor": 1.0,
+        "is_decoder": false,
+        "is_encoder_decoder": true,
+        "is_gated_act": true,
+        "label2id": {
+          "LABEL_0": 0,
+          "LABEL_1": 1
+        },
+        "layer_norm_epsilon": 1e-06,
+        "model_type": "t5",
+        "num_decoder_layers": 24,
+        "num_heads": 64,
+        "num_layers": 24,
+        "output_attentions": false,
+        "output_hidden_states": false,
+        "output_past": true,
+        "pad_token_id": 0,
+        "problem_type": null,
+        "relative_attention_max_distance": 128,
+        "relative_attention_num_buckets": 32,
+        "return_dict": true,
+        "scale_decoder_outputs": false,
+        "tie_word_embeddings": true,
+        "transformers_version": "5.12.1",
+        "use_cache": true,
+        "vocab_size": 32128
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKL",
+      "_diffusers_version": "0.31.0.dev0",
+      "_name_or_path": "../sdxl-vae/",
+      "act_fn": "silu",
+      "block_out_channels": [
+        128,
+        256,
+        512,
+        512
+      ],
+      "down_block_types": [
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D"
+      ],
+      "force_upcast": true,
+      "in_channels": 3,
+      "latent_channels": 16,
+      "latents_mean": null,
+      "latents_std": null,
+      "layers_per_block": 2,
+      "mid_block_add_attention": true,
+      "norm_num_groups": 32,
+      "out_channels": 3,
+      "sample_size": 1024,
+      "scaling_factor": 1.5305,
+      "shift_factor": 0.0609,
+      "up_block_types": [
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D"
+      ],
+      "use_post_quant_conv": false,
+      "use_quant_conv": false
+    },
+    "attention_head_dim": 64,
+    "caption_projection_dim": 2432,
+    "in_channels": 16,
+    "joint_attention_dim": 4096,
+    "num_attention_heads": 38,
+    "num_layers": 38,
+    "out_channels": 16,
+    "patch_size": 2,
+    "pooled_projection_dim": 2048,
+    "pos_embed_max_size": 192,
+    "qk_norm": "rms_norm",
+    "sample_size": 128,
+    "scheduler": [
+      "diffusers",
+      "FlowMatchEulerDiscreteScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "CLIPTextModelWithProjection"
+    ],
+    "text_encoder_2": [
+      "transformers",
+      "CLIPTextModelWithProjection"
+    ],
+    "text_encoder_3": [
+      "transformers",
+      "T5EncoderModel"
+    ],
+    "tokenizer": [
+      "transformers",
+      "CLIPTokenizer"
+    ],
+    "tokenizer_2": [
+      "transformers",
+      "CLIPTokenizer"
+    ],
+    "tokenizer_3": [
+      "transformers",
+      "T5TokenizerFast"
+    ],
+    "transformer": [
+      "diffusers",
+      "SD3Transformer2DModel"
+    ],
+    "vae": [
+      "diffusers",
+      "AutoencoderKL"
+    ]
+  },
+  "hash_signature": [
+    "10088502b888fffdfd69f79922a29510",
+    "1ec3f091d2a722a6befb49fd9ab084ca",
+    "2d5c868632c7dcb3dc3d884ef24c666b",
+    "34a84fa61b4c3ccdcb8df8be9e2c5f07",
+    "3befedc1225856950fba829d922d261f",
+    "4050c383b35bd78cae6dcc3616615ce2",
+    "4d7cebce3cc717ac8526e0b0de1fe39f",
+    "626429851c3027936a902f9e4eb97ae5",
+    "8bb573b3f2c12f5969ae4a8e092bf3ab",
+    "9680b5f576b615bc5ee7a1dabc19b8ac",
+    "9fff6428457f65c73a86772ff068ba3d",
+    "afa1cd3431a7fff2d571bf186f8a5b57",
+    "b6e394128267fd1d82004c53827a5c48",
+    "c16b7884c315c989c4a017b9fa84ace6",
+    "c73da7543802a9add541c80909f2707f",
+    "ea225848d907dde730d22f0038183b47",
+    "ec6ec25f01ffbd7cea3200ef02101ce9",
+    "f3e46159c1fcc33e83ec6fdbe8da0f2e",
+    "fb684258acc0ad1bce631820fd73366d"
+  ],
+  "model": "stable-diffusion-3.5-large",
+  "proven_facts": [
+    "root.denoiser.diffusion_root_topology"
+  ],
+  "source": "local",
+  "superseded_hash_signature": [
+    "10088502b888fffdfd69f79922a29510",
+    "1ec3f091d2a722a6befb49fd9ab084ca",
+    "2d5c868632c7dcb3dc3d884ef24c666b",
+    "34a84fa61b4c3ccdcb8df8be9e2c5f07",
+    "4050c383b35bd78cae6dcc3616615ce2",
+    "4d7cebce3cc717ac8526e0b0de1fe39f",
+    "626429851c3027936a902f9e4eb97ae5",
+    "8bb573b3f2c12f5969ae4a8e092bf3ab",
+    "9680b5f576b615bc5ee7a1dabc19b8ac",
+    "9fff6428457f65c73a86772ff068ba3d",
+    "afa1cd3431a7fff2d571bf186f8a5b57",
+    "b6e394128267fd1d82004c53827a5c48",
+    "c16b7884c315c989c4a017b9fa84ace6",
+    "c73da7543802a9add541c80909f2707f",
+    "ea225848d907dde730d22f0038183b47",
+    "ec6ec25f01ffbd7cea3200ef02101ce9",
+    "f3e46159c1fcc33e83ec6fdbe8da0f2e",
+    "f5a94559b20cfb308e687a4fdabcad28",
+    "fb684258acc0ad1bce631820fd73366d"
+  ],
+  "view_signature": [
+    {
+      "hash": "10088502b888fffdfd69f79922a29510",
+      "label": "architecture"
+    },
+    {
+      "hash": "34a84fa61b4c3ccdcb8df8be9e2c5f07",
+      "label": "architecture"
+    },
+    {
+      "hash": "3befedc1225856950fba829d922d261f",
+      "label": "denoiser"
+    },
+    {
+      "hash": "afa1cd3431a7fff2d571bf186f8a5b57",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "ec6ec25f01ffbd7cea3200ef02101ce9",
+      "label": "encoder_0_op_ffn"
+    },
+    {
+      "hash": "4050c383b35bd78cae6dcc3616615ce2",
+      "label": "encoder_0_op_selfattn"
+    },
+    {
+      "hash": "9fff6428457f65c73a86772ff068ba3d",
+      "label": "encoder_1"
+    },
+    {
+      "hash": "c16b7884c315c989c4a017b9fa84ace6",
+      "label": "encoder_1_op_ffn"
+    },
+    {
+      "hash": "9680b5f576b615bc5ee7a1dabc19b8ac",
+      "label": "encoder_2"
+    },
+    {
+      "hash": "f3e46159c1fcc33e83ec6fdbe8da0f2e",
+      "label": "encoder_2_g0_op_ffn"
+    },
+    {
+      "hash": "1ec3f091d2a722a6befb49fd9ab084ca",
+      "label": "encoder_2_g0_op_selfattn"
+    },
+    {
+      "hash": "626429851c3027936a902f9e4eb97ae5",
+      "label": "encoder_2_g1_op_selfattn"
+    },
+    {
+      "hash": "b6e394128267fd1d82004c53827a5c48",
+      "label": "scheduler"
+    },
+    {
+      "hash": "ea225848d907dde730d22f0038183b47",
+      "label": "vae_decode"
+    },
+    {
+      "hash": "8bb573b3f2c12f5969ae4a8e092bf3ab",
+      "label": "vae_decoder_block_1"
+    },
+    {
+      "hash": "c73da7543802a9add541c80909f2707f",
+      "label": "vae_decoder_block_2"
+    },
+    {
+      "hash": "4d7cebce3cc717ac8526e0b0de1fe39f",
+      "label": "vae_decoder_block_3"
+    },
+    {
+      "hash": "2d5c868632c7dcb3dc3d884ef24c666b",
+      "label": "vae_decoder_block_4"
+    },
+    {
+      "hash": "fb684258acc0ad1bce631820fd73366d",
+      "label": "vae_mid_block"
+    }
+  ],
+  "visual_evidence": {
+    "gallery_dir": "galleries/stable-diffusion-3-5-large",
+    "manifest": true,
+    "png_count": 19
+  }
+}

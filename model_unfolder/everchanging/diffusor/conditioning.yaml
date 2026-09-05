@@ -1,0 +1,68 @@
+# U11 compatibility-only UNet conditioning display vocabulary.
+#
+# This file is quarantined behind a positively source-proven U-shaped root. It
+# is not used by the U10 denoiser projector and cannot select a DiT/MMDiT
+# topology. U11 must replace these declared enum stories with component/code
+# evidence or delete them; new structural rows are forbidden.
+#
+# A denoiser's conditioning story is DECLARED by two config enums on the UNet /
+# denoiser: `encoder_hid_dim_type` (what the cross-attention keys/values are, and
+# how they are projected before any stage reads them) and `addition_embed_type`
+# (what extra vector is projected and ADDED to the timestep embedding).  The
+# renderer must draw the modality the config declares — an image-conditioned
+# decoder (Kandinsky-2.2: `image_proj`/`image`, no text encoder at all) must NOT
+# be drawn as a text-conditioned model with a fabricated text-encoder tower.
+#
+# This file is the single map from each declared enum value to its human story,
+# so a new dialect is supported by adding a row — no code change.  An UNMAPPED
+# value falls to honest-unknown (pale "external conditioning"), never to text.
+#
+# Block style (`key:` then `field: value` rows) so the built-in loader works
+# without PyYAML.
+
+# encoder_hid_dim_type -> the cross-attention K/V modality + projector.
+#   modality  : text / image / text_image / image_prompt  (what enters K/V)
+#   kv_label  : the label drawn on the external-K/V source box
+#   projector : the encoder_hid_proj module diffusers builds for this type
+#   text      : true when a text encoder is a real component of this story
+encoder_hid_dim_type:
+  text_proj:
+    modality: text
+    kv_label: Encoded text
+    projector: Linear (text_proj)
+    text: true
+  text_image_proj:
+    modality: text_image
+    kv_label: Text + image embeds
+    projector: TextImageProjection
+    text: true
+  image_proj:
+    modality: image
+    kv_label: Image embeds
+    projector: ImageProjection
+    text: false
+  ip_image_proj:
+    modality: image_prompt
+    kv_label: Image-prompt embeds
+    projector: IPAdapterFullImageProjection
+    text: false
+
+# addition_embed_type -> the vector projected and ADDED to the timestep embedding.
+#   modality  : text / image / text_image / image_hint / text_time
+#   add_label : short human wording for the added-conditioning sentence
+addition_embed_type:
+  text:
+    modality: text
+    add_label: a pooled text vector
+  text_image:
+    modality: text_image
+    add_label: a pooled text vector together with the image embedding
+  text_time:
+    modality: text_time
+    add_label: the pooled text vector together with the size/crop/target ("time_ids") embeddings
+  image:
+    modality: image
+    add_label: the image embedding (from the prior)
+  image_hint:
+    modality: image_hint
+    add_label: the image embedding together with a structural hint map

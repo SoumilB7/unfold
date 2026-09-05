@@ -11,13 +11,10 @@ Two ideas keep it open-world (so a *custom* FFN isn't a dead end):
   ``elementwise``, ``norm``, ``route``, ``attention_core``, ``conv``, ``opaque``.
   Variety lives in *composition*, not in new types.  A "custom" FFN is a different
   arrangement of the same ops — never a new enum value, never a ``variant: dict``.
-* A three-tier resolver (see :func:`ffn_region`):
-  1. **config template** — a recognised signature (gated / dense / moe) builds the
-     subgraph from known dims;
-  2. **code-evidence** — when config can't classify it, the AST scan (``evidence/``)
-     supplies the real ops (hook reserved here);
-  3. **opaque** — when neither resolves, a single honest ``opaque`` node labelled
-     from the class name + I/O dims, never a fabricated structure.
+* A fact-driven resolver (see :func:`ffn_region`) builds a detailed subgraph
+  only from a recognised, internally consistent mechanism/storage fact set.
+  Missing, conflicting or unsupported facts produce one typed opaque node;
+  checkpoint configuration never selects a template here.
 
 A ``Region`` is pure structure (ops + edges).  Layout, glyphs, labels, and JSON
 keys are decided by the *projections*, not stored here.
@@ -48,7 +45,7 @@ OP_KINDS = frozenset({
 class Op:
     id: str
     kind: str                          # one of OP_KINDS
-    label: str | None = None
+    label: str | list[str] | None = None
     in_features: int | None = None
     out_features: int | None = None
     fn: str | None = None              # activation name / elementwise op ("mul")
@@ -89,6 +86,57 @@ class Region:
 # FFN resolver — the three tiers
 # ---------------------------------------------------------------------------
 
+_DENSE_FFN_KINDS = frozenset({"dense", "mlp", "ffn"})
+_FFN_STATES = frozenset({
+    "moe", "conv_glu", "mechanism_unresolved", "unsupported",
+    "gating_unresolved", "storage_unresolved", "gated", "dense",
+})
+
+
+def ffn_structure_state(ffn: dict) -> str:
+    """Classify only the independently established FFN structural facts.
+
+    This is the single closed vocabulary consumed by the op graph, labels,
+    metadata and expanded JSON.  It deliberately does not inspect model names,
+    configuration aliases or presentation fields.
+    """
+    kind = ffn.get("kind")
+    if kind == "moe":
+        return "moe"
+    if kind == "conv_glu":
+        return "conv_glu"
+    if kind in (None, "", "unknown"):
+        return "mechanism_unresolved"
+    if kind not in _DENSE_FFN_KINDS:
+        return "unsupported"
+    gated = ffn.get("gated")
+    if gated is None:
+        return "gating_unresolved"
+    storage = ffn.get("projection_mode")
+    if storage not in {"dense", "split", "fused_gate_up"}:
+        return "storage_unresolved"
+    if (gated is False and storage != "dense") or (
+        gated is True and storage not in {"split", "fused_gate_up"}
+    ):
+        return "storage_unresolved"
+    return "gated" if gated else "dense"
+
+
+def ffn_structure_declared(ffn: dict) -> bool:
+    """Compatibility verdict derived from :func:`ffn_structure_state`.
+
+    For MoE, the router mechanism can be known while the expert's inner storage
+    remains opaque.  The whole FFN is therefore declared only when the expert
+    storage fact is independently known.
+    """
+    state = ffn_structure_state(ffn)
+    if state == "moe":
+        return ffn.get("expert_projection_mode") in {
+            "dense", "split", "fused_gate_up",
+        }
+    return state in {"conv_glu", "gated", "dense"}
+
+
 def ffn_region(ffn: dict, hidden: int | None, *, evidence: dict | None = None) -> Region:
     """Resolve a feed-forward block's facts into a canonical :class:`Region`.
 
@@ -97,96 +145,151 @@ def ffn_region(ffn: dict, hidden: int | None, *, evidence: dict | None = None) -
     (MoE has its own resolver; ``evidence`` is the reserved tier-2 hook.)
     """
     kind = ffn.get("kind")
-    inter = ffn.get("expert_intermediate_size") or ffn.get("intermediate_size")
+    state = ffn_structure_state(ffn)
+    inter = (
+        ffn.get("expert_intermediate_size")
+        if kind == "moe"
+        else ffn.get("intermediate_size")
+    )
 
-    if kind == "moe":
+    if state == "moe":
         return _moe_region(ffn, hidden, inter)
 
-    if kind == "conv_glu":
-        return _conv_glu_mlp_region(hidden, inter, ffn.get("activation") or "silu")
+    if state == "conv_glu":
+        # ``conv_glu`` is a mechanism fact.  Its activation is a separate fact;
+        # a missing activation remains the generic activation node.
+        return _conv_glu_mlp_region(hidden, inter, ffn.get("activation"))
 
-    # Honest-unknown: the config declares the block IS a feed-forward and how wide
-    # its inner projection is, but NOT whether it gates (2 vs 3 projections) or
-    # which activation it uses — those live in the model code.  Draw one honest
-    # block with the widths we know, never a fabricated gate-or-not shape.
-    if ffn.get("gated") is None and kind in (None, "dense", "mlp", "ffn"):
-        return _undeclared_ffn(hidden, inter)
+    if state == "mechanism_unresolved":
+        return _undeclared_ffn(hidden, inter, ffn, reason="mechanism")
 
-    # Some callers know that the FFN is gated from config but cannot prove how
-    # the weights are stored (separate gate/up vs fused gate-up) because source
-    # is missing or ambiguous.  Do not silently choose the common split layout.
-    if ffn.get("structure_status") in {"ambiguous", "oracle_missing"}:
+    if state == "unsupported":
+        return _opaque(
+            ffn, hidden, role="ffn",
+            label=[
+                str(ffn.get("class_name") or kind or "Custom FFN"),
+                "unsupported mechanism",
+            ],
+            status="unsupported",
+        )
+
+    if state == "gating_unresolved":
+        return _undeclared_ffn(hidden, inter, ffn, reason="gating")
+    if state == "storage_unresolved":
         return _unresolved_ffn_storage(hidden, inter, ffn)
 
-    # A recognised dense/gated MLP: build from config (tier 1) or from PROVEN
-    # source structure (tier 2 — ``structure_status: "proven"`` is the facts
-    # dialect's spelling of ``source_proven``; one meaning, both honored).
-    structure_proven = bool(ffn.get("source_proven")
-                            or ffn.get("structure_status") == "proven")
-    if kind in (None, "dense", "mlp", "ffn") and (inter is not None or structure_proven):
-        gated = bool(ffn.get("gated", True))
-        act = ffn.get("activation")
-        if not act:
-            # Config-tier builds keep the family convention; a SOURCE-proven
-            # structure with an unnamed activation stays honestly unlabeled —
-            # naming gelu there would be a fabricated fact.
-            act = None if structure_proven else ("silu" if gated else "gelu")
-        if gated and ffn.get("projection_mode") == "fused_gate_up":
-            return _fused_gated_mlp(hidden, inter, act)
-        return _gated_mlp(hidden, inter, act) if gated else _dense_mlp(hidden, inter, act)
-
-    # Tier 3: unrecognised — one honest opaque node, no fabricated internals.
-    return _opaque(ffn, hidden, role="ffn", label=str(ffn.get("class_name") or kind or "Custom FFN"))
+    storage = ffn.get("projection_mode")
+    act = ffn.get("activation")
+    if state == "dense":
+        return _dense_mlp(hidden, inter, act)
+    if storage == "fused_gate_up":
+        return _fused_gated_mlp(
+            hidden, inter, act, ffn.get("activation_formula"))
+    return _gated_mlp(
+        hidden, inter, act, ffn.get("activation_formula"))
 
 
-def _gated_mlp(hidden: int | None, inter: int | None, act: str) -> Region:
+def _gated_mlp(
+        hidden: int | None, inter: int | None, act: str | None,
+        formula: dict | None = None) -> Region:
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("gate_proj", "linear", "Linear (gate)", in_features=hidden, out_features=inter),
         Op("up_proj", "linear", "Linear (up)", in_features=hidden, out_features=inter),
-        Op("activation", "activation", fn=act),
-        Op("multiply", "elementwise", fn="mul"),
-        Op("down_proj", "linear", "Linear (down)", in_features=inter, out_features=hidden),
     ]
+    formula_ops, gate_entry, up_entry = _gated_formula_ops(act, formula)
+    ops.extend((*formula_ops,
+                Op("multiply", "elementwise", fn="mul"),
+                Op("down_proj", "linear", "Linear (down)",
+                   in_features=inter, out_features=hidden)))
     edges = [Edge("hidden", "gate_proj"), Edge("hidden", "up_proj"),
-             Edge("gate_proj", "activation"), Edge("activation", "multiply"),
-             Edge("up_proj", "multiply"), Edge("multiply", "down_proj")]
+             Edge("gate_proj", gate_entry[0]),
+             *gate_entry[1], Edge("activation", "multiply"),
+             Edge("up_proj", up_entry[0]),
+             *up_entry[1],
+             Edge("multiply", "down_proj")]
     return Region("ffn", "ffn", "Gated MLP", ops, edges, template="gated_mlp")
 
 
-def _fused_gated_mlp(hidden: int | None, inter: int | None, act: str) -> Region:
+def _fused_gated_mlp(
+        hidden: int | None, inter: int | None, act: str | None,
+        formula: dict | None = None) -> Region:
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("gate_up_proj", "linear", "Linear (gate + up)", in_features=hidden,
            out_features=(2 * inter if inter else None)),
         Op("gate_up_split", "slice", "Split gate / up"),
-        Op("activation", "activation", fn=act),
-        Op("multiply", "elementwise", fn="mul"),
-        Op("down_proj", "linear", "Linear (down)", in_features=inter, out_features=hidden),
     ]
+    formula_ops, gate_entry, up_entry = _gated_formula_ops(act, formula)
+    ops.extend((*formula_ops,
+                Op("multiply", "elementwise", fn="mul"),
+                Op("down_proj", "linear", "Linear (down)",
+                   in_features=inter, out_features=hidden)))
     edges = [
         Edge("hidden", "gate_up_proj"), Edge("gate_up_proj", "gate_up_split"),
-        Edge("gate_up_split", "activation"), Edge("activation", "multiply"),
-        Edge("gate_up_split", "multiply"), Edge("multiply", "down_proj"),
+        Edge("gate_up_split", gate_entry[0]), *gate_entry[1],
+        Edge("activation", "multiply"),
+        Edge("gate_up_split", up_entry[0]), *up_entry[1],
+        Edge("multiply", "down_proj"),
     ]
     return Region("ffn", "ffn", "Fused gated MLP", ops, edges,
                   template="fused_gated_mlp")
 
 
-#: Sana's GLUMBConv — the code-proven gated CONV Mix-FFN, drawn as its real op
-#: chain (1×1 expand ×2 → depthwise 3×3 → split value/gate → value·act(gate) →
-#: 1×1 project back).  Every op here is named by the class's own forward; the
-#: earlier single-opaque-leaf rendering hid a proven structure (and drew no
-#: input port at all).
-_GLUMBCONV_DESC = (
-    "Sana's GLUMBConv — a GATED CONV Mix-FFN, not a Linear MLP: a 1×1 conv expands "
-    "the width to 2× the inner channels, a depthwise 3×3 conv mixes locally, the "
-    "result splits in half (value · SiLU(gate)), and a 1×1 conv projects back. The "
-    "conv feed-forward paired with linear attention is what makes Sana efficient."
-)
+def _gated_formula_ops(act, formula):
+    """Exact optional gate/up transforms before the canonical multiplication."""
+    formula = formula if isinstance(formula, dict) else {}
+    alpha = formula.get("alpha")
+    activation_label = (
+        f"Swish (β={alpha:g})"
+        if act == "swish" and isinstance(alpha, (int, float)) else None)
+    ops = []
+    gate_first = "activation"
+    gate_edges = []
+    gate_clip = formula.get("gate_clip")
+    if isinstance(gate_clip, (tuple, list)) and len(gate_clip) == 2:
+        lower, upper = gate_clip
+        text = _clip_label(lower, upper)
+        ops.append(Op("gate_clip", "elementwise", text, fn="clamp"))
+        gate_first = "gate_clip"
+        gate_edges.append(Edge("gate_clip", "activation"))
+    ops.append(Op(
+        "activation", "activation", activation_label, fn=act,
+        meta=({"alpha": alpha} if alpha is not None else {})))
+
+    up_first = "multiply"
+    up_last = "multiply"
+    up_edges = []
+    up_clip = formula.get("up_clip")
+    if isinstance(up_clip, (tuple, list)) and len(up_clip) == 2:
+        ops.append(Op(
+            "up_clip", "elementwise", _clip_label(*up_clip), fn="clamp"))
+        up_first = up_last = "up_clip"
+    offset = formula.get("up_offset")
+    if isinstance(offset, (int, float)) and not isinstance(offset, bool):
+        ops.append(Op(
+            "up_offset", "elementwise", f"Add {offset:g}", fn="add",
+            meta={"operand": offset}))
+        if up_first == "multiply":
+            up_first = "up_offset"
+        else:
+            up_edges.append(Edge(up_last, "up_offset"))
+        up_last = "up_offset"
+    if up_last != "multiply":
+        up_edges.append(Edge(up_last, "multiply"))
+    return ops, (gate_first, gate_edges), (up_first, up_edges)
 
 
-def _conv_glu_mlp_region(hidden: int | None, inter: int | None, act: str = "silu") -> Region:
+def _clip_label(lower, upper):
+    if lower is None:
+        return f"Clamp ≤ {upper:g}"
+    if upper is None:
+        return f"Clamp ≥ {lower:g}"
+    return f"Clamp [{lower:g}, {upper:g}]"
+
+
+def _conv_glu_mlp_region(
+        hidden: int | None, inter: int | None, act: str | None) -> Region:
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("conv_in", "conv", "Conv 1×1",
@@ -215,7 +318,8 @@ def _conv_glu_mlp_region(hidden: int | None, inter: int | None, act: str = "silu
                   template="conv_glu", resolved=True)
 
 
-def _dense_mlp(hidden: int | None, inter: int | None, act: str) -> Region:
+def _dense_mlp(
+        hidden: int | None, inter: int | None, act: str | None) -> Region:
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("up_proj", "linear", "Linear (in)", in_features=hidden, out_features=inter),
@@ -227,21 +331,40 @@ def _dense_mlp(hidden: int | None, inter: int | None, act: str) -> Region:
     return Region("ffn", "ffn", "MLP", ops, edges, template="dense_mlp")
 
 
-def _undeclared_ffn(hidden: int | None, inter: int | None) -> Region:
-    """A feed-forward whose inner structure the config does not declare.
-
-    We know it expands the residual width to an inner width and projects back; we
-    do NOT know the gating (2 vs 3 projections) or the activation.  So it is one
-    honest ``opaque`` block carrying the widths — ``resolved=False`` renders it
-    pale, the visual signal for "config-incomplete, not fabricated"."""
-    desc = (
-        "Position-wise feed-forward: expands to an inner width and projects back. "
-        "The config does not declare the inner structure (whether it gates) or the "
-        "activation — those live in the model's code, not its config."
+def _undeclared_ffn(
+        hidden: int | None,
+        inter: int | None,
+        facts: dict,
+        *,
+        reason: str,
+) -> Region:
+    """An opaque FFN carrying only independently established facts."""
+    missing = (
+        "mechanism"
+        if reason == "mechanism"
+        else "gate topology"
     )
-    op = Op("block", "opaque", "Feed-forward",
+    desc = (
+        f"The FFN's {missing} is unresolved from the available source evidence. "
+        "Known width and activation facts are retained, but no gate, up, down, "
+        "multiply, or storage layout is inferred."
+    )
+    status = "mechanism_unresolved" if reason == "mechanism" else "gating_unresolved"
+    label = (
+        ["Feed-forward", "mechanism unresolved"]
+        if reason == "mechanism"
+        else ["Feed-forward", "gating unresolved"]
+    )
+    op = Op("block", "opaque", label,
             in_features=hidden, out_features=hidden,
-            meta={"intermediate_size": inter, "desc": desc})
+            meta={
+                "status": status,
+                "intermediate_size": inter,
+                "activation": facts.get("activation"),
+                "gated": facts.get("gated"),
+                "projection_mode": facts.get("projection_mode"),
+                "desc": desc,
+            })
     return Region("ffn", "ffn", "Feed-forward", [op], [],
                   template="undeclared", source="opaque", resolved=False)
 
@@ -250,14 +373,19 @@ def _unresolved_ffn_storage(hidden: int | None, inter: int | None, facts: dict) 
     gated = facts.get("gated")
     known = "gated" if gated is True else "dense" if gated is False else "feed-forward"
     desc = (
-        f"The {known} FFN is known from config, but its exact projection storage "
-        "could not be resolved from modeling source. It is kept opaque rather "
-        "than inventing separate or fused projection modules."
+        f"The {known} FFN's exact projection storage is unresolved from source "
+        "evidence. It is kept opaque rather than inventing separate, fused, or "
+        "dense projection modules."
     )
     op = Op(
-        "block", "opaque", "Gated FFN" if gated is True else "Feed-forward",
+        "block", "opaque",
+        ["Gated FFN" if gated is True else "Feed-forward", "storage unresolved"],
         in_features=hidden, out_features=hidden,
-        meta={"intermediate_size": inter, "desc": desc},
+        meta={
+            "status": "storage_unresolved",
+            "intermediate_size": inter,
+            "desc": desc,
+        },
     )
     return Region(
         "ffn", "ffn", "Feed-forward", [op], [], template="unresolved_storage",
@@ -267,11 +395,26 @@ def _unresolved_ffn_storage(hidden: int | None, inter: int | None, facts: dict) 
 
 def _moe_region(ffn: dict, hidden: int | None, inter: int | None) -> Region:
     n, k = ffn.get("num_experts"), ffn.get("num_experts_per_tok")
+    expert_mode = ffn.get("expert_projection_mode")
+    expert_gated = (
+        True if expert_mode in {"split", "fused_gate_up"}
+        else False if expert_mode == "dense"
+        else None
+    )
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("router", "route", in_features=hidden, meta={"num_experts": n, "top_k": k}),
-        Op("expert", "opaque", "Expert FFN", meta={"gated": bool(ffn.get("gated", True)),
-                                                   "intermediate_size": inter}),
+        # Routed experts are a separate callable from the ordinary/shared FFN.
+        # Only expert-local storage may determine their gate topology.
+        Op("expert", "opaque", ["Expert FFN", "storage unresolved"], meta={
+            "status": "storage_unresolved" if expert_mode is None else None,
+            "gated": expert_gated,
+            "projection_mode": expert_mode,
+            "intermediate_size": inter,
+            "activation": (
+                (ffn.get("expert_activation_formula") or {}).get("kind")),
+            "activation_formula": ffn.get("expert_activation_formula"),
+        }),
         Op("weighted_sum", "elementwise", fn="add"),
     ]
     edges = [Edge("hidden", "router"), Edge("router", "expert"),
@@ -279,9 +422,16 @@ def _moe_region(ffn: dict, hidden: int | None, inter: int | None) -> Region:
     return Region("ffn", "ffn", "Mixture of experts", ops, edges, template="moe")
 
 
-def _opaque(facts: dict, hidden: int | None, *, role: str, label: str) -> Region:
+def _opaque(
+    facts: dict,
+    hidden: int | None,
+    *,
+    role: str,
+    label: str | list[str],
+    status: str | None = None,
+) -> Region:
     op = Op("block", "opaque", label, in_features=hidden, out_features=hidden,
-            meta={"class_name": facts.get("class_name")})
+            meta={"class_name": facts.get("class_name"), "status": status})
     return Region(role, role, label, [op], [], template="opaque", source="opaque", resolved=False)
 
 
@@ -323,7 +473,9 @@ def attention_region(attn: dict, hidden: int | None, *, evidence: dict | None = 
     fabricated Q/K/V structure.  (``evidence`` is the reserved tier-2 hook.)
     """
     kind = attn.get("kind")
-    if kind in _SDPA_KINDS or kind is None:
+    if kind in (None, "", "unknown"):
+        return _unknown_attention_region(attn, hidden)
+    if kind in _SDPA_KINDS:
         return _sdpa_region(attn, hidden)
     if kind == "mla":
         return _mla_region(attn, hidden)
@@ -341,30 +493,93 @@ def attention_region(attn: dict, hidden: int | None, *, evidence: dict | None = 
                    label=str(attn.get("class_name") or kind or "Custom attention"))
 
 
+def _unknown_attention_region(attn: dict, hidden: int | None) -> Region:
+    """Carry proven geometry without inventing an attention mechanism.
+
+    Head counts and dimensions are useful architectural facts even when the
+    source reader cannot prove how tokens are mixed.  They belong on the opaque
+    node as metadata; they are not permission to draw Q/K/V projections, SDPA,
+    RoPE, cache ports, or an output projection.
+    """
+    geometry = {
+        key: attn.get(key)
+        for key in ("num_heads", "num_kv_heads", "head_dim")
+        if attn.get(key) is not None
+    }
+    label = (
+        "Cross-attention mechanism unresolved"
+        if attn.get("cross_attention")
+        else "Attention mechanism unresolved"
+    )
+    mechanism = Op(
+        "block",
+        "opaque",
+        label,
+        in_features=hidden,
+        out_features=hidden,
+        meta={
+            **geometry,
+            "desc": (
+                "The source evidence does not prove the token-mixing "
+                "mechanism. Known head geometry is retained, but no Q/K/V, "
+                "score, softmax, cache, or position operation is inferred."
+            ),
+        },
+    )
+    ops = [mechanism]
+    edges: list[Edge] = []
+    # Cross-attention placement and its external K/V source are independent
+    # facts from the inner token-mixing mechanism.  Preserve that known input
+    # beside the opaque mechanism; do not require an invented SDPA/QKV graph
+    # merely to show where conditioning enters.
+    if attn.get("cross_attention") and attn.get("cross_kv_source"):
+        ops = [
+            Op("hidden", "input", out_features=hidden),
+            mechanism,
+            Op("cross_attention_states", "input", _cross_kv_label(attn)),
+        ]
+        edges = [
+            Edge("hidden", "block"),
+            Edge("cross_attention_states", "block"),
+        ]
+    return Region(
+        "attention",
+        "attention",
+        label,
+        ops,
+        edges,
+        template="unknown_attention",
+        source="opaque",
+        resolved=False,
+    )
+
+
 def _head_geometry(attn: dict, hidden: int | None) -> tuple[int, int, int, int | None, int | None]:
     heads = attn.get("num_heads") or 0
-    kv_heads = attn.get("num_kv_heads") or heads
-    head_dim = attn.get("head_dim") or ((hidden // heads) if hidden and heads else 0)
+    kv_heads = attn.get("num_kv_heads") or 0
+    # U6 qualification: neither the opgraph nor any later consumer may
+    # reconstruct a withheld source factor as hidden//heads.
+    head_dim = attn.get("head_dim") or 0
     q_w = heads * head_dim if heads and head_dim else None
     kv_w = kv_heads * head_dim if kv_heads and head_dim else None
     return heads, kv_heads, head_dim, q_w, kv_w
 
 
 def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | None,
-                   *, scaled: bool = True,
+                   *, scaled: bool | None = None,
                    scale: float | None = None,
-                   softcap: float | None = None) -> tuple[list[Op], list[Edge]]:
+                   softcap: float | None = None,
+                   output_projected: bool | None = None,
+                   ) -> tuple[list[Op], list[Edge]]:
     """The shared SDPA spine: scores → softmax → ⊙V → concat → out.
 
     ``scaled=False`` is the code-proven "raw QK^T" variant (T5-family folds the
     1/sqrt(d) into initialization and matmuls unscaled scores) — drawing the
     sqrt there would fabricate an op the forward() never performs.
-    ``scale`` is a config-DECLARED constant that REPLACES the default
-    1/sqrt(head_dim) (Granite's attention_multiplier, Gemma-2's
-    query_pre_attn_scalar^-0.5) — the drawn denominator must be the real one,
-    never sqrt(dim) when the code divides by something else.
+    ``scale`` is a declared operand whose APPLICATION was independently proved
+    by ``scaled=True``.  A bare config constant never authors this operation.
     """
-    if scale is not None:
+    if scaled is True and scale is not None:
         inv = 1.0 / scale
         denom = (f"{inv:,.0f}" if abs(inv - round(inv)) < 1e-6 else f"{inv:.4g}")
         scores_meta = {
@@ -375,29 +590,54 @@ def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | Non
                      "1/sqrt(head_dim) — the forward pass multiplies QK^T by "
                      "this declared value."),
         }
-    elif scaled:
+    elif scaled is True:
         scores_meta = {"numerator": "Q K^T", "denominator": "sqrt(dim)",
                        "formula": "QK^T/sqrt(dim)"}
-    else:
+    elif scaled is False:
         scores_meta = {
             "numerator": "Q K^T", "denominator": None, "formula": "QK^T",
             "desc": "Raw dot-product attention scores QK^T — this family folds "
                     "the 1/sqrt(d) scaling into its weight initialization, so "
                     "the forward pass adds no explicit scale."}
+    else:
+        scores_meta = {
+            "numerator": "Q K^T",
+            "status": "unresolved",
+            "desc": "Computes QK^T attention scores. Whether the forward applies "
+                    "an explicit scale is unresolved, so no denominator or "
+                    "scaling formula is asserted.",
+        }
+    output_id = (
+        "o_proj" if output_projected is True
+        else "attention_output_unresolved")
+    output_op = (
+        Op("o_proj", "linear", "Linear (out)",
+           in_features=q_w, out_features=hidden)
+        if output_projected is True else
+        Op(
+            "attention_output_unresolved", "opaque",
+            "Attention output path unresolved",
+            in_features=q_w, out_features=hidden,
+            meta={"status": "unresolved"},
+        ))
     ops = [
-        Op("scaled_scores", "attention_core", fn="scaled_dot_product",
+        Op("scaled_scores", "attention_core",
+           "Attention scores (scaling unresolved)" if scaled is None else None,
+           fn=("scaled_dot_product" if scaled is True
+               else "dot_product"),
            meta=scores_meta),
         Op("attn_softmax", "activation", "Softmax", fn="softmax"),
         Op("attn_apply_v", "elementwise", fn="matmul"),
         # Merging per-head outputs back to model dim is a single-stream RESHAPE,
         # not a two-lane merge — a plain box, never the ‖ concat glyph.
         Op("concat_heads", "reshape", "Concat heads", out_features=q_w),
-        Op("o_proj", "linear", "Linear (out)", in_features=q_w, out_features=hidden),
+        output_op,
     ]
     edges = [Edge("scaled_scores", "attn_softmax"), Edge("attn_softmax", "attn_apply_v"),
-             Edge("attn_apply_v", "concat_heads"), Edge("concat_heads", "o_proj")]
+             Edge("attn_apply_v", "concat_heads"),
+             Edge("concat_heads", output_id)]
     if softcap:
-        # attn_logit_softcapping (Gemma-2): scores/cap → tanh → ×cap runs
+        # Code-bound softcap (Gemma-2): scores/cap → tanh → ×cap runs
         # BETWEEN the scores and the softmax in the forward — a real op, so it
         # is a drawn node on the spine, never a chip-only annotation.
         ops.insert(1, Op(
@@ -422,60 +662,106 @@ def _cross_kv_label(attn: dict) -> list[str]:
     return [str(attn.get("cross_kv_source"))]
 
 
+def _rope_application_proven(attn: dict) -> bool:
+    """Whether this exact attention fact proves Q/K rotary application."""
+    return (
+        attn.get("rope") is True
+        and attn.get("position_kind") == "rope"
+        and attn.get("position_application") == "qk_rotation"
+        and not attn.get("no_rope")
+    )
+
+
 def _sdpa_region(attn: dict, hidden: int | None) -> Region:
-    kind = attn.get("kind") or "mha"
+    kind = attn["kind"]
     heads, kv_heads, head_dim, q_w, kv_w = _head_geometry(attn, hidden)
     cross = bool(attn.get("cross_attention"))
-    # Cache ports show only for autoregressive K/V. `cached` defaults to `not cross`
-    # (causal LMs cache, cross-attn doesn't); an explicit False (diffusion DiT / ViT —
-    # bidirectional, non-AR) suppresses them honestly.
-    _cached = attn.get("cached")
-    cached = (not cross) if _cached is None else bool(_cached)
+    # Cache is an independent mechanism fact. Unknown must not acquire ports
+    # merely because this is self-attention or causal attention.
+    cached = attn.get("cached") is True
 
-    fused_qkv = attn.get("projection_mode") == "fused_qkv"
+    projection_mode = attn.get("projection_mode")
+    fused_qkv = projection_mode == "fused_qkv"
     if fused_qkv:
         ops = [
             Op("hidden", "input", out_features=hidden),
             Op("qkv_proj", "linear", "Linear (QKV)", in_features=hidden),
             Op("q_split", "slice", "Split Q", out_features=q_w),
             Op("k_split", "slice", "Split K", out_features=kv_w,
-               meta={"cached": cached}),
+               meta={"cached": True} if cached else {}),
             Op("v_split", "slice", "Split V", out_features=kv_w,
-               meta={"cached": cached}),
+               meta={"cached": True} if cached else {}),
         ]
-        edges = [
-            Edge("hidden", "qkv_proj"),
-            Edge("qkv_proj", "q_split"), Edge("qkv_proj", "k_split"),
-            Edge("qkv_proj", "v_split"), Edge("v_split", "attn_apply_v"),
+        qkv_source = "qkv_proj"
+        if attn.get("qkv_clip") is not None:
+            clip = attn["qkv_clip"]
+            ops.append(Op(
+                "qkv_clip", "elementwise", f"Clamp Q/K/V ≤ {clip:g}",
+                meta={
+                    "desc": (
+                        "Clamps the exact fused Q/K/V projection before it is "
+                        "split into attention lanes; the bound is supplied by "
+                        "the checkpoint only after source proves this path."),
+                }))
+            qkv_source = "qkv_clip"
+        edges = [Edge("hidden", "qkv_proj")]
+        if qkv_source == "qkv_clip":
+            edges.append(Edge("qkv_proj", "qkv_clip"))
+        edges += [
+            Edge(qkv_source, "q_split"), Edge(qkv_source, "k_split"),
+            Edge(qkv_source, "v_split"), Edge("v_split", "attn_apply_v"),
         ]
         q_source, k_source = "q_split", "k_split"
-    else:
+        v_source = "v_split"
+    elif projection_mode == "split_qkv":
         ops = [
             Op("hidden", "input", out_features=hidden),
             Op("q_proj", "linear", "Linear (Q + gate)" if attn.get("output_gate") else "Linear (Q)",
                in_features=hidden, out_features=q_w),
             Op("k_proj", "linear", "Linear (K)", in_features=hidden, out_features=kv_w,
-               meta={"cached": cached}),
+               meta={"cached": True} if cached else {}),
             Op("v_proj", "linear", "Linear (V)", in_features=hidden, out_features=kv_w,
-               meta={"cached": cached}),
+               meta={"cached": True} if cached else {}),
         ]
         edges = [
             Edge("hidden", "q_proj"), Edge("v_proj", "attn_apply_v"),
         ]
         q_source, k_source = "q_proj", "k_proj"
+        v_source = "v_proj"
+    else:
+        # Known SDPA semantics do not prove how Q/K/V are stored. Preserve the
+        # score/softmax/value spine while keeping the projection stage opaque.
+        ops = [
+            Op("hidden", "input", out_features=hidden),
+            Op(
+                "qkv_projection_unresolved",
+                "opaque",
+                "Q/K/V projections (storage unresolved)",
+                in_features=hidden,
+                meta={"status": "unresolved"},
+            ),
+        ]
+        edges = [
+            Edge("hidden", "qkv_projection_unresolved"),
+            Edge("qkv_projection_unresolved", "attn_apply_v"),
+        ]
+        q_source = k_source = v_source = "qkv_projection_unresolved"
     kv_src = "hidden"
     if cross:
         ops.append(Op("cross_attention_states", "input", _cross_kv_label(attn)))
         kv_src = "cross_attention_states"
     core_ops, core_edges = _sdpa_core_ops(
         heads, head_dim, q_w, hidden,
-        scaled=attn.get("scores_scaled") is not False,
+        scaled=attn.get("scores_scaled"),
         scale=attn.get("scores_scale"),
         softcap=attn.get("logit_softcap"),
+        output_projected=attn.get("output_projection"),
     )
     ops += core_ops
-    if not fused_qkv:
+    if projection_mode == "split_qkv":
         edges += [Edge(kv_src, "k_proj"), Edge(kv_src, "v_proj")]
+    elif projection_mode not in {"split_qkv", "fused_qkv"} and cross:
+        edges.append(Edge(kv_src, "qkv_projection_unresolved"))
     edges += core_edges
     if attn.get("sinks") and not cross:
         # Learned sink logits: an extra per-head column CONCATENATED onto the
@@ -501,6 +787,9 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
             Edge("sink_concat", "attn_softmax"),
         ]
     if attn.get("output_gate"):
+        output_id = (
+            "o_proj" if attn.get("output_projection") is True
+            else "attention_output_unresolved")
         projected_q = q_source
         ops += [
             Op("q_gate_split", "slice", "Split Q / gate"),
@@ -512,10 +801,11 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
             Edge("q_gate_split", "attn_output_gate"),
             Edge("attn_output_gate", "attn_output_mul"),
             Edge("concat_heads", "attn_output_mul"),
-            Edge("attn_output_mul", "o_proj"),
+            Edge("attn_output_mul", output_id),
         ]
         q_source = "q_gate_split"
-    for lane, source_id in (("q", q_source), ("k", k_source), ("v", "v_split" if fused_qkv else "v_proj")):
+    v_final = v_source
+    for lane, source_id in (("q", q_source), ("k", k_source), ("v", v_source)):
         if not attn.get(f"{lane}_norm"):
             continue
         norm_id = f"{lane}_norm"
@@ -530,12 +820,13 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
             edges = [edge for edge in edges
                      if not (edge.src == source_id and edge.dst == "attn_apply_v")]
             edges.append(Edge(norm_id, "attn_apply_v"))
+            v_final = norm_id
     if attn.get("output_gate"):
         # The gated output replaces the ordinary concat-heads -> output
         # projection edge.  Keep this outside the optional Q/K/V-norm loop:
         # an output gate is independent of whether any lane is normalized.
         edges = [edge for edge in edges
-                 if not (edge.src == "concat_heads" and edge.dst == "o_proj")]
+                 if not (edge.src == "concat_heads" and edge.dst == output_id)]
     # A position bias ADDED to the pre-softmax scores is one lane shape with two
     # code-proven flavours: ALiBi (fixed head-specific slopes) and the learned
     # relative bias (T5-family bucketed-distance Embedding).  Same topology,
@@ -574,13 +865,19 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
     # the head and rotates only ``rope_dim`` of ``head_dim`` dims, passing the
     # rest through untouched — drawing a full rotation would fabricate math the
     # forward never performs, so the op states the real fraction.
-    if attn.get("rope", True) and not attn.get("no_rope") and not cross:
+    if _rope_application_proven(attn) and not cross:
         rope_dim = attn.get("rope_dim")
         head_dim = attn.get("head_dim")
         partial = (isinstance(rope_dim, int) and isinstance(head_dim, int)
                    and 0 < rope_dim < head_dim)
         rope_caption = ([f"rot {rope_dim} · pass {head_dim - rope_dim} dims"]
                         if partial else [])
+        if attn.get("rope_theta") is not None:
+            rope_caption.append(f"θ {attn['rope_theta']:g}")
+        initialization = attn.get("rope_initialization")
+        if isinstance(initialization, dict) \
+                and initialization.get("kind") == "imported_registry":
+            rope_caption.append("scaled frequency initialization")
         ops += [
             Op("q_rope", "rope", ["apply RoPE", "Q"] + rope_caption),
             Op("k_rope", "rope", ["apply RoPE", "K"] + rope_caption),
@@ -589,8 +886,29 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
             Edge(q_source, "q_rope"), Edge("q_rope", "scaled_scores"),
             Edge(k_source, "k_rope"), Edge("k_rope", "scaled_scores"),
         ]
+        k_final = "k_rope"
     else:
         edges += [Edge(q_source, "scaled_scores"), Edge(k_source, "scaled_scores")]
+        k_final = k_source
+    if cached and not cross:
+        # Canonical cache authoring lives here—not in expanded JSON.  The
+        # selected source evidence proves the update/read path; projections
+        # merely render this one op on their own surfaces.
+        ops.append(Op(
+            "kv_cache", "cache", ["K/V cache", "update + read"],
+            meta={"stores": ["key", "value"]},
+        ))
+        edges = [
+            edge for edge in edges
+            if not (
+                (edge.src == k_final and edge.dst == "scaled_scores")
+                or (edge.src == v_final and edge.dst == "attn_apply_v"))
+        ]
+        edges += [
+            Edge(k_final, "kv_cache"), Edge(v_final, "kv_cache"),
+            Edge("kv_cache", "scaled_scores"),
+            Edge("kv_cache", "attn_apply_v"),
+        ]
     return Region("attention", "attention", kind, ops, edges, template=kind)
 
 
@@ -599,14 +917,23 @@ def _mla_region(attn: dict, hidden: int | None) -> Region:
     compressed-KV path (both :func:`subgraph` ops with their own regions)
     feeding the shared SDPA spine."""
     heads, _, head_dim, q_w, _ = _head_geometry(attn, hidden)
+    cached = attn.get("cached")
+    kv_label = "KV cache path" if cached is True else "Compressed KV path"
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("mla_query_path", "subgraph", "Query path",
            in_features=hidden, out_features=q_w),
-        Op("mla_kv_path", "subgraph", "KV cache path",
-           in_features=hidden, meta={"cached": True}),
+        Op("mla_kv_path", "subgraph", kv_label,
+           in_features=hidden,
+           meta={"cached": True} if cached is True else {}),
     ]
-    core_ops, core_edges = _sdpa_core_ops(heads, head_dim, q_w, hidden)
+    core_ops, core_edges = _sdpa_core_ops(
+        heads, head_dim, q_w, hidden,
+        scaled=attn.get("scores_scaled"),
+        scale=attn.get("scores_scale"),
+        softcap=attn.get("logit_softcap"),
+        output_projected=attn.get("output_projection"),
+    )
     ops += core_ops
     edges = [
         Edge("hidden", "mla_query_path"), Edge("hidden", "mla_kv_path"),
@@ -638,13 +965,25 @@ def mla_query_region(attn: dict, hidden: int | None) -> Region:
         Op("hidden", "input", out_features=hidden),
         Op("mla_q", "linear", "Query projection",
            in_features=hidden, out_features=q_w, meta={"lora_rank": q_rank}),
+    ]
+    edges = [Edge("hidden", "mla_q")]
+    if not _rope_application_proven(attn):
+        ops.append(Op(
+            "mla_q_position_unresolved", "opaque",
+            "Query position application unresolved",
+            meta={"status": "unresolved"},
+        ))
+        edges.append(Edge("mla_q", "mla_q_position_unresolved"))
+        return Region(
+            "mla_query_path", "attention", "MLA query path",
+            ops, edges, template="mla_query")
+    ops += [
         Op("mla_q_nope", "slice", "Q noPE"),
         Op("mla_q_rope", "slice", "Q RoPE"),
         Op("mla_q_rope_apply", "rope", ["apply RoPE", "Q side"]),
         Op("mla_q_concat", "concat", ["Q concat", "NoPE + RoPE"]),
     ]
-    edges = [
-        Edge("hidden", "mla_q"),
+    edges += [
         Edge("mla_q", "mla_q_nope"), Edge("mla_q", "mla_q_rope"),
         Edge("mla_q_rope", "mla_q_rope_apply"),
         Edge("mla_q_nope", "mla_q_concat"), Edge("mla_q_rope_apply", "mla_q_concat"),
@@ -656,27 +995,57 @@ def mla_kv_region(attn: dict, hidden: int | None) -> Region:
     """The MLA compressed-KV path: compress → latent cache → expand, with the
     RoPE key side-channel branching pre-cache and V leaving as its own output."""
     kv_rank = attn.get("kv_lora_rank")
+    cached = attn.get("cached")
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("mla_kv_down", "linear", "KV compression",
            in_features=hidden, out_features=kv_rank),
-        Op("mla_cache", "cache", ["latent cache c_t", "stored"],
-           meta={"stores": ["kv_latent"]}),
+        Op("mla_latent", "reshape", "Compressed KV latent"),
+    ]
+    edges = [
+        Edge("hidden", "mla_kv_down"),
+        Edge("mla_kv_down", "mla_latent"),
+    ]
+    latent_source = "mla_latent"
+    if cached is True:
+        ops.append(Op("mla_cache", "cache", ["latent cache c_t", "stored"],
+                      meta={"stores": ["kv_latent"]}))
+        edges += [Edge("mla_latent", "mla_cache")]
+        latent_source = "mla_cache"
+    ops += [
         Op("mla_kv_up", "linear", "KV expansion", in_features=kv_rank),
         Op("mla_k_nope", "slice", "K noPE"),
         Op("mla_v", "slice", ["V", "from latent"], meta={"out_label": "V"}),
+    ]
+    edges += [
+        Edge(latent_source, "mla_kv_up"),
+        Edge("mla_kv_up", "mla_k_nope"), Edge("mla_kv_up", "mla_v"),
+    ]
+    if not _rope_application_proven(attn):
+        ops.append(Op(
+            "mla_k_position_unresolved", "opaque",
+            "Key position application unresolved",
+            meta={"status": "unresolved"},
+        ))
+        edges += [
+            Edge("mla_kv_down", "mla_k_position_unresolved"),
+            Edge("mla_k_nope", "mla_k_position_unresolved"),
+        ]
+        return Region(
+            "mla_kv_path", "attention", "MLA compressed KV path",
+            ops, edges, template="mla_kv")
+    ops += [
         Op("mla_k_rope", "slice", "K RoPE"),
         Op("mla_k_rope_apply", "rope", ["apply RoPE", "K side"]),
         Op("mla_k_merge", "concat", ["K concat", "NoPE + RoPE"]),
     ]
-    edges = [
-        Edge("hidden", "mla_kv_down"),
-        Edge("mla_kv_down", "mla_cache"), Edge("mla_cache", "mla_kv_up"),
-        Edge("mla_kv_up", "mla_k_nope"), Edge("mla_kv_up", "mla_v"),
+    edges += [
         Edge("mla_kv_down", "mla_k_rope"), Edge("mla_k_rope", "mla_k_rope_apply"),
         Edge("mla_k_nope", "mla_k_merge"), Edge("mla_k_rope_apply", "mla_k_merge"),
     ]
-    return Region("mla_kv_cache_path", "attention", "MLA KV cache path", ops, edges, template="mla_kv")
+    return Region(
+        "mla_kv_path", "attention", "MLA compressed KV path",
+        ops, edges, template="mla_kv")
 
 
 def _ssm_region(attn: dict, hidden: int | None) -> Region:

@@ -17,7 +17,7 @@ num_single_layers: [num_single_layers, num_single_dit_layers, num_single_blocks]
 num_attention_heads: [num_attention_heads, num_heads, n_heads]
 # KV heads for grouped-query attention (Lumina-Next declares num_kv_heads:8); most
 # DiTs are plain MHA (absent => KV heads == Q heads, set by the parser).
-num_kv_heads: [num_kv_heads, num_key_value_heads, n_kv_heads]
+num_kv_heads: [num_kv_heads, num_key_value_heads, n_kv_heads, num_key_value_attention_heads]
 attention_head_dim: [attention_head_dim, head_dim, attention_dim_head]
 hidden_size: [hidden_size, inner_dim, d_model, dim]
 
@@ -28,7 +28,7 @@ hidden_size: [hidden_size, inner_dim, d_model, dim]
 # Lumina2's fabricated NoPE because this alias was missing axes_dim_rope.
 axes_dims_rope: [axes_dims_rope, axes_dim, axes_dim_rope, rope_axes_dim]
 mrope_section: [mrope_section, rope_sections]
-rope_theta: [rope_theta]
+rope_theta: [rope_theta, theta]   # Lumina2/PRX spell the rotary base "theta"; both also declare axes_dim(_rope), so rope stays axes-driven
 # Learned absolute positions baked into the patch embedding (SD3 / PixArt declare
 # the max grid). Presence => "position from the patch embedding"; its ABSENCE is
 # NOT evidence of NoPE — Flux carries axial RoPE in the model class, not the
@@ -61,7 +61,7 @@ patch_size: [patch_size]
 sample_size: [sample_size]
 
 # FFN width (when declared explicitly; otherwise derived from mlp_ratio * hidden).
-intermediate_size: [intermediate_size, ffn_dim, mlp_dim, inner_dim]
+intermediate_size: [intermediate_size, ffn_dim, mlp_dim]   # REC-4 §10.4: inner_dim REMOVED — in diffusers it is the ATTENTION inner width (heads*head_dim), a rival concept, never an FFN synonym
 mlp_ratio: [mlp_ratio]
 hidden_act: [hidden_act, activation_fn, act_fn]
 

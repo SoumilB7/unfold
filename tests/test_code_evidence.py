@@ -2,8 +2,6 @@
 import os
 import sys
 
-import pytest
-
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from model_unfolder import config_to_ir, inspect_model_code, unfold
@@ -409,206 +407,6 @@ class Llama4TextAttention:
 
 
 # ---------------------------------------------------------------------------
-# Typed positional evidence — model stage + attention stage, config selected
-# ---------------------------------------------------------------------------
-
-
-def test_positional_evidence_real_counterexample_matrix():
-    """The exact regressions which disprove a flat/file-presence detector."""
-    from transformers import AutoConfig
-    from model_unfolder.evidence.position import decoder_positional_evidence
-
-    expected = {
-        "bloom": "alibi",
-        "mpt": "alibi",
-        "gpt2": "learned_absolute",
-        "gpt_neo": "learned_absolute",
-        "opt": "learned_absolute",
-        "gpt_bigcode": "learned_absolute",
-        "openai-gpt": "learned_absolute",
-        "xglm": "fixed_absolute",
-        "ctrl": "fixed_absolute",
-        "gptj": "rope",
-        "llama": "rope",
-        "mistral": "rope",
-        "phi3": "rope",
-        "mixtral": "rope",
-    }
-    seen = 0
-    for model_type, kind in expected.items():
-        try:
-            cfg = AutoConfig.for_model(model_type).to_dict()
-        except (KeyError, ValueError):
-            continue
-        evidence = decoder_positional_evidence(cfg)
-        assert evidence.status == "proven", (model_type, evidence)
-        assert evidence.kinds == {kind}, (model_type, evidence)
-        seen += 1
-    assert seen >= 11
-
-
-def test_falcon_config_selects_rope_or_alibi_from_same_source():
-    from transformers import AutoConfig
-    from model_unfolder.evidence.position import decoder_positional_evidence
-
-    cfg = AutoConfig.for_model("falcon").to_dict()
-    rope = decoder_positional_evidence({**cfg, "alibi": False})
-    alibi = decoder_positional_evidence({**cfg, "alibi": True})
-    assert rope.status == alibi.status == "proven"
-    assert rope.kinds == {"rope"}
-    assert alibi.kinds == {"alibi"}
-    assert rope.mechanisms[0].source_file == alibi.mechanisms[0].source_file
-
-
-def test_zero_rotary_geometry_is_a_proven_noop():
-    from transformers import AutoConfig
-    from model_unfolder.evidence.position import decoder_positional_evidence
-
-    cfg = AutoConfig.for_model("gpt_neox").to_dict()
-    evidence = decoder_positional_evidence({**cfg, "rotary_pct": 0.0})
-    assert evidence.status == "proven"
-    assert evidence.kinds == {"none"}
-
-
-def test_hybrid_schedule_proves_rope_and_positionless_mixer():
-    from transformers import AutoConfig
-    from model_unfolder.evidence.position import decoder_positional_evidence
-
-    try:
-        cfg = AutoConfig.for_model("qwen3_5").to_dict()
-    except (KeyError, ValueError):
-        pytest.skip("installed transformers has no qwen3_5")
-    evidence = decoder_positional_evidence(cfg)
-    assert evidence.status == "proven"
-    assert evidence.kinds == {"rope", "none"}
-
-
-def test_multimodal_shared_file_uses_the_qualified_text_component():
-    from transformers import AutoConfig
-    from model_unfolder.evidence.position import decoder_positional_evidence
-
-    try:
-        cfg = AutoConfig.for_model("qwen3_5").to_dict()
-    except (KeyError, ValueError):
-        pytest.skip("installed transformers has no qwen3_5")
-    evidence = decoder_positional_evidence(cfg)
-    assert evidence.status == "proven"
-    assert evidence.component == "text_config"
-    assert {item.class_name for item in evidence.mechanisms} == {
-        "Qwen3_5Attention", "Qwen3_5GatedDeltaNet",
-    }
-    assert not any("Vision" in item.class_name for item in evidence.mechanisms)
-
-
-def test_model_input_absolute_add_can_coexist_with_attention_rope(tmp_path, monkeypatch):
-    from model_unfolder.evidence.models import SourceBundle
-    from model_unfolder.evidence.position import decoder_positional_evidence
-    from model_unfolder.evidence import position as position_module
-
-    source = _write_modeling_file(
-        tmp_path,
-        """
-def apply_rotary_pos_emb(q, k):
-    return q, k
-
-class FakeAttention:
-    def forward(self, x):
-        q, k = apply_rotary_pos_emb(x, x)
-        return q + k
-
-class FakeMLP:
-    def forward(self, x):
-        return x
-
-class FakeBlock:
-    def __init__(self):
-        self.attn = FakeAttention()
-        self.mlp = FakeMLP()
-    def forward(self, x):
-        return self.mlp(self.attn(x))
-
-class FakeModel:
-    def __init__(self):
-        self.wpe = Embedding()
-        self.layers = ModuleList([FakeBlock()])
-    def forward(self, input_ids, position_ids):
-        x = input_ids + self.wpe(position_ids)
-        for layer in self.layers:
-            x = layer(x)
-        return x
-""",
-    )
-    bundle = SourceBundle(
-        source="path", files=(str(source),), model_type="fake",
-        component_files={"root": (str(source),)},
-        component_architectures={"root": "FakeModel"},
-    )
-    monkeypatch.setattr(position_module, "resolve_source_files", lambda *a, **k: bundle)
-    evidence = decoder_positional_evidence({"model_type": "fake"})
-    assert evidence.status == "proven"
-    assert evidence.kinds == {"learned_absolute", "rope"}
-
-
-def test_dead_rotary_helper_does_not_count_as_applied(tmp_path, monkeypatch):
-    from model_unfolder.evidence.models import SourceBundle
-    from model_unfolder.evidence.position import decoder_positional_evidence
-    from model_unfolder.evidence import position as position_module
-
-    source = _write_modeling_file(
-        tmp_path,
-        """
-def apply_rotary_pos_emb(q, k):
-    return q, k
-
-class FakeAttention:
-    def forward(self, x):
-        return x
-
-class FakeMLP:
-    def forward(self, x):
-        return x
-
-class FakeBlock:
-    def __init__(self):
-        self.attn = FakeAttention()
-        self.mlp = FakeMLP()
-    def forward(self, x, past_key_value=None):
-        return self.mlp(self.attn(x))
-
-class FakeModel:
-    def __init__(self):
-        self.layers = ModuleList([FakeBlock()])
-    def forward(self, x):
-        for layer in self.layers:
-            x = layer(x)
-        return x
-""",
-    )
-    bundle = SourceBundle(
-        source="path", files=(str(source),), model_type="fake",
-        component_files={"root": (str(source),)},
-        component_architectures={"root": "FakeModel"},
-    )
-    monkeypatch.setattr(position_module, "resolve_source_files", lambda *a, **k: bundle)
-    evidence = decoder_positional_evidence({"model_type": "fake"})
-    assert evidence.status == "ambiguous"
-    assert not evidence.mechanisms
-
-
-def test_oracle_missing_is_distinct_from_present_but_ambiguous(monkeypatch):
-    from model_unfolder.evidence.models import SourceBundle
-    from model_unfolder.evidence.position import decoder_positional_evidence
-    from model_unfolder.evidence import position as position_module
-
-    monkeypatch.setattr(
-        position_module, "resolve_source_files",
-        lambda *a, **k: SourceBundle(source="local", model_type="missing"),
-    )
-    evidence = decoder_positional_evidence({"model_type": "missing"})
-    assert evidence.status == "oracle_missing"
-
-
-# ---------------------------------------------------------------------------
 # Validation cross-checks
 # ---------------------------------------------------------------------------
 
@@ -635,7 +433,7 @@ class DeepseekV3Attention:
     assert any("MLA" in w for w in ir.warnings)
 
 
-def test_validate_warns_on_ple_in_code_but_not_in_ir(tmp_path):
+def test_validate_does_not_assign_whole_file_ple_to_an_unqualified_owner(tmp_path):
     _write_modeling_file(
         tmp_path,
         """
@@ -653,7 +451,7 @@ class GemmaLikeDecoderLayer:
 
     ir = config_to_ir(LLAMA_TINY_CONFIG, inspect_code=True, code_source=str(tmp_path))
 
-    assert any("Per-Layer Embedding" in w or "PLE" in w for w in ir.warnings)
+    assert not any("Per-Layer Embedding" in w or "PLE" in w for w in ir.warnings)
 
 
 def _write_modeling_file(tmp_path, body: str):
@@ -686,170 +484,6 @@ def test_field_types_resolve_constructor_classmethod_factories():
     assert types["auto"] == "AutoModel"
     assert types["plain"] == "PlainLayer"
 
-
-def test_relative_bias_is_a_proven_positional_mechanism(tmp_path, monkeypatch):
-    """A learned bias over bucketed relative distances added to the scores
-    (the T5-family code shape, matched by general markers) proves
-    ``relative_bias`` at the ``attention_bias`` altitude — no more
-    present-but-ambiguous for encoders built this way."""
-    from model_unfolder.evidence.models import SourceBundle
-    from model_unfolder.evidence.position import decoder_positional_evidence
-    from model_unfolder.evidence import position as position_module
-
-    source = _write_modeling_file(
-        tmp_path,
-        """
-class NovelBiasAttention:
-    def __init__(self):
-        self.relative_attention_bias = Embedding()
-    def compute_bias(self, q_len, k_len):
-        return self.relative_attention_bias(q_len)
-    def forward(self, x):
-        scores = matmul(x, x)
-        position_bias = self.compute_bias(1, 1)
-        scores += position_bias
-        return softmax(scores)
-
-class FakeMLP:
-    def forward(self, x):
-        return x
-
-class FakeBlock:
-    def __init__(self):
-        self.attn = NovelBiasAttention()
-        self.mlp = FakeMLP()
-    def forward(self, x):
-        return self.mlp(self.attn(x))
-
-class FakeModel:
-    def __init__(self):
-        self.layers = ModuleList([FakeBlock()])
-    def forward(self, input_ids):
-        x = input_ids
-        for layer in self.layers:
-            x = layer(x)
-        return x
-""",
-    )
-    bundle = SourceBundle(
-        source="path", files=(str(source),), model_type="fake",
-        component_files={"root": (str(source),)},
-        component_architectures={"root": "FakeModel"},
-    )
-    monkeypatch.setattr(position_module, "resolve_source_files", lambda *a, **k: bundle)
-    evidence = decoder_positional_evidence({"model_type": "fake"})
-    assert evidence.status == "proven"
-    assert evidence.kinds == {"relative_bias"}
-    mechanism = evidence.mechanisms[0]
-    assert mechanism.application == "attention_bias"
-    assert mechanism.class_name == "NovelBiasAttention"
-
-
-def test_attention_score_scaling_verdicts_are_code_derived(tmp_path):
-    """scores_scaled: True on an explicit scale symbol or an SDPA terminal,
-    False only for a provably raw matmul, None for wrapper-only/mixed files."""
-    from model_unfolder.evidence.patterns import attention_score_scaling_from_files
-
-    scaled = tmp_path / "scaled.py"
-    scaled.write_text(
-        "class ScaledAttention:\n"
-        "    def __init__(self):\n"
-        "        self.scaling = 0.125\n"
-        "    def forward(self, q, k):\n"
-        "        return matmul(q, k) * self.scaling\n"
-    )
-    unscaled = tmp_path / "unscaled.py"
-    unscaled.write_text(
-        "class RawAttention:\n"
-        "    def forward(self, q, k):\n"
-        "        scores = matmul(q, k)\n"
-        "        return softmax(scores)\n"
-    )
-    delegated = tmp_path / "delegated.py"
-    delegated.write_text(
-        "class DelegatedAttention:\n"
-        "    def forward(self, q, k):\n"
-        "        return scaled_dot_product_attention(q, k, k)\n"
-    )
-    wrapper_only = tmp_path / "wrapper.py"
-    wrapper_only.write_text(
-        "class WrapperAttention:\n"
-        "    def __init__(self):\n"
-        "        self.inner = Something()\n"
-        "    def forward(self, x):\n"
-        "        return self.inner(x)\n"
-    )
-    assert attention_score_scaling_from_files((scaled,)) is True
-    assert attention_score_scaling_from_files((unscaled,)) is False
-    assert attention_score_scaling_from_files((delegated,)) is True
-    assert attention_score_scaling_from_files((wrapper_only,)) is None
-    # Mixed verdicts across one file's attention classes stay honestly unproven.
-    assert attention_score_scaling_from_files((scaled, unscaled)) is None
-
-
-def test_storage_fidelity_detectors_are_code_shaped(tmp_path):
-    """The three storage/bookend detectors fire on the code SHAPE, never a
-    name: fused experts (stacked gate_up split any way), fused QKV (one
-    projection, no split q/k/v), and an embedding-stage norm applied to the
-    embedding OUTPUT.  Negative controls prove absence stays None."""
-    from model_unfolder.evidence.patterns import (
-        attention_fused_qkv_from_files,
-        embedding_stage_norm_from_files,
-        expert_fused_gate_up_from_files,
-    )
-
-    fused = tmp_path / "fused.py"
-    fused.write_text(
-        "class NovelExperts:\n"
-        "    def __init__(self):\n"
-        "        self.gate_up_proj = Parameter()\n"
-        "        self.down_proj = Parameter()\n"
-        "    def forward(self, x):\n"
-        "        gate_up = linear(x, self.gate_up_proj)\n"
-        "        gate = gate_up[..., ::2]\n"          # interleaved split, no chunk()
-        "        up = gate_up[..., 1::2]\n"
-        "        return linear(gate * up, self.down_proj)\n"
-        "class NovelAttention:\n"
-        "    def __init__(self):\n"
-        "        self.query_key_value = Linear()\n"
-        "    def forward(self, x):\n"
-        "        qkv = self.query_key_value(x)\n"
-        "        return qkv\n"
-        "class NovelModel:\n"
-        "    def __init__(self):\n"
-        "        self.word_embeddings = Embedding()\n"
-        "        self.word_embeddings_layernorm = LayerNorm()\n"
-        "        self.layers = ModuleList([NovelAttention()])\n"
-        "    def forward(self, input_ids):\n"
-        "        h = self.word_embeddings(input_ids)\n"
-        "        h = self.word_embeddings_layernorm(h)\n"
-        "        return h\n"
-    )
-    split = tmp_path / "split.py"
-    split.write_text(
-        "class PlainAttention:\n"
-        "    def __init__(self):\n"
-        "        self.q_proj = Linear(); self.k_proj = Linear(); self.v_proj = Linear()\n"
-        "    def forward(self, x):\n"
-        "        return self.q_proj(x)\n"
-        "class PlainModel:\n"
-        "    def __init__(self):\n"
-        "        self.embed_tokens = Embedding()\n"
-        "        self.norm = RMSNorm()\n"
-        "    def forward(self, input_ids):\n"
-        "        h = self.embed_tokens(input_ids)\n"
-        "        for layer in []:\n"
-        "            h = layer(h)\n"
-        "        return self.norm(h)\n"                # FINAL norm, not embed-stage?
-    )
-    assert expert_fused_gate_up_from_files((fused,)) is True
-    assert expert_fused_gate_up_from_files((split,)) is None
-    assert attention_fused_qkv_from_files((fused,)) is True
-    assert attention_fused_qkv_from_files((split,)) is False
-    assert embedding_stage_norm_from_files((fused,)) == "LayerNorm"
-    # A FINAL norm applied to a reused variable name is NOT an embedding-stage
-    # norm — the order-aware dataflow must not misread llama-shaped code.
-    assert embedding_stage_norm_from_files((split,)) is None
 
 _CHATGLM_SHAPED = """
 import torch
@@ -922,36 +556,6 @@ class GLMBlock(nn.Module):
 """
 
 
-def test_init_local_fn_and_inner_kernel_evidence(tmp_path):
-    """The ChatGLM-shaped code signatures, read GENERALLY (no names):
-
-    1. a nested fn bound to ``self.F`` in __init__ (swiglu) is FOLDED into the
-       class's op scan — so a 2-linear MLP that chunks one fused projection and
-       multiplies the halves is proven GATED with fused storage;
-    2. an inner attention kernel constructed as a FIELD of the attention class
-       (core_attention) is not a rival positional candidate — the owner's RoPE
-       application is proven, never "candidates disagree".
-    """
-    f = tmp_path / "modeling_x.py"
-    f.write_text(_CHATGLM_SHAPED)
-    files = (str(f),)
-
-    from model_unfolder.evidence.patterns import decoder_ffn_gated_from_files
-    assert decoder_ffn_gated_from_files(files, cfg={}) is True
-
-    from model_unfolder.evidence.ffn import ffn_structure_evidence
-    ev = ffn_structure_evidence(files, expected_gated=True)
-    assert ev.status == "proven" and ev.projection_mode == "fused_gate_up"
-
-    from model_unfolder.evidence.position import decoder_positional_evidence
-    from model_unfolder.evidence.models import SourceBundle
-    bundle = SourceBundle(source="path", files=files,
-                          component_files={"root": files})
-    pos = decoder_positional_evidence({}, bundle=bundle)
-    assert pos.status == "proven"
-    assert any(m.kind == "rope" for m in pos.mechanisms)
-
-
 def test_remote_code_declaration_reaches_the_hub_rail(monkeypatch, tmp_path):
     """A config that DECLARES auto_map (remote code) resolves its evidence from
     the repo's own .py files when nothing is installed — the address is the
@@ -976,232 +580,105 @@ def test_remote_code_declaration_reaches_the_hub_rail(monkeypatch, tmp_path):
     assert not calls.get("hit")
 
 
+# ---------------------------------------------------------------------------
+# UNIT 1 — SOURCE PARITY (run_77 R1/R2/R3): the loader stamps the address,
+# unknown model_type falls through to the declared class, and the true
+# refusal cause is never masked. One resolution context for ship AND audit.
+# ---------------------------------------------------------------------------
+
+
+def test_raw_json_loader_stamps_repo_id(monkeypatch, tmp_path):
+    """The raw-JSON rung (remote-code / registry-predating repos) must stamp
+    ``_repo_id`` so ``resolve_source_files`` can fetch the repo's own modeling
+    source — without it every model on this rung parses evidence-blind."""
+    cfg_file = tmp_path / "config.json"
+    cfg_file.write_text(
+        '{"model_type": "notinstalled_xyz", "hidden_size": 64, '
+        '"num_hidden_layers": 2, "auto_map": {"AutoModel": "modeling_x.X"}}'
+    )
+    import model_unfolder.parser as P
+
+    def fake_download(**kwargs):
+        assert kwargs["repo_id"] == "some/remote-repo"
+        return str(cfg_file)
+
+    import huggingface_hub
+    monkeypatch.setattr(huggingface_hub, "hf_hub_download", fake_download)
+    cfg = P._load_raw_config_json("some/remote-repo", None)
+    assert cfg["_repo_id"] == "some/remote-repo"
+    # the stamp is exactly what the source resolver's id lookup prioritizes
+    import model_unfolder.evidence.sources as S
+    assert S._model_id(cfg) == "some/remote-repo"
+
+
+def test_unknown_model_type_falls_through_to_declared_class():
+    """A PRESENT-but-unregistered model_type (the rebrand pattern: kimi_k2
+    running the installed DeepseekV3 class) must resolve source by the
+    declared architecture, exactly as an ABSENT model_type already does."""
+    import model_unfolder.evidence.sources as S
+    cfg = {"model_type": "totally_unknown_rebrand_zz",
+           "architectures": ["LlamaForCausalLM"]}
+    bundle = S._installed_transformers_bundle(cfg)
+    assert bundle.files, bundle.warnings
+    assert any("modeling_llama" in f for f in bundle.files)
+    assert bundle.component_architectures.get("root") == "LlamaForCausalLM"
+    # absent architecture keeps the honest no-source warning
+    empty = S._installed_transformers_bundle({"model_type": "totally_unknown_rebrand_zz"})
+    assert not empty.files and empty.warnings
+
+
+def test_source_directory_uses_installed_registry_not_a_project_identity_table(
+        monkeypatch, tmp_path):
+    """Source addressing follows the installed library's own registry.
+
+    The project must not grow a model-type-to-directory table or guess parent
+    packages by chopping role suffixes.
+    """
+    import model_unfolder.evidence.sources as S
+    from transformers.models.auto import configuration_auto
+
+    models_root = tmp_path / "models"
+    declared = models_root / "registry_selected_module"
+    declared.mkdir(parents=True)
+    monkeypatch.setattr(
+        configuration_auto, "model_type_to_module_name",
+        lambda _declared_type: declared.name,
+    )
+    assert S._transformers_family_dir(
+        models_root, "arbitrary_declared_type") == declared.name
+    assert not hasattr(S, "MODEL_TYPE_TO_TRANSFORMERS_DIR")
+
+    # If registry metadata names no installed module, an invented suffix-parent
+    # must not be selected merely because that directory happens to exist.
+    (models_root / "ambiguous").mkdir()
+    monkeypatch.setattr(
+        configuration_auto, "model_type_to_module_name",
+        lambda _declared_type: "not_installed",
+    )
+    assert S._transformers_family_dir(models_root, "ambiguous_text") is None
+
+
+def test_fileless_hub_warning_is_not_masked(monkeypatch):
+    """When the remote-code hub lookup fails (offline/gated/id-less), its TRUE
+    cause must surface beside the local fallback warning instead of being
+    replaced by the generic 'no installed source' line."""
+    import model_unfolder.evidence.sources as S
+
+    def failing_hub(target, *, token=None):
+        raise RuntimeError("simulated offline")
+
+    monkeypatch.setattr(S, "_hub_bundle", failing_hub)
+    cfg = {"model_type": "notinstalled_xyz",
+           "auto_map": {"AutoModel": "modeling_x.X"}}
+    bundle = S.resolve_source_files(cfg, source="local")
+    assert not bundle.files
+    assert any("remote-code source fetch failed" in w for w in bundle.warnings)
+
+
 
 # ---------------------------------------------------------------------------
 # QK-norm — code-first (the code decides the SHAPE and names its own gate)
 # ---------------------------------------------------------------------------
-
-_QK_SCAFFOLD = '''
-import torch
-from torch import nn
-
-
-class XRMSNorm(nn.Module):
-    def __init__(self, dim, eps=1e-6):
-        super().__init__()
-        self.weight = nn.Parameter(torch.ones(dim))
-
-    def forward(self, x):
-        v = x.pow(2).mean(-1, keepdim=True)
-        return self.weight * (x * torch.rsqrt(v + 1e-6))
-
-
-class XMLP(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        self.gate_proj = nn.Linear(config.hidden_size, config.intermediate_size)
-        self.up_proj = nn.Linear(config.hidden_size, config.intermediate_size)
-        self.down_proj = nn.Linear(config.intermediate_size, config.hidden_size)
-
-    def forward(self, x):
-        return self.down_proj(torch.nn.functional.silu(self.gate_proj(x)) * self.up_proj(x))
-
-
-{attention}
-
-
-class XDecoderLayer(nn.Module):
-    def __init__(self, config, layer_idx):
-        super().__init__()
-        self.self_attn = XAttention(config, layer_idx)
-        self.mlp = XMLP(config)
-        self.input_layernorm = XRMSNorm(config.hidden_size)
-
-    def forward(self, hidden_states, past_key_values=None):
-        hidden_states = hidden_states + self.self_attn(self.input_layernorm(hidden_states))
-        return hidden_states + self.mlp(hidden_states)
-'''
-
-_QK_UNCONDITIONAL_ATTN = '''
-class XAttention(nn.Module):
-    def __init__(self, config, layer_idx):
-        super().__init__()
-        self.q_proj = nn.Linear(config.hidden_size, config.hidden_size)
-        self.k_proj = nn.Linear(config.hidden_size, config.hidden_size)
-        self.v_proj = nn.Linear(config.hidden_size, config.hidden_size)
-        self.o_proj = nn.Linear(config.hidden_size, config.hidden_size)
-        self.q_norm = XRMSNorm(config.head_dim)
-        self.k_norm = XRMSNorm(config.head_dim)
-
-    def forward(self, hidden_states, past_key_values=None):
-        query_states = self.q_norm(self.q_proj(hidden_states))
-        key_states = self.k_norm(self.k_proj(hidden_states))
-        value_states = self.v_proj(hidden_states)
-        attn = torch.matmul(query_states, key_states.transpose(-1, -2)).softmax(-1)
-        return self.o_proj(torch.matmul(attn, value_states))
-'''
-
-_QK_GATED_ATTN = '''
-class XAttention(nn.Module):
-    def __init__(self, config, layer_idx):
-        super().__init__()
-        self.query_key_value = nn.Linear(config.hidden_size, 3 * config.hidden_size)
-        self.dense = nn.Linear(config.hidden_size, config.hidden_size)
-        self.qk_layernorm = config.qk_layernorm
-        if self.qk_layernorm:
-            self.q_layernorm = nn.LayerNorm(config.head_dim)
-            self.k_layernorm = nn.LayerNorm(config.head_dim)
-
-    def forward(self, hidden_states, past_key_values=None):
-        fused = self.query_key_value(hidden_states)
-        query_states, key_states, value_states = fused.chunk(3, dim=-1)
-        if self.qk_layernorm:
-            query_states = self.q_layernorm(query_states)
-            key_states = self.k_layernorm(key_states)
-        attn = torch.matmul(query_states, key_states.transpose(-1, -2)).softmax(-1)
-        return self.dense(torch.matmul(attn, value_states))
-'''
-
-_QK_COMPOSITE_ATTN = '''
-class XAttention(nn.Module):
-    def __init__(self, config, layer_idx):
-        super().__init__()
-        self.q_proj = nn.Linear(config.hidden_size, config.hidden_size)
-        self.k_proj = nn.Linear(config.hidden_size, config.hidden_size)
-        self.v_proj = nn.Linear(config.hidden_size, config.hidden_size)
-        self.o_proj = nn.Linear(config.hidden_size, config.hidden_size)
-        self.use_rope = config.no_rope_layers[layer_idx]
-        if config.use_qk_norm and self.use_rope:
-            self.qk_norm = XRMSNorm(config.head_dim)
-
-    def forward(self, hidden_states, past_key_values=None):
-        query_states = self.q_proj(hidden_states)
-        key_states = self.k_proj(hidden_states)
-        value_states = self.v_proj(hidden_states)
-        if hasattr(self, "qk_norm"):
-            query_states = self.qk_norm(query_states)
-            key_states = self.qk_norm(key_states)
-        attn = torch.matmul(query_states, key_states.transpose(-1, -2)).softmax(-1)
-        return self.o_proj(torch.matmul(attn, value_states))
-'''
-
-_QK_PLAIN_ATTN = '''
-class XAttention(nn.Module):
-    def __init__(self, config, layer_idx):
-        super().__init__()
-        self.q_proj = nn.Linear(config.hidden_size, config.hidden_size)
-        self.k_proj = nn.Linear(config.hidden_size, config.hidden_size)
-        self.v_proj = nn.Linear(config.hidden_size, config.hidden_size)
-        self.o_proj = nn.Linear(config.hidden_size, config.hidden_size)
-
-    def forward(self, hidden_states, past_key_values=None):
-        query_states = self.q_proj(hidden_states)
-        key_states = self.k_proj(hidden_states)
-        value_states = self.v_proj(hidden_states)
-        attn = torch.matmul(query_states, key_states.transpose(-1, -2)).softmax(-1)
-        return self.o_proj(torch.matmul(attn, value_states))
-'''
-
-_QK_MLA_LATENT_ATTN = '''
-class XAttention(nn.Module):
-    def __init__(self, config, layer_idx):
-        super().__init__()
-        self.q_a_proj = nn.Linear(config.hidden_size, config.q_lora_rank)
-        self.q_a_layernorm = XRMSNorm(config.q_lora_rank)
-        self.q_b_proj = nn.Linear(config.q_lora_rank, config.hidden_size)
-        self.kv_a_proj_with_mqa = nn.Linear(config.hidden_size, config.kv_lora_rank)
-        self.kv_a_layernorm = XRMSNorm(config.kv_lora_rank)
-        self.kv_b_proj = nn.Linear(config.kv_lora_rank, config.hidden_size)
-        self.o_proj = nn.Linear(config.hidden_size, config.hidden_size)
-
-    def forward(self, hidden_states, past_key_values=None):
-        q = self.q_b_proj(self.q_a_layernorm(self.q_a_proj(hidden_states)))
-        compressed = self.kv_a_proj_with_mqa(hidden_states)
-        kv = self.kv_b_proj(self.kv_a_layernorm(compressed))
-        attn = torch.matmul(q, kv.transpose(-1, -2)).softmax(-1)
-        return self.o_proj(torch.matmul(attn, kv))
-'''
-
-
-def _qk_files(tmp_path, attention_src):
-    f = tmp_path / "modeling_x.py"
-    f.write_text(_QK_SCAFFOLD.format(attention=attention_src))
-    return (str(f),)
-
-
-def test_qk_norm_unconditional_construction_is_present_without_config(tmp_path):
-    """Qwen3/OLMo-2 shape: q/k norms built unconditionally and applied on the
-    projection path ⇒ present, no config consulted (their configs are silent)."""
-    from model_unfolder.evidence.patterns import decoder_qk_norm_from_files
-    ev = decoder_qk_norm_from_files(_qk_files(tmp_path, _QK_UNCONDITIONAL_ATTN))
-    assert ev is not None and ev.present is True and ev.gate == ()
-
-
-def test_qk_norm_gate_is_the_field_the_code_reads(tmp_path):
-    """StableLM/Persimmon shape: construction and application sit behind
-    ``self.qk_layernorm = config.qk_layernorm`` — the atom is the config field
-    the CODE names (never a spelling we guessed), through fused-QKV chunking."""
-    from model_unfolder.evidence.patterns import decoder_qk_norm_from_files
-    ev = decoder_qk_norm_from_files(_qk_files(tmp_path, _QK_GATED_ATTN))
-    assert ev is not None and ev.present is None
-    assert [(a.field, a.per_layer) for a in ev.gate] == [("qk_layernorm", False)]
-
-
-def test_qk_norm_composite_gate_extracts_the_per_layer_term(tmp_path):
-    """Llama-4 shape: ``config.use_qk_norm and self.use_rope`` where use_rope
-    indexes ``config.no_rope_layers[layer_idx]`` — both atoms extracted, the
-    per-layer one marked so the parser evaluates it per layer.  The
-    ``hasattr(self, "qk_norm")`` application guard adds no atom."""
-    from model_unfolder.evidence.patterns import decoder_qk_norm_from_files
-    ev = decoder_qk_norm_from_files(_qk_files(tmp_path, _QK_COMPOSITE_ATTN))
-    assert ev is not None and ev.present is None
-    assert [(a.field, a.per_layer) for a in ev.gate] == [
-        ("no_rope_layers", True), ("use_qk_norm", False)]
-
-
-def test_qk_norm_proven_absent_when_the_class_builds_none(tmp_path):
-    from model_unfolder.evidence.patterns import decoder_qk_norm_from_files
-    ev = decoder_qk_norm_from_files(_qk_files(tmp_path, _QK_PLAIN_ATTN))
-    assert ev is not None and ev.present is False
-
-
-def test_qk_norm_mla_latent_norms_are_not_qk_norms(tmp_path):
-    """DeepSeek MLA shape: ``q_a_layernorm``/``kv_a_layernorm`` results feed
-    ANOTHER projection — intermediate norms by dataflow, so proven absent."""
-    from model_unfolder.evidence.patterns import decoder_qk_norm_from_files
-    ev = decoder_qk_norm_from_files(_qk_files(tmp_path, _QK_MLA_LATENT_ATTN))
-    assert ev is not None and ev.present is False
-
-
-def test_qk_norm_resolution_states():
-    """The parser-side 5-state resolution: code shape × checkpoint values."""
-    from model_unfolder.adapters.transformer.parser import _resolve_qk_norm_layers
-    from model_unfolder.evidence.patterns import QKNormCodeEvidence, QKNormGateAtom
-
-    # proven absent beats a declared spelling — a flag the code never reads is dead
-    assert _resolve_qk_norm_layers(
-        QKNormCodeEvidence(present=False), {"qk_layernorm": True}, True, 4
-    ) == [False] * 4
-    # unconditional: config not consulted
-    assert _resolve_qk_norm_layers(
-        QKNormCodeEvidence(present=True), {}, False, 3) == [True] * 3
-    # gated: the named field's VALUE decides
-    gated = QKNormCodeEvidence(
-        present=None, gate=(QKNormGateAtom("qk_layernorm"),))
-    assert _resolve_qk_norm_layers(gated, {"qk_layernorm": True}, False, 2) == [True] * 2
-    assert _resolve_qk_norm_layers(gated, {"qk_layernorm": False}, True, 2) == [False] * 2
-    # per-layer atom: the code indexes its own field by layer
-    comp = QKNormCodeEvidence(present=None, gate=(
-        QKNormGateAtom("no_rope_layers", per_layer=True),
-        QKNormGateAtom("use_qk_norm"),
-    ))
-    cfg = {"use_qk_norm": True, "no_rope_layers": [1, 1, 0, 1]}
-    assert _resolve_qk_norm_layers(comp, cfg, False, 4) == [True, True, False, True]
-    # unresolvable gate value -> honest fallback to the declared spelling
-    assert _resolve_qk_norm_layers(comp, {"use_qk_norm": True}, True, 4) == [True] * 4
-    # no source at all -> the declaration stands (a declaration is evidence)
-    assert _resolve_qk_norm_layers(None, {}, True, 2) == [True] * 2
-
 
 def test_qk_norm_ships_for_config_silent_oracle_models():
     """The ship-path fix the 21-LLM sweep demanded: Qwen3/OLMo-2/Gemma-3 build
@@ -1213,27 +690,35 @@ def test_qk_norm_ships_for_config_silent_oracle_models():
         assert ir.layers and all(l.attention.qk_norm for l in ir.layers), mt
 
 
-def test_qk_norm_declared_gate_still_decides_for_stablelm():
+def test_stablelm_qk_norm_uses_the_proven_repeated_per_head_protocol():
+    """A repeated norm is code evidence only after its exact
+    split -> homogeneous primitive map -> concat protocol is proven."""
     from transformers import AutoConfig
-    cfg = AutoConfig.for_model("stablelm")          # qk_layernorm defaults False
-    assert not any(l.attention.qk_norm for l in config_to_ir(cfg).layers)
-    cfg.qk_layernorm = True
-    assert all(l.attention.qk_norm for l in config_to_ir(cfg).layers)
+    # Use the checkpoint-shaped mapping at this boundary.  Mutating an
+    # AutoConfig instance manufactures a class-side value with no checkpoint
+    # provenance and must not be allowed to masquerade as user configuration.
+    cfg = AutoConfig.for_model("stablelm").to_dict()
+    assert all(l.attention.qk_norm is False for l in config_to_ir(cfg).layers)
+    cfg["qk_layernorm"] = True
+    assert all(l.attention.qk_norm is True for l in config_to_ir(cfg).layers)
 
 
-def test_llama4_qk_norm_skips_nope_layers_and_positions_follow_the_code():
-    """Fabrication half of the sweep finding + the positional bug the gate
-    exposed: NoPE placement must follow ``config.no_rope_layers`` (the field
-    the code indexes — NoPE at layers 3, 7, 11…), and QK-norm must sit on
-    exactly the rope layers."""
+def test_llama4_qk_schedule_survives_while_position_selector_stays_unknown():
+    """The exact QK-norm reader proves its own per-layer gate. It cannot also
+    certify the positional selector: U8 must prove that separately, so neither
+    model-wide RoPE nor config-computed NoPE is projected yet."""
     from transformers import AutoConfig
     cfg = AutoConfig.for_model("llama4_text")
     ir = config_to_ir(cfg)
     qk = [bool(l.attention.qk_norm) for l in ir.layers]
-    nope = [bool(l.attention.no_rope) for l in ir.layers]
-    assert any(nope) and sum(nope) * 4 == len(ir.layers)
-    assert all(q == (not n) for q, n in zip(qk, nope))
-    assert [i for i, n in enumerate(nope) if n][:3] == [3, 7, 11]
+    assert [i for i, enabled in enumerate(qk) if not enabled][:3] == [3, 7, 11]
+    assert all(l.attention.no_rope is False for l in ir.layers)
+    assert all(l.attention.rope is None for l in ir.layers)
+    assert all(
+        (l.attention.position_kind, l.attention.position_application)
+        == ("unknown", "unknown")
+        for l in ir.layers
+    )
 
 
 def test_qk_norm_stays_absent_for_mla_and_plain_oracle_models():
@@ -1314,6 +799,102 @@ def test_tower_lane_norms_read_the_construction_site_not_field_presence(tmp_path
     assert plain["q_norm"] is False and plain["k_norm"] is False
 
 
+def test_tower_ffn_projection_reads_the_callable_info_contract(tmp_path):
+    """The tower reader consumes ``CallableInfo``, not ``ForwardOps``.
+
+    Pin all supported storage forms through the real registry and shared
+    ``layer_facts_from_block`` path.  The unused Linear on the fused MLP is a
+    poison: constructor presence must not be counted as a live projection.
+    """
+    source = '''
+import torch
+from torch import nn
+
+class Attention(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.q_proj = nn.Linear(dim, dim)
+        self.k_proj = nn.Linear(dim, dim)
+        self.v_proj = nn.Linear(dim, dim)
+    def forward(self, x):
+        return self.q_proj(x) + self.k_proj(x) + self.v_proj(x)
+
+class FusedMLP(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.gate_up_proj = nn.Linear(dim, 8 * dim)
+        self.down_proj = nn.Linear(4 * dim, dim)
+        self.unused_proj = nn.Linear(dim, dim)
+    def forward(self, x):
+        gate, up = self.gate_up_proj(x).chunk(2, dim=-1)
+        return self.down_proj(torch.nn.functional.silu(gate) * up)
+
+class SplitMLP(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.gate_proj = nn.Linear(dim, 4 * dim)
+        self.up_proj = nn.Linear(dim, 4 * dim)
+        self.down_proj = nn.Linear(4 * dim, dim)
+    def forward(self, x):
+        return self.down_proj(
+            torch.nn.functional.silu(self.gate_proj(x)) * self.up_proj(x)
+        )
+
+class DenseMLP(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.fc1 = nn.Linear(dim, 4 * dim)
+        self.fc2 = nn.Linear(4 * dim, dim)
+    def forward(self, x):
+        return self.fc2(torch.nn.functional.gelu(self.fc1(x)))
+
+class FusedBlock(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.attn = Attention(dim)
+        self.mlp = FusedMLP(dim)
+    def forward(self, x):
+        return self.mlp(self.attn(x))
+
+class SplitBlock(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.attn = Attention(dim)
+        self.mlp = SplitMLP(dim)
+    def forward(self, x):
+        return self.mlp(self.attn(x))
+
+class DenseBlock(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.attn = Attention(dim)
+        self.mlp = DenseMLP(dim)
+    def forward(self, x):
+        return self.mlp(self.attn(x))
+'''
+    path = tmp_path / "modeling_tower_ffn_storage.py"
+    path.write_text(source)
+
+    from model_unfolder.evidence.transitive import build_registry
+    from model_unfolder.everchanging import load_conformance_transitive
+    from model_unfolder.evidence.vision import layer_facts_from_block
+
+    registry = build_registry([str(path)])
+    vocab = load_conformance_transitive()
+    assert registry["FusedMLP"].self_field_calls == {
+        "gate_up_proj", "down_proj",
+    }
+    assert layer_facts_from_block(
+        "FusedBlock", registry, vocab,
+    )["ffn_projection_mode"] == "fused_gate_up"
+    assert layer_facts_from_block(
+        "SplitBlock", registry, vocab,
+    )["ffn_projection_mode"] == "split"
+    assert layer_facts_from_block(
+        "DenseBlock", registry, vocab,
+    )["ffn_projection_mode"] == "dense"
+
+
 # ---------------------------------------------------------------------------
 # Partial rotary — surfaced from every dialect, incl. code-only (S1b)
 # ---------------------------------------------------------------------------
@@ -1368,28 +949,6 @@ class YModel(nn.Module):
 '''
 
 
-def test_code_rope_dim_evaluates_the_constructor_arithmetic(tmp_path):
-    """ChatGLM shape: ``RotaryEmbedding(rotary_dim // 2)`` with the kv_channels
-    ternary — the halving exists nowhere in config; the evaluator reads it
-    from the code's own expression."""
-    from model_unfolder.evidence.patterns import decoder_rope_dim_from_files
-    f = tmp_path / "modeling_x.py"
-    f.write_text(_CHATGLM_ROTARY_INIT)
-    cfg = {"hidden_size": 4096, "num_attention_heads": 32, "kv_channels": 128}
-    assert decoder_rope_dim_from_files((str(f),), cfg=cfg) == 64
-    cfg_no_kv = {"hidden_size": 4096, "num_attention_heads": 32, "kv_channels": None}
-    assert decoder_rope_dim_from_files((str(f),), cfg=cfg_no_kv) == 64
-
-
-def test_code_rope_dim_ignores_config_driven_rotary(tmp_path):
-    """Modern classes pass ``config=config`` — no explicit dim argument, so
-    the code channel stays silent (the fraction is config-declared there)."""
-    from model_unfolder.evidence.patterns import decoder_rope_dim_from_files
-    f = tmp_path / "modeling_y.py"
-    f.write_text(_CONFIG_DRIVEN_ROTARY_INIT)
-    assert decoder_rope_dim_from_files((str(f),), cfg={"hidden_size": 64}) is None
-
-
 def test_partial_rotary_surfaces_in_drill_and_chips():
     """StableLM (partial_rotary_factor=0.25): the RoPE op states the real
     rot/pass split and the Partial RoPE chip appears; a full-rotary model
@@ -1404,10 +963,9 @@ def test_partial_rotary_surfaces_in_drill_and_chips():
     assert "Partial RoPE" not in full and "rot " not in full
 
 
-def test_nested_rope_parameters_dialect_carries_the_fraction():
-    """GPT-NeoX modern dialect: partial_rotary_factor nested INSIDE
-    rope_scaling/rope_parameters (the legacy top-level rotary_pct no longer
-    exists on the config class)."""
+def test_nested_rope_parameters_dialect_cannot_author_geometry_by_itself():
+    """A nested fraction remains an operand candidate, not proof that this
+    unresolved owner applies RoPE or of which head dimension it rotates."""
     import model_unfolder as mu
     cfg = {
         "model_type": "gpt_neox", "hidden_size": 96 * 8, "num_attention_heads": 8,
@@ -1415,7 +973,8 @@ def test_nested_rope_parameters_dialect_carries_the_fraction():
         "rope_scaling": {"rope_type": "default", "partial_rotary_factor": 0.25},
     }
     ir = mu.config_to_ir(cfg)
-    assert ir.layers[0].attention.rope_dim == 24
+    assert ir.layers[0].attention.rope_dim is None
+    assert ir.layers[0].attention.head_dim is None
 
 
 def test_qk_norm_draws_real_ops_in_the_drill():
@@ -1425,88 +984,16 @@ def test_qk_norm_draws_real_ops_in_the_drill():
     from transformers import AutoConfig
     import model_unfolder as mu
     html = mu.unfold(AutoConfig.for_model("qwen3")).to_html()
-    assert html.count("Q Norm") >= 1 and html.count("K Norm") >= 1
+    assert html.count("Query normalisation") >= 1
+    assert html.count("Key normalisation") >= 1
     mla = mu.unfold(AutoConfig.for_model("deepseek_v3")).to_html()
-    assert mla.count("Q Norm") == 0 and mla.count("K Norm") == 0
+    assert mla.count("Query normalisation") == 0
+    assert mla.count("Key normalisation") == 0
 
 
 # ---------------------------------------------------------------------------
 # Code-derived FFN intermediate width (GPT-J/GPT-2/CodeGen n_inner=None -> 4*hidden)
 # ---------------------------------------------------------------------------
-
-_GPTJ_SHAPED_INNER = '''
-import torch
-from torch import nn
-
-
-class XMLP(nn.Module):
-    def __init__(self, intermediate_size, config):
-        super().__init__()
-        self.fc_in = nn.Linear(config.n_embd, intermediate_size)
-        self.fc_out = nn.Linear(intermediate_size, config.n_embd)
-
-    def forward(self, x):
-        return self.fc_out(torch.nn.functional.gelu(self.fc_in(x)))
-
-
-class XAttention(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        self.q_proj = nn.Linear(config.n_embd, config.n_embd)
-        self.k_proj = nn.Linear(config.n_embd, config.n_embd)
-        self.v_proj = nn.Linear(config.n_embd, config.n_embd)
-        self.out_proj = nn.Linear(config.n_embd, config.n_embd)
-
-    def forward(self, hidden_states, layer_past=None, use_cache=None):
-        q, k, v = self.q_proj(hidden_states), self.k_proj(hidden_states), self.v_proj(hidden_states)
-        return self.out_proj(v)
-
-
-class XBlock(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        inner_dim = config.n_inner if config.n_inner is not None else 4 * config.n_embd
-        self.ln_1 = nn.LayerNorm(config.n_embd)
-        self.attn = XAttention(config)
-        self.mlp = XMLP(inner_dim, config)
-
-    def forward(self, hidden_states, layer_past=None, use_cache=None):
-        return hidden_states + self.mlp(self.attn(self.ln_1(hidden_states)))
-'''
-
-
-def test_intermediate_size_from_the_constructor_default_expression(tmp_path):
-    """GPT-J shape: ``inner_dim = config.n_inner if config.n_inner is not None
-    else 4 * config.n_embd`` — with n_inner absent, the FFN width is read from
-    the code's own default expression (4×hidden), never a per-model table."""
-    from model_unfolder.evidence.patterns import decoder_intermediate_size_from_files
-    f = tmp_path / "modeling_x.py"
-    f.write_text(_GPTJ_SHAPED_INNER)
-    files = (str(f),)
-    aliases = ("intermediate_size", "n_inner", "d_ff", "ffn_hidden_size")
-    # n_inner absent -> 4 * n_embd
-    assert decoder_intermediate_size_from_files(files, {"n_embd": 4096}, aliases) == 16384
-    # n_inner present -> the ternary yields it (code default not applied)
-    assert decoder_intermediate_size_from_files(
-        files, {"n_embd": 4096, "n_inner": 9000}, aliases) == 9000
-
-
-def test_intermediate_size_reader_ignores_a_sibling_rope_ternary(tmp_path):
-    """The reader is keyed on the intermediate_size vocabulary, so a different
-    config-default ternary in the same __init__ is not mistaken for the FFN
-    width."""
-    src = _GPTJ_SHAPED_INNER.replace(
-        "        self.ln_1 = nn.LayerNorm(config.n_embd)",
-        "        rot = config.rotary_dim if config.rotary_dim is not None else 64\n"
-        "        self.ln_1 = nn.LayerNorm(config.n_embd)")
-    f = tmp_path / "modeling_y.py"
-    f.write_text(src)
-    from model_unfolder.evidence.patterns import decoder_intermediate_size_from_files
-    aliases = ("intermediate_size", "n_inner")
-    # rotary_dim ternary must NOT be picked; n_inner default (4*n_embd) wins
-    assert decoder_intermediate_size_from_files(
-        (str(f),), {"n_embd": 1024, "rotary_dim": None}, aliases) == 4096
-
 
 def test_gptj_family_derives_the_ffn_width_end_to_end():
     """GPT-J/CodeGen/GPT-2 carry ``n_inner=None`` and compute 4×hidden — the
@@ -1518,15 +1005,21 @@ def test_gptj_family_derives_the_ffn_width_end_to_end():
         ir = config_to_ir(cfg)
         hidden = getattr(cfg, "hidden_size", None) or getattr(cfg, embd_field)
         assert ir.layers[0].ffn.intermediate_size == 4 * hidden, mt
+        fact = ir.extras["fact_provenance"]["decoder.ffn.intermediate_size"]
+        assert fact["value"] == 4 * hidden
+        assert fact["status"] == "code_and_config"
 
 
-def test_declared_intermediate_size_is_never_overridden_by_code():
-    """The code reader fires ONLY when the config field is absent — a declared
-    intermediate_size (Llama) is authoritative and untouched."""
+def test_declared_intermediate_size_is_qualified_by_the_exact_code_path():
+    """Llama's declaration is retained because its exact FFN source consumes
+    that occurrence — not merely because the plausible field is present."""
     from transformers import AutoConfig
     cfg = AutoConfig.for_model("llama")
     ir = config_to_ir(cfg)
     assert ir.layers[0].ffn.intermediate_size == cfg.intermediate_size
+    fact = ir.extras["fact_provenance"]["decoder.ffn.intermediate_size"]
+    assert fact["value"] == cfg.intermediate_size
+    assert fact["status"] == "code_and_config"
 
 
 # ---------------------------------------------------------------------------
@@ -1536,10 +1029,11 @@ def test_declared_intermediate_size_is_never_overridden_by_code():
 def test_norm_kind_math_outranks_the_rms_eps_spelling():
     """PhiMoE constructs ``nn.LayerNorm`` while carrying ``rms_norm_eps`` — the
     RMS eps spelling lies, the code math (torch-builtin LayerNorm) tells the
-    truth; and T5 (``layer_norm_epsilon`` + RMS math) stays RMS.  Every plain
-    RMS/LN control is unchanged."""
+    truth.  T5 exposes rival encoder/decoder stages, so its epsilon spelling
+    cannot stand in for an exact primitive and the diagram stays generic.
+    Every unambiguous plain RMS/LN control is unchanged."""
     from transformers import AutoConfig
-    expect = {"phimoe": "LayerNorm", "t5": "RMSNorm", "llama": "RMSNorm",
+    expect = {"phimoe": "LayerNorm", "t5": "Wiring unresolved", "llama": "RMSNorm",
               "bloom": "LayerNorm", "gemma2": "RMSNorm", "qwen3": "RMSNorm"}
     for mt, want in expect.items():
         ir = config_to_ir(AutoConfig.for_model(mt))
@@ -1548,14 +1042,23 @@ def test_norm_kind_math_outranks_the_rms_eps_spelling():
         assert drawn == {want}, f"{mt}: drew {drawn}, expected {want}"
 
 
-def test_norm_math_verdict_maps_torch_builtin_names():
-    """The math reader classifies a torch-builtin norm by its API name (fixed
-    library math), so a class with no in-file forward still resolves."""
-    from model_unfolder.evidence.patterns import _norm_math_verdict
-    import ast as _ast
-    assert _norm_math_verdict(None, {}, "LayerNorm", _ast) == "layernorm"
-    assert _norm_math_verdict(None, {}, "RMSNorm", _ast) == "rmsnorm"
-    assert _norm_math_verdict(None, {}, "SomethingElse", _ast) is None
+def test_t5_two_stage_norm_stays_unknown_until_stage_selection_is_proven():
+    """T5Model delegates to both encoder and decoder stacks.
+
+    The exact address rail preserves both rivals; an epsilon field spelling
+    must not pick a primitive or pretend one stage was selected.
+    """
+    from transformers import AutoConfig
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.evidence.decoder_norm import decoder_norm_kind_for_path
+    cfg = AutoConfig.for_model("t5")
+    context = ParseContext.build(cfg)
+    result = decoder_norm_kind_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "ambiguous"
+    ir = config_to_ir(cfg, parse_context=context)
+    assert {layer.norm_kind for layer in ir.layers} == {"unknown"}
 
 
 # ---------------------------------------------------------------------------
@@ -1629,7 +1132,8 @@ class XMoE(nn.Module):
         return topk_indices, topk_weights
 
     def forward(self, hidden_states):
-        return hidden_states
+        indices, weights = self.route_tokens_to_experts(hidden_states)
+        return indices, weights
 '''
 
 _MIXTRAL_SHAPED_ROUTER = '''
@@ -1647,7 +1151,7 @@ class XSparseMoeBlock(nn.Module):
         router_logits = self.gate(hidden_states)
         routing_weights = torch.nn.functional.softmax(router_logits, dim=1, dtype=torch.float)
         routing_weights, selected_experts = torch.topk(routing_weights, self.top_k, dim=-1)
-        return routing_weights
+        return selected_experts, routing_weights
 '''
 
 _SPARSEMIXER_SHAPED_ROUTER = '''
@@ -1656,11 +1160,20 @@ from torch import nn
 
 
 def sparsemixer(scores, top_k, jitter_eps):
-    masked_scores = scores.masked_fill(scores < 0, float("-inf"))
+    threshold, selected = scores.max(dim=-1, keepdim=True)
+    masked_scores = scores.masked_fill(scores < threshold, float("-inf"))
     masked_scores = torch.softmax(masked_scores, dim=-1)
-    selected = torch.topk(masked_scores, top_k, dim=-1)[1]
     weights = masked_scores.gather(dim=-1, index=selected)
-    return weights, selected
+    remainder = torch.scatter(scores, -1, selected, float("-inf"))
+    threshold_2, selected_2 = remainder.max(dim=-1, keepdim=True)
+    masked_scores_2 = remainder.masked_fill(
+        remainder < threshold_2, float("-inf"))
+    masked_scores_2 = torch.softmax(masked_scores_2, dim=-1)
+    weights_2 = masked_scores_2.gather(dim=-1, index=selected_2)
+    return (
+        torch.concat((weights, weights_2), dim=-1),
+        torch.concat((selected, selected_2), dim=-1),
+    )
 
 
 class XPhiMoeBlock(nn.Module):
@@ -1672,7 +1185,7 @@ class XPhiMoeBlock(nn.Module):
     def forward(self, hidden_states):
         router_logits = self.gate(hidden_states)
         routing_weights, selected_experts = sparsemixer(router_logits, self.top_k, jitter_eps=0.01)
-        return routing_weights
+        return selected_experts, routing_weights
 '''
 
 _GPTOSS_SHAPED_ROUTER = '''
@@ -1704,71 +1217,161 @@ class XTopKRouter(nn.Module):
         router_logits = F.linear(hidden_states, self.weight)
         router_top_value, router_indices = torch.topk(router_logits, self.top_k, dim=-1)
         router_scores = torch.nn.functional.softmax(router_top_value, dim=1)
-        return router_scores, router_indices
+        return router_indices, router_scores
 '''
 
 
-def _router_ev(tmp_path, src):
-    from model_unfolder.evidence.patterns import decoder_router_evidence_from_files
+def _router_ev(tmp_path, src, implementation):
+    from model_unfolder.evidence import program_index as pi
+    from model_unfolder.evidence.router import (
+        decoder_router_selection_for_path,
+    )
+    from model_unfolder.evidence.models import SourceBundle
     import hashlib
-    # unique filename per distinct source: _parse_defs is lru_cached on path, so
-    # two calls to the same path in one test would reuse the first parse.
+    src += f'''\n
+class XExpertStorage(nn.Module):
+    def __init__(self, config):
+        self.count = config.num_local_experts
+        self.width = config.intermediate_size
+        self.hidden = config.hidden_size
+        self.fused = nn.Parameter(torch.empty(
+            self.count, 2 * self.width, self.hidden))
+        self.down = nn.Parameter(torch.empty(
+            self.count, self.hidden, self.width))
+    def forward(self, hidden_states, routes, weights):
+        out = torch.zeros_like(hidden_states)
+        for expert in routes:
+            gate, up = torch.nn.functional.linear(
+                hidden_states, self.fused[expert]).chunk(2, dim=-1)
+            mixed = torch.nn.functional.silu(gate) * up
+            value = torch.nn.functional.linear(mixed, self.down[expert])
+            out.index_add_(0, expert, value * weights)
+        return out
+
+class XRoutedCompute(nn.Module):
+    def __init__(self, config):
+        self.route = {implementation}(config)
+        self.experts = XExpertStorage(config)
+    def forward(self, hidden_states):
+        indices, weights = self.route(hidden_states)
+        return self.experts(hidden_states, indices, weights)
+
+class Block(nn.Module):
+    def __init__(self, config):
+        self.compute = XRoutedCompute(config)
+    def forward(self, hidden_states):
+        return self.compute(hidden_states)
+
+class Model(nn.Module):
+    def __init__(self, config):
+        self.layers = nn.ModuleList(
+            [Block(config) for _ in range(config.num_hidden_layers)])
+    def forward(self, hidden_states):
+        for layer in self.layers:
+            hidden_states = layer(hidden_states)
+        return hidden_states
+
+class Wrapper(nn.Module):
+    base_model_prefix = "model"
+    def __init__(self, config):
+        self.model = Model(config)
+'''
     f = tmp_path / f"modeling_{hashlib.md5(src.encode()).hexdigest()[:8]}.py"
     f.write_text(src)
-    return decoder_router_evidence_from_files((str(f),))
+    bundle = SourceBundle(
+        source="local", files=(str(f),),
+        component_files={"root": (str(f),)},
+        component_architectures={"root": "Wrapper"},
+        architecture="Wrapper")
+    result = decoder_router_selection_for_path(
+        pi.build_program_index(bundle), bundle, (), allow_root_stage=True)
+    assert result.status == "resolved", result
+    return result.value
 
 
 def test_router_sigmoid_and_aux_free_bias_from_split_router_and_block(tmp_path):
     """DeepSeek-V3/GLM-4.5 shape: the bias buffer lives in the router class, the
     sigmoid + group + gather in the MoE block's route_tokens_to_experts — the
-    reader scans the UNION and reports sigmoid + bias + grouped."""
-    ev = _router_ev(tmp_path, _DSV3_SHAPED_ROUTER)
-    assert ev is not None
-    assert ev.scoring_fn == "sigmoid" and ev.bias_correction and ev.grouped
-    assert not ev.sparsemixer
+    exact reader follows the invoked block/helper path and proves sigmoid+bias."""
+    ev = _router_ev(tmp_path, _DSV3_SHAPED_ROUTER, "XMoE")
+    assert ev.scoring_fn == "sigmoid" and ev.bias_correction
+    assert ev.selection_kind == "topk"
 
 
 def test_router_plain_softmax_topk(tmp_path):
-    ev = _router_ev(tmp_path, _MIXTRAL_SHAPED_ROUTER)
+    ev = _router_ev(tmp_path, _MIXTRAL_SHAPED_ROUTER, "XSparseMoeBlock")
     assert ev.scoring_fn == "softmax"
-    assert not ev.bias_correction and not ev.grouped and not ev.sparsemixer
+    assert not ev.bias_correction and ev.selection_kind == "topk"
 
 
 def test_router_sparsemixer_followed_into_the_free_function(tmp_path):
     """Phi shape: routing delegates to a module-level ``sparsemixer`` — the
     reader follows it one hop, reports sparsemixer + its softmax scoring."""
-    ev = _router_ev(tmp_path, _SPARSEMIXER_SHAPED_ROUTER)
-    assert ev.sparsemixer and ev.scoring_fn == "softmax"
+    ev = _router_ev(tmp_path, _SPARSEMIXER_SHAPED_ROUTER, "XPhiMoeBlock")
+    assert ev.selection_kind == "sparse_mixer" and ev.scoring_fn == "softmax"
     assert not ev.bias_correction
 
 
 def test_router_ignores_expert_activation_sigmoid(tmp_path):
     """gpt-oss shape: the EXPERT GLU uses ``torch.sigmoid(gate * alpha)`` — an
-    activation, not routing.  The score-transform detector keys on routing-logit
-    NAMES, so scoring resolves to the router's softmax, never the expert sigmoid."""
-    ev = _router_ev(tmp_path, _GPTOSS_SHAPED_ROUTER)
+    activation, not routing.  Exact expert-storage ownership plus local
+    score-to-selection dataflow resolves the router's softmax and prevents the
+    expert sigmoid from leaking across that boundary."""
+    ev = _router_ev(tmp_path, _GPTOSS_SHAPED_ROUTER, "XTopKRouter")
     assert ev.scoring_fn == "softmax", f"expert sigmoid leaked: {ev}"
-    assert not ev.bias_correction and not ev.sparsemixer
+    assert not ev.bias_correction and ev.selection_kind == "topk"
 
 
 def test_router_none_for_dense_model(tmp_path):
-    from model_unfolder.evidence.patterns import decoder_router_evidence_from_files
-    f = tmp_path / "modeling_dense.py"
-    f.write_text("import torch\nfrom torch import nn\n\nclass XMLP(nn.Module):\n"
-                 "    def __init__(self, config):\n        super().__init__()\n"
-                 "        self.fc = nn.Linear(4, 4)\n    def forward(self, x):\n        return self.fc(x)\n")
-    assert decoder_router_evidence_from_files((str(f),)) is None
+    src = """
+import torch
+from torch import nn
+class XMLP(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.fc = nn.Linear(4, 4)
+    def forward(self, x):
+        return self.fc(x)
+"""
+    from model_unfolder.evidence import program_index as pi
+    from model_unfolder.evidence.router import decoder_router_selection_for_path
+    from model_unfolder.evidence.models import SourceBundle
+    import hashlib
+    src += """
+class Block(nn.Module):
+    def __init__(self, config): self.compute = XMLP(config)
+    def forward(self, x): return self.compute(x)
+class Model(nn.Module):
+    def __init__(self, config):
+        self.layers = nn.ModuleList([Block(config) for _ in range(config.num_hidden_layers)])
+    def forward(self, x):
+        for layer in self.layers: x = layer(x)
+        return x
+class Wrapper(nn.Module):
+    base_model_prefix = "model"
+    def __init__(self, config): self.model = Model(config)
+"""
+    f = tmp_path / f"dense_{hashlib.md5(src.encode()).hexdigest()[:8]}.py"
+    f.write_text(src)
+    bundle = SourceBundle(
+        source="local", files=(str(f),),
+        component_files={"root": (str(f),)},
+        component_architectures={"root": "Wrapper"}, architecture="Wrapper")
+    result = decoder_router_selection_for_path(
+        pi.build_program_index(bundle), bundle, (), allow_root_stage=True)
+    assert result.status == "failed"
 
 
 def test_glm45_router_draws_sigmoid_bias_and_gather_from_code():
     """The headline S2 fix: GLM-4.5's config lacks scoring_func/topk_method but
     its code enacts DeepSeek-V3 routing — the drawn router must be sigmoid with
-    the aux-loss-free bias and the raw-weight gather, not a plain softmax."""
+    a stored selection-only bias and raw-weight gather, not a plain softmax."""
     from transformers import AutoConfig
     import model_unfolder as mu
     html = mu.unfold(AutoConfig.for_model("glm4_moe")).to_html()
     assert "sigmoid" in html
-    assert "load-balancing" in html          # aux-loss-free bias card
+    assert "Stored selection bias" in html   # exact selection-only bias card
+    assert "load-balancing" not in html      # purpose/update policy is unproved
     assert "Gather weights" in html          # raw-weight gather step
     assert "softmax gating" not in html
 
@@ -1796,8 +1399,8 @@ def test_router_scoring_position_before_vs_after_topk(tmp_path):
     gpt-oss."""
     before_shape = _DSV3_SHAPED_ROUTER                 # sigmoid() ... then torch.topk
     after_shape = _GPTOSS_SHAPED_ROUTER                # torch.topk ... then softmax
-    assert _router_ev(tmp_path, before_shape).scoring_before_topk is True
-    assert _router_ev(tmp_path, after_shape).scoring_before_topk is False
+    assert _router_ev(tmp_path, before_shape, "XMoE").scoring_before_topk is True
+    assert _router_ev(tmp_path, after_shape, "XTopKRouter").scoring_before_topk is False
 
 
 def test_router_ignores_framework_container_aux_loss_softmax(tmp_path):
@@ -1817,7 +1420,7 @@ class XForCausalLM(nn.Module):
         routing_weights = torch.nn.functional.softmax(router_logits, dim=-1)
         return routing_weights
 '''
-    ev = _router_ev(tmp_path, src)
+    ev = _router_ev(tmp_path, src, "XTopKRouter")
     assert ev.scoring_fn == "softmax" and ev.scoring_before_topk is False
 
 
@@ -1838,17 +1441,32 @@ def test_glm45_draws_the_sigmoid_scoring_node_before_topk():
 _MOE_SCAFFOLD = '''
 import torch
 from torch import nn
+from torch.nn import functional as F
+from transformers.activations import ACT2FN
 
 
 class XExperts(nn.Module):
     def __init__(self, config):
         super().__init__()
-        self.num_experts = config.num_experts
-        self.experts = nn.ModuleList()
-        self.gate = nn.Linear(config.hidden_size, config.num_experts)
+        self.count = config.num_experts
+        self.width = config.intermediate
+        self.hidden = config.hidden_size
+        self.fused = nn.Parameter(torch.empty(
+            self.count, 2 * self.width, self.hidden))
+        self.down = nn.Parameter(torch.empty(
+            self.count, self.hidden, self.width))
+        self.act = ACT2FN[config.hidden_act]
 
-    def forward(self, x):
-        return x
+    def forward(self, x, routes, weights):
+        output = torch.zeros_like(x)
+        for index in routes:
+            current = x[index]
+            gate, up = F.linear(
+                current, self.fused[index]).chunk(2, dim=-1)
+            mixed = self.act(gate) * up
+            projected = F.linear(mixed, self.down[index])
+            output.index_add_(0, index, projected)
+        return output
 
 
 class XMoE(nn.Module):
@@ -1857,7 +1475,9 @@ class XMoE(nn.Module):
         self.experts = XExperts(config)
 
     def forward(self, x):
-        return self.experts(x)
+        routes = torch.arange(self.experts.count)
+        weights = torch.ones_like(routes)
+        return self.experts(x, routes, weights)
 
 
 class XMLP(nn.Module):
@@ -1868,7 +1488,7 @@ class XMLP(nn.Module):
         self.down_proj = nn.Linear(config.intermediate_size, config.hidden_size)
 
     def forward(self, x):
-        return self.down_proj(self.gate_proj(x))
+        return self.down_proj(F.silu(self.gate_proj(x)) * self.up_proj(x))
 
 
 class XAttention(nn.Module):
@@ -1892,6 +1512,30 @@ class XDecoderLayer(nn.Module):
 
     def forward(self, hidden_states, past_key_values=None):
         return hidden_states + self.mlp(self.self_attn(self.input_layernorm(hidden_states)))
+
+
+class XModel(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.layers = nn.ModuleList([
+            XDecoderLayer(config, i) for i in range(config.num_hidden_layers)
+        ])
+
+    def forward(self, hidden_states):
+        for layer in self.layers:
+            hidden_states = layer(hidden_states)
+        return hidden_states
+
+
+class XForCausalLM(nn.Module):
+    base_model_prefix = "model"
+
+    def __init__(self, config):
+        super().__init__()
+        self.model = XModel(config)
+
+    def forward(self, hidden_states):
+        return self.model(hidden_states)
 '''
 
 # Gate forms — each substitutes the FFN-field construction block:
@@ -1929,11 +1573,31 @@ _CTOR_MULTI = (
 
 
 def _sched(tmp_path, ctor, cfg):
-    from model_unfolder.evidence.patterns import decoder_moe_schedule_from_files
+    from model_unfolder.evidence.ffn_schedule import decoder_ffn_schedule_for_path
+    from model_unfolder.evidence.models import SourceBundle
+    from model_unfolder.evidence.program_index import build_program_index
     import hashlib
     f = tmp_path / f"modeling_{hashlib.md5(ctor.encode()).hexdigest()[:8]}.py"
     f.write_text(_MOE_SCAFFOLD.format(ffn_ctor=ctor))
-    return decoder_moe_schedule_from_files((str(f),), cfg)
+    bundle = SourceBundle(
+        source="local", files=(str(f),),
+        component_files={"root": (str(f),)},
+        component_architectures={"root": "XForCausalLM"},
+        architecture="XForCausalLM")
+
+    def select(path):
+        current = cfg
+        for part in path:
+            if not isinstance(current, dict) or part not in current:
+                return False, None, ""
+            current = current[part]
+        return True, current, "config_declared"
+
+    result = decoder_ffn_schedule_for_path(
+        build_program_index(bundle), bundle, (), allow_root_stage=True,
+        config_selector=select)
+    return ([item.state == "moe" for item in result.value.decisions]
+            if result.status == "resolved" else None)
 
 
 def test_moe_schedule_unconditional_all_moe(tmp_path):
@@ -1981,9 +1645,9 @@ def test_moe_schedule_detects_misnamed_moe_class(tmp_path):
     assert _sched(tmp_path, _CTOR_MISNAMED, {"num_hidden_layers": 2}) == [True]*2
 
 
-def test_moe_schedule_multiple_ffn_fields_returns_none(tmp_path):
-    """Ambiguous (shared_mlp + moe — hybrid shape) → None → config fallback."""
-    assert _sched(tmp_path, _CTOR_MULTI, {"num_hidden_layers": 4}) is None
+def test_moe_schedule_ignores_an_uninvoked_dense_sibling(tmp_path):
+    """A merely stored shared MLP cannot rival the exact invoked MoE field."""
+    assert _sched(tmp_path, _CTOR_MULTI, {"num_hidden_layers": 4}) == [True] * 4
 
 
 def test_moe_schedule_unresolvable_gate_returns_none(tmp_path):
@@ -1993,11 +1657,13 @@ def test_moe_schedule_unresolvable_gate_returns_none(tmp_path):
 
 
 def test_llama4_moe_schedule_now_drawn_moe_end_to_end():
-    """The headline fix: Llama-4's MoE was drawn all-dense (moe_layers unread +
-    interleave==1 inversion); the code schedule now draws it MoE."""
+    """A checkpoint-shaped Llama-4 declaration selects its exact MoE sites."""
     from transformers import AutoConfig
     import model_unfolder as mu
-    ir = mu.config_to_ir(AutoConfig.for_model("llama4_text"))
+    # ``for_model`` alone is a class-created object, not a checkpoint.  Its
+    # normalized ``moe_layers`` must not masquerade as checkpoint evidence;
+    # serializing it models the actual config.json declaration consumed here.
+    ir = mu.config_to_ir(AutoConfig.for_model("llama4_text").to_dict())
     moe = sum(1 for l in ir.layers if l.ffn.kind == "moe")
     assert moe == len(ir.layers) and moe > 0, f"only {moe}/{len(ir.layers)} MoE"
 
@@ -2007,7 +1673,7 @@ def test_ernie_moe_schedule_first_layer_dense_from_code():
     ((i+1)%interval==0 and i>=start=1) makes layer 0 dense."""
     from transformers import AutoConfig
     import model_unfolder as mu
-    ir = mu.config_to_ir(AutoConfig.for_model("ernie4_5_moe"))
+    ir = mu.config_to_ir(AutoConfig.for_model("ernie4_5_moe").to_dict())
     kinds = [l.ffn.kind for l in ir.layers]
     assert kinds[0] == "dense" and kinds[1] == "moe"
 
@@ -2017,10 +1683,11 @@ def test_moe_schedule_working_families_unchanged():
     DeepSeek dense-prefix, Mixtral/Qwen3/gpt-oss all-MoE."""
     from transformers import AutoConfig
     import model_unfolder as mu
-    ds = [l.ffn.kind for l in mu.config_to_ir(AutoConfig.for_model("deepseek_v3")).layers]
+    ds = [l.ffn.kind for l in mu.config_to_ir(
+        AutoConfig.for_model("deepseek_v3").to_dict()).layers]
     assert ds[:3] == ["dense"]*3 and all(k == "moe" for k in ds[3:])
     for mt in ("mixtral", "qwen3_moe", "gpt_oss"):
-        ir = mu.config_to_ir(AutoConfig.for_model(mt))
+        ir = mu.config_to_ir(AutoConfig.for_model(mt).to_dict())
         assert all(l.ffn.kind == "moe" for l in ir.layers), mt
 
 
@@ -2056,9 +1723,13 @@ def test_sliding_schedule_matches_code_layer_types():
         assert drawn == code, f"{mt}: sliding schedule diverged from code layer_types"
 
 
-def test_nope_schedule_matches_code_no_rope_layers():
-    """A model with a ``no_rope_layers`` list (Llama-4 iRoPE) must draw NoPE on
-    exactly the layers the code marks (``no_rope_layers[i]`` truthy = uses rope)."""
+def test_nope_schedule_declaration_does_not_project_without_selector_proof():
+    """A config schedule is not proof of how the forward applies positions.
+
+    Llama-4 exposes ``no_rope_layers``, but until U8 binds that declaration to
+    the exact positional selector in source, U4 must preserve every layer as
+    position-unknown rather than computing a plausible RoPE/NoPE schedule.
+    """
     from transformers import AutoConfig
     import model_unfolder as mu
     for mt in ("llama4_text",):
@@ -2066,336 +1737,51 @@ def test_nope_schedule_matches_code_no_rope_layers():
         nrl = getattr(cfg, "no_rope_layers", None)
         if not isinstance(nrl, (list, tuple)):
             continue
-        drawn = [bool(l.attention.no_rope) for l in mu.config_to_ir(cfg).layers]
-        code = [not bool(x) for x in nrl][:len(drawn)]
-        assert drawn == code, f"{mt}: NoPE schedule diverged from code no_rope_layers"
+        layers = mu.config_to_ir(cfg).layers
+        assert layers
+        assert all(layer.attention.no_rope is False for layer in layers)
+        assert all(layer.attention.rope is None for layer in layers)
+        assert all(
+            (layer.attention.position_kind,
+             layer.attention.position_application) == ("unknown", "unknown")
+            for layer in layers
+        )
 
 
 def test_moe_schedule_matches_code_construction():
-    """The MoE schedule (now code-authoritative) must match the code's per-layer
-    experts-class construction — the exact regression the interleave==1 bug was."""
+    """The drawn schedule equals the occurrence-exact construction schedule."""
     from transformers import AutoConfig
     import model_unfolder as mu
-    from model_unfolder.evidence.patterns import decoder_moe_schedule_from_files
-    import transformers, pathlib
-    base = pathlib.Path(transformers.__file__).parent / "models"
-    for mt, ff in (("llama4_text", "llama4/modeling_llama4.py"),
-                   ("deepseek_v3", "deepseek_v3/modeling_deepseek_v3.py"),
-                   ("ernie4_5_moe", "ernie4_5_moe/modeling_ernie4_5_moe.py")):
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.evidence.ffn_schedule import \
+        decoder_ffn_schedule_for_path
+    for mt in ("llama4_text", "deepseek_v3", "ernie4_5_moe"):
         cfg = AutoConfig.for_model(mt)
-        code = decoder_moe_schedule_from_files((str(base / ff),), cfg)
-        if code is None:
+        document = cfg.to_dict()
+        context = ParseContext.build(document)
+
+        def select(path):
+            current = document
+            for part in path:
+                if not isinstance(current, dict) or part not in current:
+                    return False, None, ""
+                current = current[part]
+            return True, current, "config_declared"
+
+        result = decoder_ffn_schedule_for_path(
+            context.program_index(), context.source_bundle, (),
+            allow_root_stage=True, config_selector=select)
+        if result.status != "resolved":
             continue
-        drawn = [(l.ffn.kind == "moe") for l in mu.config_to_ir(cfg).layers]
-        assert drawn == code[:len(drawn)], f"{mt}: drawn MoE schedule != code construction"
+        code = [item.state for item in result.value.decisions]
+        drawn = [layer.ffn.kind for layer in mu.config_to_ir(document).layers]
+        assert drawn == code[:len(drawn)], \
+            f"{mt}: drawn FFN schedule != exact construction schedule"
 
 
-# ---------------------------------------------------------------------------
-# Attention bias from construction (Group 2): code-authoritative QKV bias
-# ---------------------------------------------------------------------------
-
-def test_attention_bias_from_construction():
-    """The QKV-projection bias read from the attention class's construction:
-    Bloom/Qwen2 hardcode bias=True (config declares nothing → was drawn
-    bias-less); Llama gates on config.attention_bias; Phi-3 is bias=False."""
-    import transformers, pathlib
-    from transformers import AutoConfig
-    from model_unfolder.evidence.patterns import decoder_attention_bias_from_files
-    base = pathlib.Path(transformers.__file__).parent / "models"
-    cases = [("bloom", "bloom/modeling_bloom.py", None, True),
-             ("qwen2", "qwen2/modeling_qwen2.py", None, True),
-             ("phi3", "phi3/modeling_phi3.py", None, False),
-             ("llama", "llama/modeling_llama.py", {"attention_bias": False}, False),
-             ("llama", "llama/modeling_llama.py", {"attention_bias": True}, True)]
-    for mt, ff, override, want in cases:
-        cfg = AutoConfig.for_model(mt)
-        if override:
-            for k, v in override.items():
-                setattr(cfg, k, v)
-        got = decoder_attention_bias_from_files((str(base / ff),), cfg)
-        assert got == want, f"{mt} {override}: got {got}, want {want}"
-
-
-def test_parallel_norm_count_from_construction():
-    """Parallel-residual input-norm count from the code dataflow: GPT-J shares
-    one norm (1 — the pinned negative control), GPT-NeoX applies two separate
-    norms (2 — the fix); Falcon's conditional 4-field case → None (fallback)."""
-    import transformers, pathlib
-    from model_unfolder.evidence.patterns import decoder_parallel_norm_count_from_files
-    base = pathlib.Path(transformers.__file__).parent / "models"
-    for mt, ff, want in (("gptj", "gptj/modeling_gptj.py", 1),
-                         ("gpt_neox", "gpt_neox/modeling_gpt_neox.py", 2),
-                         ("falcon", "falcon/modeling_falcon.py", None)):
-        p = base / ff
-        if not p.exists():
-            continue
-        assert decoder_parallel_norm_count_from_files((str(p),)) == want, mt
-
-
-def test_diffusion_rope_component_scoping():
-    """The Sana leak, pinned: the DiT's own source says NO rotary; the pipeline
-    UNION (DiT + Gemma-2 text encoder) says rotary — because Gemma's markers
-    ride in.  Code readers must therefore consume ROOT-scoped files only."""
-    import diffusers, transformers, pathlib
-    from model_unfolder.evidence.patterns import diffusion_rope_from_files
-    sana = pathlib.Path(diffusers.__file__).parent / "models" / "transformers" / "sana_transformer.py"
-    gemma = pathlib.Path(transformers.__file__).parent / "models" / "gemma2" / "modeling_gemma2.py"
-    if not (sana.exists() and gemma.exists()):
-        return
-    assert diffusion_rope_from_files((str(sana),)) is False
-    assert diffusion_rope_from_files((str(sana), str(gemma))) is True  # the leak shape
-
-
-def test_diffusor_source_files_root_scoped():
-    """_source_files returns the ROOT component's files, never the pipeline
-    union; bundles without a component map keep the flat files (fallback)."""
-    from model_unfolder.evidence.models import SourceBundle
-    from model_unfolder.adapters.diffusor.parser import _source_files
-
-    class _Ctx:
-        def __init__(self, bundle):
-            self.source_bundle = bundle
-
-    scoped = SourceBundle(
-        source="local", files=("dit.py", "enc.py"),
-        component_files={"root": ("dit.py",), "text_encoder": ("enc.py",)})
-    assert _source_files({}, _Ctx(scoped)) == ("dit.py",)
-
-    flat = SourceBundle(source="local", files=("dit.py", "enc.py"))
-    assert _source_files({}, _Ctx(flat)) == ("dit.py", "enc.py")
-
-
-def test_intermediate_size_follows_into_ffn_class():
-    """Width-default idioms BELOW the layer init: the ternary or the inline
-    widened-Linear in the FFN-role class's own __init__ (BLOOM's
-    ``nn.Linear(hidden, 4*hidden)``); layer-init ternary (GPT-J) unchanged;
-    ambiguity (two distinct widened values) → None, never a guess."""
-    import transformers, pathlib
-    from transformers import AutoConfig
-    from model_unfolder.evidence.patterns import decoder_intermediate_size_from_files
-    base = pathlib.Path(transformers.__file__).parent / "models"
-    cfg = AutoConfig.for_model("bloom"); cfg.hidden_size = 14336
-    assert decoder_intermediate_size_from_files(
-        (str(base / "bloom/modeling_bloom.py"),), cfg,
-        ("intermediate_size", "n_inner", "ffn_dim")) == 4 * 14336
-    cfgj = AutoConfig.for_model("gptj")
-    assert decoder_intermediate_size_from_files(
-        (str(base / "gptj/modeling_gptj.py"),), cfgj,
-        ("intermediate_size", "n_inner")) == 4 * cfgj.n_embd
-
-
-def test_intermediate_size_ambiguous_widths_refuse(tmp_path):
-    """Two DIFFERENT widened Linears in one FFN init → None (tri-state law)."""
-    import hashlib
-    from transformers import AutoConfig
-    from model_unfolder.evidence.patterns import decoder_intermediate_size_from_files
-    src = '''
-import torch.nn as nn
-class OddMLP(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        hidden_size = config.hidden_size
-        self.a = nn.Linear(hidden_size, 4 * hidden_size)
-        self.b = nn.Linear(hidden_size, 8 * hidden_size)
-        self.down = nn.Linear(4 * hidden_size, hidden_size)
-    def forward(self, x):
-        return self.down(self.a(x) * self.b(x))
-class OddAttention(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        self.q_proj = nn.Linear(config.hidden_size, config.hidden_size)
-        self.k_proj = nn.Linear(config.hidden_size, config.hidden_size)
-        self.v_proj = nn.Linear(config.hidden_size, config.hidden_size)
-    def forward(self, x, past_key_value=None):
-        return x
-class OddBlock(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        self.self_attn = OddAttention(config)
-        self.mlp = OddMLP(config)
-    def forward(self, x, past_key_value=None):
-        return self.mlp(self.self_attn(x, past_key_value))
-'''
-    f = tmp_path / f"modeling_{hashlib.md5(src.encode()).hexdigest()[:8]}.py"
-    f.write_text(src)
-    cfg = AutoConfig.for_model("bloom"); cfg.hidden_size = 128
-    assert decoder_intermediate_size_from_files(
-        (str(f),), cfg, ("intermediate_size",)) is None
-
-
-def test_scores_scaling_wired_to_main_paths():
-    """B1: the unscaled-scores verdict reaches the MAIN paths' spec + all three
-    projections — reader witnesses (T5 raw QK^T → False, Llama SDPA → True),
-    wrapper root-scoping, spec emission only-when-False (byte-stability)."""
-    import transformers, pathlib
-    from model_unfolder.evidence.patterns import attention_score_scaling_from_files
-    from model_unfolder.evidence.models import SourceBundle
-
-    base = pathlib.Path(transformers.__file__).parent / "models"
-    t5 = base / "t5" / "modeling_t5.py"
-    llama = base / "llama" / "modeling_llama.py"
-    assert attention_score_scaling_from_files((str(t5),)) is False
-    assert attention_score_scaling_from_files((str(llama),)) is True
-
-    class _Ctx:
-        def __init__(self, bundle):
-            self.source_bundle = bundle
-
-    from model_unfolder.adapters.transformer.parser import (
-        _code_scores_scaled as t_scaled)
-    from model_unfolder.adapters.diffusor.parser import (
-        _code_scores_scaled as d_scaled)
-    t5_bundle = SourceBundle(source="local", files=(str(t5),))
-    assert t_scaled({}, _Ctx(t5_bundle)) is False
-    # Diffusor wrapper is ROOT-scoped: an unscaled encoder in the union must
-    # not flip the denoiser's verdict (the A1 scoping discipline).
-    mixed = SourceBundle(
-        source="local", files=(str(llama), str(t5)),
-        component_files={"root": (str(llama),), "text_encoder": (str(t5),)})
-    assert d_scaled({}, _Ctx(mixed)) is True
-
-
-def test_scores_scaled_projections_only_when_false():
-    """The spec field lands in BOTH dict projections ONLY when False — a
-    scaled/unknown model's output stays byte-identical (the scores_scale rule)."""
-    from model_unfolder.ir import AttentionSpec, _attention_to_dict
-    from model_unfolder.adapters.transformer.blocks.attention import attention_detail
-
-    base = AttentionSpec(kind="mha", num_heads=8, num_kv_heads=8, head_dim=64)
-    assert "scores_scaled" not in _attention_to_dict(base)
-    assert "scores_scaled" not in attention_detail(base)
-    proven = AttentionSpec(kind="mha", num_heads=8, num_kv_heads=8, head_dim=64,
-                           scores_scaled=False)
-    assert _attention_to_dict(proven)["scores_scaled"] is False
-    assert attention_detail(proven)["scores_scaled"] is False
-    scaled = AttentionSpec(kind="mha", num_heads=8, num_kv_heads=8, head_dim=64,
-                           scores_scaled=True)
-    assert "scores_scaled" not in _attention_to_dict(scaled)
-    assert "scores_scaled" not in attention_detail(scaled)
-
-
-def test_scores_scaled_region_drops_denominator():
-    """Opgraph spine: scores_scaled=False → numerator-only Q K^T (no sqrt
-    fraction); absent/True keeps the sqrt(dim) denominator."""
-    from model_unfolder.opgraph import attention_region
-
-    def _scores_meta(attn):
-        region = attention_region(attn, 512)
-        for op in region.ops:
-            meta = getattr(op, "meta", None) or {}
-            if "denominator" in meta:
-                return meta
-        raise AssertionError("no scores op with a formula meta found")
-
-    plain = {"kind": "mha", "num_heads": 8, "num_kv_heads": 8, "head_dim": 64}
-    assert _scores_meta(plain)["denominator"]          # sqrt(dim) kept
-    unscaled = dict(plain, scores_scaled=False)
-    assert _scores_meta(unscaled)["denominator"] is None
-    assert _scores_meta(unscaled)["formula"] == "QK^T"
-
-
-def test_cross_qk_norm_per_site_evidence(tmp_path):
-    """A3: the CROSS sublayer's Q/K-norm comes from the cross class's OWN
-    construction, per site — unconditional lane norms in a same-file cross
-    class prove it (Wan); a shared imported class or ctor-gated lane norms
-    stay None (PixArt/SD3 — only positive evidence draws the op)."""
-    import pathlib, hashlib
-    import diffusers
-    from model_unfolder.evidence.patterns import diffusion_cross_qk_norm_from_files
-
-    base = pathlib.Path(diffusers.__file__).parent / "models" / "transformers"
-    wan = base / "transformer_wan.py"
-    if wan.exists():
-        assert diffusion_cross_qk_norm_from_files((str(wan),)) == "rms_norm"
-    for stem in ("pixart_transformer_2d.py", "transformer_sd3.py"):
-        p = base / stem
-        if p.exists():
-            assert diffusion_cross_qk_norm_from_files((str(p),)) is None, stem
-
-    # ctor-GATED lane norm in a same-file cross class → None (guarded ≠ proven)
-    src = '''
-import torch, torch.nn as nn
-class GatedAttention(nn.Module):
-    def __init__(self, dim, qk_norm=None):
-        super().__init__()
-        if qk_norm:
-            self.norm_q = nn.RMSNorm(dim)
-            self.norm_k = nn.RMSNorm(dim)
-        self.to_q = nn.Linear(dim, dim)
-        self.to_k = nn.Linear(dim, dim)
-        self.to_v = nn.Linear(dim, dim)
-    def forward(self, x, encoder_hidden_states=None):
-        return x
-class SomeBlock(nn.Module):
-    def __init__(self, dim):
-        super().__init__()
-        self.attn1 = GatedAttention(dim)
-        self.attn2 = GatedAttention(dim)
-        self.ffn = nn.Linear(dim, dim)
-    def forward(self, hidden_states, encoder_hidden_states):
-        h = self.attn1(hidden_states)
-        h = self.attn2(h, encoder_hidden_states)
-        return self.ffn(h)
-'''
-    f = tmp_path / f"modeling_{hashlib.md5(src.encode()).hexdigest()[:8]}.py"
-    f.write_text(src)
-    assert diffusion_cross_qk_norm_from_files((str(f),)) is None
-
-
-def test_cross_spec_qk_norm_trusted_not_suppressed():
-    """The render layer trusts the spec: a cross spec whose qk_norm carries
-    per-site evidence draws Q/K Norm (detail keys + cards + region ops); a
-    cross spec without evidence draws none (the parse-time guard)."""
-    from model_unfolder.ir import AttentionSpec
-    from model_unfolder.adapters.transformer.blocks.attention import (
-        attention_detail, attention_child_blocks)
-    from model_unfolder.opgraph import attention_region
-
-    proven = AttentionSpec(kind="mha", num_heads=8, num_kv_heads=8, head_dim=64,
-                           cross_attention=True, cross_kv_source="encoded text prompt",
-                           qk_norm=True, cached=False)
-    d = attention_detail(proven)
-    assert d["q_norm"] and d["k_norm"]
-    ids = {c["id"] for c in attention_child_blocks(proven, 512, id_prefix="x_")}
-    assert {"x_q_norm", "x_k_norm"} <= ids
-    ops = {op.id for op in attention_region(d, 512).ops}
-    assert {"q_norm", "k_norm"} <= ops
-
-    unproven = AttentionSpec(kind="mha", num_heads=8, num_kv_heads=8, head_dim=64,
-                             cross_attention=True, cross_kv_source="encoded text prompt",
-                             qk_norm=False, cached=False)
-    d2 = attention_detail(unproven)
-    assert not d2["q_norm"] and not d2["k_norm"]
-    ids2 = {c["id"] for c in attention_child_blocks(unproven, 512, id_prefix="x_")}
-    assert "x_q_norm" not in ids2
-
-
-def test_attention_sinks_detection_and_surfacing(tmp_path):
-    """A4: bare `self.sinks` on an attention-evidence class fires (gpt-oss);
-    a `sinks` field on a non-attention class never does; the spec emits
-    only-when-True; the region draws the sink lane into the softmax."""
-    import hashlib
-    import transformers, pathlib
-    from model_unfolder.evidence.patterns import decoder_attention_sinks_from_files
-    base = pathlib.Path(transformers.__file__).parent / "models"
-    assert decoder_attention_sinks_from_files(
-        (str(base / "gpt_oss/modeling_gpt_oss.py"),)) is True
-    assert decoder_attention_sinks_from_files(
-        (str(base / "llama/modeling_llama.py"),)) is False
-
-    src = '''
-import torch.nn as nn
-class GraphPooler(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        self.sinks = nn.Linear(config.hidden_size, 4)   # not attention: no signal
-    def forward(self, x):
-        return self.sinks(x)
-'''
-    f = tmp_path / f"modeling_{hashlib.md5(src.encode()).hexdigest()[:8]}.py"
-    f.write_text(src)
-    assert decoder_attention_sinks_from_files((str(f),)) is False
-
+def test_attention_sinks_spec_and_rendering_surface():
+    """The exact-owner reader is pinned in test_attention_sinks; this control
+    proves its positive fact remains an only-when-True rendered mechanism."""
     from model_unfolder.ir import AttentionSpec, _attention_to_dict
     from model_unfolder.adapters.transformer.blocks.attention import (
         attention_detail, attention_child_blocks)
@@ -2426,87 +1812,6 @@ class GraphPooler(nn.Module):
     assert "sink_concat" in card_ids and "attention_sinks" not in card_ids
 
 
-def test_instance_gate_pruned_by_construction_site(tmp_path):
-    """A5: a SHARED block class instance-parameterized at the construction
-    site — the falsy-literal site loses the gated-branch facts; truthy and
-    computed sites keep them; branch-independent facts (sandwich norms whose
-    second norm runs in BOTH branches) survive the prune."""
-    import hashlib
-    from model_unfolder.evidence.stacks import secondary_stacks_from_files
-    from model_unfolder.evidence.transitive import build_registry
-    from model_unfolder.evidence.vision import layer_facts_from_block
-    from model_unfolder.everchanging import load_conformance_transitive
-
-    src = '''
-import torch, torch.nn as nn
-class SharedAttention(nn.Module):
-    def __init__(self, dim):
-        super().__init__()
-        self.to_q = nn.Linear(dim, dim)
-        self.to_k = nn.Linear(dim, dim)
-        self.to_v = nn.Linear(dim, dim)
-    def forward(self, x):
-        return x
-class SharedFeedForward(nn.Module):
-    def __init__(self, dim):
-        super().__init__()
-        self.fc1 = nn.Linear(dim, 4 * dim)
-        self.fc2 = nn.Linear(4 * dim, dim)
-    def forward(self, x):
-        return self.fc2(self.fc1(x))
-class SharedBlock(nn.Module):
-    def __init__(self, dim, modulation=True):
-        super().__init__()
-        self.modulation = modulation
-        self.attn = SharedAttention(dim)
-        self.feed_forward = SharedFeedForward(dim)
-        self.norm1 = nn.RMSNorm(dim)
-        self.norm2 = nn.RMSNorm(dim)
-        if modulation:
-            self.adaLN_modulation = nn.Linear(dim, 4 * dim)
-    def forward(self, x, temb=None):
-        if self.modulation:
-            scale, gate = self.adaLN_modulation(temb).chunk(2, dim=-1)
-            h = self.norm1(x)
-            x = x + gate.tanh() * self.norm2(self.attn(h))
-        else:
-            h = self.norm1(x)
-            x = x + self.norm2(self.attn(h))
-        return x + self.feed_forward(x)
-class SharedHost(nn.Module):
-    def __init__(self, dim, num_refiner_layers=2):
-        super().__init__()
-        self.context_refiner = nn.ModuleList(
-            [SharedBlock(dim, modulation=False) for _ in range(num_refiner_layers)])
-        self.noise_refiner = nn.ModuleList(
-            [SharedBlock(dim, modulation=True) for _ in range(num_refiner_layers)])
-    def forward(self, x, temb):
-        for blk in self.context_refiner:
-            x = blk(x)
-        for blk in self.noise_refiner:
-            x = blk(x, temb)
-        return x
-'''
-    f = tmp_path / f"modeling_{hashlib.md5(src.encode()).hexdigest()[:8]}.py"
-    f.write_text(src)
-    registry = build_registry([str(f)])
-    vocab = load_conformance_transitive()
-    stacks = {s.field_name: s for s in
-              secondary_stacks_from_files((str(f),), "SharedHost")}
-    assert dict(stacks["context_refiner"].ctor_kwargs) == {"modulation": False}
-    assert dict(stacks["noise_refiner"].ctor_kwargs) == {"modulation": True}
-
-    ctx = layer_facts_from_block("SharedBlock", registry, vocab,
-                                 ctor_kwargs=stacks["context_refiner"].ctor_kwargs)
-    assert ctx["residual_gated"] is False and ctx["gate_activation"] is None
-    noise = layer_facts_from_block("SharedBlock", registry, vocab,
-                                   ctor_kwargs=stacks["noise_refiner"].ctor_kwargs)
-    assert noise["residual_gated"] is True and noise["gate_activation"] == "tanh"
-    # no ctor info at all → class facts kept (never a wrong prune)
-    bare = layer_facts_from_block("SharedBlock", registry, vocab)
-    assert bare["residual_gated"] is True
-
-
 def test_unparsed_router_raises_ambiguity_not_softmax(tmp_path):
     """B4: config + code both silent on the score transform while source IS
     installed → the router block carries the ambiguous-evidence envelope (the
@@ -2514,11 +1819,8 @@ def test_unparsed_router_raises_ambiguity_not_softmax(tmp_path):
     (config-declared or code-read) carry no envelope."""
     import hashlib, json, pathlib
     from model_unfolder.adapters.transformer.parser import _moe_routing
+    from model_unfolder.evidence.context import ParseContext
     from model_unfolder.evidence.models import SourceBundle
-
-    class _Ctx:
-        def __init__(self, bundle):
-            self.source_bundle = bundle
 
     # A MoE-ish source whose router class the extractor can't resolve (no
     # routing tokens at all) — scoring stays unread while source exists.
@@ -2538,12 +1840,18 @@ class OpaqueBlock(nn.Module):
     class _Cfg:
         num_experts = 8
         num_experts_per_tok = 2
-    routing = _moe_routing(_Cfg(), _Ctx(SourceBundle(source="local", files=(str(f),))))
+    bundle = SourceBundle(
+        source="local", files=(str(f),),
+        component_files={"root": (str(f),)},
+        component_architectures={"root": "OpaqueBlock"},
+        architecture="OpaqueBlock")
+    routing = _moe_routing(_Cfg(), ParseContext(bundle))
     assert routing and routing.get("evidence", {}).get("status") == "ambiguous"
     assert "scoring_func" not in routing
 
     # no source at all → oracle_missing territory, NO ambiguity stamp
-    routing2 = _moe_routing(_Cfg(), _Ctx(SourceBundle(source="local", files=())))
+    routing2 = _moe_routing(
+        _Cfg(), ParseContext(SourceBundle(source="local", files=())))
     assert not (routing2 or {}).get("evidence")
 
     # blessed MoE fixtures stay envelope-free (config- or code-resolved)
@@ -2557,11 +1865,11 @@ class OpaqueBlock(nn.Module):
         assert '"status": "ambiguous"' not in blob.replace("'", '"'), stem
 
 
-def test_router_ambiguity_reaches_blocking_net(tmp_path):
-    """B4 end-to-end: the routing envelope lands on the router BLOCK's detail
-    and the blocking evidence_ambiguity finder reports it."""
+def test_config_only_expert_counts_do_not_create_a_router_block(tmp_path):
+    """The direct routing reader above retains its ambiguity control, but an
+    expert count alone cannot create a MoE/router surface for that ambiguity
+    to inhabit. U4-C must leave this exact opaque block source unresolved."""
     import hashlib
-    from model_unfolder.adapters.transformer.parser import parse as parse_transformer
     from model_unfolder.evidence.context import ParseContext
     from model_unfolder.evidence.models import SourceBundle
     from model_unfolder.sable import _ambiguous_evidence_findings
@@ -2588,17 +1896,14 @@ class OpaqueBlock(nn.Module):
     from model_unfolder.diagram import Diagram
     diagram = Diagram(config_to_ir(cfg, parse_context=ctx))
     findings = _ambiguous_evidence_findings(diagram.to_ir())
-    assert any("router" in x for x in findings), findings
+    assert not any("router" in x for x in findings), findings
+    assert all(layer.ffn.kind is None for layer in diagram.ir.layers)
 
 
 def test_companion_denoiser_notes_from_vocabulary():
-    """C2: companion-denoiser keys are YAML vocabulary — the expert-switch
-    spelling (`transformer_2` + boundary_ratio) and the CFG-twin spelling both
-    produce their note; neither key present → no note."""
+    """A checkpoint key alone cannot assert a companion-denoiser mechanism."""
     import json, pathlib
     from model_unfolder.sable import DEFAULT_CORPUS
-    from model_unfolder import unfold
-
     from model_unfolder.evidence.context import ParseContext
     from model_unfolder.adapters.diffusor.parser import parse as parse_diffusor
 
@@ -2607,7 +1912,7 @@ def test_companion_denoiser_notes_from_vocabulary():
     cfg = fx["config"]
     ir = parse_diffusor(cfg, context=ParseContext.build(cfg, source="local"))
     joined = " ".join(ir.notes or [])
-    assert "transformer_2" in joined and "0.875" in joined
+    assert "transformer_2" not in joined and "0.875" not in joined
 
     twin_cfg = {"_class_name": "SomePipeline",
                 "transformer": ["diffusers", "SomeTransformer2DModel"],
@@ -2616,20 +1921,19 @@ def test_companion_denoiser_notes_from_vocabulary():
                 "in_channels": 4, "joint_attention_dim": 2048}
     ir2 = parse_diffusor(twin_cfg)
     joined2 = " ".join(ir2.notes or [])
-    assert "CFG twin" in joined2 and "unconditional_transformer" in joined2
+    assert "CFG twin" not in joined2 and "unconditional_transformer" not in joined2
 
     plain = {"_class_name": "SomePipeline",
              "transformer": ["diffusers", "SomeTransformer2DModel"],
              "num_layers": 2, "num_attention_heads": 8, "attention_head_dim": 64,
              "in_channels": 4, "joint_attention_dim": 2048}
     assert not [n for n in (parse_diffusor(plain).notes or [])
-                if "denoiser" in n or "twin" in n]
+                if "companion" in n.lower() or "twin" in n.lower()]
 
 
-def test_dit_attention_bias_from_declared_config():
-    """C3: a diffusers config is a constructor record — a declared
-    `attention_bias: true` reaches the DiT AttentionSpec; silence keeps the
-    bias-less default (never a guess)."""
+def test_dit_attention_bias_declaration_does_not_prove_application():
+    """A config value is a possible constructor operand, not proof that this
+    exact denoiser attention applies biased projections."""
     import json, pathlib
     from model_unfolder.sable import DEFAULT_CORPUS
     from model_unfolder.evidence.context import ParseContext
@@ -2637,31 +1941,29 @@ def test_dit_attention_bias_from_declared_config():
     fx = json.loads((pathlib.Path(DEFAULT_CORPUS)
                      / "pixart-sigma-xl-2-1024-ms.json").read_text())
     ir = dparse(fx["config"], context=ParseContext.build(fx["config"], source="local"))
-    assert ir.layers[0].attention.bias is True
+    assert all(layer.attention.bias is None for layer in ir.layers)
     fx2 = json.loads((pathlib.Path(DEFAULT_CORPUS)
                       / "stable-diffusion-3-5-large.json").read_text())
     ir2 = dparse(fx2["config"], context=ParseContext.build(fx2["config"], source="local"))
-    assert ir2.layers[0].attention.bias is False
+    assert all(layer.attention.bias is None for layer in ir2.layers)
 
 
 def test_dit_norm_kind_resolved_from_classes_when_config_silent():
-    """C4: config-silent DiT norms resolve from ROOT-scoped class evidence
-    (never the pale "Normalization"), with code provenance in the prose;
-    an explicit config `norm_type` still wins (config-first on diffusers)."""
-    import json, pathlib
+    """A config ``norm_type`` cannot author or promote denoiser structure."""
+    import copy, json, pathlib
     from model_unfolder.sable import DEFAULT_CORPUS
     from model_unfolder.evidence.context import ParseContext
     from model_unfolder.adapters.diffusor.parser import parse as dparse
 
-    want = {"stable-diffusion-3-5-large": "LayerNorm",
-            "lumina-image-2-0": "RMSNorm"}
-    for stem, kind in want.items():
+    for stem in ("stable-diffusion-3-5-large", "lumina-image-2-0"):
         fx = json.loads((pathlib.Path(DEFAULT_CORPUS) / f"{stem}.json").read_text())
-        ir = dparse(fx["config"], context=ParseContext.build(fx["config"], source="local"))
-        norm = next(b for b in ir.layers[0].blocks
-                    if isinstance(b, dict) and b.get("kind") == "norm")
-        assert norm["label"] == kind, (stem, norm["label"])
-        assert "read from the model code" in (norm.get("description") or ""), stem
+        cfg = fx["config"]
+        rival = copy.deepcopy(cfg)
+        rival["norm_type"] = "invented_config_norm"
+        ir = dparse(cfg, context=ParseContext.build(cfg, source="local"))
+        altered = dparse(rival, context=ParseContext.build(rival, source="local"))
+        assert ir.layers == altered.layers
+        assert ir.extras["render"] == altered.extras["render"]
 
 
 def test_gemma2_softcaps_drawn_not_parked():
@@ -2705,13 +2007,20 @@ def test_gemma2_softcaps_drawn_not_parked():
     assert heads and "softcap" in (heads[0].get("title") or "").lower()
 
 
-def test_norm_placement_defaults_tagged_not_redrawn():
-    """B2 (corrected): reader abstention keeps the CONVENTIONAL pre cell —
-    principle 5, unresolvable → fallback, never a different drawing (T5's
-    ModuleList idiom made a norm-less "unknown" cell a real regression) —
-    but the assertion is TAGGED in the spec; a proven DiT sandwich is stated
-    on the norm cards (cell stays pre)."""
-    import json, pathlib
+def test_norm_placement_defaults_two_unknown_tiers():
+    """B2 (U2 endpoint): placement has TWO unknown tiers.
+
+    * source ABSENT (oracle_missing / zero evidence) → the pale
+      "code-defined wiring" block — no fabricated pre-norm cells, no
+      residual-tap claims (the tower_cell primitive on the main path);
+    * source PRESENT but the reader abstained on the idiom → the
+      conventional pre cell stays DRAWN (the op/nested-conformance oracle
+      still checks its norms/residual ops against the readable forward())
+      — recorded ambiguous + tagged asserted;
+    * a proven placement (real source) carries no tag at all.
+
+    Diffusion cell placement is now owned by U10's exact source projection and
+    has its own tests; this remains the transformer two-tier regression."""
     from model_unfolder.adapters.transformer.parser import parse as parse_transformer
     from model_unfolder.evidence.context import ParseContext
     from model_unfolder.evidence.models import SourceBundle
@@ -2719,32 +2028,26 @@ def test_norm_placement_defaults_tagged_not_redrawn():
     cfg = {"model_type": "llama", "hidden_size": 256, "num_hidden_layers": 2,
            "num_attention_heads": 8, "num_key_value_heads": 8,
            "intermediate_size": 512, "vocab_size": 1000}
+    # Tier 1: no source at all → pale wiring block, nothing conventional.
     ctx = ParseContext(source_bundle=SourceBundle(source="local", files=()),
                        source="local")
     ir = parse_transformer(cfg, context=ctx)
-    blocks = [b for b in ir.layers[0].blocks if isinstance(b, dict)]
-    assert "norm" in [b.get("kind") for b in blocks]          # conventional cell kept
-    assert "norm_placement" in (ir.layers[0].ffn.asserted or ())  # ...and tagged
+    assert ir.layers[0].norm_placement == "unknown"
+    ids = [b.get("id") for b in ir.layers[0].blocks if isinstance(b, dict)]
+    assert "wiring_unresolved" in ids and "rms1" not in ids
+    assert ctx.facts.records["decoder.layer.norm_placement"].status == "oracle_missing"
 
-    # proven placement (real source) → no tag
+    # Tier 2/proven: real source (llama's topology reader proves pre) → the
+    # concrete cell, no tag, code_proven ledger status.
     ctx2 = ParseContext.build(cfg, source="local")
     ir2 = parse_transformer(cfg, context=ctx2)
+    assert ir2.layers[0].norm_placement == "pre"
     assert "norm_placement" not in (ir2.layers[0].ffn.asserted or ())
-
-    # proven DiT sandwich → stated on the norm cards
-    from model_unfolder.sable import DEFAULT_CORPUS
-    from model_unfolder.adapters.diffusor.parser import parse as dparse
-    fx = json.loads((pathlib.Path(DEFAULT_CORPUS) / "lumina-image-2-0.json").read_text())
-    dir_ = dparse(fx["config"], context=ParseContext.build(fx["config"], source="local"))
-    norm_descs = [b.get("description", "") for b in dir_.layers[0].blocks
-                  if isinstance(b, dict) and b.get("kind") == "norm"]
-    assert any("sandwich placement" in d for d in norm_descs)
-
-
+    assert ctx2.facts.records["decoder.layer.norm_placement"].status == "code_proven"
 
 def test_unet_prose_on_code_evidence_rail():
-    """B3: UNet ResNet/conv activation follows the config's act_fn with
-    provenance (class default stated as default); the Transformer2D FFN is
+    """B3/U4-F: a resolved UNet activation follows the owner-bound act_fn
+    input; absence stays unresolved.  The Transformer2D FFN is independently
     honest-undeclared (never the old hardcoded GEGLU assertion)."""
     import json, pathlib
     from model_unfolder.sable import DEFAULT_CORPUS
@@ -2778,28 +2081,46 @@ def test_unet_prose_on_code_evidence_rail():
                         "act_fn": "gelu"})
     blob2 = json.dumps(unet_denoiser_children(unet2))
     assert "GroupNorm+GELU" in blob2 or "GroupNorm + GELU" in blob2
-    assert "declared by the config" in blob2
+    assert "resolved through the denoiser's act_fn input" in blob2
 
 
-def test_asserted_facts_tagged_and_advisory():
-    """B5: generic defaults land in the spec's `asserted` tuple (JSON-only;
-    key absent when everything is backed) and the advisory sable listing
-    reports them; declared/code-backed facts are never tagged."""
+def test_asserted_facts_are_tagged_for_the_s4_blocking_ship_gate():
+    """B5 (U2): the `asserted` tuple now carries ONLY the drawn conventions
+    the doctrine keeps (sqrt(dim) scores, split storage, kept-pre placement) —
+    everything else is either evidence-backed or a TYPED unknown, never a
+    default presented as fact. mask specifically (strengthened by P2d): no
+    architectures + no is_decoder, but the INSTALLED llama source
+    unconditionally builds a causal mask — CODE-PROVEN causal now outranks
+    the undeclared config (was a typed unknown before the reader existed);
+    still no asserted tag either way."""
     import json, pathlib
     from model_unfolder import unfold
-    from model_unfolder.sable import DEFAULT_CORPUS, _asserted_fact_findings
+    from model_unfolder.sable import DEFAULT_CORPUS
 
-    # a bare source-less-style config: mask stays the conventional causal
+    # bare llama-typed config WITHOUT architectures: decoder-ness undeclared
+    # by CONFIG, but code-proven causal by the P2d reader — evidence-backed,
+    # never a default presented as fact, no asserted tag.
     d = unfold({"model_type": "llama", "hidden_size": 256, "num_hidden_layers": 2,
                 "num_attention_heads": 8, "num_key_value_heads": 8,
                 "intermediate_size": 512, "vocab_size": 1000})
     ir = d.to_ir()
     attn = ir["layers"][0]["attention"]
-    assert "mask" in (attn.get("asserted") or [])
+    assert attn["mask"] == "causal"
+    prov = (ir.get("extras") or {}).get("fact_provenance") or {}
+    assert prov["decoder.attention.mask"]["status"] == "code_and_config"
+    assert "mask" not in (attn.get("asserted") or [])
     # scores_scale NOT tagged: the B1 code read backs sqrt(dim) (source installed)
     assert "scores_scale" not in (attn.get("asserted") or [])
-    findings = _asserted_fact_findings(ir)
-    assert any("'mask'" in f for f in findings)
+
+    # the SAME config with the real checkpoint's declaration draws causal
+    # with no tag (config_declared, not asserted).
+    d2 = unfold({"model_type": "llama", "architectures": ["LlamaForCausalLM"],
+                 "hidden_size": 256, "num_hidden_layers": 2,
+                 "num_attention_heads": 8, "num_key_value_heads": 8,
+                 "intermediate_size": 512, "vocab_size": 1000})
+    attn2 = d2.to_ir()["layers"][0]["attention"]
+    assert attn2["mask"] == "causal"
+    assert "mask" not in (attn2.get("asserted") or [])
 
     # a fully declared+code-backed model: FFN carries no asserted key at all
     fx = json.loads((pathlib.Path(DEFAULT_CORPUS) / "llama-7b.json").read_text())
@@ -2838,27 +2159,6 @@ def test_unet_ffn_activation_anchored_to_declared_blocks():
     assert "does not declare its inner structure" not in html
 
 
-def test_mlp_bias_from_construction():
-    """U2: MLP bias read from the FFN class's Linears, code-authoritative —
-    Bloom (nn.Linear default True, silent config) → True; Qwen2/Gemma2
-    literal False; Llama resolves `bias=config.mlp_bias` (False); GPT-2's
-    Conv1D layout abstains (None → config spelling stands)."""
-    import transformers, pathlib
-    from transformers import AutoConfig
-    from model_unfolder.evidence.patterns import decoder_mlp_bias_from_files
-    base = pathlib.Path(transformers.__file__).parent / "models"
-    want = {"bloom": True, "qwen2": False, "llama": False,
-            "gpt2": None, "gemma2": False}
-    for mt, w in want.items():
-        ff = base / mt / f"modeling_{mt}.py"
-        got = decoder_mlp_bias_from_files((str(ff),), AutoConfig.for_model(mt))
-        assert got is w or got == w, (mt, got, w)
-    # llama with mlp_bias=True in config → reader resolves the gate to True
-    cfg = AutoConfig.for_model("llama"); cfg.mlp_bias = True
-    assert decoder_mlp_bias_from_files(
-        (str(base / "llama/modeling_llama.py"),), cfg) is True
-
-
 def test_mla_kind_cross_check_both_directions(tmp_path):
     """U3: fact-conformance polices the attention KIND — a code-MLA drawn as
     GQA flags wrong_attention; drawn-MLA with no code MLA flags fabricated;
@@ -2889,41 +2189,66 @@ def test_mla_kind_cross_check_both_directions(tmp_path):
 
 
 def test_cross_attention_schedule_matches_declared_layers():
-    """U4a: the drawn cross-attention layer schedule EXACTLY matches the
-    declared ``cross_attention_layers`` list — on the wrapper AND on the bare
-    component config (whose cross layers were silently suppressed by a
-    vision_config gate until this lock caught it)."""
+    """U8-F: source selection + Q/K/V lineage, never the list alone, owns it.
+
+    The composite wrapper supplies an exact construction address and resolves.
+    A bare component config without an architecture address cannot silently
+    borrow the config list; once that same config supplies the exact class
+    address, the identical source proof resolves.
+    """
     from transformers import AutoConfig
     import model_unfolder as mu
-    for mt in ("mllama", "mllama_text_model"):
-        cfg = AutoConfig.for_model(mt)
-        text = getattr(cfg, "text_config", None) or cfg
-        declared = list(getattr(text, "cross_attention_layers", None) or [])
-        if not declared:
-            continue
-        ir = mu.config_to_ir(cfg)
-        drawn = [i for i, l in enumerate(ir.layers) if l.attention.cross_attention]
-        assert drawn == declared[:len(ir.layers)], \
-            f"{mt}: cross schedule diverged (drawn {drawn[:6]}… vs declared {declared[:6]}…)"
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.evidence.qualification import qualification_findings
+    wrapper = AutoConfig.for_model("mllama")
+    declared = list(wrapper.text_config.cross_attention_layers)
+    context = ParseContext.build(wrapper)
+    ir = mu.config_to_ir(wrapper, parse_context=context)
+    assert [i for i, layer in enumerate(ir.layers)
+            if layer.attention.cross_attention] == declared
+    fact = context.facts.typed[
+        "decoder.attention.cross_attention_schedule"]
+    assert fact.status == "code_and_config"
+    assert [i for i, kind in enumerate(fact.value)
+            if kind == "replacement_cross"] == declared
+    assert qualification_findings(ir.to_dict()) == []
+
+    bare = AutoConfig.for_model("mllama_text_model")
+    ir = mu.config_to_ir(bare)
+    assert not [layer for layer in ir.layers
+                if layer.attention.cross_attention]
+
+    addressed = bare.to_dict()
+    addressed["architectures"] = ["MllamaTextModel"]
+    ir = mu.config_to_ir(addressed)
+    assert [i for i, layer in enumerate(ir.layers)
+            if layer.attention.cross_attention] == declared
 
 
-def test_hybrid_mixer_schedule_matches_code_layer_types():
-    """U4b: the linear-mixer vs full-attention schedule matches the
-    ``layer_types`` list the attention/mixer classes read per index
-    (qwen3_next: gated_delta on 'linear_attention', softmax kinds on
-    'full_attention')."""
+def test_hybrid_mixer_schedule_is_bound_to_qwen3_next_source_selection():
+    """Qwen3-Next is a second real source shape on the exact U8-D rail.
+
+    The config list supplies values only after the source proves the indexed
+    construction and matching invocation for both candidate mechanisms.
+    """
     from transformers import AutoConfig
     import model_unfolder as mu
+    from model_unfolder.evidence.context import ParseContext
     for mt in ("qwen3_next",):
-        cfg = AutoConfig.for_model(mt)
-        lt = list(getattr(cfg, "layer_types", None) or [])
+        cfg = AutoConfig.for_model(mt).to_dict()
+        lt = list(cfg.get("layer_types") or [])
         if not lt:
             continue
-        ir = mu.config_to_ir(cfg)
+        context = ParseContext.build(cfg)
+        ir = mu.config_to_ir(cfg, parse_context=context)
         drawn = [l.attention.kind in ("gated_delta", "linear", "ssm", "rwkv")
                  for l in ir.layers]
         code = [x == "linear_attention" for x in lt][:len(drawn)]
         assert drawn == code, f"{mt}: mixer schedule diverged from layer_types"
+        fact = context.facts.typed["decoder.attention.mixer_schedule"]
+        assert fact.status in {"code_and_config", "class_default"}
+        assert tuple(item == "gated_delta" for item in fact.value) == tuple(code)
+        assert "layer_types" in fact.config_paths
 
 
 def test_patch_ops_humanized_and_plumbing_collapsed():

@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import re
 
-from ...labels import activation_label
 from .block_views import attention_card, block_detail_svg, sub_block_detail_svg
 from .utils import _attr, _fmt_int, _html, facts_html
 
@@ -12,18 +11,38 @@ _VIEWBOX_RE = re.compile(r'viewBox="0 0 ([0-9.]+) ([0-9.]+)"')
 
 def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
     """Cards-only HTML for the L2 inspect panel."""
-    panels: list[str] = [_hint_card("default", "Click a block above to inspect it")]
-
-    spec = info["dominant"]["spec"]
-    layer_blocks = spec.get("blocks") or []
+    dominant = info.get("dominant")
+    panels: list[str] = [_hint_card(
+        "default",
+        ("Click a block above to inspect it" if dominant else
+         "No repeated layer structure is available; inspect the proven model boundaries"),
+    )]
 
     for node_id in ("tok_text", "embed", "embed_norm", "join_concat",
                     "position_ids", "position_embed", "position_add"):
-        if node_id not in info.get("blocks", {}) and node_id not in {"tok_text", "embed"}:
+        block = info.get("blocks", {}).get(node_id)
+        if block is None:
+            continue
+        if not dominant and node_id != "tok_text" \
+                and block.get("resolved") is not True:
             continue
         panels.append(_simple_card(node_id, *_meta(info, node_id)))
 
-    for node_id in ("vision_path", "video_path", "audio_path", "fusion"):
+    # With no materialized layer, the model-level entry/output boundary cards
+    # are still real and clickable.  Return them without inventing any layer
+    # cards; the adapter-authored opaque body is static by construction.
+    if not dominant:
+        for node_id in ("final_rms", "lm_head"):
+            block = info.get("blocks", {}).get(node_id)
+            if block is not None and (
+                    node_id == "lm_head" or block.get("resolved") is True):
+                panels.append(_simple_card(node_id, *_meta(info, node_id)))
+        return "".join(panels)
+
+    spec = dominant["spec"]
+    layer_blocks = spec.get("blocks") or []
+
+    for node_id in ("vision_path", "video_path", "audio_path", "conditioning_path", "fusion"):
         block = info.get("blocks", {}).get(node_id)
         if not block:
             continue
@@ -58,7 +77,8 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
             panels.append(_simple_card(node_id, *_meta(info, node_id)))
 
     for node_id in ("final_rms", "lm_head"):
-        panels.append(_simple_card(node_id, *_meta(info, node_id)))
+        if node_id in info.get("blocks", {}):
+            panels.append(_simple_card(node_id, *_meta(info, node_id)))
 
     entry_block = info.get("blocks", {}).get("entry_stage")
     if entry_block:
@@ -84,8 +104,6 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
 def _build_nested_inspect_panels(ir: dict, info: dict, mount_id: str) -> list[str]:
     """Cards-only HTML for recursive nested inspect panels."""
     levels = _nested_child_levels(info)
-    if not levels:
-        levels = [_fallback_sub_inspect_children(ir, info["dominant"]["spec"]["ffn"])]
     return [_nested_panel(ir, info, mount_id, children) for children in levels if children]
 
 
@@ -195,8 +213,10 @@ def _sub_inspect_children(info: dict) -> list[dict]:
         if (block.get("role") in {"modality_input", "fusion", "mtp"}
                 or block.get("id") == "entry_stage"):
             children.extend(block.get("children") or [])
-    for block in (info["dominant"]["spec"].get("blocks") or []):
-        children.extend(block.get("children") or [])
+    dominant = info.get("dominant")
+    if dominant:
+        for block in (dominant["spec"].get("blocks") or []):
+            children.extend(block.get("children") or [])
     return children
 
 
@@ -223,82 +243,3 @@ def _unique_children(children: list[dict]) -> list[dict]:
         seen.add(child_id)
         unique.append(child)
     return unique
-
-
-def _fallback_sub_inspect_children(ir: dict, ffn: dict) -> list[dict]:
-    h = _fmt_int(ir.get("hidden_size"))
-    inter = _fmt_int(ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"))
-    activation = activation_label(ffn.get("activation") or "silu")
-    if ffn.get("kind") != "moe" and not ffn.get("gated", True):
-        return [
-            {"id": "up_proj", "title": "Input projection", "description": f"Linear · {h} → {inter}"},
-            {
-                "id": "activation",
-                "title": activation,
-                "description": "Element-wise non-linearity after the input projection",
-            },
-            {"id": "down_proj", "title": "Output projection", "description": f"Linear · {inter} → {h}"},
-        ]
-
-    if ffn.get("projection_mode") == "fused_gate_up":
-        # Source-proven FUSED storage: one gate+up matrix, split in forward —
-        # the drill draws gate_up_proj + gate_up_split, so those ids get the
-        # cards (Phi-3/phi-4; any fused-proven root).
-        first = [
-            {
-                "id": "gate_up_proj",
-                "title": "Fused gate+up projection",
-                "description": (f"One Linear · {h} → 2×{inter} — the gate and up "
-                                "projections stored as a single fused matrix."),
-            },
-            {
-                "id": "gate_up_split",
-                "title": "Split gate / up",
-                "description": "Chunks the fused projection into the gate and up halves.",
-            },
-        ]
-    else:
-        first = [
-            {
-                "id": "gate_proj",
-                "title": "Gate projection",
-                "description": f"Linear · {h} → {inter} (gated path through {activation})",
-            },
-            {"id": "up_proj", "title": "Up projection", "description": f"Linear · {h} → {inter}"},
-        ]
-    panels = [
-        *first,
-        {
-            "id": "activation",
-            "title": activation,
-            "description": "Element-wise non-linearity applied to the gate path.",
-        },
-        {
-            "id": "multiply",
-            "title": "Element-wise multiply",
-            "description": f"{activation}(gate) × up — combines the gated and ungated paths",
-        },
-        {"id": "down_proj", "title": "Down projection", "description": f"Linear · {inter} → {h}"},
-    ]
-    if ffn.get("kind") == "moe":
-        n_experts = _fmt_int(ffn.get("num_experts")) if ffn.get("num_experts") else "N"
-        n_active = ffn.get("num_experts_per_tok") or "k"
-        n_shared = ffn.get("num_shared_experts") or 0
-        panels.append({
-            "id": "router",
-            "title": "Router",
-            "description": f"Linear · {h} → {n_experts} (selects top-{n_active} experts per token)",
-        })
-        expert_desc = (
-            f"Dense FFN with same shape as above · {h} → {inter} → {h} · "
-            f"only top-{n_active} of {n_experts} active per token"
-            + (f" · plus {n_shared} shared expert(s) always active" if n_shared else "")
-        )
-        for eid in ("expert_1", "expert_k", "expert_kp1", "expert_n"):
-            panels.append({"id": eid, "title": "Expert FFN", "description": expert_desc})
-        panels.append({
-            "id": "add_moe",
-            "title": "Weighted sum",
-            "description": f"Combines top-{n_active} expert outputs weighted by router probabilities",
-        })
-    return panels

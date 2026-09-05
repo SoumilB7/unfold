@@ -1,0 +1,97 @@
+# Ledger-side scoped-ignore vocabulary (U2-R7).
+#
+# address_keys: identity/ADDRESS reads — a key whose inspected read locates a
+# source, selects a sub-document, or labels a card; it never authors drawn
+# structure.  The config-access ledger converts an inspected read of one of
+# these to a scoped `ignored` intent with a standing reason, so address
+# plumbing is never accessed-but-unconsumed debt.  Formerly the hardcoded
+# `_ADDRESS_KEYS` set in evidence/config_access.py — vocabulary lives HERE
+# (everchanging), never in code.
+#
+# The transformer domain's `ignored_fields.yaml` (keys + suffixes) is ALSO
+# consulted by the same ledger rail: those fields are declared
+# non-architectural for the audit diagnostic, and a read of one is display/
+# plumbing by the same declaration (token ids, sampling knobs).
+
+address_keys:
+  - model_type
+  - architectures
+  - _class_name
+  - _name_or_path
+  - name_or_path
+  - model_id
+  - repo_id
+  - family
+  - family_hint
+  - vision_family
+  - audio_family
+  - profile
+  - auto_map
+  - _diffusers_version
+  - transformers_version
+  - torch_dtype
+  - _commit_hash
+  - _vae_config
+  - _scheduler_config
+  - _text_encoder_configs
+  - _name
+  - id2label
+  - label2id
+  # U2-R7: pipeline component-slot address keys — the slot entry is
+  # ["diffusers", "ClassName"] (a class-name -> friendly-label read at
+  # adapters/diffusor/parser.py::_encoder_stack_specs); the encoder CONFIGS
+  # are audited under _text_encoder_configs as their own documents.
+  - text_encoder
+  - text_encoder_2
+  - text_encoder_3
+  # Composite bare slots (composite_slots.yaml vocabulary): the top-level
+  # slot read selects/validates a sub-document (its child declares its own
+  # model_type) — address, never structure.  Top-level exact match only.
+  - decoder
+  - audio_encoder
+  # scheduler slot: class-name -> stage label + flow-matching marker
+  # (adapters/diffusor/parser.py::parse); structural scheduler facts flow
+  # from _scheduler_config.* (U13 boundary).
+  - scheduler
+  # companion-denoiser slot presence (Wan 2.2 two-expert pipelines) — the
+  # stated-omission note reads only the KEY's presence.
+  - transformer_2
+  # U2-R7: sub-document WRAPPER probes — inspecting the wrapper key itself
+  # (does this config nest a text/vision sub-document?) selects a document,
+  # never authors structure; reads INSIDE the sub-document keep their own
+  # exact paths and are not touched by this entry.
+  - text_config
+  - vision_config
+
+# EXACT scoped ignore rules (Soumil's final vet, 2026-07-19): one row per
+# "<owner pattern> | <exact occurrence path> | <reason>".  A rule classifies
+# ONE read shape for ONE owner — never a bare key, never a suffix, never
+# globally.  (The former global feed from transformer/ignored_fields.yaml is
+# deleted; that file remains the unread-DIAGNOSTIC vocabulary only.)
+rules:
+  # Modality placeholder/control token ids: fusion/trace plumbing read by the
+  # modality detectors — values route tokens at runtime, never drawn structure.
+  - "root | image_token_id | token-id placeholder plumbing (modality detect/fusion)"
+  - "root | video_token_id | token-id placeholder plumbing (modality detect/fusion)"
+  - "root | vision_start_token_id | token-id placeholder plumbing (modality detect/fusion)"
+  - "root | vision_end_token_id | token-id placeholder plumbing (modality detect/fusion)"
+  - "root.text_encoder | image_token_id | token-id placeholder plumbing (embedded encoder slot)"
+  - "root.text_encoder | image_token_index | token-id placeholder plumbing (index spelling, llava)"
+  - "root.text_encoder | video_token_id | token-id placeholder plumbing (embedded encoder slot)"
+  - "root.text_encoder | vision_start_token_id | token-id placeholder plumbing (embedded encoder slot)"
+  - "root.text_encoder | vision_end_token_id | token-id placeholder plumbing (embedded encoder slot)"
+  - "root.text_encoder.vision | image_token_id | token-id placeholder plumbing (vision trace)"
+  - "root.text_encoder.vision | image_token_index | token-id placeholder plumbing (index spelling)"
+  - "root.text_encoder.vision | video_token_id | token-id placeholder plumbing (vision trace)"
+  - "root.text_encoder.vision | vision_start_token_id | token-id placeholder plumbing (vision trace)"
+  - "root.text_encoder.vision | vision_end_token_id | token-id placeholder plumbing (vision trace)"
+  - "root.vision | image_token_id | token-id placeholder plumbing (modality detect/fusion)"
+  - "root.vision | video_token_id | token-id placeholder plumbing (modality detect/fusion)"
+  - "root.vision | vision_start_token_id | token-id placeholder plumbing (modality detect/fusion)"
+  - "root.vision | vision_end_token_id | token-id placeholder plumbing (modality detect/fusion)"
+  # Wall-clock -> position-id mapping constant (Qwen-VL vision) — runtime
+  # plumbing beside position_id_per_seconds; exact nested occurrence.
+  - "root.text_encoder.vision | vision_config.tokens_per_second | wall-clock->position-id runtime constant"
+  # The embedded VAE component's class name: identity-as-ADDRESS at its exact
+  # nested occurrence (top-level address keys match only top-level reads now).
+  - "root.vae | _vae_config._class_name | component class-name address read (labels the VAE stage)"

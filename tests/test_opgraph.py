@@ -16,21 +16,118 @@ from model_unfolder.opgraph import (
 from model_unfolder.renderers.html.op_render import region_to_graph
 from model_unfolder.renderers.html.graph import wiring_problems
 
-GQA = {"kind": "gqa", "num_heads": 32, "num_kv_heads": 8, "head_dim": 128}
+GQA = {
+    "kind": "gqa",
+    "num_heads": 32,
+    "num_kv_heads": 8,
+    "head_dim": 128,
+    "projection_mode": "split_qkv",
+    "scores_scaled": True,
+    "rope": True,
+    "position_kind": "rope",
+    "position_application": "qk_rotation",
+    "cached": True,
+    "output_projection": True,
+}
+
+
+def _proven_mla(**values):
+    return {
+        "kind": "mla",
+        "cached": True,
+        "scores_scaled": True,
+        "rope": True,
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        **values,
+    }
 
 
 def test_gated_ffn_resolves_to_a_gated_region():
     r = ffn_region({"kind": "dense", "gated": True, "activation": "silu",
-                    "intermediate_size": 256}, 64)
+                    "intermediate_size": 256, "projection_mode": "split"}, 64)
     assert r.template == "gated_mlp" and r.resolved
     ids = {o.id for o in r.ops}
     assert {"gate_proj", "up_proj", "activation", "multiply", "down_proj"} <= ids
     assert r.merges() == ["multiply"]          # the single branch-merge point
 
 
+def test_exact_additive_gate_operand_is_visible_and_not_dangling():
+    r = ffn_region({
+        "kind": "dense",
+        "gated": True,
+        "activation": "swish",
+        "activation_formula": {
+            "kind": "swish",
+            "alpha": 1.702,
+            "up_offset": 1.0,
+        },
+        "intermediate_size": 256,
+        "projection_mode": "fused_gate_up",
+    }, 64)
+    graph = region_to_graph(r)
+    offset = next(node for node in graph.nodes if node.id == "up_offset")
+    assert offset.kind == "residual_add"
+    assert offset.sub == "1"
+    assert wiring_problems(graph) == []
+
+
+def test_connector_text_cannot_launder_a_missing_constant_operand():
+    from model_unfolder.renderers.html.graph import Graph, Node
+
+    bad = Graph(
+        nodes=[
+            Node("in", "port", "x", static=True),
+            Node("add", "residual_add", "Top-2 adjustment", sub="unresolved"),
+        ],
+        flow=["in", "add"],
+    )
+    problems = wiring_problems(bad)
+    assert len(problems) == 1 and "add" in problems[0]
+
+    numeric = Graph(
+        nodes=[
+            Node("in", "port", "x", static=True),
+            Node("add", "residual_add", "+", sub="+ 1"),
+        ],
+        flow=["in", "add"],
+    )
+    assert wiring_problems(numeric) == []
+
+
+def test_tower_variable_gate_is_a_real_side_input_not_a_caption_exception():
+    from model_unfolder.renderers.html.tower import tower_cell, tower_graph
+
+    cell = tower_cell(
+        "unit",
+        attn_label="Attention",
+        norm_label="RMSNorm",
+        placement="pre",
+        ffn_label="Feed-forward",
+        attn_gate="tanh conditioning gate",
+        ffn_gate="tanh conditioning gate",
+    )
+    graph = tower_graph({"cell": cell, "repeat": 2})
+    gates = [node for node in graph.nodes if node.kind == "gate_mul"]
+    assert len(gates) == 2
+    assert all(node.sub is None for node in gates)
+    assert {
+        (side.node, side.target)
+        for side in graph.side_inputs
+    } == {
+        ("unit_op_selfattn_gate_operand", "unit_op_selfattn_gate"),
+        ("unit_op_ffn_gate_operand", "unit_op_ffn_gate"),
+    }
+    assert {
+        node.label for node in graph.nodes
+        if node.id.endswith("_gate_operand")
+    } == {"tanh conditioning gate"}
+    assert wiring_problems(graph) == []
+
+
 def test_dense_ffn_is_a_plain_chain():
     r = ffn_region({"kind": "dense", "gated": False, "activation": "gelu",
-                    "intermediate_size": 256}, 64)
+                    "intermediate_size": 256, "projection_mode": "dense"}, 64)
     assert r.template == "dense_mlp"
     assert r.merges() == []                     # no branch — a straight column
 
@@ -46,7 +143,10 @@ def test_custom_ffn_falls_back_to_one_honest_opaque_node():
 
 def test_render_and_json_project_from_the_same_region():
     """The whole point: render and JSON consume ONE region (no second authoring)."""
-    r = ffn_region({"kind": "dense", "gated": True, "intermediate_size": 256}, 64)
+    r = ffn_region({
+        "kind": "dense", "gated": True, "intermediate_size": 256,
+        "projection_mode": "split",
+    }, 64)
     json_ids = {n["id"] for n in _region_to_json(r)["nodes"]}
     graph_ids = {n.id for n in region_to_graph(r).nodes}
     # every structural op id appears in both projections (the render adds only a
@@ -70,20 +170,30 @@ def test_custom_ffn_json_is_one_opaque_node():
 def test_gqa_attention_region_is_a_multi_merge_dag():
     r = attention_region(GQA, 4096)
     assert r.template == "gqa" and r.resolved
-    # two merge points: Q,K meet at the scores; softmax,V meet at apply-V.
-    assert set(r.merges()) == {"scaled_scores", "attn_apply_v"}
+    # Cached attention has three real merges: K,V enter the cache; Q and the
+    # cached K meet at scores; softmax and the cached V meet at apply-V.
+    assert set(r.merges()) == {
+        "kv_cache", "scaled_scores", "attn_apply_v"}
     # op ids ARE the inspect-card ids — one identity for structure and clicks.
     assert {"q_proj", "k_proj", "v_proj", "scaled_scores", "attn_softmax",
             "attn_apply_v", "concat_heads", "o_proj"} <= {o.id for o in r.ops}
 
 
+def test_known_attention_without_output_proof_uses_an_opaque_output_path():
+    r = attention_region({**GQA, "output_projection": None}, 4096)
+    assert "o_proj" not in r.by_id()
+    assert r.by_id()["attention_output_unresolved"].kind == "opaque"
+    assert r.inputs_of("attention_output_unresolved") == ["concat_heads"]
+
+
 def test_attention_lanes_and_spine_are_derived_from_edges():
     g = region_to_graph(attention_region(GQA, 4096), clickable=True)
-    assert g.flow[:2] == ["hidden", "scaled_scores"]          # spine jumps to the join
+    assert g.flow[:3] == ["hidden", "kv_cache", "scaled_scores"]
     lanes = g.parallels[0].norm_lanes()
     # Q and K pass through RoPE before the scores (apply_rotary_pos_emb); V does not.
     assert [lane.ids for lane in lanes] == [["q_proj", "q_rope"], ["k_proj", "k_rope"], ["v_proj"]]
-    assert lanes[2].dst == ["attn_apply_v"]                   # V merges above the join
+    assert lanes[0].dst == ["scaled_scores"]  # Q bypasses the K/V cache.
+    assert g.parallels[1].norm_lanes()[1].dst == ["attn_apply_v"]
 
 
 def test_non_rope_family_omits_the_rope_step():
@@ -109,7 +219,11 @@ def test_alibi_bias_is_a_real_two_input_score_add():
     ordered = _lane_draw_order(parallel.norm_lanes(), parallel.dst)
     alibi_lane = next(lane for lane in ordered if lane.ids == ["alibi_bias"])
     v_lane = next(lane for lane in ordered if lane.ids == ["v_proj"])
-    assert ordered.index(v_lane) == 0
+    # Cached K/V stay adjacent while the independent ALiBi side input remains
+    # the outermost lane. The cache introduces a real earlier merge, so V no
+    # longer has to be the first lane merely to reach apply-V later.
+    k_lane = next(lane for lane in ordered if lane.ids == ["k_proj"])
+    assert abs(ordered.index(k_lane) - ordered.index(v_lane)) == 1
     assert ordered.index(alibi_lane) == len(ordered) - 1
 
 
@@ -120,6 +234,13 @@ def test_cross_attention_kv_lanes_take_a_side_source():
     srcs = {tuple(lane.ids): lane.src for lane in lanes}
     assert srcs[("q_proj",)] is None                          # Q taps decoder hidden
     assert srcs[("k_proj",)] == srcs[("v_proj",)] == "cross_attention_states"
+    # Secondary inputs follow the SAME card-census contract as ordinary ops:
+    # the attention view passes clickable=True only when child cards exist.
+    # A real external-K/V card therefore makes this terminal a drill target,
+    # while a leaf attention view keeps the identical node static.
+    assert g.by_id()["cross_attention_states"].static is False
+    leaf = region_to_graph(r, clickable=False)
+    assert leaf.by_id()["cross_attention_states"].static is True
 
 
 def test_mla_indexer_is_additive_and_keeps_the_v_lane_off_the_spine():
@@ -130,8 +251,9 @@ def test_mla_indexer_is_additive_and_keeps_the_v_lane_off_the_spine():
     from model_unfolder.renderers.html.graph_engine import _lane_draw_order
     from model_unfolder.renderers.html.op_render import region_to_graph
 
-    mla = {"kind": "mla", "num_heads": 128, "head_dim": 192, "q_lora_rank": 1536,
-           "kv_lora_rank": 512, "rope_dim": 64}
+    mla = _proven_mla(
+        num_heads=128, head_dim=192, q_lora_rank=1536,
+        kv_lora_rank=512, rope_dim=64)
     dsa = {**mla, "index_n_heads": 64, "index_head_dim": 128, "index_topk": 2048}
 
     # Additive: V3 and V3.2 share the SAME query/kv/V structure; DSA only adds the indexer.
@@ -153,8 +275,9 @@ def test_mla_indexer_is_additive_and_keeps_the_v_lane_off_the_spine():
 
 
 def test_mla_region_nests_the_two_path_subgraphs():
-    attn = {"kind": "mla", "num_heads": 128, "head_dim": 192,
-            "q_lora_rank": 1536, "kv_lora_rank": 512, "rope_dim": 64}
+    attn = _proven_mla(
+        num_heads=128, head_dim=192, q_lora_rank=1536,
+        kv_lora_rank=512, rope_dim=64)
     r = attention_region(attn, 7168)
     kinds = {o.id: o.kind for o in r.ops}
     assert kinds["mla_query_path"] == kinds["mla_kv_path"] == "subgraph"
@@ -170,8 +293,9 @@ def test_concat_is_a_merge_glyph_while_head_merge_is_a_reshape_box():
     per-head outputs back to the model dim is a single-stream RESHAPE → a box. So a
     ‖ always means 'two named lanes joined here', never a relabelled 1-input op."""
     from model_unfolder.renderers.html.graph import KIND
-    attn = {"kind": "mla", "num_heads": 128, "head_dim": 192,
-            "q_lora_rank": 1536, "kv_lora_rank": 512, "rope_dim": 64}
+    attn = _proven_mla(
+        num_heads=128, head_dim=192, q_lora_rank=1536,
+        kv_lora_rank=512, rope_dim=64)
 
     # SDPA spine: concat-of-heads is a reshape, NOT a concat.
     ch = next(o for o in attention_region(GQA, 4096).ops if o.id == "concat_heads")
@@ -220,10 +344,13 @@ def test_a_one_input_concat_is_flagged_dangling():
 
 
 def test_mla_kv_path_v_exits_as_a_labelled_output_lane():
-    attn = {"kind": "mla", "kv_lora_rank": 512, "rope_dim": 64}
+    attn = _proven_mla(kv_lora_rank=512, rope_dim=64)
     g = region_to_graph(mla_kv_region(attn, 7168), clickable=True)
     # spine runs through compression -> latent cache -> expansion -> K concat
-    assert g.flow[:5] == ["hidden", "mla_kv_down", "mla_cache", "mla_kv_up", "mla_k_merge"]
+    assert g.flow[:6] == [
+        "hidden", "mla_kv_down", "mla_latent", "mla_cache",
+        "mla_kv_up", "mla_k_merge",
+    ]
     lanes = g.parallels[0].norm_lanes()
     v = next(lane for lane in lanes if lane.ids == ["mla_v"])
     assert v.dst == [] and v.out_label == "V"
@@ -268,6 +395,36 @@ def test_unknown_attention_kind_is_one_honest_opaque_node():
     r = attention_region({"kind": "brand_new_mixer", "class_name": "MyMixer"}, 1024)
     assert r.template == "opaque" and r.resolved is False
     assert [o.kind for o in r.ops] == ["opaque"]
+
+
+def test_missing_attention_kind_keeps_geometry_but_fabricates_no_mechanism():
+    r = attention_region(
+        {"kind": None, "num_heads": 32, "num_kv_heads": 8, "head_dim": 128},
+        4096,
+    )
+    assert r.template == "unknown_attention" and r.resolved is False
+    assert [op.kind for op in r.ops] == ["opaque"]
+    assert r.ops[0].meta["num_heads"] == 32
+    assert r.ops[0].meta["num_kv_heads"] == 8
+    assert r.ops[0].meta["head_dim"] == 128
+    fabricated = {
+        "q_proj", "k_proj", "v_proj", "qkv_proj", "scaled_scores",
+        "attn_softmax", "attn_apply_v", "q_rope", "k_rope", "kv_cache",
+    }
+    assert not (fabricated & {op.id for op in r.ops})
+
+
+def test_missing_attention_kind_is_opaque_on_render_and_json_surfaces():
+    r = attention_region({"kind": None, "num_heads": 16}, 1024)
+    json_nodes = region_to_json(r)["nodes"]
+    graph = region_to_graph(r, clickable=True)
+    assert [node["operation"] for node in json_nodes] == ["opaque"]
+    # The graph projection adds its presentation-only output bookend; the
+    # canonical structural node remains exactly one opaque block.
+    assert [node.id for node in graph.nodes] == ["block", "region_out"]
+    assert not {"q_proj", "k_proj", "v_proj", "scaled_scores"} & {
+        node.id for node in graph.nodes
+    }
 
 
 def test_attention_render_and_json_project_from_the_same_region():

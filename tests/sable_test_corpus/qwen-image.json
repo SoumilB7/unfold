@@ -1,0 +1,383 @@
+{
+  "checks": {
+    "asserted_facts": true,
+    "click_coupling": true,
+    "config_accessed_unprojected": true,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
+    "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
+    "dangling_connectors": true,
+    "document_boundary_completeness": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "projection_audit": true,
+    "qualified_projection_values": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true,
+    "zero_asserted_census": true
+  },
+  "config": {
+    "_class_name": "QwenImageTransformer2DModel",
+    "_diffusers_version": "0.34.0.dev0",
+    "_name_or_path": "Qwen/Qwen-Image",
+    "_pipeline_class_name": "QwenImagePipeline",
+    "_repo_id": "Qwen/Qwen-Image",
+    "_scheduler_config": {
+      "_class_name": "FlowMatchEulerDiscreteScheduler",
+      "_diffusers_version": "0.34.0.dev0",
+      "base_image_seq_len": 256,
+      "base_shift": 0.5,
+      "invert_sigmas": false,
+      "max_image_seq_len": 8192,
+      "max_shift": 0.9,
+      "num_train_timesteps": 1000,
+      "shift": 1.0,
+      "shift_terminal": 0.02,
+      "stochastic_sampling": false,
+      "time_shift_type": "exponential",
+      "use_beta_sigmas": false,
+      "use_dynamic_shifting": true,
+      "use_exponential_sigmas": false,
+      "use_karras_sigmas": false
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "architectures": [
+          "Qwen2_5_VLForConditionalGeneration"
+        ],
+        "attention_dropout": 0.0,
+        "bos_token_id": 151643,
+        "eos_token_id": 151645,
+        "hidden_act": "silu",
+        "hidden_size": 3584,
+        "image_token_id": 151655,
+        "initializer_range": 0.02,
+        "intermediate_size": 18944,
+        "max_position_embeddings": 128000,
+        "max_window_layers": 28,
+        "model_type": "qwen2_5_vl",
+        "num_attention_heads": 28,
+        "num_hidden_layers": 28,
+        "num_key_value_heads": 4,
+        "rms_norm_eps": 1e-06,
+        "rope_scaling": {
+          "mrope_section": [
+            16,
+            24,
+            24
+          ],
+          "rope_type": "default",
+          "type": "default"
+        },
+        "rope_theta": 1000000.0,
+        "sliding_window": 32768,
+        "text_config": {
+          "architectures": [
+            "Qwen2_5_VLForConditionalGeneration"
+          ],
+          "attention_dropout": 0.0,
+          "bos_token_id": 151643,
+          "eos_token_id": 151645,
+          "hidden_act": "silu",
+          "hidden_size": 3584,
+          "image_token_id": null,
+          "initializer_range": 0.02,
+          "intermediate_size": 18944,
+          "layer_types": [
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention",
+            "full_attention"
+          ],
+          "max_position_embeddings": 128000,
+          "max_window_layers": 28,
+          "model_type": "qwen2_5_vl_text",
+          "num_attention_heads": 28,
+          "num_hidden_layers": 28,
+          "num_key_value_heads": 4,
+          "rms_norm_eps": 1e-06,
+          "rope_scaling": {
+            "mrope_section": [
+              16,
+              24,
+              24
+            ],
+            "rope_theta": 1000000.0,
+            "rope_type": "default",
+            "type": "default"
+          },
+          "rope_theta": 1000000.0,
+          "sliding_window": null,
+          "torch_dtype": "float32",
+          "use_cache": true,
+          "use_sliding_window": false,
+          "video_token_id": null,
+          "vision_end_token_id": 151653,
+          "vision_start_token_id": 151652,
+          "vision_token_id": 151654,
+          "vocab_size": 152064
+        },
+        "tie_word_embeddings": false,
+        "torch_dtype": "bfloat16",
+        "transformers_version": "4.53.1",
+        "use_cache": true,
+        "use_sliding_window": false,
+        "video_token_id": 151656,
+        "vision_config": {
+          "depth": 32,
+          "fullatt_block_indexes": [
+            7,
+            15,
+            23,
+            31
+          ],
+          "hidden_act": "silu",
+          "hidden_size": 1280,
+          "in_channels": 3,
+          "in_chans": 3,
+          "initializer_range": 0.02,
+          "intermediate_size": 3420,
+          "model_type": "qwen2_5_vl",
+          "num_heads": 16,
+          "out_hidden_size": 3584,
+          "patch_size": 14,
+          "spatial_merge_size": 2,
+          "spatial_patch_size": 14,
+          "temporal_patch_size": 2,
+          "tokens_per_second": 2,
+          "torch_dtype": "float32",
+          "window_size": 112
+        },
+        "vision_end_token_id": 151653,
+        "vision_start_token_id": 151652,
+        "vision_token_id": 151654,
+        "vocab_size": 152064
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKLQwenImage",
+      "_diffusers_version": "0.34.0.dev0",
+      "attn_scales": [],
+      "base_dim": 96,
+      "dim_mult": [
+        1,
+        2,
+        4,
+        4
+      ],
+      "dropout": 0.0,
+      "latents_mean": [
+        -0.7571,
+        -0.7089,
+        -0.9113,
+        0.1075,
+        -0.1745,
+        0.9653,
+        -0.1517,
+        1.5508,
+        0.4134,
+        -0.0715,
+        0.5517,
+        -0.3632,
+        -0.1922,
+        -0.9497,
+        0.2503,
+        -0.2921
+      ],
+      "latents_std": [
+        2.8184,
+        1.4541,
+        2.3275,
+        2.6558,
+        1.2196,
+        1.7708,
+        2.6052,
+        2.0743,
+        3.2687,
+        2.1526,
+        2.8652,
+        1.5579,
+        1.6382,
+        1.1253,
+        2.8251,
+        1.916
+      ],
+      "num_res_blocks": 2,
+      "temperal_downsample": [
+        false,
+        true,
+        true
+      ],
+      "z_dim": 16
+    },
+    "attention_head_dim": 128,
+    "axes_dims_rope": [
+      16,
+      56,
+      56
+    ],
+    "guidance_embeds": false,
+    "in_channels": 64,
+    "joint_attention_dim": 3584,
+    "num_attention_heads": 24,
+    "num_layers": 60,
+    "out_channels": 16,
+    "patch_size": 2,
+    "pooled_projection_dim": 768,
+    "scheduler": [
+      "diffusers",
+      "FlowMatchEulerDiscreteScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "Qwen2_5_VLForConditionalGeneration"
+    ],
+    "tokenizer": [
+      "transformers",
+      "Qwen2Tokenizer"
+    ],
+    "transformer": [
+      "diffusers",
+      "QwenImageTransformer2DModel"
+    ],
+    "vae": [
+      "diffusers",
+      "AutoencoderKLQwenImage"
+    ]
+  },
+  "hash_signature": [
+    "3130960a49a7b5755a03df71c863676c",
+    "4b43fdd076d4dd5d6a6b852d96353ec3",
+    "5287cc8501c929c34e6d0b43d7731cf3",
+    "7971836ffdbcd94804b0c77b9f555d67",
+    "7f41627be6aa078212fb696cf99a7cc6",
+    "8b2186f92c2513348ed190b47cc83a68",
+    "bb58470aeb416484a80788857c79da0f",
+    "bca741a288ebc432209718d9d589178d",
+    "bdd81d368bf59ce20a6ac9cd400f917d",
+    "bffeb36bdbcb899a9b7c4cb2ff4ab759",
+    "c42470bb064f1f176b6efece5ccc2353",
+    "ce1353b7fc7865ce338424217feebd28",
+    "e8dcb9875790ae898ed6b47b4d76810c"
+  ],
+  "model": "Qwen-Image",
+  "proven_facts": [
+    "root.denoiser.diffusion_bookend_geometry",
+    "root.denoiser.diffusion_bookend_operations",
+    "root.denoiser.diffusion_root_topology",
+    "root.denoiser.stacks[0].attention[0].diffusion_attention_head_dim",
+    "root.denoiser.stacks[0].attention[0].diffusion_attention_head_protocol",
+    "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
+    "root.denoiser.stacks[0].diffusion_stack_depth"
+  ],
+  "source": "local",
+  "superseded_hash_signature": [
+    "1e58438e40005161df8d5109c200f77a",
+    "3130960a49a7b5755a03df71c863676c",
+    "44ef61e7b4ed7f37e080a5a9d28eb7b9",
+    "49617433d6f0a04076ce7bf0a0a3ef6e",
+    "4b43fdd076d4dd5d6a6b852d96353ec3",
+    "5287cc8501c929c34e6d0b43d7731cf3",
+    "7971836ffdbcd94804b0c77b9f555d67",
+    "7f41627be6aa078212fb696cf99a7cc6",
+    "8200d5df868ffdfeab084a892f04e88c",
+    "bb58470aeb416484a80788857c79da0f",
+    "bca741a288ebc432209718d9d589178d",
+    "bdd81d368bf59ce20a6ac9cd400f917d",
+    "c42470bb064f1f176b6efece5ccc2353",
+    "eeff7084747029722a3e5f82c1da7799"
+  ],
+  "view_signature": [
+    {
+      "hash": "8b2186f92c2513348ed190b47cc83a68",
+      "label": "architecture"
+    },
+    {
+      "hash": "bffeb36bdbcb899a9b7c4cb2ff4ab759",
+      "label": "architecture"
+    },
+    {
+      "hash": "7971836ffdbcd94804b0c77b9f555d67",
+      "label": "attn"
+    },
+    {
+      "hash": "ce1353b7fc7865ce338424217feebd28",
+      "label": "denoiser"
+    },
+    {
+      "hash": "e8dcb9875790ae898ed6b47b4d76810c",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "bdd81d368bf59ce20a6ac9cd400f917d",
+      "label": "encoder_0_op_selfattn"
+    },
+    {
+      "hash": "7f41627be6aa078212fb696cf99a7cc6",
+      "label": "ffn"
+    },
+    {
+      "hash": "3130960a49a7b5755a03df71c863676c",
+      "label": "scheduler"
+    },
+    {
+      "hash": "c42470bb064f1f176b6efece5ccc2353",
+      "label": "vae_decode"
+    },
+    {
+      "hash": "5287cc8501c929c34e6d0b43d7731cf3",
+      "label": "vae_decoder_block_1"
+    },
+    {
+      "hash": "bca741a288ebc432209718d9d589178d",
+      "label": "vae_decoder_block_2"
+    },
+    {
+      "hash": "4b43fdd076d4dd5d6a6b852d96353ec3",
+      "label": "vae_decoder_block_3"
+    },
+    {
+      "hash": "bb58470aeb416484a80788857c79da0f",
+      "label": "vae_decoder_block_4"
+    }
+  ],
+  "visual_evidence": {
+    "gallery_dir": "galleries/qwen-image",
+    "manifest": true,
+    "png_count": 13
+  }
+}

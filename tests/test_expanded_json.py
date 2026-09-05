@@ -24,43 +24,8 @@ LLAMA_TINY_CONFIG = {
     "hidden_act": "silu",
 }
 
-GEMMA4_VISION_TINY_CONFIG = {
-    "architectures": ["Gemma4ForConditionalGeneration"],
-    "model_type": "gemma4",
-    "_name_or_path": "google/gemma-4-e2b",
-    "image_token_id": 262144,
-    "image_seq_length": 280,
-    "image_token_count_options": [70, 140, 280, 560, 1120],
-    "projector_hidden_act": "gelu_pytorch_tanh",
-    "text_config": {
-        "architectures": ["Gemma4ForCausalLM"],
-        "model_type": "gemma4_text",
-        "vocab_size": 262208,
-        "hidden_size": 64,
-        "intermediate_size": 256,
-        "num_hidden_layers": 2,
-        "num_attention_heads": 4,
-        "num_key_value_heads": 1,
-        "max_position_embeddings": 1024,
-        "tie_word_embeddings": True,
-        "hidden_activation": "gelu_pytorch_tanh",
-    },
-    "vision_config": {
-        "architectures": ["Gemma4VisionModel"],
-        "model_type": "gemma4_vision",
-        "hidden_size": 32,
-        "num_hidden_layers": 3,
-        "num_attention_heads": 4,
-        "image_size": 896,
-        "patch_size": 16,
-        # Real gemma-4 vision structure: learned 2D positions + 2D RoPE, and a
-        # k×k average pool that reduces the token count after the encoder.
-        "position_embedding_size": 256,
-        "rope_parameters": {"rope_theta": 100.0, "rope_type": "default"},
-        "pooling_kernel_size": 3,
-        "global_head_dim": 8,
-    },
-}
+# Shared vision fixtures live in the importable test_support package (§16.1).
+from test_support import GEMMA4_VISION_TINY_CONFIG, MLLAMA_VISION_TINY_CONFIG
 
 
 QWEN2_AUDIO_SPARSE_CONFIG = {
@@ -89,37 +54,6 @@ QWEN2_AUDIO_SPARSE_CONFIG = {
 }
 
 
-MLLAMA_VISION_TINY_CONFIG = {
-    "architectures": ["MllamaForConditionalGeneration"],
-    "model_type": "mllama",
-    "_name_or_path": "meta-llama/Llama-3.2-11B-Vision",
-    "image_token_index": 128256,
-    "vision_config": {
-        "model_type": "mllama_vision_model",
-        "hidden_size": 1280,
-        "vision_output_dim": 7680,
-        "num_hidden_layers": 32,
-        "num_global_layers": 8,
-        "attention_heads": 16,
-        "image_size": 448,
-        "patch_size": 14,
-        "max_num_tiles": 4,
-    },
-    "text_config": {
-        "model_type": "mllama_text_model",
-        "vocab_size": 128256,
-        "hidden_size": 4096,
-        "intermediate_size": 14336,
-        "num_hidden_layers": 40,
-        "num_attention_heads": 32,
-        "num_key_value_heads": 8,
-        "cross_attention_layers": [3, 8, 13, 18, 23, 28, 33, 38],
-        "max_position_embeddings": 131072,
-        "hidden_act": "silu",
-    },
-}
-
-
 QWEN2_VL_TINY_CONFIG = {
     "architectures": ["Qwen2VLForConditionalGeneration"],
     "model_type": "qwen2_vl",
@@ -143,11 +77,14 @@ QWEN2_VL_TINY_CONFIG = {
     },
     "vision_config": {
         "architectures": ["Qwen2VisionTransformerPretrainedModel"],
-        "model_type": "qwen2_vl",
+        # Match the actual nested config class.  Using the wrapper's
+        # ``qwen2_vl`` discriminator here makes source resolution select the
+        # wrong config boundary and is not a valid Qwen2-VL counterexample.
+        "model_type": "qwen2_vl_vision",
         "embed_dim": 32,
         "hidden_size": 64,
-        "num_hidden_layers": 3,
-        "num_attention_heads": 4,
+        "depth": 3,
+        "num_heads": 4,
         "patch_size": 14,
         "temporal_patch_size": 2,
         "spatial_merge_size": 2,
@@ -242,7 +179,10 @@ class FakeMLP:
     assert evidence["provenance"]["source"] == "path"
     assert "grouped_kv_attention" in evidence["detections"]["attention"]
     assert evidence["detections"]["attention"]["grouped_kv_attention"]["locations"][0]["class"] == "FakeAttention"
-    assert data["layer_groups"][0]["attention"]["trace"]["code_finding_ids"]
+    # A global semantic detection can belong to a sibling owner. Expanded
+    # JSON keeps the exact IR path but cites no finding until a fact-level,
+    # owner-qualified receipt exists.
+    assert data["layer_groups"][0]["attention"]["trace"]["code_finding_ids"] == []
 
 
 def test_expanded_json_carries_structured_multimodal_inputs():
@@ -254,52 +194,44 @@ def test_expanded_json_carries_structured_multimodal_inputs():
     assert vision["input"] == {
         "kind": "image_pixels",
         "shape": ["batch", "images", "channels", "height", "width"],
-        "image_size": 896,
-        "patch_size": 16,
     }
     embedding = vision["embedding"]
-    assert {key: embedding[key] for key in ("kind", "patch_size", "out_features", "grid")} == {
-        "kind": "patch_embedding", "patch_size": 16, "out_features": 32, "grid": {
-            "kind": "static_patch_grid",
-            "patch": {"h": 16, "w": 16},
-            "input": {"h": 896, "w": 896},
-            "tiles": {"h": 56, "w": 56},
-        },
-    }
-    assert [op["kind"] for op in embedding["ops"]] == ["elementwise", "linear"]
-    assert embedding["source_owner"] == "Gemma4VisionModel"
+    assert embedding["kind"] == "code_defined_embedding"
+    # The exact active embedding route is not closed by U9 for this source
+    # version.  The former elementwise+linear profile came from the config/
+    # family shell; keep the stage navigable but mechanism-opaque.
+    assert set(embedding) == {"kind"}
     assert vision["encoder"]["kind"] == "vision_encoder"
-    assert vision["encoder"]["hidden_size"] == 32
+    assert vision["encoder"]["num_layers"] == 3
+    assert "hidden_size" not in vision["encoder"]
     # Position encoding is derived structurally (learned table + 2D RoPE), no family hint.
-    assert vision["encoder"]["position_encoding"] == {"kind": "learned_absolute_plus_rope"}
-    assert vision["encoder"]["global_head_dim"] == 8
-    # k=3 average pool surfaces as a post-encoder token-reduction section + stage.
-    assert vision["reduction"] == {
-        "kind": "token_pooling",
-        "kernel_size": 3,
-        "reduces_tokens_by": 9,
+    assert vision["encoder"]["position_encoding"] == {
+        "kind": "learned_absolute_plus_rope",
+        "application": "embedding_add_and_qk_rotation",
     }
-    assert vision["projector"]["out_features"] == 64
-    assert vision["tokens"] == {
-        "kind": "soft_visual_tokens",
-        "count": 280,
-        "count_options": [70, 140, 280, 560, 1120],
-        "width": 64,
-    }
+    # A checkpoint pool-size declaration cannot create a pooling operation.
+    # This source version proves no such post-stage call, so no reduction is
+    # rendered.
+    assert "reduction" not in vision
+    # COR-4/COR-5 (§9/§10): the embedder projects through a raw Parameter
+    # einsum — no construction-site Linear proves the output width, so the
+    # v1 binder refuses (out_width_source="unavailable") and the card
+    # carries NO out_features rather than the old text-width fabrication.
+    # The decoder-side token width below stays 64 (interface truth).
+    assert "out_features" not in vision["projector"]
+    assert vision["projector"]["source_evidence"]["out_width_source"] == "unavailable"
+    assert vision["tokens"] == {"kind": "soft_visual_tokens"}
     assert [step["operation"] for step in vision["pipeline"]] == [
         "input",
-        "patch_embedding",
+        "unknown",
         "encode",
-        "pool_tokens",
-        "project_to_text_width",
+        "unknown",
         "emit_soft_token_stream",
     ]
     assert vision["pipeline"][-1] == {
-        "id": "soft_visual_tokens",
+        "id": "vision_tokens",
         "operation": "emit_soft_token_stream",
         "kind": "soft_visual_tokens",
-        "count": 280,
-        "width": 64,
     }
 
     fusion = data["modalities"]["fusion"]
@@ -353,27 +285,20 @@ def test_expanded_json_carries_structured_audio_inputs():
     assert audio["input"] == {
         "kind": "audio_features",
         "shape": ["batch", "segments", "frames", "features"],
-        "feature_size": 128,
     }
     assert audio["encoder"]["kind"] == "audio_encoder"
     assert audio["encoder"]["source_owner"] == "Gemma4AudioModel"
-    assert audio["encoder"]["hidden_size"] == 1024
     assert audio["encoder"]["num_layers"] == 12
+    assert "hidden_size" not in audio["encoder"]
     assert audio["projector"]["kind"] == "linear_projector"
-    assert audio["projector"]["in_features"] == 1024
-    assert audio["projector"]["out_features"] == 64
-    assert audio["projector"]["source_class"] == "Linear"
-    assert [op["kind"] for op in audio["projector"]["ops"]] == ["linear"]
-    assert audio["tokens"] == {
-        "kind": "soft_audio_tokens",
-        "count": 750,
-        "ms_per_token": 40,
-        "width": 64,
-    }
+    assert "out_features" not in audio["projector"]
+    assert audio["projector"]["source_class"] == "Gemma4MultimodalEmbedder"
+    assert [op["kind"] for op in audio["projector"]["ops"]] == ["norm", "linear"]
+    assert audio["tokens"] == {"kind": "soft_audio_tokens"}
     assert [step["operation"] for step in audio["pipeline"]] == [
         "input",
         "encode",
-        "project_to_text_width",
+        "unknown",
         "emit_soft_token_stream",
     ]
 
@@ -418,11 +343,18 @@ def test_expanded_json_supports_mllama_cross_attention_vision():
     assert vision["kind"] == "image_to_cross_attention_states"
     assert vision["encoder"]["kind"] == "vision_encoder"
     assert vision["encoder"]["num_attention_heads"] == 16
-    # Structural: local+global layer split and the wide concatenated output.
-    assert vision["encoder"]["num_global_layers"] == 8
-    assert vision["encoder"]["output_dim"] == 7680
-    # max_num_tiles -> an image-tiling section + stage (image split into N tiles).
-    assert vision["tiling"] == {"kind": "image_tiling", "mode": "fixed_tiles", "max_tiles": 4}
+    # Two exact occurrences of the same block class stay separate: 32 local
+    # ungated blocks followed by 8 learned-gated global blocks.  The component
+    # total is the sum of those source-bound counts, not the last stage's 8.
+    variants = vision["encoder"]["variants"]
+    assert [item["repeat"] for item in variants] == [32, 8]
+    assert [item["residual_gated"] for item in variants] == [False, True]
+    assert variants[1]["gate_activation"] == "tanh"
+    assert variants[1]["gate_source"] == "parameter"
+    assert vision["encoder"]["num_layers"] == 40
+    # ``max_num_tiles`` is input geometry.  The modeling forward receives an
+    # already-tiled tensor; processor-side tiling is not a model operation.
+    assert "tiling" not in vision
     assert {key: vision["projector"][key] for key in
             ("kind", "in_features", "out_features", "source_class")} == {
         "kind": "linear_projector", "in_features": 7680,
@@ -431,15 +363,13 @@ def test_expanded_json_supports_mllama_cross_attention_vision():
     assert [op["kind"] for op in vision["projector"]["ops"]] == ["linear"]
     assert vision["tokens"] == {
         "kind": "vision_cross_attention_states",
-        "count": 1025,
         "width": 4096,
     }
     assert [step["operation"] for step in vision["pipeline"]] == [
         "input",
-        "tile_image",
-        "patch_embedding",
+        "unknown",
         "encode",
-        "project_to_decoder_width",
+        "unknown",
         "emit_cross_attention_states",
     ]
 
@@ -476,16 +406,38 @@ def test_mllama_cross_attention_is_layer_variant_only():
         if layer["attention"]["cross_attention"]
     ] == [3, 8, 13, 18, 23, 28, 33, 38]
 
+    # The layer role is exact, but its nested AutoModel attention owner is not
+    # source-addressable yet.  Preserve cross-attention while refusing to
+    # manufacture GQA from checkpoint head counts alone.
+    assert ir["layers"][3]["attention"]["kind"] is None
     html = diagram.to_html(standalone=False)
-    assert "GQA XAttn" in html
+    assert "Cross-Attention" in html
+    assert "GQA XAttn" not in html
     assert "Cross-Attention" in html
     assert "cross_attention_states" in html
     assert "Projected image states" in html
-    assert "Flatten spatial grid" in html
+    # The modeling forward receives an already-tiled tensor.  Tile creation
+    # lives in the processor, so max_num_tiles is geometry only and cannot
+    # fabricate a modeling-code operation in this diagram.
+    assert "Flatten spatial grid" not in html
     assert 'data-id="vision_enc_g0_op_selfattn"' in html
+    # The vision reader now proves more than a softmax kernel: one exact
+    # owner-bound head-count path shapes Q, K and V equally.  That is the MHA
+    # mechanism law itself, so this tower may open without borrowing the
+    # checkpoint's head counts or a model-family label.
+    vision_groups = ir["extras"]["modalities"]["inputs"]["vision"]["encoder"][
+        "sub_model"
+    ]["groups"]
+    assert all(group["attention"]["kind"] == "mha" for group in vision_groups)
+    assert all(
+        group["attention"]["projection_mode"] == "split_qkv"
+        for group in vision_groups
+    )
     assert "vision_enc_g0_attn_scaled_scores" in html
+    # The separate text-decoder cross-attention remains honestly unresolved;
+    # this assertion is scoped to the source-proven vision owner above.
     assert "vision_enc_g0_ffn_" in html
-    assert "separate vision tower" in html
+    assert "gated residuals" in html
     assert "Vision context" not in html
 
 
@@ -496,12 +448,14 @@ def test_expanded_json_supports_qwen_style_unified_grid_stream():
     vision = data["modalities"]["inputs"]["vision"]
     assert vision["kind"] == "image_to_grid_tokens"
     assert vision["encoder"]["kind"] == "vision_encoder"
-    assert vision["embedding"]["out_features"] == 32
-    assert vision["encoder"]["hidden_size"] == 32
-    assert vision["encoder"]["position_encoding"] == {"kind": "rope"}
+    assert vision["encoder"]["num_layers"] == 3
+    assert "hidden_size" not in vision["encoder"]
+    assert "position_encoding" not in vision["encoder"]
+    assert [op["kind"] for op in vision["embedding"]["ops"]][:2] == [
+        "reshape", "conv3d"]
     projector = vision["projector"]
     assert projector["kind"] == "patch_merger"
-    assert projector["in_features"] == 128 and projector["out_features"] == 64
+    assert "in_features" not in projector and projector["out_features"] == 64
     assert "profile" not in projector
     assert projector["source_class"] == "PatchMerger"
     assert [op["kind"] for op in projector["ops"]] == [
@@ -511,25 +465,17 @@ def test_expanded_json_supports_qwen_style_unified_grid_stream():
     assert vision["tokens"] == {
         "kind": "grid_visual_tokens",
         "width": 64,
-        "grid": {
-            "kind": "dynamic_thw_grid",
-            "runtime_input": "image_grid_thw",
-            "axes": ["time", "height", "width"],
-            "patch_size": 14,
-            "temporal_patch_size": 2,
-            "spatial_merge_size": 2,
-            "position_encoding": "multimodal_rope",
-        },
     }
     assert vision["pipeline"][-1]["operation"] == "emit_grid_token_stream"
 
     video = data["modalities"]["inputs"]["video"]
     assert video["kind"] == "video_to_grid_tokens"
-    assert video["embedding"]["out_features"] == 32
-    assert video["encoder"]["hidden_size"] == 32
+    assert video["encoder"]["num_layers"] == 3
+    assert "hidden_size" not in video["encoder"]
     video_projector = video["projector"]
     assert video_projector["kind"] == "patch_merger"
-    assert video_projector["in_features"] == 128 and video_projector["out_features"] == 64
+    assert "in_features" not in video_projector
+    assert video_projector["out_features"] == 64
     assert "profile" not in video_projector
     assert video_projector["source_class"] == "PatchMerger"
     assert [op["kind"] for op in video_projector["ops"]] == [
@@ -538,15 +484,6 @@ def test_expanded_json_supports_qwen_style_unified_grid_stream():
     assert video["tokens"] == {
         "kind": "grid_video_tokens",
         "width": 64,
-        "grid": {
-            "kind": "dynamic_thw_grid",
-            "runtime_input": "video_grid_thw",
-            "axes": ["time", "height", "width"],
-            "patch_size": 14,
-            "temporal_patch_size": 2,
-            "spatial_merge_size": 2,
-            "position_encoding": "multimodal_rope",
-        },
     }
 
     fusion = data["modalities"]["fusion"]
@@ -558,7 +495,6 @@ def test_expanded_json_supports_qwen_style_unified_grid_stream():
         "operation": "scatter_grid_tokens_into_placeholder_slots",
         "sources": ["vision", "video"],
         "position_encoding": "multimodal_rope",
-        "runtime_grid_inputs": ["image_grid_thw", "video_grid_thw"],
     }
     assert fusion["placeholders"]["image"] == {
         "kind": "image_placeholder",
@@ -578,7 +514,7 @@ def test_expanded_json_supports_qwen_style_unified_grid_stream():
     assert "title" not in encoded
 
 
-def test_modality_geometry_is_structural_but_fusion_waits_for_wrapper_source():
+def test_source_missing_modalities_keep_only_opaque_declared_lanes():
     qwen_like = deepcopy(QWEN2_VL_TINY_CONFIG)
     qwen_like.pop("model_type", None)
     qwen_like["architectures"] = []
@@ -586,9 +522,13 @@ def test_modality_geometry_is_structural_but_fusion_waits_for_wrapper_source():
     qwen_like["vision_config"]["architectures"] = []
 
     qwen_data = unfold(qwen_like, return_json=True)
-    assert qwen_data["modalities"]["inputs"]["vision"]["kind"] == "image_to_grid_tokens"
-    assert qwen_data["modalities"]["inputs"]["vision"]["tokens"]["grid"]["runtime_input"] == "image_grid_thw"
-    assert qwen_data["modalities"]["inputs"]["video"]["kind"] == "video_to_grid_tokens"
+    qwen_inputs = qwen_data["modalities"]["inputs"]
+    assert qwen_inputs["vision"]["kind"] == "code_defined_modality_path"
+    assert qwen_inputs["vision"]["encoder"] == {
+        "kind": "code_defined_encoder"}
+    assert qwen_inputs["vision"]["tokens"] == {
+        "kind": "code_defined_tokens"}
+    assert qwen_inputs["video"]["kind"] == "code_defined_modality_path"
     assert qwen_data["modalities"]["fusion"]["kind"] == "code_defined_fusion"
 
     mllama_like = deepcopy(MLLAMA_VISION_TINY_CONFIG)
@@ -597,13 +537,14 @@ def test_modality_geometry_is_structural_but_fusion_waits_for_wrapper_source():
     mllama_like["vision_config"].pop("model_type", None)
 
     mllama_data = unfold(mllama_like, return_json=True)
-    assert mllama_data["modalities"]["inputs"]["vision"]["kind"] == "image_to_cross_attention_states"
-    assert mllama_data["modalities"]["inputs"]["vision"]["tokens"]["count"] == 1025
+    mllama_vision = mllama_data["modalities"]["inputs"]["vision"]
+    assert mllama_vision["kind"] == "code_defined_modality_path"
+    assert mllama_vision["encoder"] == {"kind": "code_defined_encoder"}
+    assert mllama_vision["tokens"] == {"kind": "code_defined_tokens"}
     assert mllama_data["modalities"]["fusion"]["kind"] == "code_defined_fusion"
 
 
-def test_dynamic_resolution_vision_emits_dynamic_patch_grid():
-    """A Qwen2-VL-style tower has no fixed image_size; grid must be dynamic."""
+def test_config_only_patch_fields_do_not_emit_a_dynamic_grid():
     cfg = {
         "architectures": ["Qwen2VLForConditionalGeneration"],
         "model_type": "qwen2_vl",
@@ -630,15 +571,12 @@ def test_dynamic_resolution_vision_emits_dynamic_patch_grid():
             "num_heads": 4,
         },
     }
-    grid = unfold(cfg, return_json=True)["modalities"]["inputs"]["vision"]["embedding"]["grid"]
-    assert grid == {
-        "kind": "dynamic_patch_grid",
-        "patch": {"h": 14, "w": 14, "t": 2},
-        "spatial_merge_size": 2,
-    }
+    vision = unfold(cfg, return_json=True)["modalities"]["inputs"]["vision"]
+    assert vision["embedding"]["kind"] == "code_defined_embedding"
+    assert "grid" not in vision["embedding"]
 
 
-def test_non_square_patch_grid_keeps_both_axes():
+def test_config_only_non_square_patch_fields_do_not_create_a_grid():
     cfg = dict(LLAMA_TINY_CONFIG)
     cfg.update({
         "architectures": ["LlavaForConditionalGeneration"],
@@ -653,13 +591,11 @@ def test_non_square_patch_grid_keeps_both_axes():
             "num_attention_heads": 4,
         },
     })
-    grid = unfold(cfg, return_json=True)["modalities"]["inputs"]["vision"]["embedding"]["grid"]
-    assert grid["patch"] == {"h": 14, "w": 16}
-    assert grid["tiles"] == {"h": 32, "w": 28}
+    vision = unfold(cfg, return_json=True)["modalities"]["inputs"]["vision"]
+    assert "grid" not in vision["embedding"]
 
 
-def test_vision_pixel_shuffle_connector_internvl_style():
-    """InternVL: downsample_ratio -> a pixel-shuffle token-reduction stage."""
+def test_config_only_pixel_shuffle_declaration_cannot_create_reduction():
     cfg = {
         "architectures": ["InternVLForConditionalGeneration"], "model_type": "internvl",
         "image_token_id": 151667, "downsample_ratio": 0.5,
@@ -672,13 +608,17 @@ def test_vision_pixel_shuffle_connector_internvl_style():
                         "vocab_size": 1000, "rms_norm_eps": 1e-6},
     }
     v = unfold(cfg, return_json=True)["modalities"]["inputs"]["vision"]
-    assert v["reduction"] == {"kind": "pixel_shuffle", "downsample_ratio": 0.5, "reduces_tokens_by": 4}
-    assert v["encoder"]["feature_layer"] == -1
-    assert v["encoder"]["feature_select_strategy"] == "default"
+    assert "reduction" not in v
+    assert "feature_layer" not in v["encoder"]
+    assert "feature_select_strategy" not in v["encoder"]
+    # Installed source proves an MLP connector independently of the unproven
+    # pixel-shuffle declaration; preserving that projector does not license a
+    # reduction stage.
     assert v["projector"]["kind"] == "mlp_projector"
-    assert [s["operation"] for s in v["pipeline"]] == [
-        "input", "patch_embedding", "encode", "pixel_shuffle", "project_to_text_width", "emit_soft_token_stream",
-    ]
+    assert [item["kind"] for item in v["projector"]["ops"]] == [
+        "norm", "linear", "activation", "linear"]
+    assert all(step["operation"] != "pixel_shuffle"
+               for step in v["pipeline"])
 
 
 def test_vision_perceiver_resampler_idefics2_style():
@@ -695,13 +635,15 @@ def test_vision_perceiver_resampler_idefics2_style():
     }
     v = unfold(cfg, return_json=True)["modalities"]["inputs"]["vision"]
     assert v["projector"]["kind"] == "perceiver_resampler"
-    assert v["projector"]["num_latents"] == 64
-    # the resampler emits a fixed token count, not the input patch count
-    assert v["tokens"]["count"] == 64
+    assert v["projector"]["learned_queries"] is True
+    # Source proves a learned-query repeated resampler.  It does not yet prove
+    # which Parameter dimension is the emitted token axis, so the checkpoint's
+    # ``resampler_n_latents`` value cannot be copied as an output count.
+    assert "num_latents" not in v["projector"]
+    assert "count" not in v["tokens"]
 
 
-def test_vision_anyres_tiling_llava_onevision_style():
-    """LLaVA-OneVision: image_grid_pinpoints -> any-res tiling + 'full' feature select."""
+def test_processor_anyres_config_does_not_create_a_model_tiling_stage():
     cfg = {
         "architectures": ["LlavaOnevisionForConditionalGeneration"], "model_type": "llava_onevision",
         "image_token_index": 151646, "vision_feature_layer": -1, "vision_feature_select_strategy": "full",
@@ -714,9 +656,10 @@ def test_vision_anyres_tiling_llava_onevision_style():
                         "vocab_size": 1000, "rms_norm_eps": 1e-6},
     }
     v = unfold(cfg, return_json=True)["modalities"]["inputs"]["vision"]
-    assert v["tiling"] == {"kind": "image_tiling", "mode": "anyres", "num_layouts": 3,
-                           "aspect_ratio_policy": "anyres_max_9"}
-    assert v["encoder"]["feature_select_strategy"] == "full"
-    assert [s["operation"] for s in v["pipeline"]] == [
-        "input", "tile_image", "patch_embedding", "encode", "project_to_text_width", "emit_soft_token_stream",
-    ]
+    assert "tiling" not in v
+    # Source may prove the layer/token-selection operations, but the config's
+    # selector spelling/value is not itself architecture and is not copied.
+    if "feature_operations" in v["encoder"]:
+        assert {item["kind"] for item in v["encoder"]["feature_operations"]} >= {
+            "single_layer_select", "drop_first_token"}
+    assert all(step["operation"] != "tile_image" for step in v["pipeline"])

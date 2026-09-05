@@ -30,10 +30,17 @@ def build_layer_group(group: dict, raw: dict, evidence: dict | None) -> dict[str
             "ffn_kind":       ffn.get("kind"),
             "norm_kind":      rep.get("norm_kind"),
             "norm_placement": rep.get("norm_placement"),
+            "residual_topology": rep.get("residual_topology"),
         },
         "attention":         attention_view,
         "ffn":               build_ffn(ffn, hidden, path, evidence),
         "norm":              build_norm(rep, hidden, path),
-        "residual_topology": build_residual_topology(blocks, path),
+        "residual_topology": build_residual_topology(
+            blocks,
+            path,
+            rep.get("residual_topology"),
+            rep.get("parallel_norm_count"),
+            rep.get("residual_scale"),
+        ),
         "block_graph":       build_block_graph(blocks, path),
     }

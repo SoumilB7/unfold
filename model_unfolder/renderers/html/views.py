@@ -3,7 +3,14 @@ from __future__ import annotations
 
 from ...block_schema import DIFFUSION_BLOCK_IDS, DIFFUSION_STAGES
 from ...labels import kind_short, mask_short
+from ...evidence.receipts import receipts_from_projects
+from .fact_projection import (
+    DENOISER_DRAWN,
+    layer_and_model_facts,
+    projected_keys,
+)
 from .metadata import _block_label, _indices_summary, _signature
+from .render_context import current_render_context
 from .svg import (
     _branch_dot,
     _defs,
@@ -29,6 +36,11 @@ from .views_modalities import draw_multimodal_input_scaffold
 # A new architectural feature gets rendered by adding a kind here and tagging
 # the relevant blocks in the adapter — no edits to the layout engine itself.
 _KIND_LAYOUT = {
+    # Neutral rectangle for an unrecognized block kind.  It intentionally has
+    # its own entry even though the geometry resembles an ordinary box: using
+    # the norm entry as a fallback let later presentation changes silently
+    # recast an unknown operation as normalization.
+    "opaque":       {"shape": "rect",   "w": 200, "h": 44, "font": 15},
     "norm":         {"shape": "rect",   "w": 160, "h": 36, "font": 16},
     "linear":       {"shape": "rect",   "w": 200, "h": 38, "font": 15},
     "activation":   {"shape": "rect",   "w": 150, "h": 36, "font": 15},
@@ -36,6 +48,7 @@ _KIND_LAYOUT = {
     "ffn":          {"shape": "rect",   "w": 160, "h": 44, "font": 17},
     "ple":          {"shape": "rect",   "w": 160, "h": 44, "font": 17},
     "vision":       {"shape": "rect",   "w": 210, "h": 46, "font": 15},
+    "conditioning": {"shape": "rect",   "w": 210, "h": 46, "font": 15},
     "fusion":       {"shape": "rect",   "w": 230, "h": 50, "font": 15},
     "residual_add": {"shape": "circle", "w": 28,  "h": 28, "sym": "+"},
     "gate_mul":     {"shape": "circle", "w": 28,  "h": 28, "sym": "×"},
@@ -44,6 +57,35 @@ _KIND_LAYOUT = {
 _BLOCK_GAP = 32  # vertical gap between consecutive layer-body blocks
 # Larger than the arrow padding (`GAP` ×2) so the chain arrow has a visible
 # stem between blocks rather than collapsing to just an arrowhead.
+
+
+def _block_layout(block: dict) -> tuple[dict, float, float, int]:
+    """Resolve one architecture block's geometry, including stacked labels.
+
+    The top-level architecture renderer predates :class:`graph.Node`, so it
+    cannot inherit that engine's automatic multi-line sizing.  Apply the same
+    principle here: explicit and nominal kind dimensions are both floors, and
+    every truth-bearing label (single- or multi-line) may grow the box.  This is
+    purely presentation geometry; no model or mechanism identity participates.
+    """
+    layout = _KIND_LAYOUT.get(block.get("kind")) or _KIND_LAYOUT["opaque"]
+    font = block.get("font") or layout.get("font", 16)
+    width = max(layout["w"], block.get("w") or 0)
+    height = max(layout["h"], block.get("h") or 0)
+    label = block.get("label")
+    lines = (
+        tuple(str(line) for line in label)
+        if isinstance(label, (list, tuple)) else
+        (str(label),) if isinstance(label, str) and label else ())
+    if lines:
+        # The handwritten SVG font is wider than a monospace estimate; 0.8 is
+        # the measured safe bound for the standing "storage unresolved" label.
+        widest = max(len(line) for line in lines)
+        width = max(width, widest * (font + 5) * 0.8 + 32)
+        if len(lines) > 1:
+            height = max(height, 24 + len(lines) * (font + 7))
+    return layout, width, height, font
+
 
 def _is_diffusion_architecture(ir: dict) -> bool:
     return ((ir.get("extras") or {}).get("render") or {}).get("family") == "diffusion"
@@ -54,17 +96,96 @@ def _is_resolved_diffusion_block(is_diffusion: bool, info: dict, node_id: str, b
 
     Unknown diffusion nodes are still drawn and clickable, but pale, so a new
     adapter fact cannot quietly become a first-class block until we bless its
-    stage or slot here.
+    stage or slot here.  Additionally (U2/B2): ANY block that carries an
+    explicit ``resolved: False`` renders pale on every family — the generic
+    honest-unknown switch (the tower_cell "Code-defined block" primitive).
     """
-    if not is_diffusion:
-        return True
     data = dict(info.get("blocks", {}).get(node_id, {}))
     if block:
         data.update(block)
+    if data.get("resolved") is False:
+        return False
+    if not is_diffusion:
+        return True
     stage = data.get("diffusion_stage")
     if stage is not None:
         return stage in DIFFUSION_STAGES
     return node_id in DIFFUSION_BLOCK_IDS
+
+
+def _build_zero_layer_diffusion_view(ir: dict, info: dict, mount_id: str,
+                                     opaque: dict) -> str:
+    """Draw an honest boundary for a denoiser with no materialized root layer.
+
+    The ordinary architecture layout always contains transformer bookends.  On
+    a bare diffusion config that historical scaffold looked like a zero-layer
+    text decoder even though no token embedding, final norm, or LM head had
+    been proven.  Retain only exact source/output boundaries and independently
+    proven bookend operations around one opaque denoiser body.
+    """
+    canonical = info.get("blocks") or {}
+    blocks: list[dict] = []
+    for node_id in ("tok_text", "embed"):
+        block = canonical.get(node_id)
+        if not isinstance(block, dict):
+            continue
+        # The denoiser state boundary itself remains useful.  An intermediate
+        # operation is retained only when its producer marked it resolved.
+        if node_id == "tok_text" or block.get("resolved") is True:
+            blocks.append(block)
+    blocks.append(opaque)
+    for node_id in ("final_rms", "lm_head"):
+        block = canonical.get(node_id)
+        if not isinstance(block, dict):
+            continue
+        if node_id == "lm_head" or block.get("resolved") is True:
+            blocks.append(block)
+
+    w = 720
+    gap = 34
+    layouts = [(_block_layout(block), block) for block in blocks]
+    content_h = sum(layout[2] for layout, _block in layouts) \
+        + gap * max(0, len(layouts) - 1)
+    h = max(360, int(content_h + 170))
+    cx = w / 2
+    arrow_id, shadow_id = _ids(mount_id, "arch-zero")
+    parts = [_defs(arrow_id, shadow_id)]
+    parts.append(_region_rect(40, 26, w - 80, h - 52, C["bg_outer"]))
+
+    positions = []
+    bottom = h - 76
+    for (layout, block_w, block_h, font), block in layouts:
+        top = bottom - block_h
+        node_id = block["id"]
+        resolved = bool(block.get("resolved", True))
+        geom = _rect_block(
+            parts, info, shadow_id, node_id,
+            cx - block_w / 2, top, block_w, block_h,
+            _block_label(info, node_id, block.get("label")),
+            font_size=font, resolved=resolved,
+            clickable=not block.get("static", False),
+        )
+        positions.append(geom)
+        bottom = top - gap
+    for src, dst in zip(positions, positions[1:]):
+        parts.append(_v_line(src, dst, arrow_id))
+    parts.append(_svg_text(
+        cx, 54, "No root denoiser layers materialized",
+        {"text-anchor": "middle", "fill": C["muted"],
+         "font-family": FONT_MONO, "font-size": 12},
+    ))
+    ctx = current_render_context()
+    if ctx is not None:
+        # The opaque body and any retained, independently resolved bookends are
+        # still real projections.  Receipt only the denoiser-family facts that
+        # this boundary visibly carries; never use the broader architecture
+        # union to certify a model/layer fact that the zero-layer view omitted.
+        ctx.note_facts_projected(
+            "architecture",
+            projected_keys(ir, "denoiser", DENOISER_DRAWN),
+            node_ids=tuple(block["id"] for block in blocks),
+        )
+    return _svg(w, h, f"{ir.get('name', 'model')} unresolved denoiser", parts)
 
 
 def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
@@ -81,9 +202,30 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     space while compact decoder-only models keep the same vocabulary.
     """
     is_diffusion = _is_diffusion_architecture(ir)
-    spec = info["dominant"]["spec"]
+    if is_diffusion and not (ir.get("layers") or []):
+        opaque = (((ir.get("extras") or {}).get("render") or {}).get(
+            "opaque_layer_block"))
+        if not isinstance(opaque, dict):
+            raise ValueError(
+                "a zero-layer diffusion view requires an opaque denoiser block")
+        return _build_zero_layer_diffusion_view(ir, info, mount_id, opaque)
+    dominant = info.get("dominant")
+    if dominant is not None:
+        spec = dominant["spec"]
+    else:
+        # Source-faithful diffusion parsing may honestly produce no
+        # materialized root layers.  In that case the adapter must explicitly
+        # author the opaque body; the renderer is forbidden from filling the
+        # gap with a conventional transformer layer.
+        opaque = (((ir.get("extras") or {}).get("render") or {}).get(
+            "opaque_layer_block"))
+        if not isinstance(opaque, dict):
+            raise ValueError(
+                "an architecture without materialized layers requires an "
+                "explicit opaque_layer_block")
+        spec = {"blocks": [opaque]}
     layer_blocks = list(spec.get("blocks") or [])
-    group_indices = (info.get("dominant") or {}).get("indices")
+    group_indices = (dominant or {}).get("indices")
     repeat_n = len(group_indices) if group_indices else len(ir.get("layers", []))
     repeated_region = repeat_n != 1
 
@@ -96,14 +238,15 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     branch_blocks = [b for b in layer_blocks if b.get("branch_side")]
 
     modalities = ((ir.get("extras") or {}).get("modalities") or {})
-    position_evidence = ((ir.get("extras") or {}).get("position_encoding") or {})
-    position_mechanisms = position_evidence.get("mechanisms") or [] \
-        if isinstance(position_evidence, dict) else []
-    has_absolute_position = any(
-        item.get("kind") in {"learned_absolute", "fixed_absolute"}
-        and item.get("application") == "embedding_add"
-        for item in position_mechanisms if isinstance(item, dict)
-    )
+    model_block_ids = {
+        block.get("id") for block in
+        (((ir.get("extras") or {}).get("render") or {}).get(
+            "model_blocks") or ())
+        if isinstance(block, dict)
+    }
+    has_absolute_position = {
+        "position_ids", "position_embed", "position_add",
+    } <= model_block_ids
     modality_inputs = modalities.get("inputs") or {}
     fusion_spec = modalities.get("fusion") or {}
     has_modality_fusion = bool(modality_inputs) and bool(fusion_spec)
@@ -124,16 +267,23 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
         b for b in side_blocks
         if b.get("side_align") == "tap" and b.get("lane") == "left"
     ]
+    chain_half_w = max(
+        _block_layout(b)[1] / 2
+        for b in chain_blocks
+    ) if chain_blocks else 115
     if _tap_left:
         side_right = max(
-            inner_x + 30 + (_KIND_LAYOUT.get(b.get("kind"), _KIND_LAYOUT["norm"])["w"])
+            inner_x + 30 + _block_layout(b)[1]
             for b in _tap_left
         )
-        chain_half_w = max(
-            (_KIND_LAYOUT.get(b.get("kind"), _KIND_LAYOUT["norm"])["w"]) // 2
-            for b in chain_blocks
-        ) if chain_blocks else 115
         cx = max(cx, side_right + 20 + chain_half_w)
+    # The repeated-cell backdrop owns both the left tap and shifted spine.
+    # Grow it from the same actual extent as the canvas; otherwise the blocks
+    # fit the SVG but visibly spill outside their ×N region.
+    inner_w = max(
+        inner_w,
+        int(cx + chain_half_w + 40 - inner_x + 0.999),
+    )
 
     # --- 1. Compute heights from the chain block list ---
     # Size the shaded region to the content (chain height + padding).  The floor
@@ -148,17 +298,17 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     merge_id = branch_blocks[0].get("feeds") if branch_blocks else None
     branch_row_h = 0
     if branch_blocks:
-        branch_h = max(
-            b.get("h") or _KIND_LAYOUT.get(b["kind"], _KIND_LAYOUT["norm"])["h"]
-            for b in branch_blocks
-        )
+        branch_h = max(_block_layout(b)[2] for b in branch_blocks)
         branch_row_h = branch_h + 2 * _BLOCK_GAP
     stack_h = _layer_stack_height(chain_blocks) + branch_row_h
     inner_h = max(340, stack_h + 2 * inner_padding)
 
     # Multi-Token Prediction heads draw as a stack above lm_head; reserve top
     # headroom by pushing the fixed top anchors (and total height) down.
-    mtp = (ir.get("extras") or {}).get("mtp")
+    canonical_blocks = info.get("blocks") or {}
+    mtp_block = canonical_blocks.get("mtp") or {}
+    mtp = (mtp_block.get("detail")
+           if isinstance(mtp_block, dict) else None)
     mtp_pad = 108 if mtp else 0
 
     inner_y = 200 + mtp_pad
@@ -166,18 +316,24 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     position_pad = 56 if has_absolute_position and not has_modality_fusion else 0
     # An embedding-stage norm (BLOOM's word-embedding LayerNorm) adds one quiet
     # bookend box between the embedding and the stack — reserve its slot.
-    has_embed_norm = bool((info.get("blocks") or {}).get("embed_norm"))
+    has_embed_norm = bool(canonical_blocks.get("embed_norm"))
     embed_norm_pad = 64 if has_embed_norm else 0
     # A model-level ENTRY STAGE (a latent refiner between patchify and the
     # stack — the general secondary-stack slot): one more chain block.
-    entry_stage = (info.get("blocks") or {}).get("entry_stage")
+    entry_stage = canonical_blocks.get("entry_stage")
     embed_norm_pad += 84 if entry_stage else 0
-    embed_norm_pad += 66 if (info.get("blocks") or {}).get("join_concat") else 0
+    embed_norm_pad += 66 if canonical_blocks.get("join_concat") else 0
     if has_modality_fusion and not has_cross_attention_fusion:
         h = inner_y + inner_h + (360 if has_audio_fusion else 292) + embed_norm_pad
     else:
         h = inner_y + inner_h + 232 + position_pad + embed_norm_pad
-    w = 960 if needs_wide_arch else 720
+    base_w = 960 if needs_wide_arch else 720
+    # A wide left tap (for example a parallel MoE branch) may push the spine
+    # right.  The old fixed canvas did not follow that shift and clipped the
+    # pre-head/output stack. Grow from the actual rightmost chain extent plus
+    # the outer-region margin; ordinary centred architectures remain exactly
+    # at their historical 720/960 widths.
+    w = max(base_w, int(cx + chain_half_w + 90 + 0.999))
 
     arrow_id, shadow_id = _ids(mount_id, "arch")
     block_pos: dict[str, dict] = {}
@@ -195,19 +351,25 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     elif has_absolute_position:
         tok_text = _rect_block(parts, info, shadow_id, "tok_text",
                                cx - 280, h - 100, 220, 44,
-                               _block_label(info, "tok_text", "Tokenized text"), font_size=17,
-                               resolved=True)
+                               _block_label(info, "tok_text", "Model input"), font_size=17,
+                               resolved=canonical_blocks.get("tok_text") is not None)
         position_ids = _rect_block(parts, info, shadow_id, "position_ids",
                                    cx + 60, h - 100, 220, 44,
                                    _block_label(info, "position_ids", "Position IDs"), font_size=17,
                                    resolved=True)
         embed = _rect_block(parts, info, shadow_id, "embed",
                             cx - 300, h - 174, 260, 44,
-                            _block_label(info, "embed", "Token Embedding layer"), font_size=17,
-                            resolved=True)
+                            _block_label(
+                                info, "embed", "Embedding stage unresolved"),
+                            font_size=17,
+                            resolved=canonical_blocks.get("embed") is not None)
         position_embed = _rect_block(parts, info, shadow_id, "position_embed",
                                      cx + 40, h - 174, 260, 44,
-                                     _block_label(info, "position_embed", "Learned Position Embedding"),
+                                     _block_label(
+                                         info,
+                                         "position_embed",
+                                         "Position embedding stage",
+                                     ),
                                      font_size=15, resolved=True)
         position_add = _plus_block(parts, info, shadow_id, "position_add",
                                    cx, h - 230, sym="+", clickable=True)
@@ -221,12 +383,26 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     else:
         tok_text = _rect_block(parts, info, shadow_id, "tok_text",
                                cx - 110, h - 100, 220, 44,
-                               _block_label(info, "tok_text", "Tokenized text"), font_size=17,
-                               resolved=_is_resolved_diffusion_block(is_diffusion, info, "tok_text"))
+                               _block_label(info, "tok_text", "Model input"), font_size=17,
+                               resolved=(
+                                   canonical_blocks.get("tok_text") is not None
+                                   and _is_resolved_diffusion_block(
+                                       is_diffusion, info, "tok_text",
+                                       canonical_blocks.get("tok_text"),
+                                   )
+                               ))
         embed = _rect_block(parts, info, shadow_id, "embed",
                             cx - 130, h - 168, 260, 44,
-                            _block_label(info, "embed", "Token Embedding layer"), font_size=17,
-                            resolved=_is_resolved_diffusion_block(is_diffusion, info, "embed"))
+                            _block_label(
+                                info, "embed", "Embedding stage unresolved"),
+                            font_size=17,
+                            resolved=(
+                                canonical_blocks.get("embed") is not None
+                                and _is_resolved_diffusion_block(
+                                    is_diffusion, info, "embed",
+                                    canonical_blocks.get("embed"),
+                                )
+                            ))
         stack_input = embed
         # The ENTRY CHAIN in scaffold order — part 4 draws its consecutive
         # segments, so an intermediate entry block (embed_norm, an entry-stage
@@ -247,7 +423,7 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
                                 font_size=15)
             stack_input = stage
             entry_chain.append(stage)
-        if (info.get("blocks") or {}).get("join_concat"):
+        if canonical_blocks.get("join_concat"):
             # The one-time text+latent JOIN as a TRUE ‖ (strict two-input):
             # the latent flow enters from below; the drawn text lane's rail
             # bends into it from the side (part 6 targets it via block_pos).
@@ -257,23 +433,70 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
             block_pos["join_concat"] = join
             stack_input = join
             entry_chain.append(join)
-    final_rms = _rect_block(parts, info, shadow_id, "final_rms",
-                            cx - 90, 140 + mtp_pad, 180, 36,
-                            _block_label(info, "final_rms", "Final RMSNorm"), font_size=16,
-                            resolved=_is_resolved_diffusion_block(is_diffusion, info, "final_rms"))
+    final_block = canonical_blocks.get("final_rms")
+    final_label = _block_label(
+        info, "final_rms", ["Pre-head path", "unresolved"])
+    final_layout_input = {
+        **(final_block if isinstance(final_block, dict) else {}),
+        "label": final_label,
+        "w": max(180, (final_block or {}).get("w") or 0),
+        "h": max(36, (final_block or {}).get("h") or 0),
+        "font": (final_block or {}).get("font") or 16,
+    }
+    _layout, final_w, final_h, final_font = _block_layout(
+        final_layout_input)
+    final_bottom = inner_y - 24
+    final_top = final_bottom - final_h
+    final_rms = _rect_block(
+        parts,
+        info,
+        shadow_id,
+        "final_rms",
+        cx - final_w / 2,
+        final_top,
+        final_w,
+        final_h,
+        final_label,
+        font_size=final_font,
+        # The fixed scaffold keeps an explicit pre-head stage visible, but only
+        # a canonical block may make that stage solid/resolved.  An absent card
+        # must never fall back to the historical "Final RMSNorm" assertion.
+        resolved=(
+            final_block is not None
+            and _is_resolved_diffusion_block(
+                is_diffusion, info, "final_rms", final_block
+            )
+        ),
+    )
+    head_block = canonical_blocks.get("lm_head")
+    head_label = _block_label(
+        info, "lm_head", "Output stage unresolved")
+    head_layout_input = {
+        **(head_block if isinstance(head_block, dict) else {}),
+        "label": head_label,
+        "w": max(260, (head_block or {}).get("w") or 0),
+        "h": max(44, (head_block or {}).get("h") or 0),
+        "font": (head_block or {}).get("font") or 17,
+    }
+    _layout, head_w, head_h, head_font = _block_layout(head_layout_input)
+    head_top = final_top - 26 - head_h
     lm_head = _rect_block(parts, info, shadow_id, "lm_head",
-                          cx - 130, 70 + mtp_pad, 260, 44,
-                          _block_label(info, "lm_head", "Linear output layer"), font_size=17,
-                          resolved=_is_resolved_diffusion_block(is_diffusion, info, "lm_head"))
+                          cx - head_w / 2, head_top, head_w, head_h,
+                          head_label,
+                          font_size=head_font,
+                          resolved=(
+                              head_block is not None
+                              and _is_resolved_diffusion_block(
+                                  is_diffusion, info, "lm_head",
+                                  head_block,
+                              )
+                          ))
 
     # --- 3. Layer body (data-driven, stacked bottom-up) ---
     free = inner_h - stack_h
     y_cursor = inner_y + inner_h - free / 2
     for block in chain_blocks:
-        layout = _KIND_LAYOUT.get(block["kind"]) or _KIND_LAYOUT["norm"]
-        block_w = block.get("w") or layout["w"]
-        block_h = block.get("h") or layout["h"]
-        font_size = block.get("font") or layout.get("font", 16)
+        layout, block_w, block_h, font_size = _block_layout(block)
         # Tier-2 connectors (residual ⊕, gate ×) are drawn as glyphs on the
         # topology, not first-class blocks: `static` makes them non-clickable
         # with no card.  The block-tier paradigm lives in the adapter (which
@@ -396,7 +619,10 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     # group's layer count — not the global total — to stay consistent with its
     # own toggle pill ("L3–L60 · 58×"). Falls back to the total when no group
     # indices are available (single homogeneous stack ⇒ identical anyway).
-    if repeated_region:
+    # Zero materialized layers means the repeated body is unresolved, not that
+    # the architecture repeats zero times. Keep the honest opaque region above
+    # but never turn absence of a proven count into a misleading ``x 0`` claim.
+    if repeat_n > 1:
         parts.append(_svg_tag("rect", {
             "x": inner_x + inner_w - 78, "y": inner_y + 12,
             "width": 66, "height": 26, "rx": 13, "ry": 13,
@@ -412,7 +638,7 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     # one stack plays several roles (e.g. a shared encoder/decoder), right-aligned
     # to the badge so it reads as a footnote to the repeat count.
     repeat_note = ((ir.get("extras") or {}).get("render") or {}).get("repeat_note")
-    if repeat_note and repeated_region:
+    if repeat_note and repeat_n > 1:
         note_y = inner_y + 50
         for line in (repeat_note if isinstance(repeat_note, list) else [repeat_note]):
             parts.append(_svg_text(
@@ -465,6 +691,109 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
             ))
             note_y += 15
 
+    # U2 P4 net #13: the architecture view is the surface that visibly carries
+    # the layer- and model-level facts — the norm cells (norm_kind), their
+    # pre/post placement (norm_placement) and the head-tying note
+    # (tie_word_embeddings).  Those never pass through the graph engine (this
+    # view is raw SVG), so witness them here.  ``current_render_context`` is only
+    # active inside a full render (sable / to_html); a lone view call is a no-op.
+    ctx = current_render_context()
+    if ctx is not None:
+        fact_rows = ctx.fact_rows
+        receipts = []
+        position_row = fact_rows.get("decoder.input.position_addition") or {}
+        position_value = (position_row.get("value")
+                          if isinstance(position_row, dict) else None)
+        position_block = canonical_blocks.get("position_add") or {}
+        position_detail = (position_block.get("detail")
+                           if isinstance(position_block, dict) else None)
+        if isinstance(position_value, dict) \
+                and isinstance(position_detail, dict):
+            # The actual architecture block is the drawn value.  The fact row
+            # is consulted only to decide that this migrated fact owes a
+            # receipt and to cite its status; a mismatching block therefore
+            # produces a mismatching hash instead of self-healing.
+            receipts.extend(receipts_from_projects(
+                [{
+                    "owner": "decoder.input", "fact": "position_addition",
+                    "mechanism": "position_addition",
+                    "value": {
+                        "position_kind": position_detail.get("position_kind"),
+                        "position_application": position_detail.get(
+                            "position_application"),
+                    },
+                }], surface="html", structural_target="position_addition",
+                projector_symbol=(
+                    "renderers.html.views._build_architecture_view"),
+                node_ids=("position_ids", "position_embed", "position_add"),
+                projection_kind="field", fact_rows=fact_rows))
+        codebook_row = fact_rows.get("decoder.codebook_streams") or {}
+        codebooks = (codebook_row.get("value")
+                     if isinstance(codebook_row, dict) else None)
+        if isinstance(codebooks, dict):
+            receipts.extend(receipts_from_projects(
+                [{
+                    "owner": "decoder", "fact": "codebook_streams",
+                    "mechanism": "codebook_streams",
+                    "value": {
+                        "num": codebooks.get("num"),
+                        "embeddings_summed": codebooks.get("embeddings_summed"),
+                        "heads_stacked": codebooks.get("heads_stacked"),
+                    },
+                }], surface="html", structural_target="codebook_streams",
+                projector_symbol="renderers.html.views._build_architecture_view",
+                node_ids=("tok_text", "embed", "lm_head"),
+                projection_kind="field", fact_rows=fact_rows))
+        mtp_row = fact_rows.get("decoder.mtp_modules") or {}
+        mtp_value = (mtp_row.get("value")
+                     if isinstance(mtp_row, dict) else None)
+        mtp_block = canonical_blocks.get("mtp") or {}
+        mtp_detail = (mtp_block.get("detail")
+                      if isinstance(mtp_block, dict) else None)
+        if isinstance(mtp_value, dict) and isinstance(mtp_detail, dict):
+            receipts.extend(receipts_from_projects(
+                [{
+                    "owner": "decoder", "fact": "mtp_modules",
+                    "mechanism": "mtp_modules",
+                    "value": {
+                        "num_modules": mtp_detail.get("num_modules"),
+                        "shares_embedding": mtp_detail.get("shares_embedding"),
+                        "shares_output_head": mtp_detail.get(
+                            "shares_output_head"),
+                        "hidden_norm_kind": mtp_detail.get(
+                            "hidden_norm_kind"),
+                        "embedding_norm_kind": mtp_detail.get(
+                            "embedding_norm_kind"),
+                        "reuses_stage_block_class": mtp_detail.get(
+                            "reuses_stage_block_class"),
+                    },
+                }], surface="html", structural_target="mtp_modules",
+                projector_symbol="renderers.html.views._build_architecture_view",
+                node_ids=("mtp",), projection_kind="field",
+                fact_rows=fact_rows))
+        ple_row = fact_rows.get("decoder.per_layer_embedding_pathway") or {}
+        ple = ple_row.get("value") if isinstance(ple_row, dict) else None
+        if isinstance(ple, dict):
+            receipts.extend(receipts_from_projects(
+                [{
+                    "owner": "decoder",
+                    "fact": "per_layer_embedding_pathway",
+                    "mechanism": "per_layer_embedding_pathway",
+                    "value": {"hidden": ple.get("hidden"),
+                              "vocab": ple.get("vocab")},
+                }], surface="html",
+                structural_target="per_layer_embedding_pathway",
+                projector_symbol="renderers.html.views._build_architecture_view",
+                node_ids=("ple",), projection_kind="field",
+                fact_rows=fact_rows))
+        ctx.note_facts_projected(
+            "architecture",
+            layer_and_model_facts(ir) | frozenset(
+                receipt.fact_id for receipt in receipts),
+            node_ids=tuple(
+                node for receipt in receipts for node in receipt.node_ids),
+            receipts=tuple(receipts))
+
     return _svg(w, h, f"{ir.get('name', 'model')} architecture", parts)
 
 
@@ -501,7 +830,7 @@ def _draw_branch_split(
     ordered = left + right
     n = len(ordered)
     # Centre the branch row on the spine; widest branch sets the column pitch.
-    col_w = max(b.get("w") or _KIND_LAYOUT.get(b["kind"], _KIND_LAYOUT["norm"])["w"] for b in ordered)
+    col_w = max(_block_layout(b)[1] for b in ordered)
     pitch = col_w + 44
     start_x = cx - pitch * (n - 1) / 2
 
@@ -514,14 +843,13 @@ def _draw_branch_split(
 
     branch_geoms: list[dict] = []
     for i, block in enumerate(ordered):
-        b_w = block.get("w") or _KIND_LAYOUT.get(block["kind"], _KIND_LAYOUT["norm"])["w"]
-        b_h = block.get("h") or _KIND_LAYOUT.get(block["kind"], _KIND_LAYOUT["norm"])["h"]
+        _layout, b_w, b_h, font_size = _block_layout(block)
         b_cx = start_x + i * pitch
         geom = _rect_block(
             parts, info, shadow_id, block["id"],
             b_cx - b_w / 2, row_cy - b_h / 2, b_w, b_h,
             _block_label(info, block["id"], block.get("label")),
-            font_size=block.get("font") or _KIND_LAYOUT.get(block["kind"], _KIND_LAYOUT["norm"]).get("font", 16),
+            font_size=font_size,
             resolved=_is_resolved_diffusion_block(is_diffusion, info, block["id"], block),
         )
         block_pos[block["id"]] = geom
@@ -562,8 +890,7 @@ def _draw_mtp_head(
     lm_head: dict,
     mtp: dict,
 ) -> None:
-    """Draw the Multi-Token Prediction head as a small stacked-card glyph above
-    lm_head, fed from the shared trunk output and emitting the final logits."""
+    """Draw source-proven repeated auxiliary token-prediction modules."""
     n = mtp.get("num_modules") or 1
     cx = lm_head["cx"]
     w, h = 224, 46
@@ -581,7 +908,7 @@ def _draw_mtp_head(
     label = _block_label(info, "mtp", f"MTP head x{n}" if n > 1 else "MTP head")
     geom = _rect_block(parts, info, shadow_id, "mtp", cx - w / 2, top, w, h, label, font_size=15)
 
-    # Shared trunk output -> MTP, then MTP -> logits.
+    # Repeated-stage output -> auxiliary modules -> auxiliary logits.
     parts.append(_svg_tag("line", {
         "x1": cx, "y1": lm_head["top"], "x2": cx, "y2": geom["bottom"] + 4,
         "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
@@ -594,7 +921,7 @@ def _draw_mtp_head(
     }))
     parts.append(_svg_text(
         geom["right"] + 12, geom["cy"],
-        f"+{n} future token{'s' if n != 1 else ''}",
+        f"{n} auxiliary prediction module{'s' if n != 1 else ''}",
         {"dominant-baseline": "central", "fill": C["muted"],
          "font-family": FONT_MONO, "font-size": 10},
     ))
@@ -603,10 +930,7 @@ def _draw_mtp_head(
 def _layer_stack_height(layer_blocks: list[dict]) -> int:
     if not layer_blocks:
         return 0
-    total = sum(
-        b.get("h") or _KIND_LAYOUT.get(b["kind"], _KIND_LAYOUT["norm"])["h"]
-        for b in layer_blocks
-    )
+    total = sum(_block_layout(b)[2] for b in layer_blocks)
     total += _BLOCK_GAP * (len(layer_blocks) - 1)
     return total
 
@@ -635,10 +959,7 @@ def _draw_side_block(
     chain at the bottom of the ``tap_from`` block; its output is a short
     horizontal arrow into the ``feeds`` target.
     """
-    layout = _KIND_LAYOUT.get(block["kind"]) or _KIND_LAYOUT["norm"]
-    block_w = block.get("w") or layout["w"]
-    block_h = block.get("h") or layout["h"]
-    font_size = block.get("font") or layout.get("font", 16)
+    _layout, block_w, block_h, font_size = _block_layout(block)
     lane = block.get("lane", "left")
     feeds_id = block.get("feeds")
     tap_id = block.get("tap_from")
@@ -1055,10 +1376,12 @@ def _build_layer_map(ir: dict, info: dict, mount_id: str) -> str:
     lx, ly = strip_x, legend_y
     for group in info["groups"]:
         spec = group["spec"]
-        ffn_kind = "MoE" if spec["ffn"].get("kind") == "moe" else "Dense"
+        from ...labels import ffn_short
+        ffn_kind = ffn_short(spec["ffn"])
         attn = spec.get("attention", {})
         label = (
-            f"{kind_short(attn)} + {ffn_kind} ({mask_short(attn)})"
+            f"{kind_short(attn)} + {ffn_kind} "
+            f"({mask_short(attn)} · {_position_short(attn)})"
             f"  ·  {_indices_summary(group, info)}"
         )
         color = sig_to_color[group["sig"]]
@@ -1103,7 +1426,83 @@ def _build_layer_map(ir: dict, info: dict, mount_id: str) -> str:
             )
         )
 
+    # U8/U2: this is the real per-layer schedule consumer.  It derives what it
+    # drew from the canonical serialized layers above—not from the fact row—so
+    # a parser fact and renderer structure can neither certify nor repair each
+    # other.  One receipt per present schedule closes the exact
+    # config-occurrence -> fact -> visible layer-map chain.
+    ctx = current_render_context()
+    if ctx is not None:
+        receipts = _layer_schedule_receipts(ir, ctx.fact_rows)
+        ctx.note_facts_projected(
+            "layer_map", frozenset(item.fact_id for item in receipts),
+            node_ids=("layer_map",), receipts=receipts)
+
     return _svg(w, h, f"{ir.get('name', 'model')} layer map", parts)
+
+
+def _position_short(attention: dict) -> str:
+    """Compact, mechanism-exact position label for the per-layer legend."""
+    kind = attention.get("position_kind")
+    application = attention.get("position_application")
+    if (kind, application) == ("rope", "qk_rotation"):
+        return "RoPE"
+    if (kind, application) == ("alibi", "attention_bias"):
+        return "ALiBi"
+    if (kind, application) == ("relative_bias", "attention_bias"):
+        return "relative bias"
+    if (kind, application) == ("none", "none"):
+        return "no attention position op"
+    return "position unresolved"
+
+
+def _layer_schedule_receipts(ir: dict, fact_rows: dict) -> tuple:
+    """Receipt the schedule values the layer-map projector actually consumed."""
+    layers = tuple(ir.get("layers") or ())
+    if not layers:
+        return ()
+    attention = tuple((layer or {}).get("attention") or {} for layer in layers)
+    ffn = tuple((layer or {}).get("ffn") or {} for layer in layers)
+    schedules = {
+        "mask_schedule": tuple(
+            (item.get("mask"), item.get("window_size")) for item in attention),
+        "position_schedule": tuple({
+            "position_kind": item.get("position_kind"),
+            "position_application": item.get("position_application"),
+            "rope_dim": item.get("rope_dim"),
+        } for item in attention),
+        "mixer_schedule": tuple(
+            item.get("mixer_state") for item in attention),
+        "qk_norm_schedule": tuple(
+            item.get("qk_norm") for item in attention),
+        "kv_sharing_schedule": tuple(
+            item.get("kv_source_layer") for item in attention),
+        "cross_attention_schedule": tuple(
+            "additive_cross"
+            if isinstance((layer or {}).get("cross_attention"), dict)
+            else "replacement_cross"
+            if ((layer or {}).get("attention") or {}).get(
+                "cross_attention") is True
+            else "self" for layer in layers),
+        "ffn_schedule": tuple(item.get("kind") for item in ffn),
+    }
+    owners = {
+        "ffn_schedule": "decoder.ffn",
+    }
+    receipts = []
+    for fact_key, value in schedules.items():
+        owner = owners.get(fact_key, "decoder.attention")
+        if f"{owner}.{fact_key}" not in fact_rows:
+            continue
+        receipts.extend(receipts_from_projects(
+            [{
+                "owner": owner, "fact": fact_key,
+                "mechanism": fact_key, "value": value,
+            }], surface="html", structural_target=fact_key,
+            projector_symbol="renderers.html.views._build_layer_map",
+            node_ids=("layer_map",), projection_kind="field",
+            fact_rows=fact_rows))
+    return tuple(receipts)
 
 
 def _hatch_pattern(mount_id: str) -> str:

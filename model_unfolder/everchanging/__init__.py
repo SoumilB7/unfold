@@ -24,26 +24,73 @@ dependency.
 """
 from __future__ import annotations
 
+import copy
+import functools
 from pathlib import Path
 
 _DIR = Path(__file__).resolve().parent
 
 
+@functools.lru_cache(maxsize=64)
+def _parse_yaml_document(text: str, parser: str):
+    """Parse one exact YAML document once per content and parser backend."""
+    if parser == "pyyaml":
+        import yaml
+        return yaml.safe_load(text) or {}
+    return _parse_flow_yaml(text)
+
+
 def load(domain: str, name: str) -> dict:
-    """Load ``everchanging/<domain>/<name>.yaml`` (e.g. ``load("transformer", "aliases")``)."""
+    """Load ``everchanging/<domain>/<name>.yaml`` with content-keyed parsing.
+
+    The file is still read so a content change invalidates even when its mtime
+    is preserved.  Returning a deep copy preserves the former fresh-result
+    contract: one caller cannot mutate vocabulary observed by another.
+    """
     text = (_DIR / domain / f"{name}.yaml").read_text(encoding="utf-8")
     try:
-        import yaml  # optional; not a hard dependency
+        __import__("yaml")  # backend availability is part of cache identity
+        parser = "pyyaml"
     except ImportError:
-        return _parse_flow_yaml(text)
-    return yaml.safe_load(text) or {}
+        parser = "builtin"
+    return copy.deepcopy(_parse_yaml_document(text, parser))
+
+
+def clear_load_cache() -> None:
+    """Explicit invalidation for tests and long-lived development processes."""
+    _parse_yaml_document.cache_clear()
 
 
 # --- transformer domain -----------------------------------------------------
 
 def load_aliases() -> dict[str, list[str]]:
-    """Transformer field-alias table (``transformer/aliases.yaml``)."""
-    return load("transformer", "aliases")
+    """Global transformer field aliases.
+
+    Scope-qualified input-format entries share ``transformer/aliases.yaml`` so
+    all spelling equivalence has one vocabulary, but they are deliberately
+    excluded here: a dialect-local alias such as ``dim`` must never leak into
+    the unordered transformer config scope.
+    """
+    return {
+        key: value
+        for key, value in load("transformer", "aliases").items()
+        if not str(key).startswith("input_format.")
+    }
+
+
+def load_input_format_aliases(format_name: str) -> dict[str, list[str]]:
+    """Return scope-qualified aliases for one structurally detected format.
+
+    Keys are stored as ``input_format.<format>.<scope>.<canonical>`` in the
+    shared alias resource.  ``format_name`` is a syntax contract, never a model,
+    class, or repository identity.
+    """
+    prefix = f"input_format.{format_name}."
+    return {
+        str(key)[len(prefix):]: list(value)
+        for key, value in load("transformer", "aliases").items()
+        if str(key).startswith(prefix) and isinstance(value, list)
+    }
 
 
 def load_ignored_fields() -> dict[str, list[str]]:
@@ -56,6 +103,28 @@ def load_ignored_fields() -> dict[str, list[str]]:
     }
 
 
+def load_ledger_ignores() -> dict:
+    """The ledger-side scoped-ignore vocabulary (evidence/ledger_ignores.yaml).
+
+    Soumil's final vet (2026-07-19): ignores are EXACT SCOPED RULES — each
+    rule row is ``"<owner pattern> | <exact path> | <reason>"`` — plus the
+    address-key list, whose entries match only a top-level read of the key
+    itself.  The transformer ``ignored_fields`` diagnostic vocabulary no
+    longer feeds the ledger: quieting an unread-fields REPORT and classifying
+    a READ as non-architectural are different powers, and the global feed is
+    how an architectural field (is_encoder_decoder) got recorded as plumbing."""
+    data = load("evidence", "ledger_ignores")
+    rules = []
+    for row in data.get("rules") or []:
+        parts = [p.strip() for p in str(row).split("|", 2)]
+        if len(parts) != 3 or not all(parts):
+            raise ValueError(
+                f"ledger_ignores rule must be '<owner> | <path> | <reason>', "
+                f"got {row!r}")
+        rules.append(tuple(parts))
+    return {"address_keys": data.get("address_keys") or [], "rules": rules}
+
+
 def load_transformer_typing() -> dict[str, list[str]]:
     """APPROVED transformer block stages (``transformer/typing.yaml``) — the known
     decoder-only-transformer block taxonomy."""
@@ -63,29 +132,40 @@ def load_transformer_typing() -> dict[str, list[str]]:
     return {"stages": data.get("stages") or []}
 
 
-def load_layer_type_labels() -> dict[str, list[str]]:
-    """Per-layer attention-type label groups (``transformer/layer_types.yaml``):
-    the ``layer_types`` config spellings mapped to the mask the renderer draws
-    (``full`` / ``sliding`` / ``compressed_sparse``)."""
-    data = load("transformer", "layer_types")
-    return {k: data.get(k) or []
-            for k in ("full", "sliding", "compressed_sparse", "heavily_compressed")}
+def load_decoderness() -> dict[str, list[str]]:
+    """Config-declared decoder-ness vocabulary (``transformer/decoderness.yaml``):
+    the ``architectures[]`` class-role suffixes that declare an autoregressive
+    decoder (causal-LM heads; decoder-only generation wrappers, honored only
+    without ``is_encoder_decoder``). U2 mask default-kill."""
+    data = load("transformer", "decoderness")
+    return {
+        "causal_lm_suffixes": data.get("causal_lm_suffixes") or [],
+        "wrapper_generation_suffixes": data.get("wrapper_generation_suffixes") or [],
+    }
 
 
-def load_layer_topology() -> dict:
-    """Per-family macro-topology (``transformer/layer_topology.yaml``): which
-    model_types use post/sandwich norm placement or flag-less parallel residual.
+def load_composite_slots() -> dict:
+    """Declared component slots of composite/seq2seq configs
+    (``transformer/composite_slots.yaml``).
 
-    Returns ``{"norm_placement": {model_type: pre|post|double},
-    "parallel_residual": [model_type, ...]}``."""
-    data = load("transformer", "layer_topology")
-    placement: dict[str, str] = {}
-    for item in data.get("norm_placement") or []:
+    Returns ``{"slots": {slot_key: role}, "cross_attn_fields": [name, ...]}``
+    where role is ``main`` / ``encoder`` / ``codec``.  A slot only counts as a
+    component when its config value actually declares a ``model_type`` —
+    callers must apply that evidence gate; this is just the name vocabulary."""
+    data = load("transformer", "composite_slots")
+    slots: dict[str, str] = {}
+    for item in data.get("slots") or []:
         if isinstance(item, str) and "=" in item:
-            mt, _, place = item.partition("=")
-            placement[mt.strip()] = place.strip()
-    return {"norm_placement": placement,
-            "parallel_residual": list(data.get("parallel_residual") or [])}
+            key, _, role = item.partition("=")
+            slots[key.strip()] = role.strip()
+    undrawn: dict[str, str] = {}
+    for item in data.get("undrawn_component_fields") or []:
+        if isinstance(item, str) and "=" in item:
+            field, _, label = item.partition("=")
+            undrawn[field.strip()] = label.strip()
+    return {"slots": slots,
+            "cross_attn_fields": list(data.get("cross_attn_fields") or []),
+            "undrawn_component_fields": undrawn}
 
 
 # --- diffusor domain --------------------------------------------------------
@@ -95,45 +175,19 @@ def load_diffusion_aliases() -> dict[str, list[str]]:
     return load("diffusor", "aliases")
 
 
-def load_mistral_params_map() -> dict[str, dict[str, str]]:
-    """Mistral original-release ``params.json`` -> transformers spellings
-    (``transformer/mistral_params.yaml``): {"text": {src: dst}, "vision": …}."""
-    data = load("transformer", "mistral_params")
-    out: dict[str, dict[str, str]] = {}
-    for section, rows in (data or {}).items():
-        out[section] = dict(pair.split("=", 1) for pair in (rows or [])
-                            if isinstance(pair, str) and "=" in pair)
-    return out
-
-
-def load_diffusion_config_facts() -> dict[str, list[dict]]:
-    """Declared config FACT fields (``diffusor/config_facts.yaml``): per-stage
-    buckets of ``{field, label, noop?, silent?}`` rows.  Every present field is
-    READ (ownership audit) and non-noop, non-silent values become card chips."""
-    data = load("diffusor", "config_facts")
-    return {bucket: [row for row in (rows or []) if isinstance(row, dict) and row.get("field")]
-            for bucket, rows in (data or {}).items()}
-
-
 def load_diffusion_typing() -> dict[str, list[str]]:
     """APPROVED diffusion block typing (``diffusor/typing.yaml``): ``stages``
     (blessed diffusion_stage values), ``block_ids`` (reused transformer-layer
-    ids), ``part_kinds`` (compound detail-view regions),
-    ``dit_class_markers`` (detection substrings), and ``scheduler_display``
-    ("Class=Display" name overrides)."""
+    ids), ``part_kinds`` (compound detail-view regions), and
+    ``scheduler_display`` ("Class=Display" name overrides)."""
     data = load("diffusor", "typing")
     return {
         "stages": data.get("stages") or [],
         "block_ids": data.get("block_ids") or [],
         "part_kinds": data.get("part_kinds") or [],
-        "dit_class_markers": data.get("dit_class_markers") or [],
         "scheduler_display": data.get("scheduler_display") or [],
         "scheduler_flow_matching_markers": data.get("scheduler_flow_matching_markers") or [],
-        "norm_type_kind": data.get("norm_type_kind") or [],
-        "temporal_forward_markers": data.get("temporal_forward_markers") or [],
-        "stack_lane_params": data.get("stack_lane_params") or [],
-        "temporal_config_fields": data.get("temporal_config_fields") or [],
-        "companion_denoiser_fields": data.get("companion_denoiser_fields") or [],
+        "unet_temporal_forward_markers": data.get("unet_temporal_forward_markers") or [],
     }
 
 
@@ -141,6 +195,19 @@ def load_diffusion_text_encoders() -> dict[str, str]:
     """Text-encoder class name -> friendly label (``diffusor/text_encoders.yaml``;
     the whole file is the flat map)."""
     return {k: v for k, v in load("diffusor", "text_encoders").items() if isinstance(v, str)}
+
+
+def load_unet_conditioning() -> dict[str, dict]:
+    """U11-only UNet conditioning display vocabulary.
+
+    The U10 source projector never consumes this table; it remains quarantined
+    behind the positively proven U-shaped compatibility handoff.
+    """
+    data = load("diffusor", "conditioning")
+    return {
+        "encoder_hid_dim_type": data.get("encoder_hid_dim_type") or {},
+        "addition_embed_type": data.get("addition_embed_type") or {},
+    }
 
 
 # --- conformance domain (op-conformance diff: diagram structure vs HF forward) ---
@@ -301,6 +368,9 @@ def load_conformance_transitive() -> dict:
             "relative_bias": [s.lower() for s in _list("semantic_relative_bias_markers")],
         },
         "score_scale_markers": frozenset(s.lower() for s in _list("score_scale_markers")),
+        # U2 P2d mask reader: mask-machinery call tokens, split by direction.
+        "causal_mask_call_tokens": frozenset(_list("causal_mask_call_tokens")),
+        "bidirectional_mask_call_tokens": frozenset(_list("bidirectional_mask_call_tokens")),
         "library_helpers": helpers,
         "drill_role_markers": _kv_list("drill_role_markers"),
         "component_view_markers": _kv_list("component_view_markers"),
@@ -334,6 +404,25 @@ def load_constructor_classmethods() -> frozenset[str]:
             str(x) for x in (data.get("constructor_classmethods") or [])
         )
     return _CONSTRUCTOR_CLASSMETHODS
+
+
+def load_program_index_vocab() -> dict[str, frozenset[str]]:
+    """Syntactic vocabulary for the U3 ProgramIndex walker
+    (``evidence/program_index_vocab.yaml``): the bare-Name config roots, the
+    activation dispatch tables (``ACT2FN[…]``), the activation call forms
+    (``get_activation(…)``), and the container constructor classes (ModuleList/
+    Sequential/ModuleDict).  Data, never hardcoded — a new config dialect or
+    container idiom is a YAML edit."""
+    data = load("evidence", "program_index_vocab")
+    return {
+        "config_roots": frozenset(str(x) for x in (data.get("config_roots") or [])),
+        "activation_dispatch": frozenset(
+            str(x) for x in (data.get("activation_dispatch") or [])),
+        "activation_calls": frozenset(
+            str(x) for x in (data.get("activation_calls") or [])),
+        "container_classes": frozenset(
+            str(x) for x in (data.get("container_classes") or [])),
+    }
 
 
 def _parse_flow_yaml(text: str) -> dict[str, list[str]]:
@@ -378,11 +467,11 @@ def _unquote(token: str) -> str:
 __all__ = [
     "load",
     "load_aliases",
+    "load_input_format_aliases",
     "load_ignored_fields",
     "load_transformer_typing",
-    "load_layer_type_labels",
-    "load_layer_topology",
     "load_diffusion_aliases",
     "load_diffusion_typing",
     "load_diffusion_text_encoders",
+    "load_unet_conditioning",
 ]

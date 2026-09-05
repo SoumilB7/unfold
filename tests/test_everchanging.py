@@ -18,21 +18,25 @@ def test_transformer_vocab_loads():
     assert ec.load_transformer_typing()["stages"]
 
 
-def test_layer_type_labels_externalized_and_cover_modern_spellings():
-    labels = ec.load_layer_type_labels()
-    # All four mask groups present, loaded from YAML (not hardcoded in the parser).
-    assert set(labels) == {"full", "sliding", "compressed_sparse", "heavily_compressed"}
-    # The spellings whose absence used to produce false "treated as causal" warnings.
-    assert "attention" in labels["full"]                  # Nemotron-H / hybrid stacks
-    assert "deepseek_sparse_attention" in labels["full"]  # DeepSeek-V3.2 DSA
-    assert "" in labels["full"] and "sliding_attention" in labels["sliding"]
+def test_semantic_layer_schedule_vocabulary_is_not_an_authority():
+    assert not hasattr(ec, "load_layer_type_labels")
+    assert not hasattr(ec, "load_layer_schedules")
+    assert "compress_ratios" not in ec.load_aliases()
 
 
 def test_diffusor_vocab_loads():
     assert "num_layers" in ec.load_diffusion_aliases()
     typing = ec.load_diffusion_typing()
-    assert typing["stages"] and typing["block_ids"] and typing["part_kinds"] and typing["dit_class_markers"]
+    assert typing["stages"] and typing["block_ids"] and typing["part_kinds"]
+    assert "dit_class_markers" not in typing
+    assert "temporal_forward_markers" not in typing
+    assert typing["unet_temporal_forward_markers"] == ["num_frames"]
     assert ec.load_diffusion_text_encoders().get("CLIPTextModel") == "CLIP"
+
+
+def test_u10_generic_conditioning_loader_is_retired():
+    assert not hasattr(ec, "load_diffusion_conditioning")
+    assert ec.load_unet_conditioning()["encoder_hid_dim_type"]
 
 
 def test_transformer_stage_taxonomy_is_exhaustive():

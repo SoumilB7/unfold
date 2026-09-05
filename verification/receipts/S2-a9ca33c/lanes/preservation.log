@@ -1,0 +1,16 @@
+bringing up nodes...
+bringing up nodes...
+
+....................................................                     [100%]
+============================= slowest 10 durations =============================
+54.52s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[flux-2-dev]
+38.75s call     tests/test_preservation.py::test_canonical_surfaces_are_deterministic_end_to_end
+37.63s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[hunyuanvideo]
+33.28s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[qwen-image]
+31.42s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[auraflow-v0-3]
+31.39s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[sana-1600m-1024px-diffusers]
+30.60s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[qwen2-vl-7b-instruct]
+30.14s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[fluxtransformer2dmodel]
+27.23s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[musicgen-small]
+25.94s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[qwen3-5-27b-text]
+52 passed in 245.65s (0:04:05)

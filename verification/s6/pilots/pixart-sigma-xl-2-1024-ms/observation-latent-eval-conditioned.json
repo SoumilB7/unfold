@@ -1,0 +1,7574 @@
+{
+  "failure": null,
+  "observation": {
+    "functional_ops": [
+      {
+        "callable": "add",
+        "index": 0,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 1,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 2,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 3,
+        "op": "mul"
+      },
+      {
+        "callable": "torch.cat",
+        "index": 4,
+        "op": "cat"
+      },
+      {
+        "callable": "torch.cat",
+        "index": 5,
+        "op": "cat"
+      },
+      {
+        "callable": "torch.nn.functional.silu",
+        "index": 6,
+        "op": "silu"
+      },
+      {
+        "callable": "torch.nn.functional.silu",
+        "index": 7,
+        "op": "silu"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 8,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 9,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 10,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 11,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 12,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 13,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 14,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 15,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 16,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 17,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 18,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 19,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 20,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 21,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 22,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 23,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 24,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 25,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 26,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 27,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 28,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 29,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 30,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 31,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 32,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 33,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 34,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 35,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 36,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 37,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 38,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 39,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 40,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 41,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 42,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 43,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 44,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 45,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 46,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 47,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 48,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 49,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 50,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 51,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 52,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 53,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 54,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 55,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 56,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 57,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 58,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 59,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 60,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 61,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 62,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 63,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 64,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 65,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 66,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 67,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 68,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 69,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 70,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 71,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 72,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 73,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 74,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 75,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 76,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 77,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 78,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 79,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 80,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 81,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 82,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 83,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 84,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 85,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 86,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 87,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 88,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 89,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 90,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 91,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 92,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 93,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 94,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 95,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 96,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 97,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 98,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 99,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 100,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 101,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 102,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 103,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 104,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 105,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 106,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 107,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 108,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 109,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 110,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 111,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 112,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 113,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 114,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 115,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 116,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 117,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 118,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 119,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 120,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 121,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 122,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 123,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 124,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 125,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 126,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 127,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 128,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 129,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 130,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 131,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 132,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 133,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 134,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 135,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 136,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 137,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 138,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 139,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 140,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 141,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 142,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 143,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 144,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 145,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 146,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 147,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 148,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 149,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 150,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 151,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 152,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 153,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 154,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 155,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 156,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 157,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 158,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 159,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 160,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 161,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 162,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 163,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 164,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 165,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 166,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 167,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 168,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 169,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 170,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 171,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 172,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 173,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 174,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 175,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 176,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 177,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 178,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 179,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 180,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 181,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 182,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 183,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 184,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 185,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 186,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 187,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 188,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 189,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 190,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 191,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 192,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 193,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 194,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 195,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 196,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 197,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 198,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 199,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 200,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 201,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 202,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 203,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 204,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 205,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 206,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 207,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 208,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 209,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 210,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 211,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 212,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 213,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 214,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 215,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 216,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 217,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 218,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 219,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 220,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 221,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 222,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 223,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 224,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 225,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 226,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 227,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 228,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 229,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 230,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 231,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 232,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 233,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 234,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 235,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 236,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 237,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 238,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 239,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 240,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 241,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 242,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 243,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 244,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 245,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 246,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 247,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 248,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 249,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 250,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 251,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 252,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 253,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 254,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 255,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 256,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 257,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 258,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 259,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 260,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 261,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 262,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 263,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 264,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 265,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 266,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 267,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 268,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 269,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 270,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 271,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 272,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 273,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 274,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 275,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 276,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 277,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 278,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 279,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 280,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 281,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 282,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 283,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 284,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 285,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 286,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 287,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 288,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 289,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 290,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 291,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 292,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 293,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 294,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 295,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 296,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 297,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 298,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 299,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 300,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 301,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 302,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 303,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 304,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 305,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 306,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 307,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 308,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 309,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 310,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 311,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 312,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 313,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 314,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 315,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 316,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 317,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 318,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 319,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 320,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 321,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 322,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 323,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 324,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 325,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 326,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 327,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 328,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 329,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 330,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 331,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 332,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 333,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 334,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 335,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 336,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 337,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 338,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 339,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 340,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 341,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 342,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 343,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 344,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 345,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 346,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 347,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 348,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 349,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 350,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 351,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 352,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 353,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 354,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 355,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 356,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 357,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 358,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 359,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 360,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 361,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 362,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 363,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 364,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 365,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 366,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 367,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 368,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 369,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 370,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 371,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 372,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 373,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 374,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 375,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 376,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 377,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 378,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 379,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 380,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 381,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 382,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 383,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 384,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 385,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 386,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 387,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 388,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 389,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 390,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 391,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 392,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 393,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 394,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 395,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 396,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 397,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 398,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 399,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 400,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 401,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 402,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 403,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 404,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 405,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 406,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 407,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 408,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 409,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 410,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 411,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 412,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 413,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 414,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 415,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 416,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 417,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 418,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 419,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 420,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 421,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 422,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 423,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 424,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 425,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 426,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 427,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 428,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 429,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 430,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 431,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 432,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 433,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 434,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 435,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 436,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 437,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 438,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 439,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 440,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 441,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 442,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 443,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 444,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 445,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 446,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 447,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 448,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 449,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 450,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 451,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 452,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 453,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 454,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 455,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 456,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 457,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 458,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 459,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 460,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 461,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 462,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 463,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 464,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 465,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 466,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 467,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 468,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 469,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 470,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 471,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 472,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 473,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 474,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 475,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 476,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 477,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 478,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 479,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 480,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 481,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 482,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 483,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 484,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 485,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 486,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 487,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 488,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 489,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 490,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 491,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 492,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 493,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 494,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 495,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 496,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 497,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 498,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 499,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 500,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 501,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 502,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 503,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 504,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 505,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 506,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 507,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 508,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 509,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 510,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 511,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 512,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 513,
+        "op": "add"
+      },
+      {
+        "callable": "chunk",
+        "index": 514,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 515,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 516,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 517,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 518,
+        "op": "add"
+      }
+    ],
+    "lazy_observed": [],
+    "module_calls": [
+      {
+        "class_ref": {
+          "module": "diffusers.models.transformers.pixart_transformer_2d",
+          "qualname": "PixArtTransformer2DModel"
+        },
+        "index": 0,
+        "path": ""
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.embeddings",
+          "qualname": "PatchEmbed"
+        },
+        "index": 1,
+        "path": "pos_embed"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.conv",
+          "qualname": "Conv2d"
+        },
+        "index": 2,
+        "path": "pos_embed.proj"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.normalization",
+          "qualname": "AdaLayerNormSingle"
+        },
+        "index": 3,
+        "path": "adaln_single"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.embeddings",
+          "qualname": "PixArtAlphaCombinedTimestepSizeEmbeddings"
+        },
+        "index": 4,
+        "path": "adaln_single.emb"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.embeddings",
+          "qualname": "Timesteps"
+        },
+        "index": 5,
+        "path": "adaln_single.emb.time_proj"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.embeddings",
+          "qualname": "TimestepEmbedding"
+        },
+        "index": 6,
+        "path": "adaln_single.emb.timestep_embedder"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 7,
+        "path": "adaln_single.emb.timestep_embedder.linear_1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "SiLU"
+        },
+        "index": 8,
+        "path": "adaln_single.emb.timestep_embedder.act"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 9,
+        "path": "adaln_single.emb.timestep_embedder.linear_2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "SiLU"
+        },
+        "index": 10,
+        "path": "adaln_single.silu"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 11,
+        "path": "adaln_single.linear"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.embeddings",
+          "qualname": "PixArtAlphaTextProjection"
+        },
+        "index": 12,
+        "path": "caption_projection"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 13,
+        "path": "caption_projection.linear_1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "GELU"
+        },
+        "index": 14,
+        "path": "caption_projection.act_1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 15,
+        "path": "caption_projection.linear_2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 16,
+        "path": "transformer_blocks.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 17,
+        "path": "transformer_blocks.0.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 18,
+        "path": "transformer_blocks.0.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 19,
+        "path": "transformer_blocks.0.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 20,
+        "path": "transformer_blocks.0.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 21,
+        "path": "transformer_blocks.0.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 22,
+        "path": "transformer_blocks.0.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 23,
+        "path": "transformer_blocks.0.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 24,
+        "path": "transformer_blocks.0.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 25,
+        "path": "transformer_blocks.0.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 26,
+        "path": "transformer_blocks.0.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 27,
+        "path": "transformer_blocks.0.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 28,
+        "path": "transformer_blocks.0.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 29,
+        "path": "transformer_blocks.0.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 30,
+        "path": "transformer_blocks.0.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 31,
+        "path": "transformer_blocks.0.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 32,
+        "path": "transformer_blocks.0.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 33,
+        "path": "transformer_blocks.0.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 34,
+        "path": "transformer_blocks.0.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 35,
+        "path": "transformer_blocks.0.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 36,
+        "path": "transformer_blocks.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 37,
+        "path": "transformer_blocks.1.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 38,
+        "path": "transformer_blocks.1.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 39,
+        "path": "transformer_blocks.1.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 40,
+        "path": "transformer_blocks.1.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 41,
+        "path": "transformer_blocks.1.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 42,
+        "path": "transformer_blocks.1.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 43,
+        "path": "transformer_blocks.1.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 44,
+        "path": "transformer_blocks.1.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 45,
+        "path": "transformer_blocks.1.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 46,
+        "path": "transformer_blocks.1.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 47,
+        "path": "transformer_blocks.1.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 48,
+        "path": "transformer_blocks.1.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 49,
+        "path": "transformer_blocks.1.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 50,
+        "path": "transformer_blocks.1.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 51,
+        "path": "transformer_blocks.1.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 52,
+        "path": "transformer_blocks.1.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 53,
+        "path": "transformer_blocks.1.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 54,
+        "path": "transformer_blocks.1.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 55,
+        "path": "transformer_blocks.1.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 56,
+        "path": "transformer_blocks.2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 57,
+        "path": "transformer_blocks.2.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 58,
+        "path": "transformer_blocks.2.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 59,
+        "path": "transformer_blocks.2.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 60,
+        "path": "transformer_blocks.2.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 61,
+        "path": "transformer_blocks.2.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 62,
+        "path": "transformer_blocks.2.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 63,
+        "path": "transformer_blocks.2.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 64,
+        "path": "transformer_blocks.2.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 65,
+        "path": "transformer_blocks.2.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 66,
+        "path": "transformer_blocks.2.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 67,
+        "path": "transformer_blocks.2.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 68,
+        "path": "transformer_blocks.2.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 69,
+        "path": "transformer_blocks.2.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 70,
+        "path": "transformer_blocks.2.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 71,
+        "path": "transformer_blocks.2.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 72,
+        "path": "transformer_blocks.2.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 73,
+        "path": "transformer_blocks.2.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 74,
+        "path": "transformer_blocks.2.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 75,
+        "path": "transformer_blocks.2.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 76,
+        "path": "transformer_blocks.3"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 77,
+        "path": "transformer_blocks.3.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 78,
+        "path": "transformer_blocks.3.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 79,
+        "path": "transformer_blocks.3.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 80,
+        "path": "transformer_blocks.3.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 81,
+        "path": "transformer_blocks.3.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 82,
+        "path": "transformer_blocks.3.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 83,
+        "path": "transformer_blocks.3.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 84,
+        "path": "transformer_blocks.3.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 85,
+        "path": "transformer_blocks.3.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 86,
+        "path": "transformer_blocks.3.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 87,
+        "path": "transformer_blocks.3.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 88,
+        "path": "transformer_blocks.3.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 89,
+        "path": "transformer_blocks.3.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 90,
+        "path": "transformer_blocks.3.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 91,
+        "path": "transformer_blocks.3.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 92,
+        "path": "transformer_blocks.3.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 93,
+        "path": "transformer_blocks.3.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 94,
+        "path": "transformer_blocks.3.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 95,
+        "path": "transformer_blocks.3.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 96,
+        "path": "transformer_blocks.4"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 97,
+        "path": "transformer_blocks.4.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 98,
+        "path": "transformer_blocks.4.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 99,
+        "path": "transformer_blocks.4.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 100,
+        "path": "transformer_blocks.4.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 101,
+        "path": "transformer_blocks.4.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 102,
+        "path": "transformer_blocks.4.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 103,
+        "path": "transformer_blocks.4.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 104,
+        "path": "transformer_blocks.4.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 105,
+        "path": "transformer_blocks.4.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 106,
+        "path": "transformer_blocks.4.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 107,
+        "path": "transformer_blocks.4.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 108,
+        "path": "transformer_blocks.4.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 109,
+        "path": "transformer_blocks.4.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 110,
+        "path": "transformer_blocks.4.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 111,
+        "path": "transformer_blocks.4.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 112,
+        "path": "transformer_blocks.4.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 113,
+        "path": "transformer_blocks.4.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 114,
+        "path": "transformer_blocks.4.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 115,
+        "path": "transformer_blocks.4.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 116,
+        "path": "transformer_blocks.5"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 117,
+        "path": "transformer_blocks.5.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 118,
+        "path": "transformer_blocks.5.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 119,
+        "path": "transformer_blocks.5.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 120,
+        "path": "transformer_blocks.5.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 121,
+        "path": "transformer_blocks.5.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 122,
+        "path": "transformer_blocks.5.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 123,
+        "path": "transformer_blocks.5.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 124,
+        "path": "transformer_blocks.5.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 125,
+        "path": "transformer_blocks.5.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 126,
+        "path": "transformer_blocks.5.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 127,
+        "path": "transformer_blocks.5.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 128,
+        "path": "transformer_blocks.5.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 129,
+        "path": "transformer_blocks.5.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 130,
+        "path": "transformer_blocks.5.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 131,
+        "path": "transformer_blocks.5.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 132,
+        "path": "transformer_blocks.5.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 133,
+        "path": "transformer_blocks.5.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 134,
+        "path": "transformer_blocks.5.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 135,
+        "path": "transformer_blocks.5.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 136,
+        "path": "transformer_blocks.6"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 137,
+        "path": "transformer_blocks.6.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 138,
+        "path": "transformer_blocks.6.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 139,
+        "path": "transformer_blocks.6.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 140,
+        "path": "transformer_blocks.6.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 141,
+        "path": "transformer_blocks.6.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 142,
+        "path": "transformer_blocks.6.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 143,
+        "path": "transformer_blocks.6.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 144,
+        "path": "transformer_blocks.6.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 145,
+        "path": "transformer_blocks.6.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 146,
+        "path": "transformer_blocks.6.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 147,
+        "path": "transformer_blocks.6.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 148,
+        "path": "transformer_blocks.6.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 149,
+        "path": "transformer_blocks.6.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 150,
+        "path": "transformer_blocks.6.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 151,
+        "path": "transformer_blocks.6.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 152,
+        "path": "transformer_blocks.6.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 153,
+        "path": "transformer_blocks.6.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 154,
+        "path": "transformer_blocks.6.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 155,
+        "path": "transformer_blocks.6.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 156,
+        "path": "transformer_blocks.7"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 157,
+        "path": "transformer_blocks.7.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 158,
+        "path": "transformer_blocks.7.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 159,
+        "path": "transformer_blocks.7.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 160,
+        "path": "transformer_blocks.7.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 161,
+        "path": "transformer_blocks.7.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 162,
+        "path": "transformer_blocks.7.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 163,
+        "path": "transformer_blocks.7.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 164,
+        "path": "transformer_blocks.7.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 165,
+        "path": "transformer_blocks.7.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 166,
+        "path": "transformer_blocks.7.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 167,
+        "path": "transformer_blocks.7.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 168,
+        "path": "transformer_blocks.7.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 169,
+        "path": "transformer_blocks.7.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 170,
+        "path": "transformer_blocks.7.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 171,
+        "path": "transformer_blocks.7.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 172,
+        "path": "transformer_blocks.7.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 173,
+        "path": "transformer_blocks.7.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 174,
+        "path": "transformer_blocks.7.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 175,
+        "path": "transformer_blocks.7.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 176,
+        "path": "transformer_blocks.8"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 177,
+        "path": "transformer_blocks.8.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 178,
+        "path": "transformer_blocks.8.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 179,
+        "path": "transformer_blocks.8.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 180,
+        "path": "transformer_blocks.8.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 181,
+        "path": "transformer_blocks.8.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 182,
+        "path": "transformer_blocks.8.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 183,
+        "path": "transformer_blocks.8.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 184,
+        "path": "transformer_blocks.8.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 185,
+        "path": "transformer_blocks.8.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 186,
+        "path": "transformer_blocks.8.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 187,
+        "path": "transformer_blocks.8.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 188,
+        "path": "transformer_blocks.8.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 189,
+        "path": "transformer_blocks.8.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 190,
+        "path": "transformer_blocks.8.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 191,
+        "path": "transformer_blocks.8.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 192,
+        "path": "transformer_blocks.8.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 193,
+        "path": "transformer_blocks.8.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 194,
+        "path": "transformer_blocks.8.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 195,
+        "path": "transformer_blocks.8.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 196,
+        "path": "transformer_blocks.9"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 197,
+        "path": "transformer_blocks.9.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 198,
+        "path": "transformer_blocks.9.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 199,
+        "path": "transformer_blocks.9.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 200,
+        "path": "transformer_blocks.9.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 201,
+        "path": "transformer_blocks.9.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 202,
+        "path": "transformer_blocks.9.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 203,
+        "path": "transformer_blocks.9.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 204,
+        "path": "transformer_blocks.9.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 205,
+        "path": "transformer_blocks.9.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 206,
+        "path": "transformer_blocks.9.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 207,
+        "path": "transformer_blocks.9.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 208,
+        "path": "transformer_blocks.9.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 209,
+        "path": "transformer_blocks.9.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 210,
+        "path": "transformer_blocks.9.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 211,
+        "path": "transformer_blocks.9.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 212,
+        "path": "transformer_blocks.9.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 213,
+        "path": "transformer_blocks.9.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 214,
+        "path": "transformer_blocks.9.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 215,
+        "path": "transformer_blocks.9.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 216,
+        "path": "transformer_blocks.10"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 217,
+        "path": "transformer_blocks.10.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 218,
+        "path": "transformer_blocks.10.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 219,
+        "path": "transformer_blocks.10.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 220,
+        "path": "transformer_blocks.10.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 221,
+        "path": "transformer_blocks.10.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 222,
+        "path": "transformer_blocks.10.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 223,
+        "path": "transformer_blocks.10.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 224,
+        "path": "transformer_blocks.10.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 225,
+        "path": "transformer_blocks.10.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 226,
+        "path": "transformer_blocks.10.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 227,
+        "path": "transformer_blocks.10.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 228,
+        "path": "transformer_blocks.10.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 229,
+        "path": "transformer_blocks.10.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 230,
+        "path": "transformer_blocks.10.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 231,
+        "path": "transformer_blocks.10.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 232,
+        "path": "transformer_blocks.10.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 233,
+        "path": "transformer_blocks.10.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 234,
+        "path": "transformer_blocks.10.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 235,
+        "path": "transformer_blocks.10.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 236,
+        "path": "transformer_blocks.11"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 237,
+        "path": "transformer_blocks.11.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 238,
+        "path": "transformer_blocks.11.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 239,
+        "path": "transformer_blocks.11.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 240,
+        "path": "transformer_blocks.11.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 241,
+        "path": "transformer_blocks.11.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 242,
+        "path": "transformer_blocks.11.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 243,
+        "path": "transformer_blocks.11.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 244,
+        "path": "transformer_blocks.11.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 245,
+        "path": "transformer_blocks.11.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 246,
+        "path": "transformer_blocks.11.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 247,
+        "path": "transformer_blocks.11.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 248,
+        "path": "transformer_blocks.11.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 249,
+        "path": "transformer_blocks.11.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 250,
+        "path": "transformer_blocks.11.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 251,
+        "path": "transformer_blocks.11.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 252,
+        "path": "transformer_blocks.11.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 253,
+        "path": "transformer_blocks.11.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 254,
+        "path": "transformer_blocks.11.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 255,
+        "path": "transformer_blocks.11.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 256,
+        "path": "transformer_blocks.12"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 257,
+        "path": "transformer_blocks.12.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 258,
+        "path": "transformer_blocks.12.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 259,
+        "path": "transformer_blocks.12.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 260,
+        "path": "transformer_blocks.12.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 261,
+        "path": "transformer_blocks.12.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 262,
+        "path": "transformer_blocks.12.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 263,
+        "path": "transformer_blocks.12.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 264,
+        "path": "transformer_blocks.12.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 265,
+        "path": "transformer_blocks.12.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 266,
+        "path": "transformer_blocks.12.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 267,
+        "path": "transformer_blocks.12.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 268,
+        "path": "transformer_blocks.12.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 269,
+        "path": "transformer_blocks.12.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 270,
+        "path": "transformer_blocks.12.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 271,
+        "path": "transformer_blocks.12.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 272,
+        "path": "transformer_blocks.12.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 273,
+        "path": "transformer_blocks.12.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 274,
+        "path": "transformer_blocks.12.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 275,
+        "path": "transformer_blocks.12.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 276,
+        "path": "transformer_blocks.13"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 277,
+        "path": "transformer_blocks.13.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 278,
+        "path": "transformer_blocks.13.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 279,
+        "path": "transformer_blocks.13.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 280,
+        "path": "transformer_blocks.13.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 281,
+        "path": "transformer_blocks.13.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 282,
+        "path": "transformer_blocks.13.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 283,
+        "path": "transformer_blocks.13.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 284,
+        "path": "transformer_blocks.13.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 285,
+        "path": "transformer_blocks.13.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 286,
+        "path": "transformer_blocks.13.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 287,
+        "path": "transformer_blocks.13.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 288,
+        "path": "transformer_blocks.13.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 289,
+        "path": "transformer_blocks.13.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 290,
+        "path": "transformer_blocks.13.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 291,
+        "path": "transformer_blocks.13.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 292,
+        "path": "transformer_blocks.13.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 293,
+        "path": "transformer_blocks.13.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 294,
+        "path": "transformer_blocks.13.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 295,
+        "path": "transformer_blocks.13.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 296,
+        "path": "transformer_blocks.14"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 297,
+        "path": "transformer_blocks.14.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 298,
+        "path": "transformer_blocks.14.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 299,
+        "path": "transformer_blocks.14.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 300,
+        "path": "transformer_blocks.14.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 301,
+        "path": "transformer_blocks.14.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 302,
+        "path": "transformer_blocks.14.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 303,
+        "path": "transformer_blocks.14.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 304,
+        "path": "transformer_blocks.14.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 305,
+        "path": "transformer_blocks.14.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 306,
+        "path": "transformer_blocks.14.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 307,
+        "path": "transformer_blocks.14.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 308,
+        "path": "transformer_blocks.14.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 309,
+        "path": "transformer_blocks.14.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 310,
+        "path": "transformer_blocks.14.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 311,
+        "path": "transformer_blocks.14.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 312,
+        "path": "transformer_blocks.14.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 313,
+        "path": "transformer_blocks.14.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 314,
+        "path": "transformer_blocks.14.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 315,
+        "path": "transformer_blocks.14.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 316,
+        "path": "transformer_blocks.15"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 317,
+        "path": "transformer_blocks.15.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 318,
+        "path": "transformer_blocks.15.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 319,
+        "path": "transformer_blocks.15.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 320,
+        "path": "transformer_blocks.15.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 321,
+        "path": "transformer_blocks.15.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 322,
+        "path": "transformer_blocks.15.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 323,
+        "path": "transformer_blocks.15.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 324,
+        "path": "transformer_blocks.15.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 325,
+        "path": "transformer_blocks.15.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 326,
+        "path": "transformer_blocks.15.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 327,
+        "path": "transformer_blocks.15.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 328,
+        "path": "transformer_blocks.15.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 329,
+        "path": "transformer_blocks.15.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 330,
+        "path": "transformer_blocks.15.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 331,
+        "path": "transformer_blocks.15.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 332,
+        "path": "transformer_blocks.15.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 333,
+        "path": "transformer_blocks.15.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 334,
+        "path": "transformer_blocks.15.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 335,
+        "path": "transformer_blocks.15.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 336,
+        "path": "transformer_blocks.16"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 337,
+        "path": "transformer_blocks.16.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 338,
+        "path": "transformer_blocks.16.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 339,
+        "path": "transformer_blocks.16.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 340,
+        "path": "transformer_blocks.16.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 341,
+        "path": "transformer_blocks.16.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 342,
+        "path": "transformer_blocks.16.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 343,
+        "path": "transformer_blocks.16.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 344,
+        "path": "transformer_blocks.16.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 345,
+        "path": "transformer_blocks.16.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 346,
+        "path": "transformer_blocks.16.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 347,
+        "path": "transformer_blocks.16.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 348,
+        "path": "transformer_blocks.16.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 349,
+        "path": "transformer_blocks.16.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 350,
+        "path": "transformer_blocks.16.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 351,
+        "path": "transformer_blocks.16.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 352,
+        "path": "transformer_blocks.16.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 353,
+        "path": "transformer_blocks.16.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 354,
+        "path": "transformer_blocks.16.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 355,
+        "path": "transformer_blocks.16.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 356,
+        "path": "transformer_blocks.17"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 357,
+        "path": "transformer_blocks.17.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 358,
+        "path": "transformer_blocks.17.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 359,
+        "path": "transformer_blocks.17.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 360,
+        "path": "transformer_blocks.17.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 361,
+        "path": "transformer_blocks.17.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 362,
+        "path": "transformer_blocks.17.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 363,
+        "path": "transformer_blocks.17.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 364,
+        "path": "transformer_blocks.17.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 365,
+        "path": "transformer_blocks.17.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 366,
+        "path": "transformer_blocks.17.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 367,
+        "path": "transformer_blocks.17.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 368,
+        "path": "transformer_blocks.17.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 369,
+        "path": "transformer_blocks.17.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 370,
+        "path": "transformer_blocks.17.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 371,
+        "path": "transformer_blocks.17.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 372,
+        "path": "transformer_blocks.17.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 373,
+        "path": "transformer_blocks.17.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 374,
+        "path": "transformer_blocks.17.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 375,
+        "path": "transformer_blocks.17.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 376,
+        "path": "transformer_blocks.18"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 377,
+        "path": "transformer_blocks.18.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 378,
+        "path": "transformer_blocks.18.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 379,
+        "path": "transformer_blocks.18.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 380,
+        "path": "transformer_blocks.18.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 381,
+        "path": "transformer_blocks.18.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 382,
+        "path": "transformer_blocks.18.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 383,
+        "path": "transformer_blocks.18.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 384,
+        "path": "transformer_blocks.18.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 385,
+        "path": "transformer_blocks.18.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 386,
+        "path": "transformer_blocks.18.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 387,
+        "path": "transformer_blocks.18.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 388,
+        "path": "transformer_blocks.18.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 389,
+        "path": "transformer_blocks.18.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 390,
+        "path": "transformer_blocks.18.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 391,
+        "path": "transformer_blocks.18.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 392,
+        "path": "transformer_blocks.18.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 393,
+        "path": "transformer_blocks.18.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 394,
+        "path": "transformer_blocks.18.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 395,
+        "path": "transformer_blocks.18.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 396,
+        "path": "transformer_blocks.19"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 397,
+        "path": "transformer_blocks.19.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 398,
+        "path": "transformer_blocks.19.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 399,
+        "path": "transformer_blocks.19.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 400,
+        "path": "transformer_blocks.19.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 401,
+        "path": "transformer_blocks.19.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 402,
+        "path": "transformer_blocks.19.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 403,
+        "path": "transformer_blocks.19.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 404,
+        "path": "transformer_blocks.19.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 405,
+        "path": "transformer_blocks.19.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 406,
+        "path": "transformer_blocks.19.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 407,
+        "path": "transformer_blocks.19.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 408,
+        "path": "transformer_blocks.19.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 409,
+        "path": "transformer_blocks.19.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 410,
+        "path": "transformer_blocks.19.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 411,
+        "path": "transformer_blocks.19.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 412,
+        "path": "transformer_blocks.19.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 413,
+        "path": "transformer_blocks.19.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 414,
+        "path": "transformer_blocks.19.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 415,
+        "path": "transformer_blocks.19.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 416,
+        "path": "transformer_blocks.20"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 417,
+        "path": "transformer_blocks.20.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 418,
+        "path": "transformer_blocks.20.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 419,
+        "path": "transformer_blocks.20.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 420,
+        "path": "transformer_blocks.20.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 421,
+        "path": "transformer_blocks.20.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 422,
+        "path": "transformer_blocks.20.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 423,
+        "path": "transformer_blocks.20.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 424,
+        "path": "transformer_blocks.20.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 425,
+        "path": "transformer_blocks.20.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 426,
+        "path": "transformer_blocks.20.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 427,
+        "path": "transformer_blocks.20.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 428,
+        "path": "transformer_blocks.20.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 429,
+        "path": "transformer_blocks.20.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 430,
+        "path": "transformer_blocks.20.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 431,
+        "path": "transformer_blocks.20.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 432,
+        "path": "transformer_blocks.20.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 433,
+        "path": "transformer_blocks.20.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 434,
+        "path": "transformer_blocks.20.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 435,
+        "path": "transformer_blocks.20.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 436,
+        "path": "transformer_blocks.21"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 437,
+        "path": "transformer_blocks.21.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 438,
+        "path": "transformer_blocks.21.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 439,
+        "path": "transformer_blocks.21.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 440,
+        "path": "transformer_blocks.21.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 441,
+        "path": "transformer_blocks.21.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 442,
+        "path": "transformer_blocks.21.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 443,
+        "path": "transformer_blocks.21.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 444,
+        "path": "transformer_blocks.21.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 445,
+        "path": "transformer_blocks.21.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 446,
+        "path": "transformer_blocks.21.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 447,
+        "path": "transformer_blocks.21.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 448,
+        "path": "transformer_blocks.21.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 449,
+        "path": "transformer_blocks.21.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 450,
+        "path": "transformer_blocks.21.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 451,
+        "path": "transformer_blocks.21.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 452,
+        "path": "transformer_blocks.21.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 453,
+        "path": "transformer_blocks.21.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 454,
+        "path": "transformer_blocks.21.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 455,
+        "path": "transformer_blocks.21.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 456,
+        "path": "transformer_blocks.22"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 457,
+        "path": "transformer_blocks.22.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 458,
+        "path": "transformer_blocks.22.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 459,
+        "path": "transformer_blocks.22.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 460,
+        "path": "transformer_blocks.22.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 461,
+        "path": "transformer_blocks.22.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 462,
+        "path": "transformer_blocks.22.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 463,
+        "path": "transformer_blocks.22.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 464,
+        "path": "transformer_blocks.22.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 465,
+        "path": "transformer_blocks.22.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 466,
+        "path": "transformer_blocks.22.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 467,
+        "path": "transformer_blocks.22.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 468,
+        "path": "transformer_blocks.22.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 469,
+        "path": "transformer_blocks.22.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 470,
+        "path": "transformer_blocks.22.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 471,
+        "path": "transformer_blocks.22.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 472,
+        "path": "transformer_blocks.22.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 473,
+        "path": "transformer_blocks.22.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 474,
+        "path": "transformer_blocks.22.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 475,
+        "path": "transformer_blocks.22.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 476,
+        "path": "transformer_blocks.23"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 477,
+        "path": "transformer_blocks.23.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 478,
+        "path": "transformer_blocks.23.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 479,
+        "path": "transformer_blocks.23.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 480,
+        "path": "transformer_blocks.23.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 481,
+        "path": "transformer_blocks.23.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 482,
+        "path": "transformer_blocks.23.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 483,
+        "path": "transformer_blocks.23.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 484,
+        "path": "transformer_blocks.23.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 485,
+        "path": "transformer_blocks.23.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 486,
+        "path": "transformer_blocks.23.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 487,
+        "path": "transformer_blocks.23.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 488,
+        "path": "transformer_blocks.23.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 489,
+        "path": "transformer_blocks.23.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 490,
+        "path": "transformer_blocks.23.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 491,
+        "path": "transformer_blocks.23.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 492,
+        "path": "transformer_blocks.23.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 493,
+        "path": "transformer_blocks.23.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 494,
+        "path": "transformer_blocks.23.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 495,
+        "path": "transformer_blocks.23.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 496,
+        "path": "transformer_blocks.24"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 497,
+        "path": "transformer_blocks.24.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 498,
+        "path": "transformer_blocks.24.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 499,
+        "path": "transformer_blocks.24.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 500,
+        "path": "transformer_blocks.24.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 501,
+        "path": "transformer_blocks.24.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 502,
+        "path": "transformer_blocks.24.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 503,
+        "path": "transformer_blocks.24.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 504,
+        "path": "transformer_blocks.24.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 505,
+        "path": "transformer_blocks.24.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 506,
+        "path": "transformer_blocks.24.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 507,
+        "path": "transformer_blocks.24.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 508,
+        "path": "transformer_blocks.24.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 509,
+        "path": "transformer_blocks.24.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 510,
+        "path": "transformer_blocks.24.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 511,
+        "path": "transformer_blocks.24.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 512,
+        "path": "transformer_blocks.24.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 513,
+        "path": "transformer_blocks.24.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 514,
+        "path": "transformer_blocks.24.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 515,
+        "path": "transformer_blocks.24.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 516,
+        "path": "transformer_blocks.25"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 517,
+        "path": "transformer_blocks.25.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 518,
+        "path": "transformer_blocks.25.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 519,
+        "path": "transformer_blocks.25.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 520,
+        "path": "transformer_blocks.25.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 521,
+        "path": "transformer_blocks.25.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 522,
+        "path": "transformer_blocks.25.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 523,
+        "path": "transformer_blocks.25.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 524,
+        "path": "transformer_blocks.25.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 525,
+        "path": "transformer_blocks.25.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 526,
+        "path": "transformer_blocks.25.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 527,
+        "path": "transformer_blocks.25.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 528,
+        "path": "transformer_blocks.25.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 529,
+        "path": "transformer_blocks.25.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 530,
+        "path": "transformer_blocks.25.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 531,
+        "path": "transformer_blocks.25.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 532,
+        "path": "transformer_blocks.25.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 533,
+        "path": "transformer_blocks.25.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 534,
+        "path": "transformer_blocks.25.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 535,
+        "path": "transformer_blocks.25.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 536,
+        "path": "transformer_blocks.26"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 537,
+        "path": "transformer_blocks.26.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 538,
+        "path": "transformer_blocks.26.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 539,
+        "path": "transformer_blocks.26.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 540,
+        "path": "transformer_blocks.26.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 541,
+        "path": "transformer_blocks.26.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 542,
+        "path": "transformer_blocks.26.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 543,
+        "path": "transformer_blocks.26.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 544,
+        "path": "transformer_blocks.26.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 545,
+        "path": "transformer_blocks.26.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 546,
+        "path": "transformer_blocks.26.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 547,
+        "path": "transformer_blocks.26.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 548,
+        "path": "transformer_blocks.26.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 549,
+        "path": "transformer_blocks.26.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 550,
+        "path": "transformer_blocks.26.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 551,
+        "path": "transformer_blocks.26.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 552,
+        "path": "transformer_blocks.26.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 553,
+        "path": "transformer_blocks.26.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 554,
+        "path": "transformer_blocks.26.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 555,
+        "path": "transformer_blocks.26.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "BasicTransformerBlock"
+        },
+        "index": 556,
+        "path": "transformer_blocks.27"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 557,
+        "path": "transformer_blocks.27.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 558,
+        "path": "transformer_blocks.27.attn1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 559,
+        "path": "transformer_blocks.27.attn1.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 560,
+        "path": "transformer_blocks.27.attn1.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 561,
+        "path": "transformer_blocks.27.attn1.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 562,
+        "path": "transformer_blocks.27.attn1.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 563,
+        "path": "transformer_blocks.27.attn1.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 564,
+        "path": "transformer_blocks.27.attn2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 565,
+        "path": "transformer_blocks.27.attn2.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 566,
+        "path": "transformer_blocks.27.attn2.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 567,
+        "path": "transformer_blocks.27.attn2.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 568,
+        "path": "transformer_blocks.27.attn2.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 569,
+        "path": "transformer_blocks.27.attn2.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 570,
+        "path": "transformer_blocks.27.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 571,
+        "path": "transformer_blocks.27.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 572,
+        "path": "transformer_blocks.27.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 573,
+        "path": "transformer_blocks.27.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 574,
+        "path": "transformer_blocks.27.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 575,
+        "path": "transformer_blocks.27.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 576,
+        "path": "norm_out"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 577,
+        "path": "proj_out"
+      }
+    ],
+    "outcome": "observed",
+    "provenance": {
+      "build_flags": {},
+      "config_sha256": "05e62e620960e4a58813ef9f07e974bda5afa2b48a40ffc92a63c0f0f18e9f5d",
+      "constructor_used": "diffusers.Transformer2DModel.from_config(config)",
+      "environment": {
+        "diffusers_offline": "1",
+        "hash_seed": "0",
+        "hf_hub_offline": "1",
+        "network": "macos-sandbox-exec+python-audit-hook",
+        "platform": "macOS-26.5.1-arm64-arm-64bit",
+        "python": "3.12.10",
+        "transformers_offline": "1"
+      },
+      "packages": [
+        {
+          "package": "diffusers",
+          "version": "0.38.0"
+        },
+        {
+          "package": "python",
+          "version": "3.12.10"
+        },
+        {
+          "package": "torch",
+          "version": "2.9.1"
+        }
+      ],
+      "requested_factory": "diffusers.Transformer2DModel",
+      "resolved_class": {
+        "module": "diffusers.models.transformers.pixart_transformer_2d",
+        "qualname": "PixArtTransformer2DModel"
+      },
+      "source_files": [
+        {
+          "module": "diffusers.configuration_utils",
+          "path": "configuration_utils.py",
+          "sha256": "4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960"
+        },
+        {
+          "module": "diffusers.models.activations",
+          "path": "activations.py",
+          "sha256": "ab1767e8e44e7d4bf1cb18299ba33654329e2711fa983b1423fc4fe12de2c3ab"
+        },
+        {
+          "module": "diffusers.models.attention",
+          "path": "attention.py",
+          "sha256": "0192998d3979533cdbc8eef9c8f783d0b4a4a547dec9e4388a17c9ae3b1c8ea8"
+        },
+        {
+          "module": "diffusers.models.attention_processor",
+          "path": "attention_processor.py",
+          "sha256": "4a382975333be2e8bbd1f970cfa81e9442bfcc15485e30749654e267e8e5a0fc"
+        },
+        {
+          "module": "diffusers.models.embeddings",
+          "path": "embeddings.py",
+          "sha256": "d7a90ef799569e3f0fab41cadde1ecba023abd053af956c022bbfc097662a302"
+        },
+        {
+          "module": "diffusers.models.modeling_utils",
+          "path": "modeling_utils.py",
+          "sha256": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe"
+        },
+        {
+          "module": "diffusers.models.normalization",
+          "path": "normalization.py",
+          "sha256": "e92ebbb130082578f3cff3361891a1adaa32331347e7bb09e4c70b208a0a6059"
+        },
+        {
+          "module": "diffusers.models.transformers.pixart_transformer_2d",
+          "path": "pixart_transformer_2d.py",
+          "sha256": "06c6e6ffbdd4767ae0dd94c6171f7626aa4befb5fb05f058dfee0f7d9906cfe1"
+        },
+        {
+          "module": "diffusers.utils.hub_utils",
+          "path": "hub_utils.py",
+          "sha256": "051c6a2cb2d92ef614c10e90557a41c861c3f31d19a68f6527d72f8bab670bcd"
+        },
+        {
+          "module": "torch.nn.modules.activation",
+          "path": "activation.py",
+          "sha256": "ecb5e2cef1419d4bf7222fc7b35a3dffc0e5b1bc979031c95c3f1151d94fc961"
+        },
+        {
+          "module": "torch.nn.modules.container",
+          "path": "container.py",
+          "sha256": "114f37d0b6d343570ae38ba9b0c024b098f040969e8b888072c978e106ebf08c"
+        },
+        {
+          "module": "torch.nn.modules.conv",
+          "path": "conv.py",
+          "sha256": "ba25b53dfc94b341b21d96ed628babe8204963454ca768c18d981452f2c61d9c"
+        },
+        {
+          "module": "torch.nn.modules.dropout",
+          "path": "dropout.py",
+          "sha256": "f1abdbdda095e9ee0bb96701e9afd70dbca20298bd3190aa68b79d0ec98c47f7"
+        },
+        {
+          "module": "torch.nn.modules.linear",
+          "path": "linear.py",
+          "sha256": "63fb3cae2a1561fec5e183e45c171d177080113a3996f1046eea35530cd33247"
+        },
+        {
+          "module": "torch.nn.modules.module",
+          "path": "module.py",
+          "sha256": "d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd"
+        },
+        {
+          "module": "torch.nn.modules.normalization",
+          "path": "normalization.py",
+          "sha256": "40345630f4974fca9c6c3c40f43716a6205b4ffcabc2b48e49cc2942a70dd7c0"
+        }
+      ]
+    },
+    "recipe": {
+      "cache_state": "disabled",
+      "conditioning_present": true,
+      "dtype": "float32",
+      "encoder_decoder_mode": "denoiser",
+      "flags": {},
+      "input_modality": "latent",
+      "library_versions": {
+        "diffusers": "0.38.0",
+        "torch": "2.9.1"
+      },
+      "literal_arguments": {
+        "return_dict": false
+      },
+      "recipe_id": "latent-eval-conditioned",
+      "target_path": "",
+      "tensor_arguments": [
+        {
+          "device": "meta",
+          "dtype": "float32",
+          "fill": "zeros",
+          "name": "hidden_states",
+          "shape": [
+            1,
+            4,
+            8,
+            8
+          ],
+          "values": null
+        },
+        {
+          "device": "meta",
+          "dtype": "float32",
+          "fill": "zeros",
+          "name": "encoder_hidden_states",
+          "shape": [
+            1,
+            4,
+            4096
+          ],
+          "values": null
+        },
+        {
+          "device": "meta",
+          "dtype": "long",
+          "fill": "zeros",
+          "name": "timestep",
+          "shape": [
+            1
+          ],
+          "values": null
+        }
+      ],
+      "train_eval": "eval"
+    },
+    "schema_version": 1
+  },
+  "provenance": {
+    "build_flags": {},
+    "config_sha256": "05e62e620960e4a58813ef9f07e974bda5afa2b48a40ffc92a63c0f0f18e9f5d",
+    "constructor_used": "diffusers.Transformer2DModel.from_config(config)",
+    "environment": {
+      "diffusers_offline": "1",
+      "hash_seed": "0",
+      "hf_hub_offline": "1",
+      "network": "macos-sandbox-exec+python-audit-hook",
+      "platform": "macOS-26.5.1-arm64-arm-64bit",
+      "python": "3.12.10",
+      "transformers_offline": "1"
+    },
+    "packages": [
+      {
+        "package": "diffusers",
+        "version": "0.38.0"
+      },
+      {
+        "package": "python",
+        "version": "3.12.10"
+      },
+      {
+        "package": "torch",
+        "version": "2.9.1"
+      }
+    ],
+    "requested_factory": "diffusers.Transformer2DModel",
+    "resolved_class": {
+      "module": "diffusers.models.transformers.pixart_transformer_2d",
+      "qualname": "PixArtTransformer2DModel"
+    },
+    "source_files": [
+      {
+        "module": "diffusers.configuration_utils",
+        "path": "configuration_utils.py",
+        "sha256": "4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960"
+      },
+      {
+        "module": "diffusers.models.activations",
+        "path": "activations.py",
+        "sha256": "ab1767e8e44e7d4bf1cb18299ba33654329e2711fa983b1423fc4fe12de2c3ab"
+      },
+      {
+        "module": "diffusers.models.attention",
+        "path": "attention.py",
+        "sha256": "0192998d3979533cdbc8eef9c8f783d0b4a4a547dec9e4388a17c9ae3b1c8ea8"
+      },
+      {
+        "module": "diffusers.models.attention_processor",
+        "path": "attention_processor.py",
+        "sha256": "4a382975333be2e8bbd1f970cfa81e9442bfcc15485e30749654e267e8e5a0fc"
+      },
+      {
+        "module": "diffusers.models.embeddings",
+        "path": "embeddings.py",
+        "sha256": "d7a90ef799569e3f0fab41cadde1ecba023abd053af956c022bbfc097662a302"
+      },
+      {
+        "module": "diffusers.models.modeling_utils",
+        "path": "modeling_utils.py",
+        "sha256": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe"
+      },
+      {
+        "module": "diffusers.models.normalization",
+        "path": "normalization.py",
+        "sha256": "e92ebbb130082578f3cff3361891a1adaa32331347e7bb09e4c70b208a0a6059"
+      },
+      {
+        "module": "diffusers.models.transformers.pixart_transformer_2d",
+        "path": "pixart_transformer_2d.py",
+        "sha256": "06c6e6ffbdd4767ae0dd94c6171f7626aa4befb5fb05f058dfee0f7d9906cfe1"
+      },
+      {
+        "module": "diffusers.utils.hub_utils",
+        "path": "hub_utils.py",
+        "sha256": "051c6a2cb2d92ef614c10e90557a41c861c3f31d19a68f6527d72f8bab670bcd"
+      },
+      {
+        "module": "torch.nn.modules.activation",
+        "path": "activation.py",
+        "sha256": "ecb5e2cef1419d4bf7222fc7b35a3dffc0e5b1bc979031c95c3f1151d94fc961"
+      },
+      {
+        "module": "torch.nn.modules.container",
+        "path": "container.py",
+        "sha256": "114f37d0b6d343570ae38ba9b0c024b098f040969e8b888072c978e106ebf08c"
+      },
+      {
+        "module": "torch.nn.modules.conv",
+        "path": "conv.py",
+        "sha256": "ba25b53dfc94b341b21d96ed628babe8204963454ca768c18d981452f2c61d9c"
+      },
+      {
+        "module": "torch.nn.modules.dropout",
+        "path": "dropout.py",
+        "sha256": "f1abdbdda095e9ee0bb96701e9afd70dbca20298bd3190aa68b79d0ec98c47f7"
+      },
+      {
+        "module": "torch.nn.modules.linear",
+        "path": "linear.py",
+        "sha256": "63fb3cae2a1561fec5e183e45c171d177080113a3996f1046eea35530cd33247"
+      },
+      {
+        "module": "torch.nn.modules.module",
+        "path": "module.py",
+        "sha256": "d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd"
+      },
+      {
+        "module": "torch.nn.modules.normalization",
+        "path": "normalization.py",
+        "sha256": "40345630f4974fca9c6c3c40f43716a6205b4ffcabc2b48e49cc2942a70dd7c0"
+      }
+    ]
+  },
+  "recipe": {
+    "cache_state": "disabled",
+    "conditioning_present": true,
+    "dtype": "float32",
+    "encoder_decoder_mode": "denoiser",
+    "flags": {},
+    "input_modality": "latent",
+    "library_versions": {
+      "diffusers": "0.38.0",
+      "torch": "2.9.1"
+    },
+    "literal_arguments": {
+      "return_dict": false
+    },
+    "recipe_id": "latent-eval-conditioned",
+    "target_path": "",
+    "tensor_arguments": [
+      {
+        "device": "meta",
+        "dtype": "float32",
+        "fill": "zeros",
+        "name": "hidden_states",
+        "shape": [
+          1,
+          4,
+          8,
+          8
+        ],
+        "values": null
+      },
+      {
+        "device": "meta",
+        "dtype": "float32",
+        "fill": "zeros",
+        "name": "encoder_hidden_states",
+        "shape": [
+          1,
+          4,
+          4096
+        ],
+        "values": null
+      },
+      {
+        "device": "meta",
+        "dtype": "long",
+        "fill": "zeros",
+        "name": "timestep",
+        "shape": [
+          1
+        ],
+        "values": null
+      }
+    ],
+    "train_eval": "eval"
+  },
+  "status": "ok",
+  "stderr": "The config attributes {'scheduler': ['diffusers', 'DPMSolverMultistepScheduler'], 'text_encoder': ['transformers', 'T5EncoderModel'], 'tokenizer': ['transformers', 'T5Tokenizer'], 'transformer': ['diffusers', 'Transformer2DModel'], 'vae': ['diffusers', 'AutoencoderKL']} were passed to PixArtTransformer2DModel, but are not expected and will be ignored. Please verify your config.json configuration file.\n",
+  "stdout": ""
+}

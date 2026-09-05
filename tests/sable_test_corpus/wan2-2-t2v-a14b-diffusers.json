@@ -1,0 +1,310 @@
+{
+  "checks": {
+    "asserted_facts": true,
+    "click_coupling": true,
+    "config_accessed_unprojected": true,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
+    "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
+    "dangling_connectors": true,
+    "document_boundary_completeness": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "projection_audit": true,
+    "qualified_projection_values": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true,
+    "zero_asserted_census": true
+  },
+  "config": {
+    "_class_name": "WanTransformer3DModel",
+    "_diffusers_version": "0.35.0.dev0",
+    "_name_or_path": "Wan-AI/Wan2.2-T2V-A14B-Diffusers",
+    "_pipeline_class_name": "WanPipeline",
+    "_repo_id": "Wan-AI/Wan2.2-T2V-A14B-Diffusers",
+    "_scheduler_config": {
+      "_class_name": "UniPCMultistepScheduler",
+      "_diffusers_version": "0.35.0.dev0",
+      "beta_end": 0.02,
+      "beta_schedule": "linear",
+      "beta_start": 0.0001,
+      "disable_corrector": [],
+      "dynamic_thresholding_ratio": 0.995,
+      "final_sigmas_type": "zero",
+      "flow_shift": 3.0,
+      "lower_order_final": true,
+      "num_train_timesteps": 1000,
+      "predict_x0": true,
+      "prediction_type": "flow_prediction",
+      "rescale_betas_zero_snr": false,
+      "sample_max_value": 1.0,
+      "solver_order": 2,
+      "solver_p": null,
+      "solver_type": "bh2",
+      "steps_offset": 0,
+      "thresholding": false,
+      "time_shift_type": "exponential",
+      "timestep_spacing": "linspace",
+      "trained_betas": null,
+      "use_beta_sigmas": false,
+      "use_dynamic_shifting": false,
+      "use_exponential_sigmas": false,
+      "use_flow_sigmas": true,
+      "use_karras_sigmas": false
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_name_or_path": "google/umt5-xxl",
+        "architectures": [
+          "UMT5EncoderModel"
+        ],
+        "chunk_size_feed_forward": 0,
+        "classifier_dropout": 0.0,
+        "d_ff": 10240,
+        "d_kv": 64,
+        "d_model": 4096,
+        "decoder_start_token_id": 0,
+        "dense_act_fn": "gelu_new",
+        "dropout_rate": 0.1,
+        "dtype": "bfloat16",
+        "eos_token_id": 1,
+        "feed_forward_proj": "gated-gelu",
+        "id2label": {
+          "0": "LABEL_0",
+          "1": "LABEL_1"
+        },
+        "initializer_factor": 1.0,
+        "is_decoder": false,
+        "is_encoder_decoder": true,
+        "is_gated_act": true,
+        "label2id": {
+          "LABEL_0": 0,
+          "LABEL_1": 1
+        },
+        "layer_norm_epsilon": 1e-06,
+        "model_type": "umt5",
+        "num_decoder_layers": 24,
+        "num_heads": 64,
+        "num_layers": 24,
+        "output_attentions": false,
+        "output_hidden_states": false,
+        "output_past": true,
+        "pad_token_id": 0,
+        "problem_type": null,
+        "relative_attention_max_distance": 128,
+        "relative_attention_num_buckets": 32,
+        "return_dict": true,
+        "scalable_attention": true,
+        "tie_word_embeddings": true,
+        "tokenizer_class": "T5Tokenizer",
+        "transformers_version": "5.12.1",
+        "use_cache": true,
+        "vocab_size": 256384
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKLWan",
+      "_diffusers_version": "0.35.0.dev0",
+      "attn_scales": [],
+      "base_dim": 96,
+      "dim_mult": [
+        1,
+        2,
+        4,
+        4
+      ],
+      "dropout": 0.0,
+      "latents_mean": [
+        -0.7571,
+        -0.7089,
+        -0.9113,
+        0.1075,
+        -0.1745,
+        0.9653,
+        -0.1517,
+        1.5508,
+        0.4134,
+        -0.0715,
+        0.5517,
+        -0.3632,
+        -0.1922,
+        -0.9497,
+        0.2503,
+        -0.2921
+      ],
+      "latents_std": [
+        2.8184,
+        1.4541,
+        2.3275,
+        2.6558,
+        1.2196,
+        1.7708,
+        2.6052,
+        2.0743,
+        3.2687,
+        2.1526,
+        2.8652,
+        1.5579,
+        1.6382,
+        1.1253,
+        2.8251,
+        1.916
+      ],
+      "num_res_blocks": 2,
+      "temperal_downsample": [
+        false,
+        true,
+        true
+      ],
+      "z_dim": 16
+    },
+    "added_kv_proj_dim": null,
+    "attention_head_dim": 128,
+    "boundary_ratio": 0.875,
+    "cross_attn_norm": true,
+    "eps": 1e-06,
+    "ffn_dim": 13824,
+    "freq_dim": 256,
+    "image_dim": null,
+    "in_channels": 16,
+    "num_attention_heads": 40,
+    "num_layers": 40,
+    "out_channels": 16,
+    "patch_size": [
+      1,
+      2,
+      2
+    ],
+    "pos_embed_seq_len": null,
+    "qk_norm": "rms_norm_across_heads",
+    "rope_max_seq_len": 1024,
+    "scheduler": [
+      "diffusers",
+      "UniPCMultistepScheduler"
+    ],
+    "text_dim": 4096,
+    "text_encoder": [
+      "transformers",
+      "UMT5EncoderModel"
+    ],
+    "tokenizer": [
+      "transformers",
+      "T5TokenizerFast"
+    ],
+    "transformer": [
+      "diffusers",
+      "WanTransformer3DModel"
+    ],
+    "transformer_2": [
+      "diffusers",
+      "WanTransformer3DModel"
+    ],
+    "vae": [
+      "diffusers",
+      "AutoencoderKLWan"
+    ]
+  },
+  "hash_signature": [
+    "233bf3d1111aa040940edb49a84a4b9d",
+    "28e39454c95b30e92cf798c97768cfdd",
+    "2fafa21f0f504acbc36cae0d02e0897f",
+    "44f9b21c56bf92214df12f40270f61ec",
+    "7f8caa8f54b3a432dbdb16095095ff0d",
+    "89e5d1f408fe8c72264a1fe18f58492e",
+    "a3816b31eabc655a42b1babbf979e2ed",
+    "aa4f7268539d28a234b33d9a01b0ddc6",
+    "b2bbd72a624c2dfe682e5c26cba9dd5b",
+    "b81d64f599b43794abcc2478c65ece53",
+    "e16e1436c6595c19425f4be8020e587d",
+    "f5ed400ab571892a69eefebdf8baaa93"
+  ],
+  "model": "Wan2.2-T2V-A14B-Diffusers",
+  "proven_facts": [
+    "root.denoiser.diffusion_bookend_geometry",
+    "root.denoiser.diffusion_bookend_operations",
+    "root.denoiser.diffusion_root_topology",
+    "root.denoiser.stacks[0].diffusion_stack_depth"
+  ],
+  "source": "local",
+  "superseded_hash_signature": [
+    "273c67b8e41bcbaf59ebb258dcbace9a",
+    "28e39454c95b30e92cf798c97768cfdd",
+    "2fafa21f0f504acbc36cae0d02e0897f",
+    "3917079df0d8171ccac1a85ae637c270",
+    "624bf75dd569e595a7c2e822a0a8db11",
+    "7de1b35af5bfd972b5869d1c492d3b54",
+    "7f8caa8f54b3a432dbdb16095095ff0d",
+    "89e5d1f408fe8c72264a1fe18f58492e",
+    "aa4f7268539d28a234b33d9a01b0ddc6",
+    "b2bbd72a624c2dfe682e5c26cba9dd5b",
+    "b81d64f599b43794abcc2478c65ece53",
+    "dc3e5c72971f1901cc882d098b09b739",
+    "eb435e44e6c5fcdfc06bff8743f3e93f",
+    "f5ed400ab571892a69eefebdf8baaa93"
+  ],
+  "view_signature": [
+    {
+      "hash": "44f9b21c56bf92214df12f40270f61ec",
+      "label": "architecture"
+    },
+    {
+      "hash": "e16e1436c6595c19425f4be8020e587d",
+      "label": "architecture"
+    },
+    {
+      "hash": "a3816b31eabc655a42b1babbf979e2ed",
+      "label": "denoiser"
+    },
+    {
+      "hash": "233bf3d1111aa040940edb49a84a4b9d",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "aa4f7268539d28a234b33d9a01b0ddc6",
+      "label": "encoder_0_op_ffn"
+    },
+    {
+      "hash": "b2bbd72a624c2dfe682e5c26cba9dd5b",
+      "label": "encoder_0_op_selfattn"
+    },
+    {
+      "hash": "28e39454c95b30e92cf798c97768cfdd",
+      "label": "scheduler"
+    },
+    {
+      "hash": "2fafa21f0f504acbc36cae0d02e0897f",
+      "label": "vae_decode"
+    },
+    {
+      "hash": "7f8caa8f54b3a432dbdb16095095ff0d",
+      "label": "vae_decoder_block_1"
+    },
+    {
+      "hash": "b81d64f599b43794abcc2478c65ece53",
+      "label": "vae_decoder_block_2"
+    },
+    {
+      "hash": "f5ed400ab571892a69eefebdf8baaa93",
+      "label": "vae_decoder_block_3"
+    },
+    {
+      "hash": "89e5d1f408fe8c72264a1fe18f58492e",
+      "label": "vae_decoder_block_4"
+    }
+  ],
+  "visual_evidence": {
+    "gallery_dir": "galleries/wan2-2-t2v-a14b-diffusers",
+    "manifest": true,
+    "png_count": 12
+  }
+}

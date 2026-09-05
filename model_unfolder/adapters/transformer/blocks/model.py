@@ -6,15 +6,20 @@ from ....block_schema import Block
 from ..common import format_dim as _fmt
 
 
-def decoder_only_render_spec(vocab_size: int, hidden_size: int, tie_word_embeddings: bool,
+def decoder_only_render_spec(vocab_size: int, hidden_size: int, tie_word_embeddings: bool | None,
                              embed_norm: str | None = None,
-                             final_logit_softcap: float | None = None) -> dict:
+                             final_norm: str | None = None,
+                             final_logit_softcap: float | None = None,
+                             codebooks: dict | None = None,
+                             mtp: dict | None = None) -> dict:
     return {
         "family": "transformer",
         "layout": "decoder_only",
         "model_blocks": decoder_model_blocks(
             vocab_size, hidden_size, tie_word_embeddings, embed_norm=embed_norm,
-            final_logit_softcap=final_logit_softcap),
+            final_norm=final_norm,
+            final_logit_softcap=final_logit_softcap, codebooks=codebooks,
+            mtp=mtp),
     }
 
 
@@ -22,21 +27,26 @@ def mtp_head_block(
     num_modules: int,
     hidden_size: int,
     vocab_size: int,
-    tie_word_embeddings: bool,
+    shares_embedding: bool,
+    shares_output_head: bool,
+    hidden_norm_kind: str,
+    embedding_norm_kind: str,
     block_children: list | None = None,
 ) -> Block:
-    """Model-level Multi-Token Prediction head stack (DeepSeek-V3 style).
+    """Source-proven repeated auxiliary token-prediction modules.
 
-    ``num_nextn_predict_layers`` sequential modules, each predicting one extra
-    future token beyond the main LM head.  A module re-norms the trunk's hidden
-    state and the (shared) embedding of the next token, concatenates them,
-    projects ``2d -> d`` (``eh_proj``), runs one transformer block of the same
-    shape as the main stack, then reuses the shared output head.
+    The caller has already proved every operation and both sharing decisions.
+    This builder only projects that fact; it never turns a count into a module.
     """
     hidden = _fmt(hidden_size)
     wide = _fmt(2 * hidden_size)
     vocab = _fmt(vocab_size)
-    shared = " (shared)" if tie_word_embeddings else " (shared with main head)"
+    embedding_label = "Shared token embedding" if shares_embedding else "Auxiliary token embedding"
+    head_label = "Shared output head" if shares_output_head else "Auxiliary output head"
+    sharing = (
+        f"The token embedding is {'shared with the main stage' if shares_embedding else 'owned by each auxiliary module'}; "
+        f"the output head is {'shared with the main stage' if shares_output_head else 'owned by each auxiliary module'}."
+    )
     plural = "s" if num_modules != 1 else ""
     return {
         "id": "mtp",
@@ -45,27 +55,31 @@ def mtp_head_block(
         "label": [f"MTP head x{num_modules}"] if num_modules > 1 else ["MTP head"],
         "title": f"Multi-Token Prediction ({num_modules} module{plural})",
         "description": (
-            f"{num_modules} sequential MTP module{plural} predicting the next {num_modules} "
-            f"token{plural} past the main head. Each re-norms the trunk hidden state and the "
-            f"next-token embedding, concatenates ({wide}), projects to {hidden}, runs one "
-            f"transformer block, then reuses the shared output head{shared}. Trains the trunk "
-            "for multi-step lookahead; usable as a self-speculative draft at inference."
+            f"{num_modules} source-proven repeated auxiliary prediction module{plural}. "
+            f"Each applies {hidden_norm_kind} to the repeated-stage hidden state and "
+            f"{embedding_norm_kind} to its embedding lane, concatenates ({wide}), "
+            f"projects to {hidden}, runs a block whose class exactly matches a repeated "
+            f"main-stage block, and applies an output head. {sharing}"
         ),
         "view": "mtp_head",
         "detail": {
             "num_modules": num_modules,
             "hidden_size": hidden_size,
             "vocab_size": vocab_size,
-            "tied": bool(tie_word_embeddings),
+            "shares_embedding": shares_embedding,
+            "shares_output_head": shares_output_head,
+            "hidden_norm_kind": hidden_norm_kind,
+            "embedding_norm_kind": embedding_norm_kind,
+            "reuses_stage_block_class": True,
         },
         "children": [
             {"id": "mtp_hnorm", "title": "Hidden-state norm",
-             "description": f"RMSNorm on the previous depth's hidden state; dim {hidden}"},
+             "description": f"{hidden_norm_kind} on the repeated-stage hidden state; dim {hidden}"},
             {"id": "mtp_emb", "title": "Next-token embedding",
-             "description": "Shared token embedding of token t+k.",
+             "description": embedding_label + ".",
              "facts": [f"{vocab} vocab", f"{hidden}-d"]},
             {"id": "mtp_enorm", "title": "Embedding norm",
-             "description": f"RMSNorm on the next-token embedding; dim {hidden}"},
+             "description": f"{embedding_norm_kind} on the embedding lane; dim {hidden}"},
             {"id": "mtp_concat", "title": "Concatenate",
              "description": f"Concat [norm(hidden); norm(embedding)] -> {wide}"},
             {"id": "mtp_proj", "title": "Projection (eh_proj)",
@@ -73,12 +87,15 @@ def mtp_head_block(
             # The transformer block IS a decoder layer — reuse the real,
             # self-describing layer blocks (attention, FFN/MoE, norms, …) so the
             # central router renders each with no MTP-specific wiring.
-            {"id": "mtp_block", "title": "Transformer block",
-             "description": "One decoder block — the same attention + FFN/MoE blocks as the main stack",
-             "view": "mtp_transformer_block",
-             "children": list(block_children or [])},
-            {"id": "mtp_head", "title": "Shared output head",
-             "description": f"{hidden} -> {vocab}{shared}; predicts token t+k+1"},
+            {"id": "mtp_block", "title": "Repeated model block",
+             "description": (
+                 "One constructed block whose exact class matches the repeated "
+                 "main-stage block. Its internals remain opaque unless canonical "
+                 "children are supplied from that exact occurrence."),
+             **({"view": "mtp_transformer_block",
+                 "children": list(block_children)} if block_children else {})},
+            {"id": "mtp_head", "title": head_label,
+             "description": f"{hidden} -> {vocab}; emits an auxiliary token prediction"},
         ],
     }
 
@@ -100,7 +117,7 @@ def block_diffusion_loop_blocks(
     """
     hidden = _fmt(hidden_size)
     vocab = _fmt(vocab_size)
-    cap = float(final_logit_softcap) if final_logit_softcap is not None else 30.0
+    cap = float(final_logit_softcap) if final_logit_softcap is not None else None
     sc_int = ffn_intermediate_size or hidden_size  # DiffusionGemmaSelfConditioning uses intermediate_size
     return [
         {
@@ -143,12 +160,14 @@ def block_diffusion_loop_blocks(
             "description": (
                 f"A block of {canvas_length} jointly-denoised token positions.  "
                 "Initialised with random IDs drawn uniformly from the vocabulary "
-                "(x_T ∈ U(V)).  The denoising loop refines this canvas over up to "
-                "48 steps; accepted tokens are progressively locked until the "
+                "(x_T ∈ U(V)).  The denoising loop refines this canvas under a "
+                "runtime step policy whose exact bound is unresolved; accepted "
+                "tokens are progressively locked until the "
                 "canvas converges (stable + confident stopping criterion), then the "
                 "whole canvas is appended to the generated output."
             ),
-            "facts": [f"{canvas_length} tokens", "init U(V)", "jointly refined"],
+            "facts": [f"{canvas_length} tokens", "init U(V)", "jointly refined",
+                      "step bound unresolved"],
         },
         {
             "id": "bd_self_cond",
@@ -230,15 +249,22 @@ def block_diffusion_loop_blocks(
         },
         {
             "id": "bd_lm_head",
-            "title": "LM head · logit softcap",
+            "title": ("LM head · logit softcap" if cap is not None
+                      else "LM head · softcap unresolved"),
             "description": (
                 f"Linear projection from hidden dim to vocabulary logits, followed "
                 f"by Gemma4-style softcapping: logits = tanh(logits / {cap}) × {cap}. "
                 f"This bounds logit magnitude to ±{cap} without hard clipping, "
                 "keeping gradients healthy at the extremes of the distribution.  "
                 "Weights are tied with the token embedding table."
+                if cap is not None else
+                "Linear projection from hidden dim to vocabulary logits. The exact "
+                "post-head softcap value is unresolved; no conventional bound is "
+                "inserted. Weights are tied with the token embedding table."
             ),
-            "facts": [f"{hidden} → {vocab}", f"softcap ±{cap}"],
+            "facts": ([f"{hidden} → {vocab}", f"softcap ±{cap}"]
+                      if cap is not None else
+                      [f"{hidden} → {vocab}", "softcap unresolved"]),
         },
         {
             "id": "bd_sampler",
@@ -246,7 +272,8 @@ def block_diffusion_loop_blocks(
             "description": (
                 "The entropy-bound sampler decides which canvas tokens to commit "
                 "this step.  Positions are accepted in increasing entropy order "
-                "until cumulative entropy exceeds the bound ε=0.1 — these accepted "
+                "until cumulative entropy exceeds a runtime bound whose exact value "
+                "is unresolved — these accepted "
                 "positions are approximately mutually independent.  Non-accepted "
                 "tokens are re-randomised (renoised) with new uniform samples so the "
                 "decoder sees fresh uncertainty there next step; the accepted logits "
@@ -257,58 +284,141 @@ def block_diffusion_loop_blocks(
                 "are appended to the generated sequence — then a fresh canvas begins "
                 "the next block."
             ),
-            "facts": ["accepted → lock", "rest → renoise", f"converged → {canvas_length} out"],
+            "facts": ["accepted → lock", "rest → renoise",
+                      "entropy bound unresolved",
+                      f"converged → {canvas_length} out"],
         },
     ]
 
 
-def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings: bool,
+def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings: bool | None,
                          embed_norm: str | None = None,
-                         final_logit_softcap: float | None = None) -> list[Block]:
+                         final_norm: str | None = None,
+                         final_logit_softcap: float | None = None,
+                         codebooks: dict | None = None,
+                         mtp: dict | None = None) -> list[Block]:
     vocab = _fmt(vocab_size)
     hidden = _fmt(hidden_size)
+    norm_labels = {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}
+    embed_norm_label = norm_labels.get(embed_norm)
+    final_norm_label = norm_labels.get(final_norm)
+    # Repeated token streams: K is only an operand of exact source-proven
+    # embedding-bank summation and output-head stacking. Codec meaning,
+    # channel packing and delay schedules are not implied by this mechanism.
+    cb = codebooks or {}
+    k_books = cb.get("num")
+    summed = bool(cb.get("embeddings_summed"))
+    stacked = bool(cb.get("heads_stacked"))
+    embed_tie_sentence = (
+        " — weights tied with the output head."
+        if tie_word_embeddings is True else
+        "."
+        if tie_word_embeddings is False else
+        " — whether these weights are tied to the output head is unresolved."
+    )
+    head_tie_sentence = (
+        " — weights tied with the embedding."
+        if tie_word_embeddings is True else
+        "."
+        if tie_word_embeddings is False else
+        " — whether these weights are tied to the embedding is unresolved."
+    )
     return [
         {
             "id": "tok_text",
             "role": "input",
             "kind": "source",
-            "label": "Tokenized text",
-            "title": "Tokenized text",
-            "description": "Input token IDs.",
-            "facts": ["shape [batch, seq_len]"],
+            "label": ["Parallel token", "streams"] if k_books else "Tokenized text",
+            "title": f"Parallel token streams (×{k_books})" if k_books else "Tokenized text",
+            "description": (
+                f"{k_books} source-proven token-id streams feed independently "
+                "constructed embedding tables whose outputs are summed."
+                if k_books else "Input token IDs."),
+            "facts": ([f"shape [batch, {k_books}, seq_len]"]
+                      if k_books else ["shape [batch, seq_len]"]),
+            **({"detail": {
+                "num": k_books, "embeddings_summed": summed,
+                "heads_stacked": stacked,
+            }} if k_books else {}),
         },
         {
             "id": "embed",
             "role": "embedding",
             "kind": "embedding",
             "label": "Token Embedding layer",
-            "title": "Token embedding",
-            "description": "Maps each token id to its vector"
-                           + (" — weights tied with the output head." if tie_word_embeddings else "."),
-            "facts": [f"{vocab} vocab", f"{hidden}-d"],
+            "title": (f"Parallel embedding banks (×{k_books}, summed)"
+                      if k_books and summed else "Token embedding"),
+            "description": (
+                f"Each of the {k_books} streams has its own embedding table; "
+                "the looked-up vectors are summed into one token vector "
+                "(read from the decoder's construction and forward)."
+                if k_books and summed else
+                "Maps each token id to its vector" + embed_tie_sentence),
+            "facts": ([f"{k_books} × ({vocab} vocab)", f"{hidden}-d", "summed"]
+                      if k_books and summed else [f"{vocab} vocab", f"{hidden}-d"]),
         },
         *([{
             "id": "embed_norm",
             "role": "norm",
             "kind": "norm",
-            "label": embed_norm,
+            "label": embed_norm_label,
             "title": "Embedding norm",
             "description": (
-                f"{embed_norm} applied to the token embeddings BEFORE the layer "
-                "stack — a code-level stage of this family (BLOOM's "
-                "word-embedding LayerNorm), read from the modeling source."
+                f"{embed_norm_label} applied to the token embeddings BEFORE "
+                "the layer stack, proven from the exact model-stage dataflow."
             ),
-        }] if embed_norm else []),
+        }] if embed_norm_label else []),
         {
             "id": "final_rms",
             "role": "norm",
             "kind": "norm",
-            "label": "Final RMSNorm",
-            "title": "Final norm",
-            "description": "RMSNorm over the last hidden state before the output head.",
-            "facts": [f"dim {hidden}"],
+            "label": (
+                f"Final {final_norm_label}"
+                if final_norm_label else ["Pre-head path", "unresolved"]
+            ),
+            "title": (
+                "Final norm" if final_norm_label
+                else "Pre-head path unresolved"
+            ),
+            "description": (
+                f"{final_norm_label} over the last hidden state before the "
+                "output head."
+                if final_norm_label else
+                "The repeated layer's normalization kind cannot prove that "
+                "the model root applies a final normalization. The exact "
+                "pre-head stage remains unresolved until its owner is read."
+            ),
+            "facts": [f"dim {hidden}"] if final_norm_label else [],
+            "resolved": final_norm_label is not None,
         },
-        {
+        *([mtp_head_block(
+            num_modules=mtp["num_modules"],
+            hidden_size=hidden_size,
+            vocab_size=vocab_size,
+            shares_embedding=mtp["shares_embedding"],
+            shares_output_head=mtp["shares_output_head"],
+            hidden_norm_kind=mtp["hidden_norm_kind"],
+            embedding_norm_kind=mtp["embedding_norm_kind"],
+            # The evidence proves the called block class matches the repeated
+            # stage, but not which occurrence of a heterogeneous schedule may
+            # donate its internals. Keep that child opaque until such an exact
+            # occurrence join exists; never borrow layer zero.
+            block_children=None,
+        )] if mtp else []),
+        *([{
+            "id": "lm_head",
+            "role": "output",
+            "kind": "output",
+            "label": ["Parallel token", "heads"],
+            "title": f"Parallel token heads (×{k_books})",
+            "description": (
+                f"{k_books} parallel linear heads project the final hidden "
+                "state into per-stream logits, stacked "
+                f"[{k_books}, seq, {vocab}] — one next-token distribution per "
+                "stream each step (read from exact construction and forward)."
+            ),
+            "facts": [f"{k_books} × ({hidden} → {vocab})"],
+        }] if k_books and stacked else [{
             "id": "lm_head",
             "role": "output",
             "kind": "output",
@@ -326,12 +436,11 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
                 f"softcaps them: logits = tanh(logits / {final_logit_softcap:g}) "
                 f"× {final_logit_softcap:g}, bounding magnitude to "
                 f"±{final_logit_softcap:g} without hard clipping"
-                + (" — weights tied with the embedding." if tie_word_embeddings else ".")
+                + head_tie_sentence
             ) if final_logit_softcap else (
-                "Projects the final hidden state into vocabulary logits"
-                + (" — weights tied with the embedding." if tie_word_embeddings else ".")
+                "Projects the final hidden state into vocabulary logits" + head_tie_sentence
             ),
             "facts": [f"{hidden} \u2192 {vocab}"] + (
                 [f"softcap ±{final_logit_softcap:g}"] if final_logit_softcap else []),
-        },
+        }]),
     ]

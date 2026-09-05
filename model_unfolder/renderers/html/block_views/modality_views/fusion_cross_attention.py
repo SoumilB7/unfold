@@ -13,11 +13,15 @@ from ...theme import C, GAP
 
 
 def build_cross_attention_fusion_view(ir: dict, info: dict, mount_id: str, fusion: dict) -> str:
-    """Show projected image states conditioning selected decoder layers."""
+    """Show external encoder states conditioning selected decoder layers."""
     arrow_id, shadow_id = _ids(mount_id, "cross-attention-fusion")
     parts: list[str] = []
 
-    # cx is pushed right so the left-hand "Projected image states" side block clears
+    # The side source's wording follows the fusion's own sources: a
+    # conditioning (prompt-encoder) composite is not vision.
+    is_conditioning = any("conditioning" in str(s) for s in fusion.get("sources") or [])
+
+    # cx is pushed right so the left-hand states side block clears
     # the spine with room for its arrow — at cx=430 it overlapped the cross-attention
     # block (right edge 284 vs the block's left edge 280) and the elbow collapsed.
     cx = 500  # internal layout centre; the canvas auto-fits below
@@ -25,7 +29,7 @@ def build_cross_attention_fusion_view(ir: dict, info: dict, mount_id: str, fusio
     vision = _rect_block(
         parts, info, shadow_id, "cross_attention_states",
         64, 250, 220, 50,
-        ["Projected image", "states"],
+        ["Encoded prompt", "states"] if is_conditioning else ["Projected image", "states"],
         font_size=15,
     )
     adapter = _rect_block(

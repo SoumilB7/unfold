@@ -1,0 +1,272 @@
+{
+  "executable": "/private/tmp/model-unfolder-s5-venv-final.BtxhZh/bin/python",
+  "failures": [],
+  "package": "model-unfolder",
+  "python": "3.12.10",
+  "schema": 1,
+  "version": "0.3.0",
+  "witness_count": 29,
+  "witnesses": [
+    {
+      "duration_seconds": 4.621,
+      "fixture": "auraflow-v0-3.json",
+      "html_sha256": "3f71a0ad875073da03adc05ebeab3a4d2bbaacd011364dc817ca734e61011fa0",
+      "layers": 36,
+      "model": "AuraFlow-v0.3",
+      "rendered_name": "AuraFlow-v0.3",
+      "warnings": 1
+    },
+    {
+      "duration_seconds": 4.499,
+      "fixture": "cogvideox-5b.json",
+      "html_sha256": "6e268cc58489ad34da564c3f5272d871d4b083a694a72a7073a928a8cf68e9a3",
+      "layers": 42,
+      "model": "CogVideoX-5b",
+      "rendered_name": "CogVideoX-5b",
+      "warnings": 1
+    },
+    {
+      "duration_seconds": 0.447,
+      "fixture": "deepseek-v3.json",
+      "html_sha256": "2306815c31c78058cdb39c83bd85aaf35831966123b758718514269b377d1624",
+      "layers": 61,
+      "model": "DeepSeek-V3",
+      "rendered_name": "DeepSeek-V3",
+      "warnings": 5
+    },
+    {
+      "duration_seconds": 4.606,
+      "fixture": "flux-2-dev.json",
+      "html_sha256": "010b6eeec6bd041746062c5deae62924426c5e3dac2a9ea940aac5a19c4e05b6",
+      "layers": 56,
+      "model": "FLUX.2-dev",
+      "rendered_name": "FLUX.2-dev",
+      "warnings": 2
+    },
+    {
+      "duration_seconds": 2.169,
+      "fixture": "fluxtransformer2dmodel.json",
+      "html_sha256": "cf548caec4f40a7a7dc127e2440f51461a6772273bcb89f01422b5af744f9389",
+      "layers": 57,
+      "model": "FluxTransformer2DModel",
+      "rendered_name": "FluxTransformer2DModel",
+      "warnings": 1
+    },
+    {
+      "duration_seconds": 0.514,
+      "fixture": "glm-4-5.json",
+      "html_sha256": "241f843195c14a24aaeaa097ff8ef2289dccb0c8b2596d0ef0400f37a13b7214",
+      "layers": 92,
+      "model": "GLM-4.5",
+      "rendered_name": "GLM-4.5",
+      "warnings": 2
+    },
+    {
+      "duration_seconds": 1.755,
+      "fixture": "hunyuanvideo.json",
+      "html_sha256": "112f40a6885f1550be4f0ca1a4052be102865ebc21d8349d3cfe938da53cda26",
+      "layers": 60,
+      "model": "HunyuanVideo",
+      "rendered_name": "HunyuanVideo",
+      "warnings": 3
+    },
+    {
+      "duration_seconds": 0.751,
+      "fixture": "ltx-video.json",
+      "html_sha256": "99cb6ccab3b17d4bb9bdb05807a96bcb3b73ea6eb108e1b988b39f817f02ca01",
+      "layers": 28,
+      "model": "LTX-Video",
+      "rendered_name": "LTX-Video",
+      "warnings": 1
+    },
+    {
+      "duration_seconds": 1.037,
+      "fixture": "lumina-image-2-0.json",
+      "html_sha256": "b56a4a5a7998b237767f94017068935eebfa95139f42c8fb7f96c4fbf8564951",
+      "layers": 30,
+      "model": "Lumina-Image-2.0",
+      "rendered_name": "Lumina-Image-2.0",
+      "warnings": 3
+    },
+    {
+      "duration_seconds": 0.317,
+      "fixture": "olmo-2-1124-7b.json",
+      "html_sha256": "4ca083dba70498538e844fe2313b0bf5d9f52915bfb16f3d611ad3d6dc2514c0",
+      "layers": 32,
+      "model": "OLMo-2-1124-7B",
+      "rendered_name": "OLMo-2-1124-7B",
+      "warnings": 1
+    },
+    {
+      "duration_seconds": 0.747,
+      "fixture": "pixart-sigma-xl-2-1024-ms.json",
+      "html_sha256": "7e113eed436069a436e34cf5438a6cd3a2afdb3902526b74ebef51e42d0c1e8b",
+      "layers": 0,
+      "model": "PixArt-Sigma-XL-2-1024-MS",
+      "rendered_name": "PixArt-Sigma-XL-2-1024-MS",
+      "warnings": 1
+    },
+    {
+      "duration_seconds": 2.227,
+      "fixture": "qwen-image.json",
+      "html_sha256": "93a8103dd3d2cb76676a945290a44436b2eab2a5cf517b6f8ed354ec70db9f8f",
+      "layers": 60,
+      "model": "Qwen-Image",
+      "rendered_name": "Qwen-Image",
+      "warnings": 1
+    },
+    {
+      "duration_seconds": 1.379,
+      "fixture": "qwen2-vl-7b-instruct.json",
+      "html_sha256": "b1abbc03321c9c733e6e1da5f381efbe67e07a1c809bc6d71c6119880eba7512",
+      "layers": 28,
+      "model": "Qwen2-VL-7B-Instruct",
+      "rendered_name": "Qwen2-VL-7B-Instruct",
+      "warnings": 2
+    },
+    {
+      "duration_seconds": 0.226,
+      "fixture": "qwen3-8b.json",
+      "html_sha256": "1761f984c43cb1c649ca0018960c0fe6e43a746013abfc30ff982efd49848ad4",
+      "layers": 36,
+      "model": "Qwen3-8B",
+      "rendered_name": "Qwen3-8B",
+      "warnings": 1
+    },
+    {
+      "duration_seconds": 17.093,
+      "fixture": "qwen3-5-27b-text.json",
+      "html_sha256": "dde8548f18b2bfb4d7c358a30c2efec42cad9e43974d447ccaace25c1c14e2c4",
+      "layers": 64,
+      "model": "Qwen3.5-27B text component",
+      "rendered_name": "Qwen3.5-27B:text",
+      "warnings": 2
+    },
+    {
+      "duration_seconds": 0.913,
+      "fixture": "sana-1600m-1024px-diffusers.json",
+      "html_sha256": "9cc1dc4d07d35a427b9425cc0c8a02e463da4025db8b7728be8411dc3c97503b",
+      "layers": 20,
+      "model": "Sana_1600M_1024px_diffusers",
+      "rendered_name": "Sana_1600M_1024px_diffusers",
+      "warnings": 1
+    },
+    {
+      "duration_seconds": 1.078,
+      "fixture": "wan2-2-t2v-a14b-diffusers.json",
+      "html_sha256": "42013cd31b8f1e7859842386e964175fe14fd7a2a300f02ca08a9c9f1096918e",
+      "layers": 40,
+      "model": "Wan2.2-T2V-A14B-Diffusers",
+      "rendered_name": "Wan2.2-T2V-A14B-Diffusers",
+      "warnings": 2
+    },
+    {
+      "duration_seconds": 3.117,
+      "fixture": "bloom.json",
+      "html_sha256": "caf0aff8f7d0db5569324da287cd14a0825f0eca53ab875bc146a409e9cd80df",
+      "layers": 70,
+      "model": "bloom",
+      "rendered_name": "bloom",
+      "warnings": 1
+    },
+    {
+      "duration_seconds": 3.221,
+      "fixture": "dbrx-base.json",
+      "html_sha256": "5bbb3b865e29344437a1891b34be1c4cee3a94de0a11b4f8f33385ad37f530b7",
+      "layers": 40,
+      "model": "dbrx-base",
+      "rendered_name": "dbrx-base",
+      "warnings": 1
+    },
+    {
+      "duration_seconds": 0.282,
+      "fixture": "gemma-2-2b-it.json",
+      "html_sha256": "aa45cdfe2c970f42f810ad465aabe8980e66ffb4a7820a25923fb27c150561c4",
+      "layers": 26,
+      "model": "gemma-2-2b-it",
+      "rendered_name": "gemma-2-2b-it",
+      "warnings": 1
+    },
+    {
+      "duration_seconds": 0.251,
+      "fixture": "gpt-oss-20b.json",
+      "html_sha256": "e9f1e9c0c54c1cd276bb20d44f69c9f7cb1c44053deaaf973a2e217f3cd48e3f",
+      "layers": 24,
+      "model": "gpt-oss-20b",
+      "rendered_name": "gpt-oss-20b",
+      "warnings": 2
+    },
+    {
+      "duration_seconds": 0.208,
+      "fixture": "granite-3-0-8b-instruct.json",
+      "html_sha256": "282c6a0558d20f542f5c57818c7b01a552f520599833a5a5b10cb72804c0d12d",
+      "layers": 40,
+      "model": "granite-3.0-8b-instruct",
+      "rendered_name": "granite-3.0-8b-instruct",
+      "warnings": 4
+    },
+    {
+      "duration_seconds": 0.253,
+      "fixture": "llama-7b.json",
+      "html_sha256": "99398798f919d6b25acad65d6b11673486b15205906479bb6f9bb2f1e62f89ee",
+      "layers": 32,
+      "model": "llama-7b",
+      "rendered_name": "llama-7b",
+      "warnings": 1
+    },
+    {
+      "duration_seconds": 0.844,
+      "fixture": "mochi-1-preview.json",
+      "html_sha256": "30adf09168a79b3a52924e53488bc7aafa95b5ea92c276b1039d342f9435768f",
+      "layers": 48,
+      "model": "mochi-1-preview",
+      "rendered_name": "mochi-1-preview",
+      "warnings": 2
+    },
+    {
+      "duration_seconds": 1.148,
+      "fixture": "musicgen-small.json",
+      "html_sha256": "e312bc4f42c1a7cf6bd36c361e196d79a7e3819b03711283c0b379e7bf3f94c2",
+      "layers": 24,
+      "model": "musicgen-small",
+      "rendered_name": "MusicgenForConditionalGeneration",
+      "warnings": 3
+    },
+    {
+      "duration_seconds": 1.315,
+      "fixture": "prxpixel-t2i.json",
+      "html_sha256": "fde747a83f72a30c83d9684883b808c6f295618f20d13ca275bcd509f82972ef",
+      "layers": 24,
+      "model": "prxpixel-t2i",
+      "rendered_name": "prxpixel-t2i",
+      "warnings": 1
+    },
+    {
+      "duration_seconds": 1.256,
+      "fixture": "stable-diffusion-3-5-large.json",
+      "html_sha256": "37616b2954901a61d0fd2485722a85b065c82c8bffdded1f04c8121e36bf61d1",
+      "layers": 0,
+      "model": "stable-diffusion-3.5-large",
+      "rendered_name": "stable-diffusion-3.5-large",
+      "warnings": 1
+    },
+    {
+      "duration_seconds": 1.723,
+      "fixture": "stable-diffusion-xl-base-1-0.json",
+      "html_sha256": "5a8823cf84b9f6d77476ee4b0e217d75fa0e094a85551ee85e3b077bf99e5c7c",
+      "layers": 0,
+      "model": "stable-diffusion-xl-base-1.0",
+      "rendered_name": "stable-diffusion-xl-base-1.0",
+      "warnings": 1
+    },
+    {
+      "duration_seconds": 0.481,
+      "fixture": "stablelm-2-1-6b.json",
+      "html_sha256": "440dd33c5727c7dd921ff9b4c50e2510aa23cba151c1bd9bca9b08e81fcb2b7d",
+      "layers": 24,
+      "model": "stablelm-2-1_6b",
+      "rendered_name": "stablelm-2-1_6b",
+      "warnings": 1
+    }
+  ]
+}

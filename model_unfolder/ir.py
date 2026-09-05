@@ -1,35 +1,60 @@
-"""
-Intermediate Representation (IR) for transformer architectures.
+"""Intermediate representation shared by evidence and every projection.
 
-The IR is the contract between parsers (which read HuggingFace configs)
-and the renderer (which produces SVG/HTML). It is layer-aware to support
-heterogeneous architectures (Gemma sliding-window patterns, DeepSeek
-dense+MoE phase changes, YOCO/CLA cross-layer KV sharing, etc.).
+Parsers populate this contract from owner-qualified facts.  Renderers, expanded
+JSON and parameter consumers project it; they do not reinterpret configuration
+or source code.  The layer-aware shape supports heterogeneous stacks (sliding
+versus global attention, dense versus expert FFNs, cross-layer KV sharing, and
+other per-occurrence differences).
 """
 from __future__ import annotations
-from dataclasses import dataclass, field
+from dataclasses import MISSING, dataclass, field, fields
+import math
 from typing import Optional
+
+
+CROSS_KV_SOURCE_KINDS = frozenset({
+    "conditioning_encoder", "vision", "audio", "external",
+})
 
 
 @dataclass
 class AttentionSpec:
     """Specification of an attention/token-mixer block within a layer."""
-    kind: str                       # "mha" | "gqa" | "mqa" | "mla" | "gated_delta" | "ssm" | ...
+    kind: str | None                # "mha" | "gqa" | "mqa" | "mla" | ...
+                                    # None = mechanism unresolved.  Geometry may
+                                    # still be known, but consumers must not
+                                    # manufacture Q/K/V or SDPA from omission.
     num_heads: int
+    mixer_state: Optional[str] = None  # exact per-layer schedule lane:
+                                    # ordinary_attention | gated_delta | ...
+                                    # This is independent of the attention
+                                    # subtype; an unresolved MHA/GQA split must
+                                    # not erase a proved ordinary-attention lane.
     num_kv_heads: Optional[int] = None
     head_dim: Optional[int] = None
     kv_lora_rank: Optional[int] = None
     q_lora_rank: Optional[int] = None
     rope_dim: Optional[int] = None
+    rope_theta: Optional[float] = None  # exact base of the frequency state
+                                    # consumed by this applied Q/K rotation;
+                                    # declaration alone is powerless.
+    rope_initialization: Optional[dict] = None  # exact selected initializer
+                                    # protocol + present code-read operands;
+                                    # never inferred from rope_type spelling.
     # MLA decoupled head geometry (DeepSeek/Kimi): Q/K split into nope+rope, V
     # has its own width. Needed for an accurate MLA parameter count.
     qk_nope_head_dim: Optional[int] = None
     qk_rope_head_dim: Optional[int] = None
     v_head_dim: Optional[int] = None
-    mask: str = "causal"            # "causal" | "sliding" | "chunked" | "global"
+    mask: Optional[str] = None      # "causal" | "sliding" | "chunked" | "global" |
+                                    # "unknown". U2 default-kill: no dataclass
+                                    # "causal" — the parser sets causal only when
+                                    # evidence/config declares decoder-ness;
+                                    # None/"unknown" renders an unresolved chip.
     window_size: Optional[int] = None
     kv_source_layer: Optional[int] = None   # for cross-layer KV sharing
-    qk_norm: bool = False           # per-head Q/K normalisation (Cohere, OLMo-2, StableLM)
+    qk_norm: Optional[bool] = None  # per-head Q/K normalisation. True/False are
+                                    # evidence-backed; None means unresolved.
     sinks: bool = False             # learned sink logits joining the softmax (an extra
                                     # column whose probability mass is discarded after
                                     # normalisation — a head can attend to "nothing").
@@ -37,28 +62,46 @@ class AttentionSpec:
                                     # ("Append sink column" between scores and softmax —
                                     # the logits are PARAMETERS of that op; weights are
                                     # never input nodes).  Emitted only when True.
-    logit_softcap: Optional[float] = None   # attn_logit_softcapping (Gemma-2 ±50):
+    logit_softcap: Optional[float] = None   # code-bound score/tanh softcap operand:
                                     # scores/cap → tanh → ×cap between QK^T and the
                                     # softmax — a REAL forward op, drawn as a node.
                                     # Emitted only when declared.
-    rope: bool = True               # applies rotary position embedding to Q/K before scores
-                                    # (False for ALiBi/learned-absolute families: BLOOM/MPT/GPT-2/OPT)
+    qkv_clip: Optional[float] = None # exact projection-clamp operand; a config
+                                    # value alone cannot create this operation.
+    rope: Optional[bool] = None     # applies rotary position embedding to Q/K.
+                                    # This compatibility value is never enough
+                                    # to draw the operation by itself: consumers
+                                    # also require position_kind="rope" and
+                                    # position_application="qk_rotation".
     position_kind: Optional[str] = None       # rope | alibi | learned_absolute | none | unknown
     position_application: Optional[str] = None  # qk_rotation | attention_bias | embedding_add | none
-    bias: bool = False              # bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi)
+    bias: Optional[bool | str] = None  # uniform True/False or exact "mixed"
+                                    # bias terms across the attention affine path (Qwen2,
+                                    # GPT-2, Phi). True/False/"mixed" are
+                                    # evidence-backed (config or code); None ⇒ no
+                                    # channel decided — cards say "bias unresolved"
+                                    # instead of silently drawing bias-less.
     shared: bool = False            # weight-shared layer reused across positions (Zamba)
     no_rope: bool = False           # no positional encoding on this layer (Llama 4 iRoPE NoPE)
     rope_3d: bool = False            # 3D axial RoPE over (temporal·height·width) — video DiTs
                                     # (Wan/HunyuanVideo/CogVideoX/Mochi/LTX); surfaces the temporal
                                     # axis as a chip so the block reads as video without drilling
-    cached: Optional[bool] = None   # whether K/V are written to an autoregressive cache;
-                                    # None → default (causal LMs cache, cross-attn doesn't);
-                                    # False → bidirectional/non-AR (diffusion DiT, ViT) — no cache ports
+    cached: Optional[bool] = None   # whether K/V are written to a cache.
+                                    # None is unresolved, never "causal ⇒ cache".
+    output_projection: Optional[bool] = None  # exact attention-result ->
+                                    # output-Linear path. True is code-proven;
+                                    # None renders an honest opaque output path.
     cross_attention: bool = False   # decoder Q attends to external encoder/modality K/V states
     cross_kv_source: Optional[str] = None  # what supplies the external K/V when
                                     # cross_attention is set — e.g. "encoded text
                                     # prompt" (DiT/UNet) vs "projected image states"
                                     # (vision). Drives the diagram's external node.
+    cross_kv_source_kind: Optional[str] = None  # closed typed source role;
+                                    # absent means the external K/V source is
+                                    # unresolved. Never derived from prose.
+    cross_kv_source_evidence: Optional[dict] = None  # serialized exact
+                                    # source-proven FusionEvidence that decided
+                                    # cross_kv_source_kind.
     compress_ratio: Optional[int] = None   # compressed sparse / hierarchical compressed attention
     index_topk: Optional[int] = None        # sparse-attention indexer fan-in (keys kept per query)
     index_n_heads: Optional[int] = None     # DeepSeek-V3.2 DSA lightning-indexer head count
@@ -72,13 +115,12 @@ class AttentionSpec:
     scores_scaled: Optional[bool] = None    # code-PROVEN scores-scaling verdict from the
                                             # attention forward (attention_score_scaling_
                                             # from_files): False ⇒ raw QK^T, no scale op
-                                            # (T5 family); True/None keep the sqrt(dim)
-                                            # rendering.  Emitted ONLY when False so every
-                                            # scaled model stays byte-identical.
+                                            # (T5 family); True proves the usual
+                                            # sqrt(dim) scale; None is unresolved.
     projection_mode: Optional[str] = None   # code-proven Q/K/V STORAGE:
                                     # "fused_qkv" (one query_key_value/c_attn
-                                    # matrix, split in forward) vs None (split
-                                    # projections / unproven keeps the default)
+                                    # matrix, split in forward), "split_qkv", or
+                                    # None (storage unresolved; never split by default)
     # Self-describing label override for attention variants the generic kind/mask
     # vocabulary can't name on its own (e.g. MM-DiT dual-stream vs single-stream
     # joint attention). Keys: short, tag, label (list[str]), title, desc.
@@ -89,45 +131,136 @@ class AttentionSpec:
     # conventions (Part 4 §6).  Emitted only when non-empty.
     asserted: tuple = ()
 
+    def __post_init__(self):
+        source_kind = self.cross_kv_source_kind
+        evidence = self.cross_kv_source_evidence
+        if source_kind is None:
+            if evidence is not None:
+                raise ValueError(
+                    "cross-K/V provenance cannot exist without a typed source")
+            return
+        if source_kind not in CROSS_KV_SOURCE_KINDS:
+            raise ValueError(f"unknown cross-K/V source kind: {source_kind}")
+        if not self.cross_attention:
+            raise ValueError(
+                "a typed cross-K/V source requires cross_attention=True")
+        if not isinstance(evidence, dict):
+            raise TypeError(
+                "a typed cross-K/V source requires FusionEvidence provenance")
+        if evidence.get("status") != "proven" \
+                or evidence.get("kind") != "cross_attention":
+            raise ValueError(
+                "cross-K/V source provenance must prove cross-attention")
+        if not evidence.get("owner_class") or not evidence.get("source_file") \
+                or not isinstance(evidence.get("line"), int):
+            raise ValueError(
+                "cross-K/V source provenance requires owner, file and line")
+        route_modalities = {
+            route.get("modality") for route in evidence.get("routes", ())
+            if isinstance(route, dict)
+        }
+        expected_modality = {
+            "conditioning_encoder": "conditioning",
+            "vision": "vision",
+            "audio": "audio",
+            "external": "external",
+        }[source_kind]
+        if route_modalities != {expected_modality}:
+            raise ValueError(
+                "cross-K/V source kind must match the proven fusion route")
+
 
 @dataclass
 class FFNSpec:
     """Specification of the feed-forward block within a layer."""
-    kind: str                       # "dense" | "moe"
-    activation: str                 # "silu" | "gelu" | "relu" | "geglu" | "swiglu"
-    intermediate_size: int
-    gated: Optional[bool] = True    # SwiGLU/GeGLU style gated MLP. None ⇒ the
-                                    # config does not declare the FFN's inner
-                                    # structure (gate-or-not lives in the model
-                                    # code, not the config) — render/JSON must say
-                                    # so, never assert a shape it can't see.
-    activation_assumed: bool = False  # True ⇒ config declared no activation; the
-                                      # value is a convention (DiT default), not a
-                                      # config fact — render/JSON must say so
-    activation_from_class: bool = False  # True ⇒ the activation (and hence the
-                                      # gate-or-not structure) was read from the
-                                      # model CLASS, not the config (a code-derived
-                                      # fact, e.g. Flux's fixed gelu-approximate) —
-                                      # render/JSON must mark it as such
+    kind: Optional[str] = None      # "dense" | "moe" | "conv_glu";
+                                    # None ⇒ the mechanism is unresolved. Known
+                                    # widths may still ride an opaque region.
+    activation: Optional[str] = None  # independently resolved activation;
+                                    # None never supplies a SiLU/GELU convention
+    intermediate_size: Optional[int] = None
+    gated: Optional[bool] = None    # independently proven gate topology.
+                                    # None must never become dense or gated by
+                                    # truthiness/default coercion.
+    activation_assumed: bool = False  # transitional provenance field; U4-C
+                                      # never authors a conventional activation
+    activation_from_class: bool = False  # activation was read from source code,
+                                      # rather than supplied as a bare config value
     bias: Optional[bool] = None    # MLP projection bias (mlp_bias) — a Tier-3
                                    # chip when True; None ⇒ config silent.
-    projection_mode: Optional[str] = None  # code-proven STORAGE of the plain
+    projection_mode: Optional[str] = None  # code-proven STORAGE of the ordinary
                                    # MLP: "split" | "fused_gate_up" | "dense";
-                                   # None ⇒ unproven (conventional shape kept).
+                                   # None ⇒ unproven and therefore opaque.
     expert_projection_mode: Optional[str] = None  # code-proven STORAGE of the
                                    # ROUTED EXPERTS — an independent callable
                                    # (DeepSeek: split MLP + fused experts).
+    expert_activation_formula: Optional[dict] = None  # exact routed-expert
+                                   # gate activation + optional literal
+                                   # alpha/clamp/up-offset operands
     num_experts: Optional[int] = None
     num_experts_per_tok: Optional[int] = None
-    num_shared_experts: int = 0
+    num_shared_experts: Optional[int] = None
     expert_intermediate_size: Optional[int] = None
     routing: Optional[dict] = None  # gating fn, grouped routing, top-k renorm, scale
-    asserted: tuple = ()            # B5: facts that fell to generic defaults
-                                    # (activation → "silu", norm_kind →
-                                    # "rmsnorm", storage → split); emitted
-                                    # only when non-empty
-    activation_clip: Optional[float] = None  # clamp bound on the (Swi)GLU activation
-                                    # (gpt-oss ``swiglu_limit``) — a Tier-3 property
+    asserted: tuple = ()            # transitional debt surface for facts still
+                                    # projected by later U4 slices
+
+    def __post_init__(self) -> None:
+        formula = self.expert_activation_formula
+        if formula is None:
+            return
+        if self.kind != "moe":
+            raise ValueError(
+                "an expert activation formula requires kind='moe'")
+        if not isinstance(formula, dict):
+            raise TypeError("expert activation formula is a typed mapping")
+        allowed = {
+            "kind", "alpha", "gate_clip", "up_clip", "up_offset",
+        }
+        if set(formula) - allowed:
+            raise ValueError("expert activation formula has unknown operands")
+        kind = formula.get("kind")
+        if not isinstance(kind, str) or not kind:
+            raise ValueError("expert activation formula requires its kind")
+        for name in ("alpha", "up_offset"):
+            value = formula.get(name)
+            if value is not None and (
+                    not isinstance(value, (int, float))
+                    or isinstance(value, bool)
+                    or not math.isfinite(value)):
+                raise TypeError(f"expert activation {name} is numeric")
+        for name in ("gate_clip", "up_clip"):
+            bounds = formula.get(name)
+            if bounds is None:
+                continue
+            if not isinstance(bounds, (tuple, list)) or len(bounds) != 2:
+                raise TypeError(f"expert activation {name} is a bound pair")
+            lower, upper = bounds
+            if any(value is not None and (
+                    not isinstance(value, (int, float))
+                    or isinstance(value, bool)
+                    or not math.isfinite(value))
+                   for value in bounds):
+                raise TypeError(f"expert activation {name} is numeric")
+            if lower is None and upper is None:
+                raise ValueError(f"expert activation {name} is empty")
+            if lower is not None and upper is not None and lower > upper:
+                raise ValueError(f"expert activation {name} is reversed")
+        if self.expert_projection_mode not in {
+                "fused_gate_up", "split", "dense"}:
+            raise ValueError(
+                "an expert activation formula requires proven expert storage")
+
+
+def canonical_norm_kind(value) -> str | None:
+    """Normalize an already-proven norm semantic into the closed IR enum.
+
+    This is vocabulary normalization only. It never classifies a constructor
+    or infers a primitive from a model/class name; an evidence reader must
+    first prove the semantic value passed here.
+    """
+    token = str(value or "").strip().lower().replace("_", "")
+    return token if token in {"layernorm", "rmsnorm"} else None
 
 
 @dataclass
@@ -136,31 +269,172 @@ class LayerSpec:
     index: int
     attention: AttentionSpec
     ffn: FFNSpec
-    norm_kind: str = "rmsnorm"      # "rmsnorm" | "layernorm" | "unknown" (config
-                                    # gives no norm-type signal — don't assert one)
-    norm_placement: str = "pre"     # "pre" | "post" | "double"
+    norm_kind: str = "unknown"      # "rmsnorm" | "layernorm" | "unknown"
+    norm_placement: str = "unknown" # "pre" | "post" | "double" | "unknown"
+    # Independent from norm placement.  A known set of sublayers is not proof
+    # that their residual stream is sequential or parallel.
+    residual_topology: str = "unknown"  # "sequential" | "parallel" |
+                                        # "fused_parallel" | "unknown"
+    # Number of distinct input-norm occurrences feeding a proven parallel
+    # attention/FFN pair.  None is not one: it is genuinely unresolved.
+    parallel_norm_count: Optional[int] = None
+    residual_scale: Optional[float] = None  # exact operand on every rendered
+                                            # residual contribution
     blocks: list = field(default_factory=list)
+    #: ADDITIVE cross-attention sublayer (seq2seq decoders — MusicGen builds
+    #: encoder_attn IN ADDITION to self_attn).  Distinct from
+    #: attention.cross_attention=True, which REPLACES self-attention (mllama).
+    cross_attention: Optional[AttentionSpec] = None
+
+    def __post_init__(self) -> None:
+        if self.norm_kind not in {"rmsnorm", "layernorm", "unknown"}:
+            raise ValueError(f"unknown layer norm kind {self.norm_kind!r}")
+        if self.norm_placement not in {"pre", "post", "double", "unknown"}:
+            raise ValueError(
+                f"unknown layer norm placement {self.norm_placement!r}")
+        if self.residual_topology not in {
+                "sequential", "parallel", "fused_parallel", "unknown"}:
+            raise ValueError(
+                f"unknown layer residual topology {self.residual_topology!r}")
+        if self.parallel_norm_count is not None and (
+                not isinstance(self.parallel_norm_count, int)
+                or isinstance(self.parallel_norm_count, bool)
+                or self.parallel_norm_count <= 0):
+            raise ValueError(
+                "parallel_norm_count must be a positive integer or None")
+        if self.residual_topology != "parallel" \
+                and self.parallel_norm_count is not None:
+            raise ValueError(
+                "parallel_norm_count requires residual_topology='parallel'")
+        if self.residual_scale is not None and (
+                not isinstance(self.residual_scale, (int, float))
+                or isinstance(self.residual_scale, bool)
+                or not math.isfinite(self.residual_scale)):
+            raise TypeError("residual_scale must be numeric or None")
 
     def signature(self) -> tuple:
         """Hashable structural fingerprint used for grouping similar layers."""
-        a = self.attention
-        f = self.ffn
-        return (
-            a.kind, a.mask, a.window_size, a.kv_source_layer is not None,
-            a.qk_norm, a.shared, a.no_rope, a.output_gate,
-            a.position_kind, a.position_application,
-            a.cross_attention,
-            f.kind, f.gated, f.num_experts,
-            self.norm_kind, self.norm_placement,
-            # Parallel-residual topology (a side-lane FFN) is a structural
-            # difference the spec fields above don't capture — it distinguishes
-            # e.g. Flux double-stream (sequential) from single-stream (parallel).
-            # External lanes (conditioning side-rails) are NOT topology and are
-            # identical across block types, so they're excluded here.
-            any(b.get("lane") and not str(b.get("lane")).startswith("external")
-                for b in self.blocks),
-            any(block.get("id") == "cross_attention_adapter" for block in self.blocks),
+        return layer_signature(self)
+
+
+_NON_STRUCTURAL_FACT_FIELDS = frozenset({
+    "asserted", "cross_kv_source_evidence",
+})
+_BLOCK_STRUCTURAL_FIELDS = (
+    "id", "role", "kind", "view", "lane", "branch_side", "residual_from",
+    "diffusion_stage", "feeds", "also_feeds", "target", "resolved",
+)
+
+
+def _freeze_signature_value(value):
+    """Return a deterministic, hashable representation of structural data."""
+    if isinstance(value, dict):
+        return tuple(
+            (str(key), _freeze_signature_value(item))
+            for key, item in sorted(value.items(), key=lambda pair: str(pair[0]))
         )
+    if isinstance(value, (list, tuple)):
+        return tuple(_freeze_signature_value(item) for item in value)
+    if isinstance(value, (set, frozenset)):
+        return tuple(sorted((_freeze_signature_value(item) for item in value), key=repr))
+    return value
+
+
+def _default_for(dataclass_field):
+    if dataclass_field.default is not MISSING:
+        return dataclass_field.default
+    if dataclass_field.default_factory is not MISSING:
+        return dataclass_field.default_factory()
+    return None
+
+
+def _fact_signature(cls, value) -> tuple:
+    """One schema-derived signature for a typed fact or its dict projection.
+
+    Missing dict keys receive the dataclass default, so the typed IR and its
+    serialized form cannot disagree merely because an optional false/empty
+    value was omitted.  Provenance/debt fields are excluded explicitly; every
+    architectural field added to the dataclass participates automatically.
+    """
+    if value is None:
+        return ()
+    out = []
+    for item in fields(cls):
+        if item.name in _NON_STRUCTURAL_FACT_FIELDS:
+            continue
+        if isinstance(value, dict):
+            raw = value.get(item.name, _default_for(item))
+        else:
+            raw = getattr(value, item.name)
+        # The exact source layer is represented by CrossLayerEdge.  At layer
+        # grouping altitude only "computes K/V" versus "reuses K/V" changes
+        # the cell; retaining the integer would fabricate one group per source.
+        if cls is AttentionSpec and item.name == "kv_source_layer":
+            raw = raw is not None
+        out.append((item.name, _freeze_signature_value(raw)))
+    return tuple(out)
+
+
+def attention_signature(attention) -> tuple:
+    """Canonical grouping signature for :class:`AttentionSpec` facts."""
+    return _fact_signature(AttentionSpec, attention)
+
+
+def ffn_signature(ffn) -> tuple:
+    """Canonical grouping signature for :class:`FFNSpec` facts."""
+    return _fact_signature(FFNSpec, ffn)
+
+
+def _block_signature(block: dict) -> tuple:
+    """Structural cell topology only; presentation prose is deliberately out."""
+    return (
+        tuple(
+            (name, _freeze_signature_value(block.get(name)))
+            for name in _BLOCK_STRUCTURAL_FIELDS
+        ),
+        tuple(
+            _block_signature(child)
+            for child in block.get("children") or []
+            if isinstance(child, dict)
+        ),
+    )
+
+
+def layer_signature(layer) -> tuple:
+    """The sole layer grouping contract for typed IR and dict projections."""
+    if isinstance(layer, dict):
+        attention = layer.get("attention")
+        ffn = layer.get("ffn")
+        norm_kind = layer.get("norm_kind")
+        norm_placement = layer.get("norm_placement")
+        residual_topology = layer.get("residual_topology")
+        parallel_norm_count = layer.get("parallel_norm_count")
+        residual_scale = layer.get("residual_scale")
+        blocks = layer.get("blocks") or []
+        cross_attention = layer.get("cross_attention")
+    else:
+        attention = layer.attention
+        ffn = layer.ffn
+        norm_kind = layer.norm_kind
+        norm_placement = layer.norm_placement
+        residual_topology = layer.residual_topology
+        parallel_norm_count = layer.parallel_norm_count
+        residual_scale = layer.residual_scale
+        blocks = layer.blocks
+        cross_attention = layer.cross_attention
+    return (
+        ("attention", attention_signature(attention)),
+        ("ffn", ffn_signature(ffn)),
+        ("norm_kind", norm_kind),
+        ("norm_placement", norm_placement),
+        ("residual_topology", residual_topology),
+        ("parallel_norm_count", parallel_norm_count),
+        ("residual_scale", residual_scale),
+        ("cross_attention", attention_signature(cross_attention)),
+        ("blocks", tuple(
+            _block_signature(block) for block in blocks if isinstance(block, dict)
+        )),
+    )
 
 
 @dataclass
@@ -172,39 +446,103 @@ class CrossLayerEdge:
     shared: list = field(default_factory=list)    # ["K", "V"]
 
 
+class EvidenceWarning(str):
+    """Exact legacy warning text carrying typed display metadata in memory.
+
+    The public IR contract remains ``list[str]`` and JSON keeps the exact audit
+    receipt. The subtype lets the renderer group those rows using metadata
+    authored by the evidence producer, without reading an evidence ledger or
+    interpreting the receipt prose.
+    """
+
+    def __new__(cls, check: str, summary: str, details: tuple[str, ...],
+                detail: str):
+        if not check or not summary or not details:
+            raise ValueError(
+                "an evidence warning requires check, summary and details")
+        if any(not isinstance(row, str) or not row for row in details):
+            raise TypeError("evidence warning details are non-empty exact text")
+        if len(set(details)) != len(details):
+            raise ValueError("evidence warning details are occurrence-deduplicated")
+        if detail not in details:
+            raise ValueError("evidence warning detail must belong to its group")
+        text = f"Unresolved evidence — {check} evidence unresolved: {detail}"
+        obj = super().__new__(cls, text)
+        obj.check = check
+        obj.summary = summary
+        obj.details = details
+        obj.detail = detail
+        obj._sealed = True
+        return obj
+
+    def __setattr__(self, name, value) -> None:
+        if getattr(self, "_sealed", False):
+            raise AttributeError("EvidenceWarning is immutable")
+        super().__setattr__(name, value)
+
+    def __getnewargs__(self):
+        """Preserve typed metadata across copy/deepcopy/pickle reconstruction."""
+        return self.check, self.summary, self.details, self.detail
+
+
 @dataclass
 class ModelIR:
     """Top-level IR for a complete model."""
     name: str
     architecture: str               # e.g. "DeepseekV3ForCausalLM"
     vocab_size: int
-    hidden_size: int
+    # COR-3 (§8.A): None = the width is UNKNOWN (conflicting or absent
+    # declarations) — zero is never an unknown sentinel; consumers render
+    # unknown or omit the claim, and params return incomplete.
+    hidden_size: int | None
     max_position_embeddings: Optional[int]
-    tie_word_embeddings: bool
+    tie_word_embeddings: Optional[bool]  # True/False = config-declared or the
+                                    # installed config CLASS default (U2 hydration
+                                    # tier); None ⇒ unknown — the param estimate
+                                    # annotates, never silently picks a branch
     layers: list                    # list[LayerSpec]
+    # Model-stage bookends are independent from the repeated layer primitive.
+    # In particular, a RMSNorm inside every layer does not prove that the root
+    # applies a final RMSNorm.
+    embedding_norm_kind: Optional[str] = None
+    final_norm_kind: Optional[str] = None
     cross_layer_edges: list = field(default_factory=list)
     extras: dict = field(default_factory=dict)
-    warnings: list = field(default_factory=list)  # config GAPS / unknowns → "⚠ partial config"
+    # Product-visible unresolved evidence. Typed rows remain real strings for
+    # API/JSON compatibility while carrying display-only metadata in memory.
+    warnings: list = field(default_factory=list)
     notes: list = field(default_factory=list)     # by-design advisories (not deficiencies) → neutral ⓘ
+
+    def __post_init__(self) -> None:
+        for field_name in ("embedding_norm_kind", "final_norm_kind"):
+            value = getattr(self, field_name)
+            if value not in {None, "rmsnorm", "layernorm", "unknown"}:
+                raise ValueError(
+                    f"unknown model-stage norm kind {field_name}={value!r}")
+        if any(not isinstance(warning, str) for warning in self.warnings):
+            raise TypeError("warnings must remain string-compatible")
 
     def to_dict(self) -> dict:
         # Avoid dataclasses.asdict here: it recursively deepcopy()s every
         # nested dict/list, including repeated render block metadata for every
         # layer.  The IR is treated as immutable after parsing, so a direct
         # structural projection is much cheaper and enough for rendering.
-        return {
+        document = {
             "name": self.name,
             "architecture": self.architecture,
             "vocab_size": self.vocab_size,
             "hidden_size": self.hidden_size,
             "max_position_embeddings": self.max_position_embeddings,
             "tie_word_embeddings": self.tie_word_embeddings,
+            "embedding_norm_kind": self.embedding_norm_kind,
+            "final_norm_kind": self.final_norm_kind,
             "layers": [_layer_to_dict(layer) for layer in self.layers],
             "cross_layer_edges": [_cross_edge_to_dict(edge) for edge in self.cross_layer_edges],
             "extras": self.extras,
             "warnings": self.warnings,
             "notes": self.notes,
         }
+        return document
 
     @property
     def num_layers(self) -> int:
@@ -269,12 +607,18 @@ def detect_layer_period(sigs: list) -> int | None:
 def _attention_to_dict(a: AttentionSpec) -> dict:
     return {
         "kind": a.kind,
+        **({"mixer_state": a.mixer_state}
+           if a.mixer_state is not None else {}),
         "num_heads": a.num_heads,
         "num_kv_heads": a.num_kv_heads,
         "head_dim": a.head_dim,
         "kv_lora_rank": a.kv_lora_rank,
         "q_lora_rank": a.q_lora_rank,
         "rope_dim": a.rope_dim,
+        **({"rope_theta": a.rope_theta}
+           if a.rope_theta is not None else {}),
+        **({"rope_initialization": dict(a.rope_initialization)}
+           if a.rope_initialization is not None else {}),
         "mask": a.mask,
         "window_size": a.window_size,
         "kv_source_layer": a.kv_source_layer,
@@ -288,8 +632,14 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "bias": a.bias,
         "shared": a.shared,
         "no_rope": a.no_rope,
+        "rope_3d": a.rope_3d,
+        "cached": a.cached,
+        "output_projection": a.output_projection,
         "cross_attention": a.cross_attention,
         "cross_kv_source": a.cross_kv_source,
+        **({"cross_kv_source_kind": a.cross_kv_source_kind,
+            "cross_kv_source_evidence": dict(a.cross_kv_source_evidence)}
+           if a.cross_kv_source_kind is not None else {}),
         "compress_ratio": a.compress_ratio,
         "index_topk": a.index_topk,
         "index_n_heads": a.index_n_heads,
@@ -298,16 +648,15 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "conv_kernel_size": a.conv_kernel_size,
         "output_gate": a.output_gate,
         "projection_mode": a.projection_mode,
+        "scores_scaled": a.scores_scaled,
         "variant": a.variant,
         # emitted only when DECLARED so undeclared models' output is byte-stable
         **({"scores_scale": a.scores_scale} if a.scores_scale is not None else {}),
-        # emitted only when the code PROVES the scores are unscaled (raw QK^T,
-        # T5 family) — True/None are the status-quo sqrt(dim) rendering
-        **({"scores_scaled": False} if a.scores_scaled is False else {}),
         # emitted only when code proves learned sink logits join the softmax
         **({"sinks": True} if a.sinks else {}),
-        # emitted only when DECLARED (attn_logit_softcapping) — a real op node
+        # emitted only when exact code+config evidence proves the real op node
         **({"logit_softcap": a.logit_softcap} if a.logit_softcap else {}),
+        **({"qkv_clip": a.qkv_clip} if a.qkv_clip is not None else {}),
         # B5: defaults distinguishable-from-declared, only-when-non-empty
         **({"asserted": list(a.asserted)} if a.asserted else {}),
     }
@@ -327,10 +676,10 @@ def _ffn_to_dict(f: FFNSpec) -> dict:
         "num_shared_experts": f.num_shared_experts,
         "expert_intermediate_size": f.expert_intermediate_size,
         "routing": f.routing,
-        "activation_clip": f.activation_clip,
         "bias": f.bias,
         "projection_mode": f.projection_mode,
         "expert_projection_mode": f.expert_projection_mode,
+        "expert_activation_formula": f.expert_activation_formula,
     }
 
 
@@ -341,7 +690,14 @@ def _layer_to_dict(layer: LayerSpec) -> dict:
         "ffn": _ffn_to_dict(layer.ffn),
         "norm_kind": layer.norm_kind,
         "norm_placement": layer.norm_placement,
+        "residual_topology": layer.residual_topology,
+        "parallel_norm_count": layer.parallel_norm_count,
+        **({"residual_scale": layer.residual_scale}
+           if layer.residual_scale is not None else {}),
         "blocks": layer.blocks,
+        # Only-when-present: single-attention layers stay byte-identical.
+        **({"cross_attention": _attention_to_dict(layer.cross_attention)}
+           if layer.cross_attention is not None else {}),
     }
 
 

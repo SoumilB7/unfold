@@ -15,8 +15,15 @@ BLOCK_LABEL_FONT_BOOST = 3
 # and in the browser url(#dup) binds to the FIRST match, which is a hidden drill panel,
 # so the arrowheads silently vanished (rsvg renders each svg isolated, hiding it). A
 def _ids(mount_id: str, view: str) -> tuple[str, str]:
-    from .render_context import ensure_render_context
-    n = ensure_render_context().next_id()
+    from .render_context import current_render_context
+    context = current_render_context()
+    # ID allocation may CONSUME the explicitly active document/render context;
+    # it must never CREATE ambient state.  Raw SVG helpers are also useful as
+    # standalone compatibility entry points, and installing a ContextVar here
+    # leaked one render's diagnostics/events into the next unrelated call.
+    # A standalone SVG is its own namespace, so ordinal zero is sufficient;
+    # composed documents always activate a shared context before reaching us.
+    n = context.next_id() if context is not None else 0
     return f"{mount_id}-{view}-{n}-arrow", f"{mount_id}-{view}-{n}-shadow"
 
 
@@ -322,47 +329,6 @@ def _formula_block(
     return {"left": x, "right": x + w, "top": y, "bottom": y + h,
             "cx": x + w / 2, "cy": y + h / 2, "w": w, "h": h}
 
-
-def _window_strip(
-    parts: list[str],
-    x: float,
-    y: float,
-    w: float,
-    h: float,
-    window_size: int | None,
-) -> dict:
-    """Token-context strip with the local sliding window highlighted — drawn as
-    the *input* node of a sliding-window attention graph."""
-    cell_w, cell_h, gap = 22, 18, 4
-    n_cells, active_start, active_count = 15, 8, 5
-    strip_w = n_cells * cell_w + (n_cells - 1) * gap
-    active_w = active_count * cell_w + (active_count - 1) * gap
-    strip_x = x + (w - strip_w) / 2
-    strip_y = y + 4
-    active_x = strip_x + active_start * (cell_w + gap)
-
-    for idx in range(n_cells):
-        is_active = active_start <= idx < active_start + active_count
-        parts.append(_svg_tag("rect", {
-            "x": strip_x + idx * (cell_w + gap), "y": strip_y,
-            "width": cell_w, "height": cell_h, "rx": 4, "ry": 4,
-            "fill": C["badge_bg"] if is_active else C["bg_card"],
-            "stroke": C["block"] if is_active else C["border"],
-            "stroke-width": 1 if is_active else 0.8,
-            "opacity": 1 if is_active else 0.82,
-        }))
-    parts.append(_svg_tag("rect", {
-        "x": active_x - 4, "y": strip_y - 4,
-        "width": active_w + 8, "height": cell_h + 8, "rx": 7, "ry": 7,
-        "fill": "none", "stroke": C["block"], "stroke-width": 1,
-    }))
-    parts.append(_svg_text(
-        x + w / 2, strip_y + cell_h + 18,
-        f"local window {window_size:,}" if window_size else "local window",
-        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 9},
-    ))
-    return {"left": x, "right": x + w, "top": y, "bottom": y + h,
-            "cx": x + w / 2, "cy": y + h / 2, "w": w, "h": h}
 
 def _cache_io_ports(
     parts: list[str],

@@ -12,30 +12,44 @@ from .ir import ModelIR, AttentionSpec, FFNSpec
 def _attn_params(a: AttentionSpec, hidden: int) -> int:
     h = _as_count(hidden)
     nq = _as_count(a.num_heads)
-    head_dim = _as_count(a.head_dim) or (h // max(nq, 1))
-    nkv = _as_count(a.num_kv_heads) or nq
+    head_dim = _as_count(a.head_dim)
+    nkv = _as_count(a.num_kv_heads)
+
+    if a.kind in {None, "", "unknown"}:
+        return 0
 
     if a.kind == "mla":
         # MLA splits each head into a non-positional (nope) part and a rotary
         # (rope) part for Q/K, with V its own width.  These dims are what make
         # the count correct — falling back to head_dim (hidden/num_heads) badly
         # undercounts (DeepSeek heads are 192/128 wide, not hidden/num_heads).
-        qk_rope = a.qk_rope_head_dim or a.rope_dim or 0
-        qk_nope = a.qk_nope_head_dim or max(head_dim - qk_rope, 0) or head_dim
+        qk_rope = _as_count(a.qk_rope_head_dim)
+        qk_nope = _as_count(a.qk_nope_head_dim)
+        v_head = _as_count(a.v_head_dim)
+        kv_lora = _as_count(a.kv_lora_rank)
+        if not all((h, nq, qk_rope, qk_nope, v_head, kv_lora)):
+            return 0
         qk_head = qk_nope + qk_rope          # Q/K per-head width
-        v_head = a.v_head_dim or head_dim    # V per-head width
         # Q path: hidden -> [q_lora] -> nq*qk_head  (LoRA down/up when present)
         if a.q_lora_rank:
             q = h * a.q_lora_rank + a.q_lora_rank * (nq * qk_head)
         else:
             q = h * (nq * qk_head)
         # KV path: hidden -> (kv_lora + rope), then kv_lora -> nq*(nope + v)
-        kv_lora = a.kv_lora_rank or 0
         kv_a = h * (kv_lora + qk_rope)
         kv_b = kv_lora * (nq * (qk_nope + v_head))
         out = (nq * v_head) * h
         return q + kv_a + kv_b + out
 
+    # Gated-delta attention is not ordinary Q/K/V/O attention.  Its recurrent
+    # projections, gates, convolution and normalization need their own U14
+    # formula.  Exact U6 geometry makes the mechanism drawable; it does not
+    # authorize laundering those values through the ordinary attention count.
+    if a.kind == "gated_delta":
+        return 0
+
+    if not all((h, nq, nkv, head_dim)):
+        return 0
     qkv = h * (nq + 2 * nkv) * head_dim
     out = nq * head_dim * h
     return qkv + out
@@ -61,18 +75,39 @@ def _as_count(v, default: int = 0) -> int:
 
 
 def _ffn_params(f: FFNSpec, hidden: int) -> tuple:
-    """Returns (total_params, active_params_per_token)."""
-    g = 3 if f.gated else 2
+    """Returns (total_params, active_params_per_token).
+
+    ``gated is None`` (U2 typed unknown) counts the 2-projection floor — the
+    caller (``estimate_params``) ANNOTATES the estimate so an unknown never
+    silently picks a branch (blast_radius found a −33% FFN hazard here)."""
     hidden = _as_count(hidden)
     if f.kind == "moe":
-        per_expert = g * hidden * _as_count(f.expert_intermediate_size or f.intermediate_size)
+        # Routed experts and the ordinary/shared FFN are separate mechanisms.
+        # Exact fused gate+up expert storage proves three matrix-widths even
+        # when the ordinary FFN gate verdict is unknown; never let that proof
+        # silently certify a shared expert in the opposite direction.
+        expert_g = (
+            3 if f.expert_projection_mode in {"fused_gate_up", "split"}
+            else 2
+        )
+        shared_g = 3 if f.gated else 2
+        expert_width = _as_count(f.expert_intermediate_size)
+        # Shared experts are instances of the expert-width lane; the ordinary
+        # dense-layer width is a separate layer-variant fact and must not be
+        # substituted here.
+        shared_width = expert_width
+        per_expert = expert_g * hidden * expert_width
+        per_shared = shared_g * hidden * shared_width
         n_routed = _as_count(f.num_experts)
         n_shared = _as_count(f.num_shared_experts)
         n_active = _as_count(f.num_experts_per_tok)
         router = hidden * n_routed
-        total = per_expert * (n_routed + n_shared) + router
-        active = per_expert * (n_active + n_shared) + router
+        total = (
+            per_expert * n_routed + per_shared * n_shared + router)
+        active = (
+            per_expert * n_active + per_shared * n_shared + router)
         return total, active
+    g = 3 if f.gated else 2
     p = g * hidden * _as_count(f.intermediate_size)
     return p, p
 
@@ -93,10 +128,41 @@ def estimate_params(ir: ModelIR) -> dict:
     """
     h = ir.hidden_size
     v = ir.vocab_size
+    # COR-3 (§8.A): unresolved width -> an explicitly INCOMPLETE estimate.
+    # Computing with zero would present "0 params" as a known claim.
+    if not h:
+        return {"total": None, "active": None, "embed": None, "output": None,
+                "per_layer": [], "is_sparse": False,
+                "incomplete": "hidden_size unresolved — parameter formulas "
+                              "need the model width"}
+
+    # U2 unknown policy: an unknown never silently picks a branch — the
+    # estimate keeps a deterministic convention AND says so (``assumptions``
+    # rides into the count card). tie=None counts an untied head (upper
+    # bound); gated=None counts the 2-projection floor.
+    assumptions: list[str] = []
 
     embed = v * h
     output = 0 if ir.tie_word_embeddings else v * h
-    final_norm = h
+    if ir.tie_word_embeddings is None:
+        assumptions.append(
+            "embedding/head tying unknown — output head counted untied")
+    embedding_norm = (
+        h if ir.embedding_norm_kind == "rmsnorm"
+        else 2 * h if ir.embedding_norm_kind == "layernorm"
+        else 0
+    )
+    if ir.embedding_norm_kind not in {"rmsnorm", "layernorm"}:
+        assumptions.append(
+            "embedding-stage normalization not proven — its parameters omitted")
+    final_norm = (
+        h if ir.final_norm_kind == "rmsnorm"
+        else 2 * h if ir.final_norm_kind == "layernorm"
+        else 0
+    )
+    if ir.final_norm_kind not in {"rmsnorm", "layernorm"}:
+        assumptions.append(
+            "final-stage normalization unresolved — its parameters omitted")
 
     per_layer = []
     layers_total = 0
@@ -106,17 +172,94 @@ def estimate_params(ir: ModelIR) -> dict:
     for layer in ir.layers:
         a_p = _attn_params(layer.attention, h)
         f_total, f_active = _ffn_params(layer.ffn, h)
+        if layer.attention.kind in {None, "", "unknown"} \
+                and _ATTENTION_UNKNOWN_NOTE not in assumptions:
+            assumptions.append(_ATTENTION_UNKNOWN_NOTE)
+        elif layer.attention.kind == "gated_delta" \
+                and _GATED_DELTA_FORMULA_NOTE not in assumptions:
+            assumptions.append(_GATED_DELTA_FORMULA_NOTE)
+        elif layer.attention.kind in {"mha", "gqa", "mqa"} \
+                and not all((
+                    _as_count(layer.attention.num_heads),
+                    _as_count(layer.attention.num_kv_heads),
+                    _as_count(layer.attention.head_dim),
+                )) and _ATTENTION_GEOMETRY_NOTE not in assumptions:
+            assumptions.append(_ATTENTION_GEOMETRY_NOTE)
+        elif layer.attention.kind == "mla" and not all((
+                _as_count(layer.attention.num_heads),
+                _as_count(layer.attention.kv_lora_rank),
+                _as_count(layer.attention.qk_nope_head_dim),
+                _as_count(layer.attention.qk_rope_head_dim),
+                _as_count(layer.attention.v_head_dim),
+        )) and _ATTENTION_GEOMETRY_NOTE not in assumptions:
+            assumptions.append(_ATTENTION_GEOMETRY_NOTE)
         if layer.ffn.kind == "moe":
             is_sparse = True
-        norm_p = 2 * h
+        pending_notes = (
+            (_EXPERT_GATED_NOTE
+             if layer.ffn.kind == "moe"
+             and layer.ffn.expert_projection_mode is None
+             and layer.ffn.expert_intermediate_size is not None else None),
+            # ``gated`` describes the ordinary/shared FFN lane.  A routed-only
+            # MoE with zero shared experts has no such parameters, so its
+            # unknown value cannot affect this formula and must not manufacture
+            # a misleading assumption (GPT-OSS is the real control).
+            (_GATED_NOTE
+             if layer.ffn.gated is None
+             and (
+                 (
+                     layer.ffn.kind == "moe"
+                     and _as_count(layer.ffn.num_shared_experts) > 0
+                     and layer.ffn.expert_intermediate_size is not None
+                 )
+                 or (
+                     layer.ffn.kind != "moe"
+                     and layer.ffn.intermediate_size is not None
+                 )
+             )
+             else None),
+            (_EXPERT_WIDTH_NOTE
+             if layer.ffn.kind == "moe"
+             and layer.ffn.expert_intermediate_size is None
+             else None),
+            (_ORDINARY_WIDTH_NOTE
+             if layer.ffn.intermediate_size is None
+             and layer.ffn.kind != "moe"
+             else None),
+        )
+        for note in pending_notes:
+            if note is not None and note not in assumptions:
+                assumptions.append(note)
+        per_norm = (
+            h if layer.norm_kind == "rmsnorm"
+            else 2 * h if layer.norm_kind == "layernorm"
+            else 0
+        )
+        norm_count = (
+            4 if layer.norm_placement == "double"
+            and layer.residual_topology == "sequential"
+            else 2 if layer.norm_placement in {"pre", "post"}
+            and layer.residual_topology == "sequential"
+            else layer.parallel_norm_count
+            if layer.residual_topology == "parallel"
+            else None
+        )
+        norm_p = per_norm * norm_count if norm_count is not None else 0
+        if per_norm == 0 or norm_count is None:
+            note = (
+                "layer normalization parameters unresolved — omitted until "
+                "kind, placement, and residual topology are owner-proven"
+            )
+            if note not in assumptions:
+                assumptions.append(note)
         t = a_p + f_total + norm_p
         ac = a_p + f_active + norm_p
         per_layer.append({"total": t, "active": ac, "attn": a_p, "ffn": f_total})
         layers_total += t
         layers_active += ac
 
-    total = embed + output + final_norm + layers_total
-    active = embed + output + final_norm + layers_active
+    total = embed + output + embedding_norm + final_norm + layers_total
+    active = embed + output + embedding_norm + final_norm + layers_active
 
     return {
         "total": total,
@@ -125,7 +268,31 @@ def estimate_params(ir: ModelIR) -> dict:
         "output": output,
         "per_layer": per_layer,
         "is_sparse": is_sparse,
+        # Only-when-present so every fully-resolved model stays byte-stable.
+        **({"assumptions": assumptions} if assumptions else {}),
     }
+
+
+#: U2: the one-line annotation for an unknown FFN gate structure.
+_ATTENTION_UNKNOWN_NOTE = (
+    "attention mechanism unknown — Q/K/V/O matrix terms omitted"
+)
+_ATTENTION_GEOMETRY_NOTE = (
+    "attention geometry unresolved — Q/K/V/O matrix terms omitted"
+)
+_GATED_DELTA_FORMULA_NOTE = (
+    "gated-delta parameter formula not yet migrated — recurrent matrix "
+    "terms omitted"
+)
+_GATED_NOTE = ("FFN structure unknown — counted as 2 projections "
+               "(a gated FFN would add hidden x inner per layer)")
+_EXPERT_GATED_NOTE = (
+    "routed-expert structure unknown — counted as 2 projections "
+    "(a gated expert would add hidden x expert-inner per expert)")
+_EXPERT_WIDTH_NOTE = (
+    "routed-expert inner width unknown — expert matrix terms omitted")
+_ORDINARY_WIDTH_NOTE = (
+    "ordinary/shared FFN inner width unknown — its matrix terms omitted")
 
 
 def humanize(n: int) -> str:

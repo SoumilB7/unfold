@@ -34,7 +34,7 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import test_diffusion as td
+import test_support as td
 
 from model_unfolder import unfold
 from model_unfolder.adapters.diffusor import parser as diffusor
@@ -95,6 +95,7 @@ def test_derivation_parity_spec_facts_equal_standalone_serializers(name, cfg):
     applied to the standalone sub-parse's typed spec, plus ONLY the declared
     altitude transforms and the evidence-resolved extras."""
     from model_unfolder.adapters.transformer.blocks.attention import attention_detail
+    from model_unfolder.adapters.transformer.blocks.feed_forward import ffn_detail
     from model_unfolder.adapters.transformer.parser import parse as parse_transformer
     from model_unfolder.evidence.context import ParseContext
     from model_unfolder.ir import distinct_layer_groups
@@ -117,14 +118,13 @@ def test_derivation_parity_spec_facts_equal_standalone_serializers(name, cfg):
         assert got == expected
         assert spec_group["count"] == len(typed_group["indices"])
         assert spec_group["layers"] == list(typed_group["indices"])
-        # FFN structural identity survives (kind + width + expert geometry).
-        ffn = typed_group["layer"].ffn
-        assert spec_group["ffn"].get("kind") == ("moe" if ffn.kind == "moe" else "dense")
-        if ffn.kind == "moe":
-            assert spec_group["ffn"].get("num_experts") == ffn.num_experts
-            assert spec_group["ffn"].get("num_experts_per_tok") == ffn.num_experts_per_tok
-        else:
-            assert spec_group["ffn"].get("intermediate_size") == ffn.intermediate_size
+        # FFN parity is exact too.  In particular, a non-MoE config is not
+        # automatically a proven dense mechanism: unresolved kind/gating/
+        # storage stays None at tower altitude exactly as it does standalone.
+        expected_ffn = ffn_detail(typed_group["layer"].ffn)
+        got_ffn = dict(spec_group["ffn"])
+        assert got_ffn.pop("hidden") == standalone.hidden_size
+        assert got_ffn == expected_ffn
 
 
 @pytest.mark.parametrize("name,cfg", sorted(ENCODER_CASES.items()))
@@ -257,10 +257,9 @@ def test_hero_altitude_represents_the_root_losslessly(slug):
     through the canonical serializers breaks this, which is exactly what makes
     a future migration of the flagship view onto the projector safe."""
     import json
-    from pathlib import Path
-
     from model_unfolder import config_to_ir
     from model_unfolder.adapters.transformer.blocks.attention import attention_detail
+    from model_unfolder.adapters.transformer.blocks.feed_forward import ffn_detail
     from model_unfolder.ir import distinct_layer_groups
     from model_unfolder.submodel import ALTITUDE_TRANSFORMS, submodel_spec
 
@@ -284,19 +283,14 @@ def test_hero_altitude_represents_the_root_losslessly(slug):
         expected = attention_detail(layer.attention)
         got = dict(spec_group["attention"])
         assert got.pop("hidden") == ir.hidden_size
-        got.pop("scores_scaled", None)
         assert got == expected, f"{slug}: attention fact loss in hero dialect"
         assert spec_group["count"] == len(typed_group["indices"])
         assert spec_group["layers"] == list(typed_group["indices"])
         assert spec_group["norm_placement"] == layer.norm_placement
-        ffn = layer.ffn
-        if ffn.kind == "moe":
-            assert spec_group["ffn"].get("kind") == "moe"
-            assert spec_group["ffn"].get("num_experts") == ffn.num_experts
-            assert spec_group["ffn"].get("num_experts_per_tok") == ffn.num_experts_per_tok
-            assert spec_group["ffn"].get("expert_intermediate_size") == ffn.expert_intermediate_size
-        else:
-            assert spec_group["ffn"].get("intermediate_size") == ffn.intermediate_size
+        expected_ffn = ffn_detail(layer.ffn)
+        got_ffn = dict(spec_group["ffn"])
+        assert got_ffn.pop("hidden") == ir.hidden_size
+        assert got_ffn == expected_ffn, f"{slug}: FFN fact loss in hero dialect"
     # The schedule reproduces the stack's exact layer-type sequence.
     total = sum(count for _, count in spec["schedule"]["runs"])
     assert total == len(ir.layers)

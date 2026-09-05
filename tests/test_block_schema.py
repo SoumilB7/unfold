@@ -15,6 +15,7 @@ from types import SimpleNamespace
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pytest
+from transformers import AutoConfig
 
 from model_unfolder import unfold
 from model_unfolder.adapters.transformer.parser import parse
@@ -35,7 +36,9 @@ _BASE = dict(
 CORPUS = {
     "dense": _BASE,
     "moe_mla": dict(
-        _BASE, kv_lora_rank=64, q_lora_rank=96, n_routed_experts=8,
+        _BASE, model_type="deepseek_v3",
+        architectures=["DeepseekV3ForCausalLM"],
+        kv_lora_rank=64, q_lora_rank=96, n_routed_experts=8,
         num_experts_per_tok=2, moe_intermediate_size=128, first_k_dense_replace=1,
         scoring_func="sigmoid", n_group=4, topk_group=2, norm_topk_prob=True,
         routed_scaling_factor=2.5,
@@ -145,16 +148,23 @@ def test_dotted_boundary_validator_flags_regions_without_double_reporting_arrows
     assert not validate_no_dotted_boundaries(arrow)
 
 
-def test_per_layer_embedding_uses_solid_wiring():
-    html = unfold(CORPUS["per_layer_embedding"]).to_html(standalone=True)
+@pytest.fixture(scope="module")
+def _source_proven_ple_html():
+    return unfold(
+        AutoConfig.for_model("gemma3n_text").to_dict()).to_html(standalone=True)
+
+
+def test_per_layer_embedding_uses_solid_wiring(_source_proven_ple_html):
+    html = _source_proven_ple_html
     assert validate_no_dotted_arrows(html) == []
 
 
-def test_per_layer_embedding_keeps_dimensions_on_cards_not_svg_blocks():
+def test_per_layer_embedding_keeps_dimensions_on_cards_not_svg_blocks(
+        _source_proven_ple_html):
     """PLE projection widths are card facts, never text beside diagram boxes."""
     import re
 
-    html = unfold(CORPUS["per_layer_embedding"]).to_html(standalone=True)
+    html = _source_proven_ple_html
     match = re.search(
         r'<svg[^>]*aria-label="[^"]*per-layer embeddings block".*?</svg>',
         html,
@@ -162,9 +172,9 @@ def test_per_layer_embedding_keeps_dimensions_on_cards_not_svg_blocks():
     )
     assert match
     svg = match.group(0)
-    assert "64  -&gt;  128" not in svg
-    assert "128  -&gt;  64" not in svg
-    assert "64 → 128" in html and "128 → 64" in html  # retained as card chips
+    assert "256  -&gt;  2,048" not in svg
+    assert "2,048  -&gt;  256" not in svg
+    assert "256 → 2,048" in html and "2,048 → 256" in html
 
 
 def test_known_keys_cover_the_real_tree():
@@ -188,7 +198,8 @@ def test_ffn_detail_view_uses_clicked_block_not_dominant_group():
     from model_unfolder.renderers.html.metadata import _make_info
 
     dense_ir = parse(dict(
-        model_type="phi", num_hidden_layers=1, hidden_size=128, num_attention_heads=8,
+        model_type="phi", architectures=["PhiForCausalLM"],
+        num_hidden_layers=1, hidden_size=128, num_attention_heads=8,
         intermediate_size=256, vocab_size=1000, hidden_act="gelu", layer_norm_eps=1e-5,
     )).to_dict()
     moe_ir = parse(CORPUS["moe_mla"]).to_dict()
@@ -199,10 +210,11 @@ def test_ffn_detail_view_uses_clicked_block_not_dominant_group():
     dense_in_moe_context = render_block_detail(dense_ir, _make_info(moe_ir), "ffn-dense", dense_block)
     assert "Linear (in)" in dense_in_moe_context
     assert "Linear (gate)" not in dense_in_moe_context
-    assert "Expert 1" not in dense_in_moe_context
+    assert "Selected expert" not in dense_in_moe_context
 
     moe_in_dense_context = render_block_detail(moe_ir, _make_info(dense_ir), "ffn-moe", moe_block)
-    assert "Expert 1" in moe_in_dense_context
+    assert "Selected expert" in moe_in_dense_context
+    assert "template × 2" in moe_in_dense_context
     assert "Router" in moe_in_dense_context
     assert "Linear (in)" not in moe_in_dense_context
 
@@ -216,7 +228,8 @@ def test_attention_detail_view_uses_clicked_block_not_dominant_group():
         intermediate_size=256, vocab_size=1000, hidden_act="gelu", layer_norm_eps=1e-5,
     )).to_dict()
     gqa_ir = parse(dict(
-        model_type="m", num_hidden_layers=1, hidden_size=128, num_attention_heads=8,
+        model_type="gemma", architectures=["GemmaForCausalLM"],
+        num_hidden_layers=1, hidden_size=128, num_attention_heads=8,
         num_key_value_heads=2, intermediate_size=256, vocab_size=1000, rms_norm_eps=1e-5,
     )).to_dict()
 

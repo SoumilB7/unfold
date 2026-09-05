@@ -22,6 +22,7 @@ _MASK_SHORT = {
     "global": "full",
     "full": "full",
     "causal": "causal",
+    "bidirectional": "bidirectional",
     "chunked": "chunked",
     "compressed_sparse": "CSA",
     "heavily_compressed": "HCA",
@@ -31,6 +32,7 @@ _MASK_LONG = {
     "global": "Full / global",
     "full": "Full (bidirectional)",
     "causal": "Causal",
+    "bidirectional": "Bidirectional",
     "chunked": "Chunked",
     "compressed_sparse": "Compressed sparse",
     "heavily_compressed": "Hierarchical compressed",
@@ -40,6 +42,8 @@ _MASK_TITLE = {
     "global": "Full-context attention",
     "full": "Full bidirectional attention (no causal mask)",
     "causal": "Causal attention",
+    "bidirectional": "Bidirectional attention (no causal mask — every token "
+                     "attends to every token)",
     "chunked": "Chunked attention",
     "compressed_sparse": "Compressed sparse attention",
     "heavily_compressed": "Hierarchical compressed attention",
@@ -82,18 +86,32 @@ _ACTIVATION_LABELS = {
 
 
 def mask_short(attention: dict) -> str:
-    """Compact mask tag — ``"SWA"`` / ``"full"`` / ``"causal"``."""
-    return _MASK_SHORT.get(attention.get("mask", "causal"), "causal")
+    """Compact mask tag — ``"SWA"`` / ``"full"`` / ``"causal"``.
+
+    U2: an unresolved mask (``None``/``"unknown"``) says so instead of
+    re-asserting the causal default the parser just refused to fabricate."""
+    mask = attention.get("mask")
+    if mask not in _MASK_SHORT:
+        return "unresolved"
+    return _MASK_SHORT[mask]
 
 
 def mask_long(attention: dict) -> str:
     """Human-readable mask label — ``"Sliding-window"`` / ``"Full / global"``."""
-    return _MASK_LONG.get(attention.get("mask", "causal"), "Causal")
+    mask = attention.get("mask")
+    if mask not in _MASK_LONG:
+        return "Mask unresolved"
+    return _MASK_LONG[mask]
 
 
 def mask_title(attention: dict) -> str:
     """Tooltip-style mask description."""
-    return _MASK_TITLE.get(attention.get("mask", "causal"), "Causal attention")
+    mask = attention.get("mask")
+    if mask not in _MASK_TITLE:
+        return ("Attention mask unresolved — the config does not declare "
+                "whether this stack is a causal decoder, and the mask is not "
+                "read from code yet; nothing is asserted")
+    return _MASK_TITLE[mask]
 
 
 def mask_chip(attention: dict) -> str:
@@ -109,18 +127,31 @@ def mask_chip(attention: dict) -> str:
 
 
 def kind_short(attention: dict) -> str:
+    kind = attention.get("kind")
     variant = attention.get("variant")
+    if kind in (None, "", "unknown"):
+        if variant and variant.get("short"):
+            base = (f"{variant['short']} · {variant['tag']}"
+                    if variant.get("tag") else variant["short"])
+            return f"{base} · unresolved"
+        return ("XAttn unresolved" if attention.get("cross_attention")
+                else "Attn unresolved")
     if variant and variant.get("short"):
         # Variant is self-describing (e.g. "Joint Attn · MM-DiT"); it already
         # encodes everything, so don't also append the auto QK/bias/NoPE tags.
         return f"{variant['short']} · {variant['tag']}" if variant.get("tag") else variant["short"]
-    short = _KIND_SHORT.get(attention.get("kind", ""), "MHA")
+    short = _KIND_SHORT.get(kind)
+    if short is None:
+        return ("XAttn unresolved" if attention.get("cross_attention")
+                else "Attn unresolved")
     if attention.get("cross_attention"):
         short = f"{short} XAttn"
     tags = []
     if attention.get("qk_norm"):
         tags.append("QK-Norm")
-    if attention.get("bias"):
+    if attention.get("bias") == "mixed":
+        tags.append("mixed bias")
+    elif attention.get("bias") is True:
         tags.append("+bias")
     if attention.get("shared"):
         tags.append("Shared")
@@ -143,10 +174,22 @@ def _partial_rope_dims(attention: dict) -> tuple[int, int] | None:
 
 
 def kind_long(attention: dict) -> str:
+    kind = attention.get("kind")
     variant = attention.get("variant")
+    if kind in (None, "", "unknown"):
+        if variant and (variant.get("title") or variant.get("short")):
+            base = variant.get("title") or variant["short"]
+            return f"{base} — attention mechanism unresolved"
+        return ("Cross-attention mechanism unresolved"
+                if attention.get("cross_attention")
+                else "Attention mechanism unresolved")
     if variant and (variant.get("title") or variant.get("short")):
         return variant.get("title") or variant["short"]
-    base = _KIND_LONG.get(attention.get("kind", ""), "Multi-head attention")
+    base = _KIND_LONG.get(kind)
+    if base is None:
+        return ("Cross-attention mechanism unresolved"
+                if attention.get("cross_attention")
+                else "Attention mechanism unresolved")
     if attention.get("cross_attention"):
         base = {
             "gqa": "Grouped-query cross-attention",
@@ -156,7 +199,9 @@ def kind_long(attention: dict) -> str:
     extras = []
     if attention.get("qk_norm"):
         extras.append("per-head Q/K normalisation")
-    if attention.get("bias"):
+    if attention.get("bias") == "mixed":
+        extras.append("mixed projection bias")
+    elif attention.get("bias") is True:
         extras.append("bias on Q/K/V/O projections")
     if attention.get("shared"):
         extras.append("weight-shared across positions")
@@ -167,19 +212,32 @@ def kind_long(attention: dict) -> str:
         extras.append("no positional encoding (NoPE)")
     return f"{base}; {'; '.join(extras)}" if extras else base
 
+
+def attention_tower_label(attention: dict) -> str | list[str]:
+    """Compact repeated-cell label without strengthening an unknown kind."""
+    kind = attention.get("kind")
+    if kind in (None, "", "unknown"):
+        return [
+            "Cross-attention" if attention.get("cross_attention") else "Self-attention",
+            "mechanism unresolved",
+        ]
+    return kind_short(attention)
+
 def moe_router_detail(ffn: dict) -> str:
     """Longer router tooltip describing the gating and selection behaviour."""
     r = ffn.get("routing") or {}
     bits = []
     if r.get("scoring_func"):
         bits.append(f"{r['scoring_func']} gating")
-    if r.get("topk_method"):
-        bits.append(f"{r['topk_method']} selection")
-    if (r.get("n_group") or 0) > 1 and r.get("topk_group"):
+    if r.get("selection_kind") == "sparse_mixer":
+        bits.append("sparse-mixer selection")
+    if r.get("grouped"):
         bits.append(f"group-limited: top-{r['topk_group']} of {r['n_group']} groups")
-    if r.get("norm_topk_prob"):
-        bits.append("normalized top-k weights")
-    if r.get("routed_scaling_factor"):
+    if r.get("normalization_kind") == "sum":
+        bits.append("sum-renormalized weights")
+    elif r.get("normalization_kind") == "p_norm":
+        bits.append(f"p-norm weights (p={r.get('normalization_value')})")
+    if r.get("routed_scaling_factor") not in (None, 1, 1.0):
         bits.append(f"routed output ×{r['routed_scaling_factor']}")
     return "; ".join(bits)
 
@@ -218,11 +276,12 @@ def describe_attention(attention: dict) -> str:
         return variant["desc"]
     kind = attention.get("kind")
     if attention.get("cross_attention"):
-        kv_heads = attention.get("num_kv_heads") or attention.get("num_heads")
+        kv_heads = attention.get("num_kv_heads")
         text = (
             "Cross-attention; decoder hidden states produce Q; "
             "cross_attention_states produce K/V; "
-            f"{attention.get('num_heads')} Q / {kv_heads} KV heads; "
+            f"{_fmt_int(attention.get('num_heads'))} Q / "
+            f"{_fmt_int(kv_heads)} KV heads; "
             f"head dim {_fmt_int(attention.get('head_dim'))}"
         )
     elif kind == "mla":
@@ -284,7 +343,9 @@ def describe_attention(attention: dict) -> str:
     extras = []
     if attention.get("qk_norm"):
         extras.append("QK-Norm")
-    if attention.get("bias"):
+    if attention.get("bias") == "mixed":
+        extras.append("mixed bias")
+    elif attention.get("bias") is True:
         extras.append("+bias")
     if attention.get("shared"):
         extras.append("weight-shared")
@@ -306,14 +367,24 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
     kind = attention.get("kind")
     facts: list[str] = []
     variant = attention.get("variant")
-    if variant and variant.get("desc"):
+    if kind in (None, "", "unknown"):
+        role = "Cross-attention" if attention.get("cross_attention") else "Attention"
+        desc = (
+            f"{role} exists, but its internal mechanism is unresolved from "
+            "the available source evidence."
+        )
+        _head_facts(attention, facts)
+    elif variant and variant.get("desc"):
         desc = variant["desc"]
         _head_facts(attention, facts)
     elif attention.get("cross_attention"):
         desc = ("Cross-attention — decoder hidden states produce the queries; "
                 "the projected image states produce K and V.")
-        kv = attention.get("num_kv_heads") or attention.get("num_heads")
-        facts += [f"{attention.get('num_heads')} Q heads", f"{kv} KV heads"]
+        kv = attention.get("num_kv_heads")
+        if attention.get("num_heads") is not None:
+            facts.append(f"{attention.get('num_heads')} Q heads")
+        if kv is not None:
+            facts.append(f"{kv} KV heads")
         _dim_fact(attention, facts)
     elif kind == "mla":
         desc = ("Multi-head latent attention — K/V are stored as one compressed "
@@ -329,8 +400,10 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
         _dim_fact(attention, facts)
     elif kind == "gqa":
         desc = "Grouped-query attention — query heads share a smaller set of K/V heads."
-        facts += [f"{attention.get('num_heads')} Q heads",
-                  f"{attention.get('num_kv_heads')} KV heads"]
+        if attention.get("num_heads") is not None:
+            facts.append(f"{attention.get('num_heads')} Q heads")
+        if attention.get("num_kv_heads") is not None:
+            facts.append(f"{attention.get('num_kv_heads')} KV heads")
         _dim_fact(attention, facts)
     elif kind == "ssm":
         desc = "Selective state-space mixer (Mamba) — a recurrence replaces attention."
@@ -387,6 +460,10 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
         # as a chip so the block reads as VIDEO (a 3rd, time, dimension) without
         # drilling into the attention's "apply RoPE" leaves.
         facts.append("3D RoPE · T·H·W")
+    if (attention.get("position_kind") == "rope"
+            and attention.get("position_application") == "qk_rotation"
+            and attention.get("rope_theta") is not None):
+        facts.append(f"RoPE θ {_fmt_int(attention['rope_theta'])}")
     if attention.get("output_gate"):
         facts.append(f"{attention['output_gate']} output gate")
     position_kind = attention.get("position_kind")
@@ -399,10 +476,43 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
         facts.append("no positional transform")
     elif position_kind == "unknown":
         facts.append("position scheme unresolved")
-    for flag, chip in (("qk_norm", "QK-Norm"), ("bias", "+bias"),
+    # U2 honest-unknown chips (the position-chip discipline, generalized):
+    # an unresolved mask/bias states itself instead of silently rendering
+    # like the evidence-backed causal/bias-less case.
+    if attention.get("mask") in (None, "unknown"):
+        facts.append("mask unresolved")
+    for flag, chip in (("qk_norm", "QK-Norm"),
                        ("shared", "weight-shared"), ("no_rope", "NoPE")):
         if attention.get(flag):
             facts.append(chip)
+    if attention.get("bias") == "mixed":
+        facts.append("mixed projection bias")
+    elif attention.get("bias") is True:
+        facts.append("+bias")
+    elif attention.get("bias") is None and "bias" in attention:
+        facts.append("bias unresolved")
+    elif attention.get("bias") is False:
+        facts.append("bias-free projections")
+    if kind in {"mha", "gqa", "mqa"}:
+        if attention.get("qk_norm") is None:
+            facts.append("QK norm unresolved")
+        elif attention.get("qk_norm") is False:
+            facts.append("no QK norm")
+        if attention.get("cached") is None:
+            facts.append("cache unresolved")
+        elif attention.get("cached") is False:
+            facts.append("no KV cache")
+        if attention.get("projection_mode") is None:
+            facts.append("QKV storage unresolved")
+        if (attention.get("scores_scaled") is None
+                and attention.get("scores_scale") is None):
+            facts.append("score scaling unresolved")
+        if attention.get("position_kind") in {None, "unknown"} \
+                or attention.get("position_application") in {None, "unknown"}:
+            facts.append("position application unresolved")
+        elif (attention.get("position_kind"),
+              attention.get("position_application")) == ("none", "none"):
+            facts.append("no attention-stage position op")
     _pr = _partial_rope_dims(attention)
     if _pr:
         facts.append(f"partial rotary — {_pr[0]} of {_pr[1]} head dims")
@@ -411,11 +521,12 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
 
 def _head_facts(attention: dict, facts: list[str]) -> None:
     q, kv = attention.get("num_heads"), attention.get("num_kv_heads")
-    if q and (not kv or kv == q):
+    if q and kv == q:
         facts.append(f"{q} heads")
     elif q:
         facts.append(f"{q} Q heads")
-        facts.append(f"{kv} KV heads")
+        if kv:
+            facts.append(f"{kv} KV heads")
     _dim_fact(attention, facts)
 
 
@@ -426,10 +537,15 @@ def _dim_fact(attention: dict, facts: list[str]) -> None:
 
 def ffn_summary(ffn: dict) -> tuple[str, list[str]]:
     """(explanation sentence, fact chips) for an FFN / MoE block."""
-    if ffn.get("kind") == "moe":
+    from .opgraph import ffn_structure_state
+
+    state = ffn_structure_state(ffn)
+    if state == "moe":
         desc = ("Mixture of experts — the router sends each token through a few "
                 "expert FFNs instead of one dense MLP.")
-        facts = [f"{_fmt_int(ffn.get('num_experts'))} experts"]
+        facts = []
+        if ffn.get("num_experts") is not None:
+            facts.append(f"{_fmt_int(ffn.get('num_experts'))} experts")
         if ffn.get("num_experts_per_tok"):
             chip = f"top-{ffn.get('num_experts_per_tok')}"
             if ffn.get("num_shared_experts"):
@@ -437,51 +553,196 @@ def ffn_summary(ffn: dict) -> tuple[str, list[str]]:
             facts.append(chip)
         if ffn.get("num_experts") and ffn.get("num_experts_per_tok"):
             facts.append(f"{100 * ffn['num_experts_per_tok'] / ffn['num_experts']:.1f}% active")
-        facts.append(f"expert hidden {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}")
-        if ffn.get("activation_clip"):
-            facts.append(f"clamped ±{ffn['activation_clip']:g}")
+        if ffn.get("expert_intermediate_size") is not None:
+            facts.append(
+                f"expert hidden {_fmt_int(ffn.get('expert_intermediate_size'))}")
+        expert_storage = ffn.get("expert_projection_mode")
+        if expert_storage is None:
+            facts.append("expert storage unresolved")
+        elif expert_storage == "fused_gate_up":
+            facts.append("fused expert gate+up")
+        elif expert_storage == "split":
+            facts.append("split expert gate/up")
+        elif expert_storage == "dense":
+            facts.append("plain expert MLP")
+        if ffn.get("num_shared_experts") and ffn.get("activation") is not None:
+            facts.append(
+                "shared FFN activation "
+                + activation_label(ffn.get("activation")))
+        expert_formula = ffn.get("expert_activation_formula") or {}
+        if expert_formula.get("kind"):
+            facts.append(
+                "expert activation "
+                + activation_label(expert_formula.get("kind")))
+        if expert_formula.get("alpha") is not None:
+            facts.append(f"expert β={expert_formula['alpha']:g}")
+        if expert_formula.get("gate_clip") is not None:
+            lo, hi = expert_formula["gate_clip"]
+            facts.append(
+                f"expert gate {_bounded_phrase(lo, hi)}")
+        if expert_formula.get("up_clip") is not None:
+            lo, hi = expert_formula["up_clip"]
+            facts.append(f"expert up {_bounded_phrase(lo, hi)}")
+        if expert_formula.get("up_offset") is not None:
+            facts.append(f"expert up +{expert_formula['up_offset']:g}")
         if ffn.get("bias"):
             facts.append("learned bias")
         return desc, facts
-    if ffn.get("gated") is None:
-        # Config declares the FFN and its inner width, but not whether it gates
-        # or which activation it uses — say exactly that, assert no shape.
-        desc = ("Feed-forward — expands to an inner width and projects back. The "
-                "config does not declare the gating or activation (these live in "
-                "the model's code).")
-        return desc, [f"hidden {_fmt_int(ffn.get('intermediate_size'))}"]
-    if ffn.get("gated"):
+    if state == "mechanism_unresolved":
+        desc = (
+            "Feed-forward mechanism unresolved — known geometry is retained, "
+            "but no dense, gated, projection-storage, or activation path is "
+            "invented."
+        )
+        facts = ["mechanism unresolved"]
+        if ffn.get("intermediate_size") is not None:
+            facts.append(f"hidden {_fmt_int(ffn.get('intermediate_size'))}")
+        if ffn.get("activation") is not None:
+            facts.append(activation_label(ffn.get("activation")))
+        return desc, facts
+    if state == "unsupported":
+        name = str(ffn.get("class_name") or ffn.get("kind") or "custom FFN")
+        return (
+            f"Unsupported feed-forward mechanism ({name}) — retained as one "
+            "opaque block rather than mapped to a familiar MLP.",
+            ["unsupported mechanism"],
+        )
+    if state == "gating_unresolved":
+        desc = (
+            "Feed-forward — its gate topology is unresolved from source "
+            "evidence, so no dense or gated inner graph is drawn."
+        )
+        facts = ["gating unresolved"]
+        if ffn.get("intermediate_size") is not None:
+            facts.append(f"hidden {_fmt_int(ffn.get('intermediate_size'))}")
+        if ffn.get("activation") is not None:
+            facts.append(activation_label(ffn.get("activation")))
+        return desc, facts
+    if state == "storage_unresolved":
+        gated = ffn.get("gated")
+        shape = "gated" if gated is True else "plain" if gated is False else "feed-forward"
+        desc = (
+            f"The {shape} FFN mechanism is known, but its projection storage is "
+            "unresolved; no split, fused, or dense module layout is invented."
+        )
+        facts = ["projection storage unresolved"]
+        if ffn.get("intermediate_size") is not None:
+            facts.append(f"hidden {_fmt_int(ffn.get('intermediate_size'))}")
+        if ffn.get("activation") is not None:
+            facts.append(activation_label(ffn.get("activation")))
+        return desc, facts
+    if state == "conv_glu":
+        desc = (
+            "Convolutional gated linear unit — pointwise expansion, local "
+            "depthwise mixing, a gated activation, then pointwise projection."
+        )
+    elif state == "gated":
         desc = ("Gated MLP — a gate path modulates the up projection before "
                 "projecting back down.")
     else:
         desc = "Two-layer MLP — expand, apply the non-linearity, project back."
     if ffn.get("activation_from_class"):
-        # The activation (and so the gate-or-not shape) was read from the model
-        # class, not the config — say where the fact comes from (code-derived).
+        # Activation provenance is independent of gate/storage topology.
         desc += (" The activation is fixed in the model class, not the config "
                  "(surfaced as a code-derived fact).")
-    facts = [activation_label(ffn.get("activation")),
-             f"hidden {_fmt_int(ffn.get('intermediate_size'))}"]
-    if ffn.get("activation_clip"):
-        facts.append(f"clamped ±{ffn['activation_clip']:g}")
+    facts = []
+    if ffn.get("activation") is not None:
+        facts.append(activation_label(ffn.get("activation")))
+    else:
+        facts.append("activation unresolved")
+    if ffn.get("intermediate_size") is not None:
+        facts.append(f"hidden {_fmt_int(ffn.get('intermediate_size'))}")
+    storage = ffn.get("projection_mode")
+    if storage is None:
+        facts.append("projection storage unresolved")
+    elif storage == "fused_gate_up":
+        facts.append("fused gate+up")
+    elif storage == "split":
+        facts.append("split gate/up")
     return desc, facts
 
 
+def _bounded_phrase(lower, upper):
+    if lower is None:
+        return f"≤ {upper:g}"
+    if upper is None:
+        return f"≥ {lower:g}"
+    return f"∈ [{lower:g}, {upper:g}]"
+
+
+def ffn_label(ffn: dict) -> str | list[str]:
+    """Compact block label derived from the one canonical FFN state."""
+    from .opgraph import ffn_structure_state
+
+    state = ffn_structure_state(ffn)
+    if state == "moe":
+        return ["Mixture of Experts", "(MoE)"]
+    if state == "conv_glu":
+        return ["Conv-GLU", "Feed-forward"]
+    if state == "mechanism_unresolved":
+        return ["Feed-forward", "mechanism unresolved"]
+    if state == "unsupported":
+        return ["Feed-forward", "unsupported mechanism"]
+    if state == "gating_unresolved":
+        return ["Feed-forward", "gating unresolved"]
+    if state == "storage_unresolved":
+        return [
+            "Gated FFN" if ffn.get("gated") is True else "Feed-forward",
+            "storage unresolved",
+        ]
+    return "Gated FFN" if state == "gated" else "Feed-forward (FFN)"
+
+
+def ffn_title(ffn: dict) -> str:
+    """Card title derived from the one canonical FFN state."""
+    from .opgraph import ffn_structure_state
+
+    state = ffn_structure_state(ffn)
+    return {
+        "moe": "Mixture of experts",
+        "conv_glu": "Convolutional gated feed-forward",
+        "mechanism_unresolved": "Feed-forward mechanism unresolved",
+        "unsupported": "Unsupported feed-forward mechanism",
+        "gating_unresolved": "Feed-forward gating unresolved",
+        "storage_unresolved": "Feed-forward projection storage unresolved",
+        "gated": "Gated feed-forward",
+        "dense": "Feed-forward",
+    }[state]
+
+
+def ffn_short(ffn: dict) -> str:
+    """One-line group/badge vocabulary from the canonical FFN state."""
+    from .opgraph import ffn_structure_state
+
+    return {
+        "moe": "MoE",
+        "conv_glu": "Conv-GLU",
+        "mechanism_unresolved": "FFN unresolved",
+        "unsupported": "FFN unsupported",
+        "gating_unresolved": "Gating unresolved",
+        "storage_unresolved": "Storage unresolved",
+        "gated": "Gated FFN",
+        "dense": "Dense FFN",
+    }[ffn_structure_state(ffn)]
+
+
 def router_facts(ffn: dict) -> list[str]:
-    """Fact chips for an MoE router (selection knobs the config declares)."""
+    """Fact chips projected from the canonical source-proven router policy."""
     facts = []
     if ffn.get("num_experts"):
         facts.append(f"{_fmt_int(ffn.get('num_experts'))} experts")
-    if ffn.get("num_experts_per_tok"):
-        facts.append(f"top-{ffn.get('num_experts_per_tok')}")
     routing = ffn.get("routing") or {}
+    if routing.get("selection_count"):
+        facts.append(f"top-{routing.get('selection_count')}")
     if routing.get("scoring_func"):
         facts.append(str(routing["scoring_func"]))
-    if (routing.get("n_group") or 0) > 1 and routing.get("topk_group"):
+    if routing.get("grouped"):
         facts.append(f"keep {routing['topk_group']}/{routing['n_group']} groups")
-    if routing.get("norm_topk_prob"):
-        facts.append("renormalized")
-    if routing.get("routed_scaling_factor"):
+    if routing.get("normalization_kind") == "sum":
+        facts.append("sum-renormalized")
+    elif routing.get("normalization_kind") == "p_norm":
+        facts.append(f"p-norm {routing.get('normalization_value')}")
+    if routing.get("routed_scaling_factor") not in (None, 1, 1.0):
         facts.append(f"scale {routing['routed_scaling_factor']}")
     return facts
 
@@ -501,12 +762,24 @@ def _fmt_int(value) -> str:
 
 
 def attention_label(attention: AttentionSpec) -> list[str]:
-    if attention.variant and attention.variant.get("label"):
-        return list(attention.variant["label"])
     kind = attention.kind
     prefix = _attention_mask_prefix(attention)
+    if kind in (None, "", "unknown"):
+        if attention.variant and attention.variant.get("label"):
+            label = list(attention.variant["label"])
+            if label:
+                # Hero blocks have a fixed two-line compact label.  Keep the
+                # variant's primary name here and put its full topology plus
+                # the mechanism explanation in the title/inspect card; adding
+                # a third line overflows the block.
+                return [label[0], "(unresolved)"]
+        if attention.cross_attention:
+            return _cross_attention_label(attention, prefix)
+        return _prefixed_label(prefix, "Attention", "(mechanism unresolved)")
+    if attention.variant and attention.variant.get("label"):
+        return list(attention.variant["label"])
     if attention.cross_attention:
-        return _prefixed_label(prefix, "Vision", "Cross-Attention")
+        return _cross_attention_label(attention, prefix)
     if kind == "mla":
         return _prefixed_label(prefix, "Multi-Head Latent", "Attention")
     if kind == "mqa":
@@ -543,6 +816,22 @@ def attention_label(attention: AttentionSpec) -> list[str]:
     return ["Multi-Head", "Attention"]
 
 
+def _cross_attention_label(attention: AttentionSpec,
+                           prefix: str | None) -> list[str]:
+    """Project only the closed source role carried by ``AttentionSpec``.
+
+    ``cross_kv_source`` remains explanatory prose and is deliberately ignored.
+    An absent typed role is the only route to the unresolved label.
+    """
+    source = {
+        "conditioning_encoder": "(prompt encoder K/V)",
+        "vision": "(vision K/V)",
+        "audio": "(audio K/V)",
+        "external": "(external K/V)",
+    }.get(attention.cross_kv_source_kind, "(K/V source unresolved)")
+    return _prefixed_label(prefix, "Cross-Attention", source)
+
+
 def _spec_partial_rope(attention: AttentionSpec) -> bool:
     """True when the spec proves a partial head rotation (rope_dim strictly
     inside head_dim; MLA's rope/nope split is its own mechanism)."""
@@ -552,6 +841,15 @@ def _spec_partial_rope(attention: AttentionSpec) -> bool:
 
 
 def attention_title(attention: AttentionSpec) -> str:
+    if attention.kind in (None, "", "unknown"):
+        if attention.variant and (
+                attention.variant.get("title") or attention.variant.get("short")):
+            base = attention.variant.get("title") or attention.variant["short"]
+            return f"{base} — attention mechanism unresolved"
+        base = ("Cross-attention mechanism unresolved"
+                if attention.cross_attention
+                else "Attention mechanism unresolved")
+        return _prefixed_title(_attention_mask_title_prefix(attention), base)
     if attention.variant and attention.variant.get("title"):
         return attention.variant["title"]
     if attention.cross_attention:
@@ -655,13 +953,17 @@ def op_card(op) -> dict:
     carry ``desc`` to override the kind sentence.
     """
     kind = op.kind
-    title = op.label or _OP_TITLES.get(kind, kind)
+    raw_title = op.label or _OP_TITLES.get(kind, kind)
+    title = " — ".join(str(line) for line in raw_title) \
+        if isinstance(raw_title, (list, tuple)) else raw_title
     if kind == "activation" and op.fn and not op.label:
         title = activation_label(op.fn)
     elif kind == "elementwise" and op.fn and not op.label:
         title = _ELEMENTWISE_TITLES.get(op.fn, title)
     elif kind == "opaque":
-        title = (op.meta or {}).get("class_name") or op.label or title
+        opaque_title = op.label or (op.meta or {}).get("class_name") or title
+        title = " — ".join(str(line) for line in opaque_title) \
+            if isinstance(opaque_title, (list, tuple)) else opaque_title
     facts = []
     if op.in_features and op.out_features:
         facts.append(f"{_fmt_int(op.in_features)} → {_fmt_int(op.out_features)}")

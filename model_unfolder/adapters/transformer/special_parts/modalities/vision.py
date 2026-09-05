@@ -3,685 +3,362 @@ from __future__ import annotations
 
 from typing import Any
 
-from .accessors import as_int, drop_none, first, nested, present_paths
-from .detect import (
-    has_cross_attention_adapter,
-    has_video_input,
-    is_unified_grid_stream,
-)
+from .....evidence import config_access as _config_access
+from .accessors import as_int
 from .schema import Stage, assemble_path
 
 
-def apply_vision_evidence(payload: dict | None, evidence) -> dict | None:
-    """Project one typed source record into every visual-path IR projection."""
-    if not payload or evidence is None:
-        return payload
-    modalities = (payload.get("modalities") or {}).get("inputs") or {}
-    evidence_dict = evidence.to_dict()
-    for name in ("vision", "video"):
-        path = modalities.get(name)
-        if not isinstance(path, dict):
-            continue
-        path["source_evidence"] = evidence_dict
-        embedding = path.get("embedding") or {}
-        if evidence.patch_ops:
-            embedding["ops"] = [op.to_dict() for op in evidence.patch_ops]
-        else:
-            embedding.pop("ops", None)
-        embedding["source_component"] = evidence.component
-        embedding["source_owner"] = evidence.owner_class
-        encoder = path.get("encoder") or {}
-        encoder["kind"] = "vision_encoder"
-        encoder["source_component"] = evidence.component
-        encoder["source_owner"] = evidence.owner_class
-        encoder["position_encoding"] = {"kind": evidence.position_kind}
-        encoder["input_position_kind"] = evidence.input_position_kind
-        variants = [variant.to_dict() for variant in evidence.variants]
-        for variant in variants:
-            field = variant.get("repeat_field")
-            if field == "num_hidden_layers":
-                variant["repeat"] = encoder.get("num_layers")
-            elif field:
-                variant["repeat"] = encoder.get(field)
-        encoder["variants"] = variants
-        # A non-standard block (conformer-style) must not be projected as the
-        # standard cell — no sub_model means the view draws honest-unknown.
-        if not all(v.get("standard_cell", True) for v in variants):
-            encoder.pop("sub_model", None)
-            encoder["final_norm_kind"] = evidence.final_norm_kind
-            continue
-        # THE one tower dialect: the variants ARE layer-type groups, so the
-        # encoder carries a sub_model-shaped spec and rides the same cell
-        # projector / namespaced canonical drills / card builder as every
-        # other tower (text encoders, refiners).  Facts only — no drawables.
-        encoder["sub_model"] = _vision_submodel_spec(encoder, variants, evidence)
-        encoder["final_norm_kind"] = evidence.final_norm_kind
-        if evidence.variants:
-            primary = evidence.variants[0]
-            encoder["norm_kind"] = primary.norm_kind
-            encoder["norm_placement"] = primary.norm_placement
-            encoder["ffn_gated"] = primary.ffn_gated
-            encoder["residual_gated"] = primary.residual_gated
-            encoder["attention_class"] = primary.attention_class
-            encoder["ffn_class"] = primary.ffn_class
-            encoder["projection_mode"] = primary.projection_mode
-            encoder["q_norm"] = primary.q_norm
-            encoder["k_norm"] = primary.k_norm
-            encoder["v_norm"] = primary.v_norm
-            encoder["post_rope_scale"] = primary.post_rope_scale
-            encoder["attention_position_kind"] = primary.position_kind
-            encoder["attention_kind"] = primary.attention_kind
-            encoder["ffn_projection_mode"] = primary.ffn_projection_mode
-        for step in path.get("pipeline") or []:
-            if step.get("id") in {"patch_embedding", "video_patch_embedding"}:
-                step["ops"] = embedding["ops"]
-            elif step.get("id") in {"vision_encoder", "video_encoder"}:
-                step["kind"] = "vision_encoder"
-                step["source_component"] = evidence.component
-                step["source_owner"] = evidence.owner_class
-    return payload
-
-
-def _vision_submodel_spec(encoder: dict, variants: list[dict], evidence) -> dict:
-    """Delegates to the ONE shared tower spec builder (schema.py) — the vision
-    variant dicts already carry the shared layer-fact keys at top level."""
-    from .schema import tower_submodel_spec
-    return tower_submodel_spec(
-        encoder, variants, component=str(getattr(evidence, "component", "") or ""))
-
-
-def apply_projector_evidence(payload: dict | None, evidence) -> dict | None:
-    """Project the one qualified connector record into image and video paths.
+def apply_projector_evidence(payload: dict | None, evidence, cfg: Any = None,
+                             owner_namespace: str = "root") -> dict | None:
+    """Project destination-qualified connector records into their exact paths.
 
     The card, op drill, path label, and fact-conformance net all read this same
-    object.  Config remains authoritative for dimensions and latent counts; it
-    never fabricates callable order when source evidence is absent.
+    object.  Config supplies a dimension operand only after source proves the
+    exact constructor boundary that consumes it; an unbound number never
+    becomes projector architecture.  Latent/input geometry remains separate
+    and never fabricates callable order when source evidence is absent.
+
+    COR-4 (§9): the projector's ``out_features`` is written HERE and only here,
+    from the evidence's source-bound width — a config path proven at the
+    construction site (read back through the evented accessor so the numeric
+    premise stays a logged config read) or a literal from the source.  Unproven
+    or unbindable widths stay absent: no language-width or family fallback.
     """
-    if not payload or evidence is None:
+    if not payload:
         return payload
     modalities = (payload.get("modalities") or {}).get("inputs") or {}
-    evidence_dict = evidence.to_dict()
-    for name in ("vision", "video"):
-        path = modalities.get(name)
-        if not isinstance(path, dict):
-            continue
-        projector = path.get("projector") or {}
-        projector.pop("profile", None)
-        projector["source_evidence"] = evidence_dict
-        projector["source_owner"] = evidence.owner_class
-        projector["source_component"] = evidence.component
-        projector["source_class"] = evidence.projector_class
-        projector["source_field"] = evidence.field_name
-        if evidence.status == "proven":
-            projector["kind"] = evidence.kind
-            projector["ops"] = [op.to_dict() for op in evidence.ops]
-            projector["learned_queries"] = evidence.learned_queries
-        else:
-            projector["kind"] = "code_defined_projector"
-            projector.pop("ops", None)
-            projector.pop("learned_queries", None)
-        for step in path.get("pipeline") or []:
-            if step.get("id") not in {"projector", "video_projector"}:
+    # The geometry shell creates a connector node so the path remains
+    # navigable, but its kind/ops/width are not architectural evidence.  Clear
+    # those claims for every lane before applying destination-owned records;
+    # otherwise a source-missing lane silently keeps the legacy config answer.
+    for name, path in modalities.items():
+        if isinstance(path, dict):
+            _clear_projector_claim(path)
+    if evidence is None:
+        return payload
+    if getattr(evidence, "status", "") in {"failed", "ambiguous"}:
+        detail = "; ".join(
+            getattr(failure, "detail", "")
+            for failure in getattr(evidence, "failures", ())
+            if getattr(failure, "detail", ""))
+        for path in modalities.values():
+            if not isinstance(path, dict):
                 continue
-            step["kind"] = projector["kind"]
-            if evidence.status == "proven":
-                step["ops"] = projector["ops"]
-            else:
-                step.pop("ops", None)
+            # A failure may qualify an already-declared side block; it must
+            # never manufacture a projector merely so there is somewhere to
+            # display the finding.  When no projector block exists, the
+            # parser's model-level warning remains the visible receipt.
+            projector = path.get("projector")
+            if not isinstance(projector, dict):
+                continue
+            projector["kind"] = "code_defined_projector"
+            projector["evidence_unresolved"] = True
+            projector["evidence_failure"] = detail or getattr(
+                evidence, "status", "unresolved")
+        return payload
+    records = _projector_records(evidence)
+    for record in records:
+        destinations = tuple(getattr(record, "modalities", ()) or ())
+        # Compatibility-only legacy evidence predates destination ownership.
+        # Production U9 results always carry destinations.
+        if not destinations:
+            destinations = ("vision", "video")
+        evidence_dict = record.to_dict()
+        for name in destinations:
+            path = modalities.get(name)
+            if not isinstance(path, dict):
+                continue
+            _apply_one_projector(
+                path, name, record, evidence_dict, cfg, owner_namespace)
     return payload
 
 
-def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
-    """Return image/vision intake as semantic facts."""
-    cross_attn = has_cross_attention_adapter(cfg, text_cfg)
-    unified_grid = is_unified_grid_stream(cfg, vision_cfg)
-    image_size = first(vision_cfg, "image_size", "input_size")
-    patch_size = first(vision_cfg, "patch_size", "patch_size_h")
-    input_channels = first(vision_cfg, "in_channels", "num_channels")
-    hidden_size = vision_encoder_hidden_size(cfg, vision_cfg, unified_grid)
-    projector_out = vision_projector_out(cfg, vision_cfg, text_hidden_size, cross_attn, unified_grid)
-    projector_in = vision_projector_in(vision_cfg, hidden_size, cross_attn, unified_grid)
-    num_layers = first(vision_cfg, "num_hidden_layers", "num_layers", "depth")
-    num_heads = first(vision_cfg, "num_attention_heads", "num_heads", "attention_heads")
-    # A perceiver resampler emits a fixed number of latent tokens regardless of
-    # the patch count, so that count wins when present.
-    token_count = perceiver_latents(cfg) or visual_token_count(cfg, vision_cfg, cross_attn)
-    encoder_kind = vision_encoder_kind(cfg, vision_cfg)
-    projector_kind_value = projector_kind(cfg)
-    projector_activation = first(cfg, "projector_hidden_act", "mm_projector_act")
-    embedding_ops = vision_patch_embedding_ops(cfg, vision_cfg, hidden_size)
-    token_kind = (
-        "vision_cross_attention_states" if cross_attn
-        else "grid_visual_tokens" if unified_grid
-        else "soft_visual_tokens"
-    )
-    token_node_id = "vision_context" if cross_attn else "soft_visual_tokens"
-    final_operation = (
-        "emit_cross_attention_states" if cross_attn
-        else "emit_grid_token_stream" if unified_grid
-        else "emit_soft_token_stream"
-    )
-    projection_operation = (
-        "project_to_decoder_width" if cross_attn
-        else "merge_patches_to_text_width" if unified_grid
-        else "project_to_text_width"
-    )
-
-    image_shape = ["batch", "images", "channels", "height", "width"]
-    grid = grid_spec(cfg, vision_cfg, "image") if unified_grid else None
-    path_kind = (
-        "image_to_cross_attention_states" if cross_attn
-        else "image_to_grid_tokens" if unified_grid
-        else "image_to_soft_visual_tokens"
-    )
-
-    # --- Structural vision features, all config-driven (no family names) ---
-    tiling = image_tiling(cfg, vision_cfg)
-    reduction = token_reduction(cfg, vision_cfg)
-    multilayer = multilayer_features(vision_cfg)
-    features = feature_selection(cfg)
-    encoder_fields = drop_none({
-        "hidden_size": hidden_size,
-        "num_layers": num_layers,
-        "num_attention_heads": num_heads,
-        # A vision tower that declares global layers runs a local+global stack.
-        "num_global_layers": first(vision_cfg, "num_global_layers"),
-        "num_channels": first(vision_cfg, "num_channels", "in_chans", "in_channels"),
-        "global_head_dim": first(vision_cfg, "global_head_dim"),
-        # timm/ViT dialects declare the MLP width as a RATIO of the hidden size
-        # (Qwen2-VL: mlp_ratio=4 -> 1280*4); a declared ratio is a config fact,
-        # never a guessed default.
-        "intermediate_size": first(vision_cfg, "intermediate_size", "mlp_dim")
-        or (int(first(vision_cfg, "mlp_ratio") * hidden_size)
-            if first(vision_cfg, "mlp_ratio") and hidden_size else None),
-        "activation": first(vision_cfg, "hidden_act", "hidden_activation"),
-        "patch_size": patch_size,
-        # Which encoder output the connector reads (single layer + CLS policy).
-        "feature_layer": (features or {}).get("layer"),
-        "feature_select_strategy": (features or {}).get("select_strategy"),
-        # Concatenated multi-layer features (e.g. mllama) widen the output.
-        "intermediate_layers_indices": (multilayer or {}).get("layers"),
-        "output_dim": (multilayer or {}).get("output_dim")
-                      or first(vision_cfg, "vision_output_dim", "output_dim"),
-        "position_encoding": vision_position_encoding(cfg, vision_cfg),
-        # A windowed vision tower that declares WHICH blocks run full attention
-        # (Qwen2.5-VL/Omni fullatt_block_indexes) — the layer schedule is a
-        # structural fact, not an impl flag.
-        "full_attention_block_indexes": first(vision_cfg, "fullatt_block_indexes"),
-        # Video token time-density (grid streams): declared tokens per second.
-        "video_tokens_per_second": first(vision_cfg, "tokens_per_second"),
-        "norm_kind": "unknown",
-        "ffn_gated": None,
-    })
-
-    stages = [
-        Stage("input", "image_pixels", "input", "image_pixels",
-              {"shape": image_shape, "image_size": image_size, "patch_size": patch_size,
-               "channels": input_channels},
-              step_fields={"shape": image_shape, "channels": input_channels}),
-    ]
-    if tiling:
-        stages.append(
-            Stage("tiling", "vision_tiles", "tile_image", "image_tiling",
-                  {"mode": tiling.get("mode"), "max_tiles": tiling.get("max_tiles"),
-                   "aspect_ratios": tiling.get("aspect_ratios"),
-                   "num_layouts": tiling.get("num_layouts"),
-                   "aspect_ratio_policy": tiling.get("aspect_ratio_policy")},
-                  step_fields=drop_none({"mode": tiling.get("mode"),
-                                         "max_tiles": tiling.get("max_tiles"),
-                                         "num_layouts": tiling.get("num_layouts")}))
-        )
-    stages.append(
-        Stage("embedding", "patch_embedding", "patch_embedding", "patch_embedding",
-              drop_none({"patch_size": patch_size, "out_features": hidden_size,
-                         "grid": patch_grid_geometry(vision_cfg),
-                         "ops": embedding_ops or None}),
-              step_fields={"patch_size": patch_size, "out_features": hidden_size})
-    )
-    stages.append(
-        Stage("encoder", "vision_encoder", "encode", encoder_kind,
-              encoder_fields,
-              step_fields={"hidden_size": hidden_size, "num_layers": num_layers})
-    )
-    if reduction:
-        stages.append(
-            Stage("reduction", "vision_token_reduce", reduction["operation"], reduction["kind"],
-                  reduction["fields"])
-        )
-    stages.append(
-        Stage("projector", "projector", projection_operation, projector_kind_value,
-              drop_none({"in_features": projector_in, "out_features": projector_out,
-                         "activation": projector_activation, "num_latents": perceiver_latents(cfg)}))
-    )
-    stages.append(
-        Stage("tokens", token_node_id, final_operation, token_kind,
-              {"count": token_count, "count_options": token_count_options(cfg),
-               "width": text_hidden_size or None, "grid": grid},
-              step_fields={"count": token_count, "width": text_hidden_size or None, "grid": grid})
-    )
-    return assemble_path(
-        path_kind,
-        stages,
-        present_paths(cfg, vision_cfg, [
-            ("vision_config", vision_cfg),
-            ("image_seq_length", cfg),
-            ("image_token_id", cfg),
-            ("image_token_index", cfg),
-            ("vision_start_token_id", cfg),
-            ("vision_end_token_id", cfg),
-            ("mm_projector_type", cfg),
-        ]),
-    )
+def _clear_projector_claim(path: dict) -> None:
+    projector = path.get("projector")
+    if isinstance(projector, dict):
+        for key in (
+                "activation", "kind", "learned_queries", "ops",
+                "in_features", "out_features", "profile", "source_class",
+                "source_component", "source_evidence", "source_field",
+                "source_owner"):
+            projector.pop(key, None)
+        projector["kind"] = "code_defined_projector"
+    for step in path.get("pipeline") or ():
+        if step.get("id") not in {
+                "projector", "video_projector", "audio_projector",
+                "conditioning_projector"}:
+            continue
+        for key in (
+                "activation", "learned_queries", "ops",
+                "in_features", "out_features"):
+            step.pop(key, None)
+        step["kind"] = "code_defined_projector"
 
 
-def vision_patch_embedding_ops(cfg: Any, vision_cfg: Any, hidden_size: Any) -> list[dict]:
-    """Return an exact patch-embedding chain only for established signatures.
+def _projector_records(evidence):
+    if getattr(evidence, "status", "") in {"resolved", "incomplete"}:
+        inventory = getattr(evidence, "value", None)
+        return tuple(getattr(inventory, "projectors", ()) or ())
+    inventory = getattr(evidence, "projectors", None)
+    if inventory is not None:
+        return tuple(inventory)
+    return (evidence,) if hasattr(evidence, "to_dict") else ()
 
-    These are class/config-family signatures, never model ids. Unknown towers
-    keep the honest generic patch view instead of receiving a guessed backend.
+
+def _apply_one_projector(path, name, evidence, evidence_dict, cfg,
+                         owner_namespace):
+    projector = path.get("projector") or {}
+    projector.pop("profile", None)
+    bound_in, _in_fact_status = _bound_projector_width(
+        evidence, cfg, owner=f"{owner_namespace}.{name}", lane="in")
+    bound_out, out_fact_status = _bound_out_width(
+        evidence, cfg, owner=f"{owner_namespace}.{name}")
+    if bound_in is not None:
+        projector["in_features"] = bound_in
+    if bound_out is not None:
+        _insert_after(projector, "in_features", "out_features", bound_out)
+        tokens = path.get("tokens")
+        if isinstance(tokens, dict):
+            tokens["width"] = bound_out
+    projector["source_evidence"] = evidence_dict
+    projector["source_owner"] = evidence.owner_class
+    projector["source_component"] = evidence.component
+    projector["source_class"] = evidence.projector_class
+    projector["source_field"] = evidence.field_name
+    if evidence.status == "proven":
+        projector["kind"] = evidence.kind
+        projector["ops"] = [op.to_dict() for op in evidence.ops]
+        projector["learned_queries"] = evidence.learned_queries
+    else:
+        projector["kind"] = "code_defined_projector"
+        projector.pop("ops", None)
+        projector.pop("learned_queries", None)
+    for step in path.get("pipeline") or []:
+        if step.get("id") not in {
+                "projector", "video_projector", "audio_projector",
+                "conditioning_projector"}:
+            continue
+        if bound_in is not None:
+            step["in_features"] = bound_in
+        if bound_out is not None:
+            _insert_after(step, "in_features", "out_features", bound_out)
+        step["kind"] = projector["kind"]
+        if evidence.status == "proven":
+            step["ops"] = projector["ops"]
+        else:
+            step.pop("ops", None)
+    if bound_out is not None:
+        pipeline = path.get("pipeline") or ()
+        if pipeline:
+            pipeline[-1]["width"] = bound_out
+
+
+def _bound_out_width(evidence, cfg: Any, *, owner: str) \
+        -> tuple[int | None, str | None]:
+    """Resolve source-bound output width and fact status, or two unknowns.
+
+    ``code_bound`` carries its literal; ``config_bound`` names an exact dotted
+    path from the ROOT config, which is read through the evented accessor under
+    that exact container so ownership and the logged read agree.  ``derived``
+    and ``unavailable`` resolve nothing — the drawing stays honestly unknown.
     """
-    # Config proves geometry, not callable order or backend. Typed source
-    # evidence fills this list after path assembly.
-    return []
-
-
-def video_path(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
-    """Return video intake when a model reuses its visual tower for frames."""
-    patch_size = first(vision_cfg, "patch_size", "patch_size_h")
-    hidden_size = vision_encoder_hidden_size(cfg, vision_cfg, unified_grid=True)
-    projector_in = vision_projector_in(vision_cfg, hidden_size, cross_attn=False, unified_grid=True)
-    num_layers = first(vision_cfg, "num_hidden_layers", "num_layers", "depth")
-    num_heads = first(vision_cfg, "num_attention_heads", "num_heads", "attention_heads")
-    projector_out = vision_projector_out(cfg, vision_cfg, text_hidden_size, cross_attn=False, unified_grid=True)
-    encoder_kind = vision_encoder_kind(cfg, vision_cfg)
-    projector_kind_value = projector_kind(cfg)
-    temporal_patch_size = first(vision_cfg, "temporal_patch_size")
-    input_channels = first(vision_cfg, "in_channels", "num_channels")
-    video_shape = ["batch", "videos", "frames", "channels", "height", "width"]
-    grid = grid_spec(cfg, vision_cfg, "video")
-    embedding_ops = vision_patch_embedding_ops(cfg, vision_cfg, hidden_size)
-
-    stages = [
-        Stage("input", "video_frames", "input", "video_frames",
-              {"shape": video_shape, "patch_size": patch_size,
-               "temporal_patch_size": temporal_patch_size, "channels": input_channels},
-              step_fields={"shape": video_shape, "channels": input_channels}),
-        Stage("embedding", "video_patch_embedding", "temporal_patch_embedding", "temporal_patch_embedding",
-              drop_none({"patch_size": patch_size, "temporal_patch_size": temporal_patch_size,
-                         "out_features": hidden_size, "grid": patch_grid_geometry(vision_cfg),
-                         "ops": embedding_ops or None}),
-              step_fields={"patch_size": patch_size, "temporal_patch_size": temporal_patch_size,
-                           "out_features": hidden_size}),
-        Stage("encoder", "video_encoder", "encode", encoder_kind,
-              {"hidden_size": hidden_size,
-               "num_layers": num_layers, "num_attention_heads": num_heads,
-               "position_encoding": vision_position_encoding(cfg, vision_cfg)},
-              step_fields={"hidden_size": hidden_size, "num_layers": num_layers}),
-        Stage("projector", "video_projector", "merge_patches_to_text_width", projector_kind_value,
-              drop_none({"in_features": projector_in, "out_features": projector_out})),
-        Stage("tokens", "video_tokens", "emit_grid_token_stream", "grid_video_tokens",
-              {"width": text_hidden_size or None, "grid": grid}),
-    ]
-    return assemble_path(
-        "video_to_grid_tokens",
-        stages,
-        present_paths(cfg, vision_cfg, [
-            ("vision_config", vision_cfg),
-            ("video_token_id", cfg),
-            ("video_token_index", cfg),
-            ("vision_start_token_id", cfg),
-            ("vision_end_token_id", cfg),
-        ]),
-    )
-
-
-def vision_encoder_hidden_size(cfg: Any, vision_cfg: Any, unified_grid: bool) -> Any:
-    """Return the width used inside the visual encoder itself."""
-    if unified_grid:
-        return first(vision_cfg, "embed_dim", "vision_hidden_size", "width", "hidden_size")
-    return first(vision_cfg, "hidden_size", "vision_hidden_size", "width", "embed_dim")
-
-
-def vision_projector_out(
-    cfg: Any,
-    vision_cfg: Any,
-    text_hidden_size: int,
-    cross_attn: bool,
-    unified_grid: bool,
-) -> Any:
-    """Return output width of the vision projector/merger."""
-    if cross_attn:
-        return text_hidden_size or first(cfg, "projection_dim", "text_hidden_size")
-    if unified_grid:
-        # The merger's own declared output width wins (Qwen2.5-VL/Omni
-        # out_hidden_size); the text width is the fallback, not the source.
-        return (first(vision_cfg, "out_hidden_size") or text_hidden_size
-                or first(vision_cfg, "hidden_size", "output_dim"))
-    return text_hidden_size or first(cfg, "projection_dim", "text_hidden_size")
-
-
-def vision_projector_in(vision_cfg: Any, encoder_hidden_size: Any, cross_attn: bool, unified_grid: bool) -> Any:
-    """Return input width of the vision projector/merger."""
-    if cross_attn:
-        return first(vision_cfg, "vision_output_dim", "output_dim", "projection_dim") or encoder_hidden_size
-    if unified_grid:
-        return merged_patch_features(vision_cfg, encoder_hidden_size) or encoder_hidden_size
-    return encoder_hidden_size
-
-
-def merged_patch_features(vision_cfg: Any, encoder_hidden_size: Any) -> int | None:
-    """Return flattened merged patch width for grid-token mergers."""
-    hidden = as_int(encoder_hidden_size)
-    merge = as_int(first(vision_cfg, "spatial_merge_size"))
-    if hidden is None or merge is None:
-        return None
-    return hidden * (merge ** 2)
-
-
-def vision_encoder_kind(cfg: Any, vision_cfg: Any) -> str:
-    """Return a semantic kind for the vision tower."""
-    return "vision_encoder"
-
-
-def vision_position_encoding(cfg: Any, vision_cfg: Any) -> dict | None:
-    """Derive the vision tower's position encoding from config fields only.
-
-    A vision tower positions patches on a 2D grid, so a learned table or RoPE
-    here is inherently 2D/axial.  We read the structural signals directly —
-    no model-family lookup:
-
-    * ``position_embedding_size`` / ``use_absolute_position_embeddings`` -> learned 2D table
-    * ``rope_parameters`` / ``rope_theta`` in the vision config            -> 2D RoPE
-
-    A tower that declares both (e.g. Gemma 4 vision) reports
-    ``"learned_2d_plus_rope_2d"``; mllama, which uses neither standard field,
-    reports nothing rather than a guessed label.
-    """
-    # A unified grid stream (Qwen-VL etc.) positions patches with model-level
-    # multimodal RoPE — itself a structural property (mrope rope-scaling,
-    # spatial-merge, or runtime grid_thw), not a family name.
-    if is_unified_grid_stream(cfg, vision_cfg):
-        return {"kind": "multimodal_rope"}
-
-    methods: list[str] = []
-    learned = (
-        first(vision_cfg, "position_embedding_size", "num_positions") is not None
-        or bool(first(vision_cfg, "use_absolute_position_embeddings"))
-    )
-    if learned:
-        methods.append("learned_2d")
-    if first(vision_cfg, "rope_parameters", "rope_theta", "rope_scaling") is not None:
-        methods.append("rope_2d")
-    if not methods:
-        return None
-    rope = first(vision_cfg, "rope_parameters", "rope_scaling")
-    return drop_none({
-        "kind": "_plus_".join(methods),
-        "rope": rope if isinstance(rope, dict) else None,
-    })
-
-
-def image_tiling(cfg: Any, vision_cfg: Any) -> dict | None:
-    """Detect how a high-res image is split before encoding.
-
-    Two modes, both config-driven:
-
-    * ``fixed_tiles`` — ``max_num_tiles`` (mllama): up to N fixed-size tiles,
-      each encoded independently; ``supported_aspect_ratios`` lists the layouts.
-    * ``anyres`` — ``image_grid_pinpoints`` (LLaVA-NeXT / OneVision): the image
-      is resized to the best-fitting grid from a list of candidate resolutions.
-
-    Absent -> the model encodes the image as a single field.
-    """
-    max_tiles = as_int(first(vision_cfg, "max_num_tiles", "max_image_tiles"))
-    if max_tiles:
-        return drop_none({
-            "mode": "fixed_tiles",
-            "max_tiles": max_tiles,
-            "aspect_ratios": first(vision_cfg, "supported_aspect_ratios"),
-        })
-    pinpoints = first(cfg, "image_grid_pinpoints")
-    if pinpoints:
-        return drop_none({
-            "mode": "anyres",
-            "num_layouts": len(pinpoints) if isinstance(pinpoints, (list, tuple)) else None,
-            "aspect_ratio_policy": first(cfg, "vision_aspect_ratio"),
-        })
-    return None
-
-
-def token_reduction(cfg: Any, vision_cfg: Any) -> dict | None:
-    """Detect a post-encoder token-reduction step from config.
-
-    Two reduction families, both before the projector:
-
-    * ``pooling_kernel_size`` -> k×k average pool (Gemma 4), cuts tokens by k²
-    * ``downsample_ratio`` (InternVL, e.g. 0.5) or ``scale_factor`` (Idefics3 /
-      SmolVLM, e.g. 3) -> pixel-shuffle / space-to-depth, cuts tokens by 1/r²
-
-    ``spatial_merge_size`` is *not* reported here — for grid streams it is
-    already surfaced on the grid and the patch-merger projector.
-    """
-    pool = as_int(first(vision_cfg, "pooling_kernel_size", "pool_kernel_size"))
-    if pool:
-        return {
-            "operation": "pool_tokens",
-            "kind": "token_pooling",
-            "fields": {"kernel_size": pool, "reduces_tokens_by": pool * pool},
-        }
-    ratio = first(cfg, "downsample_ratio")
-    if ratio:
-        try:
-            factor = round((1.0 / float(ratio)) ** 2)
-        except (TypeError, ValueError, ZeroDivisionError):
-            factor = None
-        return {
-            "operation": "pixel_shuffle",
-            "kind": "pixel_shuffle",
-            "fields": drop_none({"downsample_ratio": ratio, "reduces_tokens_by": factor}),
-        }
-    scale = as_int(first(cfg, "scale_factor", "pixel_shuffle_factor"))
-    if scale:
-        return {
-            "operation": "pixel_shuffle",
-            "kind": "pixel_shuffle",
-            "fields": {"scale_factor": scale, "reduces_tokens_by": scale * scale},
-        }
-    return None
-
-
-def multilayer_features(vision_cfg: Any) -> dict | None:
-    """Detect *multi-layer* feature concatenation from config.
-
-    Signal: ``intermediate_layers_indices`` or a list-valued
-    ``vision_feature_layers`` — the encoder concatenates hidden states from
-    several layers (mllama joins [3,7,15,23,30]+final, hence
-    ``vision_output_dim`` >> hidden).  A single ``vision_feature_layer`` (LLaVA)
-    is *not* a concat — that is handled by :func:`feature_selection`.
-    """
-    layers = first(vision_cfg, "intermediate_layers_indices", "vision_feature_layers")
-    if not isinstance(layers, (list, tuple)) or len(layers) <= 1:
-        return None
-    return drop_none({
-        "layers": list(layers),
-        "output_dim": first(vision_cfg, "vision_output_dim", "output_dim"),
-    })
-
-
-def feature_selection(cfg: Any) -> dict | None:
-    """Which encoder output the connector consumes (LLaVA-style).
-
-    * ``vision_feature_layer`` — single hidden-state layer (e.g. -2 = penultimate)
-    * ``vision_feature_select_strategy`` — ``"default"`` drops the CLS token,
-      ``"full"`` keeps every patch token
-    """
-    layer = first(cfg, "vision_feature_layer")
-    strategy = first(cfg, "vision_feature_select_strategy")
-    if layer is None and strategy is None:
-        return None
-    if isinstance(layer, (list, tuple)):  # a list is multi-layer concat, not single select
-        layer = None
-    return drop_none({"layer": layer, "select_strategy": strategy})
-
-
-def projector_kind(cfg: Any) -> str:
-    """Classify the vision connector from structural config fields.
-
-    Priority reflects how distinctive each mechanism is:
-    perceiver resampler -> patch merger (grid) -> declared projector type ->
-    MLP (has an activation) -> plain linear.
-    """
-    vision_cfg = first(cfg, "vision_config", "vision_model_config")
-    if first(cfg, "perceiver_config", "use_resampler", "resampler_config") is not None:
-        return "perceiver_resampler"
-    if is_unified_grid_stream(cfg, vision_cfg):
-        return "patch_merger"
-    raw = first(cfg, "mm_projector_type", "projector_type", "multi_modal_projector_type")
-    if raw:
-        return str(raw)
-    if first(cfg, "projector_hidden_act", "mm_projector_act"):
-        return "mlp_projector"
-    return "linear_projector"
-
-
-def perceiver_latents(cfg: Any) -> int | None:
-    """Fixed query/token count for a perceiver-resampler connector (Idefics2)."""
-    pc = nested(cfg, "perceiver_config") or nested(cfg, "resampler_config") or {}
-    return as_int(first(pc, "resampler_n_latents", "n_latents", "num_latents", "num_queries"))
-
-
-def visual_token_count(cfg: Any, vision_cfg: Any, cross_attn: bool = False) -> int | None:
-    """Return fixed per-image token count when the config declares one."""
-    if cross_attn or has_cross_attention_adapter(cfg):
-        count = mllama_tile_token_count(vision_cfg)
-        if count is not None:
-            return count
-    direct = first(
-        cfg,
-        "image_seq_length",
-        "num_image_tokens",
-        "mm_tokens_per_image",
-        "vision_soft_tokens_per_image",
-        "tokens_per_image",
-    )
-    if direct is not None:
-        return direct
-    image_size = first(vision_cfg, "image_size")
-    patch_size = first(vision_cfg, "patch_size")
-    if image_size and patch_size:
-        try:
-            return int((int(image_size) // int(patch_size)) ** 2)
-        except (TypeError, ValueError, ZeroDivisionError):
-            return None
-    return None
-
-
-def mllama_tile_token_count(vision_cfg: Any) -> int | None:
-    """Return tile token count for cross-attention vision towers."""
-    image_size = first(vision_cfg, "image_size")
-    patch_size = first(vision_cfg, "patch_size")
-    if not (image_size and patch_size):
-        return None
-    try:
-        patches = int((int(image_size) // int(patch_size)) ** 2)
-    except (TypeError, ValueError, ZeroDivisionError):
-        return None
-    return patches + 1
-
-
-def token_count_options(cfg: Any) -> list[int] | None:
-    """Return optional per-image token count choices."""
-    for key in ("image_token_count_options", "soft_token_count_options", "tokens_per_image_options"):
-        value = first(cfg, key)
-        if isinstance(value, (list, tuple)) and value:
-            return [int(v) for v in value if v is not None]
-    return None
-
-
-def patch_grid_geometry(vision_cfg: Any) -> dict | None:
-    """Normalized patch-grid geometry as a single object.
-
-    Models the patch layout as dims, not scalars, so square, non-square
-    (``patch_size_h`` != ``patch_size_w``), dynamic-resolution (no fixed
-    ``image_size``), temporal (video), and patch-merged towers all flow
-    through one shape that the renderer formats without per-model branches::
-
-        {
-          "kind": "static_patch_grid" | "dynamic_patch_grid",
-          "patch": {"h": 14, "w": 14, "t": 2?},   # t only for temporal
-          "input": {"h": 448, "w": 448} | absent,  # absent => dynamic
-          "tiles": {"h": 32, "w": 32} | absent,    # floor-div, when computable
-          "spatial_merge_size": 2?,
-        }
-    """
-    img_h, img_w = _hw(first(vision_cfg, "image_size", "input_size"))
-    patch_h = as_int(first(vision_cfg, "patch_size", "patch_size_h"))
-    patch_w = as_int(first(vision_cfg, "patch_size_w")) or patch_h
-    temporal = as_int(first(vision_cfg, "temporal_patch_size"))
-    merge = as_int(first(vision_cfg, "spatial_merge_size"))
-
-    if patch_h is None and patch_w is None and img_h is None:
-        return None
-
-    dynamic = img_h is None
-    tiles = None
-    if not dynamic and patch_h and patch_w and img_w is not None:
-        if img_h % patch_h == 0 and img_w % patch_w == 0:
-            tiles = {"h": img_h // patch_h, "w": img_w // patch_w}
-
-    return drop_none({
-        "kind": "dynamic_patch_grid" if dynamic else "static_patch_grid",
-        "patch": drop_none({"h": patch_h, "w": patch_w, "t": temporal}),
-        "input": None if dynamic else drop_none({"h": img_h, "w": img_w}),
-        "tiles": tiles,
-        "spatial_merge_size": merge,
-    })
-
-
-def _hw(value: Any) -> tuple[int | None, int | None]:
-    """Split a size config value into (height, width); scalars mean square."""
-    if isinstance(value, (list, tuple)):
-        if len(value) >= 2:
-            return as_int(value[0]), as_int(value[1])
-        if len(value) == 1:
-            v = as_int(value[0])
-            return v, v
+    if evidence is None or getattr(evidence, "status", "") != "proven":
         return None, None
-    v = as_int(value)
-    return v, v
+    source = getattr(evidence, "out_width_source", "unavailable")
+    if source == "code_bound":
+        # a literal in the projector source — code alone proves it.  R5-vet:
+        # a pure-code width still needs a TYPED FACT (and hence a receipt);
+        # it merely has no config obligation.
+        width = as_int(getattr(evidence, "out_width_value", None))
+        if width is not None:
+            _record_projector_fact(owner, width, "code_proven", None, evidence)
+        return width, "code_proven"
+    if source != "config_bound" or cfg is None:
+        return None, None
+    parts = tuple(getattr(evidence, "out_width_path", ()) or ())
+    if not parts:
+        return None, None
+    node = cfg
+    for part in parts[:-1]:            # raw structural hops — the leaf is the fact
+        node = node.get(part) if isinstance(node, dict) else getattr(node, part, None)
+        if node is None:
+            return None, None
+    # The read AUTHORS the drawn out_features, so it is a consumption with an
+    # exact path — a bare inspected read would (rightly) show up as
+    # accessed-but-unconsumed debt in the H3 audit.
+    resolution = _config_access.resolve(
+        node, parts[-1], (), component=owner, path=parts[:-1])
+    if resolution.state != "present":
+        return None, None
+    # U2-R5: ONE author for the evidence status.  The projector SOURCE proves it
+    # consumes this exact config value, so the status is ``code_and_config`` —
+    # never ``config_declared`` merely because a number exists.  The SAME status
+    # goes to the consumption (whose fingerprint Net 2 checks), to the typed
+    # FACT (where the validator's expected hash originates), and — via the
+    # returned pair — to the drawn card's descriptor, so no later surface can
+    # re-derive it differently.
+    fact_status = "code_and_config"
+    width = as_int(resolution.consume(
+        fact_owner=owner, fact_key="projector_out_features",
+        mechanism="projector_out_width", status=fact_status))
+    if width is not None:
+        _record_projector_fact(owner, width, fact_status, ".".join(parts),
+                               evidence)
+    return width, fact_status
 
 
-def grid_spec(cfg: Any, vision_cfg: Any, modality: str) -> dict | None:
-    """Return dynamic THW grid metadata for image/video streams."""
-    runtime_name = "video_grid_thw" if modality == "video" else "image_grid_thw"
-    return drop_none({
-        "kind": "dynamic_thw_grid",
-        "runtime_input": runtime_name,
-        "axes": ["time", "height", "width"],
-        "patch_size": first(vision_cfg, "patch_size", "patch_size_h"),
-        "temporal_patch_size": first(vision_cfg, "temporal_patch_size"),
-        "spatial_merge_size": first(vision_cfg, "spatial_merge_size"),
-        "position_encoding": "multimodal_rope",
-    })
+def _bound_projector_width(evidence, cfg: Any, *, owner: str, lane: str):
+    """Resolve one source-proven projector boundary width."""
+    if lane not in {"in", "out"}:
+        raise ValueError("projector width lane is in|out")
+    if lane == "out":
+        return _bound_out_width(evidence, cfg, owner=owner)
+    if evidence is None or getattr(evidence, "status", "") != "proven":
+        return None, None
+    source = getattr(evidence, "in_width_source", "unavailable")
+    if source == "code_bound":
+        width = as_int(getattr(evidence, "in_width_value", None))
+        if width is not None:
+            _record_projector_fact(
+                owner, width, "code_proven", None, evidence,
+                fact_key="projector_in_features")
+        return width, "code_proven"
+    if source != "config_bound" or cfg is None:
+        return None, None
+    parts = tuple(getattr(evidence, "in_width_path", ()) or ())
+    if not parts:
+        return None, None
+    node = cfg
+    for part in parts[:-1]:
+        node = node.get(part) if isinstance(node, dict) else getattr(node, part, None)
+        if node is None:
+            return None, None
+    resolution = _config_access.resolve(
+        node, parts[-1], (), component=owner, path=parts[:-1])
+    if resolution.state != "present":
+        return None, None
+    status = "code_and_config"
+    width = as_int(resolution.consume(
+        fact_owner=owner, fact_key="projector_in_features",
+        mechanism="projector_in_width", status=status))
+    if width is not None:
+        _record_projector_fact(
+            owner, width, status, ".".join(parts), evidence,
+            fact_key="projector_in_features")
+    return width, status
 
 
-def grid_runtime_inputs(modalities: dict[str, Any]) -> list[str] | None:
-    """Return runtime grid tensors consumed by unified multimodal streams."""
-    inputs: list[str] = []
-    if "vision" in modalities:
-        grid = ((modalities["vision"].get("tokens") or {}).get("grid") or {})
-        if grid.get("runtime_input"):
-            inputs.append(grid["runtime_input"])
-    if "video" in modalities:
-        grid = ((modalities["video"].get("tokens") or {}).get("grid") or {})
-        if grid.get("runtime_input"):
-            inputs.append(grid["runtime_input"])
-    return inputs or None
+def _record_projector_fact(owner: str, width: int, status: str,
+                           config_path: "str | None", evidence, *,
+                           fact_key: str = "projector_out_features") -> None:
+    """Record the typed projector-width fact — the ONE author for both tiers.
+
+    R5-vet: ``code_and_config`` must substantiate BOTH halves — the exact config
+    path AND the exact projector source span (file/line/class from the
+    construction-site evidence); a config path alone does not substantiate the
+    "code" half.  ``code_proven`` cites the span alone.
+
+    U2-R5 pilot scope: recorded ONLY for the owners the registry migrates
+    (root.vision / root.video).  An EMBEDDED tower's owner
+    (root.text_encoder.vision) is deliberately unmigrated: its consumption
+    obligation stays on the advisory census as exact R6 debt, and attempting
+    the typed write would (rightly) be rejected by the closed-world registry —
+    a rejection that, swallowed by the modality try/except, once silently
+    dropped the WHOLE projector-evidence application for embedded VL encoders.
+    The registry decides, deterministically."""
+    from .....evidence.context import active_facts
+    from .....evidence.facts import EvidenceFact, SourceSpan
+    from .....evidence.registry import REGISTRY
+    facts = active_facts()
+    definition = REGISTRY.get(fact_key)
+    if facts is None or definition is None \
+            or owner not in definition.owner_patterns:
+        return
+    span = SourceSpan(
+        component=str(getattr(evidence, "component", "") or ""),
+        class_name=getattr(evidence, "projector_class", None),
+        file=getattr(evidence, "source_file", None),
+        line=getattr(evidence, "line", None))
+    source_label = (f"{span.file}:{span.line}" if span.file else
+                    str(span.class_name or "projector source"))
+    facts.record_typed(EvidenceFact(
+        key=fact_key, owner=owner, value=width,
+        status=status, completeness="complete",
+        config_paths=(config_path,) if config_path else (),
+        source_spans=(span,),
+        legacy_source=(f"{config_path} + {source_label}" if config_path
+                       else source_label),
+        reason=("projector input width" if fact_key == "projector_in_features"
+                else "projector output width")
+               + " bound at the construction site the source proves"))
+
+
+def _insert_after(target: dict, anchor: str, key: str, value: Any) -> None:
+    """Insert ``key`` directly after ``anchor`` preserving all other order —
+    the overlay must not reorder card fields the build already wrote."""
+    if anchor not in target:
+        target[key] = value
+        return
+    items = list(target.items())
+    target.clear()
+    for existing_key, existing_value in items:
+        target[existing_key] = existing_value
+        if existing_key == anchor:
+            target[key] = value
+
+
+
+
+def vision_path(_cfg: Any, _text_cfg: Any, _vision_cfg: Any,
+                _text_hidden_size: int) -> dict:
+    """Build an opaque, address-only lane for a declared visual component.
+
+    The checkpoint may establish that a vision component exists.  It cannot
+    establish patching, encoder, connector, token-route, geometry, or position
+    mechanisms.  Those fields are projected later from exact U9 source facts;
+    this shell exists only so those facts have stable structural destinations.
+    """
+    shape = ["batch", "images", "channels", "height", "width"]
+    return assemble_path(
+        "code_defined_modality_path",
+        [
+            Stage("input", "image_pixels", "input", "image_pixels",
+                  {"shape": shape}),
+            Stage("embedding", "patch_embedding", "unknown",
+                  "code_defined_embedding", {}),
+            Stage("encoder", "vision_encoder", "unknown",
+                  "code_defined_encoder", {}),
+            Stage("projector", "projector", "unknown",
+                  "code_defined_projector", {}),
+            Stage("tokens", "vision_tokens", "unknown",
+                  "code_defined_tokens", {}),
+        ],
+        [],
+    )
+
+
+def video_path(_cfg: Any, _vision_cfg: Any, _text_hidden_size: int) -> dict:
+    """Build an opaque, address-only video lane over a declared component."""
+    shape = ["batch", "videos", "frames", "channels", "height", "width"]
+    return assemble_path(
+        "code_defined_modality_path",
+        [
+            Stage("input", "video_frames", "input", "video_frames",
+                  {"shape": shape}),
+            Stage("embedding", "video_patch_embedding", "unknown",
+                  "code_defined_embedding", {}),
+            Stage("encoder", "video_encoder", "unknown",
+                  "code_defined_encoder", {}),
+            Stage("projector", "video_projector", "unknown",
+                  "code_defined_projector", {}),
+            Stage("tokens", "video_tokens", "unknown",
+                  "code_defined_tokens", {}),
+        ],
+        [],
+    )
 
 
 __all__ = [
-    "grid_runtime_inputs",
-    "has_video_input",
     "video_path",
     "vision_path",
 ]
