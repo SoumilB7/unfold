@@ -17,7 +17,8 @@ from model_unfolder.evidence.reconciliation import (
 from scripts.generate_s7_shadow import (
     RecipeAttemptBundle, RecipeResolution, _assert_live_shadow_matches,
     _assert_model_summary_matches,
-    _bf16_retry, _generation_sources, _semantic_payload, _signature_recipe,
+    _bf16_retry, _execution_rows_for_run, _generation_sources,
+    _inventory_for_run, _semantic_payload, _signature_recipe,
     _require_schema_version, _source_hashes, _stable_observation_payload, _targets,
     _validate_relation_cross_file, _validate_relation_payload,
     _validate_target_metadata, check,
@@ -417,6 +418,35 @@ def test_live_shadow_model_mismatch_names_slug_field_and_both_values():
     assert "committed='failed'" in detail
     assert "live='ok'" in detail
     assert "RuntimeFailed" in detail
+
+
+def test_live_shadow_never_joins_stored_inventory_to_live_observation(monkeypatch):
+    request = SimpleNamespace()
+    stored = SimpleNamespace(name="stored")
+    live = SimpleNamespace(name="live")
+    monkeypatch.setattr(shadow_generator, "_s6_inventory",
+                        lambda *_args: stored)
+    monkeypatch.setattr(shadow_generator, "inventory_in_subprocess",
+                        lambda _request: live)
+    assert _inventory_for_run(
+        request, "pilot", "hash", live_shadow=False) is stored
+    assert _inventory_for_run(
+        request, "pilot", "hash", live_shadow=True) is live
+
+
+def test_live_shadow_replays_stored_recipes_instead_of_reusing_results(monkeypatch):
+    request = SimpleNamespace()
+    stored = SimpleNamespace(recipe="exact-recipe")
+    replayed = SimpleNamespace(recipe="exact-recipe", provenance="live")
+    monkeypatch.setattr(shadow_generator, "_s6_observations",
+                        lambda *_args: (stored,))
+    monkeypatch.setattr(shadow_generator, "observe_in_subprocess",
+                        lambda req, recipe: replayed
+                        if req is request and recipe == "exact-recipe" else None)
+    assert _execution_rows_for_run(
+        request, "pilot", "hash", live_shadow=False) == (stored,)
+    assert _execution_rows_for_run(
+        request, "pilot", "hash", live_shadow=True) == (replayed,)
 
 
 def test_semantic_live_hash_normalizes_only_host_metadata_and_diagnostics():

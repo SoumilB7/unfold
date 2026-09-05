@@ -298,6 +298,28 @@ def _s6_request(slug: str, config_hash: str) -> BuildRequest | None:
     return request if digest == config_hash else None
 
 
+def _inventory_for_run(request: BuildRequest, slug: str, config_hash: str,
+                       *, live_shadow: bool) -> InventoryResult:
+    """Never join a stored host inventory to a live-host observation."""
+    if live_shadow:
+        return inventory_in_subprocess(request)
+    return _s6_inventory(slug, config_hash) or inventory_in_subprocess(request)
+
+
+def _execution_rows_for_run(request: BuildRequest, slug: str, config_hash: str,
+                            *, live_shadow: bool) -> tuple[ObservationResult, ...]:
+    """Replay pilot recipes live; stored results are not live evidence."""
+    stored = _s6_observations(slug, config_hash)
+    if not live_shadow:
+        return stored
+    rows = []
+    for result in stored:
+        if result.recipe is None:
+            raise ValueError(f"stored S6 observation for {slug!r} has no recipe")
+        rows.append(observe_in_subprocess(request, result.recipe))
+    return tuple(rows)
+
+
 _INTEGER_INPUTS = frozenset({
     "input_ids", "decoder_input_ids", "attention_mask",
     "decoder_attention_mask", "encoder_attention_mask",
@@ -1053,6 +1075,7 @@ def _readme(matrix: Mapping[str, Any]) -> str:
 
 
 def _one(target: Mapping[str, Any], *, write_relations: bool,
+         live_shadow: bool = False,
          output: Path = OUTPUT) -> tuple[
              dict[str, Any], dict[str, Any], dict[str, Any]]:
     input_path = ROOT / target["input"]
@@ -1062,8 +1085,8 @@ def _one(target: Mapping[str, Any], *, write_relations: bool,
         ensure_ascii=True).encode("utf-8"))
     request = (_s6_request(target["slug"], config_hash)
                or _request(config, target["slug"]))
-    inventory_result = (_s6_inventory(target["slug"], config_hash)
-                        or inventory_in_subprocess(request))
+    inventory_result = _inventory_for_run(
+        request, target["slug"], config_hash, live_shadow=live_shadow)
     if inventory_result.status != "ok":
         raise RuntimeError(
             f"{target['slug']}: inventory failed: {inventory_result.failure}")
@@ -1097,8 +1120,9 @@ def _one(target: Mapping[str, Any], *, write_relations: bool,
             output / "relations" / f"{target['slug']}.json.gz",
             relation_payload)
 
-    execution_rows = _s6_observations(
-        target["slug"], inventory.provenance.config_sha256)
+    execution_rows = _execution_rows_for_run(
+        request, target["slug"], inventory.provenance.config_sha256,
+        live_shadow=live_shadow)
     all_observations = (*execution_rows, *signature_bundle.attempts,
                         *relation_results)
     raw_facts = context.facts.typed_records()
@@ -1203,7 +1227,8 @@ def generate(*, output: Path = OUTPUT, ci_shadow: bool = False,
         print(f"S7 shadow {target['cohort']} {target['slug']}", file=sys.stderr,
               flush=True)
         artifact, observation_payload, relation_payload = _one(
-            target, write_relations=not ci_shadow, output=output)
+            target, write_relations=not ci_shadow, live_shadow=ci_shadow,
+            output=output)
         logical_artifact_hashes[f"models/{target['slug']}.json.gz"] = _sha256(
             _json_bytes(_semantic_payload(artifact)))
         logical_observation_hashes[
