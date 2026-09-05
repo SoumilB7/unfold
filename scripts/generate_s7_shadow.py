@@ -1166,7 +1166,9 @@ def _one(target: Mapping[str, Any], *, write_relations: bool,
 
 
 def _assert_model_summary_matches(actual: Mapping[str, Any],
-                                  expected: Mapping[str, Any]) -> None:
+                                  expected: Mapping[str, Any], *,
+                                  diagnostic: Mapping[str, Any] | None = None,
+                                  ) -> None:
     """Fail at the first exact model field that differs across environments."""
     slug = actual.get("slug")
     if slug != expected.get("slug"):
@@ -1179,8 +1181,11 @@ def _assert_model_summary_matches(actual: Mapping[str, Any],
         detail = "; ".join(
             f"{key}: committed={expected.get(key)!r}, live={actual.get(key)!r}"
             for key in changed)
+        evidence = f"; typed_evidence={dict(diagnostic)!r}" \
+            if diagnostic else ""
         raise ValueError(
-            f"live Linux S7 shadow model {slug!r} disagrees: {detail}")
+            f"live Linux S7 shadow model {slug!r} disagrees: "
+            f"{detail}{evidence}")
 
 
 def generate(*, output: Path = OUTPUT, ci_shadow: bool = False,
@@ -1281,7 +1286,13 @@ def generate(*, output: Path = OUTPUT, ci_shadow: bool = False,
                 raise ValueError(
                     f"live Linux S7 shadow has no committed model row for "
                     f"{target['slug']!r}")
-            _assert_model_summary_matches(summary, expected)
+            _assert_model_summary_matches(
+                summary, expected,
+                diagnostic={
+                    "signature_failure": artifact["signature_recipe"]["failure"],
+                    "relation_probe_issues": artifact[
+                        "relation_probe_resolution"]["issues"],
+                })
         if not ci_shadow:
             path = output / "models" / f"{target['slug']}.json.gz"
             _write_gzip_json(path, artifact)

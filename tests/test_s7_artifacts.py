@@ -391,12 +391,15 @@ def test_live_shadow_model_mismatch_names_slug_field_and_both_values():
     committed = {"slug": "model-a", "recipe_status": "failed", "relations": 2}
     live = {"slug": "model-a", "recipe_status": "ok", "relations": 2}
     with pytest.raises(ValueError) as captured:
-        _assert_model_summary_matches(live, committed)
+        _assert_model_summary_matches(
+            live, committed,
+            diagnostic={"signature_failure": {"kind": "RuntimeFailed"}})
     detail = str(captured.value)
     assert "model-a" in detail
     assert "recipe_status" in detail
     assert "committed='failed'" in detail
     assert "live='ok'" in detail
+    assert "RuntimeFailed" in detail
 
 
 def test_semantic_live_hash_normalizes_only_host_metadata_and_diagnostics():
