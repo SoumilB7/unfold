@@ -68,3 +68,12 @@ def test_preflight_script_imports_repo_local_physics_from_foreign_cwd(tmp_path):
         cwd=tmp_path, env=env, text=True, capture_output=True, timeout=10)
     assert result.returncode == 2
     assert "ModuleNotFoundError" not in result.stderr
+
+
+def test_linux_preflight_precedes_expensive_model_denominator():
+    workflow = (ROOT / ".github" / "workflows" / "quality.yml").read_text()
+    preflight = "python scripts/verify_linux_network_sandbox.py"
+    denominator = "python scripts/coverage.py --check"
+    assert workflow.count(preflight) == 1
+    assert workflow.count(denominator) == 1
+    assert workflow.index(preflight) < workflow.index(denominator)

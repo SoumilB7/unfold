@@ -16,16 +16,16 @@ jobs:
       - run: >-
           python -m pip install -e '.[dev]'
           transformers==5.12.1 diffusers==0.38.0 huggingface_hub==1.10.1
+      - name: S7 Linux OS network sandbox is real
+        env:
+          UNFOLD_LINUX_NETWORK_SANDBOX: sudo-unshare
+        run: python scripts/verify_linux_network_sandbox.py
       - name: Config-consumption census is current
         run: python scripts/census.py --check
       - name: Declared 29+15 support denominator has no silent failures
         run: python scripts/coverage.py --check
       - name: Reviewed release examples are byte-current
         run: python scripts/generate_examples.py --check
-      - name: S7 Linux OS network sandbox is real
-        env:
-          UNFOLD_LINUX_NETWORK_SANDBOX: sudo-unshare
-        run: python scripts/verify_linux_network_sandbox.py
       - name: S7 29+10 shadow artifacts are current
         run: python scripts/generate_s7_shadow.py --check
       - name: S7 29+10 shadow runs behind the Linux network namespace
