@@ -3,11 +3,18 @@ from __future__ import annotations
 
 import errno
 import json
+import os
+from pathlib import Path
+import subprocess
+import sys
 from types import SimpleNamespace
 
 import pytest
 
 from scripts import verify_linux_network_sandbox as preflight
+
+
+ROOT = Path(__file__).parent.parent
 
 
 def _run(monkeypatch, *, row=None, returncode=0, stderr=""):
@@ -49,3 +56,15 @@ def test_preflight_accepts_only_exact_child_namespace_network_denial(monkeypatch
 def test_preflight_rejects_missing_forged_or_non_kernel_denials(
         monkeypatch, row, returncode, stderr):
     assert _run(monkeypatch, row=row, returncode=returncode, stderr=stderr) == 1
+
+
+def test_preflight_script_imports_repo_local_physics_from_foreign_cwd(tmp_path):
+    env = dict(os.environ)
+    env.pop("PYTHONPATH", None)
+    env.pop("UNFOLD_LINUX_NETWORK_SANDBOX", None)
+    result = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" /
+                             "verify_linux_network_sandbox.py")],
+        cwd=tmp_path, env=env, text=True, capture_output=True, timeout=10)
+    assert result.returncode == 2
+    assert "ModuleNotFoundError" not in result.stderr
