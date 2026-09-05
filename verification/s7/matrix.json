@@ -1,44 +1,44 @@
 {
   "artifacts": {
-    "models/auraflow-v0-3.json.gz": "091585f6f980939a52af7b0ba15038f1e7dea9fee186f126d29c42b29a74ee5a",
-    "models/bloom.json.gz": "7d88cb885e05ba037b6ed02e32b5b1380f3ede9e8da4cd7a58db020d97f8db24",
-    "models/cogvideox-5b.json.gz": "cb34f46cb6de88b259e10ea0331cf357dff815246e2d907291f550ce153362a4",
-    "models/command-a-03-2025.json.gz": "48481f61c5262472df8d1f1f569de6f46f60bd1921d6a6d6a3537d6e3ecc53b1",
-    "models/dbrx-base.json.gz": "fed4043f8ea92216b7155b7b183ed5c60abe5a81fc248c4ee0d6ba7fe678cb15",
-    "models/deepseek-coder-v2-lite.json.gz": "c6cdee70ec17e4d62789d91f470e23a18f09153458f5c0c95753f87ea6839674",
-    "models/deepseek-v3.json.gz": "26c4db7be5385abc16772fe32ddb9c0dd2e9c59794bdfdca13a4c669dcbc35ac",
-    "models/deepseek-v4-flash.json.gz": "c042a6404fc4f8f4e513caa6d5a8ac7e9f1af0851cf90c934519a466a7074c4c",
-    "models/flux-2-dev.json.gz": "3a90d5e478e94e0146480ad9cf67613b51169fe47a5bb3756155db2aad8cc8a9",
-    "models/fluxtransformer2dmodel.json.gz": "daf14a04128a7319054e424dce52da52324c0dbd403c7286cb3ab08a81bac505",
-    "models/gemma-2-2b-it.json.gz": "3a95e7960fcc7a266dad66127bbac1a49379085e26c45c38c5bc2d3de0141731",
-    "models/gemma-3n-e2b.json.gz": "d626903b7d5d78cb32ad7e20a6730aacc049a38007e77868816dc88846219cab",
-    "models/glm-4-5.json.gz": "9544fbd2579bc60109b2576450d3ad3fcf83e2206ff9f044350b5ec742aee7a6",
-    "models/gpt-oss-20b.json.gz": "96549b34e6184b4a8c34577a268b4ad444776014d34237ed52bb4775b7739647",
-    "models/granite-3-0-8b-instruct.json.gz": "08a48dff2964837a96eb9051df6ff5e3676881c1c826230b95ba729a0f2be9bb",
-    "models/hunyuanvideo.json.gz": "43953635e27b8ed605742e393e2485563f00123d09c805d78ea690af2a6a7af0",
-    "models/jamba-v0-1.json.gz": "91e689e643799ced32e761ed54d1317dc8e4e3f4c7d8811948e231b8bbffec1f",
-    "models/lfm2-1-2b.json.gz": "ac282191743167675da82babe349e7e657ff119eb4a3ed6426e7b05317487ce1",
-    "models/llama-7b.json.gz": "584232be543d336cb41ea01b0d16488f17ec710a71a7e33d027189df1ef4e7c3",
-    "models/ltx-video.json.gz": "8563b118f4efd60fe79ca07a2ce8e4eec26cdca59bd830e78bae8943cfbba097",
-    "models/lumina-image-2-0.json.gz": "678ef0def7dfeec3e5c6615006fbb58e8e8a3bbc2122d5745f60f2a7540f15a6",
-    "models/mochi-1-preview.json.gz": "67aa49f38669a6400460c2e45b2c9fa55fa6ca01908342587f4efd6c7c4a758b",
-    "models/musicgen-small.json.gz": "4ef9e6928c225f1afc12f9f7074f53f56ae074e16acd319db8419c1e23f9e730",
-    "models/nemotron-h-8b.json.gz": "a6c71f4466a40f64f0cc98f838df7e6723b8043d392bdfcb7c0170c76f9a1dbd",
-    "models/olmo-2-1124-7b.json.gz": "71741d2251d19b634e790de5040f40d62032b47fae5d84f6edad38a556bb0cc6",
-    "models/pixart-sigma-xl-2-1024-ms.json.gz": "46394e6c3eb67157118e4310cbe38ff791ef1098de84393229f21231070fb71b",
-    "models/prxpixel-t2i.json.gz": "7f9e1ea837a162043a0e2cc14d9637221b84c2910c23598e5643b3b62b178e59",
-    "models/qwen-image.json.gz": "3a97b877368f7c65f3df771915606e9ed7d0bd38858ef720dd784ae3c180593d",
-    "models/qwen2-vl-7b-instruct.json.gz": "2a9e40cbbd27ac75c06c2969c6d7940f773fd902d720057878a57d2c6f0f2371",
-    "models/qwen3-5-27b-text.json.gz": "eb7799aa5f1798a8e8fd33d99d7216d3e7e0010b32295a97c740dbf64715a9a8",
-    "models/qwen3-5-27b.json.gz": "a3a223aec382afcedac0159e3066c779fa5b0d7e8a52e7a9ad952535df1010c1",
-    "models/qwen3-8b.json.gz": "fc444445750c2a6d29885e72ae241eca0c2a263f8f1fc815fd6434d0ef6b258a",
-    "models/qwen3-omni-30b.json.gz": "a9637c57721eb85b5859008f8863da47d24c19b0876f264d74cc8a7d19d261dc",
-    "models/qwen3-vl-235b.json.gz": "b79c9a9bdc4fa7bdb1f1838b72e4bf51d14ccdf6d59509f0e7a8c7b5c20c4be9",
-    "models/sana-1600m-1024px-diffusers.json.gz": "28ca472930be75971758394648b75eebedd7ed29bed6c5ec6e331bfb28bc9b22",
-    "models/stable-diffusion-3-5-large.json.gz": "9bccf75584a3d6163017d0a7bfdb9a4b3cdf75abe6eb99573ac596979615d785",
-    "models/stable-diffusion-xl-base-1-0.json.gz": "9b78fe3a12434b250472c28f5321d2c0617734ecd68716d7157eadc0cbc2061a",
-    "models/stablelm-2-1-6b.json.gz": "646d73ba32d0ad6f617ae794072e17394093f9c8d1ec4d341ab5d114a6e28ec3",
-    "models/wan2-2-t2v-a14b-diffusers.json.gz": "8b078a1f49c2f659f5ef120bf8e77babc15d39773277748ade9804829bab2e27"
+    "models/auraflow-v0-3.json.gz": "40520a204f638c28e94b402531d931b1490785937bbc7478a1d482233464d8ec",
+    "models/bloom.json.gz": "32acbe9b64b2c80e260f17549f5f5f39af9b8872abe4d8d8d807352c6a05cd7c",
+    "models/cogvideox-5b.json.gz": "678680a2fcbd93c9fb218eaa7d14605ab47da9d2e47d99e8a5dd189e635430ba",
+    "models/command-a-03-2025.json.gz": "05fc6b5de1103d4d6227b7154191a92acdb941cd5d39e64360350452bc4efed4",
+    "models/dbrx-base.json.gz": "153c2805c5bc7742ca75f6cb69ec29279c98553f31beb5e6b3170293258de734",
+    "models/deepseek-coder-v2-lite.json.gz": "f7c7d9fd9c1c1a8e7df23b57ad222ecddc64a6ec1287d6baeba39c9833415590",
+    "models/deepseek-v3.json.gz": "82502640ee509a8bb2d876d03fc8e8aa9e2ca212047fe9d7c7e5ab840aa28720",
+    "models/deepseek-v4-flash.json.gz": "299ca541c8df4eaa0268c54730997566a462c361449040b67b7434ea97e63db2",
+    "models/flux-2-dev.json.gz": "9ff833576e24c0a8b6788d30a67f79ea493ffcb4c2429b89d03de4b80535945b",
+    "models/fluxtransformer2dmodel.json.gz": "226189182daf076038a10a2c2845766d75cc9bb95eef3374c15d9734f753e759",
+    "models/gemma-2-2b-it.json.gz": "f9c4aeb9c0637945606b9800fae9a19c05d2aad6f631baae2d060db55b82222f",
+    "models/gemma-3n-e2b.json.gz": "b13d6d0cfb59659f110dfaaf60422b6a6ee45cce0e1c711d4f77fc7deb995997",
+    "models/glm-4-5.json.gz": "13a001ebed22c7e43314fa25ad99f1e8babdee16439a97c018bde65539cecdf5",
+    "models/gpt-oss-20b.json.gz": "32e01946d5803fb18ebd1aa5baf3e754a7315a0905f243e67aa7ffee465c1f62",
+    "models/granite-3-0-8b-instruct.json.gz": "689b3f42964e265360da5c97f2452f30461e8e6f094793b76a6ac36cb3737467",
+    "models/hunyuanvideo.json.gz": "202dbb462e6f2cc6a040de0bb8de024403e95f96e152ca32f46eb05226f70f97",
+    "models/jamba-v0-1.json.gz": "d1a40b4e5e310fbf91f92e83f619020c4bb4c9f0bc12850f26861ea508eccca3",
+    "models/lfm2-1-2b.json.gz": "0cd29fd11841cdc5a8584654cdf272cabe12f100b1a1be6c0b488fb008d2be14",
+    "models/llama-7b.json.gz": "960d9860bb033370b542feae2ad98b9e601b067969a3378542bb96b96d7660b8",
+    "models/ltx-video.json.gz": "eca347f5a3c36622f482b5a8c494c3dd8c51e57b06a68fd1a5b8c78f42567783",
+    "models/lumina-image-2-0.json.gz": "d5ca0b9a27a8e48a4374e8e59f76c10f4724cc83d97cb6892b98c6d0f90ae247",
+    "models/mochi-1-preview.json.gz": "04f849802087d351d927361d81664cc7310ec74f0b1f42fe29a2687f826ffe5b",
+    "models/musicgen-small.json.gz": "f1a47bc965f365ee96516a0024bb234ff5e98eb12eae7ff85428fcff7eb6e2f3",
+    "models/nemotron-h-8b.json.gz": "853d6fbba7d4ad1d638c5be7f05f173e676826694a8b2863cec7b94f6e277597",
+    "models/olmo-2-1124-7b.json.gz": "969dc42993b874e0224e9d538e6a6914035ee68703f856d30623128ef0d218b2",
+    "models/pixart-sigma-xl-2-1024-ms.json.gz": "8e6fe98bc559503340756737ee216aa39a31fbe79b31df2362d80e814e177148",
+    "models/prxpixel-t2i.json.gz": "b91813714ed59b6b4a05195fffedee0ddd5f40d002cf4a3e317571e59a171339",
+    "models/qwen-image.json.gz": "4f7e59773aae39dfc4bb3934a8c5ae388fda393644aaeb515acd587a9611ae8b",
+    "models/qwen2-vl-7b-instruct.json.gz": "4dde9cb16a0c9f07a9bff749595b02caabe3d48889f9da7f6db4bcdb18faf2e4",
+    "models/qwen3-5-27b-text.json.gz": "3778522eddaaa63f46aaee6f993a91ba562c74c21594fc4affd60512f27eac46",
+    "models/qwen3-5-27b.json.gz": "80a4a58abd51497b9a2dacc6c81ac0ef666b874d3767464bdd88ce31e729b376",
+    "models/qwen3-8b.json.gz": "152d12e1d6867668cb2b769e97d27080eb2b01f9894d95d2458d0d1ab91e37b1",
+    "models/qwen3-omni-30b.json.gz": "6fc63af2f81e22437867d116faabd743992a277cc6b27d4499dbf2da1a47aa08",
+    "models/qwen3-vl-235b.json.gz": "369f832bbd050aac684adff1cdc43d58e400007017dbf15fa32bb42014afc4a7",
+    "models/sana-1600m-1024px-diffusers.json.gz": "51e07e64fa2de7ddf3d3d2440b26b5978ab4ffa1080a3d4f84169626fef984b8",
+    "models/stable-diffusion-3-5-large.json.gz": "a513f67d8851f1ba9850d179bd28f4964f6ca35b8e9c27975833348d7a21c6a1",
+    "models/stable-diffusion-xl-base-1-0.json.gz": "8611702ac3a35dd2f2977b216fb5b1f8b7d232c84192e41c785d41d48677b55e",
+    "models/stablelm-2-1-6b.json.gz": "67fe4af7773d704f4d32832587f4033acc2da59f3f4afb9ffa106f9b622da724",
+    "models/wan2-2-t2v-a14b-diffusers.json.gz": "daf9f2698fd38b6d01b91414390a3b92b5ad070840666828b6a08c5fad4717b2"
   },
   "denominator": {
     "corpus": 29,
@@ -47,6 +47,14 @@
   "models": [
     {
       "blocking_findings": 1784,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "checkpoint",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -148,6 +156,10 @@
         "period": null
       },
       "projection_unresolved": 1025,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 38,
@@ -158,6 +170,14 @@
     },
     {
       "blocking_findings": 566,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -329,6 +349,10 @@
         "period": 1
       },
       "projection_unresolved": 564,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [
         "param_share"
       ],
@@ -341,6 +365,14 @@
     },
     {
       "blocking_findings": 2387,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "checkpoint",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -456,6 +488,10 @@
         "period": 1
       },
       "projection_unresolved": 1320,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 43,
@@ -466,6 +502,14 @@
     },
     {
       "blocking_findings": 807,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "class_default",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -577,6 +621,10 @@
         "period": 1
       },
       "projection_unresolved": 283,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 2,
@@ -587,6 +635,14 @@
     },
     {
       "blocking_findings": 602,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": "bfloat16"
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -744,6 +800,10 @@
         "period": null
       },
       "projection_unresolved": 600,
+      "recipe_execution_dtype": "bfloat16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 307,
@@ -754,6 +814,14 @@
     },
     {
       "blocking_findings": 1266,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "checkpoint",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -891,6 +959,10 @@
         "period": null
       },
       "projection_unresolved": 564,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 60,
@@ -901,6 +973,14 @@
     },
     {
       "blocking_findings": 2464,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "checkpoint",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -1029,6 +1109,10 @@
         "period": null
       },
       "projection_unresolved": 1185,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 58,
@@ -1039,6 +1123,14 @@
     },
     {
       "blocking_findings": 30,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": "bfloat16"
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -1124,6 +1216,10 @@
         "period": 2
       },
       "projection_unresolved": 28,
+      "recipe_execution_dtype": "bfloat16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [
         "param_share"
       ],
@@ -1135,7 +1231,15 @@
       "unobserved_no_static_proof": 2
     },
     {
-      "blocking_findings": 2285,
+      "blocking_findings": 544,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": "bfloat16"
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -1243,10 +1347,10 @@
           "period": null
         }
       ],
-      "execution_unresolved": 1743,
+      "execution_unresolved": 2,
       "grouped": 830,
       "input": "tests/sable_test_corpus/glm-4-5.json",
-      "investigation_missing": 1743,
+      "investigation_missing": 2,
       "mechanism_unresolved": 0,
       "model": "GLM-4.5",
       "no_recipe_attempted": 0,
@@ -1355,16 +1459,28 @@
         "period": null
       },
       "projection_unresolved": 542,
+      "recipe_execution_dtype": "bfloat16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 370,
       "root_resolution": "resolved",
       "slug": "glm-4-5",
       "structure_unaccounted": 542,
-      "unobserved_no_static_proof": 1743
+      "unobserved_no_static_proof": 2
     },
     {
-      "blocking_findings": 297,
+      "blocking_findings": 28,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -1402,10 +1518,10 @@
           "period": 1
         }
       ],
-      "execution_unresolved": 271,
+      "execution_unresolved": 2,
       "grouped": 218,
       "input": "tests/sable_test_corpus/gpt-oss-20b.json",
-      "investigation_missing": 271,
+      "investigation_missing": 2,
       "mechanism_unresolved": 0,
       "model": "gpt-oss-20b",
       "no_recipe_attempted": 0,
@@ -1446,16 +1562,28 @@
         "period": 2
       },
       "projection_unresolved": 26,
+      "recipe_execution_dtype": "bfloat16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 1,
+      "recipe_status": "ok",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 26,
       "root_resolution": "resolved",
       "slug": "gpt-oss-20b",
       "structure_unaccounted": 26,
-      "unobserved_no_static_proof": 271
+      "unobserved_no_static_proof": 2
     },
     {
       "blocking_findings": 44,
+      "checkpoint_dtype": {
+        "path": "torch_dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "torch_dtype",
+        "state": "present",
+        "value": "bfloat16"
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -1567,6 +1695,10 @@
         "period": 1
       },
       "projection_unresolved": 42,
+      "recipe_execution_dtype": "bfloat16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [
         "param_share"
       ],
@@ -1579,6 +1711,14 @@
     },
     {
       "blocking_findings": 3351,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "checkpoint",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 120,
       "construction_schedules": [
@@ -1712,6 +1852,10 @@
         "period": null
       },
       "projection_unresolved": 1832,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 25,
@@ -1722,6 +1866,14 @@
     },
     {
       "blocking_findings": 36,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": "float16"
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -1817,6 +1969,10 @@
         "period": 1
       },
       "projection_unresolved": 34,
+      "recipe_execution_dtype": "float16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 162,
@@ -1827,6 +1983,14 @@
     },
     {
       "blocking_findings": 1438,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "checkpoint",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -1914,6 +2078,10 @@
         "period": 1
       },
       "projection_unresolved": 663,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 29,
@@ -1924,6 +2092,14 @@
     },
     {
       "blocking_findings": 1583,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "checkpoint",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -2011,6 +2187,10 @@
         "period": 1
       },
       "projection_unresolved": 909,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 3,
@@ -2021,6 +2201,14 @@
     },
     {
       "blocking_findings": 4681,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "checkpoint",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -2150,6 +2338,10 @@
         "period": 1
       },
       "projection_unresolved": 2271,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 1,
@@ -2160,6 +2352,14 @@
     },
     {
       "blocking_findings": 1242,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "class_default",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -2258,6 +2458,10 @@
         "period": 1
       },
       "projection_unresolved": 905,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [
         "param_share"
       ],
@@ -2270,6 +2474,14 @@
     },
     {
       "blocking_findings": 36,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": "float32"
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -2365,6 +2577,10 @@
         "period": 1
       },
       "projection_unresolved": 34,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 162,
@@ -2375,6 +2591,14 @@
     },
     {
       "blocking_findings": 1311,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "checkpoint",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -2431,6 +2655,10 @@
         "period": null
       },
       "projection_unresolved": 1225,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "failed",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 0,
@@ -2440,7 +2668,15 @@
       "unobserved_no_static_proof": 86
     },
     {
-      "blocking_findings": 794,
+      "blocking_findings": 373,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "checkpoint",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -2478,10 +2714,10 @@
           "period": 1
         }
       ],
-      "execution_unresolved": 447,
+      "execution_unresolved": 26,
       "grouped": 48,
       "input": "tests/sable_test_corpus/prxpixel-t2i.json",
-      "investigation_missing": 447,
+      "investigation_missing": 26,
       "mechanism_unresolved": 0,
       "model": "prxpixel-t2i",
       "no_recipe_attempted": 0,
@@ -2520,16 +2756,28 @@
         "period": 1
       },
       "projection_unresolved": 347,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 26,
       "root_resolution": "resolved",
       "slug": "prxpixel-t2i",
       "structure_unaccounted": 347,
-      "unobserved_no_static_proof": 447
+      "unobserved_no_static_proof": 26
     },
     {
       "blocking_findings": 4414,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "checkpoint",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -2681,6 +2929,10 @@
         "period": 1
       },
       "projection_unresolved": 2117,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 61,
@@ -2691,6 +2943,14 @@
     },
     {
       "blocking_findings": 829,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": "bfloat16"
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -2782,6 +3042,10 @@
         "period": 1
       },
       "projection_unresolved": 500,
+      "recipe_execution_dtype": "bfloat16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 30,
@@ -2792,6 +3056,14 @@
     },
     {
       "blocking_findings": 501,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -2955,6 +3227,10 @@
         "period": 4
       },
       "projection_unresolved": 451,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 274,
@@ -2965,6 +3241,14 @@
     },
     {
       "blocking_findings": 40,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": "bfloat16"
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -3068,6 +3352,10 @@
         "period": 1
       },
       "projection_unresolved": 38,
+      "recipe_execution_dtype": "bfloat16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 182,
@@ -3078,6 +3366,14 @@
     },
     {
       "blocking_findings": 1283,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "checkpoint",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -3149,6 +3445,10 @@
         "period": 1
       },
       "projection_unresolved": 822,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 22,
@@ -3159,6 +3459,14 @@
     },
     {
       "blocking_findings": 2995,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "checkpoint",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -3227,6 +3535,10 @@
         "period": null
       },
       "projection_unresolved": 1574,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 1,
@@ -3237,6 +3549,14 @@
     },
     {
       "blocking_findings": 3552,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "checkpoint",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -3370,6 +3690,10 @@
         "period": null
       },
       "projection_unresolved": 3312,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 0,
@@ -3380,6 +3704,14 @@
     },
     {
       "blocking_findings": 101,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": "float16"
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -3459,6 +3791,10 @@
         "period": 1
       },
       "projection_unresolved": 99,
+      "recipe_execution_dtype": "float16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 122,
@@ -3469,6 +3805,14 @@
     },
     {
       "blocking_findings": 2156,
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "checkpoint",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
       "cohort": "corpus",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -3580,6 +3924,10 @@
         "period": 1
       },
       "projection_unresolved": 1018,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 1,
@@ -3590,6 +3938,14 @@
     },
     {
       "blocking_findings": 85,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": "bfloat16"
+      },
       "cohort": "to_serve",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -3751,6 +4107,10 @@
         "period": 4
       },
       "projection_unresolved": 83,
+      "recipe_execution_dtype": "bfloat16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [
         "param_share"
       ],
@@ -3762,7 +4122,15 @@
       "unobserved_no_static_proof": 2
     },
     {
-      "blocking_findings": 758,
+      "blocking_findings": 297,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": "bfloat16"
+      },
       "cohort": "to_serve",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -3805,10 +4173,10 @@
           "period": null
         }
       ],
-      "execution_unresolved": 489,
+      "execution_unresolved": 28,
       "grouped": 136,
       "input": "tests/unseen_model_configs/deepseek-coder-v2-lite.json",
-      "investigation_missing": 489,
+      "investigation_missing": 28,
       "mechanism_unresolved": 0,
       "model": "deepseek-ai/DeepSeek-Coder-V2-Lite-Base",
       "no_recipe_attempted": 0,
@@ -3852,16 +4220,28 @@
         "period": null
       },
       "projection_unresolved": 269,
+      "recipe_execution_dtype": "bfloat16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 83,
       "root_resolution": "resolved",
       "slug": "deepseek-coder-v2-lite",
       "structure_unaccounted": 269,
-      "unobserved_no_static_proof": 489
+      "unobserved_no_static_proof": 28
     },
     {
-      "blocking_findings": 2866,
+      "blocking_findings": 1518,
+      "checkpoint_dtype": {
+        "path": "torch_dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "torch_dtype",
+        "state": "present",
+        "value": "bfloat16"
+      },
       "cohort": "to_serve",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -3918,10 +4298,10 @@
           "period": 1
         }
       ],
-      "execution_unresolved": 1453,
+      "execution_unresolved": 105,
       "grouped": 86,
       "input": "verification/s7/inputs/deepseek-v4-flash.json",
-      "investigation_missing": 1453,
+      "investigation_missing": 105,
       "mechanism_unresolved": 0,
       "model": "deepseek-ai/DeepSeek-V4-Flash",
       "no_recipe_attempted": 0,
@@ -3979,6 +4359,10 @@
         "period": 1
       },
       "projection_unresolved": 1413,
+      "recipe_execution_dtype": "bfloat16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [
         "multi_stream_residual",
         "side_head"
@@ -3988,10 +4372,18 @@
       "root_resolution": "resolved",
       "slug": "deepseek-v4-flash",
       "structure_unaccounted": 1413,
-      "unobserved_no_static_proof": 1453
+      "unobserved_no_static_proof": 105
     },
     {
       "blocking_findings": 4613,
+      "checkpoint_dtype": {
+        "path": "torch_dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "torch_dtype",
+        "state": "present",
+        "value": "bfloat16"
+      },
       "cohort": "to_serve",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -4098,6 +4490,10 @@
         "period": null
       },
       "projection_unresolved": 2661,
+      "recipe_execution_dtype": "bfloat16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [
         "activation_reuse",
         "multi_stream_residual",
@@ -4112,7 +4508,15 @@
       "unobserved_no_static_proof": 1952
     },
     {
-      "blocking_findings": 1090,
+      "blocking_findings": 546,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": "bfloat16"
+      },
       "cohort": "to_serve",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -4162,10 +4566,10 @@
           "period": 8
         }
       ],
-      "execution_unresolved": 546,
+      "execution_unresolved": 2,
       "grouped": 0,
       "input": "tests/unseen_model_configs/jamba-v0-1.json",
-      "investigation_missing": 546,
+      "investigation_missing": 2,
       "mechanism_unresolved": 0,
       "model": "ai21labs/Jamba-v0.1",
       "no_recipe_attempted": 0,
@@ -4212,16 +4616,28 @@
         "period": 1
       },
       "projection_unresolved": 544,
+      "recipe_execution_dtype": "bfloat16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 1,
       "root_resolution": "resolved",
       "slug": "jamba-v0-1",
       "structure_unaccounted": 544,
-      "unobserved_no_static_proof": 546
+      "unobserved_no_static_proof": 2
     },
     {
       "blocking_findings": 98,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": "bfloat16"
+      },
       "cohort": "to_serve",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -4287,6 +4703,10 @@
         "period": 1
       },
       "projection_unresolved": 96,
+      "recipe_execution_dtype": "bfloat16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [
         "param_share"
       ],
@@ -4299,6 +4719,14 @@
     },
     {
       "blocking_findings": 316,
+      "checkpoint_dtype": {
+        "path": "torch_dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "torch_dtype",
+        "state": "present",
+        "value": "bfloat16"
+      },
       "cohort": "to_serve",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -4438,6 +4866,10 @@
         "period": 1
       },
       "projection_unresolved": 314,
+      "recipe_execution_dtype": "bfloat16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 2,
@@ -4448,6 +4880,14 @@
     },
     {
       "blocking_findings": 1480,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": null
+      },
       "cohort": "to_serve",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -4611,6 +5051,10 @@
         "period": 4
       },
       "projection_unresolved": 1149,
+      "recipe_execution_dtype": "float32",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 0,
+      "recipe_status": "ok",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 194,
@@ -4621,6 +5065,14 @@
     },
     {
       "blocking_findings": 4266,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": "bfloat16"
+      },
       "cohort": "to_serve",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -4748,6 +5200,10 @@
         "period": 1
       },
       "projection_unresolved": 2122,
+      "recipe_execution_dtype": "bfloat16",
+      "recipe_resolution": "failed",
+      "recipe_retry_count": 0,
+      "recipe_status": "failed",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 1,
@@ -4757,7 +5213,15 @@
       "unobserved_no_static_proof": 2144
     },
     {
-      "blocking_findings": 3237,
+      "blocking_findings": 1915,
+      "checkpoint_dtype": {
+        "path": "dtype",
+        "provenance": "checkpoint_declared",
+        "source_kind": "checkpoint",
+        "spelling": "dtype",
+        "state": "present",
+        "value": null
+      },
       "cohort": "to_serve",
       "construction_conflicts": 0,
       "construction_schedules": [
@@ -4865,10 +5329,10 @@
           "period": 1
         }
       ],
-      "execution_unresolved": 1621,
+      "execution_unresolved": 299,
       "grouped": 0,
       "input": "tests/unseen_model_configs/qwen3-vl-235b.json",
-      "investigation_missing": 1621,
+      "investigation_missing": 299,
       "mechanism_unresolved": 0,
       "model": "Qwen/Qwen3-VL-235B-A22B-Instruct",
       "no_recipe_attempted": 0,
@@ -4977,61 +5441,65 @@
         "period": 1
       },
       "projection_unresolved": 1616,
+      "recipe_execution_dtype": "bfloat16",
+      "recipe_resolution": "ok",
+      "recipe_retry_count": 1,
+      "recipe_status": "ok",
       "relation_kinds": [],
       "relations": 0,
       "rendered": 2,
       "root_resolution": "resolved",
       "slug": "qwen3-vl-235b",
       "structure_unaccounted": 1616,
-      "unobserved_no_static_proof": 1621
+      "unobserved_no_static_proof": 299
     }
   ],
   "observation_artifacts": {
-    "observations/auraflow-v0-3.json.gz": "03eb691d99ef14012a388bd914b8d2326749b087e34378b1569c63f29d830724",
-    "observations/bloom.json.gz": "0bf8606a82b3c6c3402e5f1d8834cd8eb8c9db6781b8ab0a7b9eda6cebc8b3da",
-    "observations/cogvideox-5b.json.gz": "ceaf88970489dcbbff6d4d48576213ad1a3a29f238e98d7936dc8214e8a3e21f",
-    "observations/command-a-03-2025.json.gz": "c948c3c127bc043cf84e59d12ae2240c421171fd5a4db265e891684fc9d70425",
-    "observations/dbrx-base.json.gz": "d9645ea15dbbf90d8e3dc0ebe5081145aa3fdafb3374c9cc767481d10e26ff0c",
-    "observations/deepseek-coder-v2-lite.json.gz": "4127ba91bdd41e7804113f89429320cb4fc921050c0fcbaafc1dd0032ae9f436",
-    "observations/deepseek-v3.json.gz": "8c2d1fdc3209c58aa350c8593b1af3695b7e5fee4172ba6c5bc95d658ce753ee",
-    "observations/deepseek-v4-flash.json.gz": "07d9e136a634a0ab6cd2458dfc7a0baa429a90f66f5d720d7cdee7d8e4cc0576",
-    "observations/flux-2-dev.json.gz": "ec2c1231a69d0bf0de9f20656f23233c79649d931f2739cad66cacdce55bc526",
-    "observations/fluxtransformer2dmodel.json.gz": "eabc3899ec2b17bf7693779e6cfc60aa03a6dbcd273281250f6b4c9f0378e011",
-    "observations/gemma-2-2b-it.json.gz": "5373f650bd7c9422e209403887564de8e0089e0eaef396c760e80e83bf579f68",
-    "observations/gemma-3n-e2b.json.gz": "9cd1a2fe427fdd4dbe767a3705544541b11b68d05ecca7413df8d4f16fdeb040",
-    "observations/glm-4-5.json.gz": "9f2d7588d3ee2fe0668916ee52fa4bceb8cc927c75fb3101c7670e0739ab9495",
-    "observations/gpt-oss-20b.json.gz": "677993920b25f6989e7cce2ee5a309edc43cda8c60fe2ad1ef07a0338a935222",
-    "observations/granite-3-0-8b-instruct.json.gz": "ada525544e85103cb88eb533b4bb748ea06771f5eb59abee75729a3d407cda66",
-    "observations/hunyuanvideo.json.gz": "bfc880ad18a5564443f3c3c961a7ec62a4cc820bc204479c43759707328b4713",
-    "observations/jamba-v0-1.json.gz": "183e7e2ab267cebc8ec184c3f207c90379cc9157b241cd393c492b51eac06899",
-    "observations/lfm2-1-2b.json.gz": "3b8557c469a489c50e6ac0bf6393120b1c24c2e3ade6583cd9b3fcb44ebc7824",
-    "observations/llama-7b.json.gz": "54c811013ce2dfb356af34b730d679808610c3591fe19c0ae9ffbed76eab8520",
-    "observations/ltx-video.json.gz": "1007bcff2e4c4717a6962a0d27bcf2c25461c439af38472c81d57a2183001fde",
-    "observations/lumina-image-2-0.json.gz": "33311a5e3f03b31f211ba8ae04c121a3f7f9ac801927109e8f9200eacef8a950",
-    "observations/mochi-1-preview.json.gz": "eaf22832469a01d1581eb7b5dac45e798e475e60d4aed7f2bf7d26feecf369d4",
-    "observations/musicgen-small.json.gz": "a2d49884f3fcc9ed9ee203ea46dbb4974cbdd3a68b3ff068ed194be6aa36bcbb",
-    "observations/nemotron-h-8b.json.gz": "30ddccbd45c45a3201f9aa8253f90d1c8a2d50d2f3384c99b437c4a930f1e627",
-    "observations/olmo-2-1124-7b.json.gz": "69cff588a4d6b08c26e283286351c0f646df5905f20b1b723bee413ff01d937d",
-    "observations/pixart-sigma-xl-2-1024-ms.json.gz": "98f69581612f80e99a32745cdd936dd71893ca7b3dd53d45e841b743b849f4b6",
-    "observations/prxpixel-t2i.json.gz": "1c2ca9c09d2f0b7a6691eb66464a156d67ec74cfd4631ac2deb7c92667200488",
-    "observations/qwen-image.json.gz": "33a7e4e8820ce119891bb3b7104b387e202274e720ad8efff76d9de0bb2582c4",
-    "observations/qwen2-vl-7b-instruct.json.gz": "91fbf6c9703d49432a51f125813b60541d9f7b9331240e262a12369867260dce",
-    "observations/qwen3-5-27b-text.json.gz": "d5e61563c809b2aa392462dd4cbe336fbf28e91c39344db2f432f544c00971a2",
-    "observations/qwen3-5-27b.json.gz": "2e8b847c4fbf7326c81032e5bdcdb58d573e1c602fa7d018a50b8d069c471c9b",
-    "observations/qwen3-8b.json.gz": "732c1bdc9fc61fd1c55820af9c1a4b924049a91fec2f094c897549bcff85a5e2",
-    "observations/qwen3-omni-30b.json.gz": "6591fe94179a437b7e32db568cadc381eceed6552d9899c9bb02896200fe29da",
-    "observations/qwen3-vl-235b.json.gz": "85c787f96405a0c2ca0baafeb7464c26f1698c444f9e4014d3b068159b1ae09f",
-    "observations/sana-1600m-1024px-diffusers.json.gz": "947cd955b8591a6c649106406c4e34f1e7ec6ee05a581bf33c0530dbdd08d44a",
-    "observations/stable-diffusion-3-5-large.json.gz": "5c402c19eb837797bbc0d2a7c3948b3f0dc241731d496cd690bf8712b1adb6d1",
-    "observations/stable-diffusion-xl-base-1-0.json.gz": "b2a72fd9cae45411d288e59a550ca9ba990d856ef7529804806f36e2fab5cb31",
-    "observations/stablelm-2-1-6b.json.gz": "61dd4e0d3f143939170bb3f456346c07e6318f14f13d63d4c575868b80184312",
-    "observations/wan2-2-t2v-a14b-diffusers.json.gz": "ec918d0a613064da8e0777f95f3d7b10df5dd94946c2cb3a3dfccf50f9c1664c"
+    "observations/auraflow-v0-3.json.gz": "6a4e2120076307557300ef8faf4783cf7fe82a2ec366f4ac2c8b973c0a7eff0e",
+    "observations/bloom.json.gz": "a406ff3f768f0829444e615be317edc8ac8e42a2c6e60216175d26a6727f8fa4",
+    "observations/cogvideox-5b.json.gz": "5ea31cb1f11af060b05318bd5288f3c72d8229550b33b422dd5bcb88325ec398",
+    "observations/command-a-03-2025.json.gz": "91c87074b1f54e9d64a3935ca77a04fea196ab8b7ab21a523a163a155049547d",
+    "observations/dbrx-base.json.gz": "e8cc612b10623587eccd7c50334210b2ce9f2d6c8e6ca8739b96160729565b5f",
+    "observations/deepseek-coder-v2-lite.json.gz": "484f543e8369fd44f8b767b9fbdc5c0602d844596d7c94ffdddd6c519717d839",
+    "observations/deepseek-v3.json.gz": "cfb0f805e6277002780c7f0da703502ee923b2f2d22edaa4ed12699e2185176b",
+    "observations/deepseek-v4-flash.json.gz": "a050a87731993b873e74788348520b280b749f3e99d0355c8e6ae6f29d7bf14d",
+    "observations/flux-2-dev.json.gz": "b7744bfad85bb25a54b32c66ebeff4e9d22bbeb10ba906355a37e5f624bba0c5",
+    "observations/fluxtransformer2dmodel.json.gz": "d7421846842ee810f446364601f76b99dd3c4ead847c9758dc2415bfaf03f95d",
+    "observations/gemma-2-2b-it.json.gz": "a3b7f95179fbadfe8019c246ef6a9495777378b84b0c690d5eba35eaff09925b",
+    "observations/gemma-3n-e2b.json.gz": "9ce41b1b82909478f212d9e1e7997d3ff48fc68c1193a444d31c5f54f8106209",
+    "observations/glm-4-5.json.gz": "0d21316ef1d5d37e80fc6f8c54dfd673ed8e0a2adb7e7f96bcec8283a9c0e666",
+    "observations/gpt-oss-20b.json.gz": "de996c536e6b91ebeb45267497810ea4c77af0de54e438cd9a74f6ae517b0179",
+    "observations/granite-3-0-8b-instruct.json.gz": "50abda3f49aac5480abe1be76d0d5a880ba78eded538e465ddc86ca1afa029bf",
+    "observations/hunyuanvideo.json.gz": "ca1bb9ac5b27cc49ce1e69bd7d3c72a7f48af03cbcefda756d2f35a17a3870b2",
+    "observations/jamba-v0-1.json.gz": "0a9d037866daa7e468a7140ed1101fa53b69249de2ba883acdce4469dbf68e47",
+    "observations/lfm2-1-2b.json.gz": "aa418d71eeb0b9e702159512116173cd83b3d1820e0beea7cfcc981fe6a5454a",
+    "observations/llama-7b.json.gz": "88118ed103c92d3306f077b6dae1387ebb24640c208e060510cf2ed2fb565df5",
+    "observations/ltx-video.json.gz": "85ab86294695840fc431699d3a40b33b503b8be2f19fa4b9335037274eb7a9a1",
+    "observations/lumina-image-2-0.json.gz": "bfe94f574cf363186666fdf0784c3738eaa5554db0742a16599d302af13b8be8",
+    "observations/mochi-1-preview.json.gz": "e2d814e1cdcbe3dd6d66a6a3a44b4a93aa29c5a66b0c43923c5346dc4f0c0939",
+    "observations/musicgen-small.json.gz": "a4f2593f4f285d26ae272996d588fee1ca9a9464a5d80b1c761413c5d2d71d62",
+    "observations/nemotron-h-8b.json.gz": "d3c45242a8976b227e66ced80bd60cf6c058b74fc3404a7270af56a223dfd8e9",
+    "observations/olmo-2-1124-7b.json.gz": "f3ddf3275a7c14ff8a16e4c99bd8998353d6fe75e3f969a17b38dde308e5c7c5",
+    "observations/pixart-sigma-xl-2-1024-ms.json.gz": "a44a501890e8c25ee0382a9cff9878455a9a33e6129f2e5c94b139f796f0e308",
+    "observations/prxpixel-t2i.json.gz": "5d008588c63b581217a28492611db4443db938381b9405c3ef5affb3cce1e560",
+    "observations/qwen-image.json.gz": "79f101d6f75ed217862d2cb729d2be3b0f449f9d56e569deae6c1d14d28a5fb2",
+    "observations/qwen2-vl-7b-instruct.json.gz": "d476c5c93f888fef729a7137a591f4cf9eabf059f8f3cb3dda652c589f79cc6e",
+    "observations/qwen3-5-27b-text.json.gz": "16dc3a3685f8d665fa95016e6252905d85730e9f9ede08539d16ac393dc49243",
+    "observations/qwen3-5-27b.json.gz": "a5a4be045cb154620bec4d3804200529c62bc0a60d968c4d74395f6d2e12caf4",
+    "observations/qwen3-8b.json.gz": "55db56dcdfb0079783a77687e1c6f2952029e6a3aa26978b63a193816a0dfc1e",
+    "observations/qwen3-omni-30b.json.gz": "d565bbaa7ad68febce9e9092612ce76dd25df7b71844b0c68e8337d5e03a57aa",
+    "observations/qwen3-vl-235b.json.gz": "d655cc5f7b2212cd29eac6729fe9e40edcf7d1044f3da2d8d82703559f30e429",
+    "observations/sana-1600m-1024px-diffusers.json.gz": "ecbeb141832df1bf43c7ee64d7c887a3d634cd9db5ef241e807eafaa68cd0537",
+    "observations/stable-diffusion-3-5-large.json.gz": "393790ccb77e4adf94760d58ffbefa501947a656ac7516852ce0e39faf2ecf92",
+    "observations/stable-diffusion-xl-base-1-0.json.gz": "1703bf507108b006ad45c17babb1a9ff79fb9fbd53568be39060e33f5994b8c8",
+    "observations/stablelm-2-1-6b.json.gz": "fd29222d3443e1591d93ed73e954c987bbdd2741cc2661539211d11d981f770c",
+    "observations/wan2-2-t2v-a14b-diffusers.json.gz": "834a23f9e18920e89c0dc25d3c818654fe5ed117d9c1eead8a62ae4c28a10b07"
   },
   "schema_version": 1,
   "sources": {
-    "model_unfolder/evidence/reconciliation.py": "84f5f27122f8a566279717b7e5b93c7d66067d85a2a1e4a4c9c691af1459fd89",
+    "model_unfolder/evidence/reconciliation.py": "30aa5180eda97ddd317947e368901ba3e8dea6dfc78befdb8f3d950f4cfd3256",
     "model_unfolder/evidence/relation_source.py": "bc1910f05ca46d1894424c654727b12d4dbb1ab1a20475e2ecbb91949a2e8902",
     "physics/relation_observation.py": "c72607bea0dfbab2bf45d97e9fb15c6f932f315522d209f6bc2cc1a573044736",
-    "scripts/generate_s7_shadow.py": "f67b6ff91f30920d333cea4d47c3f3255d863d62aed52a93ef3a2f9bdc70837a"
+    "scripts/generate_s7_shadow.py": "2110dbad7f0b49fec7ac9b47cd383f3a7f6b2fbaf3b13c8874e158512a93f752"
   }
 }

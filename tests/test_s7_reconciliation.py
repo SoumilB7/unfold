@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+import model_unfolder.evidence.reconciliation as reconciliation_module
 from model_unfolder.evidence.document import PreparedDocument
 from model_unfolder.evidence.facts import EvidenceFact, SourceSpan as FactSpan
 from model_unfolder.evidence.program_index import (
@@ -22,6 +23,9 @@ from model_unfolder.evidence.reconciliation import (
     OccurrenceRow,
     ProjectionAxis,
     ProjectionClaim,
+    ProjectionFactCitation,
+    FactClaimDeclaration,
+    FACT_CLAIM_DECLARATIONS,
     ReconciliationTable,
     RelationRow,
     RuntimeClassRef,
@@ -34,6 +38,7 @@ from model_unfolder.evidence.reconciliation import (
     unresolved_axis_findings,
     unresolved_reason_class_counts,
 )
+from model_unfolder.evidence.registry import REGISTRY
 from model_unfolder.evidence.relation_source import StaticRelationProof
 from model_unfolder.ir import ModelIR
 from model_unfolder.renderers.html.render_context import RenderEvent
@@ -114,12 +119,38 @@ def _fact():
 
 def _projection(path="blocks.0"):
     fact = _fact()
+    citation = ProjectionFactCitation(
+        fact, FactClaimDeclaration("mechanism", "connection", "forward_dataflow"))
     return ProjectionClaim(
         path,
         ProjectionAxis("grouped", parent="blocks", rule="typed-fact drill",
-                       fact_keys=(fact.ledger_key(),)),
-        (fact,),
+                       fact_keys=(fact.ledger_key(),),
+                       fact_claim_kinds=((fact.ledger_key(), "connection"),)),
+        (citation,),
     )
+
+
+def test_s7_bridge_declarations_are_registered_mechanism_facts():
+    """The temporary S7 bridge cannot create a parallel fact vocabulary."""
+    assert FACT_CLAIM_DECLARATIONS
+    assert set(FACT_CLAIM_DECLARATIONS) <= set(REGISTRY)
+    assert all(key == declaration.fact_key
+               for key, declaration in FACT_CLAIM_DECLARATIONS.items())
+
+
+def test_a_projected_fact_without_a_reader_declaration_blocks(monkeypatch):
+    fact = _fact()
+    event = RenderEvent(
+        "architecture", (), "root", "", "", "", None,
+        frozenset(), frozenset({"q_proj"}),
+        facts_projected=frozenset({fact.ledger_key()}))
+    monkeypatch.delitem(
+        reconciliation_module.FACT_CLAIM_DECLARATIONS, fact.key)
+    with pytest.raises(ValueError, match="no reader claim-kind declaration"):
+        projection_claims_from_product(
+            index=_product_index(), inventory=_inventory(),
+            static_claims=(_static(),), ir=_product_ir(),
+            facts={fact.ledger_key(): fact}, render_events=(event,))
 
 
 def _product_index():
@@ -462,17 +493,38 @@ def test_table_rejects_foreign_relation_occurrences():
 
 def test_projection_claim_cannot_name_a_fact_it_does_not_carry():
     fact = _fact()
+    citation = ProjectionFactCitation(
+        fact, FactClaimDeclaration("mechanism", "connection", "forward_dataflow"))
     with pytest.raises(ValueError, match="must equal"):
         ProjectionClaim(
             "blocks.0",
             ProjectionAxis("grouped", parent="blocks", rule="x",
-                           fact_keys=("root.fabricated",)),
-            (fact,),
+                           fact_keys=("root.fabricated",),
+                           fact_claim_kinds=(("root.fabricated", "connection"),)),
+            (citation,),
         )
+
+
+def test_existence_only_evidence_cannot_certify_a_connection_claim():
+    with pytest.raises(ValueError, match="cannot prove a connection"):
+        FactClaimDeclaration("mechanism", "connection", "constructor")
+
+
+def test_config_value_cannot_certify_an_applied_function_claim():
+    config_only = dataclasses.replace(
+        _fact(), status="config_declared", source_spans=(),
+        config_paths=("width",))
+    with pytest.raises(ValueError, match="lacks code evidence"):
+        ProjectionFactCitation(
+            config_only,
+            FactClaimDeclaration(
+                "mechanism", "applied_function", "function_application"))
 
 
 def test_product_fact_joins_exact_source_class_to_runtime_occurrences():
     fact = _fact()
+    citation = ProjectionFactCitation(
+        fact, FactClaimDeclaration("mechanism", "connection", "forward_dataflow"))
     event = RenderEvent(
         "architecture", (), "root", "", "", "", None,
         frozenset(), frozenset({"q_proj"}),
@@ -547,12 +599,15 @@ def test_reconciliation_refuses_duck_typed_authorities_and_self_grouping():
         reconcile(model="fixture", inventory=object(), observations=(),
                   config_document=_document())
     fact = _fact()
+    citation = ProjectionFactCitation(
+        fact, FactClaimDeclaration("mechanism", "connection", "forward_dataflow"))
     with pytest.raises(ValueError, match="distinct parent"):
         ProjectionClaim(
             "blocks.0",
             ProjectionAxis("grouped", parent="blocks.0", rule="x",
-                           fact_keys=(fact.ledger_key(),)),
-            (fact,),
+                           fact_keys=(fact.ledger_key(),),
+                           fact_claim_kinds=((fact.ledger_key(), "connection"),)),
+            (citation,),
         )
 
 

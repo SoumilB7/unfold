@@ -1,6 +1,7 @@
 """C-7 gates over the persisted 29+10 reconciliation denominator."""
 from __future__ import annotations
 
+import dataclasses
 import gzip
 import json
 from pathlib import Path
@@ -10,7 +11,12 @@ import pytest
 from model_unfolder.evidence.reconciliation import (
     unresolved_axis_findings, unresolved_reason_class_counts,
 )
-from scripts.generate_s7_shadow import _stable_observation_payload, check
+from scripts.generate_s7_shadow import (
+    RecipeAttemptBundle, RecipeResolution, _bf16_retry,
+    _stable_observation_payload, check,
+)
+from physics.execution_observation import ExecutionRecipe, ObservationResult
+from physics.instance_inventory import Failure
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -66,9 +72,77 @@ def test_every_model_has_a_typed_signature_attempt_and_split_execution_counts():
                 S7 / "observations" / f"{summary['slug']}.json.gz", "rt",
                 encoding="utf-8") as stream:
             result = json.load(stream)
-        assert result["recipe"]["flags"]["source"] == \
+        assert result["schema_version"] == 2
+        assert len(result["attempts"]) in {1, 2}
+        assert result["attempts"][0]["recipe"]["flags"]["source"] == \
             "resolved_callable_signature"
-        assert result["status"] in {"ok", "failed"}
+        assert result["final_status"] in {"ok", "failed"}
+        assert result["retry_count"] == len(result["attempts"]) - 1
+
+
+def test_known_dtype_retry_is_single_and_never_rewrites_checkpoint_dtype():
+    recipe = ExecutionRecipe(
+        "r", "callable_signature", "eval", "disabled", "unspecified", False,
+        "float32", {"torch": "1"},
+        flags={"source": "resolved_callable_signature",
+               "checkpoint_dtype": {"value": None, "state": "absent"}})
+    resolution = RecipeResolution(
+        "ok", {"value": None, "state": "absent"}, "float32", recipe, {})
+    first = ObservationResult(
+        "failed", recipe=recipe,
+        failure=Failure(
+            "ExecutionFailed", "execute",
+            "RuntimeError: Expected inputs of BF16 type but got float32"))
+    retry_recipe = _bf16_retry(recipe)
+    retry = ObservationResult(
+        "failed", recipe=retry_recipe,
+        failure=Failure("ExecutionFailed", "execute", "later shape failure"))
+    bundle = RecipeAttemptBundle(resolution, (first, retry))
+    assert bundle.to_dict()["retry_count"] == 1
+    assert bundle.resolution.checkpoint_dtype == {
+        "value": None, "state": "absent"}
+    assert retry.recipe.dtype == "bfloat16"
+    with pytest.raises(ValueError, match="one attempt and at most one retry"):
+        RecipeAttemptBundle(resolution, (first, retry, retry))
+
+    forged_recipe = dataclasses.replace(
+        retry_recipe,
+        flags={**retry_recipe.flags,
+               "checkpoint_dtype": {"value": "bfloat16", "state": "present"}})
+    forged = ObservationResult(
+        "failed", recipe=forged_recipe,
+        failure=Failure("ExecutionFailed", "execute", "later shape failure"))
+    with pytest.raises(ValueError, match="change only execution dtype"):
+        RecipeAttemptBundle(resolution, (first, forged))
+
+
+def test_retry_for_a_non_dtype_error_is_rejected():
+    recipe = ExecutionRecipe(
+        "r", "callable_signature", "eval", "disabled", "unspecified", False,
+        "float32", {"torch": "1"},
+        flags={"source": "resolved_callable_signature"})
+    resolution = RecipeResolution("ok", {}, "float32", recipe, {})
+    first = ObservationResult(
+        "failed", recipe=recipe,
+        failure=Failure("ExecutionFailed", "execute", "shape mismatch"))
+    retry = ObservationResult(
+        "failed", recipe=_bf16_retry(recipe),
+        failure=Failure("ExecutionFailed", "execute", "shape mismatch"))
+    with pytest.raises(ValueError, match="known dtype error"):
+        RecipeAttemptBundle(resolution, (first, retry))
+
+
+def test_failed_recipe_resolution_cannot_carry_an_execution_result():
+    recipe = ExecutionRecipe(
+        "r", "callable_signature", "eval", "disabled", "unspecified", False,
+        "float32", {"torch": "1"}, flags={"resolution_status": "failed"})
+    resolution = RecipeResolution(
+        "failed", {}, "float32", recipe, {}, "forward callable unresolved")
+    executed = ObservationResult(
+        "failed", recipe=recipe,
+        failure=Failure("ExecutionFailed", "execute", "runtime failure"))
+    with pytest.raises(ValueError, match="typed resolution failure"):
+        RecipeAttemptBundle(resolution, (executed,))
 
 
 def test_projection_categories_partition_denominator_and_keep_unknown_exact():
@@ -83,6 +157,11 @@ def test_projection_categories_partition_denominator_and_keep_unknown_exact():
                 assert projection["reason"] == \
                     "no product block or fact cites this occurrence"
                 assert projection["reason_class"] == "structure_unaccounted"
+            assert [item[0] for item in projection["fact_claim_kinds"]] == \
+                projection["fact_keys"]
+            assert all(item[1] in {
+                "existence", "connection", "applied_function", "value", "relation"}
+                       for item in projection["fact_claim_kinds"])
 
     llama = next(row for row in _matrix()["models"]
                  if row["slug"] == "llama-7b")

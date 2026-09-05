@@ -25,7 +25,8 @@ from model_unfolder import config_to_ir
 from model_unfolder.diagram import Diagram
 from model_unfolder.evidence.component_owner import resolve_component_root
 from model_unfolder.evidence.context import ParseContext
-from model_unfolder.evidence.document import prepare_document
+from model_unfolder.evidence.document import DocumentBinding, prepare_document
+from model_unfolder.evidence.config_access import bound_document, resolve
 from model_unfolder.evidence.program_index import build_program_index
 from model_unfolder.evidence.reconciliation import (
     projection_claims_from_product, reconcile, relation_rows_from_evidence,
@@ -41,7 +42,7 @@ from physics.execution_observation import (
     observe_in_subprocess,
 )
 from physics.instance_inventory import (
-    BuildRequest, InventoryResult, inventory_in_subprocess,
+    BuildRequest, Failure, InventoryResult, inventory_in_subprocess,
 )
 from physics.relation_observation import (
     RelationObservationResult, observe_relations_in_subprocess,
@@ -250,31 +251,125 @@ def _s6_request(slug: str, config_hash: str) -> BuildRequest | None:
     return request if digest == config_hash else None
 
 
-_SIGNATURE_TENSORS = {
-    "input_ids": ((1, 2), "long"),
-    "decoder_input_ids": ((1, 2), "long"),
-    "attention_mask": ((1, 2), "long"),
-    "decoder_attention_mask": ((1, 2), "long"),
-    "pixel_values": ((1, 3, 4, 4), "float32"),
-    "input_values": ((1, 16), "float32"),
-    "hidden_states": ((1, 2, 4), "float32"),
-    "encoder_hidden_states": ((1, 2, 4), "float32"),
-    "sample": ((1, 4, 4, 4), "float32"),
-    "x": ((1, 2, 4), "float32"),
-    "timestep": ((1,), "float32"),
-    "timesteps": ((1,), "float32"),
-    "guidance": ((1,), "float32"),
-    "pooled_projections": ((1, 4), "float32"),
-}
+_INTEGER_INPUTS = frozenset({
+    "input_ids", "decoder_input_ids", "attention_mask",
+    "decoder_attention_mask", "encoder_attention_mask",
+})
+_FLOAT_SCALARS = frozenset({"timestep", "timesteps", "guidance"})
+_KNOWN_INPUTS = _INTEGER_INPUTS | _FLOAT_SCALARS | frozenset({
+    "sample", "hidden_states", "x", "encoder_hidden_states",
+    "pooled_projections", "pixel_values", "input_values",
+})
+_KNOWN_GROUPED_DTYPE_ERRORS = (
+    "expected inputs of bf16 type but got",
+    "grouped_mm only supports",
+)
 
 
-def _signature_recipe(index: Any, root: Any, inventory: Any) -> ExecutionRecipe:
+@dataclasses.dataclass(frozen=True)
+class RecipeResolution:
+    """The recipe decision, separate from every execution attempt."""
+
+    status: str
+    checkpoint_dtype: Mapping[str, Any]
+    execution_dtype: str
+    recipe: ExecutionRecipe
+    argument_sources: Mapping[str, Any]
+    failure_detail: str = ""
+
+    def __post_init__(self) -> None:
+        if self.status not in {"ok", "failed"}:
+            raise ValueError("recipe resolution status is closed")
+        if self.status == "ok" and self.failure_detail:
+            raise ValueError("a resolved recipe carries no failure")
+        if self.status == "failed" and not self.failure_detail:
+            raise ValueError("a failed recipe resolution names the unknown input")
+        if self.execution_dtype != self.recipe.dtype:
+            raise ValueError("recipe execution dtype must match its resolution")
+        if self.status == "failed" and self.recipe.flags.get(
+                "resolution_status") != "failed":
+            raise ValueError("a failed recipe must remain failed in its audit flags")
+
+
+@dataclasses.dataclass(frozen=True)
+class RecipeAttemptBundle:
+    """One resolution and one execution, plus at most one dtype retry."""
+
+    resolution: RecipeResolution
+    attempts: tuple[ObservationResult, ...]
+
+    def __post_init__(self) -> None:
+        if len(self.attempts) not in {1, 2}:
+            raise ValueError("a recipe bundle has one attempt and at most one retry")
+        if self.attempts[0].recipe != self.resolution.recipe:
+            raise ValueError("first attempt must use the resolved recipe")
+        if self.resolution.status == "failed":
+            first = self.attempts[0]
+            if (len(self.attempts) != 1 or first.status != "failed"
+                    or first.failure is None
+                    or first.failure.kind != "ConfigurationFailed"
+                    or first.failure.stage != "recipe_resolution"):
+                raise ValueError(
+                    "an unresolved recipe has one typed resolution failure")
+        if len(self.attempts) == 2:
+            first, retry = self.attempts
+            if not _known_dtype_failure(first):
+                raise ValueError("a retry requires the closed known dtype error")
+            if first.recipe is None or first.recipe.dtype == "bfloat16":
+                raise ValueError("a bfloat16 recipe cannot receive a dtype retry")
+            if retry.recipe != _bf16_retry(first.recipe):
+                raise ValueError(
+                    "the single retry may change only execution dtype and cite "
+                    "its first attempt")
+
+    @property
+    def final(self) -> ObservationResult:
+        return self.attempts[-1]
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "schema_version": 2,
+            "resolution": dataclasses.asdict(self.resolution),
+            "attempts": [_stable_observation_payload(row) for row in self.attempts],
+            "final_status": self.final.status,
+            "retry_count": len(self.attempts) - 1,
+        }
+
+
+def _normalise_dtype(value: Any) -> str | None:
+    if value is None:
+        return None
+    text = str(value).lower().removeprefix("torch.")
+    return {
+        "bf16": "bfloat16", "bfloat16": "bfloat16",
+        "fp16": "float16", "float16": "float16", "half": "float16",
+        "fp32": "float32", "float32": "float32", "float": "float32",
+    }.get(text)
+
+
+def _config_value(prepared: Any, canonical: str, aliases=()) -> tuple[Any, dict[str, Any]]:
+    result = resolve(
+        prepared.document, canonical, aliases, component="root",
+        class_defaults=prepared.class_overlay)
+    return result.value, {
+        "state": result.state, "path": result.selected_path,
+        "spelling": result.selected_alias, "provenance": result.provenance,
+        "source_kind": result.source_kind,
+    }
+
+
+def _positive_int(value: Any) -> int | None:
+    return value if isinstance(value, int) and not isinstance(value, bool) and value > 0 else None
+
+
+def _signature_recipe(index: Any, root: Any, inventory: Any,
+                      config: Mapping[str, Any]) -> RecipeResolution:
     """One neutral forward attempt derived only from the resolved signature.
 
     Parameter spellings are callable addresses, not family identities.  The
-    tiny shapes are deliberately generic probes; incompatibility becomes the
-    typed ExecutionFailed/ExecutionUnresolved result required by S7, never a
-    reason to introduce a model-specific recipe table.
+    Shape meanings come from the parameter address and their dimensions from
+    the supported config-resolution path.  Probe-size calculations are named
+    in the recipe; no model/class identity participates.
     """
     symbol = root.graph.root.symbol if root.address_resolved else None
     forwards = tuple(
@@ -283,16 +378,18 @@ def _signature_recipe(index: Any, root: Any, inventory: Any) -> ExecutionRecipe:
     parameters = tuple(
         row for row in (forwards[0].params if len(forwards) == 1 else ())
         if row.name != "self" and row.kind not in {"vararg", "kwarg"})
+    callable_failure = (
+        "resolved owner has no forward callable"
+        if not forwards else
+        "resolved owner has multiple forward callables"
+        if len(forwards) > 1 else "")
     required = tuple(row for row in parameters if not row.has_default)
     selected = list(required)
     if not required:
         primary = next((row for row in parameters
-                        if row.name in _SIGNATURE_TENSORS), None)
+                        if row.name in _KNOWN_INPUTS), None)
         if primary is not None:
             selected.append(primary)
-    tensor_arguments = tuple(
-        TensorArgument(row.name, *_SIGNATURE_TENSORS[row.name])
-        for row in selected if row.name in _SIGNATURE_TENSORS)
     parameter_rows = tuple((row.name, row.kind, row.has_default)
                            for row in parameters)
     digest = _sha256(json.dumps(
@@ -304,10 +401,114 @@ def _signature_recipe(index: Any, root: Any, inventory: Any) -> ExecutionRecipe:
         if row.name in {"use_cache", "return_dict", "output_attentions",
                         "output_hidden_states"}
     }
-    return ExecutionRecipe(
+    prepared = prepare_document(dict(config), merge=False)
+    if prepared.failure is not None:
+        checkpoint_dtype = {"state": "failed", "detail": str(prepared.failure)}
+        execution_dtype = "float32"
+        values = {}
+        sources = {}
+        dtype_failure = "config document preparation failed"
+    else:
+        with bound_document(DocumentBinding("root", (), prepared)):
+            dtype_value, dtype_source = _config_value(
+                prepared, "dtype", ("torch_dtype",))
+            values = {}
+            sources = {}
+            for key, aliases in (
+                ("hidden_size", ("d_model", "model_dim")),
+                ("in_channels", ("num_channels",)),
+                ("joint_attention_dim", ("cross_attention_dim",
+                                           "caption_projection_dim",
+                                           "text_embed_dim", "cap_feat_dim",
+                                           "context_in_dim", "text_dim")),
+                ("pooled_projection_dim", ("projection_dim",)),
+                ("patch_size", ("spatial_patch_size",)),
+                ("patch_size_t", ("temporal_patch_size",)),
+                ("max_position_embeddings", ("max_sequence_length",)),
+            ):
+                values[key], sources[key] = _config_value(prepared, key, aliases)
+        normalised = _normalise_dtype(dtype_value)
+        checkpoint_dtype = {**dtype_source, "value": dtype_value}
+        # An absent/null deployment declaration does not become a checkpoint
+        # fact.  float32 is only the execution probe's explicit default.
+        execution_dtype = normalised or "float32"
+        dtype_failure = (
+            f"unknown declared dtype {dtype_value!r}"
+            if dtype_source["state"] == "present" and dtype_value is not None
+            and normalised is None else "")
+
+    seq_capacity = _positive_int(values.get("max_position_embeddings"))
+    sequence = min(seq_capacity, 2) if seq_capacity else 2
+    hidden = _positive_int(values.get("hidden_size"))
+    channels = _positive_int(values.get("in_channels"))
+    context = _positive_int(values.get("joint_attention_dim"))
+    pooled = _positive_int(values.get("pooled_projection_dim"))
+    patch = values.get("patch_size")
+    patch = (_positive_int(patch) or
+             (_positive_int(patch[0]) if isinstance(patch, (list, tuple)) and patch else None))
+    patch_t = _positive_int(values.get("patch_size_t"))
+    spatial = max(2, patch or 1)
+    temporal = max(1, patch_t or 1)
+    argument_sources: dict[str, Any] = {}
+    tensors = []
+    unresolved = []
+    for row in selected:
+        name = row.name
+        shape = None
+        dtype = execution_dtype
+        used = []
+        if name in _INTEGER_INPUTS:
+            shape, dtype, used = (1, sequence), "long", ["max_position_embeddings"]
+        elif name in _FLOAT_SCALARS:
+            shape, used = (1,), []
+        elif name in {"sample", "hidden_states", "x"}:
+            if channels:
+                shape = ((1, channels, temporal, spatial, spatial)
+                         if patch_t else (1, channels, spatial, spatial))
+                used = ["in_channels", *( ["patch_size_t"] if patch_t else []),
+                        "patch_size"]
+            elif hidden:
+                shape, used = (1, sequence, hidden), ["hidden_size"]
+        elif name == "encoder_hidden_states" and context:
+            shape, used = (1, sequence, context), ["joint_attention_dim"]
+        elif name == "pooled_projections" and pooled:
+            shape, used = (1, pooled), ["pooled_projection_dim"]
+        elif name == "pixel_values" and channels:
+            shape, used = (1, channels, spatial, spatial), ["in_channels", "patch_size"]
+        elif name == "input_values":
+            # Sequence length is a bounded recipe probe, not architecture.
+            shape, used = (1, sequence), ["max_position_embeddings"]
+        if shape is None:
+            unresolved.append(name)
+            continue
+        tensors.append(TensorArgument(name, shape, dtype))
+        argument_sources[name] = {
+            "shape": list(shape), "dtype": dtype,
+            "config_inputs": {key: sources.get(key) for key in used},
+            "calculation": "bounded probe dimensions from resolved values",
+        }
+
+    resolution_status = (
+        "ok" if not unresolved and not dtype_failure and not callable_failure
+        else "failed")
+    failures = []
+    if callable_failure:
+        failures.append(callable_failure)
+    if dtype_failure:
+        failures.append(dtype_failure)
+    if unresolved:
+        failures.append("unknown input meaning/dimensions: " + ", ".join(unresolved))
+    failure_detail = "; ".join(failures)
+    conditioning_inputs = {
+        "encoder_hidden_states", "pooled_projections", "pixel_values",
+        "input_values", "decoder_input_ids",
+    }
+    conditioning_present = any(
+        row.name in conditioning_inputs for row in tensors)
+    recipe = ExecutionRecipe(
         f"signature-{digest}", "callable_signature", "eval", "disabled",
-        "unspecified", False, "float32", versions,
-        tensor_arguments=tensor_arguments,
+        "unspecified", conditioning_present, execution_dtype, versions,
+        tensor_arguments=tuple(tensors),
         literal_arguments=literal_arguments,
         flags={
             "source": "resolved_callable_signature",
@@ -316,8 +517,50 @@ def _signature_recipe(index: Any, root: Any, inventory: Any) -> ExecutionRecipe:
             "callable": (forwards[0].symbol.qualified_name
                          if len(forwards) == 1 else "unresolved"),
             "parameters": [list(row) for row in parameter_rows],
+            "checkpoint_dtype": checkpoint_dtype,
+            "execution_dtype": execution_dtype,
+            "argument_sources": argument_sources,
+            "resolution_status": resolution_status,
         },
     )
+    return RecipeResolution(
+        resolution_status, checkpoint_dtype, execution_dtype, recipe,
+        argument_sources, failure_detail)
+
+
+def _known_dtype_failure(result: ObservationResult) -> bool:
+    if result.status != "failed" or result.failure is None \
+            or result.failure.kind != "ExecutionFailed":
+        return False
+    detail = result.failure.detail.lower()
+    return any(marker in detail for marker in _KNOWN_GROUPED_DTYPE_ERRORS)
+
+
+def _bf16_retry(recipe: ExecutionRecipe) -> ExecutionRecipe:
+    tensors = tuple(dataclasses.replace(
+        row, dtype="bfloat16" if row.dtype in {"float16", "float32"} else row.dtype)
+        for row in recipe.tensor_arguments)
+    flags = dict(recipe.flags)
+    flags.update({"retry_of": recipe.recipe_id, "execution_dtype": "bfloat16",
+                  "retry_reason": "known_grouped_mm_dtype_error"})
+    return dataclasses.replace(
+        recipe, recipe_id=f"{recipe.recipe_id}-bf16-retry",
+        dtype="bfloat16", tensor_arguments=tensors, flags=flags)
+
+
+def _run_signature_recipe(request: BuildRequest,
+                          resolution: RecipeResolution) -> RecipeAttemptBundle:
+    if resolution.status == "failed":
+        first = ObservationResult(
+            "failed", recipe=resolution.recipe,
+            failure=Failure("ConfigurationFailed", "recipe_resolution",
+                            resolution.failure_detail))
+        return RecipeAttemptBundle(resolution, (first,))
+    first = observe_in_subprocess(request, resolution.recipe)
+    attempts = [first]
+    if _known_dtype_failure(first) and resolution.execution_dtype != "bfloat16":
+        attempts.append(observe_in_subprocess(request, _bf16_retry(resolution.recipe)))
+    return RecipeAttemptBundle(resolution, tuple(attempts))
 
 
 def _source_inputs(config: dict[str, Any], inventory: Any):
@@ -462,16 +705,25 @@ def _readme(matrix: Mapping[str, Any]) -> str:
         "execution observation as a known mechanism. Full per-occurrence "
         "tables are the deterministic gzip JSON files under `models/`.",
         "",
-        "| cohort | model | occurrences | construction conflicts | no recipe | "
+        "Recipe status is reported per target. Checkpoint dtype (including "
+        "absence/null) is kept separate from the execution dtype; a recorded "
+        "bf16 retry never rewrites deployment evidence.",
+        "",
+        "| cohort | model | recipe | checkpoint dtype | execution dtype | retry | occurrences | construction conflicts | no recipe | "
         "attempted-unobserved | rendered | grouped | containers | projection "
         "unresolved | investigation missing | structure unaccounted | mechanism "
         "unresolved | relations |",
-        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|",
+        "|---|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|",
     ]
     for row in matrix["models"]:
         relations = ", ".join(row["relation_kinds"]) or "none"
+        checkpoint = row["checkpoint_dtype"]
+        checkpoint_text = f"{checkpoint.get('value')!s} ({checkpoint.get('state')})"
         lines.append(
-            f"| {row['cohort']} | {row['model']} | {row['occurrences']} | "
+            f"| {row['cohort']} | {row['model']} | "
+            f"{row['recipe_resolution']}→{row['recipe_status']} | "
+            f"{checkpoint_text} | {row['recipe_execution_dtype']} | "
+            f"{row['recipe_retry_count']} | {row['occurrences']} | "
             f"{row['construction_conflicts']} | {row['no_recipe_attempted']} | "
             f"{row['unobserved_no_static_proof']} | {row['rendered']} | "
             f"{row['grouped']} | {row['non_architectural_container']} | "
@@ -502,12 +754,13 @@ def _one(target: Mapping[str, Any], *, write_relations: bool,
     # Every target receives one neutral, signature-derived attempt.  A failed
     # invocation is still a typed attempt and is materially different from the
     # generator never trying the model at all.
-    signature_recipe = _signature_recipe(index, root, inventory)
-    signature_result = observe_in_subprocess(request, signature_recipe)
+    recipe_resolution = _signature_recipe(index, root, inventory, config)
+    signature_bundle = _run_signature_recipe(request, recipe_resolution)
+    signature_result = signature_bundle.final
     if write_relations:
         _write_gzip_json(
             output / "observations" / f"{target['slug']}.json.gz",
-            _stable_observation_payload(signature_result))
+            signature_bundle.to_dict())
 
     relation_result = None
     recipe_spec = _relation_recipe(target["slug"])
@@ -525,7 +778,7 @@ def _one(target: Mapping[str, Any], *, write_relations: bool,
 
     execution_rows = _s6_observations(
         target["slug"], inventory.provenance.config_sha256)
-    all_observations = (*execution_rows, signature_result,
+    all_observations = (*execution_rows, *signature_bundle.attempts,
                         *((relation_result,) if relation_result else ()))
     facts = context.facts.typed_records()
     diagram = Diagram(ir)
@@ -556,6 +809,15 @@ def _one(target: Mapping[str, Any], *, write_relations: bool,
         "product_layer_schedule": _layer_schedule(ir),
         "construction_schedules": _construction_schedules(inventory),
         "blocking_findings": findings,
+        "signature_recipe": {
+            "status": recipe_resolution.status,
+            "checkpoint_dtype": dict(recipe_resolution.checkpoint_dtype),
+            "execution_dtype": signature_bundle.final.recipe.dtype,
+            "retry_count": len(signature_bundle.attempts) - 1,
+            "final_status": signature_bundle.final.status,
+            "failure": (dataclasses.asdict(signature_bundle.final.failure)
+                        if signature_bundle.final.failure else None),
+        },
         "table": table.to_dict(),
     }
 
@@ -605,6 +867,11 @@ def generate(*, output: Path = OUTPUT, ci_shadow: bool = False) -> dict[str, Any
             "mechanism_unresolved": reason_counts["mechanism_unresolved"],
             "relation_kinds": sorted({row["kind"] for row in table["relations"]}),
             "blocking_findings": len(artifact["blocking_findings"]),
+            "recipe_resolution": artifact["signature_recipe"]["status"],
+            "recipe_status": artifact["signature_recipe"]["final_status"],
+            "recipe_retry_count": artifact["signature_recipe"]["retry_count"],
+            "checkpoint_dtype": artifact["signature_recipe"]["checkpoint_dtype"],
+            "recipe_execution_dtype": artifact["signature_recipe"]["execution_dtype"],
             "root_resolution": artifact["root_resolution"],
             "product_layer_schedule": artifact["product_layer_schedule"],
             "construction_schedules": _summary_schedules(
@@ -687,12 +954,32 @@ def check(output: Path = OUTPUT) -> None:
         if _sha256(path.read_bytes()) != digest:
             raise ValueError(f"S7 observation hash mismatch: {relative}")
         with gzip.open(path, "rt", encoding="utf-8") as stream:
-            observation = ObservationResult.from_dict(json.load(stream))
-        if observation.recipe is None \
-                or observation.recipe.flags.get("source") != \
+            payload = json.load(stream)
+        if payload.get("schema_version") != 2:
+            raise ValueError(f"S7 observation bundle schema drifted: {relative}")
+        attempts = tuple(ObservationResult.from_dict(row)
+                         for row in payload.get("attempts") or ())
+        if len(attempts) not in {1, 2}:
+            raise ValueError(f"S7 observation retry count is invalid: {relative}")
+        observation = attempts[-1]
+        if attempts[0].recipe is None \
+                or attempts[0].recipe.flags.get("source") != \
                 "resolved_callable_signature":
             raise ValueError(
                 f"S7 observation is not a signature-derived attempt: {relative}")
+        if payload.get("retry_count") != len(attempts) - 1:
+            raise ValueError(f"S7 observation retry record drifted: {relative}")
+        if len(attempts) == 2 and not _known_dtype_failure(attempts[0]):
+            raise ValueError(f"S7 observation has an unlawful retry: {relative}")
+        slug = Path(relative).name.removesuffix(".json.gz")
+        summary = next(row for row in matrix["models"] if row["slug"] == slug)
+        resolution = payload.get("resolution") or {}
+        if (summary.get("recipe_resolution") != resolution.get("status")
+                or summary.get("recipe_status") != observation.status
+                or summary.get("recipe_retry_count") != len(attempts) - 1
+                or summary.get("checkpoint_dtype") != resolution.get("checkpoint_dtype")
+                or summary.get("recipe_execution_dtype") != observation.recipe.dtype):
+            raise ValueError(f"S7 recipe summary drifted: {relative}")
 
 
 def main() -> int:
