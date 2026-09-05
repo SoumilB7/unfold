@@ -16,7 +16,7 @@ from model_unfolder.evidence.reconciliation import (
 )
 from scripts.generate_s7_shadow import (
     RecipeAttemptBundle, RecipeResolution, _assert_live_shadow_matches,
-    _assert_model_summary_matches,
+    _assert_logical_payload_matches, _assert_model_summary_matches,
     _bf16_retry, _execution_rows_for_run, _generation_sources,
     _inventory_for_run, _semantic_payload, _signature_recipe,
     _require_schema_version, _source_hashes, _stable_observation_payload, _targets,
@@ -447,6 +447,20 @@ def test_live_shadow_replays_stored_recipes_instead_of_reusing_results(monkeypat
         request, "pilot", "hash", live_shadow=False) == (stored,)
     assert _execution_rows_for_run(
         request, "pilot", "hash", live_shadow=True) == (replayed,)
+
+
+def test_logical_payload_mismatch_names_model_kind_and_exact_json_path(tmp_path):
+    expected = tmp_path / "model.json.gz"
+    with gzip.open(expected, "wt", encoding="utf-8") as stream:
+        json.dump({"nested": {"value": "committed"}}, stream)
+    with pytest.raises(ValueError) as captured:
+        _assert_logical_payload_matches(
+            slug="model-a", kind="model",
+            actual={"nested": {"value": "live"}}, expected_path=expected)
+    detail = str(captured.value)
+    assert "model-a" in detail and "model artifact" in detail
+    assert "$.nested.value" in detail
+    assert "committed='committed'" in detail and "live='live'" in detail
 
 
 def test_semantic_live_hash_normalizes_only_host_metadata_and_diagnostics():

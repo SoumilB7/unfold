@@ -1212,6 +1212,50 @@ def _assert_model_summary_matches(actual: Mapping[str, Any],
             f"{detail}{evidence}")
 
 
+def _payload_differences(actual: Any, expected: Any, path: str = "$",
+                         *, limit: int = 8) -> list[str]:
+    """Return a bounded, deterministic structural diff for CI evidence."""
+    rows: list[str] = []
+    if isinstance(actual, Mapping) and isinstance(expected, Mapping):
+        for key in sorted(set(actual) | set(expected), key=str):
+            if len(rows) >= limit:
+                break
+            child = f"{path}.{key}"
+            if key not in actual:
+                rows.append(f"{child}: missing live; committed={expected[key]!r}")
+            elif key not in expected:
+                rows.append(f"{child}: live={actual[key]!r}; missing committed")
+            else:
+                rows.extend(_payload_differences(
+                    actual[key], expected[key], child, limit=limit-len(rows)))
+    elif isinstance(actual, list) and isinstance(expected, list):
+        if len(actual) != len(expected):
+            rows.append(
+                f"{path}: committed length={len(expected)}, live length={len(actual)}")
+        for index, (live, committed) in enumerate(zip(actual, expected)):
+            if len(rows) >= limit:
+                break
+            rows.extend(_payload_differences(
+                live, committed, f"{path}[{index}]", limit=limit-len(rows)))
+    elif actual != expected:
+        rows.append(f"{path}: committed={expected!r}, live={actual!r}")
+    return rows[:limit]
+
+
+def _assert_logical_payload_matches(*, slug: str, kind: str,
+                                    actual: Mapping[str, Any],
+                                    expected_path: Path) -> None:
+    with gzip.open(expected_path, "rt", encoding="utf-8") as stream:
+        expected = json.load(stream)
+    actual_semantic = _semantic_payload(actual)
+    expected_semantic = _semantic_payload(expected)
+    if actual_semantic != expected_semantic:
+        detail = "; ".join(_payload_differences(
+            actual_semantic, expected_semantic))
+        raise ValueError(
+            f"live Linux S7 {kind} artifact for {slug!r} disagrees: {detail}")
+
+
 def generate(*, output: Path = OUTPUT, ci_shadow: bool = False,
              expected_models: Mapping[str, Mapping[str, Any]] | None = None,
              ) -> dict[str, Any]:
@@ -1237,6 +1281,19 @@ def generate(*, output: Path = OUTPUT, ci_shadow: bool = False,
         logical_relation_hashes[
             f"relations/{target['slug']}.json.gz"] = _sha256(
                 _json_bytes(_semantic_payload(relation_payload)))
+        if ci_shadow and expected_models is not None:
+            _assert_logical_payload_matches(
+                slug=target["slug"], kind="model", actual=artifact,
+                expected_path=output / "models" / f"{target['slug']}.json.gz")
+            _assert_logical_payload_matches(
+                slug=target["slug"], kind="observation",
+                actual=observation_payload,
+                expected_path=(output / "observations" /
+                               f"{target['slug']}.json.gz"))
+            _assert_logical_payload_matches(
+                slug=target["slug"], kind="relation", actual=relation_payload,
+                expected_path=(output / "relations" /
+                               f"{target['slug']}.json.gz"))
         # The complete typed attempt is persisted separately.  Re-open it on a
         # write run; on a CI shadow the generator retained the same bundle only
         # inside _one, so the model artifact's recipe summary is the exact
