@@ -12,9 +12,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.12.10"
       - run: >-
           python -m pip install -e '.[dev]'
+          torch==2.9.1
           transformers==5.12.1 diffusers==0.38.0 huggingface_hub==1.10.1
       - name: S7 Linux OS network sandbox is real
         env:

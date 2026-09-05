@@ -119,6 +119,23 @@ def test_every_model_has_a_typed_signature_attempt_and_split_execution_counts():
         assert result["retry_count"] == len(result["attempts"]) - 1
 
 
+def test_linux_workflow_pins_the_recorded_execution_authorities():
+    recorded = {"python": set(), "torch": set()}
+    for summary in _matrix()["models"]:
+        with gzip.open(
+                S7 / "observations" / f"{summary['slug']}.json.gz", "rt",
+                encoding="utf-8") as stream:
+            recipe = json.load(stream)["attempts"][0]["recipe"]
+        for package in recorded:
+            recorded[package].add(recipe["library_versions"][package])
+    assert all(len(versions) == 1 for versions in recorded.values())
+    expected = {package: next(iter(versions))
+                for package, versions in recorded.items()}
+    workflow = (ROOT / ".github" / "workflows" / "quality.yml").read_text()
+    assert f'python-version: "{expected["python"]}"' in workflow
+    assert f'torch=={expected["torch"]}' in workflow
+
+
 def test_known_dtype_retry_is_single_and_never_rewrites_checkpoint_dtype():
     recipe, resolution = _recipe_resolution()
     first = ObservationResult(
