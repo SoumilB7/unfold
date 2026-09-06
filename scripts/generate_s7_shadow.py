@@ -1045,7 +1045,10 @@ def _readme(matrix: Mapping[str, Any]) -> str:
         "not prove this occurrence. Under v2.6, every unresolved value is "
         "classified as `investigation_missing`, `structure_unaccounted`, or "
         "`mechanism_unresolved`; the last is legal only with its typed "
-        "investigation receipt and concrete reason. S7 does not relabel an "
+        "reader-result exhaustion bound to the exact claim. A rendered or "
+        "grouped occurrence may still carry blocking fact-level "
+        "`claim_proof_unstamped` findings owned by S9; drawing an occurrence "
+        "does not qualify those facts for cutover. S7 does not relabel an "
         "execution observation as a known mechanism. Full per-occurrence "
         "tables are the deterministic gzip JSON files under `models/`.",
         "",
@@ -1055,9 +1058,9 @@ def _readme(matrix: Mapping[str, Any]) -> str:
         "",
         "| cohort | model | recipe | checkpoint dtype | execution dtype | retry | occurrences | construction conflicts | no recipe | "
         "attempted-unobserved | rendered | grouped | containers | projection "
-        "unresolved | investigation missing | structure unaccounted | mechanism "
+        "unresolved | unstamped fact proofs | investigation missing | structure unaccounted | mechanism "
         "unresolved | relations |",
-        "|---|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|",
+        "|---|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|",
     ]
     for row in matrix["models"]:
         relations = ", ".join(row["relation_kinds"]) or "none"
@@ -1071,7 +1074,8 @@ def _readme(matrix: Mapping[str, Any]) -> str:
             f"{row['construction_conflicts']} | {row['no_recipe_attempted']} | "
             f"{row['unobserved_no_static_proof']} | {row['rendered']} | "
             f"{row['grouped']} | {row['non_architectural_container']} | "
-            f"{row['projection_unresolved']} | {row['investigation_missing']} | "
+            f"{row['projection_unresolved']} | {row['unqualified_fact_citations']} | "
+            f"{row['investigation_missing']} | "
             f"{row['structure_unaccounted']} | {row['mechanism_unresolved']} | "
             f"{relations} |")
     return "\n".join(lines) + "\n"
@@ -1569,6 +1573,33 @@ def _validate_relation_cross_file(
         raise ValueError(f"S7 relation summary drifted: {relative}")
 
 
+def _validate_projection_summary(
+    summary: Mapping[str, Any],
+    table: Mapping[str, Any],
+    relative: str,
+) -> None:
+    projections = tuple(
+        row.get("projection", {}) for row in table.get("occurrences") or ())
+    expected = {
+        "rendered": sum(row.get("kind") == "rendered" for row in projections),
+        "grouped": sum(row.get("kind") == "grouped" for row in projections),
+        "non_architectural_container": sum(
+            row.get("kind") == "non_architectural"
+            and row.get("reason") == "container" for row in projections),
+        "projection_unresolved": sum(
+            row.get("kind") == "projection_unresolved" for row in projections),
+        "qualified_fact_citations": sum(
+            len(row.get("fact_claim_proofs") or ()) for row in projections),
+        "unqualified_fact_citations": sum(
+            len(row.get("fact_findings") or ()) for row in projections),
+    }
+    drift = {key: (summary.get(key), value)
+             for key, value in expected.items() if summary.get(key) != value}
+    if drift:
+        raise ValueError(
+            f"S7 projection summary drifted from artifact {relative}: {drift}")
+
+
 def check(output: Path = OUTPUT) -> None:
     matrix_path = output / "matrix.json"
     matrix = json.loads(matrix_path.read_text(encoding="utf-8"))
@@ -1616,6 +1647,7 @@ def check(output: Path = OUTPUT) -> None:
         summary = summaries_by_slug[slug]
         if len(table["occurrences"]) != summary["occurrences"]:
             raise ValueError(f"S7 artifact silently dropped occurrences: {relative}")
+        _validate_projection_summary(summary, table, relative)
         reason_counts = unresolved_reason_class_counts(table)
         if any(summary.get(key) != value
                for key, value in reason_counts.items()):

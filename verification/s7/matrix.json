@@ -1,89 +1,89 @@
 {
   "artifacts": {
-    "models/auraflow-v0-3.json.gz": "00aff32cf44a0acb7d9d85f6ce014778e317aa082e46427abeb1b33d5aec4842",
-    "models/bloom.json.gz": "cc50356d34518a1577848282ea75a1507e8fe459efacf20cd595799be214f973",
-    "models/cogvideox-5b.json.gz": "a773011c149c34e9ef82dd089bb4ec7f0e28069c7fc0eb73d718e64f1137ce43",
-    "models/command-a-03-2025.json.gz": "bc94eb7eaa0473b88819a36cfcbd92623a4b3a090b21037ccd65ba45a88b05c5",
-    "models/dbrx-base.json.gz": "aaed1b0e6a572f5a8cfad657395b6764954f417caff8359fc9d6d1eac64f1ed9",
-    "models/deepseek-coder-v2-lite.json.gz": "30ff332042e3047354b4365b9de7d2f472457b924d626cf4c769526cdabf268b",
-    "models/deepseek-v3.json.gz": "cf1b5e961651da84e8358cb278ca2485c4364cce34509decd9ee2392c0ce0ac7",
-    "models/deepseek-v4-flash.json.gz": "fbc8a0d8198b22634eff24f5b10ab09e54d3a982213aab6a071f895482a4bbb6",
-    "models/flux-2-dev.json.gz": "6ffe0de50d6afcfc62fbeabffa80d86e36944af66dfa68c6183fdc9618f3fcb4",
-    "models/fluxtransformer2dmodel.json.gz": "0d4c96a59d3a41c40f039cdcef7680293be0e3fb9d8ab1b4b668379d16ad1b20",
-    "models/gemma-2-2b-it.json.gz": "cd880e7092acc1d92510ce692b4d7ddf6d8a4d22ef2ecb94a70610350d52fc46",
-    "models/gemma-3n-e2b.json.gz": "433c9c1838c59831ac596d53925606373c9f88dbe24fccc136b79e7437e4205a",
-    "models/glm-4-5.json.gz": "e39fb94f9fb79537bc7590f5642668e531cc63455893e016cbdb09d29511ca5d",
-    "models/gpt-oss-20b.json.gz": "d27dd4f53a1755cb267e3890ce634dce9dbd675ed8d7fc4c37325af466d92677",
-    "models/granite-3-0-8b-instruct.json.gz": "fdaccb8d711956dd617defe733a4d93b67f728f9210295164edc9fe6873f9411",
-    "models/hunyuanvideo.json.gz": "25945a075d2693845188b1c0f7d90a7b2a93809d0792e8128d9e6943f40668e7",
-    "models/jamba-v0-1.json.gz": "160899ff0cc7e7733260484b08fb46c24115cd7aa101b583118b555607b58d46",
-    "models/lfm2-1-2b.json.gz": "1575891531aa9f508fa5710e6cec4df5b3a8ea3599095a18336fdff6ae24cbe3",
-    "models/llama-7b.json.gz": "5164e37641ff4608fbaeb7b9a56bbd050385cb3b526a281e93467fc9abde9bfa",
-    "models/ltx-video.json.gz": "986598f950f555f4be030f3452a5a84dc1ef99b6bc25f14fb3ccfe4bac5ecb58",
-    "models/lumina-image-2-0.json.gz": "bda6e931bb054d805b923801777eea356e8e384a5ab35f388099683ae7eb5715",
-    "models/mochi-1-preview.json.gz": "e780e394e1410996ea490964f861c9c2ec138a4515a5f772bec5924856ada409",
-    "models/musicgen-small.json.gz": "4f085f633169bd9e77f3a3e5ea15338f60348a203256028c570d1dc59e91f22a",
-    "models/nemotron-h-8b.json.gz": "8feddd8a5c507da2c54944fa374901809c5d050102d32214f73381514d23b976",
-    "models/olmo-2-1124-7b.json.gz": "ad4797dd7a6a394aa4f9683c0d001e93cb98c1ed71cf0a422ce0377030b58190",
-    "models/pixart-sigma-xl-2-1024-ms.json.gz": "0beba7528caf94b01b2e2d4597643b9df7124e784bd5ba137468d59f4c7bc9fc",
-    "models/prxpixel-t2i.json.gz": "fc7c66308dcc240afc27fbd26933dbaf92f98bb000e7b97540c318bc2e69bd15",
-    "models/qwen-image.json.gz": "3014d4142e15e50bc1c5ee6af94e9af34062794f14851bee5a2d61eefed1b358",
-    "models/qwen2-vl-7b-instruct.json.gz": "e4e282f1f3f37b1e6bac0659fd97fd9a1c7acfcdd9d7641c41bc17a285d48196",
-    "models/qwen3-5-27b-text.json.gz": "88bca4c580904edc30b4f06a3a197f94b0fd9a4f80fb438612ea523c763863e9",
-    "models/qwen3-5-27b.json.gz": "32458f5dc9dba3b166c0111740dbbf4cb7d212e5ac923ec4a095b7d3e7251144",
-    "models/qwen3-8b.json.gz": "55da87f5eec16e7b54a84936b779515c3e732e1fa67b844669af266decb1df56",
-    "models/qwen3-omni-30b.json.gz": "afe82b39038dc30d7ee8f07d884e0128e819d0487474fb9cbfcad4884b87ffbf",
-    "models/qwen3-vl-235b.json.gz": "b4c20d67bdbce2b6b5a4a1e82aa52a4de6bd2cdb6e851a3968ff7ac187ad6992",
-    "models/sana-1600m-1024px-diffusers.json.gz": "266dd071f42e62a230e5cc8da9370bce1f0a0b1cb9731da04c322b67fe8ada93",
-    "models/stable-diffusion-3-5-large.json.gz": "20ace42760c38d0b3dbd105d2035a61450f3240d9489aa4713a12a2432e14ca5",
-    "models/stable-diffusion-xl-base-1-0.json.gz": "d1edbe002ab8c6f4db3331453d2a4700aa8942ff72adaf86b431c1d49672a51b",
-    "models/stablelm-2-1-6b.json.gz": "ec383963f5a7faa58b9f5e849efadd9bc0161cd1e5548647786c77a9b4014e1f",
-    "models/wan2-2-t2v-a14b-diffusers.json.gz": "f81150c2d33baf899dc37ed3f030080726d50098d0fe6a753bc6d123d26fa97c"
+    "models/auraflow-v0-3.json.gz": "8167e09a2d06030e9f03420abe39103b0688a8c097a01b3b62f6dddd07a90b19",
+    "models/bloom.json.gz": "c172e2cb5bf8ca359154d14fe45d741cf0dbd8e9751cd70435897f28bc016d17",
+    "models/cogvideox-5b.json.gz": "5cf8c2f80c884c625298898dce5115e25ea1feaa38744fdcb76ee61df0feb1c2",
+    "models/command-a-03-2025.json.gz": "b4e52317bc620dbfccd1b0fb73edd60f342ca77b9a1f9e0df7381ccc94af1ae2",
+    "models/dbrx-base.json.gz": "3f66c0d48aa93566dac93ac90edad53a11bbf06e4d3047e0311fcaebd0cc8e64",
+    "models/deepseek-coder-v2-lite.json.gz": "c3537c9028a7c32af0e4ffb6af34d0ae6ea4218783d27d4857c0d4b81de3f915",
+    "models/deepseek-v3.json.gz": "27e0f17e422c93a25cf2d7a803fdff9d70d399ee736d12ad428e71a313eb55f4",
+    "models/deepseek-v4-flash.json.gz": "e4b34ebb624d6826a5b6b9417fcc5a1e4ab574ac5ba1cc0513b6999e5d572f11",
+    "models/flux-2-dev.json.gz": "f177bc038678622fda7bdc0a1388e241ca667e487fb7b0dbc8aac35805724c93",
+    "models/fluxtransformer2dmodel.json.gz": "ed2cddcd8786c0b6ff7f67934f566b836e6de3cd9d25600d358599381b65a1d6",
+    "models/gemma-2-2b-it.json.gz": "5ac9df89ca433f1db532c9e91f91092712d99e4658d16f12fcdbb7e56c4c3bc6",
+    "models/gemma-3n-e2b.json.gz": "4d6bdc2eeb7203a88eb82023baabf7272cdda7f7851f64eb27273da0f4f97865",
+    "models/glm-4-5.json.gz": "f0556ccc834a93a421489d7126536fd618e014c58c86e19ad82dee58cc8cabaf",
+    "models/gpt-oss-20b.json.gz": "ed32429418144ecc8753994d7331a9f6ca6d959e886c1b8da20eb4622b33b460",
+    "models/granite-3-0-8b-instruct.json.gz": "534a2fc8df8a4aa01bf5fb992dd28c7cb935528bde212a13cac80bc902fa51d8",
+    "models/hunyuanvideo.json.gz": "9e8f62cbb34bcef863ec6bd71a9849625787a2b9e655ff546fd0d4a9e4e273e1",
+    "models/jamba-v0-1.json.gz": "1cc38fd92934e9d2fad79edce393e2dc136e98ab868220d5e49b0a7c0e8348e7",
+    "models/lfm2-1-2b.json.gz": "cdf4095f4c1eb2148fe3cab584d52813efc88e521d99276d3ba68b5af919b883",
+    "models/llama-7b.json.gz": "98348bae656d1fb950693e422a736c19dadea3bcae8770ceaf8a05d827b74c83",
+    "models/ltx-video.json.gz": "7ec5531d5f46ef7e8899350204cc38b098ab6cb04b8d0872216f08bf39f54077",
+    "models/lumina-image-2-0.json.gz": "4a2c2a89265fa0901c85bdabdd746009197d9908765ea4bbebcca92bb542d60b",
+    "models/mochi-1-preview.json.gz": "4cbafebf87810a3b34f41804bb52e68e1130b048f3973b5d9ecbae27494ac752",
+    "models/musicgen-small.json.gz": "44b9d213cf2eb61684a19f88cc80b520406207c34144fcc27b6960f590ec049b",
+    "models/nemotron-h-8b.json.gz": "aeb8d32ef39188a98d6b0c06ec82b7df793384544347d053ff587126ab58ecd1",
+    "models/olmo-2-1124-7b.json.gz": "89e124e55f6b0e6719cb8b7410be8b53108833de0c265ee95065e66aa28fde25",
+    "models/pixart-sigma-xl-2-1024-ms.json.gz": "bf67ac9637abbd857d17c033374c6166ea28e50dfdf7a1741a910b83cf11efe3",
+    "models/prxpixel-t2i.json.gz": "0234bed6383c0195263fc595dd2b78ef844646e04f5b858f5c7f6b21768b163c",
+    "models/qwen-image.json.gz": "ecde4b82c11487a5b6a59c5c842bbc10f57ec64bc622771910392315b977739a",
+    "models/qwen2-vl-7b-instruct.json.gz": "d1c89599d2df29d49bffa89ced582d78f19f9ca564ff0e39a32dddc4416c1c55",
+    "models/qwen3-5-27b-text.json.gz": "8acf9b46e8bcc90d491c2bdcbd727012842c98f3851bd32ac1b6d5e2f707d4f9",
+    "models/qwen3-5-27b.json.gz": "42a5dccf47a8db3ddcd609b96a11bc8c2d8319fe7629bd14f41a7873ebd08cb3",
+    "models/qwen3-8b.json.gz": "69b8aed13a1b7b6a8162a760201cc9b0e14e0a69ef491f9303dda17c66764264",
+    "models/qwen3-omni-30b.json.gz": "c9e06559d6c43013f2a8f87a28d9c8bb1f423f1dc8f3c64d68373eb41e6cf8ff",
+    "models/qwen3-vl-235b.json.gz": "84c092eaa55f97d3eac1b93a3a28f74d1e02e7ff65a960719158b718e0a624ce",
+    "models/sana-1600m-1024px-diffusers.json.gz": "2f52fe21d1e6fcb3c2d5c28ad90fc361c30cafd11df4060d050cd46d025d83de",
+    "models/stable-diffusion-3-5-large.json.gz": "49072e18c66da422b7fdf44c3fb1e1b41c541157fd204e4260de262817e32776",
+    "models/stable-diffusion-xl-base-1-0.json.gz": "2c776b53d2663da1688a3fd79fee8a17c19dfc06c760f140c2778c8296cfc234",
+    "models/stablelm-2-1-6b.json.gz": "904c09703d56edc3cf9b67f61c22c8570d51723c4369a13237844c93f755445f",
+    "models/wan2-2-t2v-a14b-diffusers.json.gz": "7cec883955f7e6619e41b75a9cbe515e191f53e8dc7abf437cbc41711837286a"
   },
   "denominator": {
     "corpus": 29,
     "to_serve": 10
   },
   "logical_artifacts": {
-    "models/auraflow-v0-3.json.gz": "d674e66a0729a88c9506ffb905ed61547b8cd6c8aca8c3716a90046488a25487",
-    "models/bloom.json.gz": "1984d417c62981bf109a42c009d5617618f52f26b338d85f2e3c08effbc67f5e",
-    "models/cogvideox-5b.json.gz": "6796b87e90d7d96aeb8eaf22a1280bf3e9ad64360497f1784d3dc712786846fc",
-    "models/command-a-03-2025.json.gz": "60e1eade280cfa2123c7095208cd1479f95dc8eadfe79245bb2e98010b3f48b4",
-    "models/dbrx-base.json.gz": "d7e0b16fe666885ae5cba6f28c318d9d08ab8987ab6ef71da26cdfdf90834158",
-    "models/deepseek-coder-v2-lite.json.gz": "c59e9ecc829bb14f3c06a7e9ee387973fc3cb76171bbccb73055b7427e0363c1",
-    "models/deepseek-v3.json.gz": "22eaa1432224bc71b9f74c4ec04246ffb38ee98c68c30e3d020f66748c5589c5",
-    "models/deepseek-v4-flash.json.gz": "767cfc0a7ffea570ddd9c915aef34829e9752dca6b81d832ca6b5b80da6401be",
-    "models/flux-2-dev.json.gz": "7b761e1917f9aad7ef9e9c93e3fc5287805c3728fb85046b5b647738519e1dfe",
-    "models/fluxtransformer2dmodel.json.gz": "3b07da41271bf8b8fe511878c06ddc6f367e2f4bd92b1d2b9beb0fd3a2c20ac3",
-    "models/gemma-2-2b-it.json.gz": "62d10af0dbab5b313c211c473ce4d95b1251b149c8482dc2f9cdc2d750e96b76",
-    "models/gemma-3n-e2b.json.gz": "38f05537fde324788b9dc25d4512ec444531f29343f250fa5991d9d631e12a32",
-    "models/glm-4-5.json.gz": "263a52446c7b0e1904d96dfadd54e4b99d38a51220dc4bda046f16e3726d1ccc",
-    "models/gpt-oss-20b.json.gz": "785832db0855fd6f4b02361650d08fa5ffa257ec282315824252e532d18060d9",
-    "models/granite-3-0-8b-instruct.json.gz": "c2d7feb540b8960234768b645be37f0c7b63c8bea7333b98888b3a6e36b32c1b",
-    "models/hunyuanvideo.json.gz": "1f0074465ec372ad193e57ae511c9a6e4d685dd28f7a2511e451452c6a150972",
-    "models/jamba-v0-1.json.gz": "551ebcd62baa2f2016c8ab644ecf0cf31ab687cdf6dcb1b63bd5a01232d67529",
-    "models/lfm2-1-2b.json.gz": "fe0e60f4f90b56fe3ec34f169a3b05fd9701ce42c80b101aa3eced52a26ab417",
-    "models/llama-7b.json.gz": "1001b5acc5e7fb5c68ccd45a1e8f67bc93cae650b152decd59c0605fc73dab78",
-    "models/ltx-video.json.gz": "035594c97b3d7f2095170e828ba26b66d2cc27ad8518bfead7a8cc054e91171b",
-    "models/lumina-image-2-0.json.gz": "7529bc7beabb1f14218beaac8c97b087b199198cc884e4f65221fda7ac47ea3a",
-    "models/mochi-1-preview.json.gz": "bdafb13f0add51ea7bea7146b553c050b899aa85b683c4629dc7cad7f23b4194",
-    "models/musicgen-small.json.gz": "431e759cef0c4622fdf4f2990007c4582c182788f7210e57aec81ef91fd5651b",
-    "models/nemotron-h-8b.json.gz": "3986a45ffead51b51966a7e902388b04978b73b24788b91a741e171c088a33b7",
-    "models/olmo-2-1124-7b.json.gz": "0a4dfb5d732c98114a4122609a44f1bbc3e9c087458550b3ad31456a9465799c",
-    "models/pixart-sigma-xl-2-1024-ms.json.gz": "20ecc73e632b0732f5e1a8fc237eb509a9adf4d8ec2d98856ebf8f30920c3024",
-    "models/prxpixel-t2i.json.gz": "c3e00b9495c6ee030eade3842d0c65885594952e37697dd04f56af18e547fb73",
-    "models/qwen-image.json.gz": "91163c4c9b6067a9b6c768084fc195a66b6d742a58fbb9ec3c7e4ef765f8a5d1",
-    "models/qwen2-vl-7b-instruct.json.gz": "d8ecba22c53bab505e1db85ece3f33395d2add23e2c75a848a0cfd9295c9b60d",
-    "models/qwen3-5-27b-text.json.gz": "10e8bac12d9ce663a96ecb5c320fa688462eb357f065b19a347d79c806135242",
-    "models/qwen3-5-27b.json.gz": "843eb2ba206d039235e0b1f21c3282318c8ce152ae6ad7247dbc8c73fcd78946",
-    "models/qwen3-8b.json.gz": "115e2e80c27fc71a28044d16ae3928b9055763ea84f123d5b108536116d94f40",
-    "models/qwen3-omni-30b.json.gz": "6cff86a26bf387846b209f8f9817c545d8a8385244b05b6f75d2280e76e2d863",
-    "models/qwen3-vl-235b.json.gz": "ef30080b4cdaa2486ddd56f7d429202f3c61e04e0d7efe6403c32a0661b8199f",
-    "models/sana-1600m-1024px-diffusers.json.gz": "d40739a4c18311a153d1ea31540f71302f5f4d78e7d3ef75a00057c1e394fe48",
-    "models/stable-diffusion-3-5-large.json.gz": "d1807dc9765dd6448b7a68aba5cfdac9d7a69e057bf20393a33a50ad0247542c",
-    "models/stable-diffusion-xl-base-1-0.json.gz": "ad8f7953e6ab7fd870c380f9927d1bb5c6f77952a3e61584f06feb46a421246c",
-    "models/stablelm-2-1-6b.json.gz": "04fb1e2c882fadd2b71e293635480ad581c1b080255a8592aba6a83119490152",
-    "models/wan2-2-t2v-a14b-diffusers.json.gz": "18c094304bc5391e86357c626a61606dfd4e8f98bf62d8404c0ff50e8e4242ae"
+    "models/auraflow-v0-3.json.gz": "1fbab261dd2eb873adaf0efdaf13d746925af1377ee8f19ff7ece2a4cbf2a2c9",
+    "models/bloom.json.gz": "d80514a7b0bb96a1046b1f33e31f9e47ce5599962e6280f0f924544d30196465",
+    "models/cogvideox-5b.json.gz": "8932a53a415b3c08eb0655b58b8655bbe9a29f17a36b51c3b7ee0e13141c0f75",
+    "models/command-a-03-2025.json.gz": "4971059b29e088ba0369c1b2d0300ae75fdf37d49259855286d511d84eb90484",
+    "models/dbrx-base.json.gz": "241f858af991ef93507466266e65385362f0319b6360cf6967a2bb1f2a2c1202",
+    "models/deepseek-coder-v2-lite.json.gz": "fb21247ecc68460d5fbe41e0b9a54811c4a53f093d51f420852f69789a985308",
+    "models/deepseek-v3.json.gz": "7268db69d7f9938479e4832aaa67375190daef025918cf3a416682306a6561b2",
+    "models/deepseek-v4-flash.json.gz": "264b4a77da805ba010c0c9848667ec40acaaf4199196ad96a3f18877f08ff724",
+    "models/flux-2-dev.json.gz": "bf3810dff9515d0dc606e6b6caf586350741f4d10c2a992829d329be0833bb4e",
+    "models/fluxtransformer2dmodel.json.gz": "21128b56ac08537033f9b86a13a58711a56451b6f52d738eac450efc12812ad9",
+    "models/gemma-2-2b-it.json.gz": "261006c1041cc8562579aa6d016b7e0fb4c4abe008bc85c228718304d5527fcf",
+    "models/gemma-3n-e2b.json.gz": "c8f2efe93e64306484ffe04be64f6d6c82b2e12baeb6c364fe085115c4fa1808",
+    "models/glm-4-5.json.gz": "c36c7a93e284612494136b2fa5411a207380164682f21dcf59a4db54ea7f5e64",
+    "models/gpt-oss-20b.json.gz": "213a081d6f5273dc4417de6bc173541255d257d57551942097ad4677cf38a2eb",
+    "models/granite-3-0-8b-instruct.json.gz": "c335c7d31740efc817e6b7a6aa90913ffd543ed83bea903f2c0bc00d16201b12",
+    "models/hunyuanvideo.json.gz": "2b5d5239cfd727de01f9b4a7a339f0ab291f6a98d2bda2ccb30750003c5cb7f0",
+    "models/jamba-v0-1.json.gz": "6b1a6f4cd1408089402ea175d987001b5a80d32fcd5c6afde83612b58faeb98f",
+    "models/lfm2-1-2b.json.gz": "dc98a62b2fcb35ff1d49acfcd007f57859fabea6292ce418ce3c4e496f1a0180",
+    "models/llama-7b.json.gz": "8b3df3797ab0cf22dad8ded713d5a18559f26a81d4654d66aafbfe585702b72d",
+    "models/ltx-video.json.gz": "8020467ff931522b108552f6b8981594a9e32174f13efe34109447d7fdcd8bcb",
+    "models/lumina-image-2-0.json.gz": "462177792825ea82880a488b080a11003d5c2b80a14b1a2ce91a833088826cad",
+    "models/mochi-1-preview.json.gz": "241fd350087141aedc70ee84221d759e0a0273351db0e87908bf38855556277a",
+    "models/musicgen-small.json.gz": "da8ccf324d55df60e5c8149e321e036df0cc1433dd74d9f7e7d18a2e6f73e74e",
+    "models/nemotron-h-8b.json.gz": "da45509b887c0d7535d3ec88e3e01b6f4cc6bc1c26c98037513810aaf9c93ba1",
+    "models/olmo-2-1124-7b.json.gz": "4ac220cab28e011a9387011f69da19e08c685d010fd5ad8fa2dd9c82421289e7",
+    "models/pixart-sigma-xl-2-1024-ms.json.gz": "e648a0d9105d9e9ea6cedebf033dc3f462de74f2ae46c8ba74dbd55c92bb56cf",
+    "models/prxpixel-t2i.json.gz": "b7394b6bed1a5c247e9212c386298cbf415fbfcf1e399b8fe08022fd4e396201",
+    "models/qwen-image.json.gz": "b045900dda6318e48cbd15d0e80f1a146be0c01f149ea953057b2424b06fa4cb",
+    "models/qwen2-vl-7b-instruct.json.gz": "706ef9fcf5de8439a2dac1a7ce11c9d70e658dad8a170f30695e81f311fa3677",
+    "models/qwen3-5-27b-text.json.gz": "f5d1ff8188b66c311c8a2d137392b46a0c04302a97898079ec74c793113b2799",
+    "models/qwen3-5-27b.json.gz": "b814a11c8bbeb83c80c7010657659e26c0eef95e9a256303cf7ffd0326aed0d7",
+    "models/qwen3-8b.json.gz": "f676d36422697ddfcdb1c427232648c489f0b4c7ed7abab341840c0860fc6164",
+    "models/qwen3-omni-30b.json.gz": "0f85566e79a5368e70bc66e81be24620b86c02e7864add31bdf37723df1286fe",
+    "models/qwen3-vl-235b.json.gz": "162805b51d6e104a18dff92dbf41e40f83ade4c9a42732a0902cf3f314b52bf4",
+    "models/sana-1600m-1024px-diffusers.json.gz": "0708c4e3c396eec6e31d7c9d7eb0a3c9fa6c5957685e8aa50398395b08376a25",
+    "models/stable-diffusion-3-5-large.json.gz": "96e195ce513d5cdd57a8d6b9748b7ee5d4aabf99396628475c06fe69a5561e23",
+    "models/stable-diffusion-xl-base-1-0.json.gz": "8b73cc53798820327dbee3c6fea6df338e367f9ffac08767a0c797e71880e4a2",
+    "models/stablelm-2-1-6b.json.gz": "e759fd752ff99c47483487494535059e62c7ffce23a1c5e7affc33631cf661e9",
+    "models/wan2-2-t2v-a14b-diffusers.json.gz": "d4a0ca853b958c91f15c8701f959499e89f92df6d3be91d25773a8d9a0ae2884"
   },
   "logical_observation_artifacts": {
     "observations/auraflow-v0-3.json.gz": "85e73fabd694fa42d4c91203a435e235343b35e03928b3938eb842235c818b8a",
@@ -169,7 +169,7 @@
   },
   "models": [
     {
-      "blocking_findings": 1784,
+      "blocking_findings": 1823,
       "checkpoint_dtype": {
         "path": null,
         "provenance": "",
@@ -226,8 +226,8 @@
       "execution_unresolved": 759,
       "grouped": 0,
       "input": "tests/sable_test_corpus/auraflow-v0-3.json",
-      "investigation_missing": 759,
-      "mechanism_unresolved": 38,
+      "investigation_missing": 798,
+      "mechanism_unresolved": 0,
       "model": "AuraFlow-v0.3",
       "no_recipe_attempted": 0,
       "non_architectural_container": 38,
@@ -278,7 +278,7 @@
         "layer_count": 36,
         "period": null
       },
-      "projection_unresolved": 1063,
+      "projection_unresolved": 1025,
       "qualified_fact_citations": 2,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -295,7 +295,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 0,
       "relations": 0,
-      "rendered": 0,
+      "rendered": 38,
       "root_resolution": "resolved",
       "slug": "auraflow-v0-3",
       "structure_unaccounted": 1025,
@@ -303,7 +303,7 @@
       "unqualified_fact_citations": 39
     },
     {
-      "blocking_findings": 566,
+      "blocking_findings": 1271,
       "checkpoint_dtype": {
         "path": "dtype",
         "provenance": "checkpoint_declared",
@@ -396,10 +396,10 @@
         }
       ],
       "execution_unresolved": 2,
-      "grouped": 0,
+      "grouped": 210,
       "input": "tests/sable_test_corpus/bloom.json",
-      "investigation_missing": 2,
-      "mechanism_unresolved": 211,
+      "investigation_missing": 707,
+      "mechanism_unresolved": 0,
       "model": "bloom",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -482,7 +482,7 @@
         "layer_count": 70,
         "period": 1
       },
-      "projection_unresolved": 775,
+      "projection_unresolved": 564,
       "qualified_fact_citations": 0,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -501,7 +501,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 1,
-      "rendered": 1,
+      "rendered": 2,
       "root_resolution": "resolved",
       "slug": "bloom",
       "structure_unaccounted": 564,
@@ -509,7 +509,7 @@
       "unqualified_fact_citations": 705
     },
     {
-      "blocking_findings": 2387,
+      "blocking_findings": 2431,
       "checkpoint_dtype": {
         "path": null,
         "provenance": "",
@@ -576,8 +576,8 @@
       "execution_unresolved": 1067,
       "grouped": 0,
       "input": "tests/sable_test_corpus/cogvideox-5b.json",
-      "investigation_missing": 1067,
-      "mechanism_unresolved": 43,
+      "investigation_missing": 1111,
+      "mechanism_unresolved": 0,
       "model": "CogVideoX-5b",
       "no_recipe_attempted": 0,
       "non_architectural_container": 85,
@@ -632,7 +632,7 @@
         "layer_count": 42,
         "period": 1
       },
-      "projection_unresolved": 1363,
+      "projection_unresolved": 1320,
       "qualified_fact_citations": 1,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -649,7 +649,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 0,
       "relations": 0,
-      "rendered": 0,
+      "rendered": 43,
       "root_resolution": "resolved",
       "slug": "cogvideox-5b",
       "structure_unaccounted": 1320,
@@ -657,7 +657,7 @@
       "unqualified_fact_citations": 44
     },
     {
-      "blocking_findings": 807,
+      "blocking_findings": 1733,
       "checkpoint_dtype": {
         "path": null,
         "provenance": "",
@@ -720,10 +720,10 @@
         }
       ],
       "execution_unresolved": 524,
-      "grouped": 0,
+      "grouped": 241,
       "input": "tests/sable_test_corpus/dbrx-base.json",
-      "investigation_missing": 524,
-      "mechanism_unresolved": 242,
+      "investigation_missing": 1450,
+      "mechanism_unresolved": 0,
       "model": "dbrx-base",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -776,7 +776,7 @@
         "layer_count": 40,
         "period": 1
       },
-      "projection_unresolved": 525,
+      "projection_unresolved": 283,
       "qualified_fact_citations": 0,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -793,7 +793,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 0,
       "relations": 0,
-      "rendered": 1,
+      "rendered": 2,
       "root_resolution": "resolved",
       "slug": "dbrx-base",
       "structure_unaccounted": 283,
@@ -801,7 +801,7 @@
       "unqualified_fact_citations": 926
     },
     {
-      "blocking_findings": 602,
+      "blocking_findings": 2258,
       "checkpoint_dtype": {
         "path": "dtype",
         "provenance": "checkpoint_declared",
@@ -887,10 +887,10 @@
         }
       ],
       "execution_unresolved": 2,
-      "grouped": 0,
+      "grouped": 307,
       "input": "tests/sable_test_corpus/deepseek-v3.json",
-      "investigation_missing": 2,
-      "mechanism_unresolved": 369,
+      "investigation_missing": 1658,
+      "mechanism_unresolved": 0,
       "model": "DeepSeek-V3",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -966,7 +966,7 @@
         "layer_count": 61,
         "period": null
       },
-      "projection_unresolved": 969,
+      "projection_unresolved": 600,
       "qualified_fact_citations": 61,
       "recipe_execution_dtype": "bfloat16",
       "recipe_execution_dtype_source": {
@@ -984,7 +984,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 0,
-      "rendered": 245,
+      "rendered": 307,
       "root_resolution": "resolved",
       "slug": "deepseek-v3",
       "structure_unaccounted": 600,
@@ -992,7 +992,7 @@
       "unqualified_fact_citations": 1656
     },
     {
-      "blocking_findings": 1266,
+      "blocking_findings": 1458,
       "checkpoint_dtype": {
         "path": null,
         "provenance": "",
@@ -1063,10 +1063,10 @@
         }
       ],
       "execution_unresolved": 702,
-      "grouped": 0,
+      "grouped": 72,
       "input": "tests/sable_test_corpus/flux-2-dev.json",
-      "investigation_missing": 702,
-      "mechanism_unresolved": 132,
+      "investigation_missing": 894,
+      "mechanism_unresolved": 0,
       "model": "FLUX.2-dev",
       "no_recipe_attempted": 0,
       "non_architectural_container": 10,
@@ -1137,7 +1137,7 @@
         "layer_count": 56,
         "period": null
       },
-      "projection_unresolved": 696,
+      "projection_unresolved": 564,
       "qualified_fact_citations": 2,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -1154,7 +1154,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 0,
       "relations": 0,
-      "rendered": 0,
+      "rendered": 60,
       "root_resolution": "resolved",
       "slug": "flux-2-dev",
       "structure_unaccounted": 564,
@@ -1162,7 +1162,7 @@
       "unqualified_fact_citations": 192
     },
     {
-      "blocking_findings": 2464,
+      "blocking_findings": 2544,
       "checkpoint_dtype": {
         "path": null,
         "provenance": "",
@@ -1223,10 +1223,10 @@
         }
       ],
       "execution_unresolved": 1279,
-      "grouped": 0,
+      "grouped": 19,
       "input": "tests/sable_test_corpus/fluxtransformer2dmodel.json",
-      "investigation_missing": 1279,
-      "mechanism_unresolved": 77,
+      "investigation_missing": 1359,
+      "mechanism_unresolved": 0,
       "model": "FluxTransformer2DModel",
       "no_recipe_attempted": 0,
       "non_architectural_container": 59,
@@ -1298,7 +1298,7 @@
         "layer_count": 57,
         "period": null
       },
-      "projection_unresolved": 1262,
+      "projection_unresolved": 1185,
       "qualified_fact_citations": 2,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -1315,7 +1315,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 0,
       "relations": 0,
-      "rendered": 0,
+      "rendered": 58,
       "root_resolution": "resolved",
       "slug": "fluxtransformer2dmodel",
       "structure_unaccounted": 1185,
@@ -1323,7 +1323,7 @@
       "unqualified_fact_citations": 80
     },
     {
-      "blocking_findings": 30,
+      "blocking_findings": 819,
       "checkpoint_dtype": {
         "path": "dtype",
         "provenance": "checkpoint_declared",
@@ -1372,10 +1372,10 @@
         }
       ],
       "execution_unresolved": 2,
-      "grouped": 104,
+      "grouped": 236,
       "input": "tests/sable_test_corpus/gemma-2-2b-it.json",
-      "investigation_missing": 2,
-      "mechanism_unresolved": 185,
+      "investigation_missing": 791,
+      "mechanism_unresolved": 0,
       "model": "gemma-2-2b-it",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -1416,7 +1416,7 @@
         "layer_count": 26,
         "period": 2
       },
-      "projection_unresolved": 213,
+      "projection_unresolved": 28,
       "qualified_fact_citations": 52,
       "recipe_execution_dtype": "bfloat16",
       "recipe_execution_dtype_source": {
@@ -1436,7 +1436,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 1,
-      "rendered": 79,
+      "rendered": 132,
       "root_resolution": "resolved",
       "slug": "gemma-2-2b-it",
       "structure_unaccounted": 28,
@@ -1444,7 +1444,7 @@
       "unqualified_fact_citations": 789
     },
     {
-      "blocking_findings": 544,
+      "blocking_findings": 3406,
       "checkpoint_dtype": {
         "path": "dtype",
         "provenance": "checkpoint_declared",
@@ -1561,10 +1561,10 @@
         }
       ],
       "execution_unresolved": 2,
-      "grouped": 368,
+      "grouped": 830,
       "input": "tests/sable_test_corpus/glm-4-5.json",
-      "investigation_missing": 2,
-      "mechanism_unresolved": 555,
+      "investigation_missing": 2864,
+      "mechanism_unresolved": 0,
       "model": "GLM-4.5",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -1671,7 +1671,7 @@
         "layer_count": 92,
         "period": null
       },
-      "projection_unresolved": 1097,
+      "projection_unresolved": 542,
       "qualified_fact_citations": 92,
       "recipe_execution_dtype": "bfloat16",
       "recipe_execution_dtype_source": {
@@ -1689,7 +1689,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 0,
-      "rendered": 277,
+      "rendered": 370,
       "root_resolution": "resolved",
       "slug": "glm-4-5",
       "structure_unaccounted": 542,
@@ -1697,7 +1697,7 @@
       "unqualified_fact_citations": 2862
     },
     {
-      "blocking_findings": 28,
+      "blocking_findings": 709,
       "checkpoint_dtype": {
         "path": "dtype",
         "provenance": "checkpoint_declared",
@@ -1744,10 +1744,10 @@
         }
       ],
       "execution_unresolved": 2,
-      "grouped": 96,
+      "grouped": 218,
       "input": "tests/sable_test_corpus/gpt-oss-20b.json",
-      "investigation_missing": 2,
-      "mechanism_unresolved": 147,
+      "investigation_missing": 683,
+      "mechanism_unresolved": 0,
       "model": "gpt-oss-20b",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -1786,7 +1786,7 @@
         "layer_count": 24,
         "period": 2
       },
-      "projection_unresolved": 173,
+      "projection_unresolved": 26,
       "qualified_fact_citations": 24,
       "recipe_execution_dtype": "bfloat16",
       "recipe_execution_dtype_source": {
@@ -1803,7 +1803,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 0,
-      "rendered": 1,
+      "rendered": 26,
       "root_resolution": "resolved",
       "slug": "gpt-oss-20b",
       "structure_unaccounted": 26,
@@ -1811,7 +1811,7 @@
       "unqualified_fact_citations": 681
     },
     {
-      "blocking_findings": 44,
+      "blocking_findings": 1094,
       "checkpoint_dtype": {
         "path": "torch_dtype",
         "provenance": "checkpoint_declared",
@@ -1874,10 +1874,10 @@
         }
       ],
       "execution_unresolved": 2,
-      "grouped": 160,
+      "grouped": 282,
       "input": "tests/sable_test_corpus/granite-3-0-8b-instruct.json",
-      "investigation_missing": 2,
-      "mechanism_unresolved": 203,
+      "investigation_missing": 1052,
+      "mechanism_unresolved": 0,
       "model": "granite-3.0-8b-instruct",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -1930,7 +1930,7 @@
         "layer_count": 40,
         "period": 1
       },
-      "projection_unresolved": 245,
+      "projection_unresolved": 42,
       "qualified_fact_citations": 80,
       "recipe_execution_dtype": "bfloat16",
       "recipe_execution_dtype_source": {
@@ -1950,7 +1950,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 1,
-      "rendered": 121,
+      "rendered": 202,
       "root_resolution": "resolved",
       "slug": "granite-3-0-8b-instruct",
       "structure_unaccounted": 42,
@@ -1958,7 +1958,7 @@
       "unqualified_fact_citations": 1050
     },
     {
-      "blocking_findings": 3351,
+      "blocking_findings": 3401,
       "checkpoint_dtype": {
         "path": null,
         "provenance": "",
@@ -2021,10 +2021,10 @@
         }
       ],
       "execution_unresolved": 1399,
-      "grouped": 0,
+      "grouped": 3,
       "input": "tests/sable_test_corpus/hunyuanvideo.json",
-      "investigation_missing": 1399,
-      "mechanism_unresolved": 26,
+      "investigation_missing": 1449,
+      "mechanism_unresolved": 0,
       "model": "HunyuanVideo",
       "no_recipe_attempted": 0,
       "non_architectural_container": 67,
@@ -2099,7 +2099,7 @@
         "layer_count": 60,
         "period": null
       },
-      "projection_unresolved": 1858,
+      "projection_unresolved": 1832,
       "qualified_fact_citations": 3,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -2116,7 +2116,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 0,
       "relations": 0,
-      "rendered": 2,
+      "rendered": 25,
       "root_resolution": "resolved",
       "slug": "hunyuanvideo",
       "structure_unaccounted": 1952,
@@ -2124,7 +2124,7 @@
       "unqualified_fact_citations": 50
     },
     {
-      "blocking_findings": 36,
+      "blocking_findings": 781,
       "checkpoint_dtype": {
         "path": "dtype",
         "provenance": "checkpoint_declared",
@@ -2179,10 +2179,10 @@
         }
       ],
       "execution_unresolved": 2,
-      "grouped": 128,
+      "grouped": 226,
       "input": "tests/sable_test_corpus/llama-7b.json",
-      "investigation_missing": 2,
-      "mechanism_unresolved": 163,
+      "investigation_missing": 747,
+      "mechanism_unresolved": 0,
       "model": "llama-7b",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -2227,7 +2227,7 @@
         "layer_count": 32,
         "period": 1
       },
-      "projection_unresolved": 197,
+      "projection_unresolved": 34,
       "qualified_fact_citations": 64,
       "recipe_execution_dtype": "float16",
       "recipe_execution_dtype_source": {
@@ -2245,7 +2245,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 0,
-      "rendered": 97,
+      "rendered": 162,
       "root_resolution": "resolved",
       "slug": "llama-7b",
       "structure_unaccounted": 34,
@@ -2253,7 +2253,7 @@
       "unqualified_fact_citations": 745
     },
     {
-      "blocking_findings": 1438,
+      "blocking_findings": 1469,
       "checkpoint_dtype": {
         "path": null,
         "provenance": "",
@@ -2306,8 +2306,8 @@
       "execution_unresolved": 775,
       "grouped": 0,
       "input": "tests/sable_test_corpus/ltx-video.json",
-      "investigation_missing": 775,
-      "mechanism_unresolved": 29,
+      "investigation_missing": 806,
+      "mechanism_unresolved": 0,
       "model": "LTX-Video",
       "no_recipe_attempted": 0,
       "non_architectural_container": 85,
@@ -2348,7 +2348,7 @@
         "layer_count": 28,
         "period": 1
       },
-      "projection_unresolved": 692,
+      "projection_unresolved": 663,
       "qualified_fact_citations": 1,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -2365,7 +2365,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 0,
       "relations": 0,
-      "rendered": 0,
+      "rendered": 29,
       "root_resolution": "resolved",
       "slug": "ltx-video",
       "structure_unaccounted": 663,
@@ -2373,7 +2373,7 @@
       "unqualified_fact_citations": 31
     },
     {
-      "blocking_findings": 1583,
+      "blocking_findings": 1588,
       "checkpoint_dtype": {
         "path": null,
         "provenance": "",
@@ -2424,8 +2424,8 @@
       "execution_unresolved": 674,
       "grouped": 0,
       "input": "tests/sable_test_corpus/lumina-image-2-0.json",
-      "investigation_missing": 674,
-      "mechanism_unresolved": 3,
+      "investigation_missing": 679,
+      "mechanism_unresolved": 0,
       "model": "Lumina-Image-2.0",
       "no_recipe_attempted": 0,
       "non_architectural_container": 34,
@@ -2468,7 +2468,7 @@
         "layer_count": 30,
         "period": 1
       },
-      "projection_unresolved": 912,
+      "projection_unresolved": 909,
       "qualified_fact_citations": 3,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -2485,7 +2485,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 0,
       "relations": 0,
-      "rendered": 0,
+      "rendered": 3,
       "root_resolution": "resolved",
       "slug": "lumina-image-2-0",
       "structure_unaccounted": 909,
@@ -2493,7 +2493,7 @@
       "unqualified_fact_citations": 5
     },
     {
-      "blocking_findings": 4681,
+      "blocking_findings": 4683,
       "checkpoint_dtype": {
         "path": null,
         "provenance": "",
@@ -2568,8 +2568,8 @@
       "execution_unresolved": 2410,
       "grouped": 0,
       "input": "tests/sable_test_corpus/mochi-1-preview.json",
-      "investigation_missing": 2410,
-      "mechanism_unresolved": 1,
+      "investigation_missing": 2412,
+      "mechanism_unresolved": 0,
       "model": "mochi-1-preview",
       "no_recipe_attempted": 0,
       "non_architectural_container": 144,
@@ -2630,7 +2630,7 @@
         "layer_count": 48,
         "period": 1
       },
-      "projection_unresolved": 2272,
+      "projection_unresolved": 2271,
       "qualified_fact_citations": 1,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -2647,7 +2647,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 0,
       "relations": 0,
-      "rendered": 0,
+      "rendered": 1,
       "root_resolution": "resolved",
       "slug": "mochi-1-preview",
       "structure_unaccounted": 2271,
@@ -2655,7 +2655,7 @@
       "unqualified_fact_citations": 2
     },
     {
-      "blocking_findings": 1242,
+      "blocking_findings": 1245,
       "checkpoint_dtype": {
         "path": null,
         "provenance": "",
@@ -2723,8 +2723,8 @@
       "execution_unresolved": 337,
       "grouped": 0,
       "input": "tests/sable_test_corpus/musicgen-small.json",
-      "investigation_missing": 337,
-      "mechanism_unresolved": 1,
+      "investigation_missing": 340,
+      "mechanism_unresolved": 0,
       "model": "musicgen-small",
       "no_recipe_attempted": 0,
       "non_architectural_container": 63,
@@ -2761,7 +2761,7 @@
         "layer_count": 24,
         "period": 1
       },
-      "projection_unresolved": 906,
+      "projection_unresolved": 905,
       "qualified_fact_citations": 0,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -2780,7 +2780,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 0,
       "relations": 1,
-      "rendered": 0,
+      "rendered": 1,
       "root_resolution": "resolved",
       "slug": "musicgen-small",
       "structure_unaccounted": 905,
@@ -2788,7 +2788,7 @@
       "unqualified_fact_citations": 3
     },
     {
-      "blocking_findings": 36,
+      "blocking_findings": 1070,
       "checkpoint_dtype": {
         "path": "dtype",
         "provenance": "checkpoint_declared",
@@ -2843,10 +2843,10 @@
         }
       ],
       "execution_unresolved": 2,
-      "grouped": 128,
+      "grouped": 290,
       "input": "tests/sable_test_corpus/olmo-2-1124-7b.json",
-      "investigation_missing": 2,
-      "mechanism_unresolved": 227,
+      "investigation_missing": 1036,
+      "mechanism_unresolved": 0,
       "model": "OLMo-2-1124-7B",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -2891,7 +2891,7 @@
         "layer_count": 32,
         "period": 1
       },
-      "projection_unresolved": 261,
+      "projection_unresolved": 34,
       "qualified_fact_citations": 64,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -2909,7 +2909,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 0,
-      "rendered": 97,
+      "rendered": 162,
       "root_resolution": "resolved",
       "slug": "olmo-2-1124-7b",
       "structure_unaccounted": 34,
@@ -3006,7 +3006,7 @@
       "unqualified_fact_citations": 0
     },
     {
-      "blocking_findings": 373,
+      "blocking_findings": 474,
       "checkpoint_dtype": {
         "path": null,
         "provenance": "",
@@ -3053,10 +3053,10 @@
         }
       ],
       "execution_unresolved": 26,
-      "grouped": 0,
+      "grouped": 48,
       "input": "tests/sable_test_corpus/prxpixel-t2i.json",
-      "investigation_missing": 26,
-      "mechanism_unresolved": 74,
+      "investigation_missing": 127,
+      "mechanism_unresolved": 0,
       "model": "prxpixel-t2i",
       "no_recipe_attempted": 0,
       "non_architectural_container": 26,
@@ -3093,7 +3093,7 @@
         "layer_count": 24,
         "period": 1
       },
-      "projection_unresolved": 421,
+      "projection_unresolved": 347,
       "qualified_fact_citations": 1,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -3110,7 +3110,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 26,
       "relations": 0,
-      "rendered": 0,
+      "rendered": 26,
       "root_resolution": "resolved",
       "slug": "prxpixel-t2i",
       "structure_unaccounted": 347,
@@ -3118,7 +3118,7 @@
       "unqualified_fact_citations": 101
     },
     {
-      "blocking_findings": 4414,
+      "blocking_findings": 4478,
       "checkpoint_dtype": {
         "path": null,
         "provenance": "",
@@ -3203,8 +3203,8 @@
       "execution_unresolved": 2297,
       "grouped": 0,
       "input": "tests/sable_test_corpus/qwen-image.json",
-      "investigation_missing": 2297,
-      "mechanism_unresolved": 61,
+      "investigation_missing": 2361,
+      "mechanism_unresolved": 0,
       "model": "Qwen-Image",
       "no_recipe_attempted": 0,
       "non_architectural_container": 301,
@@ -3277,7 +3277,7 @@
         "layer_count": 60,
         "period": 1
       },
-      "projection_unresolved": 2178,
+      "projection_unresolved": 2117,
       "qualified_fact_citations": 1,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -3294,7 +3294,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 0,
       "relations": 0,
-      "rendered": 0,
+      "rendered": 61,
       "root_resolution": "resolved",
       "slug": "qwen-image",
       "structure_unaccounted": 2117,
@@ -3302,7 +3302,7 @@
       "unqualified_fact_citations": 64
     },
     {
-      "blocking_findings": 829,
+      "blocking_findings": 1256,
       "checkpoint_dtype": {
         "path": "dtype",
         "provenance": "checkpoint_declared",
@@ -3357,10 +3357,10 @@
         }
       ],
       "execution_unresolved": 329,
-      "grouped": 112,
+      "grouped": 198,
       "input": "tests/sable_test_corpus/qwen2-vl-7b-instruct.json",
-      "investigation_missing": 329,
-      "mechanism_unresolved": 115,
+      "investigation_missing": 756,
+      "mechanism_unresolved": 0,
       "model": "Qwen2-VL-7B-Instruct",
       "no_recipe_attempted": 0,
       "non_architectural_container": 3,
@@ -3401,7 +3401,7 @@
         "layer_count": 28,
         "period": 1
       },
-      "projection_unresolved": 615,
+      "projection_unresolved": 500,
       "qualified_fact_citations": 0,
       "recipe_execution_dtype": "bfloat16",
       "recipe_execution_dtype_source": {
@@ -3419,7 +3419,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 0,
-      "rendered": 1,
+      "rendered": 30,
       "root_resolution": "resolved",
       "slug": "qwen2-vl-7b-instruct",
       "structure_unaccounted": 500,
@@ -3427,7 +3427,7 @@
       "unqualified_fact_citations": 427
     },
     {
-      "blocking_findings": 501,
+      "blocking_findings": 1708,
       "checkpoint_dtype": {
         "path": "dtype",
         "provenance": "checkpoint_declared",
@@ -3516,10 +3516,10 @@
         }
       ],
       "execution_unresolved": 50,
-      "grouped": 64,
+      "grouped": 337,
       "input": "tests/sable_test_corpus/qwen3-5-27b-text.json",
-      "investigation_missing": 50,
-      "mechanism_unresolved": 354,
+      "investigation_missing": 1257,
+      "mechanism_unresolved": 0,
       "model": "Qwen3.5-27B text component",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -3598,7 +3598,7 @@
         "layer_count": 64,
         "period": 4
       },
-      "projection_unresolved": 805,
+      "projection_unresolved": 451,
       "qualified_fact_citations": 64,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -3615,7 +3615,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 0,
-      "rendered": 193,
+      "rendered": 274,
       "root_resolution": "resolved",
       "slug": "qwen3-5-27b-text",
       "structure_unaccounted": 451,
@@ -3623,7 +3623,7 @@
       "unqualified_fact_citations": 1207
     },
     {
-      "blocking_findings": 40,
+      "blocking_findings": 1202,
       "checkpoint_dtype": {
         "path": "dtype",
         "provenance": "checkpoint_declared",
@@ -3682,10 +3682,10 @@
         }
       ],
       "execution_unresolved": 2,
-      "grouped": 144,
+      "grouped": 326,
       "input": "tests/sable_test_corpus/qwen3-8b.json",
-      "investigation_missing": 2,
-      "mechanism_unresolved": 255,
+      "investigation_missing": 1164,
+      "mechanism_unresolved": 0,
       "model": "Qwen3-8B",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -3734,7 +3734,7 @@
         "layer_count": 36,
         "period": 1
       },
-      "projection_unresolved": 293,
+      "projection_unresolved": 38,
       "qualified_fact_citations": 72,
       "recipe_execution_dtype": "bfloat16",
       "recipe_execution_dtype_source": {
@@ -3752,7 +3752,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 0,
-      "rendered": 109,
+      "rendered": 182,
       "root_resolution": "resolved",
       "slug": "qwen3-8b",
       "structure_unaccounted": 38,
@@ -3760,7 +3760,7 @@
       "unqualified_fact_citations": 1162
     },
     {
-      "blocking_findings": 1283,
+      "blocking_findings": 1347,
       "checkpoint_dtype": {
         "path": null,
         "provenance": "",
@@ -3803,10 +3803,10 @@
         }
       ],
       "execution_unresolved": 461,
-      "grouped": 0,
+      "grouped": 20,
       "input": "tests/sable_test_corpus/sana-1600m-1024px-diffusers.json",
-      "investigation_missing": 461,
-      "mechanism_unresolved": 42,
+      "investigation_missing": 525,
+      "mechanism_unresolved": 0,
       "model": "Sana_1600M_1024px_diffusers",
       "no_recipe_attempted": 0,
       "non_architectural_container": 41,
@@ -3839,7 +3839,7 @@
         "layer_count": 20,
         "period": 1
       },
-      "projection_unresolved": 864,
+      "projection_unresolved": 822,
       "qualified_fact_citations": 1,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -3856,7 +3856,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 0,
       "relations": 0,
-      "rendered": 0,
+      "rendered": 22,
       "root_resolution": "resolved",
       "slug": "sana-1600m-1024px-diffusers",
       "structure_unaccounted": 822,
@@ -3864,7 +3864,7 @@
       "unqualified_fact_citations": 64
     },
     {
-      "blocking_findings": 2995,
+      "blocking_findings": 2996,
       "checkpoint_dtype": {
         "path": null,
         "provenance": "",
@@ -3929,8 +3929,8 @@
       "execution_unresolved": 1421,
       "grouped": 0,
       "input": "tests/sable_test_corpus/stable-diffusion-3-5-large.json",
-      "investigation_missing": 1421,
-      "mechanism_unresolved": 1,
+      "investigation_missing": 1422,
+      "mechanism_unresolved": 0,
       "model": "stable-diffusion-3.5-large",
       "no_recipe_attempted": 0,
       "non_architectural_container": 114,
@@ -3940,7 +3940,7 @@
         "layer_count": 0,
         "period": null
       },
-      "projection_unresolved": 1575,
+      "projection_unresolved": 1574,
       "qualified_fact_citations": 0,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -3957,7 +3957,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 0,
       "relations": 0,
-      "rendered": 0,
+      "rendered": 1,
       "root_resolution": "resolved",
       "slug": "stable-diffusion-3-5-large",
       "structure_unaccounted": 1574,
@@ -4131,7 +4131,7 @@
       "unqualified_fact_citations": 0
     },
     {
-      "blocking_findings": 101,
+      "blocking_findings": 588,
       "checkpoint_dtype": {
         "path": "dtype",
         "provenance": "checkpoint_declared",
@@ -4178,10 +4178,10 @@
         }
       ],
       "execution_unresolved": 2,
-      "grouped": 96,
+      "grouped": 121,
       "input": "tests/sable_test_corpus/stablelm-2-1-6b.json",
-      "investigation_missing": 2,
-      "mechanism_unresolved": 74,
+      "investigation_missing": 489,
+      "mechanism_unresolved": 0,
       "model": "stablelm-2-1_6b",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -4218,7 +4218,7 @@
         "layer_count": 24,
         "period": 1
       },
-      "projection_unresolved": 173,
+      "projection_unresolved": 99,
       "qualified_fact_citations": 48,
       "recipe_execution_dtype": "float16",
       "recipe_execution_dtype_source": {
@@ -4236,7 +4236,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 0,
-      "rendered": 73,
+      "rendered": 122,
       "root_resolution": "resolved",
       "slug": "stablelm-2-1-6b",
       "structure_unaccounted": 99,
@@ -4244,7 +4244,7 @@
       "unqualified_fact_citations": 487
     },
     {
-      "blocking_findings": 2156,
+      "blocking_findings": 2159,
       "checkpoint_dtype": {
         "path": null,
         "provenance": "",
@@ -4309,8 +4309,8 @@
       "execution_unresolved": 1138,
       "grouped": 0,
       "input": "tests/sable_test_corpus/wan2-2-t2v-a14b-diffusers.json",
-      "investigation_missing": 1138,
-      "mechanism_unresolved": 1,
+      "investigation_missing": 1141,
+      "mechanism_unresolved": 0,
       "model": "Wan2.2-T2V-A14B-Diffusers",
       "no_recipe_attempted": 0,
       "non_architectural_container": 121,
@@ -4363,7 +4363,7 @@
         "layer_count": 40,
         "period": 1
       },
-      "projection_unresolved": 1019,
+      "projection_unresolved": 1018,
       "qualified_fact_citations": 1,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -4380,7 +4380,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 0,
       "relations": 0,
-      "rendered": 0,
+      "rendered": 1,
       "root_resolution": "resolved",
       "slug": "wan2-2-t2v-a14b-diffusers",
       "structure_unaccounted": 1018,
@@ -4388,7 +4388,7 @@
       "unqualified_fact_citations": 3
     },
     {
-      "blocking_findings": 85,
+      "blocking_findings": 1245,
       "checkpoint_dtype": {
         "path": "dtype",
         "provenance": "checkpoint_declared",
@@ -4475,10 +4475,10 @@
         }
       ],
       "execution_unresolved": 2,
-      "grouped": 256,
+      "grouped": 385,
       "input": "tests/unseen_model_configs/command-a-03-2025.json",
-      "investigation_missing": 2,
-      "mechanism_unresolved": 258,
+      "investigation_missing": 1162,
+      "mechanism_unresolved": 0,
       "model": "CohereLabs/c4ai-command-a-03-2025",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -4557,7 +4557,7 @@
         "layer_count": 64,
         "period": 4
       },
-      "projection_unresolved": 341,
+      "projection_unresolved": 83,
       "qualified_fact_citations": 64,
       "recipe_execution_dtype": "bfloat16",
       "recipe_execution_dtype_source": {
@@ -4577,7 +4577,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 1,
-      "rendered": 193,
+      "rendered": 322,
       "root_resolution": "resolved",
       "slug": "command-a-03-2025",
       "structure_unaccounted": 83,
@@ -4585,7 +4585,7 @@
       "unqualified_fact_citations": 1160
     },
     {
-      "blocking_findings": 297,
+      "blocking_findings": 736,
       "checkpoint_dtype": {
         "path": "dtype",
         "provenance": "checkpoint_declared",
@@ -4637,10 +4637,10 @@
         }
       ],
       "execution_unresolved": 28,
-      "grouped": 0,
+      "grouped": 136,
       "input": "tests/unseen_model_configs/deepseek-coder-v2-lite.json",
-      "investigation_missing": 28,
-      "mechanism_unresolved": 137,
+      "investigation_missing": 467,
+      "mechanism_unresolved": 0,
       "model": "deepseek-ai/DeepSeek-Coder-V2-Lite-Base",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -4682,7 +4682,7 @@
         "layer_count": 27,
         "period": null
       },
-      "projection_unresolved": 406,
+      "projection_unresolved": 269,
       "qualified_fact_citations": 0,
       "recipe_execution_dtype": "bfloat16",
       "recipe_execution_dtype_source": {
@@ -4700,7 +4700,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 0,
-      "rendered": 82,
+      "rendered": 83,
       "root_resolution": "resolved",
       "slug": "deepseek-coder-v2-lite",
       "structure_unaccounted": 269,
@@ -4708,7 +4708,7 @@
       "unqualified_fact_citations": 439
     },
     {
-      "blocking_findings": 1518,
+      "blocking_findings": 1605,
       "checkpoint_dtype": {
         "path": "torch_dtype",
         "provenance": "checkpoint_declared",
@@ -4774,10 +4774,10 @@
         }
       ],
       "execution_unresolved": 105,
-      "grouped": 0,
+      "grouped": 86,
       "input": "verification/s7/inputs/deepseek-v4-flash.json",
-      "investigation_missing": 105,
-      "mechanism_unresolved": 87,
+      "investigation_missing": 192,
+      "mechanism_unresolved": 0,
       "model": "deepseek-ai/DeepSeek-V4-Flash",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -4833,7 +4833,7 @@
         "layer_count": 43,
         "period": 1
       },
-      "projection_unresolved": 1500,
+      "projection_unresolved": 1413,
       "qualified_fact_citations": 0,
       "recipe_execution_dtype": "bfloat16",
       "recipe_execution_dtype_source": {
@@ -4854,7 +4854,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 2,
-      "rendered": 1,
+      "rendered": 2,
       "root_resolution": "resolved",
       "slug": "deepseek-v4-flash",
       "structure_unaccounted": 1413,
@@ -4862,7 +4862,7 @@
       "unqualified_fact_citations": 87
     },
     {
-      "blocking_findings": 4613,
+      "blocking_findings": 4617,
       "checkpoint_dtype": {
         "path": "torch_dtype",
         "provenance": "checkpoint_declared",
@@ -4930,8 +4930,8 @@
       "execution_unresolved": 1952,
       "grouped": 0,
       "input": "verification/s7/inputs/gemma-3n-e2b.json",
-      "investigation_missing": 1952,
-      "mechanism_unresolved": 1,
+      "investigation_missing": 1956,
+      "mechanism_unresolved": 0,
       "model": "google/gemma-3n-E2B",
       "no_recipe_attempted": 0,
       "non_architectural_container": 141,
@@ -4976,7 +4976,7 @@
         "layer_count": 30,
         "period": null
       },
-      "projection_unresolved": 2662,
+      "projection_unresolved": 2661,
       "qualified_fact_citations": 0,
       "recipe_execution_dtype": "bfloat16",
       "recipe_execution_dtype_source": {
@@ -4999,7 +4999,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 3,
       "relations": 13,
-      "rendered": 93,
+      "rendered": 94,
       "root_resolution": "resolved",
       "slug": "gemma-3n-e2b",
       "structure_unaccounted": 2661,
@@ -5140,7 +5140,7 @@
       "unqualified_fact_citations": 0
     },
     {
-      "blocking_findings": 98,
+      "blocking_findings": 260,
       "checkpoint_dtype": {
         "path": "dtype",
         "provenance": "checkpoint_declared",
@@ -5181,10 +5181,10 @@
         }
       ],
       "execution_unresolved": 2,
-      "grouped": 18,
+      "grouped": 96,
       "input": "tests/unseen_model_configs/lfm2-1-2b.json",
-      "investigation_missing": 2,
-      "mechanism_unresolved": 85,
+      "investigation_missing": 164,
+      "mechanism_unresolved": 0,
       "model": "LiquidAI/LFM2-1.2B",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -5213,7 +5213,7 @@
         "layer_count": 16,
         "period": 1
       },
-      "projection_unresolved": 181,
+      "projection_unresolved": 96,
       "qualified_fact_citations": 6,
       "recipe_execution_dtype": "bfloat16",
       "recipe_execution_dtype_source": {
@@ -5233,7 +5233,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 1,
-      "rendered": 1,
+      "rendered": 8,
       "root_resolution": "resolved",
       "slug": "lfm2-1-2b",
       "structure_unaccounted": 96,
@@ -5241,7 +5241,7 @@
       "unqualified_fact_citations": 162
     },
     {
-      "blocking_findings": 316,
+      "blocking_findings": 370,
       "checkpoint_dtype": {
         "path": "torch_dtype",
         "provenance": "checkpoint_declared",
@@ -5320,10 +5320,10 @@
         }
       ],
       "execution_unresolved": 2,
-      "grouped": 0,
+      "grouped": 53,
       "input": "verification/s7/inputs/nemotron-h-8b.json",
-      "investigation_missing": 2,
-      "mechanism_unresolved": 54,
+      "investigation_missing": 56,
+      "mechanism_unresolved": 0,
       "model": "nvidia/Nemotron-H-8B-Base-8K",
       "no_recipe_attempted": 0,
       "non_architectural_container": 1,
@@ -5388,7 +5388,7 @@
         "layer_count": 52,
         "period": 1
       },
-      "projection_unresolved": 368,
+      "projection_unresolved": 314,
       "qualified_fact_citations": 0,
       "recipe_execution_dtype": "bfloat16",
       "recipe_execution_dtype_source": {
@@ -5406,7 +5406,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 0,
-      "rendered": 1,
+      "rendered": 2,
       "root_resolution": "resolved",
       "slug": "nemotron-h-8b",
       "structure_unaccounted": 314,
@@ -5414,7 +5414,7 @@
       "unqualified_fact_citations": 54
     },
     {
-      "blocking_findings": 1480,
+      "blocking_findings": 1485,
       "checkpoint_dtype": {
         "path": "dtype",
         "provenance": "checkpoint_declared",
@@ -5505,8 +5505,8 @@
       "execution_unresolved": 331,
       "grouped": 0,
       "input": "tests/unseen_model_configs/qwen3-5-27b-full.json",
-      "investigation_missing": 331,
-      "mechanism_unresolved": 1,
+      "investigation_missing": 336,
+      "mechanism_unresolved": 0,
       "model": "Qwen/Qwen3.5-27B",
       "no_recipe_attempted": 0,
       "non_architectural_container": 2,
@@ -5585,7 +5585,7 @@
         "layer_count": 64,
         "period": 4
       },
-      "projection_unresolved": 1150,
+      "projection_unresolved": 1149,
       "qualified_fact_citations": 0,
       "recipe_execution_dtype": "float32",
       "recipe_execution_dtype_source": {
@@ -5602,7 +5602,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 0,
-      "rendered": 193,
+      "rendered": 194,
       "root_resolution": "resolved",
       "slug": "qwen3-5-27b",
       "structure_unaccounted": 1149,
@@ -5771,7 +5771,7 @@
       "unqualified_fact_citations": 0
     },
     {
-      "blocking_findings": 1915,
+      "blocking_findings": 1918,
       "checkpoint_dtype": {
         "path": "dtype",
         "provenance": "checkpoint_declared",
@@ -5890,8 +5890,8 @@
       "execution_unresolved": 299,
       "grouped": 0,
       "input": "tests/unseen_model_configs/qwen3-vl-235b.json",
-      "investigation_missing": 299,
-      "mechanism_unresolved": 1,
+      "investigation_missing": 302,
+      "mechanism_unresolved": 0,
       "model": "Qwen/Qwen3-VL-235B-A22B-Instruct",
       "no_recipe_attempted": 0,
       "non_architectural_container": 3,
@@ -5998,7 +5998,7 @@
         "layer_count": 94,
         "period": 1
       },
-      "projection_unresolved": 1617,
+      "projection_unresolved": 1616,
       "qualified_fact_citations": 0,
       "recipe_execution_dtype": "bfloat16",
       "recipe_execution_dtype_source": {
@@ -6015,7 +6015,7 @@
       "relation_recipe_failed": 0,
       "relation_recipe_ok": 1,
       "relations": 0,
-      "rendered": 1,
+      "rendered": 2,
       "root_resolution": "resolved",
       "slug": "qwen3-vl-235b",
       "structure_unaccounted": 1616,
@@ -6282,7 +6282,7 @@
     "model_unfolder/evidence/qualification.py": "9441909408e661b49cab399a7b625ea7a0288d8f081b0be9206bd8cff9b5d1ff",
     "model_unfolder/evidence/reader_result.py": "e4c967f49680c023d9ffccc9fbfb3fbe19d50e582539db2bf8b68833c53bffb4",
     "model_unfolder/evidence/receipts.py": "df605eebae0ae2333891af7592b88b49755559e309d9be85ad7068301301b19a",
-    "model_unfolder/evidence/reconciliation.py": "74ca1ad7e6396f478c87a15ea7b91284e4d3a6a547d6c2d52a7933f8776edabc",
+    "model_unfolder/evidence/reconciliation.py": "b926da93874a38379e4535c982a0b524dd4cb39db7443eab9f84a6a59da7c33d",
     "model_unfolder/evidence/registry.py": "d38d07ec5ddf4cef4f5032cb1a34d0780bdd4c777d3cb313f2efb293a4f1651d",
     "model_unfolder/evidence/relation_probe.py": "7854aebdd8168240736d213cb20be34ad4ce657e4373e6367a2302e76854165a",
     "model_unfolder/evidence/relation_source.py": "8db5603b9bd6f1d9af471228d589a146ed8a362d40159e2de022d702f0419aa7",
@@ -6402,7 +6402,7 @@
     "physics/execution_observation.py": "a48f1f86a1e7c4bef29baf6baa9b6df0916a507a0cd4859601b9b5d5911a38ac",
     "physics/instance_inventory.py": "4315986c1db7cd83bdba56f1ec75a41134af1a1321c699f46b0ff1f9f1d32303",
     "physics/relation_observation.py": "16e38f8c45da13f0b328b1c2abcf115f4b9ed32f2dffe512a35d253bb6d0752c",
-    "scripts/generate_s7_shadow.py": "253d33f312ce3e652192575b41222cb9c74f3a0296315e87071abe090d71a3c8",
+    "scripts/generate_s7_shadow.py": "33ab1ad476f612c1d7b0fffb19ffc84cda09b01f50a5933b09ff0d77ab0bf61f",
     "tests/sable_test_corpus/auraflow-v0-3.json": "105bbd65a8575c0f50e92f3090b7bf1089e7f3bd5c3802d76cd06844d4e5d73c",
     "tests/sable_test_corpus/bloom.json": "ec3c45693cfa29ebab32657ca294ab592fce04aedbca0dc1d7aef13ea6371eaa",
     "tests/sable_test_corpus/cogvideox-5b.json": "8da9cccfafce3e9735601aea8fcc3783247a0ed7a68773d42650871e5437847e",

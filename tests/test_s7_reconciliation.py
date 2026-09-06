@@ -18,6 +18,7 @@ from model_unfolder.evidence.config_access import (
     prepared_document_token,
 )
 from model_unfolder.evidence.document import DocumentBinding, PreparedDocument
+from model_unfolder.evidence.component_owner import OwnerOccurrenceId
 from model_unfolder.evidence.facts import EvidenceFact, SourceSpan as FactSpan
 from model_unfolder.evidence.program_index import (
     ClassRecord, ConstructionSite, ConstructionSiteId, ExprNode, ProgramIndex,
@@ -34,6 +35,8 @@ from model_unfolder.evidence.reconciliation import (
     ProjectionAxis,
     ProjectionClaim,
     ProjectionFactCitation,
+    ProjectionFactFinding,
+    ReaderExhaustion,
     FACT_CLAIM_REQUIREMENTS,
     ReconciliationTable,
     RelationRow,
@@ -46,6 +49,9 @@ from model_unfolder.evidence.reconciliation import (
     relation_rows_from_evidence as _relation_rows_under_test,
     unresolved_axis_findings,
     unresolved_reason_class_counts,
+)
+from model_unfolder.evidence.reader_result import (
+    ReaderFailure, ReaderProvenance, ReaderResult,
 )
 from model_unfolder.evidence.registry import REGISTRY
 from model_unfolder.evidence.receipts import value_status_hash
@@ -155,6 +161,8 @@ def _projection(path="blocks.0"):
         ProjectionAxis("grouped", parent="blocks", rule="typed-fact drill",
                        fact_keys=(fact.ledger_key(),),
                        fact_claim_kinds=((fact.ledger_key(), "value"),),
+                       fact_claim_readers=((fact.ledger_key(),
+                                            fact.claim_readers),),
                        fact_claim_proofs=(citation.summary,)),
         (citation,), (fact,),
     )
@@ -166,7 +174,7 @@ def test_s7_requirements_are_consumer_contracts_for_registered_facts():
     assert set(FACT_CLAIM_REQUIREMENTS) <= set(REGISTRY)
 
 
-def test_a_projected_fact_without_typed_proof_is_visible_unresolved():
+def test_rendered_fact_without_typed_proof_stays_rendered_and_blocks_at_fact_level():
     fact = _raw_fact()
     event = RenderEvent(
         "architecture", (), "root", "", "", "", None,
@@ -177,11 +185,18 @@ def test_a_projected_fact_without_typed_proof_is_visible_unresolved():
         static_claims=(_static(),), ir=_product_ir(),
         facts={fact.ledger_key(): fact}, render_events=(event,))
     claim = next(row for row in claims if row.instance_path == "blocks.0")
-    assert claim.axis.kind == "projection_unresolved"
+    assert claim.axis.kind == "rendered"
     assert claim.axis.unqualified_fact_keys == (fact.ledger_key(),)
     assert claim.axis.fact_claim_kinds == ((fact.ledger_key(), "value"),)
     assert claim.axis.undeclared_fact_keys == ()
     assert claim.axis.declared_unproven_fact_keys == (fact.ledger_key(),)
+    assert claim.axis.fact_findings == (ProjectionFactFinding(fact.ledger_key()),)
+    table = reconcile(
+        model="fixture", inventory=_inventory(), observations=(),
+        config_document=_document(), projection_claims=(claim,))
+    assert any(
+        f"projection fact {fact.ledger_key()}=claim_proof_unstamped" in finding
+        for finding in unresolved_axis_findings(table))
 
 
 def test_one_qualified_fact_cannot_hide_an_unqualified_sibling():
@@ -199,12 +214,40 @@ def test_one_qualified_fact_cannot_hide_an_unqualified_sibling():
         index=_product_index(), inventory=_inventory(),
         static_claims=(_static(),), ir=_product_ir(), facts=facts,
         render_events=(event,)) if row.instance_path == "blocks.0")
-    assert claim.axis.kind == "projection_unresolved"
+    assert claim.axis.kind == "rendered"
     assert claim.axis.fact_keys == (qualified.ledger_key(),)
     assert claim.axis.unqualified_fact_keys == (unqualified.ledger_key(),)
     assert claim.axis.undeclared_fact_keys == (unqualified.ledger_key(),)
     assert claim.axis.declared_unproven_fact_keys == ()
     assert claim.axis.fact_claim_proofs[0].fact_id == qualified.ledger_key()
+    assert claim.axis.fact_findings == (
+        ProjectionFactFinding(unqualified.ledger_key()),)
+
+
+def test_grouped_occurrence_keeps_product_projection_and_fact_level_gap():
+    fact = _raw_fact()
+    inventory = _inventory()
+    modules = list(inventory.modules)
+    modules[2] = dataclasses.replace(modules[2], children=("inner",))
+    modules.append(ModuleNode(
+        "blocks.0.inner", CLASS, "fixture.model", (CLASS,), (), (), {}, ()))
+    inventory = dataclasses.replace(inventory, modules=tuple(modules))
+    static = _static()
+    nested = dataclasses.replace(static, path_pattern=("blocks", "*", "inner"))
+    event = RenderEvent(
+        "block", ("block",), "root", "", "", "", None,
+        frozenset(), frozenset({"inner"}),
+        facts_projected=frozenset({fact.ledger_key()}))
+    claims = projection_claims_from_product(
+        index=_product_index(), inventory=inventory,
+        static_claims=(static, nested), ir=_product_ir(),
+        facts={fact.ledger_key(): fact}, render_events=(event,))
+    grouped = next(row for row in claims
+                   if row.instance_path == "blocks.0.inner")
+    assert grouped.axis.kind == "grouped"
+    assert grouped.axis.parent == "blocks.0"
+    assert grouped.axis.fact_findings == (
+        ProjectionFactFinding(fact.ledger_key()),)
 
 
 def test_missing_declaration_is_distinct_from_declared_missing_proof():
@@ -226,6 +269,8 @@ def test_missing_declaration_is_distinct_from_declared_missing_proof():
     assert claim.axis.declared_unproven_fact_keys == (declared.ledger_key(),)
     assert claim.axis.unqualified_fact_keys == tuple(sorted((
         declared.ledger_key(), undeclared.ledger_key())))
+    assert tuple(row.fact_key for row in claim.axis.fact_findings) == \
+        claim.axis.unqualified_fact_keys
 
 
 def _product_index():
@@ -291,9 +336,21 @@ def test_axes_and_authority_vocabulary_are_closed():
             "execution_unresolved", reason="unobserved_no_static_proof",
             reason_class="mechanism_unresolved")
     with pytest.raises(ValueError, match="concrete unresolved reason is closed"):
-        InvestigationRecord("reader_ran", ("reader",), "probably_missing")
+        InvestigationRecord(
+            "fixture.depth", _raw_fact(),
+            ReaderResult.failed(None, (ReaderFailure(
+                "unsupported_syntax", "fixture exhaustion"),)),
+            "probably_missing")
     with pytest.raises(ValueError):
         ProjectionAxis("rendered")
+    with pytest.raises(ValueError, match="grouped requires"):
+        ProjectionAxis("grouped", parent="blocks", rule="plausible prose")
+    with pytest.raises(ValueError, match="failure kind is not typed"):
+        ReaderExhaustion("failed", "none", ("made_up",))
+    with pytest.raises(ValueError, match="failed exhaustion"):
+        ReaderExhaustion(
+            "failed", "none", ("unsupported_syntax",),
+            ambiguity_present=True)
 
 
 def test_one_occurrence_cannot_carry_two_projection_values():
@@ -396,6 +453,7 @@ def test_fact_source_provenance_is_content_addressed_not_host_addressed():
             "grouped", parent="blocks", rule="typed-fact drill",
             fact_keys=(fact.ledger_key(),),
             fact_claim_kinds=((fact.ledger_key(), "value"),),
+            fact_claim_readers=((fact.ledger_key(), fact.claim_readers),),
             fact_claim_proofs=(citation.summary,)),
         (citation,), (fact,),
     )
@@ -436,6 +494,7 @@ def test_fact_source_mapping_never_chooses_a_duplicate_basename():
             "grouped", parent="blocks", rule="typed-fact drill",
             fact_keys=(fact.ledger_key(),),
             fact_claim_kinds=((fact.ledger_key(), "value"),),
+            fact_claim_readers=((fact.ledger_key(), fact.claim_readers),),
             fact_claim_proofs=(citation.summary,)),
         (citation,), (fact,),
     )
@@ -470,6 +529,7 @@ def test_ambiguous_or_missing_fact_source_provenance_blocks():
                 "grouped", parent="blocks", rule="typed-fact drill",
                 fact_keys=(fact.ledger_key(),),
                 fact_claim_kinds=((fact.ledger_key(), "value"),),
+                fact_claim_readers=((fact.ledger_key(), fact.claim_readers),),
                 fact_claim_proofs=(citation.summary,)),
             (citation,), (fact,))
 
@@ -544,9 +604,7 @@ def test_relation_requires_source_explanation_or_stays_unresolved():
     unresolved = RelationRow(
         "tie", "relation_unresolved", ("blocks.0",), ("blocks.1",),
         {"reason": "source assignment not resolved"}, ("parameter identity",),
-        reason_class="mechanism_unresolved",
-        investigation=InvestigationRecord(
-            "reader_ran", ("tie_reader",), "source_missing"))
+        reason_class="investigation_missing")
     assert unresolved.kind == "relation_unresolved"
 
 
@@ -557,18 +615,65 @@ def test_reason_classes_are_closed_and_class_three_needs_real_investigation():
         ProjectionAxis(
             "projection_unresolved", reason="ambiguous path",
             reason_class="mechanism_unresolved")
+    exhaustion = ReaderResult.failed(None, (ReaderFailure(
+        "unsupported_syntax", "reader exhausted its supported syntax"),))
+    investigation = InvestigationRecord(
+        "fixture.depth", _raw_fact(), exhaustion,
+        "out_of_support")
     with pytest.raises(ValueError, match="cannot masquerade"):
         ProjectionAxis(
             "projection_unresolved", reason="not drawn",
             reason_class="structure_unaccounted",
-            investigation=InvestigationRecord(
-                "reader_ran", ("projection_reader",), "source_missing"))
+            investigation=investigation)
+    fact = _fact()
+    citation = ProjectionFactCitation(fact)
     axis = ProjectionAxis(
         "projection_unresolved", reason="ambiguous path",
+        fact_keys=(fact.ledger_key(),),
+        fact_claim_kinds=((fact.ledger_key(), "value"),),
+        fact_claim_readers=((fact.ledger_key(), fact.claim_readers),),
+        fact_claim_proofs=(citation.summary,),
         reason_class="mechanism_unresolved",
         investigation=InvestigationRecord(
-            "reader_ran", ("projection_reader",), "ambiguous_alternatives"))
+            "fixture.depth", fact, exhaustion, "out_of_support"))
     assert axis.reason_class == "mechanism_unresolved"
+    claim = ProjectionClaim("blocks.0", axis, (citation,), (fact,))
+    table = reconcile(
+        model="fixture", inventory=_inventory(), observations=(),
+        config_document=_document(), projection_claims=(claim,))
+    path = "blocks.0"
+    assert not any(item.startswith(f"{path}: projection=")
+                   for item in unresolved_axis_findings(table))
+    payload = table.to_dict()
+    projection = next(
+        row["projection"] for row in payload["occurrences"]
+        if row["provenance"]["instance_path"] == path)
+    projection["investigation"]["claim_key"] = "root.unrelated"
+    assert any("not bound to the relevant claim" in item
+               for item in unresolved_axis_findings(payload))
+    with pytest.raises(ValueError, match="not bound to the relevant claim"):
+        unresolved_reason_class_counts(payload)
+    forged = table.to_dict()
+    forged_projection = next(
+        row["projection"] for row in forged["occurrences"]
+        if row["provenance"]["instance_path"] == path)
+    forged_projection["investigation"]["reader_id"] = "forged.reader"
+    forged_projection["investigation"]["declared_reader_ids"] = [
+        "forged.reader"]
+    assert any("invalid investigation record" in item
+               or "authoritative claim readers" in item
+               for item in unresolved_axis_findings(forged))
+    with pytest.raises(ValueError, match="reader must be declared by its claim"):
+        InvestigationRecord(
+            "wrong.reader", fact, exhaustion, "out_of_support")
+    with pytest.raises(ValueError, match="cannot cite a resolved result"):
+        InvestigationRecord(
+            "fixture.depth", fact,
+            ReaderResult.resolved(
+                OwnerOccurrenceId(_product_index().classes[0].symbol), True,
+                provenance=(ReaderProvenance(
+                    "derived", detail="fixture resolved result"),)),
+            "out_of_support")
 
 
 def test_serialized_class_three_without_investigation_is_a_blocking_finding():
@@ -620,22 +725,28 @@ def test_sable_net_is_anti_vacuous_and_blocks_every_unresolved_axis():
     assert any(": projection=projection_unresolved" in item for item in findings)
 
 
-def test_investigated_mechanism_unknown_is_visible_but_not_s7_blocking():
+def test_reader_ran_label_without_typed_exhaustion_is_not_class_three():
     table = reconcile(
         model="fixture", inventory=_inventory(), observations=(),
         config_document=_document(), projection_claims=(_projection(),))
     payload = table.to_dict()
     row = payload["occurrences"][2]
-    row["execution"] = dataclasses.asdict(ExecutionAxis(
-        "execution_unresolved", reason="unobserved_no_static_proof",
-        detail="source closure found data-dependent dispatch",
-        reason_class="mechanism_unresolved",
-        investigation=InvestigationRecord(
-            "closure_built", ("Block.forward",), "data_dependent")))
+    row["projection"] = {
+        **row["projection"],
+        "kind": "projection_unresolved",
+        "reason": "ambiguous path",
+        "reason_class": "mechanism_unresolved",
+        "investigation": {
+            "kind": "reader_ran", "identifiers": ["fixture.depth"],
+            "concrete_reason": "out_of_support"},
+    }
     findings = unresolved_axis_findings(payload)
     path = row["provenance"]["instance_path"]
-    assert not any(item.startswith(f"{path}: execution=") for item in findings)
-    assert unresolved_reason_class_counts(payload)["mechanism_unresolved"] == 1
+    assert any(item.startswith(f"{path}: projection=projection_unresolved")
+               and "lacks an investigation record" in item
+               for item in findings)
+    with pytest.raises(ValueError, match="invalid projection unresolved reason"):
+        unresolved_reason_class_counts(payload)
 
 
 def test_unresolved_reconciliation_is_wired_into_sable_as_blocking(monkeypatch):
@@ -682,9 +793,7 @@ def test_table_rejects_foreign_relation_occurrences():
     relation = RelationRow(
         "r", "relation_unresolved", ("",), ("foreign",),
         {"reason": "unbound"}, ("trace:r",),
-        reason_class="mechanism_unresolved",
-        investigation=InvestigationRecord(
-            "reader_ran", ("relation_reader",), "source_missing"))
+        reason_class="investigation_missing")
     with pytest.raises(ValueError, match="outside the denominator"):
         ReconciliationTable(1, "x", CONFIG_HASH, (base,), (relation,))
 
@@ -1020,6 +1129,8 @@ def test_reconciliation_refuses_duck_typed_authorities_and_self_grouping():
             ProjectionAxis("grouped", parent="blocks.0", rule="x",
                            fact_keys=(fact.ledger_key(),),
                            fact_claim_kinds=((fact.ledger_key(), "value"),),
+                           fact_claim_readers=((fact.ledger_key(),
+                                                fact.claim_readers),),
                            fact_claim_proofs=(citation.summary,)),
             (citation,),
             (fact,),

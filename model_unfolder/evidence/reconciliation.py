@@ -26,6 +26,7 @@ from typing import Any, Mapping, Sequence
 from .claim_evidence import CLAIM_KINDS, ClaimProofSummary
 from .facts import EvidenceFact
 from .program_index import ProgramIndex
+from .reader_result import FAILURE_KINDS as READER_FAILURE_KINDS, ReaderResult
 
 
 CONSTRUCTION_KINDS = frozenset({
@@ -47,9 +48,7 @@ RELATION_KINDS = frozenset({
 UNRESOLVED_REASON_CLASSES = frozenset({
     "investigation_missing", "structure_unaccounted", "mechanism_unresolved",
 })
-INVESTIGATION_KINDS = frozenset({
-    "recipe_attempted", "reader_ran", "closure_built",
-})
+INVESTIGATION_KINDS = frozenset({"reader_ran"})
 CONCRETE_UNRESOLVED_REASONS = frozenset({
     "data_dependent", "source_missing", "ambiguous_alternatives",
     "out_of_support",
@@ -68,15 +67,6 @@ def _sha256(value: Any) -> str:
 def _closed_text(value: str, *, field: str) -> None:
     if not isinstance(value, str) or not value:
         raise ValueError(f"{field} must be non-empty text")
-
-
-def _reader_investigation(
-    identifier: str,
-    concrete_reason: str = "source_missing",
-) -> InvestigationRecord:
-    """Create the explicit reader receipt required for a class-3 unknown."""
-    return InvestigationRecord(
-        "reader_ran", (identifier,), concrete_reason)
 
 
 @dataclass(frozen=True)
@@ -225,28 +215,110 @@ class OccurrenceProvenance:
 
 
 @dataclass(frozen=True)
+class ReaderExhaustion:
+    """Portable summary made only from an actual non-resolved ReaderResult."""
+
+    status: str
+    completeness: str
+    failure_kinds: tuple[str, ...] = ()
+    ambiguity_present: bool = False
+
+    def __post_init__(self) -> None:
+        if self.status not in {"incomplete", "ambiguous", "absent", "failed"}:
+            raise ValueError("reader exhaustion cannot cite a resolved result")
+        if self.completeness not in {"partial", "none"}:
+            raise ValueError("reader exhaustion completeness is closed")
+        if tuple(sorted(set(self.failure_kinds))) != self.failure_kinds:
+            raise ValueError("reader exhaustion failure kinds are canonical")
+        if any(kind not in READER_FAILURE_KINDS for kind in self.failure_kinds):
+            raise ValueError("reader exhaustion failure kind is not typed")
+        if self.status == "incomplete" and (
+                self.completeness != "partial" or not self.failure_kinds
+                or self.ambiguity_present):
+            raise ValueError("incomplete exhaustion retains typed failures")
+        if self.status == "failed" and (
+                self.completeness != "none" or not self.failure_kinds
+                or self.ambiguity_present):
+            raise ValueError("failed exhaustion retains typed failures")
+        if self.status == "ambiguous" and (
+                self.completeness != "none" or not self.ambiguity_present
+                or self.failure_kinds):
+            raise ValueError("ambiguous exhaustion retains its ambiguity")
+        if self.status == "absent" and (
+                self.completeness != "none" or self.failure_kinds
+                or self.ambiguity_present):
+            raise ValueError("absent exhaustion carries no invented detail")
+
+    @classmethod
+    def from_result(cls, result: ReaderResult[Any]) -> "ReaderExhaustion":
+        if not isinstance(result, ReaderResult):
+            raise TypeError("reader exhaustion requires an actual ReaderResult")
+        return cls(
+            result.status,
+            result.completeness,
+            tuple(sorted(failure.kind for failure in result.failures)),
+            result.ambiguity is not None,
+        )
+
+
+@dataclass(frozen=True, init=False)
 class InvestigationRecord:
     """The exact attempt that makes a legitimate unknown non-vacuous.
 
-    This record is deliberately evidence-kind neutral: an execution axis cites
-    recipes, while a mechanism/relation axis cites the reader or static closure
-    it actually ran.  It never turns an observation into mechanism evidence.
+    It can be constructed only from an actual typed ``ReaderResult`` and binds
+    that exhaustion to the exact reader id and claim key it attempted.  A
+    joiner-authored ``reader_ran`` boolean/string is intentionally impossible.
     """
 
     kind: str
-    identifiers: tuple[str, ...]
+    reader_id: str
+    claim_key: str
+    declared_reader_ids: tuple[str, ...]
+    typed_exhaustion: ReaderExhaustion
     concrete_reason: str
 
-    def __post_init__(self) -> None:
-        if self.kind not in INVESTIGATION_KINDS:
-            raise ValueError("investigation kind is closed")
-        if (not self.identifiers
-                or tuple(sorted(set(self.identifiers))) != self.identifiers
-                or any(not isinstance(item, str) or not item
-                       for item in self.identifiers)):
-            raise ValueError("investigation identifiers are non-empty and canonical")
-        if self.concrete_reason not in CONCRETE_UNRESOLVED_REASONS:
+    def __init__(self, reader_id: str, claim: EvidenceFact,
+                 result: ReaderResult[Any], concrete_reason: str) -> None:
+        _closed_text(reader_id, field="investigation reader id")
+        if not isinstance(claim, EvidenceFact):
+            raise TypeError("reader investigation requires the actual claim fact")
+        claim_key = claim.ledger_key()
+        readers = claim.claim_readers
+        if reader_id not in readers:
+            raise ValueError("investigation reader must be declared by its claim")
+        if concrete_reason not in CONCRETE_UNRESOLVED_REASONS:
             raise ValueError("concrete unresolved reason is closed")
+        object.__setattr__(self, "kind", "reader_ran")
+        object.__setattr__(self, "reader_id", reader_id)
+        object.__setattr__(self, "claim_key", claim_key)
+        object.__setattr__(self, "declared_reader_ids", readers)
+        object.__setattr__(self, "typed_exhaustion",
+                           ReaderExhaustion.from_result(result))
+        object.__setattr__(self, "concrete_reason", concrete_reason)
+        _validate_exhaustion_reason(self.typed_exhaustion, concrete_reason)
+
+
+def _validate_exhaustion_reason(
+    exhaustion: ReaderExhaustion,
+    concrete_reason: str,
+) -> None:
+    failures = set(exhaustion.failure_kinds)
+    expected = {
+        "source_missing": {
+            "missing_source", "external_unavailable", "unresolved_import"},
+        "out_of_support": {
+            "unsupported_syntax", "dynamic_dispatch", "out_of_owner",
+            "incomplete_graph"},
+        "data_dependent": {"dynamic_dispatch"},
+    }
+    if concrete_reason == "ambiguous_alternatives":
+        if exhaustion.status != "ambiguous":
+            raise ValueError("ambiguous reason requires an ambiguous ReaderResult")
+        return
+    if exhaustion.status not in {"failed", "incomplete"} \
+            or not failures.intersection(expected[concrete_reason]):
+        raise ValueError(
+            "concrete reason must agree with the typed reader exhaustion")
 
 
 def _validate_unresolved_class(
@@ -296,6 +368,9 @@ class ConstructionAxis:
             unresolved=self.kind == "construction_conflict",
             reason_class=self.reason_class, investigation=self.investigation,
             field="construction axis")
+        if self.reason_class == "mechanism_unresolved":
+            raise ValueError(
+                "construction class-3 needs a claim-bearing reader result")
 
 
 @dataclass(frozen=True)
@@ -328,6 +403,28 @@ class ExecutionAxis:
             unresolved=self.kind == "execution_unresolved",
             reason_class=self.reason_class, investigation=self.investigation,
             field="execution axis")
+        if self.reason_class == "mechanism_unresolved":
+            raise ValueError(
+                "execution class-3 needs a claim-bearing reader result, not an axis label")
+
+
+@dataclass(frozen=True)
+class ProjectionFactFinding:
+    """One unsupported fact on an otherwise product-proven projection row."""
+
+    fact_key: str
+    reason_class: str = "investigation_missing"
+    concrete_reason: str = "claim_proof_unstamped"
+    owner: str = "S9 reader migration"
+
+    def __post_init__(self) -> None:
+        _closed_text(self.fact_key, field="projection fact finding key")
+        if self.reason_class != "investigation_missing":
+            raise ValueError("unstamped claim proof is class-1 investigation debt")
+        if self.concrete_reason != "claim_proof_unstamped":
+            raise ValueError("projection fact finding reason is closed")
+        if self.owner != "S9 reader migration":
+            raise ValueError("projection fact finding has one migration owner")
 
 
 @dataclass(frozen=True)
@@ -339,10 +436,12 @@ class ProjectionAxis:
     fact_keys: tuple[str, ...] = ()
     block_ids: tuple[str, ...] = ()
     fact_claim_kinds: tuple[tuple[str, str], ...] = ()
+    fact_claim_readers: tuple[tuple[str, tuple[str, ...]], ...] = ()
     fact_claim_proofs: tuple[ClaimProofSummary, ...] = ()
     unqualified_fact_keys: tuple[str, ...] = ()
     undeclared_fact_keys: tuple[str, ...] = ()
     declared_unproven_fact_keys: tuple[str, ...] = ()
+    fact_findings: tuple[ProjectionFactFinding, ...] = ()
     reason_class: str | None = None
     investigation: InvestigationRecord | None = None
 
@@ -364,6 +463,19 @@ class ProjectionAxis:
         known_fact_keys = set(self.fact_keys) | set(self.unqualified_fact_keys)
         if not {key for key, _kind in self.fact_claim_kinds} <= known_fact_keys:
             raise ValueError("claim declarations must belong to observed facts")
+        if any(not isinstance(row, tuple) or len(row) != 2
+               or not isinstance(row[0], str) or not isinstance(row[1], tuple)
+               or not row[1]
+               or tuple(sorted(set(row[1]))) != row[1]
+               or any(not isinstance(reader, str) or not reader
+                      for reader in row[1])
+               for row in self.fact_claim_readers):
+            raise TypeError(
+                "projection fact readers are canonical (fact, readers) pairs")
+        if tuple(sorted(set(self.fact_claim_readers))) != self.fact_claim_readers:
+            raise ValueError("projection fact reader declarations are canonical")
+        if not {key for key, _readers in self.fact_claim_readers} <= known_fact_keys:
+            raise ValueError("reader declarations must belong to observed facts")
         if any(not isinstance(row, ClaimProofSummary)
                for row in self.fact_claim_proofs):
             raise TypeError("projection fact proofs are typed summaries")
@@ -388,36 +500,53 @@ class ProjectionAxis:
                 != self.unqualified_fact_keys:
             raise ValueError(
                 "unqualified facts partition into undeclared and declared-unproven")
+        if any(not isinstance(row, ProjectionFactFinding)
+               for row in self.fact_findings):
+            raise TypeError("projection fact findings are typed")
+        finding_keys = tuple(row.fact_key for row in self.fact_findings)
+        if finding_keys != self.unqualified_fact_keys:
+            raise ValueError(
+                "every unqualified fact has exactly one canonical fact-level finding")
         if self.parent is not None and not isinstance(self.parent, str):
             raise TypeError("projection parent is an exact instance path")
         if self.kind == "rendered" and (
-                not (self.fact_keys or self.block_ids)
-                or self.parent is not None or self.reason or self.rule
-                or self.unqualified_fact_keys):
+                not (self.fact_keys or self.block_ids or self.unqualified_fact_keys)
+                or self.parent is not None or self.reason or self.rule):
             raise ValueError(
                 "rendered requires a product fact/block and carries no parent/rule/reason")
         if self.kind == "grouped" and (
                 self.parent is None or not self.rule or self.reason
-                or self.unqualified_fact_keys):
+                or not (self.fact_keys or self.block_ids
+                        or self.unqualified_fact_keys)):
             raise ValueError("grouped requires parent + rule and carries no reason")
         if self.kind == "non_architectural" and (
                 not self.reason or self.parent is not None or self.rule
                 or self.fact_keys or self.block_ids or self.fact_claim_kinds
-                or self.fact_claim_proofs or self.unqualified_fact_keys
+                or self.fact_claim_readers or self.fact_claim_proofs
+                or self.unqualified_fact_keys
                 or self.undeclared_fact_keys
-                or self.declared_unproven_fact_keys):
+                or self.declared_unproven_fact_keys or self.fact_findings):
             raise ValueError("non_architectural requires a reason only")
         if self.kind == "projection_unresolved" and (
                 not self.reason or self.parent is not None or self.rule
-                or self.block_ids):
+                or self.block_ids or self.unqualified_fact_keys
+                or self.fact_findings):
             raise ValueError("projection_unresolved requires a visible reason")
-        if self.unqualified_fact_keys and self.reason != \
-                "product cites facts without typed semantic proof":
-            raise ValueError("unqualified facts require the exact proof-gap reason")
         _validate_unresolved_class(
             unresolved=self.kind == "projection_unresolved",
             reason_class=self.reason_class, investigation=self.investigation,
             field="projection axis")
+        if self.reason_class == "mechanism_unresolved":
+            known = set(self.fact_keys) | set(self.unqualified_fact_keys)
+            if self.investigation is None \
+                    or self.investigation.claim_key not in known:
+                raise ValueError(
+                    "projection class-3 must bind its reader result to a cited claim")
+            if dict(self.fact_claim_readers).get(
+                    self.investigation.claim_key) != \
+                    self.investigation.declared_reader_ids:
+                raise ValueError(
+                    "projection investigation must match authoritative claim readers")
 
 
 @dataclass(frozen=True)
@@ -477,6 +606,9 @@ class RelationRow:
             unresolved=self.kind == "relation_unresolved",
             reason_class=self.reason_class, investigation=self.investigation,
             field="relation")
+        if self.reason_class == "mechanism_unresolved":
+            raise ValueError(
+                "relation class-3 is locked until S9 carries authoritative facts")
         json.dumps(dict(self.detail), sort_keys=True)
 
 
@@ -515,6 +647,8 @@ class ReconciliationTable:
             or row.execution.kind == "execution_unresolved"
             or row.projection.kind == "projection_unresolved"
             for row in self.occurrences
+        ) + sum(
+            len(row.projection.fact_findings) for row in self.occurrences
         ) + sum(row.kind == "relation_unresolved" for row in self.relations)
 
     def to_dict(self) -> dict[str, Any]:
@@ -636,6 +770,12 @@ class ProjectionClaim:
             for row in self.observed_facts if row.claim_kind is not None))
         if self.axis.fact_claim_kinds != kinds:
             raise ValueError("projection claim retains every reader declaration")
+        readers = tuple(sorted(
+            (row.ledger_key(), row.claim_readers)
+            for row in self.observed_facts if row.claim_readers))
+        if self.axis.fact_claim_readers != readers:
+            raise ValueError(
+                "projection claim retains authoritative fact reader declarations")
         undeclared = tuple(sorted(
             row.ledger_key() for row in self.observed_facts
             if row.claim_kind is None))
@@ -650,6 +790,15 @@ class ProjectionClaim:
         if self.axis.fact_claim_proofs != tuple(
                 row.summary for row in self.fact_citations):
             raise ValueError("projection claim retains every typed proof receipt")
+        if self.axis.reason_class == "mechanism_unresolved":
+            assert self.axis.investigation is not None
+            relevant = next(
+                (fact for fact in self.observed_facts
+                 if fact.ledger_key() == self.axis.investigation.claim_key), None)
+            if relevant is None \
+                    or self.axis.investigation.reader_id not in relevant.claim_readers:
+                raise ValueError(
+                    "projection investigation must cite a reader declared by its fact")
         if self.axis.kind == "grouped" and self.axis.parent == self.instance_path:
             raise ValueError("a grouped projection must name a distinct parent")
 
@@ -859,45 +1008,28 @@ def projection_claims_from_product(
         ordered_facts = tuple(path_facts[key] for key in sorted(path_facts))
         unqualified, undeclared, declared_unproven = \
             _claim_gap_partition(ordered_facts)
-        if unqualified:
-            qualified_facts = tuple(
-                fact for fact in ordered_facts
-                if fact.ledger_key() not in set(unqualified))
-            citations = _projection_citations(qualified_facts)
-            claims_by_path[path] = ProjectionClaim(
-                path,
-                ProjectionAxis(
-                    "projection_unresolved",
-                    reason="product cites facts without typed semantic proof",
-                    fact_keys=tuple(
-                        fact.ledger_key() for fact in qualified_facts),
-                    fact_claim_kinds=tuple(
-                        (fact.ledger_key(), fact.claim_kind)
-                        for fact in ordered_facts
-                        if fact.claim_kind is not None),
-                    fact_claim_proofs=tuple(
-                        row.summary for row in citations),
-                    unqualified_fact_keys=unqualified,
-                    undeclared_fact_keys=undeclared,
-                    declared_unproven_fact_keys=declared_unproven,
-                    reason_class="mechanism_unresolved",
-                    investigation=_reader_investigation(
-                        "projection_fact_proof", "out_of_support")),
-                fact_citations=citations,
-                observed_facts=ordered_facts,
-            )
-            continue
-        citations = _projection_citations(ordered_facts)
+        qualified_facts = tuple(
+            fact for fact in ordered_facts
+            if fact.ledger_key() not in set(unqualified))
+        citations = _projection_citations(qualified_facts)
         claims_by_path[path] = ProjectionClaim(
             path,
             ProjectionAxis(
                 "rendered",
-                fact_keys=tuple(fact.ledger_key() for fact in ordered_facts),
+                fact_keys=tuple(fact.ledger_key() for fact in qualified_facts),
                 fact_claim_kinds=tuple(
                     (fact.ledger_key(), fact.claim_kind)
                     for fact in ordered_facts
                     if fact.claim_kind is not None),
-                fact_claim_proofs=tuple(row.summary for row in citations)),
+                fact_claim_readers=tuple(
+                    (fact.ledger_key(), fact.claim_readers)
+                    for fact in ordered_facts if fact.claim_readers),
+                fact_claim_proofs=tuple(row.summary for row in citations),
+                unqualified_fact_keys=unqualified,
+                undeclared_fact_keys=undeclared,
+                declared_unproven_fact_keys=declared_unproven,
+                fact_findings=tuple(
+                    ProjectionFactFinding(key) for key in unqualified)),
             citations, ordered_facts,
         )
     for path, parent_rows in grouped_facts.items():
@@ -907,46 +1039,29 @@ def projection_claims_from_product(
         ordered_facts = tuple(path_facts[key] for key in sorted(path_facts))
         unqualified, undeclared, declared_unproven = \
             _claim_gap_partition(ordered_facts)
-        if unqualified:
-            qualified_facts = tuple(
-                fact for fact in ordered_facts
-                if fact.ledger_key() not in set(unqualified))
-            citations = _projection_citations(qualified_facts)
-            claims_by_path[path] = ProjectionClaim(
-                path,
-                ProjectionAxis(
-                    "projection_unresolved",
-                    reason="product cites facts without typed semantic proof",
-                    fact_keys=tuple(
-                        fact.ledger_key() for fact in qualified_facts),
-                    fact_claim_kinds=tuple(
-                        (fact.ledger_key(), fact.claim_kind)
-                        for fact in ordered_facts
-                        if fact.claim_kind is not None),
-                    fact_claim_proofs=tuple(
-                        row.summary for row in citations),
-                    unqualified_fact_keys=unqualified,
-                    undeclared_fact_keys=undeclared,
-                    declared_unproven_fact_keys=declared_unproven,
-                    reason_class="mechanism_unresolved",
-                    investigation=_reader_investigation(
-                        "projection_fact_proof", "out_of_support")),
-                fact_citations=citations,
-                observed_facts=ordered_facts,
-            )
-            continue
-        citations = _projection_citations(ordered_facts)
+        qualified_facts = tuple(
+            fact for fact in ordered_facts
+            if fact.ledger_key() not in set(unqualified))
+        citations = _projection_citations(qualified_facts)
         claims_by_path[path] = ProjectionClaim(
             path,
             ProjectionAxis(
                 "grouped", parent=parent,
                 rule="fact source occurrence is drawn inside its proven parent",
-                fact_keys=tuple(fact.ledger_key() for fact in ordered_facts),
+                fact_keys=tuple(fact.ledger_key() for fact in qualified_facts),
                 fact_claim_kinds=tuple(
                     (fact.ledger_key(), fact.claim_kind)
                     for fact in ordered_facts
                     if fact.claim_kind is not None),
-                fact_claim_proofs=tuple(row.summary for row in citations)),
+                fact_claim_readers=tuple(
+                    (fact.ledger_key(), fact.claim_readers)
+                    for fact in ordered_facts if fact.claim_readers),
+                fact_claim_proofs=tuple(row.summary for row in citations),
+                unqualified_fact_keys=unqualified,
+                undeclared_fact_keys=undeclared,
+                declared_unproven_fact_keys=declared_unproven,
+                fact_findings=tuple(
+                    ProjectionFactFinding(key) for key in unqualified)),
             citations, ordered_facts,
         )
 
@@ -1503,16 +1618,14 @@ def relation_rows_from_evidence(
                 investigation = None
                 if not spans:
                     detail["reason"] = "cross-layer tensor use lacks source proof"
-                    investigation = _reader_investigation(
-                        "relation_rows_from_evidence:kv_sharing_schedule")
                 rows.append(RelationRow(
                     _relation_id(kind, (source.path,), (target.path,), detail), kind,
                     (source.path,), (target.path,), detail,
                     (f"trace:{recipe}:{traced.consumer_argument}",), spans,
                     tuple(sorted(kv_fact.config_paths)),
                     (kv_fact.ledger_key(),),
-                    reason_class=("mechanism_unresolved"
-                                  if investigation is not None else None),
+                    reason_class=("investigation_missing"
+                                  if kind == "relation_unresolved" else None),
                     investigation=investigation))
 
         stream = _stream_count(observation)
@@ -1530,8 +1643,7 @@ def relation_rows_from_evidence(
                     "rank-4 layer state lacks an output-reaching matrix "
                     "contraction for every exact layer occurrence")
                 spans = ()
-                investigation = _reader_investigation(
-                    "relation_observation:matrix_contractions")
+                investigation = None
             else:
                 kind = "multi_stream_residual"
                 spans = tuple(sorted({
@@ -1548,8 +1660,8 @@ def relation_rows_from_evidence(
                     f"trace:{recipe}:output-reaching-stream-matrix-contractions",
                 ))),
                 spans,
-                reason_class=("mechanism_unresolved"
-                              if investigation is not None else None),
+                reason_class=("investigation_missing"
+                              if kind == "relation_unresolved" else None),
                 investigation=investigation))
 
         if side_fact is not None and observation.boundaries:
@@ -1602,8 +1714,7 @@ def relation_rows_from_evidence(
                 investigation = None
                 if kind == "relation_unresolved":
                     detail["reason"] = "side-input candidate lacks exact source/targets"
-                    investigation = _reader_investigation(
-                        "relation_rows_from_evidence:per_layer_embedding_pathway")
+                    investigation = None
                 rows.append(RelationRow(
                     _relation_id(kind, (sibling.path,), targets or (sibling.path,),
                                  detail), kind, (sibling.path,),
@@ -1611,8 +1722,8 @@ def relation_rows_from_evidence(
                     (f"trace:{recipe}:pre-stack-shape-lineage",), spans,
                     tuple(sorted(side_fact.config_paths)),
                     (side_fact.ledger_key(),),
-                    reason_class=("mechanism_unresolved"
-                                  if investigation is not None else None),
+                    reason_class=("investigation_missing"
+                                  if kind == "relation_unresolved" else None),
                     investigation=investigation))
 
         if observation.boundaries:
@@ -1639,8 +1750,7 @@ def relation_rows_from_evidence(
                     kind = "relation_unresolved"
                     detail["reason"] = "post-stack rank collapse lacks source proof"
                     spans = ()
-                    investigation = _reader_investigation(
-                        "relation_source:post_stack_collapse")
+                    investigation = None
                 else:
                     proof = matching_proofs[0]
                     kind = "side_head"
@@ -1651,8 +1761,8 @@ def relation_rows_from_evidence(
                     _relation_id(kind, source_paths, (sibling.path,), detail), kind,
                     source_paths, (sibling.path,), detail,
                     (f"trace:{recipe}:post-stack-rank-collapse",), spans,
-                    reason_class=("mechanism_unresolved"
-                                  if investigation is not None else None),
+                    reason_class=("investigation_missing"
+                                  if kind == "relation_unresolved" else None),
                     investigation=investigation))
 
     ordered = tuple(sorted(rows, key=lambda row: row.relation_id))
@@ -1743,6 +1853,18 @@ def unresolved_axis_findings(table: ReconciliationTable | Mapping[str, Any]) -> 
         for axis in ("construction", "execution", "projection"):
             value = row.get(axis, {}) if isinstance(row, Mapping) else {}
             kind = value.get("kind") if isinstance(value, Mapping) else None
+            if axis == "projection" and isinstance(value, Mapping):
+                issue, fact_findings = _serialized_fact_finding_issue(
+                    value.get("fact_findings"),
+                    value.get("unqualified_fact_keys") or ())
+                if issue:
+                    findings.append(f"{path}: projection fact findings: {issue}")
+                else:
+                    findings.extend(
+                        f"{path}: projection fact {item['fact_key']}="
+                        "claim_proof_unstamped (investigation_missing; "
+                        "owner=S9 reader migration)"
+                        for item in fact_findings)
             if kind is None:
                 findings.append(f"{path}: {axis}=missing")
                 continue
@@ -1753,7 +1875,11 @@ def unresolved_axis_findings(table: ReconciliationTable | Mapping[str, Any]) -> 
                     findings.append(
                         f"{path}: {axis}={kind} carries unresolved evidence")
                 continue
-            issue = _serialized_reason_class_issue(reason_class, investigation)
+            issue = _serialized_reason_class_issue(
+                reason_class, investigation,
+                claim_keys=tuple(value.get("fact_keys") or ())
+                + tuple(value.get("unqualified_fact_keys") or ()),
+                claim_readers=dict(value.get("fact_claim_readers") or ()))
             if issue:
                 findings.append(f"{path}: {axis}={kind}: {issue}")
             elif reason_class in BLOCKING_UNRESOLVED_REASON_CLASSES:
@@ -1763,7 +1889,9 @@ def unresolved_axis_findings(table: ReconciliationTable | Mapping[str, Any]) -> 
         if relation.get("kind") == "relation_unresolved":
             reason_class = relation.get("reason_class")
             issue = _serialized_reason_class_issue(
-                reason_class, relation.get("investigation"))
+                reason_class, relation.get("investigation"),
+                claim_keys=tuple(relation.get("fact_keys") or ()),
+                claim_readers={})
             prefix = f"relation {relation.get('relation_id', '<missing>')}: unresolved"
             if issue:
                 findings.append(f"{prefix}: {issue}")
@@ -1777,26 +1905,80 @@ def unresolved_axis_findings(table: ReconciliationTable | Mapping[str, Any]) -> 
     return sorted(findings)
 
 
+def _serialized_fact_finding_issue(
+    findings: Any,
+    unqualified_fact_keys: Any,
+) -> tuple[str, tuple[Mapping[str, Any], ...]]:
+    expected_fields = {"fact_key", "reason_class", "concrete_reason", "owner"}
+    if not isinstance(findings, (list, tuple)):
+        return "missing typed fact-finding list", ()
+    if not isinstance(unqualified_fact_keys, (list, tuple)):
+        return "unqualified fact keys are not a sequence", ()
+    rows: list[Mapping[str, Any]] = []
+    try:
+        for finding in findings:
+            if not isinstance(finding, Mapping) or set(finding) != expected_fields:
+                return "fact finding has an open or malformed schema", ()
+            ProjectionFactFinding(**dict(finding))
+            rows.append(finding)
+    except (TypeError, ValueError):
+        return "fact finding violates the closed policy", ()
+    if tuple(row["fact_key"] for row in rows) != tuple(unqualified_fact_keys):
+        return "fact findings do not bijectively cover unqualified facts", ()
+    return "", tuple(rows)
+
+
 def _serialized_reason_class_issue(
     reason_class: Any,
     investigation: Any,
+    *,
+    claim_keys: tuple[str, ...] = (),
+    claim_readers: Mapping[str, Sequence[str]] | None = None,
 ) -> str:
     if reason_class not in UNRESOLVED_REASON_CLASSES:
         return "missing or invalid reason class"
     if reason_class != "mechanism_unresolved":
         return ("non-mechanism reason class carries an investigation record"
                 if investigation is not None else "")
-    expected_fields = {"kind", "identifiers", "concrete_reason"}
+    expected_fields = {
+        "kind", "reader_id", "claim_key", "declared_reader_ids",
+        "typed_exhaustion",
+        "concrete_reason",
+    }
     if (not isinstance(investigation, Mapping)
-            or set(investigation) != expected_fields
-            or not isinstance(investigation.get("identifiers"), (list, tuple))):
+            or set(investigation) != expected_fields):
         return "mechanism_unresolved lacks an investigation record"
     try:
-        InvestigationRecord(
-            investigation.get("kind"),
-            tuple(investigation.get("identifiers") or ()),
-            investigation.get("concrete_reason"),
+        if investigation.get("kind") != "reader_ran":
+            raise ValueError("only reader results can exhaust a mechanism claim")
+        _closed_text(investigation.get("reader_id"), field="reader id")
+        _closed_text(investigation.get("claim_key"), field="claim key")
+        declared_readers = investigation.get("declared_reader_ids")
+        if (not isinstance(declared_readers, (list, tuple))
+                or tuple(sorted(set(declared_readers))) != tuple(declared_readers)
+                or investigation.get("reader_id") not in declared_readers):
+            raise ValueError("reader id is not declared by the claim")
+        if investigation.get("claim_key") not in claim_keys:
+            return "reader investigation is not bound to the relevant claim"
+        authoritative = tuple(
+            (claim_readers or {}).get(investigation.get("claim_key"), ()))
+        if tuple(declared_readers) != authoritative:
+            return "reader investigation does not match authoritative claim readers"
+        exhaustion = investigation.get("typed_exhaustion")
+        if not isinstance(exhaustion, Mapping) or set(exhaustion) != {
+                "status", "completeness", "failure_kinds",
+                "ambiguity_present"}:
+            raise ValueError("typed reader exhaustion is missing")
+        typed_exhaustion = ReaderExhaustion(
+            exhaustion.get("status"), exhaustion.get("completeness"),
+            tuple(exhaustion.get("failure_kinds") or ()),
+            exhaustion.get("ambiguity_present"),
         )
+        if investigation.get("concrete_reason") not in \
+                CONCRETE_UNRESOLVED_REASONS:
+            raise ValueError("concrete reason is outside the closed vocabulary")
+        _validate_exhaustion_reason(
+            typed_exhaustion, investigation.get("concrete_reason"))
     except (TypeError, ValueError):
         return "mechanism_unresolved carries an invalid investigation record"
     return ""
@@ -1814,13 +1996,23 @@ def unresolved_reason_class_counts(
         "projection": "projection_unresolved",
     }
     for row in data.get("occurrences") or ():
+        projection = row.get("projection", {})
+        issue, fact_findings = _serialized_fact_finding_issue(
+            projection.get("fact_findings"),
+            projection.get("unqualified_fact_keys") or ())
+        if issue:
+            raise ValueError(f"invalid projection fact findings: {issue}")
+        counts["investigation_missing"] += len(fact_findings)
         for axis, unresolved_kind in unresolved_kinds.items():
             value = row.get(axis, {})
             if value.get("kind") != unresolved_kind:
                 continue
             reason_class = value.get("reason_class")
             issue = _serialized_reason_class_issue(
-                reason_class, value.get("investigation"))
+                reason_class, value.get("investigation"),
+                claim_keys=tuple(value.get("fact_keys") or ())
+                + tuple(value.get("unqualified_fact_keys") or ()),
+                claim_readers=dict(value.get("fact_claim_readers") or ()))
             if issue:
                 raise ValueError(f"invalid {axis} unresolved reason: {issue}")
             counts[reason_class] += 1
@@ -1829,7 +2021,9 @@ def unresolved_reason_class_counts(
             continue
         reason_class = relation.get("reason_class")
         issue = _serialized_reason_class_issue(
-            reason_class, relation.get("investigation"))
+            reason_class, relation.get("investigation"),
+            claim_keys=tuple(relation.get("fact_keys") or ()),
+            claim_readers={})
         if issue:
             raise ValueError(f"invalid relation unresolved reason: {issue}")
         counts[reason_class] += 1
@@ -1840,7 +2034,8 @@ __all__ = [
     "AUTHORITY_MATRIX", "CONSTRUCTION_KINDS", "EXECUTION_KINDS",
     "PROJECTION_KINDS", "RELATION_KINDS", "UNRESOLVED_REASON_CLASSES",
     "AuthorityRule", "ConstructionAxis", "ExecutionAxis",
-    "ProjectionFactCitation", "FACT_CLAIM_REQUIREMENTS",
+    "ProjectionFactCitation", "ProjectionFactFinding",
+    "FACT_CLAIM_REQUIREMENTS", "ReaderExhaustion",
     "InvestigationRecord", "MeaningProvenance",
     "OccurrenceProvenance", "OccurrenceRow", "ProjectionAxis",
     "ProjectionClaim", "ReconciliationTable", "RelationRow",

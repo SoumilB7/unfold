@@ -25,7 +25,7 @@ from scripts.generate_s7_shadow import (
     _signature_recipe,
     _require_schema_version, _source_hashes, _stable_observation_payload, _targets,
     _validate_relation_cross_file, _validate_relation_payload,
-    _validate_target_metadata, check,
+    _validate_projection_summary, _validate_target_metadata, check,
 )
 from model_unfolder.evidence.relation_probe import RelationProbePlanReceipt
 from physics.execution_observation import ExecutionRecipe, ObservationResult
@@ -755,16 +755,14 @@ def test_projection_categories_partition_denominator_and_keep_unknown_exact():
         for row in _artifact(summary["slug"])["table"]["occurrences"]:
             projection = row["projection"]
             if projection["kind"] == "projection_unresolved":
-                assert projection["reason"] in {
-                    "no product block or fact cites this occurrence",
-                    "product cites facts without typed semantic proof",
-                }
-                if projection["unqualified_fact_keys"]:
-                    assert projection["reason_class"] == "mechanism_unresolved"
-                    assert projection["investigation"] is not None
-                else:
-                    assert projection["reason_class"] == "structure_unaccounted"
+                assert projection["reason"] == \
+                    "no product block or fact cites this occurrence"
+                assert projection["reason_class"] == "structure_unaccounted"
+            elif projection["kind"] in {"rendered", "grouped"}:
+                assert projection["reason_class"] is None
+                assert projection["investigation"] is None
             declared = dict(projection["fact_claim_kinds"])
+            declared_readers = dict(projection["fact_claim_readers"])
             assert sorted(
                 projection["undeclared_fact_keys"]
                 + projection["declared_unproven_fact_keys"]) == \
@@ -782,6 +780,19 @@ def test_projection_categories_partition_denominator_and_keep_unknown_exact():
                        for item in projection["fact_claim_kinds"])
             assert all(proof["claim_kind"] == declared[proof["fact_id"]]
                        for proof in projection["fact_claim_proofs"])
+            assert set(declared_readers) <= set(
+                projection["fact_keys"] + projection["unqualified_fact_keys"])
+            assert all(readers == sorted(set(readers)) and readers
+                       for readers in declared_readers.values())
+            assert [finding["fact_key"]
+                    for finding in projection["fact_findings"]] == \
+                projection["unqualified_fact_keys"]
+            assert all(finding == {
+                "fact_key": finding["fact_key"],
+                "reason_class": "investigation_missing",
+                "concrete_reason": "claim_proof_unstamped",
+                "owner": "S9 reader migration",
+            } for finding in projection["fact_findings"])
 
     llama = next(row for row in _matrix()["models"]
                  if row["slug"] == "llama-7b")
@@ -810,10 +821,22 @@ def test_every_unresolved_axis_has_exactly_one_v26_reason_class():
                 if value["kind"] == unresolved_kind:
                     assert value["reason_class"] in classes
                     if value["reason_class"] == "mechanism_unresolved":
-                        assert value["investigation"] is not None
+                        assert axis == "projection"
+                        investigation = value["investigation"]
+                        assert investigation is not None
+                        assert investigation["claim_key"] in \
+                            dict(row["projection"]["fact_claim_readers"])
+                        assert investigation["declared_reader_ids"] == \
+                            dict(row["projection"]["fact_claim_readers"])[
+                                investigation["claim_key"]]
                 else:
                     assert value["reason_class"] is None
                     assert value["investigation"] is None
+            assert all(
+                finding["reason_class"] == "investigation_missing"
+                and finding["concrete_reason"] == "claim_proof_unstamped"
+                and finding["owner"] == "S9 reader migration"
+                for finding in row["projection"]["fact_findings"])
         for relation in table["relations"]:
             if relation["kind"] == "relation_unresolved":
                 assert relation["reason_class"] in classes
@@ -906,6 +929,27 @@ def test_source_change_poison_makes_the_artifact_gate_red(tmp_path):
         (S7 / "targets.json").read_bytes())
     with pytest.raises(ValueError, match="dependency surface is stale"):
         check(tmp_path)
+
+
+def test_projection_summary_cannot_drift_while_preserving_its_total():
+    summary = dict(next(row for row in _matrix()["models"]
+                        if row["slug"] == "llama-7b"))
+    table = _artifact("llama-7b")["table"]
+    summary["unqualified_fact_citations"] = sum(
+        len(row["projection"].get("fact_findings") or ())
+        for row in table["occurrences"])
+    _validate_projection_summary(summary, table, "models/llama-7b.json.gz")
+    swapped = dict(summary)
+    swapped["rendered"] += 1
+    swapped["grouped"] -= 1
+    with pytest.raises(ValueError, match="projection summary drifted"):
+        _validate_projection_summary(
+            swapped, table, "models/llama-7b.json.gz")
+    fact_drift = dict(summary)
+    fact_drift["unqualified_fact_citations"] += 1
+    with pytest.raises(ValueError, match="projection summary drifted"):
+        _validate_projection_summary(
+            fact_drift, table, "models/llama-7b.json.gz")
 
 
 def test_yaml_only_change_makes_dependency_surface_gate_red(monkeypatch):
