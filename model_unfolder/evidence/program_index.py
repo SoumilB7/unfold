@@ -990,7 +990,7 @@ __all__ = [
     # resolver-only
     "ConflictRecord",
     # assembly
-    "ProgramIndex", "build_program_index",
+    "ProgramIndex", "build_program_index", "portable_source_index_fingerprint",
 ]
 
 
@@ -2730,6 +2730,60 @@ def _aggregate_fingerprint(source_ids) -> str:
         ))
         for sid in source_ids
     )
+    h = hashlib.sha256()
+    for row in rows:
+        h.update(row.encode("utf-8", "surrogatepass"))
+        h.update(b"\x1e")
+    return h.hexdigest()
+
+
+def portable_source_index_fingerprint(index: ProgramIndex) -> str:
+    """Seal one static source closure without importing a host install path.
+
+    ``ProgramIndex.fingerprint`` remains the exact process-local address seal:
+    absolute paths deliberately distinguish two local source identities.  A
+    persisted cross-machine receipt needs a different identity.  This seal keeps
+    the complete source multiset, component ownership, external provenance,
+    shortest unique trailing locator, and content fingerprint.  Relocating the
+    same closure is therefore stable; renaming, changing ownership/provenance or
+    changing bytes is not.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("portable source-index fingerprint requires ProgramIndex")
+    sources = [node.source_id for node in index.source_nodes]
+    sources.extend(failure.source for failure in index.parse_failures)
+    if not sources:
+        raise ValueError("portable source-index fingerprint needs a source census")
+    paths = tuple(sorted(set(source.canonical_path for source in sources)))
+
+    def parts(path: str) -> tuple[str, ...]:
+        values = tuple(part for part in path.replace("\\", "/").split("/")
+                       if part and not part.endswith(":"))
+        if not values:
+            raise ValueError("a source-index entry has no portable path parts")
+        return values
+
+    path_parts = {path: parts(path) for path in paths}
+
+    def logical_locator(path: str) -> str:
+        value = path_parts[path]
+        for width in range(1, len(value) + 1):
+            suffix = value[-width:]
+            if sum(other[-width:] == suffix for other in path_parts.values()
+                   if len(other) >= width) == 1:
+                return "/".join(suffix)
+        # A relative one-part path can be a suffix of an absolute path.  Mark
+        # that exact logical-root case instead of importing an installation
+        # prefix merely to make it different.
+        return "@source-root/" + "/".join(value)
+
+    rows = sorted("\x1f".join((
+        source.component_key or "",
+        "1" if source.external else "0",
+        source.external_provenance,
+        logical_locator(source.canonical_path),
+        source.content_fingerprint,
+    )) for source in sources)
     h = hashlib.sha256()
     for row in rows:
         h.update(row.encode("utf-8", "surrogatepass"))

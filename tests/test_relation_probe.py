@@ -154,6 +154,43 @@ def test_full_class_field_and_external_label_rename_preserves_rule(tmp_path):
     assert right.plans[0].stack_path == "renamed"
 
 
+def test_probe_identity_is_host_independent_but_execution_sensitive(tmp_path):
+    index, inventory, result = _fixture(tmp_path)
+    first = resolve_relation_probes(index, inventory, result).plans[0]
+    provenance = dataclasses.replace(
+        inventory.provenance,
+        source_files=tuple(dataclasses.replace(
+            row, path=f"/other-host/site-packages/{row.path}")
+            for row in inventory.provenance.source_files),
+        environment={
+            **inventory.provenance.environment,
+            "python": "same-version-other-install",
+            "platform": "other-os",
+            "network": "other-os-level-sandbox",
+        },
+    )
+    observation = dataclasses.replace(result.observation, provenance=provenance)
+    moved_result = dataclasses.replace(
+        result, provenance=provenance, observation=observation)
+    moved_inventory = dataclasses.replace(inventory, provenance=provenance)
+    moved = resolve_relation_probes(
+        index, moved_inventory, moved_result).plans[0]
+    assert moved.observation_sha256 == first.observation_sha256
+    assert moved.index_fingerprint == first.index_fingerprint
+    assert moved.execution_recipe().recipe_id == first.execution_recipe().recipe_id
+
+    changed_call = dataclasses.replace(
+        observation.module_calls[-1],
+        class_ref=ResolvedClass("fixture", "DifferentCell"),
+    )
+    changed = dataclasses.replace(
+        observation,
+        module_calls=(*observation.module_calls[:-1], changed_call),
+    )
+    assert relation_probe_module._observation_hash(changed) != \
+        first.observation_sha256
+
+
 def test_two_independent_capabilities_produce_two_plans_never_a_pick(tmp_path):
     result = resolve_relation_probes(*_fixture(tmp_path, second=True))
     assert result.status == "resolved"

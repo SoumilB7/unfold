@@ -27,7 +27,10 @@ from model_unfolder.evidence.context import ParseContext
 from model_unfolder.evidence.document import DocumentBinding, prepare_document
 from model_unfolder.evidence.config_access import bound_document, resolve
 from model_unfolder.evidence.claim_evidence import qualify_config_value_fact
-from model_unfolder.evidence.program_index import build_program_index
+from model_unfolder.evidence.program_index import (
+    build_program_index,
+    portable_source_index_fingerprint as _portable_source_index_fingerprint,
+)
 from model_unfolder.evidence.reconciliation import (
     projection_claims_from_product, reconcile, relation_rows_from_evidence,
     static_claims_from_owner_graph, unresolved_axis_findings,
@@ -122,54 +125,6 @@ def _sha256(data: bytes) -> str:
 def _json_bytes(value: Any) -> bytes:
     return (json.dumps(value, indent=2, sort_keys=True, ensure_ascii=True)
             + "\n").encode("utf-8")
-
-
-def _portable_source_index_fingerprint(index: Any) -> str:
-    """Content-address the static source closure without host install paths.
-
-    ``ProgramIndex.fingerprint`` deliberately includes absolute paths because
-    they are part of its process-local address identity.  Persisted S7 evidence
-    crosses machines, so its index seal instead retains the complete source
-    multiset using component/import provenance, filename and content hash.  A
-    rename, ownership change, external provenance change or byte change still
-    changes the seal; relocating the same environment does not.
-    """
-    sources = [node.source_id for node in getattr(index, "source_nodes", ())]
-    sources.extend(
-        failure.source for failure in getattr(index, "parse_failures", ()))
-    if not sources:
-        raise ValueError("portable source-index fingerprint needs a source census")
-    paths = tuple(sorted(set(source.canonical_path for source in sources)))
-
-    def parts(path: str) -> tuple[str, ...]:
-        values = tuple(part for part in path.replace("\\", "/").split("/")
-                       if part and not part.endswith(":"))
-        if not values:
-            raise ValueError("a source-index entry has no portable path parts")
-        return values
-
-    path_parts = {path: parts(path) for path in paths}
-
-    def logical_locator(path: str) -> str:
-        value = path_parts[path]
-        for width in range(1, len(value) + 1):
-            suffix = value[-width:]
-            if sum(other[-width:] == suffix for other in path_parts.values()
-                   if len(other) >= width) == 1:
-                return "/".join(suffix)
-        # A relative one-part path can be a suffix of an absolute path.  Mark
-        # that exact logical-root case instead of importing an installation
-        # prefix merely to make it different.
-        return "@source-root/" + "/".join(value)
-
-    rows = sorted((
-        source.component_key or "",
-        "1" if source.external else "0",
-        source.external_provenance,
-        logical_locator(source.canonical_path),
-        source.content_fingerprint,
-    ) for source in sources)
-    return _sha256(_json_bytes(rows))
 
 
 _SEMANTIC_ENVIRONMENT_PATHS = frozenset({

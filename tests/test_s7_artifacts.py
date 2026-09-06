@@ -14,6 +14,9 @@ import scripts.generate_s7_shadow as shadow_generator
 from model_unfolder.evidence.reconciliation import (
     unresolved_axis_findings, unresolved_reason_class_counts,
 )
+from model_unfolder.evidence.program_index import (
+    ProgramIndex, SourceFileNode, SourceId,
+)
 from scripts.generate_s7_shadow import (
     RecipeAttemptBundle, RecipeResolution, _assert_live_shadow_matches,
     _assert_logical_payload_matches, _assert_model_summary_matches,
@@ -499,16 +502,16 @@ def test_semantic_live_hash_normalizes_only_host_metadata_and_diagnostics():
 def test_persisted_source_index_seal_is_path_independent_but_evidence_sensitive():
     def source(path, *, fingerprint="a" * 64, component="root",
                external=False, provenance=""):
-        return SimpleNamespace(
-            canonical_path=path, content_fingerprint=fingerprint,
-            component_key=None if external else component,
+        return SourceId(
+            path, fingerprint, component_key=None if external else component,
             external=external, external_provenance=provenance)
 
     def index(*sources):
-        return SimpleNamespace(
-            source_nodes=tuple(SimpleNamespace(source_id=row)
-                               for row in sources),
-            parse_failures=())
+        return ProgramIndex(
+            "fixture",
+            source_nodes=tuple(SourceFileNode(row) for row in sources),
+            fingerprint="f" * 64,
+        )
 
     mac = index(
         source("/Library/Python/site-packages/pkg/a/modeling_x.py",

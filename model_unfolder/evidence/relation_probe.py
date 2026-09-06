@@ -27,7 +27,7 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-from .program_index import ProgramIndex
+from .program_index import ProgramIndex, portable_source_index_fingerprint
 
 
 _ORDERED_CONTAINER_TYPES = frozenset({
@@ -56,7 +56,28 @@ def _canonical_hash(value: Any) -> str:
 
 
 def _observation_hash(observation: Any) -> str:
-    return _canonical_hash(dataclasses.asdict(observation))
+    """Content-address execution evidence without host-environment identity.
+
+    The observation remains exact: recipe, calls, operations, lazy modules,
+    package versions, config hash, resolved class, factories and build flags all
+    participate.  Only source *location* and the three declared host-environment
+    values are replaced by their portable authorities.  Source module + bytes
+    remain, including multiplicity.
+    """
+    payload = dataclasses.asdict(observation)
+    provenance = dict(payload["provenance"])
+    provenance["source_files"] = sorted((
+        {"module": row["module"], "sha256": row["sha256"]}
+        for row in provenance["source_files"]),
+        key=lambda row: (row["module"], row["sha256"]),
+    )
+    environment = dict(provenance["environment"])
+    for key in ("platform", "network", "python"):
+        if key in environment:
+            environment[key] = f"<{key}>"
+    provenance["environment"] = environment
+    payload["provenance"] = provenance
+    return _canonical_hash(payload)
 
 
 def _child_path(container: str, child: str) -> str:
@@ -502,7 +523,7 @@ def resolve_relation_probes(
             observation=observation,
             observation_sha256=observation_sha256,
             inventory_config_sha256=inventory.provenance.config_sha256,
-            index_fingerprint=index.fingerprint,
+            index_fingerprint=portable_source_index_fingerprint(index),
         ))
 
     plans.sort(key=lambda row: row.stack_path)
