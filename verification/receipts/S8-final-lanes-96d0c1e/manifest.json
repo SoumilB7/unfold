@@ -7,6 +7,9 @@
     "family_verification_sd_v1_4",
     "39_model_shadow_regeneration",
     "shadow_artifact_check_and_named_delta_review",
+    "44_model_coverage_generate",
+    "44_model_coverage_check",
+    "per_model_coverage_delta_review_and_public_count_freshness",
     "commit_verification_artifacts",
     "isolated_broad_coordinator"
   ],
@@ -52,5 +55,17 @@
   "scope": "S7 artifacts may regenerate; no product/preservation baseline blessing. Exact output deltas need Soumil approval. All lanes serial.",
   "family_output": "/private/tmp/unfold-s8-family-96d0c1e",
   "matrix_tree": "/private/tmp/unfold-s8-final-verification-96d0c1e",
-  "matrix_output": "/private/tmp/unfold-s8-matrix-96d0c1e"
+  "matrix_output": "/private/tmp/unfold-s8-matrix-96d0c1e",
+  "coverage_commands": [
+    [
+      "python3",
+      "scripts/coverage.py"
+    ],
+    [
+      "python3",
+      "scripts/coverage.py",
+      "--check"
+    ]
+  ],
+  "coverage_scope": "Exact existing29+15denominator; no silent finding accepted; preserve acceptedS7 manifest and per-model deltas"
 }
