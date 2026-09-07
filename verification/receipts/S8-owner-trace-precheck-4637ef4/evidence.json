@@ -1,0 +1,86 @@
+{
+  "checkpoint": "4637ef4b77a8139326a8643b9f7eb68ab9d0f93c",
+  "page_sha256": "40277c09576adda868d513ee0121a0dd84f18a5d8ff3917ef27e5b0bd0983db4",
+  "cards": {
+    "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff": {
+      "text": "Source-proven feed-forward computation\nConstructed occurrence: down_blocks.1.attentions.0.transformer_blocks.0.ff. The children below show containment. Their order does not establish execution order.\n4,920,960 parameters in subtree\nExecution: investigation_missing\nno_recipe_attempted\nActivation: gelu\nProjection storage: fused_gate_up\ninput projection: 5120 \u00d7 640\noutput projection: 640 \u00d7 2560\nin\nLinear (gate + up)\nSplit gate / up\nLinear (down)\nGELU\nnet",
+      "facts": [
+        "4,920,960 parameters in subtree",
+        "Execution: investigation_missing",
+        "no_recipe_attempted",
+        "Activation: gelu",
+        "Projection storage: fused_gate_up",
+        "input projection: 5120 \u00d7 640",
+        "output projection: 640 \u00d7 2560"
+      ],
+      "svg_count": 2,
+      "node_ids": [
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_gate_up_proj",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_gate_up_split",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_multiply",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_down_proj",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__net"
+      ]
+    },
+    "instance_down_blocks__0__downsamplers__0": {
+      "text": "Spatial reduction\nConstructed occurrence: down_blocks.0.downsamplers.0. The children below show containment. Their order does not establish execution order.\n921,920 parameters in subtree\nExecution: investigation_missing\nno_recipe_attempted\nSource-proven spatial primitive: torch.nn.Conv2d\nStride: 2\n2D convolution",
+      "facts": [
+        "921,920 parameters in subtree",
+        "Execution: investigation_missing",
+        "no_recipe_attempted",
+        "Source-proven spatial primitive: torch.nn.Conv2d",
+        "Stride: 2"
+      ],
+      "svg_count": 1,
+      "node_ids": [
+        "instance_down_blocks__0__downsamplers__0__conv"
+      ]
+    },
+    "instance_down_blocks__0__resnets__0": {
+      "text": "ResnetBlock2D\nConstructed occurrence: down_blocks.0.resnets.0. The children below show containment. Their order does not establish execution order.\n2,255,040 parameters in subtree\nExecution: investigation_missing\nno_recipe_attempted\nConnections across optional branches and helpers remain under investigation.\nConditional additive arithmetic; operand call boundaries retained\nGroupNorm\nSiLU\n2D convolution\nGroupNorm\nSiLU\nDropout\n2D convolution\nFirst add input\nDivide by scale\nvalue unresolved\nSecond add input\nCall result\nInput unresolved\nGroupNorm\n2D convolution\nLinear\nGroupNorm\nDropout\n2D convolution\nSiLU",
+      "facts": [
+        "2,255,040 parameters in subtree",
+        "Execution: investigation_missing",
+        "no_recipe_attempted",
+        "Connections across optional branches and helpers remain under investigation.",
+        "Conditional additive arithmetic; operand call boundaries retained"
+      ],
+      "svg_count": 5,
+      "node_ids": [
+        "instance_down_blocks__0__resnets__0__norm1",
+        "instance_down_blocks__0__resnets__0__nonlinearity",
+        "instance_down_blocks__0__resnets__0__conv1",
+        "instance_down_blocks__0__resnets__0__norm2",
+        "instance_down_blocks__0__resnets__0__nonlinearity",
+        "instance_down_blocks__0__resnets__0__dropout",
+        "instance_down_blocks__0__resnets__0__conv2",
+        "instance_down_blocks__0__resnets__0__return_operand_0",
+        "instance_down_blocks__0__resnets__0__return_add",
+        "instance_down_blocks__0__resnets__0__return_scale",
+        "instance_down_blocks__0__resnets__0__return_operand_1",
+        "instance_down_blocks__0__resnets__0__conditioning_0_operand_0",
+        "instance_down_blocks__0__resnets__0__conditioning_0_add",
+        "instance_down_blocks__0__resnets__0__conditioning_0_operand_1",
+        "instance_down_blocks__0__resnets__0__norm1",
+        "instance_down_blocks__0__resnets__0__conv1",
+        "instance_down_blocks__0__resnets__0__time_emb_proj",
+        "instance_down_blocks__0__resnets__0__norm2",
+        "instance_down_blocks__0__resnets__0__dropout",
+        "instance_down_blocks__0__resnets__0__conv2",
+        "instance_down_blocks__0__resnets__0__nonlinearity"
+      ]
+    }
+  },
+  "installed_source_sha256": {
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/activations.py": "ab1767e8e44e7d4bf1cb18299ba33654329e2711fa983b1423fc4fe12de2c3ab",
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/attention.py": "0192998d3979533cdbc8eef9c8f783d0b4a4a547dec9e4388a17c9ae3b1c8ea8",
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/downsampling.py": "2852f787a39f6f679578b9992c37b114c4b76cb9449b473267490429c22c396c",
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/resnet.py": "b601e45d78a640e66b05822d3d008e40a039b92bb126abd1a9bdef6124666d84"
+  },
+  "parameter_arithmetic": {
+    "ffn": 4920960,
+    "downsample": 921920,
+    "resnet": 2255040
+  }
+}

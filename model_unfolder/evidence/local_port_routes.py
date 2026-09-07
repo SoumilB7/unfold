@@ -49,7 +49,7 @@ class LocalPortRoute:
     spans: tuple[SourceSpan, ...]
 
 
-def read_local_port_route(index, forward, expression, before, guard=()):
+def read_local_port_route(index, forward, expression, before, guard=(), *, region_input=None):
     """Trace one value to formal/selection/call ports, retaining both if arms.
 
     Supports local assignment, tuple call-result unpacking, and one optional
@@ -60,6 +60,9 @@ def read_local_port_route(index, forward, expression, before, guard=()):
     calls = {row.span: row for row in index.calls_in(forward.symbol)}
     formals = {row.name for row in forward.params if row.name != "self"}
     spans = set()
+
+    def outside_region(span):
+        return region_input is not None and _before(span, region_input[1])
 
     def unknown(reason):
         return {"kind": "unresolved", "reason": reason}
@@ -78,6 +81,12 @@ def read_local_port_route(index, forward, expression, before, guard=()):
         if value.kind == "constant":
             return {"kind": "literal", "value": value.const_value}
         if value.kind == "name":
+            scoped_boundary = region_input is not None and value.name == region_input[0]
+            if region_input is not None and value.name == region_input[0] \
+                    and (cutoff.line, cutoff.col) <= (region_input[1].line, region_input[1].col):
+                if (cutoff.line, cutoff.col) < (region_input[1].line, region_input[1].col):
+                    return unknown("earlier carried-state version belongs to prior region history")
+                return {"kind": "region_input"}
             address = (value.name, cutoff.line, cutoff.col, tuple(context))
             if address in seen:
                 return unknown("cyclic local definition")
@@ -89,7 +98,7 @@ def read_local_port_route(index, forward, expression, before, guard=()):
                     return unknown("loop target supplies this local; formal identity does not survive binding")
             matches = []
             for binding in bindings:
-                if binding.span is None or not _before(binding.span, cutoff) or _disjoint(binding.guard, context):
+                if binding.span is None or (scoped_boundary and outside_region(binding.span)) or not _before(binding.span, cutoff) or _disjoint(binding.guard, context):
                     continue
                 slots = [slot for target in binding.targets if (slot := _slot(target, value.name)) is not None]
                 if slots:
@@ -97,8 +106,33 @@ def read_local_port_route(index, forward, expression, before, guard=()):
                         return unknown("unsupported assignment to routed local")
                     matches.append((binding, slots[0]))
             matches.sort(key=lambda row: (row[0].span.line, row[0].span.col))
+            if context and matches and all(_before(binding.span, context[0].span)
+                                           for binding, _ in matches):
+                # A side value established before the current guarded region
+                # enters at that region's boundary. Do not interpret earlier
+                # conditionals as though nested inside the consumer's loop.
+                # Any write to this local inside the region prevents this step.
+                inside_writes = [binding for binding in bindings
+                                 if any(_slot(target, value.name) is not None for target in binding.targets)
+                                 and any(step.span == context[0].span for step in binding.guard)]
+                effects = [row for row in index.unsupported_execution_in(forward.symbol)
+                           if row.construct_kind != "boolop" and row.span is not None
+                           and not _before(row.span, context[0].span) and _before(row.span, cutoff)]
+                target_writes = [loop for loop in index.loops_in(forward.symbol)
+                                 if _slot(loop.target, value.name) is not None and loop.span is not None
+                                 and not _before(loop.span, context[0].span) and _before(loop.span, cutoff)]
+                if not inside_writes and not effects and not target_writes:
+                    return visit(value, context[0].span, (), seen)
+            def loop_else_binding(binding):
+                for loop in index.loops_in(forward.symbol):
+                    span = loop.else_span
+                    if span is not None and (span.line, span.col) <= (binding.span.line, binding.span.col) \
+                            and (binding.span.end_line or binding.span.line, binding.span.end_col or binding.span.col) \
+                                <= (span.end_line or span.line, span.end_col or span.col):
+                        return True
+                return False
             guaranteed = [number for number, (binding, _) in enumerate(matches)
-                          if context[:len(binding.guard)] == binding.guard]
+                          if context[:len(binding.guard)] == binding.guard and not loop_else_binding(binding)]
             base = guaranteed[-1] if guaranteed else -1
             later = matches[base + 1:]
 
@@ -108,14 +142,19 @@ def read_local_port_route(index, forward, expression, before, guard=()):
                 return base >= 0 and _before(region, matches[base][0].span)
 
             for loop in index.loops_in(forward.symbol):
-                if loop.span is not None and _before(loop.span, cutoff) \
+                if loop.span is not None and not (scoped_boundary and outside_region(loop.span)) and _before(loop.span, cutoff) \
                         and not _disjoint(loop.guard, context) \
                         and _slot(loop.target, value.name) is not None \
                         and not overwritten_after(loop.span):
                     spans.add(loop.span)
                     return unknown("completed loop may have rebound this local; original formal identity is not established")
             for region in index.unsupported_execution_in(forward.symbol):
-                if region.span is not None and _before(region.span, cutoff) \
+                if region.construct_kind == "boolop":
+                    # Short-circuit selection is opaque, but evaluating a
+                    # predicate is not itself a local assignment. Named writes
+                    # still enter the explicit binding/refusal checks above.
+                    continue
+                if region.span is not None and not (scoped_boundary and outside_region(region.span)) and _before(region.span, cutoff) \
                         and not _disjoint(region.guard, context) \
                         and not overwritten_after(region.span):
                     # With/try/match target bindings are not exhaustively
@@ -158,11 +197,14 @@ def read_local_port_route(index, forward, expression, before, guard=()):
                     spans.update(row.span for row in writes if row.span is not None)
                     return {"kind": "loop_carried", "formal": value.name,
                             "initial_route": (assigned(*matches[base]) if base >= 0 else
+                                              {"kind": "region_input"} if scoped_boundary else
                                               {"kind": "formal", "formal": value.name} if value.name in formals else
                                               unknown("loop seed unresolved")),
                             "reason": "initial value seeds the loop; subsequent iterations use the carried value"}
                 if base >= 0:
                     return assigned(*matches[base])
+                if region_input is not None and value.name == region_input[0]:
+                    return {"kind": "region_input"}
                 if value.name not in formals:
                     return unknown("local has no reaching assignment or formal")
                 return {"kind": "formal", "formal": value.name}
@@ -204,6 +246,22 @@ def read_local_port_route(index, forward, expression, before, guard=()):
             if len(later) > 1:
                 binding, slot = later[-1]
             extra = binding.guard[len(context):] if binding.guard[:len(context)] == context else ()
+            if len(extra) > 1 and extra[0].kind == "if":
+                step = extra[0]
+                spans.add(step.span)
+                return {"kind": "conditional", "condition": "source guard unresolved",
+                        "when_true": visit(value, cutoff, (*context, step), seen),
+                        "when_false": visit(value, step.span, context, seen)}
+            if len(extra) > 1 and extra[0].kind == "else":
+                step = extra[0]
+                if_steps = [candidate for row in (*bindings, *calls.values()) for candidate in row.guard
+                            if candidate.span == step.span and candidate.kind == "if"]
+                if not if_steps:
+                    return unknown("nested else has no exact opposite source arm")
+                spans.add(step.span)
+                return {"kind": "conditional", "condition": "source guard unresolved",
+                        "when_true": visit(value, cutoff, (*context, if_steps[0]), seen),
+                        "when_false": visit(value, cutoff, (*context, step), seen)}
             if len(extra) != 1 or extra[0].kind not in {"if", "else"}:
                 return unknown("optional assignment is not one exact if arm")
             step = extra[0]
@@ -226,6 +284,10 @@ def read_local_port_route(index, forward, expression, before, guard=()):
             return call_result(call, (), cutoff, context, seen)
         if value.kind in {"tuple", "list"}:
             return {"kind": "sequence", "items": [visit(child, cutoff, context, seen) for child in value.children]}
+        if value.kind == "binop":
+            return {"kind": "source_operation", "operator": value.operator,
+                    "operands": [visit(child, cutoff, context, seen) for child in value.children],
+                    "reason": "source operator ports; operand dispatch and result computation unresolved"}
         return unknown("expression requires another mechanism reader")
 
     def describe_selection(value):
@@ -244,8 +306,14 @@ def read_local_port_route(index, forward, expression, before, guard=()):
                      for number, actual in enumerate(call.args)]
         arguments.extend({"port": name, "route": visit(actual, cutoff, context, seen)}
                          for name, actual in call.kwargs)
+        receiver = None
+        if call.callee.kind == "attribute" and call.callee.children:
+            base = call.callee.children[0]
+            receiver = {"kind": "lookup_receiver", "route": visit(base, cutoff, context, seen),
+                        "reason": "attribute lookup receiver; descriptor binding and computation unresolved"}
         return {"kind": "call_result", "result_slot": list(slot),
                 "arguments": arguments, "mechanism": "unresolved",
+                "receiver": receiver,
                 "reason": "call argument and result wiring proven; internal computation not established"}
 
     result = visit(expression, before, tuple(guard), ())

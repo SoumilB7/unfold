@@ -1,0 +1,2180 @@
+{
+  "additional_positive_paths": [
+    ""
+  ],
+  "additional_root_reason": "root was present in prior raw observation but dropped by the old empty-path join",
+  "blessed": false,
+  "constructed": 1930,
+  "execution": {
+    "execution_unresolved": 239,
+    "observed": 1691,
+    "proven_inactive": 1621
+  },
+  "family_execution_unresolved": [
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.resnets",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.0.downsamplers",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.0.resnets",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.attentions",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.downsamplers",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.resnets",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.resnets",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.resnets",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.upsamplers",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.resnets",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.upsamplers",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.2.resnets",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.attentions.0.transformer_blocks",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.attentions.1.transformer_blocks",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.0.transformer_blocks",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.1.transformer_blocks",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.2.transformer_blocks",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.0.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.0.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.0.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.1.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.1.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.1.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.2.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.2.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.2.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.3.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.3.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.3.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.4.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.4.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.4.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.5.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.5.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.5.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.6.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.6.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.6.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.7.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.7.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.7.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.8.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.8.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.8.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.9.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.9.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "mid_block.attentions.0.transformer_blocks.9.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.attentions.0.transformer_blocks.0.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.attentions.0.transformer_blocks.0.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.attentions.0.transformer_blocks.0.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.attentions.0.transformer_blocks.1.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.attentions.0.transformer_blocks.1.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.attentions.0.transformer_blocks.1.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.attentions.1.transformer_blocks.0.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.attentions.1.transformer_blocks.0.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.attentions.1.transformer_blocks.0.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.attentions.1.transformer_blocks.1.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.attentions.1.transformer_blocks.1.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.1.attentions.1.transformer_blocks.1.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.0.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.0.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.0.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.1.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.1.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.1.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.2.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.2.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.2.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.3.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.3.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.3.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.4.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.4.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.4.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.5.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.5.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.5.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.6.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.6.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.6.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.7.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.7.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.7.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.8.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.8.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.8.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.9.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.9.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.0.transformer_blocks.9.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.0.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.0.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.0.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.1.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.1.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.1.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.2.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.2.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.2.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.3.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.3.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.3.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.4.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.4.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.4.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.5.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.5.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.5.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.6.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.6.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.6.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.7.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.7.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.7.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.8.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.8.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.8.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.9.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.9.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "down_blocks.2.attentions.1.transformer_blocks.9.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.0.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.0.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.0.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.1.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.1.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.1.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.2.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.2.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.2.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.3.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.3.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.3.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.4.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.4.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.4.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.5.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.5.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.5.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.6.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.6.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.6.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.7.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.7.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.7.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.8.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.8.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.8.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.9.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.9.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.0.transformer_blocks.9.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.0.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.0.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.0.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.1.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.1.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.1.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.2.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.2.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.2.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.3.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.3.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.3.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.4.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.4.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.4.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.5.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.5.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.5.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.6.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.6.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.6.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.7.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.7.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.7.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.8.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.8.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.8.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.9.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.9.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.1.transformer_blocks.9.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.0.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.0.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.0.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.1.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.1.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.1.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.2.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.2.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.2.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.3.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.3.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.3.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.4.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.4.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.4.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.5.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.5.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.5.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.6.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.6.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.6.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.7.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.7.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.7.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.8.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.8.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.8.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.9.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.9.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.0.attentions.2.transformer_blocks.9.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.0.transformer_blocks.0.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.0.transformer_blocks.0.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.0.transformer_blocks.0.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.0.transformer_blocks.1.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.0.transformer_blocks.1.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.0.transformer_blocks.1.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.1.transformer_blocks.0.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.1.transformer_blocks.0.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.1.transformer_blocks.0.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.1.transformer_blocks.1.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.1.transformer_blocks.1.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.1.transformer_blocks.1.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.2.transformer_blocks.0.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.2.transformer_blocks.0.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.2.transformer_blocks.0.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.2.transformer_blocks.1.attn1.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.2.transformer_blocks.1.attn2.to_out",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    },
+    {
+      "detail": "",
+      "investigation": null,
+      "kind": "execution_unresolved",
+      "path": "up_blocks.1.attentions.2.transformer_blocks.1.ff.net",
+      "reason": "unobserved_no_static_proof",
+      "reason_class": "investigation_missing",
+      "recipe_ids": []
+    }
+  ],
+  "lost_positive_paths": [],
+  "prior_positive_paths": 1690,
+  "prior_table_status": "accepted table supplied",
+  "production_observation_policy": "ordinary parse may have no observation; this exit table uses the actual fresh compatible attempt",
+  "projection": {
+    "non_architectural": 239,
+    "projection_unresolved": 1621,
+    "rendered": 1691
+  },
+  "recipe_status": "ok",
+  "status": "review_required",
+  "total_occurrences": 3551,
+  "unet_fact_findings": [],
+  "wiring_problems": []
+}

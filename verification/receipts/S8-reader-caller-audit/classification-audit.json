@@ -1,0 +1,2428 @@
+{
+  "checkpoint": "4637ef4b77a8139326a8643b9f7eb68ab9d0f93c",
+  "table_sha256": "82c1f8a3fc3364443a54dad45b79fe75a8d1883ff247adc70528f8e10247089e",
+  "html_sha256": "40277c09576adda868d513ee0121a0dd84f18a5d8ff3917ef27e5b0bd0983db4",
+  "total": 3551,
+  "constructed": 1930,
+  "rendered": 1691,
+  "non_architectural": 239,
+  "all_containers_exact_ModuleList": true,
+  "container_drawn_but_non_architectural": [
+    {
+      "instance_path": "mid_block.attentions",
+      "block_id": "instance_mid_block__attentions",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.resnets",
+      "block_id": "instance_mid_block__resnets",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.0.downsamplers",
+      "block_id": "instance_down_blocks__0__downsamplers",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.0.resnets",
+      "block_id": "instance_down_blocks__0__resnets",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.attentions",
+      "block_id": "instance_down_blocks__1__attentions",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.downsamplers",
+      "block_id": "instance_down_blocks__1__downsamplers",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.resnets",
+      "block_id": "instance_down_blocks__1__resnets",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions",
+      "block_id": "instance_down_blocks__2__attentions",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.resnets",
+      "block_id": "instance_down_blocks__2__resnets",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions",
+      "block_id": "instance_up_blocks__0__attentions",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.resnets",
+      "block_id": "instance_up_blocks__0__resnets",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.upsamplers",
+      "block_id": "instance_up_blocks__0__upsamplers",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions",
+      "block_id": "instance_up_blocks__1__attentions",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.resnets",
+      "block_id": "instance_up_blocks__1__resnets",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.upsamplers",
+      "block_id": "instance_up_blocks__1__upsamplers",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.2.resnets",
+      "block_id": "instance_up_blocks__2__resnets",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.attentions.0.transformer_blocks",
+      "block_id": "instance_down_blocks__1__attentions__0__transformer_blocks",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.attentions.1.transformer_blocks",
+      "block_id": "instance_down_blocks__1__attentions__1__transformer_blocks",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.0.transformer_blocks",
+      "block_id": "instance_up_blocks__1__attentions__0__transformer_blocks",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.1.transformer_blocks",
+      "block_id": "instance_up_blocks__1__attentions__1__transformer_blocks",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.2.transformer_blocks",
+      "block_id": "instance_up_blocks__1__attentions__2__transformer_blocks",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.0.attn1.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__0__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.0.attn2.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__0__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.0.ff.net",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__0__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.1.attn1.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__1__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.1.attn2.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__1__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.1.ff.net",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__1__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.2.attn1.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__2__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.2.attn2.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__2__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.2.ff.net",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__2__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.3.attn1.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__3__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.3.attn2.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__3__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.3.ff.net",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__3__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.4.attn1.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__4__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.4.attn2.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__4__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.4.ff.net",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__4__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.5.attn1.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__5__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.5.attn2.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__5__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.5.ff.net",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__5__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.6.attn1.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__6__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.6.attn2.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__6__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.6.ff.net",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__6__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.7.attn1.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__7__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.7.attn2.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__7__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.7.ff.net",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__7__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.8.attn1.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__8__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.8.attn2.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__8__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.8.ff.net",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__8__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.9.attn1.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__9__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.9.attn2.to_out",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__9__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "mid_block.attentions.0.transformer_blocks.9.ff.net",
+      "block_id": "instance_mid_block__attentions__0__transformer_blocks__9__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.attentions.0.transformer_blocks.0.attn1.to_out",
+      "block_id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.attentions.0.transformer_blocks.0.attn2.to_out",
+      "block_id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.attentions.0.transformer_blocks.0.ff.net",
+      "block_id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.attentions.0.transformer_blocks.1.attn1.to_out",
+      "block_id": "instance_down_blocks__1__attentions__0__transformer_blocks__1__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.attentions.0.transformer_blocks.1.attn2.to_out",
+      "block_id": "instance_down_blocks__1__attentions__0__transformer_blocks__1__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.attentions.0.transformer_blocks.1.ff.net",
+      "block_id": "instance_down_blocks__1__attentions__0__transformer_blocks__1__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.attentions.1.transformer_blocks.0.attn1.to_out",
+      "block_id": "instance_down_blocks__1__attentions__1__transformer_blocks__0__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.attentions.1.transformer_blocks.0.attn2.to_out",
+      "block_id": "instance_down_blocks__1__attentions__1__transformer_blocks__0__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.attentions.1.transformer_blocks.0.ff.net",
+      "block_id": "instance_down_blocks__1__attentions__1__transformer_blocks__0__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.attentions.1.transformer_blocks.1.attn1.to_out",
+      "block_id": "instance_down_blocks__1__attentions__1__transformer_blocks__1__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.attentions.1.transformer_blocks.1.attn2.to_out",
+      "block_id": "instance_down_blocks__1__attentions__1__transformer_blocks__1__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.1.attentions.1.transformer_blocks.1.ff.net",
+      "block_id": "instance_down_blocks__1__attentions__1__transformer_blocks__1__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.0.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__0__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.0.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__0__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.0.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__0__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.1.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__1__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.1.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__1__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.1.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__1__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.2.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__2__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.2.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__2__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.2.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__2__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.3.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__3__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.3.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__3__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.3.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__3__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.4.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__4__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.4.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__4__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.4.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__4__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.5.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__5__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.5.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__5__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.5.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__5__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.6.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__6__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.6.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__6__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.6.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__6__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.7.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__7__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.7.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__7__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.7.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__7__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.8.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__8__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.8.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__8__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.8.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__8__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.9.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__9__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.9.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__9__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.0.transformer_blocks.9.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__0__transformer_blocks__9__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.0.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__0__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.0.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__0__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.0.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__0__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.1.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__1__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.1.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__1__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.1.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__1__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.2.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__2__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.2.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__2__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.2.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__2__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.3.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__3__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.3.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__3__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.3.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__3__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.4.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__4__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.4.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__4__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.4.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__4__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.5.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__5__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.5.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__5__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.5.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__5__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.6.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__6__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.6.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__6__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.6.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__6__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.7.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__7__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.7.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__7__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.7.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__7__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.8.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__8__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.8.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__8__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.8.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__8__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.9.attn1.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__9__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.9.attn2.to_out",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__9__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "down_blocks.2.attentions.1.transformer_blocks.9.ff.net",
+      "block_id": "instance_down_blocks__2__attentions__1__transformer_blocks__9__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.0.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__0__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.0.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__0__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.0.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__0__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.1.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__1__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.1.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__1__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.1.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__1__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.2.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__2__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.2.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__2__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.2.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__2__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.3.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__3__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.3.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__3__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.3.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__3__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.4.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__4__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.4.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__4__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.4.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__4__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.5.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__5__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.5.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__5__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.5.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__5__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.6.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__6__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.6.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__6__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.6.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__6__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.7.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__7__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.7.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__7__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.7.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__7__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.8.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__8__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.8.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__8__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.8.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__8__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.9.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__9__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.9.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__9__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.0.transformer_blocks.9.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__0__transformer_blocks__9__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.0.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__0__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.0.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__0__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.0.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__0__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.1.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__1__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.1.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__1__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.1.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__1__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.2.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__2__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.2.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__2__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.2.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__2__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.3.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__3__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.3.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__3__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.3.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__3__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.4.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__4__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.4.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__4__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.4.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__4__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.5.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__5__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.5.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__5__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.5.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__5__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.6.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__6__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.6.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__6__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.6.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__6__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.7.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__7__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.7.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__7__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.7.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__7__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.8.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__8__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.8.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__8__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.8.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__8__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.9.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__9__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.9.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__9__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.1.transformer_blocks.9.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__1__transformer_blocks__9__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.0.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__0__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.0.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__0__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.0.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__0__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.1.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__1__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.1.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__1__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.1.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__1__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.2.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__2__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.2.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__2__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.2.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__2__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.3.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__3__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.3.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__3__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.3.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__3__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.4.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__4__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.4.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__4__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.4.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__4__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.5.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__5__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.5.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__5__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.5.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__5__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.6.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__6__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.6.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__6__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.6.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__6__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.7.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__7__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.7.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__7__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.7.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__7__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.8.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__8__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.8.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__8__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.8.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__8__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.9.attn1.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__9__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.9.attn2.to_out",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__9__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.0.attentions.2.transformer_blocks.9.ff.net",
+      "block_id": "instance_up_blocks__0__attentions__2__transformer_blocks__9__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.0.transformer_blocks.0.attn1.to_out",
+      "block_id": "instance_up_blocks__1__attentions__0__transformer_blocks__0__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.0.transformer_blocks.0.attn2.to_out",
+      "block_id": "instance_up_blocks__1__attentions__0__transformer_blocks__0__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.0.transformer_blocks.0.ff.net",
+      "block_id": "instance_up_blocks__1__attentions__0__transformer_blocks__0__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.0.transformer_blocks.1.attn1.to_out",
+      "block_id": "instance_up_blocks__1__attentions__0__transformer_blocks__1__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.0.transformer_blocks.1.attn2.to_out",
+      "block_id": "instance_up_blocks__1__attentions__0__transformer_blocks__1__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.0.transformer_blocks.1.ff.net",
+      "block_id": "instance_up_blocks__1__attentions__0__transformer_blocks__1__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.1.transformer_blocks.0.attn1.to_out",
+      "block_id": "instance_up_blocks__1__attentions__1__transformer_blocks__0__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.1.transformer_blocks.0.attn2.to_out",
+      "block_id": "instance_up_blocks__1__attentions__1__transformer_blocks__0__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.1.transformer_blocks.0.ff.net",
+      "block_id": "instance_up_blocks__1__attentions__1__transformer_blocks__0__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.1.transformer_blocks.1.attn1.to_out",
+      "block_id": "instance_up_blocks__1__attentions__1__transformer_blocks__1__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.1.transformer_blocks.1.attn2.to_out",
+      "block_id": "instance_up_blocks__1__attentions__1__transformer_blocks__1__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.1.transformer_blocks.1.ff.net",
+      "block_id": "instance_up_blocks__1__attentions__1__transformer_blocks__1__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.2.transformer_blocks.0.attn1.to_out",
+      "block_id": "instance_up_blocks__1__attentions__2__transformer_blocks__0__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.2.transformer_blocks.0.attn2.to_out",
+      "block_id": "instance_up_blocks__1__attentions__2__transformer_blocks__0__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.2.transformer_blocks.0.ff.net",
+      "block_id": "instance_up_blocks__1__attentions__2__transformer_blocks__0__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.2.transformer_blocks.1.attn1.to_out",
+      "block_id": "instance_up_blocks__1__attentions__2__transformer_blocks__1__attn1__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.2.transformer_blocks.1.attn2.to_out",
+      "block_id": "instance_up_blocks__1__attentions__2__transformer_blocks__1__attn2__to_out",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks.1.attentions.2.transformer_blocks.1.ff.net",
+      "block_id": "instance_up_blocks__1__attentions__2__transformer_blocks__1__ff__net",
+      "actual_svg_node": true,
+      "actual_card": true,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    }
+  ],
+  "container_without_own_node_and_card": [
+    {
+      "instance_path": "down_blocks",
+      "block_id": "instance_down_blocks",
+      "actual_svg_node": false,
+      "actual_card": false,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    },
+    {
+      "instance_path": "up_blocks",
+      "block_id": "instance_up_blocks",
+      "actual_svg_node": false,
+      "actual_card": false,
+      "runtime_class": {
+        "module": "torch.nn.modules.container",
+        "qualname": "ModuleList"
+      }
+    }
+  ],
+  "guarded_absence_count": 1621,
+  "all_absences_not_constructed": true,
+  "all_absences_proven_inactive": true,
+  "all_absences_without_runtime_class": true,
+  "all_absences_with_source_site": true,
+  "absent_constructed_overlap": [],
+  "guard_counts": {
+    "time_embedding_act_fn is None is True": 1,
+    "cond_proj_dim is not None is False": 2,
+    "post_act_fn is None is True": 2,
+    "add_downsample is False": 1,
+    "add_upsample is False": 1,
+    "norm_type == \"ln_norm\" is False and norm_type == \"rms_norm\" is False and norm_type is None is True": 4,
+    "positional_embeddings == \"sinusoidal\" is False": 70,
+    "self.added_kv_proj_dim is not None is False": 420,
+    "norm_num_groups is not None is False": 140,
+    "qk_norm is not None and added_kv_proj_dim is not None is False": 280,
+    "cross_attention_norm is None is True": 140,
+    "qk_norm is None is True": 280,
+    "spatial_norm_dim is not None is False": 140,
+    "self.context_pre_only is not None and not self.context_pre_only is False": 140
+  },
+  "fact_findings": 0,
+  "rendered_unstamped_fact_findings": 0
+}

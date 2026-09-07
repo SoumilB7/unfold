@@ -1,0 +1,1284 @@
+{
+  "block_structure": [
+    {
+      "id": "noise",
+      "kind": "source",
+      "label": "Noise"
+    },
+    {
+      "id": "timestep",
+      "kind": "source",
+      "label": [
+        "Timestep t",
+        ""
+      ]
+    },
+    {
+      "id": "prompt",
+      "kind": "source",
+      "label": "Text prompt"
+    },
+    {
+      "id": "encoder_0",
+      "kind": "embedding",
+      "label": "CLIP",
+      "view": "text_encoder"
+    },
+    {
+      "id": "encoder_0_op_selfattn",
+      "kind": "attention",
+      "view": "attention"
+    },
+    {
+      "id": "encoder_0_op_ffn",
+      "kind": "ffn",
+      "view": "ffn"
+    },
+    {
+      "id": "encoder_1",
+      "kind": "embedding",
+      "label": "CLIP",
+      "view": "text_encoder"
+    },
+    {
+      "id": "encoder_1_op_selfattn",
+      "kind": "attention",
+      "view": "attention"
+    },
+    {
+      "id": "encoder_1_op_ffn",
+      "kind": "ffn",
+      "view": "ffn"
+    },
+    {
+      "id": "latent",
+      "kind": "latent",
+      "label": "latent"
+    },
+    {
+      "id": "denoiser",
+      "kind": "denoiser",
+      "label": [
+        "U-Net",
+        "Denoiser"
+      ]
+    },
+    {
+      "id": "unet_down_0",
+      "view": "unet_stage"
+    },
+    {
+      "id": "unet_down_0__resnet",
+      "view": "unet_resnet"
+    },
+    {
+      "id": "unet_down_1",
+      "view": "unet_stage"
+    },
+    {
+      "id": "unet_down_1__resnet",
+      "view": "unet_resnet"
+    },
+    {
+      "id": "unet_down_1__transformer",
+      "view": "unet_transformer"
+    },
+    {
+      "id": "unet_down_1__selfattn",
+      "view": "attention"
+    },
+    {
+      "id": "unet_down_1__crossattn",
+      "view": "attention"
+    },
+    {
+      "id": "unet_down_1__ff",
+      "view": "gated_ffn"
+    },
+    {
+      "id": "unet_down_2",
+      "view": "unet_stage"
+    },
+    {
+      "id": "unet_down_2__resnet",
+      "view": "unet_resnet"
+    },
+    {
+      "id": "unet_down_2__transformer",
+      "view": "unet_transformer"
+    },
+    {
+      "id": "unet_down_2__selfattn",
+      "view": "attention"
+    },
+    {
+      "id": "unet_down_2__crossattn",
+      "view": "attention"
+    },
+    {
+      "id": "unet_down_2__ff",
+      "view": "gated_ffn"
+    },
+    {
+      "id": "unet_mid",
+      "view": "unet_stage"
+    },
+    {
+      "id": "unet_mid__resnet_pre",
+      "view": "unet_resnet"
+    },
+    {
+      "id": "unet_mid__transformer",
+      "view": "unet_transformer"
+    },
+    {
+      "id": "unet_mid__selfattn",
+      "view": "attention"
+    },
+    {
+      "id": "unet_mid__crossattn",
+      "view": "attention"
+    },
+    {
+      "id": "unet_mid__ff",
+      "view": "gated_ffn"
+    },
+    {
+      "id": "unet_mid__resnet_post",
+      "view": "unet_resnet"
+    },
+    {
+      "id": "unet_up_0",
+      "view": "unet_stage"
+    },
+    {
+      "id": "unet_up_0__resnet",
+      "view": "unet_resnet"
+    },
+    {
+      "id": "unet_up_0__transformer",
+      "view": "unet_transformer"
+    },
+    {
+      "id": "unet_up_0__selfattn",
+      "view": "attention"
+    },
+    {
+      "id": "unet_up_0__crossattn",
+      "view": "attention"
+    },
+    {
+      "id": "unet_up_0__ff",
+      "view": "gated_ffn"
+    },
+    {
+      "id": "unet_up_1",
+      "view": "unet_stage"
+    },
+    {
+      "id": "unet_up_1__resnet",
+      "view": "unet_resnet"
+    },
+    {
+      "id": "unet_up_1__transformer",
+      "view": "unet_transformer"
+    },
+    {
+      "id": "unet_up_1__selfattn",
+      "view": "attention"
+    },
+    {
+      "id": "unet_up_1__crossattn",
+      "view": "attention"
+    },
+    {
+      "id": "unet_up_1__ff",
+      "view": "gated_ffn"
+    },
+    {
+      "id": "unet_up_2",
+      "view": "unet_stage"
+    },
+    {
+      "id": "unet_up_2__resnet",
+      "view": "unet_resnet"
+    },
+    {
+      "id": "unet_text_cond",
+      "view": "encoded_text_concat"
+    },
+    {
+      "id": "scheduler",
+      "kind": "scheduler",
+      "label": [
+        "Euler"
+      ],
+      "view": "scheduler_step"
+    },
+    {
+      "id": "vae_decode",
+      "kind": "output",
+      "label": "VAE decode",
+      "view": "vae_decoder"
+    },
+    {
+      "id": "vae_decoder_block_4",
+      "view": "vae_decoder_block"
+    },
+    {
+      "id": "vae_decoder_block_3",
+      "view": "vae_decoder_block"
+    },
+    {
+      "id": "vae_decoder_block_2",
+      "view": "vae_decoder_block"
+    },
+    {
+      "id": "vae_decoder_block_1",
+      "view": "vae_decoder_block"
+    },
+    {
+      "id": "image",
+      "kind": "source",
+      "label": "Image"
+    }
+  ],
+  "distinct_svg_count": 29,
+  "normalization": [
+    "Only sha256:<hash>:line:col:end_line:end_col evidence-address strings inside selected fact values are replaced; paths, literals, source formals, mechanisms, operations and connections remain exact."
+  ],
+  "page": {
+    "cards": {
+      "block": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Feed-forward (storage unresolved)\nThe gated FFN mechanism is proven, but its projection storage is not. The drill stays opaque instead of choosing split, fused, or dense modules."
+      },
+      "cross_attention_states": {
+        "facts": [
+          "K/V from text (2,048)"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Encoded text (K/V)\nThe encoded prompt supplies the keys and values here \u2014 the latent tokens are the queries, this external text sequence is the K/V, which is what makes it cross-attention. The text encoders' features are concatenated to 2048-d (see the 'Encoded text' source in the denoiser view for that concatenation).\nK/V from text (2,048)"
+      },
+      "default": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Click a block \u2014 open the Denoiser to see its architecture"
+      },
+      "denoiser": {
+        "facts": [],
+        "node_ids": [
+          "unet_conv_in",
+          "unet_conv_out",
+          "unet_up_2",
+          "unet_down_0",
+          "unet_up_1",
+          "unet_down_1",
+          "unet_up_0",
+          "unet_down_2",
+          "unet_mid",
+          "unet_text_cond"
+        ],
+        "svg_count": 1,
+        "text": "U-Net denoiser\nThe network applied at every step: a 3-stage convolutional U-net (down \u2192 mid \u2192 up with skip connections) that takes the latent z_t (+ timestep + text conditioning) and predicts the noise. Each down stage halves the spatial resolution (the latent is 4\u00d7 downscaled at the bottleneck) and each up stage doubles it back; the timestep modulates every ResNet, and text conditioning (dim 2048) enters the cross-attention stages. Click to open its architecture.\nConv in\nConv out\nUp stage\nDown stage\nUp stage\nDown stage\nUp stage\nDown stage\nMid stage\nEncoded text\n2\u00d7 CLIP (concat)"
+      },
+      "encoder_0": {
+        "facts": [],
+        "node_ids": [
+          "encoder_0_op_embed",
+          "encoder_0_op_norm",
+          "encoder_0_op_selfattn",
+          "encoder_0_op_add",
+          "encoder_0_op_norm",
+          "encoder_0_op_ffn",
+          "encoder_0_op_add"
+        ],
+        "svg_count": 1,
+        "text": "CLIP (768-d) text encoder\nCLIP (768-d): produces token-level features for the U-net's cross-attention. Frozen; run once and reused every sampling step.\n\u00d7 12\nin (prompt tokens)\nToken embedding\nLayerNorm\nMHA (+bias)\nLayerNorm\nFeed-forward (FFN)\n\u2192 cross-attention K/V"
+      },
+      "encoder_0_attn_attn_apply_v": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Element-wise op\nCombines its input lanes element by element."
+      },
+      "encoder_0_attn_attn_softmax": {
+        "facts": [
+          "softmax"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Softmax\nElement-wise non-linearity.\nsoftmax"
+      },
+      "encoder_0_attn_concat_heads": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Concat heads\nRegroups one tensor into a new shape (no learned weights)."
+      },
+      "encoder_0_attn_hidden": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Input\nExternal input feeding this block."
+      },
+      "encoder_0_attn_k_proj": {
+        "facts": [
+          "768 \u2192 768"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Linear (K)\nLinear projection (a learned weight matrix applied to every position).\n768 \u2192 768"
+      },
+      "encoder_0_attn_o_proj": {
+        "facts": [
+          "768 \u2192 768"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Linear (out)\nLinear projection (a learned weight matrix applied to every position).\n768 \u2192 768"
+      },
+      "encoder_0_attn_q_proj": {
+        "facts": [
+          "768 \u2192 768"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Linear (Q)\nLinear projection (a learned weight matrix applied to every position).\n768 \u2192 768"
+      },
+      "encoder_0_attn_scaled_scores": {
+        "facts": [
+          "scaled_dot_product"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Attention core\nThe token-mixing kernel \u2014 positions exchange information here.\nscaled_dot_product"
+      },
+      "encoder_0_attn_v_proj": {
+        "facts": [
+          "768 \u2192 768"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Linear (V)\nLinear projection (a learned weight matrix applied to every position).\n768 \u2192 768"
+      },
+      "encoder_0_ffn_activation": {
+        "facts": [
+          "quick_gelu"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Quick Gelu\nElement-wise non-linearity.\nquick_gelu"
+      },
+      "encoder_0_ffn_down_proj": {
+        "facts": [
+          "3,072 \u2192 768"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Linear (out)\nLinear projection (a learned weight matrix applied to every position).\n3,072 \u2192 768"
+      },
+      "encoder_0_ffn_up_proj": {
+        "facts": [
+          "768 \u2192 3,072"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Linear (in)\nLinear projection (a learned weight matrix applied to every position).\n768 \u2192 3,072"
+      },
+      "encoder_0_op_add": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Residual add\nAdds the sublayer input back onto its output (x + sublayer(norm(x))). Every attention and feed-forward sublayer is wrapped in this residual so signals and gradients flow cleanly through depth."
+      },
+      "encoder_0_op_embed": {
+        "facts": [
+          "49,408 vocab",
+          "768-d",
+          "max seq 77"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Token embedding\nMaps each token id to a vector.\n49,408 vocab\n768-d\nmax seq 77"
+      },
+      "encoder_0_op_ffn": {
+        "facts": [
+          "Quick Gelu",
+          "hidden 3,072"
+        ],
+        "node_ids": [
+          "encoder_0_ffn_up_proj",
+          "encoder_0_ffn_activation",
+          "encoder_0_ffn_down_proj"
+        ],
+        "svg_count": 1,
+        "text": "Feed-forward\nTwo-layer MLP \u2014 expand, apply the non-linearity, project back.\nQuick Gelu\nhidden 3,072\nin (768)\nLinear (in)\nQuick Gelu\nLinear (out)"
+      },
+      "encoder_0_op_norm": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "LayerNorm\nLayerNorm normalizes each token's features before the sublayer (pre-norm). Keeps activation scales stable so the network trains deeply. Both sublayers in every layer are LayerNorm-normalized."
+      },
+      "encoder_0_op_selfattn": {
+        "facts": [
+          "12 heads",
+          "head dim 64",
+          "position scheme unresolved",
+          "+bias",
+          "QK norm unresolved",
+          "cache unresolved",
+          "position application unresolved"
+        ],
+        "node_ids": [
+          "encoder_0_attn_scaled_scores",
+          "encoder_0_attn_attn_softmax",
+          "encoder_0_attn_attn_apply_v",
+          "encoder_0_attn_concat_heads",
+          "encoder_0_attn_o_proj",
+          "encoder_0_attn_q_proj",
+          "encoder_0_attn_k_proj",
+          "encoder_0_attn_v_proj"
+        ],
+        "svg_count": 1,
+        "text": "Multi-head self-attention; bias on Q/K/V/O projections\nEach token attends to the others in the prompt, mixing context across the sequence so every position is contextualised.\n12 heads\nhead dim 64\nposition scheme unresolved\n+bias\nQK norm unresolved\ncache unresolved\nposition application unresolved\nin (768)\nQ K^T\nsqrt(dim)\nSoftmax\nConcat heads\nLinear (out)\nLinear (Q)\nLinear (K)\nLinear (V)"
+      },
+      "encoder_1": {
+        "facts": [],
+        "node_ids": [
+          "encoder_1_op_embed",
+          "encoder_1_op_norm",
+          "encoder_1_op_selfattn",
+          "encoder_1_op_add",
+          "encoder_1_op_norm",
+          "encoder_1_op_ffn",
+          "encoder_1_op_add"
+        ],
+        "svg_count": 1,
+        "text": "CLIP (1,280-d) text encoder\nCLIP (1,280-d): produces token-level features for the U-net's cross-attention. Frozen; run once and reused every sampling step.\n\u00d7 32\nin (prompt tokens)\nToken embedding\nLayerNorm\nSelf-attention\nmechanism unresolved\nLayerNorm\nFeed-forward (FFN)\n\u2192 cross-attention K/V"
+      },
+      "encoder_1_attn_block": {
+        "facts": [
+          "1,280 \u2192 1,280"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Attention mechanism unresolved\nThe source evidence does not prove the token-mixing mechanism. Known head geometry is retained, but no Q/K/V, score, softmax, cache, or position operation is inferred.\n1,280 \u2192 1,280"
+      },
+      "encoder_1_ffn_activation": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Activation\nElement-wise non-linearity."
+      },
+      "encoder_1_ffn_down_proj": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Linear (out)\nLinear projection (a learned weight matrix applied to every position)."
+      },
+      "encoder_1_ffn_up_proj": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Linear (in)\nLinear projection (a learned weight matrix applied to every position)."
+      },
+      "encoder_1_op_add": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Residual add\nAdds the sublayer input back onto its output (x + sublayer(norm(x))). Every attention and feed-forward sublayer is wrapped in this residual so signals and gradients flow cleanly through depth."
+      },
+      "encoder_1_op_embed": {
+        "facts": [
+          "49,408 vocab",
+          "1,280-d",
+          "max seq 77"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Token embedding\nMaps each token id to a vector.\n49,408 vocab\n1,280-d\nmax seq 77"
+      },
+      "encoder_1_op_ffn": {
+        "facts": [
+          "activation unresolved"
+        ],
+        "node_ids": [
+          "encoder_1_ffn_up_proj",
+          "encoder_1_ffn_activation",
+          "encoder_1_ffn_down_proj"
+        ],
+        "svg_count": 1,
+        "text": "Feed-forward\nTwo-layer MLP \u2014 expand, apply the non-linearity, project back.\nactivation unresolved\nin (1,280)\nLinear (in)\nActivation\nLinear (out)"
+      },
+      "encoder_1_op_norm": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "LayerNorm\nLayerNorm normalizes each token's features before the sublayer (pre-norm). Keeps activation scales stable so the network trains deeply. Both sublayers in every layer are LayerNorm-normalized."
+      },
+      "encoder_1_op_selfattn": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 1,
+        "text": "Attention mechanism unresolved\nEach token attends to the others in the prompt, mixing context across the sequence so every position is contextualised.\nAttention mechanism unresolved"
+      },
+      "image": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Output image\nThe generated image in pixel space."
+      },
+      "latent": {
+        "facts": [
+          "4 channels"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Latent state (z_t)\nThe working latent \u2014 a single slot the loop reads and rewrites each step. It is seeded once from the initial noise (z_T), overwritten every step by the scheduler's output (z_{t-1}), and read by the denoiser as the current z_t. 'z_t' and 'z_{t-1}' are this same slot at consecutive steps, not separate tensors \u2014 the two arrows feeding it are two writers at different times, not a sum.\n4 channels"
+      },
+      "noise": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Initial noise\nz_T: random Gaussian latent, shape [4 channels], sampled in the VAE latent space. (Image-to-image instead starts from an encoded input image.) This is the latent the loop iteratively denoises."
+      },
+      "opaque_mixer": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Custom attention internals unresolved\nThis layer's mixer type is known, but its internal forward graph was not resolved from source. No Q/K/V projections, softmax, recurrence, or state update are asserted."
+      },
+      "prompt": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Text prompt\nThe conditioning prompt, encoded by 2 text encoders (CLIP (768-d), CLIP (1,280-d)). Their token features are concatenated along the feature axis (768 + 1,280 = 2,048-d) into the cross-attention conditioning."
+      },
+      "sch_pred": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Predicted noise\nThe denoiser's predicted noise (\u03b5\u0302) for this timestep, handed to the scheduler each step."
+      },
+      "sch_scale": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "\u03c3_t \u00b7 \u03b5\u0302\nScales the predicted noise by this timestep's noise level \u03c3_t."
+      },
+      "sch_step": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Combine step\nCombines the current latent z_t with the scaled prediction to take one denoising step toward z_{t-1} (the \u2295 glyph)."
+      },
+      "sch_zt": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Current latent z_t\nThe latent being denoised \u2014 the loop-carried value the scheduler updates into z_{t-1}."
+      },
+      "scheduler": {
+        "facts": [
+          "epsilon",
+          "1,000 train timesteps",
+          "scaled_linear",
+          "leading"
+        ],
+        "node_ids": [
+          "sch_pred",
+          "sch_scale",
+          "sch_step",
+          "sch_zt"
+        ],
+        "svg_count": 1,
+        "text": "Scheduler \u2014 Euler\nEuler combines the denoiser's prediction with z_t to produce z_{t-1}, one step toward a clean latent. The loop repeats for N sampling steps (N chosen at inference, typically ~20-50 \u2014 it is not a config field).\nepsilon\n1,000 train timesteps\nscaled_linear\nleading\n\u03b5\u0302 noise\nfrom denoiser\n\u03c3_t \u00b7 \u03b5\u0302\nz_{t\u22121} (one step)\nz_t\ncurrent latent\nz_t \u2212 \u03c3_t\u00b7\u03b5\u0302"
+      },
+      "text_concat_op": {
+        "facts": [
+          "\u2192 2,048-d K/V"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Concatenate (feature axis)\nThe encoders' per-token features are joined along the feature (channel) axis \u2014 stacked side by side into wider tokens, with no projection, no mixing and no added parameters. Here 768 + 1,280 = 2,048. That combined tensor is the keys/values every cross-attention stage reads. It is the same operation (torch.cat over the feature axis) as the U-net's skip connections \u2014 which is why both use the \u2016 connector, not \u2295.\n\u2192 2,048-d K/V"
+      },
+      "timestep": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Timestep\nThe current step's noise level t (decreasing T -> 0). Embedded, then projected and added inside every ResNet block (and the mid block) \u2014 a U-net conditions on the noise level additively, not through AdaLN. SDXL also adds a micro-conditioning embedding \u2014 the pooled text vector together with the image size / crop / target-size ('time_ids') embeddings, projected from 2,816-d \u2014 to this timestep embedding (addition_embed_type = text_time)."
+      },
+      "unet_conv_in": {
+        "facts": [
+          "4 \u2192 320 ch"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Conv in\nInput 3\u00d73 convolution: lifts the 4-channel noisy latent to 320 feature channels. Declared by in_channels / block_out_channels[0].\n4 \u2192 320 ch"
+      },
+      "unet_conv_out": {
+        "facts": [
+          "320 \u2192 4 ch"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Conv out\nOutput GroupNorm + SiLU + 3\u00d73 convolution: normalises (conv_norm_out, GroupNorm over 320 channels), activates (conv_act, SiLU \u2014 resolved through the denoiser's act_fn input), then projects back to 4 channels \u2014 the predicted noise (\u03b5\u0302). Declared by out_channels / norm_num_groups.\n320 \u2192 4 ch"
+      },
+      "unet_down_0": {
+        "facts": [
+          "320 ch",
+          "2\u00d7 ResNet",
+          "downsample 2\u00d7"
+        ],
+        "node_ids": [
+          "unet_down_0__resnet",
+          "unet_down_0__downsample"
+        ],
+        "svg_count": 1,
+        "text": "Down stage\nDown-path resolution stage: 2 residual (ResNet) block(s) at 320 channels. Halves the spatial resolution into the next stage. Declared by down_block_types / block_out_channels / layers_per_block.\n320 ch\n2\u00d7 ResNet\ndownsample 2\u00d7\n\u00d7 2\nin (320 ch)\nResNet block\nDownsample"
+      },
+      "unet_down_0__downsample": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Downsample\nHalves spatial resolution with a stride-2 convolution."
+      },
+      "unet_down_0__resnet": {
+        "facts": [],
+        "node_ids": [
+          "unet_op_norm1",
+          "unet_op_conv1",
+          "unet_op_temb",
+          "unet_op_norm2",
+          "unet_op_conv2",
+          "unet_op_residual"
+        ],
+        "svg_count": 1,
+        "text": "ResNet block\nGroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 2 per stage (layers_per_block).\nin (320 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nTimestep emb"
+      },
+      "unet_down_1": {
+        "facts": [
+          "640 ch",
+          "2\u00d7 ResNet",
+          "2-layer Transformer",
+          "downsample 2\u00d7"
+        ],
+        "node_ids": [
+          "unet_down_1__resnet",
+          "unet_down_1__transformer",
+          "unet_down_1__downsample"
+        ],
+        "svg_count": 1,
+        "text": "Down stage\nDown-path resolution stage: 2 residual (ResNet) block(s) at 640 channels, each followed by a 2-layer text cross-attention Transformer2D. Halves the spatial resolution into the next stage. Declared by down_block_types / block_out_channels / layers_per_block / transformer_layers_per_block.\n640 ch\n2\u00d7 ResNet\n2-layer Transformer\ndownsample 2\u00d7\n\u00d7 2\nin (640 ch)\nResNet block\nTransformer block\nDownsample\nEncoded text\n2\u00d7 CLIP (concat)"
+      },
+      "unet_down_1__crossattn": {
+        "facts": [],
+        "node_ids": [
+          "cross_attention_states"
+        ],
+        "svg_count": 1,
+        "text": "Cross-attention (text)\nCross-attention: queries from the latent tokens, keys/values from the encoded text prompt (dim 2048) \u2014 where text conditioning enters the U-net. Click to see the text states feeding K/V.\nin (1,280)\nCross-attention mechanism unresolved\nEncoded text"
+      },
+      "unet_down_1__downsample": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Downsample\nHalves spatial resolution with a stride-2 convolution."
+      },
+      "unet_down_1__ff": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 1,
+        "text": "Feed-forward\nPosition-wise GEGLU feed-forward sublayer, applied after attention. Its structure is read from the block class the config's block types name, not from a config field.\nGated FFN\nstorage unresolved"
+      },
+      "unet_down_1__resnet": {
+        "facts": [],
+        "node_ids": [
+          "unet_op_norm1",
+          "unet_op_conv1",
+          "unet_op_temb",
+          "unet_op_norm2",
+          "unet_op_conv2",
+          "unet_op_residual"
+        ],
+        "svg_count": 1,
+        "text": "ResNet block\nGroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 2 per stage (layers_per_block).\nin (640 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nTimestep emb"
+      },
+      "unet_down_1__selfattn": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 1,
+        "text": "Self-attention\nFull bidirectional self-attention over the spatial latent tokens at this resolution. Click to open its Q/K/V structure.\nAttention mechanism unresolved"
+      },
+      "unet_down_1__transformer": {
+        "facts": [
+          "2\u00d7 layers",
+          "10 heads"
+        ],
+        "node_ids": [
+          "unet_down_1__selfattn",
+          "unet_down_1__crossattn",
+          "unet_down_1__ff"
+        ],
+        "svg_count": 1,
+        "text": "Transformer block\nA Transformer2D block \u2014 2 layer(s), each running self-attention \u2192 text cross-attention \u2192 feed-forward. Where text conditioning enters.\n2\u00d7 layers\n10 heads\n\u00d7 2\nin (latent tokens)\nSelf-attention\nCross-attention (text)\nFeed-forward\nEncoded text\n2\u00d7 CLIP (concat)"
+      },
+      "unet_down_2": {
+        "facts": [
+          "1,280 ch",
+          "2\u00d7 ResNet",
+          "10-layer Transformer"
+        ],
+        "node_ids": [
+          "unet_down_2__resnet",
+          "unet_down_2__transformer"
+        ],
+        "svg_count": 1,
+        "text": "Down stage\nDown-path resolution stage: 2 residual (ResNet) block(s) at 1,280 channels, each followed by a 10-layer text cross-attention Transformer2D. The lowest down-path resolution. Declared by down_block_types / block_out_channels / layers_per_block / transformer_layers_per_block.\n1,280 ch\n2\u00d7 ResNet\n10-layer Transformer\n\u00d7 2\nin (1,280 ch)\nResNet block\nTransformer block\nEncoded text\n2\u00d7 CLIP (concat)"
+      },
+      "unet_down_2__crossattn": {
+        "facts": [],
+        "node_ids": [
+          "cross_attention_states"
+        ],
+        "svg_count": 1,
+        "text": "Cross-attention (text)\nCross-attention: queries from the latent tokens, keys/values from the encoded text prompt (dim 2048) \u2014 where text conditioning enters the U-net. Click to see the text states feeding K/V.\nin (1,280)\nCross-attention mechanism unresolved\nEncoded text"
+      },
+      "unet_down_2__ff": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 1,
+        "text": "Feed-forward\nPosition-wise GEGLU feed-forward sublayer, applied after attention. Its structure is read from the block class the config's block types name, not from a config field.\nGated FFN\nstorage unresolved"
+      },
+      "unet_down_2__resnet": {
+        "facts": [],
+        "node_ids": [
+          "unet_op_norm1",
+          "unet_op_conv1",
+          "unet_op_temb",
+          "unet_op_norm2",
+          "unet_op_conv2",
+          "unet_op_residual"
+        ],
+        "svg_count": 1,
+        "text": "ResNet block\nGroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 2 per stage (layers_per_block).\nin (1,280 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nTimestep emb"
+      },
+      "unet_down_2__selfattn": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 1,
+        "text": "Self-attention\nFull bidirectional self-attention over the spatial latent tokens at this resolution. Click to open its Q/K/V structure.\nAttention mechanism unresolved"
+      },
+      "unet_down_2__transformer": {
+        "facts": [
+          "10\u00d7 layers",
+          "20 heads"
+        ],
+        "node_ids": [
+          "unet_down_2__selfattn",
+          "unet_down_2__crossattn",
+          "unet_down_2__ff"
+        ],
+        "svg_count": 1,
+        "text": "Transformer block\nA Transformer2D block \u2014 10 layer(s), each running self-attention \u2192 text cross-attention \u2192 feed-forward. Where text conditioning enters.\n10\u00d7 layers\n20 heads\n\u00d7 10\nin (latent tokens)\nSelf-attention\nCross-attention (text)\nFeed-forward\nEncoded text\n2\u00d7 CLIP (concat)"
+      },
+      "unet_mid": {
+        "facts": [
+          "1,280 ch",
+          "2\u00d7 ResNet",
+          "10-layer Transformer"
+        ],
+        "node_ids": [
+          "unet_mid__resnet_pre",
+          "unet_mid__transformer",
+          "unet_mid__resnet_post"
+        ],
+        "svg_count": 1,
+        "text": "Mid stage\nBottleneck stage at the lowest resolution: 2 ResNet block(s) at 1,280 channels with a 10-layer text cross-attention Transformer2D between them. Declared by mid_block_type / transformer_layers_per_block.\n1,280 ch\n2\u00d7 ResNet\n10-layer Transformer\nin (1,280 ch)\nResNet block\nTransformer block\nResNet block\nEncoded text\n2\u00d7 CLIP (concat)"
+      },
+      "unet_mid__crossattn": {
+        "facts": [],
+        "node_ids": [
+          "cross_attention_states"
+        ],
+        "svg_count": 1,
+        "text": "Cross-attention (text)\nCross-attention: queries from the latent tokens, keys/values from the encoded text prompt (dim 2048) \u2014 where text conditioning enters the U-net. Click to see the text states feeding K/V.\nin (1,280)\nCross-attention mechanism unresolved\nEncoded text"
+      },
+      "unet_mid__ff": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 1,
+        "text": "Feed-forward\nPosition-wise GEGLU feed-forward sublayer, applied after attention. Its structure is read from the block class the config's block types name, not from a config field.\nGated FFN\nstorage unresolved"
+      },
+      "unet_mid__resnet_post": {
+        "facts": [],
+        "node_ids": [
+          "unet_op_norm1",
+          "unet_op_conv1",
+          "unet_op_temb",
+          "unet_op_norm2",
+          "unet_op_conv2",
+          "unet_op_residual"
+        ],
+        "svg_count": 1,
+        "text": "ResNet block (post)\nSecond ResNet of the bottleneck sandwich: runs after the Transformer2D. Same cell as the first \u2014 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add.\nin (1,280 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nTimestep emb"
+      },
+      "unet_mid__resnet_pre": {
+        "facts": [],
+        "node_ids": [
+          "unet_op_norm1",
+          "unet_op_conv1",
+          "unet_op_temb",
+          "unet_op_norm2",
+          "unet_op_conv2",
+          "unet_op_residual"
+        ],
+        "svg_count": 1,
+        "text": "ResNet block (pre)\nFirst ResNet of the bottleneck sandwich: runs before the Transformer2D. GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add.\nin (1,280 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nTimestep emb"
+      },
+      "unet_mid__selfattn": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 1,
+        "text": "Self-attention\nFull bidirectional self-attention over the spatial latent tokens at this resolution. Click to open its Q/K/V structure.\nAttention mechanism unresolved"
+      },
+      "unet_mid__transformer": {
+        "facts": [
+          "10\u00d7 layers",
+          "20 heads"
+        ],
+        "node_ids": [
+          "unet_mid__selfattn",
+          "unet_mid__crossattn",
+          "unet_mid__ff"
+        ],
+        "svg_count": 1,
+        "text": "Transformer block\nA Transformer2D block \u2014 10 layer(s), each running self-attention \u2192 text cross-attention \u2192 feed-forward. Where text conditioning enters.\n10\u00d7 layers\n20 heads\n\u00d7 10\nin (latent tokens)\nSelf-attention\nCross-attention (text)\nFeed-forward\nEncoded text\n2\u00d7 CLIP (concat)"
+      },
+      "unet_op_conv1": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Conv 3\u00d73\nA 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice."
+      },
+      "unet_op_conv2": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Conv 3\u00d73\nA 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice."
+      },
+      "unet_op_norm1": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "GroupNorm + SiLU\nGroup normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input."
+      },
+      "unet_op_norm2": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "GroupNorm + SiLU\nGroup normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input."
+      },
+      "unet_op_residual": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Residual add\nAdds the block's raw input back onto the convolved output \u2014 (input_tensor + hidden_states) / output_scale_factor. The bypass goes around the entire cell: norm1, SiLU, conv1, timestep injection, norm2, SiLU, conv2. When in/out channels differ a 1\u00d71 conv adjusts the shortcut (conv_shortcut)."
+      },
+      "unet_op_temb": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "\u2295 Timestep embedding\nThe linear-projected timestep embedding is added here (ResnetBlock2D: hidden_states = hidden_states + time_emb_proj(SiLU(temb))). This is the mechanism by which a UNet ResNet receives the current noise level \u2014 distinct from DiT/AdaLN, which gates normalization parameters. The projection adjusts the channel width to match the residual branch."
+      },
+      "unet_text_cond": {
+        "facts": [
+          "K/V dim 2,048"
+        ],
+        "node_ids": [
+          "text_concat_op"
+        ],
+        "svg_count": 1,
+        "text": "Text conditioning\nThe encoded text prompt supplies the keys/values to EVERY cross-attention stage \u2014 the down, mid and up CrossAttn blocks all read the same 2048-d text states, the 2 text encoders' token features concatenated along the feature axis (768 + 1,280 = 2,048). The latent flows through the U vertically; this conditioning enters each cross-attention stage from the side. Click to see how the encoders combine. Declared by cross_attention_dim + the CrossAttn* block types.\nK/V dim 2,048\nCLIP\n768-d\nCLIP\n1,280-d\nK/V (2,048)"
+      },
+      "unet_up_0": {
+        "facts": [
+          "1,280 ch",
+          "3\u00d7 ResNet",
+          "10-layer Transformer",
+          "upsample 2\u00d7"
+        ],
+        "node_ids": [
+          "unet_up_0__resnet",
+          "unet_up_0__transformer",
+          "unet_up_0__upsample"
+        ],
+        "svg_count": 1,
+        "text": "Up stage\nUp-path resolution stage: concatenates the skip connection from the matching down stage, then 3 residual (ResNet) block(s) at 1,280 channels, each with a 10-layer text cross-attention Transformer2D. Doubles the spatial resolution. Declared by up_block_types / block_out_channels / layers_per_block / transformer_layers_per_block.\n1,280 ch\n3\u00d7 ResNet\n10-layer Transformer\nupsample 2\u00d7\n\u00d7 3\nin (1,280 ch)\nResNet block\nTransformer block\nUpsample\nEncoded text\n2\u00d7 CLIP (concat)"
+      },
+      "unet_up_0__crossattn": {
+        "facts": [],
+        "node_ids": [
+          "cross_attention_states"
+        ],
+        "svg_count": 1,
+        "text": "Cross-attention (text)\nCross-attention: queries from the latent tokens, keys/values from the encoded text prompt (dim 2048) \u2014 where text conditioning enters the U-net. Click to see the text states feeding K/V.\nin (1,280)\nCross-attention mechanism unresolved\nEncoded text"
+      },
+      "unet_up_0__ff": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 1,
+        "text": "Feed-forward\nPosition-wise GEGLU feed-forward sublayer, applied after attention. Its structure is read from the block class the config's block types name, not from a config field.\nGated FFN\nstorage unresolved"
+      },
+      "unet_up_0__resnet": {
+        "facts": [],
+        "node_ids": [
+          "unet_op_norm1",
+          "unet_op_conv1",
+          "unet_op_temb",
+          "unet_op_norm2",
+          "unet_op_conv2",
+          "unet_op_residual"
+        ],
+        "svg_count": 1,
+        "text": "ResNet block\nGroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 3 per stage (layers_per_block).\nin (1,280 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nTimestep emb"
+      },
+      "unet_up_0__selfattn": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 1,
+        "text": "Self-attention\nFull bidirectional self-attention over the spatial latent tokens at this resolution. Click to open its Q/K/V structure.\nAttention mechanism unresolved"
+      },
+      "unet_up_0__transformer": {
+        "facts": [
+          "10\u00d7 layers",
+          "20 heads"
+        ],
+        "node_ids": [
+          "unet_up_0__selfattn",
+          "unet_up_0__crossattn",
+          "unet_up_0__ff"
+        ],
+        "svg_count": 1,
+        "text": "Transformer block\nA Transformer2D block \u2014 10 layer(s), each running self-attention \u2192 text cross-attention \u2192 feed-forward. Where text conditioning enters.\n10\u00d7 layers\n20 heads\n\u00d7 10\nin (latent tokens)\nSelf-attention\nCross-attention (text)\nFeed-forward\nEncoded text\n2\u00d7 CLIP (concat)"
+      },
+      "unet_up_0__upsample": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Upsample\nDoubles spatial resolution by nearest-neighbour upsampling then a convolution."
+      },
+      "unet_up_1": {
+        "facts": [
+          "640 ch",
+          "3\u00d7 ResNet",
+          "2-layer Transformer",
+          "upsample 2\u00d7"
+        ],
+        "node_ids": [
+          "unet_up_1__resnet",
+          "unet_up_1__transformer",
+          "unet_up_1__upsample"
+        ],
+        "svg_count": 1,
+        "text": "Up stage\nUp-path resolution stage: concatenates the skip connection from the matching down stage, then 3 residual (ResNet) block(s) at 640 channels, each with a 2-layer text cross-attention Transformer2D. Doubles the spatial resolution. Declared by up_block_types / block_out_channels / layers_per_block / transformer_layers_per_block.\n640 ch\n3\u00d7 ResNet\n2-layer Transformer\nupsample 2\u00d7\n\u00d7 3\nin (640 ch)\nResNet block\nTransformer block\nUpsample\nEncoded text\n2\u00d7 CLIP (concat)"
+      },
+      "unet_up_1__crossattn": {
+        "facts": [],
+        "node_ids": [
+          "cross_attention_states"
+        ],
+        "svg_count": 1,
+        "text": "Cross-attention (text)\nCross-attention: queries from the latent tokens, keys/values from the encoded text prompt (dim 2048) \u2014 where text conditioning enters the U-net. Click to see the text states feeding K/V.\nin (1,280)\nCross-attention mechanism unresolved\nEncoded text"
+      },
+      "unet_up_1__ff": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 1,
+        "text": "Feed-forward\nPosition-wise GEGLU feed-forward sublayer, applied after attention. Its structure is read from the block class the config's block types name, not from a config field.\nGated FFN\nstorage unresolved"
+      },
+      "unet_up_1__resnet": {
+        "facts": [],
+        "node_ids": [
+          "unet_op_norm1",
+          "unet_op_conv1",
+          "unet_op_temb",
+          "unet_op_norm2",
+          "unet_op_conv2",
+          "unet_op_residual"
+        ],
+        "svg_count": 1,
+        "text": "ResNet block\nGroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 3 per stage (layers_per_block).\nin (640 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nTimestep emb"
+      },
+      "unet_up_1__selfattn": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 1,
+        "text": "Self-attention\nFull bidirectional self-attention over the spatial latent tokens at this resolution. Click to open its Q/K/V structure.\nAttention mechanism unresolved"
+      },
+      "unet_up_1__transformer": {
+        "facts": [
+          "2\u00d7 layers",
+          "10 heads"
+        ],
+        "node_ids": [
+          "unet_up_1__selfattn",
+          "unet_up_1__crossattn",
+          "unet_up_1__ff"
+        ],
+        "svg_count": 1,
+        "text": "Transformer block\nA Transformer2D block \u2014 2 layer(s), each running self-attention \u2192 text cross-attention \u2192 feed-forward. Where text conditioning enters.\n2\u00d7 layers\n10 heads\n\u00d7 2\nin (latent tokens)\nSelf-attention\nCross-attention (text)\nFeed-forward\nEncoded text\n2\u00d7 CLIP (concat)"
+      },
+      "unet_up_1__upsample": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Upsample\nDoubles spatial resolution by nearest-neighbour upsampling then a convolution."
+      },
+      "unet_up_2": {
+        "facts": [
+          "320 ch",
+          "3\u00d7 ResNet"
+        ],
+        "node_ids": [
+          "unet_up_2__resnet"
+        ],
+        "svg_count": 1,
+        "text": "Up stage\nUp-path resolution stage: concatenates the skip connection from the matching down stage, then 3 residual (ResNet) block(s) at 320 channels. Declared by up_block_types / block_out_channels / layers_per_block.\n320 ch\n3\u00d7 ResNet\n\u00d7 3\nin (320 ch)\nResNet block"
+      },
+      "unet_up_2__resnet": {
+        "facts": [],
+        "node_ids": [
+          "unet_op_norm1",
+          "unet_op_conv1",
+          "unet_op_temb",
+          "unet_op_norm2",
+          "unet_op_conv2",
+          "unet_op_residual"
+        ],
+        "svg_count": 1,
+        "text": "ResNet block\nGroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 3 per stage (layers_per_block).\nin (320 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nTimestep emb"
+      },
+      "vae_clean_latent": {
+        "facts": [
+          "4 ch",
+          "latent res"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Clean latent\nz_0 after the denoising loop.\n4 ch\nlatent res"
+      },
+      "vae_decode": {
+        "facts": [
+          "latent scale 0.13025"
+        ],
+        "node_ids": [
+          "vae_decoder_block_4",
+          "vae_decoder_block_3",
+          "vae_decoder_block_2",
+          "vae_decoder_block_1",
+          "vae_output_head"
+        ],
+        "svg_count": 1,
+        "text": "VAE decoder\nOnce the loop reaches z_0 (clean latent), the VAE decoder maps it from latent space back to a full-resolution pixel image. Click to open its architecture.\nlatent scale 0.13025\nin (4 ch \u00b7 latent res)\nUp stage 4\nUp stage 3\nUp stage 2\nUp stage 1\nOutput head"
+      },
+      "vae_decoder_block_1": {
+        "facts": [
+          "128 ch",
+          "3\u00d7 ResNet",
+          "UpDecoderBlock2D",
+          "GroupNorm 32 groups"
+        ],
+        "node_ids": [
+          "vae_op_norm1",
+          "vae_op_conv1",
+          "vae_op_norm2",
+          "vae_op_conv2",
+          "vae_op_residual"
+        ],
+        "svg_count": 1,
+        "text": "Up stage 1\nVAE decoder resolution stage.\n128 ch\n3\u00d7 ResNet\nUpDecoderBlock2D\nGroupNorm 32 groups\n\u00d7 3\nin (128 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73"
+      },
+      "vae_decoder_block_2": {
+        "facts": [
+          "256 ch",
+          "3\u00d7 ResNet",
+          "\u21912\u00d7 spatial",
+          "UpDecoderBlock2D",
+          "GroupNorm 32 groups"
+        ],
+        "node_ids": [
+          "vae_op_norm1",
+          "vae_op_conv1",
+          "vae_op_norm2",
+          "vae_op_conv2",
+          "vae_op_residual",
+          "vae_op_upsample"
+        ],
+        "svg_count": 1,
+        "text": "Up stage 2\nVAE decoder resolution stage.\n256 ch\n3\u00d7 ResNet\n\u21912\u00d7 spatial\nUpDecoderBlock2D\nGroupNorm 32 groups\n\u00d7 3\nin (256 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nUpsample\nnearest 2\u00d7 \u2192 conv"
+      },
+      "vae_decoder_block_3": {
+        "facts": [
+          "512 ch",
+          "3\u00d7 ResNet",
+          "\u21912\u00d7 spatial",
+          "UpDecoderBlock2D",
+          "GroupNorm 32 groups"
+        ],
+        "node_ids": [
+          "vae_op_norm1",
+          "vae_op_conv1",
+          "vae_op_norm2",
+          "vae_op_conv2",
+          "vae_op_residual",
+          "vae_op_upsample"
+        ],
+        "svg_count": 1,
+        "text": "Up stage 3\nVAE decoder resolution stage.\n512 ch\n3\u00d7 ResNet\n\u21912\u00d7 spatial\nUpDecoderBlock2D\nGroupNorm 32 groups\n\u00d7 3\nin (512 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nUpsample\nnearest 2\u00d7 \u2192 conv"
+      },
+      "vae_decoder_block_4": {
+        "facts": [
+          "512 ch",
+          "3\u00d7 ResNet",
+          "\u21912\u00d7 spatial",
+          "UpDecoderBlock2D",
+          "GroupNorm 32 groups"
+        ],
+        "node_ids": [
+          "vae_op_norm1",
+          "vae_op_conv1",
+          "vae_op_norm2",
+          "vae_op_conv2",
+          "vae_op_residual",
+          "vae_op_upsample"
+        ],
+        "svg_count": 1,
+        "text": "Up stage 4\nVAE decoder resolution stage.\n512 ch\n3\u00d7 ResNet\n\u21912\u00d7 spatial\nUpDecoderBlock2D\nGroupNorm 32 groups\n\u00d7 3\nin (512 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nUpsample\nnearest 2\u00d7 \u2192 conv"
+      },
+      "vae_image": {
+        "facts": [
+          "RGB",
+          "8\u00d7 upscaled"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Image\nThe decoded image in pixel space.\nRGB\n8\u00d7 upscaled"
+      },
+      "vae_op_conv1": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Conv 3\u00d73\nA 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours. The feature-transforming workhorse of the cell; the stack runs GroupNorm + SiLU \u2192 Conv 3\u00d73 twice."
+      },
+      "vae_op_conv2": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Conv 3\u00d73\nA 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours. The feature-transforming workhorse of the cell; the stack runs GroupNorm + SiLU \u2192 Conv 3\u00d73 twice."
+      },
+      "vae_op_norm1": {
+        "facts": [
+          "32 groups"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "GroupNorm + SiLU\nGroup normalization followed by a SiLU (swish) activation, applied before each convolution in the residual cell. Normalizes feature statistics so the conv sees a well-scaled signal.\n32 groups"
+      },
+      "vae_op_norm2": {
+        "facts": [
+          "32 groups"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "GroupNorm + SiLU\nGroup normalization followed by a SiLU (swish) activation, applied before each convolution in the residual cell. Normalizes feature statistics so the conv sees a well-scaled signal.\n32 groups"
+      },
+      "vae_op_residual": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Residual add\nAdds the block input back onto the convolved output (an identity skip, or a 1\u00d71 conv when the channel count changes) so the cell learns a residual and gradients flow cleanly through depth."
+      },
+      "vae_op_upsample": {
+        "facts": [],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Upsample\nDoubles spatial resolution (H \u00d7 W \u2192 2H \u00d7 2W) by nearest-neighbour interpolation, then a 3\u00d73 conv to smooth interpolation artifacts. Runs once after the ResNet stack, stepping the latent toward image size."
+      },
+      "vae_output_head": {
+        "facts": [
+          "conv 3\u00d73",
+          "128 \u2192 3 ch"
+        ],
+        "node_ids": [],
+        "svg_count": 0,
+        "text": "Output image head\nFinal convolution maps decoder channels to the output image channels.\nconv 3\u00d73\n128 \u2192 3 ch"
+      }
+    },
+    "text": "stable-diffusion-xl-base-1.0 - unfolded\n11 items: configuration values are read but not yet proven into the drawing.\nconfig occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored\nconfig occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored\nconfig occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored\nconfig occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored\nconfig occurrence root.denoiser:'encoder_hid_dim' (spelled 'encoder_hid_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored\nconfig occurrence root.denoiser:'encoder_hid_dim_type' (spelled 'encoder_hid_dim_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored\nconfig occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored\nconfig occurrence root.denoiser:'mid_block_type' (spelled 'mid_block_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored\nconfig occurrence root.denoiser:'projection_class_embeddings_input_dim' (spelled 'projection_class_embeddings_input_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored\nconfig occurrence root.denoiser:'transformer_layers_per_block' (spelled 'transformer_layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored\nconfig occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored\nstable-diffusion-xl-base-1.0\nUNet2DConditionModel\nConv U-Net\n3 resolution stages\nCross-attn\n\u26a0 unresolved evidence\nLAYERS\n0\nHIDDEN\n1,280\nTIMESTEPS\n1,000\nLATENT\n4 ch\nPARAMS\n~0*\nSAMPLING LOOP\nDenoiser applied iteratively \u00b7 click it to open its architecture\n\u203a\n\u21ba t \u2192 0\nImage\nVAE decode\nU-Net\nDenoiser\nEuler\nNoise\nlatent\nTimestep t\nCLIP\nCLIP\nText prompt\nz_T \u00b7 once\nz_t\n\u03b5\u0302\nz_t-1 \u00b7 each step\nz_0\nClick a block \u2014 open the Denoiser to see its architecture\nInitial noise\nz_T: random Gaussian latent, shape [4 channels], sampled in the VAE latent space. (Image-to-image instead starts from an encoded input image.) This is the latent the loop iteratively denoises.\nTimestep\nThe current step's noise level t (decreasing T -> 0). Embedded, then projected and added inside every ResNet block (and the mid block) \u2014 a U-net conditions on the noise level additively, not through AdaLN. SDXL also adds a micro-conditioning embedding \u2014 the pooled text vector together with the image size / crop / target-size ('time_ids') embeddings, projected from 2,816-d \u2014 to this timestep embedding (addition_embed_type = text_time).\nText prompt\nThe conditioning prompt, encoded by 2 text encoders (CLIP (768-d), CLIP (1,280-d)). Their token features are concatenated along the feature axis (768 + 1,280 = 2,048-d) into the cross-attention conditioning.\nCLIP (768-d) text encoder\nCLIP (768-d): produces token-level features for the U-net's cross-attention. Frozen; run once and reused every sampling step.\n\u00d7 12\nin (prompt tokens)\nToken embedding\nLayerNorm\nMHA (+bias)\nLayerNorm\nFeed-forward (FFN)\n\u2192 cross-attention K/V\nCLIP (1,280-d) text encoder\nCLIP (1,280-d): produces token-level features for the U-net's cross-attention. Frozen; run once and reused every sampling step.\n\u00d7 32\nin (prompt tokens)\nToken embedding\nLayerNorm\nSelf-attention\nmechanism unresolved\nLayerNorm\nFeed-forward (FFN)\n\u2192 cross-attention K/V\nLatent state (z_t)\nThe working latent \u2014 a single slot the loop reads and rewrites each step. It is seeded once from the initial noise (z_T), overwritten every step by the scheduler's output (z_{t-1}), and read by the denoiser as the current z_t. 'z_t' and 'z_{t-1}' are this same slot at consecutive steps, not separate tensors \u2014 the two arrows feeding it are two writers at different times, not a sum.\n4 channels\nU-Net denoiser\nThe network applied at every step: a 3-stage convolutional U-net (down \u2192 mid \u2192 up with skip connections) that takes the latent z_t (+ timestep + text conditioning) and predicts the noise. Each down stage halves the spatial resolution (the latent is 4\u00d7 downscaled at the bottleneck) and each up stage doubles it back; the timestep modulates every ResNet, and text conditioning (dim 2048) enters the cross-attention stages. Click to open its architecture.\nConv in\nConv out\nUp stage\nDown stage\nUp stage\nDown stage\nUp stage\nDown stage\nMid stage\nEncoded text\n2\u00d7 CLIP (concat)\nScheduler \u2014 Euler\nEuler combines the denoiser's prediction with z_t to produce z_{t-1}, one step toward a clean latent. The loop repeats for N sampling steps (N chosen at inference, typically ~20-50 \u2014 it is not a config field).\nepsilon\n1,000 train timesteps\nscaled_linear\nleading\n\u03b5\u0302 noise\nfrom denoiser\n\u03c3_t \u00b7 \u03b5\u0302\nz_{t\u22121} (one step)\nz_t\ncurrent latent\nz_t \u2212 \u03c3_t\u00b7\u03b5\u0302\nVAE decoder\nOnce the loop reaches z_0 (clean latent), the VAE decoder maps it from latent space back to a full-resolution pixel image. Click to open its architecture.\nlatent scale 0.13025\nin (4 ch \u00b7 latent res)\nUp stage 4\nUp stage 3\nUp stage 2\nUp stage 1\nOutput head\nOutput image\nThe generated image in pixel space.\nToken embedding\nMaps each token id to a vector.\n49,408 vocab\n768-d\nmax seq 77\nMulti-head self-attention; bias on Q/K/V/O projections\nEach token attends to the others in the prompt, mixing context across the sequence so every position is contextualised.\n12 heads\nhead dim 64\nposition scheme unresolved\n+bias\nQK norm unresolved\ncache unresolved\nposition application unresolved\nin (768)\nQ K^T\nsqrt(dim)\nSoftmax\nConcat heads\nLinear (out)\nLinear (Q)\nLinear (K)\nLinear (V)\nFeed-forward\nTwo-layer MLP \u2014 expand, apply the non-linearity, project back.\nQuick Gelu\nhidden 3,072\nin (768)\nLinear (in)\nQuick Gelu\nLinear (out)\nLayerNorm\nLayerNorm normalizes each token's features before the sublayer (pre-norm). Keeps activation scales stable so the network trains deeply. Both sublayers in every layer are LayerNorm-normalized.\nResidual add\nAdds the sublayer input back onto its output (x + sublayer(norm(x))). Every attention and feed-forward sublayer is wrapped in this residual so signals and gradients flow cleanly through depth.\nToken embedding\nMaps each token id to a vector.\n49,408 vocab\n1,280-d\nmax seq 77\nAttention mechanism unresolved\nEach token attends to the others in the prompt, mixing context across the sequence so every position is contextualised.\nAttention mechanism unresolved\nFeed-forward\nTwo-layer MLP \u2014 expand, apply the non-linearity, project back.\nactivation unresolved\nin (1,280)\nLinear (in)\nActivation\nLinear (out)\nLayerNorm\nLayerNorm normalizes each token's features before the sublayer (pre-norm). Keeps activation scales stable so the network trains deeply. Both sublayers in every layer are LayerNorm-normalized.\nResidual add\nAdds the sublayer input back onto its output (x + sublayer(norm(x))). Every attention and feed-forward sublayer is wrapped in this residual so signals and gradients flow cleanly through depth.\nConv in\nInput 3\u00d73 convolution: lifts the 4-channel noisy latent to 320 feature channels. Declared by in_channels / block_out_channels[0].\n4 \u2192 320 ch\nDown stage\nDown-path resolution stage: 2 residual (ResNet) block(s) at 320 channels. Halves the spatial resolution into the next stage. Declared by down_block_types / block_out_channels / layers_per_block.\n320 ch\n2\u00d7 ResNet\ndownsample 2\u00d7\n\u00d7 2\nin (320 ch)\nResNet block\nDownsample\nDown stage\nDown-path resolution stage: 2 residual (ResNet) block(s) at 640 channels, each followed by a 2-layer text cross-attention Transformer2D. Halves the spatial resolution into the next stage. Declared by down_block_types / block_out_channels / layers_per_block / transformer_layers_per_block.\n640 ch\n2\u00d7 ResNet\n2-layer Transformer\ndownsample 2\u00d7\n\u00d7 2\nin (640 ch)\nResNet block\nTransformer block\nDownsample\nEncoded text\n2\u00d7 CLIP (concat)\nDown stage\nDown-path resolution stage: 2 residual (ResNet) block(s) at 1,280 channels, each followed by a 10-layer text cross-attention Transformer2D. The lowest down-path resolution. Declared by down_block_types / block_out_channels / layers_per_block / transformer_layers_per_block.\n1,280 ch\n2\u00d7 ResNet\n10-layer Transformer\n\u00d7 2\nin (1,280 ch)\nResNet block\nTransformer block\nEncoded text\n2\u00d7 CLIP (concat)\nMid stage\nBottleneck stage at the lowest resolution: 2 ResNet block(s) at 1,280 channels with a 10-layer text cross-attention Transformer2D between them. Declared by mid_block_type / transformer_layers_per_block.\n1,280 ch\n2\u00d7 ResNet\n10-layer Transformer\nin (1,280 ch)\nResNet block\nTransformer block\nResNet block\nEncoded text\n2\u00d7 CLIP (concat)\nUp stage\nUp-path resolution stage: concatenates the skip connection from the matching down stage, then 3 residual (ResNet) block(s) at 1,280 channels, each with a 10-layer text cross-attention Transformer2D. Doubles the spatial resolution. Declared by up_block_types / block_out_channels / layers_per_block / transformer_layers_per_block.\n1,280 ch\n3\u00d7 ResNet\n10-layer Transformer\nupsample 2\u00d7\n\u00d7 3\nin (1,280 ch)\nResNet block\nTransformer block\nUpsample\nEncoded text\n2\u00d7 CLIP (concat)\nUp stage\nUp-path resolution stage: concatenates the skip connection from the matching down stage, then 3 residual (ResNet) block(s) at 640 channels, each with a 2-layer text cross-attention Transformer2D. Doubles the spatial resolution. Declared by up_block_types / block_out_channels / layers_per_block / transformer_layers_per_block.\n640 ch\n3\u00d7 ResNet\n2-layer Transformer\nupsample 2\u00d7\n\u00d7 3\nin (640 ch)\nResNet block\nTransformer block\nUpsample\nEncoded text\n2\u00d7 CLIP (concat)\nUp stage\nUp-path resolution stage: concatenates the skip connection from the matching down stage, then 3 residual (ResNet) block(s) at 320 channels. Declared by up_block_types / block_out_channels / layers_per_block.\n320 ch\n3\u00d7 ResNet\n\u00d7 3\nin (320 ch)\nResNet block\nText conditioning\nThe encoded text prompt supplies the keys/values to EVERY cross-attention stage \u2014 the down, mid and up CrossAttn blocks all read the same 2048-d text states, the 2 text encoders' token features concatenated along the feature axis (768 + 1,280 = 2,048). The latent flows through the U vertically; this conditioning enters each cross-attention stage from the side. Click to see how the encoders combine. Declared by cross_attention_dim + the CrossAttn* block types.\nK/V dim 2,048\nCLIP\n768-d\nCLIP\n1,280-d\nK/V (2,048)\nConv out\nOutput GroupNorm + SiLU + 3\u00d73 convolution: normalises (conv_norm_out, GroupNorm over 320 channels), activates (conv_act, SiLU \u2014 resolved through the denoiser's act_fn input), then projects back to 4 channels \u2014 the predicted noise (\u03b5\u0302). Declared by out_channels / norm_num_groups.\n320 \u2192 4 ch\nPredicted noise\nThe denoiser's predicted noise (\u03b5\u0302) for this timestep, handed to the scheduler each step.\n\u03c3_t \u00b7 \u03b5\u0302\nScales the predicted noise by this timestep's noise level \u03c3_t.\nCurrent latent z_t\nThe latent being denoised \u2014 the loop-carried value the scheduler updates into z_{t-1}.\nCombine step\nCombines the current latent z_t with the scaled prediction to take one denoising step toward z_{t-1} (the \u2295 glyph).\nClean latent\nz_0 after the denoising loop.\n4 ch\nlatent res\nUp stage 4\nVAE decoder resolution stage.\n512 ch\n3\u00d7 ResNet\n\u21912\u00d7 spatial\nUpDecoderBlock2D\nGroupNorm 32 groups\n\u00d7 3\nin (512 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nUpsample\nnearest 2\u00d7 \u2192 conv\nUp stage 3\nVAE decoder resolution stage.\n512 ch\n3\u00d7 ResNet\n\u21912\u00d7 spatial\nUpDecoderBlock2D\nGroupNorm 32 groups\n\u00d7 3\nin (512 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nUpsample\nnearest 2\u00d7 \u2192 conv\nUp stage 2\nVAE decoder resolution stage.\n256 ch\n3\u00d7 ResNet\n\u21912\u00d7 spatial\nUpDecoderBlock2D\nGroupNorm 32 groups\n\u00d7 3\nin (256 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nUpsample\nnearest 2\u00d7 \u2192 conv\nUp stage 1\nVAE decoder resolution stage.\n128 ch\n3\u00d7 ResNet\nUpDecoderBlock2D\nGroupNorm 32 groups\n\u00d7 3\nin (128 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nOutput image head\nFinal convolution maps decoder channels to the output image channels.\nconv 3\u00d73\n128 \u2192 3 ch\nImage\nThe decoded image in pixel space.\nRGB\n8\u00d7 upscaled\nInput\nExternal input feeding this block.\nLinear (Q)\nLinear projection (a learned weight matrix applied to every position).\n768 \u2192 768\nLinear (K)\nLinear projection (a learned weight matrix applied to every position).\n768 \u2192 768\nLinear (V)\nLinear projection (a learned weight matrix applied to every position).\n768 \u2192 768\nAttention core\nThe token-mixing kernel \u2014 positions exchange information here.\nscaled_dot_product\nSoftmax\nElement-wise non-linearity.\nsoftmax\nElement-wise op\nCombines its input lanes element by element.\nConcat heads\nRegroups one tensor into a new shape (no learned weights).\nLinear (out)\nLinear projection (a learned weight matrix applied to every position).\n768 \u2192 768\nLinear (in)\nLinear projection (a learned weight matrix applied to every position).\n768 \u2192 3,072\nQuick Gelu\nElement-wise non-linearity.\nquick_gelu\nLinear (out)\nLinear projection (a learned weight matrix applied to every position).\n3,072 \u2192 768\nAttention mechanism unresolved\nThe source evidence does not prove the token-mixing mechanism. Known head geometry is retained, but no Q/K/V, score, softmax, cache, or position operation is inferred.\n1,280 \u2192 1,280\nLinear (in)\nLinear projection (a learned weight matrix applied to every position).\nActivation\nElement-wise non-linearity.\nLinear (out)\nLinear projection (a learned weight matrix applied to every position).\nResNet block\nGroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 2 per stage (layers_per_block).\nin (320 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nTimestep emb\nDownsample\nHalves spatial resolution with a stride-2 convolution.\nResNet block\nGroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 2 per stage (layers_per_block).\nin (640 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nTimestep emb\nTransformer block\nA Transformer2D block \u2014 2 layer(s), each running self-attention \u2192 text cross-attention \u2192 feed-forward. Where text conditioning enters.\n2\u00d7 layers\n10 heads\n\u00d7 2\nin (latent tokens)\nSelf-attention\nCross-attention (text)\nFeed-forward\nEncoded text\n2\u00d7 CLIP (concat)\nDownsample\nHalves spatial resolution with a stride-2 convolution.\nResNet block\nGroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 2 per stage (layers_per_block).\nin (1,280 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nTimestep emb\nTransformer block\nA Transformer2D block \u2014 10 layer(s), each running self-attention \u2192 text cross-attention \u2192 feed-forward. Where text conditioning enters.\n10\u00d7 layers\n20 heads\n\u00d7 10\nin (latent tokens)\nSelf-attention\nCross-attention (text)\nFeed-forward\nEncoded text\n2\u00d7 CLIP (concat)\nResNet block (pre)\nFirst ResNet of the bottleneck sandwich: runs before the Transformer2D. GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add.\nin (1,280 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nTimestep emb\nTransformer block\nA Transformer2D block \u2014 10 layer(s), each running self-attention \u2192 text cross-attention \u2192 feed-forward. Where text conditioning enters.\n10\u00d7 layers\n20 heads\n\u00d7 10\nin (latent tokens)\nSelf-attention\nCross-attention (text)\nFeed-forward\nEncoded text\n2\u00d7 CLIP (concat)\nResNet block (post)\nSecond ResNet of the bottleneck sandwich: runs after the Transformer2D. Same cell as the first \u2014 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add.\nin (1,280 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nTimestep emb\nResNet block\nGroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 3 per stage (layers_per_block).\nin (1,280 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nTimestep emb\nTransformer block\nA Transformer2D block \u2014 10 layer(s), each running self-attention \u2192 text cross-attention \u2192 feed-forward. Where text conditioning enters.\n10\u00d7 layers\n20 heads\n\u00d7 10\nin (latent tokens)\nSelf-attention\nCross-attention (text)\nFeed-forward\nEncoded text\n2\u00d7 CLIP (concat)\nUpsample\nDoubles spatial resolution by nearest-neighbour upsampling then a convolution.\nResNet block\nGroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 3 per stage (layers_per_block).\nin (640 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nTimestep emb\nTransformer block\nA Transformer2D block \u2014 2 layer(s), each running self-attention \u2192 text cross-attention \u2192 feed-forward. Where text conditioning enters.\n2\u00d7 layers\n10 heads\n\u00d7 2\nin (latent tokens)\nSelf-attention\nCross-attention (text)\nFeed-forward\nEncoded text\n2\u00d7 CLIP (concat)\nUpsample\nDoubles spatial resolution by nearest-neighbour upsampling then a convolution.\nResNet block\nGroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 3 per stage (layers_per_block).\nin (320 ch)\nGroupNorm + SiLU\nConv 3\u00d73\nGroupNorm + SiLU\nConv 3\u00d73\nTimestep emb\nConcatenate (feature axis)\nThe encoders' per-token features are joined along the feature (channel) axis \u2014 stacked side by side into wider tokens, with no projection, no mixing and no added parameters. Here 768 + 1,280 = 2,048. That combined tensor is the keys/values every cross-attention stage reads. It is the same operation (torch.cat over the feature axis) as the U-net's skip connections \u2014 which is why both use the \u2016 connector, not \u2295.\n\u2192 2,048-d K/V\nGroupNorm + SiLU\nGroup normalization followed by a SiLU (swish) activation, applied before each convolution in the residual cell. Normalizes feature statistics so the conv sees a well-scaled signal.\n32 groups\nConv 3\u00d73\nA 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours. The feature-transforming workhorse of the cell; the stack runs GroupNorm + SiLU \u2192 Conv 3\u00d73 twice.\nGroupNorm + SiLU\nGroup normalization followed by a SiLU (swish) activation, applied before each convolution in the residual cell. Normalizes feature statistics so the conv sees a well-scaled signal.\n32 groups\nConv 3\u00d73\nA 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours. The feature-transforming workhorse of the cell; the stack runs GroupNorm + SiLU \u2192 Conv 3\u00d73 twice.\nResidual add\nAdds the block input back onto the convolved output (an identity skip, or a 1\u00d71 conv when the channel count changes) so the cell learns a residual and gradients flow cleanly through depth.\nUpsample\nDoubles spatial resolution (H \u00d7 W \u2192 2H \u00d7 2W) by nearest-neighbour interpolation, then a 3\u00d73 conv to smooth interpolation artifacts. Runs once after the ResNet stack, stepping the latent toward image size.\nGroupNorm + SiLU\nGroup normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.\nConv 3\u00d73\nA 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.\n\u2295 Timestep embedding\nThe linear-projected timestep embedding is added here (ResnetBlock2D: hidden_states = hidden_states + time_emb_proj(SiLU(temb))). This is the mechanism by which a UNet ResNet receives the current noise level \u2014 distinct from DiT/AdaLN, which gates normalization parameters. The projection adjusts the channel width to match the residual branch.\nGroupNorm + SiLU\nGroup normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.\nConv 3\u00d73\nA 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.\nResidual add\nAdds the block's raw input back onto the convolved output \u2014 (input_tensor + hidden_states) / output_scale_factor. The bypass goes around the entire cell: norm1, SiLU, conv1, timestep injection, norm2, SiLU, conv2. When in/out channels differ a 1\u00d71 conv adjusts the shortcut (conv_shortcut).\nSelf-attention\nFull bidirectional self-attention over the spatial latent tokens at this resolution. Click to open its Q/K/V structure.\nAttention mechanism unresolved\nCross-attention (text)\nCross-attention: queries from the latent tokens, keys/values from the encoded text prompt (dim 2048) \u2014 where text conditioning enters the U-net. Click to see the text states feeding K/V.\nin (1,280)\nCross-attention mechanism unresolved\nEncoded text\nFeed-forward\nPosition-wise GEGLU feed-forward sublayer, applied after attention. Its structure is read from the block class the config's block types name, not from a config field.\nGated FFN\nstorage unresolved\nSelf-attention\nFull bidirectional self-attention over the spatial latent tokens at this resolution. Click to open its Q/K/V structure.\nAttention mechanism unresolved\nCross-attention (text)\nCross-attention: queries from the latent tokens, keys/values from the encoded text prompt (dim 2048) \u2014 where text conditioning enters the U-net. Click to see the text states feeding K/V.\nin (1,280)\nCross-attention mechanism unresolved\nEncoded text\nFeed-forward\nPosition-wise GEGLU feed-forward sublayer, applied after attention. Its structure is read from the block class the config's block types name, not from a config field.\nGated FFN\nstorage unresolved\nSelf-attention\nFull bidirectional self-attention over the spatial latent tokens at this resolution. Click to open its Q/K/V structure.\nAttention mechanism unresolved\nCross-attention (text)\nCross-attention: queries from the latent tokens, keys/values from the encoded text prompt (dim 2048) \u2014 where text conditioning enters the U-net. Click to see the text states feeding K/V.\nin (1,280)\nCross-attention mechanism unresolved\nEncoded text\nFeed-forward\nPosition-wise GEGLU feed-forward sublayer, applied after attention. Its structure is read from the block class the config's block types name, not from a config field.\nGated FFN\nstorage unresolved\nSelf-attention\nFull bidirectional self-attention over the spatial latent tokens at this resolution. Click to open its Q/K/V structure.\nAttention mechanism unresolved\nCross-attention (text)\nCross-attention: queries from the latent tokens, keys/values from the encoded text prompt (dim 2048) \u2014 where text conditioning enters the U-net. Click to see the text states feeding K/V.\nin (1,280)\nCross-attention mechanism unresolved\nEncoded text\nFeed-forward\nPosition-wise GEGLU feed-forward sublayer, applied after attention. Its structure is read from the block class the config's block types name, not from a config field.\nGated FFN\nstorage unresolved\nSelf-attention\nFull bidirectional self-attention over the spatial latent tokens at this resolution. Click to open its Q/K/V structure.\nAttention mechanism unresolved\nCross-attention (text)\nCross-attention: queries from the latent tokens, keys/values from the encoded text prompt (dim 2048) \u2014 where text conditioning enters the U-net. Click to see the text states feeding K/V.\nin (1,280)\nCross-attention mechanism unresolved\nEncoded text\nFeed-forward\nPosition-wise GEGLU feed-forward sublayer, applied after attention. Its structure is read from the block class the config's block types name, not from a config field.\nGated FFN\nstorage unresolved\nCustom attention internals unresolved\nThis layer's mixer type is known, but its internal forward graph was not resolved from source. No Q/K/V projections, softmax, recurrence, or state update are asserted.\nEncoded text (K/V)\nThe encoded prompt supplies the keys and values here \u2014 the latent tokens are the queries, this external text sequence is the K/V, which is what makes it cross-attention. The text encoders' features are concatenated to 2048-d (see the 'Encoded text' source in the denoiser view for that concatenation).\nK/V from text (2,048)\nFeed-forward (storage unresolved)\nThe gated FFN mechanism is proven, but its projection storage is not. The drill stays opaque instead of choosing split, fused, or dense modules."
+  },
+  "semantic_facts": {},
+  "signatures": {
+    "block_structure": "cc88328c10f794d01d1ea7506c0619f24965568e9bc70824f012d2607f6c6939",
+    "semantic_facts": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "svg_count": 50,
+  "svg_visual_hashes": [
+    "5df8a4eda034ca7f242d0fb47b632e22",
+    "f227a5818dd73ae2cb101218f719250a",
+    "b280f4ff4ac4c8a4288b5a63d0af5271",
+    "cdf43b8ecc2ac51d8d827ac14dbd6dae",
+    "2989690d90d82dded5881dedfe9065ca",
+    "19881dbe26ee6e9c28298b4f00967617",
+    "8039bda2aac9986de2094b82f76b73cc",
+    "1f44c23d07a67ae2e7f392b093ff5cf8",
+    "ae24e5f955ac82cfe38f3fe21cd0c556",
+    "bc6f7241f63e806321d67186218d8f87",
+    "09d273d6022ab07158f8dc7b09698e33",
+    "b75b8f3ce3d358907036ee12b22cbbc2",
+    "9ad20efcf870037eef9d1cb50c0bc390",
+    "8870ec2d1f94d18d07b8440da8b9ab4b",
+    "c60a86c043f8d2be68bca7e5df2215e7",
+    "1f259e59ffa9b85c128e90153526ddfa",
+    "f2e1233e250891e2de39c5c057476f4b",
+    "b32f612f227252073a08e66d082113c1",
+    "c47dd23a8c0eb8df389dc310acb4ccac",
+    "8d24f016deed8cbc7b7e8e5bd234dc2e",
+    "498f27eac22f32eb6d48d602da830a91",
+    "4b53d426a3dbc8f0c6e315f0d2a12cad",
+    "64d6cd9b58140f0e4a7ec3412116dd93",
+    "8874936fa4778a9d44c1cf1a7d0bc752",
+    "40325d6d1106b458996838748a7df14b",
+    "0850c4e36b23a250337f084246890fd0",
+    "2f1629970ce23e018d4bc9220f3384f7",
+    "0850c4e36b23a250337f084246890fd0",
+    "2f1629970ce23e018d4bc9220f3384f7",
+    "0850c4e36b23a250337f084246890fd0",
+    "0850c4e36b23a250337f084246890fd0",
+    "2f1629970ce23e018d4bc9220f3384f7",
+    "8874936fa4778a9d44c1cf1a7d0bc752",
+    "40325d6d1106b458996838748a7df14b",
+    "64d6cd9b58140f0e4a7ec3412116dd93",
+    "ae24e5f955ac82cfe38f3fe21cd0c556",
+    "d74b41718aa9142aa76f0525bc5d86e2",
+    "89e2b1caaac398f3d1f6631a6ae9c7b9",
+    "ae24e5f955ac82cfe38f3fe21cd0c556",
+    "d74b41718aa9142aa76f0525bc5d86e2",
+    "89e2b1caaac398f3d1f6631a6ae9c7b9",
+    "ae24e5f955ac82cfe38f3fe21cd0c556",
+    "d74b41718aa9142aa76f0525bc5d86e2",
+    "89e2b1caaac398f3d1f6631a6ae9c7b9",
+    "ae24e5f955ac82cfe38f3fe21cd0c556",
+    "d74b41718aa9142aa76f0525bc5d86e2",
+    "89e2b1caaac398f3d1f6631a6ae9c7b9",
+    "ae24e5f955ac82cfe38f3fe21cd0c556",
+    "d74b41718aa9142aa76f0525bc5d86e2",
+    "89e2b1caaac398f3d1f6631a6ae9c7b9"
+  ]
+}

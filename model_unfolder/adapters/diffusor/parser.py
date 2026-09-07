@@ -2,9 +2,10 @@
 
 For non-U-shaped roots, exact source occurrences plus checkpoint-bound operands
 author one typed diffusion projection.  Unknown mechanisms remain opaque; this
-adapter has no family/config template fallback.  A positively proven U-shape is
-handed to the quarantined U11 compatibility parser, while VAE and scheduler
-internals remain explicit U12/U13 handoffs.
+adapter has no family/config template fallback. A positively proven U-shape
+enters the runtime-bound UNet fact projection; the former adapter is available
+only inside an explicit differential comparison. VAE and scheduler internals
+remain explicit U12/U13 handoffs.
 """
 from __future__ import annotations
 
@@ -637,10 +638,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
 
     topology = _shadow_diffusion_root_topology(context)
 
-    # U11 handoff only: a U-shape must be positively proven by the exact root
-    # execution graph. The old config/class predicate may still interpret that
-    # proven handoff internally, but it can no longer route an unknown root into
-    # a U-net architecture.
+    # Exact source topology selects the UNet cutover. The legacy comparison
+    # flag is scoped by verification code and cannot be enabled by config.
     if topology.has_value and topology.value.kind == "u_shaped":
         from .unet_differential import legacy_comparison_enabled
         if legacy_comparison_enabled():

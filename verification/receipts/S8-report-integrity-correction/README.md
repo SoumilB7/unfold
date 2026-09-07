@@ -1,0 +1,15 @@
+# S8 report integrity and linkage correction
+
+Bounded correction to `scripts/report_s8_demonstration.py` only. Generator and production reader/IR/rendering code unchanged. No model execution, pytest or output blessing. Exact working-tree script hash is in `source-manifest.json`.
+
+- `read_case` now reads actual page bytes, compares their hash with the saved result, recomputes observations from current HTML/IR/facts, and reports a stale sidecar mismatch. All downstream card/SVG checks use the recomputed observation. Missing/replaced pages cannot establish actual rendering, SVG equality/change, or unchanged-byte identity.
+- Scratch equality compares static-reader, runtime-builder, saved scratch and source-control hashes with the hash of archived `scratch-modeling-source.py`. The old boolean is not authority.
+- Semantic comparison dynamically includes every `root.denoiser` fact value. The only exclusion is `declared_constructor_defaults`: omission provenance intentionally changes in sparse input and is separately checked on the exact denoiser card. Current IR citations must match the reported projected family fact inventory, and every non-excluded projected fact must participate. New primary-route fact names require no allowlist update.
+- Each trace now requires its canonical fact in its exact block citations and an intact actual page.
+- Missing FFN proof must remove the confident FFN view/kind, stale fact citations and actual operation-node IDs from the previous FFN computation. A limitation chip beside a stale confident drill no longer suffices.
+
+The independent four-gap reproduction now rejects missing-page false PASS, divergent source hashes, missing fact-to-block links and omitted new family facts. Exact replay output is `independent-replay.json`. Six additional standalone synthetic controls pass in `probe-results.json`: intact actual page; replaced-page rejection with fresh observations; matching scratch bytes versus a changed-byte poison; stale confident FFN metadata rejection; stale actual FFN nodes despite downgraded IR rejection; and a limited view without old operations. `probe_report.py` is the reproducible source. AST syntax check passed.
+
+Historical observations generated under the former semantic schema can now report a sidecar mismatch; they are not silently rewritten. The new generator imports the same observation function and will emit the corrected schema at the next final freeze. Legacy differential pages remain read from their actual bytes and retain explicit integrity findings.
+
+Remaining review obligations: the changed witness still needs its exact source edit, added computation and actual mechanism drill reviewed; these checks do not independently prove an exact +1-per-selected-stage correspondence. No generic source/count interpreter was added. Missing-proof rejection covers this declared FFN renderer/operation correspondence, not arbitrary visual semantic equivalence. All reports remain review-required and never bless deltas.

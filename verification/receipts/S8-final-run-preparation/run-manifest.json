@@ -1,0 +1,332 @@
+{
+  "status": "PREPARED_NOT_RUN_WAITING_FOR_EXECUTOR_FREEZE",
+  "final_commit": null,
+  "detached_checkout": "/private/tmp/unfold-s8-final-review-<commit>",
+  "output_root": "/private/tmp/unfold-s8-final-<commit>",
+  "receipt_root": "verification/receipts/S8-final-<commit>",
+  "page_root": "../z-docs/12-design/S8/final-<commit>/",
+  "execution": "strictly serial model lanes; no pytest overlap; do not run until executor supplies immutable candidate",
+  "source_pin": {
+    "production": "demonstrate_s8_unet._tree_sources(): sorted relative .py hashes under model_unfolder and physics, canonical json SHA256",
+    "cli_flag": "--expect-source-sha256 <frozen production manifest sha256>",
+    "additional_files": [
+      "scripts/demonstrate_s8_unet.py",
+      "scripts/report_s8_demonstration.py",
+      "scripts/verify_s8_unet_family.py",
+      "/private/tmp/unfold-s8-native-gallery.py"
+    ],
+    "source_before_after": "retain exact commit, git status, implementation manifest and script hashes before/after whole campaign; each demonstration retains before/after production fingerprints",
+    "external_model_source": "each fresh inventory/proof source hash and archived cited source bytes, plus static/runtime/scratch equality for scratch conditions"
+  },
+  "inputs": {
+    "sdxl": {
+      "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-final-run-preparation/inputs/sdxl.json",
+      "sha256": "1dc8ec0a5612bdd2165d4610672ed552bcdee3cd76522dea89359dbab487d1db"
+    },
+    "sd-v1-4": {
+      "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-final-run-preparation/inputs/sd-v1-4.json",
+      "sha256": "b99d071738951cb1ca6b6d9f77147a983fad8e9d60a0601916b135ed5ac08756"
+    }
+  },
+  "commands": [
+    {
+      "witness": "sdxl",
+      "condition": "ordinary",
+      "argv": [
+        "python3",
+        "scripts/demonstrate_s8_unet.py",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-final-run-preparation/inputs/sdxl.json",
+        "--output",
+        "<output_root>/sdxl",
+        "--condition",
+        "ordinary",
+        "--expect-source-sha256",
+        "<frozen production manifest sha256>"
+      ],
+      "log": "<output_root>/logs/sdxl-ordinary.log",
+      "cold_receipt": "<output_root>/logs/sdxl-ordinary-run.json",
+      "output": "<output_root>/sdxl/ordinary",
+      "failure_policy": "retain failure.json, log and partial files; do not retry in the same directory or overwrite failed evidence; report blocker before changing frozen source"
+    },
+    {
+      "witness": "sdxl",
+      "condition": "sparse",
+      "argv": [
+        "python3",
+        "scripts/demonstrate_s8_unet.py",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-final-run-preparation/inputs/sdxl.json",
+        "--output",
+        "<output_root>/sdxl",
+        "--condition",
+        "sparse",
+        "--expect-source-sha256",
+        "<frozen production manifest sha256>"
+      ],
+      "log": "<output_root>/logs/sdxl-sparse.log",
+      "cold_receipt": "<output_root>/logs/sdxl-sparse-run.json",
+      "output": "<output_root>/sdxl/sparse",
+      "failure_policy": "retain failure.json, log and partial files; do not retry in the same directory or overwrite failed evidence; report blocker before changing frozen source"
+    },
+    {
+      "witness": "sdxl",
+      "condition": "misleading",
+      "argv": [
+        "python3",
+        "scripts/demonstrate_s8_unet.py",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-final-run-preparation/inputs/sdxl.json",
+        "--output",
+        "<output_root>/sdxl",
+        "--condition",
+        "misleading",
+        "--expect-source-sha256",
+        "<frozen production manifest sha256>"
+      ],
+      "log": "<output_root>/logs/sdxl-misleading.log",
+      "cold_receipt": "<output_root>/logs/sdxl-misleading-run.json",
+      "output": "<output_root>/sdxl/misleading",
+      "failure_policy": "retain failure.json, log and partial files; do not retry in the same directory or overwrite failed evidence; report blocker before changing frozen source"
+    },
+    {
+      "witness": "sdxl",
+      "condition": "rewrite",
+      "argv": [
+        "python3",
+        "scripts/demonstrate_s8_unet.py",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-final-run-preparation/inputs/sdxl.json",
+        "--output",
+        "<output_root>/sdxl",
+        "--condition",
+        "rewrite",
+        "--expect-source-sha256",
+        "<frozen production manifest sha256>"
+      ],
+      "log": "<output_root>/logs/sdxl-rewrite.log",
+      "cold_receipt": "<output_root>/logs/sdxl-rewrite-run.json",
+      "output": "<output_root>/sdxl/rewrite",
+      "failure_policy": "retain failure.json, log and partial files; do not retry in the same directory or overwrite failed evidence; report blocker before changing frozen source"
+    },
+    {
+      "witness": "sdxl",
+      "condition": "unchanged",
+      "argv": [
+        "python3",
+        "scripts/demonstrate_s8_unet.py",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-final-run-preparation/inputs/sdxl.json",
+        "--output",
+        "<output_root>/sdxl",
+        "--condition",
+        "unchanged",
+        "--expect-source-sha256",
+        "<frozen production manifest sha256>"
+      ],
+      "log": "<output_root>/logs/sdxl-unchanged.log",
+      "cold_receipt": "<output_root>/logs/sdxl-unchanged-run.json",
+      "output": "<output_root>/sdxl/unchanged",
+      "failure_policy": "retain failure.json, log and partial files; do not retry in the same directory or overwrite failed evidence; report blocker before changing frozen source"
+    },
+    {
+      "witness": "sdxl",
+      "condition": "changed",
+      "argv": [
+        "python3",
+        "scripts/demonstrate_s8_unet.py",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-final-run-preparation/inputs/sdxl.json",
+        "--output",
+        "<output_root>/sdxl",
+        "--condition",
+        "changed",
+        "--expect-source-sha256",
+        "<frozen production manifest sha256>"
+      ],
+      "log": "<output_root>/logs/sdxl-changed.log",
+      "cold_receipt": "<output_root>/logs/sdxl-changed-run.json",
+      "output": "<output_root>/sdxl/changed",
+      "failure_policy": "retain failure.json, log and partial files; do not retry in the same directory or overwrite failed evidence; report blocker before changing frozen source"
+    },
+    {
+      "witness": "sdxl",
+      "condition": "missing",
+      "argv": [
+        "python3",
+        "scripts/demonstrate_s8_unet.py",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-final-run-preparation/inputs/sdxl.json",
+        "--output",
+        "<output_root>/sdxl",
+        "--condition",
+        "missing",
+        "--expect-source-sha256",
+        "<frozen production manifest sha256>"
+      ],
+      "log": "<output_root>/logs/sdxl-missing.log",
+      "cold_receipt": "<output_root>/logs/sdxl-missing-run.json",
+      "output": "<output_root>/sdxl/missing",
+      "failure_policy": "retain failure.json, log and partial files; do not retry in the same directory or overwrite failed evidence; report blocker before changing frozen source"
+    },
+    {
+      "witness": "sdxl",
+      "condition": "legacy",
+      "argv": [
+        "python3",
+        "scripts/demonstrate_s8_unet.py",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-final-run-preparation/inputs/sdxl.json",
+        "--output",
+        "<output_root>/sdxl",
+        "--condition",
+        "legacy",
+        "--expect-source-sha256",
+        "<frozen production manifest sha256>"
+      ],
+      "log": "<output_root>/logs/sdxl-legacy.log",
+      "cold_receipt": "<output_root>/logs/sdxl-legacy-run.json",
+      "output": "<output_root>/sdxl/legacy",
+      "failure_policy": "retain failure.json, log and partial files; do not retry in the same directory or overwrite failed evidence; report blocker before changing frozen source"
+    },
+    {
+      "witness": "sd-v1-4",
+      "condition": "ordinary",
+      "argv": [
+        "python3",
+        "scripts/demonstrate_s8_unet.py",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-final-run-preparation/inputs/sd-v1-4.json",
+        "--output",
+        "<output_root>/sd-v1-4",
+        "--condition",
+        "ordinary",
+        "--expect-source-sha256",
+        "<frozen production manifest sha256>"
+      ],
+      "log": "<output_root>/logs/sd-v1-4-ordinary.log",
+      "cold_receipt": "<output_root>/logs/sd-v1-4-ordinary-run.json",
+      "output": "<output_root>/sd-v1-4/ordinary",
+      "failure_policy": "retain failure.json, log and partial files; do not retry in the same directory or overwrite failed evidence; report blocker before changing frozen source"
+    },
+    {
+      "witness": "sd-v1-4",
+      "condition": "legacy",
+      "argv": [
+        "python3",
+        "scripts/demonstrate_s8_unet.py",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-final-run-preparation/inputs/sd-v1-4.json",
+        "--output",
+        "<output_root>/sd-v1-4",
+        "--condition",
+        "legacy",
+        "--expect-source-sha256",
+        "<frozen production manifest sha256>"
+      ],
+      "log": "<output_root>/logs/sd-v1-4-legacy.log",
+      "cold_receipt": "<output_root>/logs/sd-v1-4-legacy-run.json",
+      "output": "<output_root>/sd-v1-4/legacy",
+      "failure_policy": "retain failure.json, log and partial files; do not retry in the same directory or overwrite failed evidence; report blocker before changing frozen source"
+    }
+  ],
+  "post_commands": [
+    {
+      "witness": "sdxl",
+      "argv": [
+        "python3",
+        "scripts/report_s8_demonstration.py",
+        "--root",
+        "<output_root>/sdxl",
+        "--differential",
+        "--claim-traces"
+      ]
+    },
+    {
+      "witness": "sd-v1-4",
+      "argv": [
+        "python3",
+        "scripts/report_s8_demonstration.py",
+        "--root",
+        "<output_root>/sd-v1-4",
+        "--differential"
+      ],
+      "expected_scope": "ordinary/differential only; six SDXL-specific controls correctly remain NOT_RUN for this witness"
+    }
+  ],
+  "legacy_policy": "Rerun both legacy halves on final frozen candidate (~6 seconds each at4637). Preserve4637 artifacts historically; no reuse or mixed observation schema.",
+  "changed_expectation": {
+    "basis": "Existing source bytes and ordinary constructed paths only; reconfirm against final ordinary, no new interpreter",
+    "root_source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+    "root_source_line": 370,
+    "edit": "transformer_layers_per_block=transformer_layers_per_block[i], -> transformer_layers_per_block=transformer_layers_per_block[i] + 1,",
+    "groups": [
+      {
+        "parent": "down_blocks.1.attentions.0",
+        "ordinary_count": 2,
+        "changed_count": 3,
+        "added_transformer": "down_blocks.1.attentions.0.transformer_blocks.2",
+        "added_ffn": "down_blocks.1.attentions.0.transformer_blocks.2.ff",
+        "peer_subtree_parameters": 10005120
+      },
+      {
+        "parent": "down_blocks.1.attentions.1",
+        "ordinary_count": 2,
+        "changed_count": 3,
+        "added_transformer": "down_blocks.1.attentions.1.transformer_blocks.2",
+        "added_ffn": "down_blocks.1.attentions.1.transformer_blocks.2.ff",
+        "peer_subtree_parameters": 10005120
+      },
+      {
+        "parent": "down_blocks.2.attentions.0",
+        "ordinary_count": 10,
+        "changed_count": 11,
+        "added_transformer": "down_blocks.2.attentions.0.transformer_blocks.10",
+        "added_ffn": "down_blocks.2.attentions.0.transformer_blocks.10.ff",
+        "peer_subtree_parameters": 34755840
+      },
+      {
+        "parent": "down_blocks.2.attentions.1",
+        "ordinary_count": 10,
+        "changed_count": 11,
+        "added_transformer": "down_blocks.2.attentions.1.transformer_blocks.10",
+        "added_ffn": "down_blocks.2.attentions.1.transformer_blocks.10.ff",
+        "peer_subtree_parameters": 34755840
+      }
+    ],
+    "ordinary_down_transformers": 24,
+    "expected_changed_down_transformers": 28,
+    "expected_added_ffns": 4,
+    "ordinary_total_ffns": 70,
+    "conditional_parameter_prediction": 89521920,
+    "parameter_prediction_condition": "If each added block matches its existing constructed peer shapes; confirm actual changed shapes, do not bless expected numbers."
+  },
+  "broad_gate": {
+    "owner": "executor only; no command run in preparation",
+    "argv": [
+      "python3",
+      "scripts/verify_commit.py",
+      "--commit",
+      "<final_commit>",
+      "--focus",
+      "tests/test_s8_unet_routing.py",
+      "--focus",
+      "tests/test_s8_cell_connections.py",
+      "--focus",
+      "tests/test_s8_port_routes.py",
+      "--focus",
+      "tests/test_s8_call_port_layout.py",
+      "--focus",
+      "tests/test_s7_reconciliation.py"
+    ],
+    "additional_focus": "executor appends actual new primary-route tests; coordinator intrinsically adds kernel/U2/collection/static/full/preservation lanes",
+    "fingerprint_command": [
+      "python3",
+      "-m",
+      "test_support.tree_state",
+      "."
+    ],
+    "receipt_source": "/private/tmp/model-unfolder-verification/<run-id>/ (copy exact coordinator receipt/logs in repo)",
+    "law": "isolated detached lanes strictly serial; preserve legitimate pixel/IR deltas as blocking approval evidence, never update baselines or bless to make gate green"
+  }
+}

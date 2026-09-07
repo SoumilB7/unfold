@@ -1257,3 +1257,17 @@ def test_multi_stream_shape_requires_exact_recipe_lineage_and_unique_axis():
     assert rows((1, 8), (1, 8, 4, 4096), ()) == ()
     # Two equal candidate axes make the residual axis ambiguous.
     assert rows((1, 4), (1, 4, 4, 4096), ("tokens",)) == ()
+
+
+def test_drawn_container_keeps_projection_and_unstamped_fact_finding():
+    fact = _raw_fact()
+    ir = _product_ir(head=False)
+    ir.extras['render']['model_blocks'].append({
+        'id': 'container_card', 'kind': 'opaque', 'label': 'Constructed container',
+        'source_instance_path': 'blocks', 'source_fact_keys': [fact.ledger_key()]})
+    claims = projection_claims_from_product(
+        index=_product_index(), inventory=_inventory(), static_claims=(),
+        ir=ir, facts={fact.ledger_key(): fact}, render_events=())
+    row = next(row for row in claims if row.instance_path == 'blocks')
+    assert row.axis.kind == 'rendered'
+    assert row.axis.fact_findings == (ProjectionFactFinding(fact.ledger_key()),)

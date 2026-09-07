@@ -1,0 +1,1459 @@
+{
+  "bindings": [
+    {
+      "dataflow_operators": [
+        "assign"
+      ],
+      "end_line": 1110,
+      "guards": [],
+      "kind": "assign",
+      "line": 1110,
+      "targets": [
+        {
+          "kind": "name",
+          "name": "sample"
+        }
+      ],
+      "value": {
+        "children": [
+          {
+            "children": [
+              {
+                "kind": "name",
+                "name": "self"
+              }
+            ],
+            "kind": "attribute",
+            "name": "conv_in"
+          },
+          {
+            "kind": "name",
+            "name": "sample"
+          }
+        ],
+        "kind": "call"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "assign"
+      ],
+      "end_line": 1137,
+      "guards": [],
+      "kind": "assign",
+      "line": 1137,
+      "targets": [
+        {
+          "kind": "name",
+          "name": "down_block_res_samples"
+        }
+      ],
+      "value": {
+        "children": [
+          {
+            "kind": "name",
+            "name": "sample"
+          }
+        ],
+        "kind": "tuple"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "assign"
+      ],
+      "end_line": 1153,
+      "guards": [
+        {
+          "end_line": 1159,
+          "kind": "for",
+          "line": 1138,
+          "test": {
+            "children": [
+              {
+                "kind": "name",
+                "name": "self"
+              }
+            ],
+            "kind": "attribute",
+            "name": "down_blocks"
+          }
+        },
+        {
+          "end_line": 1157,
+          "kind": "if",
+          "line": 1139,
+          "test": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "kind": "name",
+                    "name": "hasattr"
+                  },
+                  {
+                    "kind": "name",
+                    "name": "downsample_block"
+                  },
+                  {
+                    "kind": "constant",
+                    "value": "has_cross_attention"
+                  }
+                ],
+                "kind": "call"
+              },
+              {
+                "children": [
+                  {
+                    "kind": "name",
+                    "name": "downsample_block"
+                  }
+                ],
+                "kind": "attribute",
+                "name": "has_cross_attention"
+              }
+            ],
+            "kind": "boolop",
+            "operator": "and"
+          }
+        }
+      ],
+      "kind": "assign",
+      "line": 1145,
+      "targets": [
+        {
+          "children": [
+            {
+              "kind": "name",
+              "name": "sample"
+            },
+            {
+              "kind": "name",
+              "name": "res_samples"
+            }
+          ],
+          "kind": "tuple"
+        }
+      ],
+      "value": {
+        "children": [
+          {
+            "kind": "name",
+            "name": "downsample_block"
+          }
+        ],
+        "keywords": {
+          "**": {
+            "kind": "name",
+            "name": "additional_residuals"
+          },
+          "attention_mask": {
+            "kind": "name",
+            "name": "attention_mask"
+          },
+          "cross_attention_kwargs": {
+            "kind": "name",
+            "name": "cross_attention_kwargs"
+          },
+          "encoder_attention_mask": {
+            "kind": "name",
+            "name": "encoder_attention_mask"
+          },
+          "encoder_hidden_states": {
+            "kind": "name",
+            "name": "encoder_hidden_states"
+          },
+          "hidden_states": {
+            "kind": "name",
+            "name": "sample"
+          },
+          "temb": {
+            "kind": "name",
+            "name": "emb"
+          }
+        },
+        "kind": "call"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "assign"
+      ],
+      "end_line": 1155,
+      "guards": [
+        {
+          "end_line": 1159,
+          "kind": "for",
+          "line": 1138,
+          "test": {
+            "children": [
+              {
+                "kind": "name",
+                "name": "self"
+              }
+            ],
+            "kind": "attribute",
+            "name": "down_blocks"
+          }
+        },
+        {
+          "end_line": 1157,
+          "kind": "else",
+          "line": 1139,
+          "test": null
+        }
+      ],
+      "kind": "assign",
+      "line": 1155,
+      "targets": [
+        {
+          "children": [
+            {
+              "kind": "name",
+              "name": "sample"
+            },
+            {
+              "kind": "name",
+              "name": "res_samples"
+            }
+          ],
+          "kind": "tuple"
+        }
+      ],
+      "value": {
+        "children": [
+          {
+            "kind": "name",
+            "name": "downsample_block"
+          }
+        ],
+        "keywords": {
+          "hidden_states": {
+            "kind": "name",
+            "name": "sample"
+          },
+          "temb": {
+            "kind": "name",
+            "name": "emb"
+          }
+        },
+        "kind": "call"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "aug:+"
+      ],
+      "end_line": 1157,
+      "guards": [
+        {
+          "end_line": 1159,
+          "kind": "for",
+          "line": 1138,
+          "test": {
+            "children": [
+              {
+                "kind": "name",
+                "name": "self"
+              }
+            ],
+            "kind": "attribute",
+            "name": "down_blocks"
+          }
+        },
+        {
+          "end_line": 1157,
+          "kind": "else",
+          "line": 1139,
+          "test": null
+        },
+        {
+          "end_line": 1157,
+          "kind": "if",
+          "line": 1156,
+          "test": {
+            "children": [
+              {
+                "kind": "name",
+                "name": "is_adapter"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "kind": "name",
+                        "name": "len"
+                      },
+                      {
+                        "kind": "name",
+                        "name": "down_intrablock_additional_residuals"
+                      }
+                    ],
+                    "kind": "call"
+                  },
+                  {
+                    "kind": "constant",
+                    "value": 0
+                  }
+                ],
+                "kind": "compare",
+                "operator": ">"
+              }
+            ],
+            "kind": "boolop",
+            "operator": "and"
+          }
+        }
+      ],
+      "kind": "augassign",
+      "line": 1157,
+      "targets": [
+        {
+          "kind": "name",
+          "name": "sample"
+        }
+      ],
+      "value": {
+        "children": [
+          {
+            "children": [
+              {
+                "kind": "name",
+                "name": "down_intrablock_additional_residuals"
+              }
+            ],
+            "kind": "attribute",
+            "name": "pop"
+          },
+          {
+            "kind": "constant",
+            "value": 0
+          }
+        ],
+        "kind": "call"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "aug:+"
+      ],
+      "end_line": 1159,
+      "guards": [
+        {
+          "end_line": 1159,
+          "kind": "for",
+          "line": 1138,
+          "test": {
+            "children": [
+              {
+                "kind": "name",
+                "name": "self"
+              }
+            ],
+            "kind": "attribute",
+            "name": "down_blocks"
+          }
+        }
+      ],
+      "kind": "augassign",
+      "line": 1159,
+      "targets": [
+        {
+          "kind": "name",
+          "name": "down_block_res_samples"
+        }
+      ],
+      "value": {
+        "kind": "name",
+        "name": "res_samples"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "assign"
+      ],
+      "end_line": 1170,
+      "guards": [
+        {
+          "end_line": 1170,
+          "kind": "if",
+          "line": 1161,
+          "test": {
+            "kind": "name",
+            "name": "is_controlnet"
+          }
+        }
+      ],
+      "kind": "assign",
+      "line": 1170,
+      "targets": [
+        {
+          "kind": "name",
+          "name": "down_block_res_samples"
+        }
+      ],
+      "value": {
+        "kind": "name",
+        "name": "new_down_block_res_samples"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "assign"
+      ],
+      "end_line": 1182,
+      "guards": [
+        {
+          "end_line": 1192,
+          "kind": "if",
+          "line": 1173,
+          "test": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "kind": "name",
+                    "name": "self"
+                  }
+                ],
+                "kind": "attribute",
+                "name": "mid_block"
+              },
+              {
+                "kind": "constant",
+                "value": null
+              }
+            ],
+            "kind": "compare",
+            "operator": "is not"
+          }
+        },
+        {
+          "end_line": 1184,
+          "kind": "if",
+          "line": 1174,
+          "test": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "kind": "name",
+                    "name": "hasattr"
+                  },
+                  {
+                    "children": [
+                      {
+                        "kind": "name",
+                        "name": "self"
+                      }
+                    ],
+                    "kind": "attribute",
+                    "name": "mid_block"
+                  },
+                  {
+                    "kind": "constant",
+                    "value": "has_cross_attention"
+                  }
+                ],
+                "kind": "call"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "kind": "name",
+                        "name": "self"
+                      }
+                    ],
+                    "kind": "attribute",
+                    "name": "mid_block"
+                  }
+                ],
+                "kind": "attribute",
+                "name": "has_cross_attention"
+              }
+            ],
+            "kind": "boolop",
+            "operator": "and"
+          }
+        }
+      ],
+      "kind": "assign",
+      "line": 1175,
+      "targets": [
+        {
+          "kind": "name",
+          "name": "sample"
+        }
+      ],
+      "value": {
+        "children": [
+          {
+            "children": [
+              {
+                "kind": "name",
+                "name": "self"
+              }
+            ],
+            "kind": "attribute",
+            "name": "mid_block"
+          },
+          {
+            "kind": "name",
+            "name": "sample"
+          },
+          {
+            "kind": "name",
+            "name": "emb"
+          }
+        ],
+        "keywords": {
+          "attention_mask": {
+            "kind": "name",
+            "name": "attention_mask"
+          },
+          "cross_attention_kwargs": {
+            "kind": "name",
+            "name": "cross_attention_kwargs"
+          },
+          "encoder_attention_mask": {
+            "kind": "name",
+            "name": "encoder_attention_mask"
+          },
+          "encoder_hidden_states": {
+            "kind": "name",
+            "name": "encoder_hidden_states"
+          }
+        },
+        "kind": "call"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "assign"
+      ],
+      "end_line": 1184,
+      "guards": [
+        {
+          "end_line": 1192,
+          "kind": "if",
+          "line": 1173,
+          "test": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "kind": "name",
+                    "name": "self"
+                  }
+                ],
+                "kind": "attribute",
+                "name": "mid_block"
+              },
+              {
+                "kind": "constant",
+                "value": null
+              }
+            ],
+            "kind": "compare",
+            "operator": "is not"
+          }
+        },
+        {
+          "end_line": 1184,
+          "kind": "else",
+          "line": 1174,
+          "test": null
+        }
+      ],
+      "kind": "assign",
+      "line": 1184,
+      "targets": [
+        {
+          "kind": "name",
+          "name": "sample"
+        }
+      ],
+      "value": {
+        "children": [
+          {
+            "children": [
+              {
+                "kind": "name",
+                "name": "self"
+              }
+            ],
+            "kind": "attribute",
+            "name": "mid_block"
+          },
+          {
+            "kind": "name",
+            "name": "sample"
+          },
+          {
+            "kind": "name",
+            "name": "emb"
+          }
+        ],
+        "kind": "call"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "aug:+"
+      ],
+      "end_line": 1192,
+      "guards": [
+        {
+          "end_line": 1192,
+          "kind": "if",
+          "line": 1173,
+          "test": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "kind": "name",
+                    "name": "self"
+                  }
+                ],
+                "kind": "attribute",
+                "name": "mid_block"
+              },
+              {
+                "kind": "constant",
+                "value": null
+              }
+            ],
+            "kind": "compare",
+            "operator": "is not"
+          }
+        },
+        {
+          "end_line": 1192,
+          "kind": "if",
+          "line": 1187,
+          "test": {
+            "children": [
+              {
+                "kind": "name",
+                "name": "is_adapter"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "kind": "name",
+                        "name": "len"
+                      },
+                      {
+                        "kind": "name",
+                        "name": "down_intrablock_additional_residuals"
+                      }
+                    ],
+                    "kind": "call"
+                  },
+                  {
+                    "kind": "constant",
+                    "value": 0
+                  }
+                ],
+                "kind": "compare",
+                "operator": ">"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "kind": "name",
+                        "name": "sample"
+                      }
+                    ],
+                    "kind": "attribute",
+                    "name": "shape"
+                  },
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "kind": "name",
+                            "name": "down_intrablock_additional_residuals"
+                          },
+                          {
+                            "kind": "constant",
+                            "value": 0
+                          }
+                        ],
+                        "kind": "subscript"
+                      }
+                    ],
+                    "kind": "attribute",
+                    "name": "shape"
+                  }
+                ],
+                "kind": "compare",
+                "operator": "=="
+              }
+            ],
+            "kind": "boolop",
+            "operator": "and"
+          }
+        }
+      ],
+      "kind": "augassign",
+      "line": 1192,
+      "targets": [
+        {
+          "kind": "name",
+          "name": "sample"
+        }
+      ],
+      "value": {
+        "children": [
+          {
+            "children": [
+              {
+                "kind": "name",
+                "name": "down_intrablock_additional_residuals"
+              }
+            ],
+            "kind": "attribute",
+            "name": "pop"
+          },
+          {
+            "kind": "constant",
+            "value": 0
+          }
+        ],
+        "kind": "call"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "assign"
+      ],
+      "end_line": 1195,
+      "guards": [
+        {
+          "end_line": 1195,
+          "kind": "if",
+          "line": 1194,
+          "test": {
+            "kind": "name",
+            "name": "is_controlnet"
+          }
+        }
+      ],
+      "kind": "assign",
+      "line": 1195,
+      "targets": [
+        {
+          "kind": "name",
+          "name": "sample"
+        }
+      ],
+      "value": {
+        "children": [
+          {
+            "kind": "name",
+            "name": "sample"
+          },
+          {
+            "kind": "name",
+            "name": "mid_block_additional_residual"
+          }
+        ],
+        "kind": "binop",
+        "operator": "+"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "assign"
+      ],
+      "end_line": 1201,
+      "guards": [
+        {
+          "end_line": 1226,
+          "kind": "for",
+          "line": 1198,
+          "test": {
+            "children": [
+              {
+                "kind": "name",
+                "name": "enumerate"
+              },
+              {
+                "children": [
+                  {
+                    "kind": "name",
+                    "name": "self"
+                  }
+                ],
+                "kind": "attribute",
+                "name": "up_blocks"
+              }
+            ],
+            "kind": "call"
+          }
+        }
+      ],
+      "kind": "assign",
+      "line": 1201,
+      "targets": [
+        {
+          "kind": "name",
+          "name": "res_samples"
+        }
+      ],
+      "value": {
+        "children": [
+          {
+            "kind": "name",
+            "name": "down_block_res_samples"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "kind": "name",
+                        "name": "len"
+                      },
+                      {
+                        "children": [
+                          {
+                            "kind": "name",
+                            "name": "upsample_block"
+                          }
+                        ],
+                        "kind": "attribute",
+                        "name": "resnets"
+                      }
+                    ],
+                    "kind": "call"
+                  }
+                ],
+                "kind": "unaryop",
+                "operator": "-"
+              },
+              null,
+              null
+            ],
+            "kind": "slice"
+          }
+        ],
+        "kind": "subscript"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "assign"
+      ],
+      "end_line": 1202,
+      "guards": [
+        {
+          "end_line": 1226,
+          "kind": "for",
+          "line": 1198,
+          "test": {
+            "children": [
+              {
+                "kind": "name",
+                "name": "enumerate"
+              },
+              {
+                "children": [
+                  {
+                    "kind": "name",
+                    "name": "self"
+                  }
+                ],
+                "kind": "attribute",
+                "name": "up_blocks"
+              }
+            ],
+            "kind": "call"
+          }
+        }
+      ],
+      "kind": "assign",
+      "line": 1202,
+      "targets": [
+        {
+          "kind": "name",
+          "name": "down_block_res_samples"
+        }
+      ],
+      "value": {
+        "children": [
+          {
+            "kind": "name",
+            "name": "down_block_res_samples"
+          },
+          {
+            "children": [
+              null,
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "kind": "name",
+                        "name": "len"
+                      },
+                      {
+                        "children": [
+                          {
+                            "kind": "name",
+                            "name": "upsample_block"
+                          }
+                        ],
+                        "kind": "attribute",
+                        "name": "resnets"
+                      }
+                    ],
+                    "kind": "call"
+                  }
+                ],
+                "kind": "unaryop",
+                "operator": "-"
+              },
+              null
+            ],
+            "kind": "slice"
+          }
+        ],
+        "kind": "subscript"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "assign"
+      ],
+      "end_line": 1219,
+      "guards": [
+        {
+          "end_line": 1226,
+          "kind": "for",
+          "line": 1198,
+          "test": {
+            "children": [
+              {
+                "kind": "name",
+                "name": "enumerate"
+              },
+              {
+                "children": [
+                  {
+                    "kind": "name",
+                    "name": "self"
+                  }
+                ],
+                "kind": "attribute",
+                "name": "up_blocks"
+              }
+            ],
+            "kind": "call"
+          }
+        },
+        {
+          "end_line": 1226,
+          "kind": "if",
+          "line": 1209,
+          "test": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "kind": "name",
+                    "name": "hasattr"
+                  },
+                  {
+                    "kind": "name",
+                    "name": "upsample_block"
+                  },
+                  {
+                    "kind": "constant",
+                    "value": "has_cross_attention"
+                  }
+                ],
+                "kind": "call"
+              },
+              {
+                "children": [
+                  {
+                    "kind": "name",
+                    "name": "upsample_block"
+                  }
+                ],
+                "kind": "attribute",
+                "name": "has_cross_attention"
+              }
+            ],
+            "kind": "boolop",
+            "operator": "and"
+          }
+        }
+      ],
+      "kind": "assign",
+      "line": 1210,
+      "targets": [
+        {
+          "kind": "name",
+          "name": "sample"
+        }
+      ],
+      "value": {
+        "children": [
+          {
+            "kind": "name",
+            "name": "upsample_block"
+          }
+        ],
+        "keywords": {
+          "attention_mask": {
+            "kind": "name",
+            "name": "attention_mask"
+          },
+          "cross_attention_kwargs": {
+            "kind": "name",
+            "name": "cross_attention_kwargs"
+          },
+          "encoder_attention_mask": {
+            "kind": "name",
+            "name": "encoder_attention_mask"
+          },
+          "encoder_hidden_states": {
+            "kind": "name",
+            "name": "encoder_hidden_states"
+          },
+          "hidden_states": {
+            "kind": "name",
+            "name": "sample"
+          },
+          "res_hidden_states_tuple": {
+            "kind": "name",
+            "name": "res_samples"
+          },
+          "temb": {
+            "kind": "name",
+            "name": "emb"
+          },
+          "upsample_size": {
+            "kind": "name",
+            "name": "upsample_size"
+          }
+        },
+        "kind": "call"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "assign"
+      ],
+      "end_line": 1226,
+      "guards": [
+        {
+          "end_line": 1226,
+          "kind": "for",
+          "line": 1198,
+          "test": {
+            "children": [
+              {
+                "kind": "name",
+                "name": "enumerate"
+              },
+              {
+                "children": [
+                  {
+                    "kind": "name",
+                    "name": "self"
+                  }
+                ],
+                "kind": "attribute",
+                "name": "up_blocks"
+              }
+            ],
+            "kind": "call"
+          }
+        },
+        {
+          "end_line": 1226,
+          "kind": "else",
+          "line": 1209,
+          "test": null
+        }
+      ],
+      "kind": "assign",
+      "line": 1221,
+      "targets": [
+        {
+          "kind": "name",
+          "name": "sample"
+        }
+      ],
+      "value": {
+        "children": [
+          {
+            "kind": "name",
+            "name": "upsample_block"
+          }
+        ],
+        "keywords": {
+          "hidden_states": {
+            "kind": "name",
+            "name": "sample"
+          },
+          "res_hidden_states_tuple": {
+            "kind": "name",
+            "name": "res_samples"
+          },
+          "temb": {
+            "kind": "name",
+            "name": "emb"
+          },
+          "upsample_size": {
+            "kind": "name",
+            "name": "upsample_size"
+          }
+        },
+        "kind": "call"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "assign"
+      ],
+      "end_line": 1230,
+      "guards": [
+        {
+          "end_line": 1231,
+          "kind": "if",
+          "line": 1229,
+          "test": {
+            "children": [
+              {
+                "kind": "name",
+                "name": "self"
+              }
+            ],
+            "kind": "attribute",
+            "name": "conv_norm_out"
+          }
+        }
+      ],
+      "kind": "assign",
+      "line": 1230,
+      "targets": [
+        {
+          "kind": "name",
+          "name": "sample"
+        }
+      ],
+      "value": {
+        "children": [
+          {
+            "children": [
+              {
+                "kind": "name",
+                "name": "self"
+              }
+            ],
+            "kind": "attribute",
+            "name": "conv_norm_out"
+          },
+          {
+            "kind": "name",
+            "name": "sample"
+          }
+        ],
+        "kind": "call"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "assign"
+      ],
+      "end_line": 1231,
+      "guards": [
+        {
+          "end_line": 1231,
+          "kind": "if",
+          "line": 1229,
+          "test": {
+            "children": [
+              {
+                "kind": "name",
+                "name": "self"
+              }
+            ],
+            "kind": "attribute",
+            "name": "conv_norm_out"
+          }
+        }
+      ],
+      "kind": "assign",
+      "line": 1231,
+      "targets": [
+        {
+          "kind": "name",
+          "name": "sample"
+        }
+      ],
+      "value": {
+        "children": [
+          {
+            "children": [
+              {
+                "kind": "name",
+                "name": "self"
+              }
+            ],
+            "kind": "attribute",
+            "name": "conv_act"
+          },
+          {
+            "kind": "name",
+            "name": "sample"
+          }
+        ],
+        "kind": "call"
+      }
+    },
+    {
+      "dataflow_operators": [
+        "assign"
+      ],
+      "end_line": 1232,
+      "guards": [],
+      "kind": "assign",
+      "line": 1232,
+      "targets": [
+        {
+          "kind": "name",
+          "name": "sample"
+        }
+      ],
+      "value": {
+        "children": [
+          {
+            "children": [
+              {
+                "kind": "name",
+                "name": "self"
+              }
+            ],
+            "kind": "attribute",
+            "name": "conv_out"
+          },
+          {
+            "kind": "name",
+            "name": "sample"
+          }
+        ],
+        "kind": "call"
+      }
+    }
+  ],
+  "checkpoint": "d3a4d61732233a14ee67917f48fe5ec11d41f10e",
+  "forward": "UNet2DConditionModel.forward",
+  "limit": "Neutral syntax inventory; not an execution, target-binding or complete mechanism proof",
+  "loops": [
+    {
+      "end_line": 1055,
+      "guards": [],
+      "iterable": {
+        "children": [
+          {
+            "children": [
+              {
+                "kind": "name",
+                "name": "sample"
+              }
+            ],
+            "kind": "attribute",
+            "name": "shape"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "kind": "constant",
+                    "value": 2
+                  }
+                ],
+                "kind": "unaryop",
+                "operator": "-"
+              },
+              null,
+              null
+            ],
+            "kind": "slice"
+          }
+        ],
+        "kind": "subscript"
+      },
+      "line": 1051,
+      "target": {
+        "kind": "name",
+        "name": "dim"
+      }
+    },
+    {
+      "end_line": 1159,
+      "guards": [],
+      "iterable": {
+        "children": [
+          {
+            "kind": "name",
+            "name": "self"
+          }
+        ],
+        "kind": "attribute",
+        "name": "down_blocks"
+      },
+      "line": 1138,
+      "target": {
+        "kind": "name",
+        "name": "downsample_block"
+      }
+    },
+    {
+      "end_line": 1168,
+      "guards": [
+        {
+          "end_line": 1170,
+          "kind": "if",
+          "line": 1161,
+          "test": {
+            "kind": "name",
+            "name": "is_controlnet"
+          }
+        }
+      ],
+      "iterable": {
+        "children": [
+          {
+            "kind": "name",
+            "name": "zip"
+          },
+          {
+            "kind": "name",
+            "name": "down_block_res_samples"
+          },
+          {
+            "kind": "name",
+            "name": "down_block_additional_residuals"
+          }
+        ],
+        "kind": "call"
+      },
+      "line": 1164,
+      "target": {
+        "children": [
+          {
+            "kind": "name",
+            "name": "down_block_res_sample"
+          },
+          {
+            "kind": "name",
+            "name": "down_block_additional_residual"
+          }
+        ],
+        "kind": "tuple"
+      }
+    },
+    {
+      "end_line": 1226,
+      "guards": [],
+      "iterable": {
+        "children": [
+          {
+            "kind": "name",
+            "name": "enumerate"
+          },
+          {
+            "children": [
+              {
+                "kind": "name",
+                "name": "self"
+              }
+            ],
+            "kind": "attribute",
+            "name": "up_blocks"
+          }
+        ],
+        "kind": "call"
+      },
+      "line": 1198,
+      "target": {
+        "children": [
+          {
+            "kind": "name",
+            "name": "i"
+          },
+          {
+            "kind": "name",
+            "name": "upsample_block"
+          }
+        ],
+        "kind": "tuple"
+      }
+    }
+  ],
+  "source_file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/unets/unet_2d_condition.py",
+  "source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+  "unsupported_regions": [
+    {
+      "end_line": 1113,
+      "kind": "boolop",
+      "line": 1113,
+      "reason": "short-circuit boolean carries a call"
+    },
+    {
+      "end_line": 1139,
+      "kind": "boolop",
+      "line": 1139,
+      "reason": "short-circuit boolean carries a call"
+    },
+    {
+      "end_line": 1142,
+      "kind": "boolop",
+      "line": 1142,
+      "reason": "short-circuit boolean carries a call"
+    },
+    {
+      "end_line": 1156,
+      "kind": "boolop",
+      "line": 1156,
+      "reason": "short-circuit boolean carries a call"
+    },
+    {
+      "end_line": 1174,
+      "kind": "boolop",
+      "line": 1174,
+      "reason": "short-circuit boolean carries a call"
+    },
+    {
+      "end_line": 1190,
+      "kind": "boolop",
+      "line": 1188,
+      "reason": "short-circuit boolean carries a call"
+    },
+    {
+      "end_line": 1209,
+      "kind": "boolop",
+      "line": 1209,
+      "reason": "short-circuit boolean carries a call"
+    }
+  ]
+}

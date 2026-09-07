@@ -1,0 +1,14 @@
+{
+  "checkpoint": "4637ef4b77a8139326a8643b9f7eb68ab9d0f93c",
+  "tracked_fingerprint_before": "b8ef9928edf6dc59c3260dbf4ffbbc27feb8b127d0792549193c425eb1283302",
+  "tracked_fingerprint_after": "b8ef9928edf6dc59c3260dbf4ffbbc27feb8b127d0792549193c425eb1283302",
+  "clean_checkout": true,
+  "commands_exit_codes": {
+    "replay_bindings.py": 0,
+    "replay_storage.py": 0,
+    "replay_ffn_fresh.py": 0,
+    "replay_routes.py": 0
+  },
+  "verdict": "RETURN R7 loop-else false-positive; R1/R5 bounded controls PASS",
+  "pytest_run": false
+}

@@ -16,12 +16,10 @@ from pathlib import Path
 import re
 
 EVIDENCE_ADDRESS = re.compile(r"sha256:[0-9a-f]{64}:\d+:\d+:\d+:\d+")
-SEMANTIC_FACTS = (
-    "constructed_modules", "constructed_parameter_shapes", "ffn_mechanisms",
-    "runtime_primitives", "cell_connections", "cell_arithmetic",
-    "context_connections", "stage_join_connections", "spatial_mechanisms",
-    "constructed_stage_relations",
-)
+SEMANTIC_METADATA_EXCLUSIONS = {
+    "root.denoiser.declared_constructor_defaults":
+        "Omission provenance changes in the sparse control; its exact key/value/default card chips are checked separately.",
+}
 
 
 def digest(value):
@@ -113,8 +111,9 @@ def semantic_value(value):
 
 def observation(ir, facts, page):
     from model_unfolder.preview import svg_views, _visual_hash
-    selected = {key: semantic_value(facts["root.denoiser." + key]["value"])
-                for key in SEMANTIC_FACTS if "root.denoiser." + key in facts}
+    selected = {key.removeprefix("root.denoiser."): semantic_value(row["value"])
+                for key, row in sorted(facts.items())
+                if key.startswith("root.denoiser.") and key not in SEMANTIC_METADATA_EXCLUSIONS}
     render = ir.get("extras", {}).get("render", {})
     structure = [{key: row[key] for key in (
         "id", "kind", "label", "view", "source_instance_path", "source_fact_keys") if key in row}
@@ -124,6 +123,7 @@ def observation(ir, facts, page):
             "svg_visual_hashes": [_visual_hash(svg) for _, svg in svgs],
             "svg_count": len(svgs), "distinct_svg_count": len({_visual_hash(svg) for _, svg in svgs}),
             "normalization": ["Only sha256:<hash>:line:col:end_line:end_col evidence-address strings inside selected fact values are replaced; paths, literals, source formals, mechanisms, operations and connections remain exact."],
+            "semantic_metadata_exclusions": SEMANTIC_METADATA_EXCLUSIONS,
             "signatures": {"semantic_facts": digest(selected), "block_structure": digest(structure)},
             "page": PageEvidence(page).record()}
 
@@ -157,7 +157,40 @@ def read_case(path):
     result = {name: json.loads((path / (name + ".json")).read_text())
               for name in ("result", "facts", "ir", "controls", "observation", "qualified-facts")}
     result["path"] = str(path)
+    page_path = path / "page.html"
+    raw = page_path.read_bytes() if page_path.is_file() else None
+    actual_hash = hashlib.sha256(raw).hexdigest() if raw is not None else None
+    recomputed = observation(result["ir"], result["facts"], raw.decode() if raw is not None else "")
+    result["artifact_integrity"] = {
+        "page_exists": raw is not None,
+        "actual_html_sha256": actual_hash,
+        "recorded_html_sha256": result["result"].get("html_sha256"),
+        "page_hash_matches": raw is not None and actual_hash == result["result"].get("html_sha256"),
+        "saved_observation_matches": result["observation"] == recomputed,
+    }
+    # Every downstream check uses actual current bytes and current IR/facts.
+    # The stale sidecar remains a finding, never the source of rendered proof.
+    result["observation"] = recomputed
     return result
+
+
+def _page_intact(case):
+    integrity = case.get("artifact_integrity", {})
+    return integrity.get("page_hash_matches") is True
+
+
+def _scratch_integrity(case):
+    path = Path(case["path"])
+    archived = path / "scratch-modeling-source.py"
+    control_path = path / "source-control.json"
+    control = json.loads(control_path.read_text()) if control_path.is_file() else {}
+    hashes = {key: case["result"].get(key) for key in (
+        "static_source_sha256", "runtime_source_sha256", "scratch_source_sha256")}
+    hashes["archived_scratch_sha256"] = hashlib.sha256(archived.read_bytes()).hexdigest() if archived.is_file() else None
+    hashes["source_control_scratch_sha256"] = control.get("scratch_sha256")
+    values = list(hashes.values())
+    return bool(values and all(isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value)
+                               for value in values) and len(set(values)) == 1), hashes
 
 
 def condition_checks(ordinary, current):
@@ -168,9 +201,18 @@ def condition_checks(ordinary, current):
     def check(name, passed, evidence):
         checks.append({"check": name, "status": "PASS" if passed else "FAIL", "evidence": evidence})
 
-    check("actual HTML generated", bool(current["result"].get("html_sha256")), current["path"] + "/page.html")
+    check("actual HTML generated", _page_intact(current), current.get("artifact_integrity"))
+    check("saved observations match actual HTML, IR and facts", current.get("artifact_integrity", {}).get("saved_observation_matches") is True,
+          current.get("artifact_integrity"))
+    check("ordinary reference HTML is intact", _page_intact(ordinary), ordinary.get("artifact_integrity"))
     check("graph wiring", not current["result"].get("wiring_problems"), current["result"].get("wiring_problems"))
-    projected = current["result"].get("projected_fact_keys", [])
+    projected = sorted({key for block in blocks(current["ir"].get("extras", {}).get("render", {}))
+                        for key in block.get("source_fact_keys", ()) if key.startswith("root.denoiser.")})
+    check("projected family fact inventory matches current IR", projected == current["result"].get("projected_fact_keys", []), projected)
+    uncovered = [key for key in projected if key not in SEMANTIC_METADATA_EXCLUSIONS
+                 and key.removeprefix("root.denoiser.") not in b["semantic_facts"]]
+    check("every projected family semantic fact participates", not uncovered,
+          {"uncovered": uncovered, "metadata_exclusions": SEMANTIC_METADATA_EXCLUSIONS})
     qualified = current["qualified-facts"]
     gaps = [key for key in projected if key not in qualified or not qualified[key].get("proof")]
     check("every projected family fact carries a proof", bool(projected) and not gaps, gaps)
@@ -195,7 +237,8 @@ def condition_checks(ordinary, current):
             "ordinary": a["signatures"]["semantic_facts"], "condition": b["signatures"]["semantic_facts"]})
         check("canonical block structure preserved", a["block_structure"] == b["block_structure"], {
             "ordinary": a["signatures"]["block_structure"], "condition": b["signatures"]["block_structure"]})
-        check("actual SVG diagrams preserved", a["svg_visual_hashes"] == b["svg_visual_hashes"], {
+        check("actual SVG diagrams preserved", _page_intact(ordinary) and _page_intact(current)
+              and a["svg_visual_hashes"] == b["svg_visual_hashes"], {
             "ordinary_count": a["svg_count"], "condition_count": b["svg_count"]})
     if condition == "sparse":
         defaults = current["facts"].get("root.denoiser.declared_constructor_defaults", {}).get("value", {})
@@ -212,14 +255,16 @@ def condition_checks(ordinary, current):
         windows = [page[max(0, m.start()-200):m.end()+300] for m in re.finditer("hidden_act", page)]
         check("misleading field flagged in HTML prose", any(re.search(r"unused|unconsumed|unclaimed|unsupported|not consumed|uninterpreted|unread|no consumer", window, re.I) for window in windows), windows)
     if condition in {"rewrite", "unchanged", "changed", "missing"}:
-        check("static reader and builder share exact scratch root bytes", current["result"].get("same_source") is True, {
-            key: current["result"].get(key) for key in ("static_source_sha256", "runtime_source_sha256", "scratch_source_sha256")})
+        matches, hashes = _scratch_integrity(current)
+        check("static reader and builder share exact scratch root bytes", matches, hashes)
     if condition == "unchanged":
-        check("unchanged scratch is byte-identical HTML", ordinary["result"]["html_sha256"] == current["result"]["html_sha256"], {
-            "ordinary": ordinary["result"]["html_sha256"], "unchanged": current["result"]["html_sha256"]})
+        check("unchanged scratch is byte-identical HTML", _page_intact(ordinary) and _page_intact(current)
+              and ordinary["artifact_integrity"]["actual_html_sha256"] == current["artifact_integrity"]["actual_html_sha256"], {
+            "ordinary": ordinary.get("artifact_integrity"), "unchanged": current.get("artifact_integrity")})
     if condition == "changed":
         check("real computation change changes facts", a["semantic_facts"] != b["semantic_facts"], str(Path(current["path"]) / "source.diff"))
-        check("real computation change changes actual drawing", a["svg_visual_hashes"] != b["svg_visual_hashes"], {"ordinary": a["svg_count"], "changed": b["svg_count"]})
+        check("real computation change changes actual drawing", _page_intact(ordinary) and _page_intact(current)
+              and a["svg_visual_hashes"] != b["svg_visual_hashes"], {"ordinary": a["svg_count"], "changed": b["svg_count"]})
         old_params, new_params = ordinary["result"].get("parameters"), current["result"].get("parameters")
         check("shape-derived parameter number changes", old_params is not None and new_params is not None and old_params != new_params, {"before": old_params, "after": new_params})
         old_ffn, new_ffn = a["semantic_facts"].get("ffn_mechanisms", {}), b["semantic_facts"].get("ffn_mechanisms", {})
@@ -247,7 +292,9 @@ def condition_checks(ordinary, current):
         check("removed evidence limits the FFN proof", bool(ordinary_ffn) and len(current_ffn) < len(ordinary_ffn), {"ordinary": len(ordinary_ffn), "missing": len(current_ffn)})
         lost = sorted(set(ordinary_ffn) - set(current_ffn))
         current_blocks = {row["source_instance_path"]: row for row in blocks(current["ir"].get("extras", {}).get("render", {})) if row.get("source_instance_path")}
+        ordinary_blocks = {row["source_instance_path"]: row for row in blocks(ordinary["ir"].get("extras", {}).get("render", {})) if row.get("source_instance_path")}
         limitations = []
+        stale_drawings = []
         for path in lost:
             block = current_blocks.get(path, {})
             card = b["page"]["cards"].get(block.get("id"), {})
@@ -255,8 +302,19 @@ def condition_checks(ordinary, current):
                      if re.search(r"mechanism|source|computation|reader|ffn", line, re.I)
                      and re.search(r"unresolved|investigation_missing|missing|unavailable|not established|not proven", line, re.I)]
             limitations.append({"occurrence": path, "lost_fact": "root.denoiser.ffn_mechanisms", "card_id": block.get("id"), "visible_limitation": lines})
+            fact_key = "root.denoiser.ffn_mechanisms"
+            old_operations = {row["id"] for row in blocks(ordinary_blocks.get(path, {}).get("children", []))
+                              if fact_key in row.get("source_fact_keys", [])}
+            stale_nodes = sorted(old_operations & set(card.get("node_ids", [])))
+            stale_citations = [row["id"] for row in blocks(block)
+                               if fact_key in row.get("source_fact_keys", [])]
+            if block.get("view") == "runtime_ffn" or block.get("kind") == "ffn" or stale_nodes or stale_citations:
+                stale_drawings.append({"occurrence": path, "view": block.get("view"), "kind": block.get("kind"),
+                                       "stale_fact_citations": stale_citations, "stale_actual_operation_nodes": stale_nodes})
         check("each affected occurrence exposes its missing mechanism evidence on its own card",
               bool(limitations) and all(row["visible_limitation"] for row in limitations), limitations)
+        check("lost FFN proof removes its confident mechanism view and actual operation nodes",
+              bool(lost) and not stale_drawings, stale_drawings)
     return checks
 
 
@@ -330,6 +388,7 @@ def differential(root):
               "new_html_sha256": after["result"]["html_sha256"],
               "ir_deltas": rows, "counts": dict(Counter(row["disposition"] for row in rows)),
               "svg_deltas": {"removed": dict(old_svgs-new_svgs), "added": dict(new_svgs-old_svgs)},
+              "artifact_integrity": {"legacy": before["artifact_integrity"], "ordinary": after["artifact_integrity"]},
               "limitations": ["Named re-proof candidates are not accepted re-proofs or approval to re-bless.",
                               "Each IR delta is retained. HTML byte diff and normalized SVG changes are also written; no output is blessed."]}
     dump(root / "differential-report.json", result)
@@ -415,7 +474,9 @@ def claim_traces(root):
                        "block": {name: block.get(name) for name in ("id", "kind", "view", "source_fact_keys")},
                        "actual_card": card, "shape_evidence": qualified.get(shape_key, {}).get("proof"),
                        "numbers_on_actual_cards": expected_numbers,
-                       "chain_gaps": [name for name, present in (("qualified proof", bool(proof)), ("archived matching implementation bytes", source_bytes_present), ("stage overview", stage_visible),
+                       "chain_gaps": [name for name, present in (("actual HTML artifact integrity", _page_intact(case)),
+                           ("canonical fact cited by this block", key in block.get("source_fact_keys", [])),
+                           ("qualified proof", bool(proof)), ("archived matching implementation bytes", source_bytes_present), ("stage overview", stage_visible),
                            ("actual card", bool(card)), ("actual drill SVG", bool(card.get("svg_count"))),
                            ("shape-backed numbers on exact cards", bool(expected_numbers) and all(row["present_on_its_actual_card"] for row in expected_numbers))) if not present],
                        "limitation": "An artifact linkage is not a semantic re-proof. Review the typed proof's exact claims and cited source before acceptance."})

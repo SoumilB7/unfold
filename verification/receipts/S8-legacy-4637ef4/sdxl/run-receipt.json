@@ -1,0 +1,15 @@
+{
+  "checkpoint": "4637ef4b77a8139326a8643b9f7eb68ab9d0f93c",
+  "command": [
+    "python3",
+    "scripts/demonstrate_s8_unet.py",
+    "--condition",
+    "legacy",
+    "--input",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-family-4637ef4/sdxl/input.json",
+    "--output",
+    "/private/tmp/unfold-s8-legacy-witnesses/sdxl"
+  ],
+  "elapsed_seconds": 6.443,
+  "returncode": 0
+}

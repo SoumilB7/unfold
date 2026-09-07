@@ -214,3 +214,17 @@ def test_loop_transfer_cannot_promote_lexically_last_write(tmp_path, transfer):
     assert found['kind'] == 'loop_result'
     assert found['iteration_result']['kind'] == 'unresolved'
     assert 'control transfer' in found['iteration_result']['reason']
+
+
+def test_loop_else_write_cannot_be_assumed_after_possible_break(tmp_path):
+    found = route(tmp_path, '''
+        state = value
+        for item in saved:
+            state = step(state)
+            if condition:
+                break
+        else:
+            state = finish(state)
+        consume(state)
+    ''').value
+    assert found['kind'] == 'unresolved'

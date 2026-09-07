@@ -1,0 +1,132 @@
+{
+  "checkpoint": "4637ef4b77a8139326a8643b9f7eb68ab9d0f93c",
+  "original_denominator_commit": "83140f1",
+  "modules": [
+    {
+      "module": "model_unfolder/evidence/unet_attention_source.py",
+      "entry": "read_unet_runtime_attention_sources",
+      "entry_line": 728,
+      "production_caller": "unet_runtime.py:91",
+      "downstream": "context_connections via unet_cutover.py:53",
+      "deletion_unit": "retained with production caller; no deletion required for this original module",
+      "sha256": "234d438b530ece02ddd2dc3378676b35f2b202b8e8e7d684142d7762b1e04117"
+    },
+    {
+      "module": "model_unfolder/evidence/unet_cell_mechanism.py",
+      "entry": "read_unet_cell_mechanisms / read_unet_stage_join_connections",
+      "entry_line": 884,
+      "production_caller": "unet_runtime.py:79 / :70",
+      "downstream": "cell_connections, cell_arithmetic, stage_join_connections via unet_cutover.py:54\u201360",
+      "deletion_unit": "retained with production caller; no deletion required for this original module",
+      "sha256": "c57f6b5aa3d034526c8a95d8a623cc66a5c7936b2636edc152ae85f579d88e01"
+    },
+    {
+      "module": "model_unfolder/evidence/unet_nested_mechanism.py",
+      "entry": "read_unet_nested_mechanisms / read_unet_runtime_nested_ffns",
+      "entry_line": 510,
+      "production_caller": "unet_runtime.py:81 / :97",
+      "downstream": "ffn_mechanisms via unet_cutover.py:59",
+      "deletion_unit": "retained with production caller; no deletion required for this original module",
+      "sha256": "929c7438d424b6c28410b143627fcecd2589073aa45eab2c7e17ac2126d7d172"
+    },
+    {
+      "module": "model_unfolder/evidence/unet_root_preprocess.py",
+      "entry": "read_unet_root_preprocessing",
+      "entry_line": 475,
+      "production_caller": "unet_runtime.py:87",
+      "downstream": "attention source proof dependency at unet_runtime.py:91",
+      "deletion_unit": "retained with production caller; no deletion required for this original module",
+      "sha256": "44b6a6bd1a3ac45a2801efdb5bc46f4ab2be77c365324edc23aab9ba15f7374c"
+    },
+    {
+      "module": "model_unfolder/evidence/unet_selected_child_execution.py",
+      "entry": "read_unet_selected_child_execution",
+      "entry_line": 486,
+      "production_caller": "unet_runtime.py:83",
+      "downstream": "spatial/context/cell proof dependency at unet_runtime.py:85\u201392 and unet_cutover.py:55\u201357",
+      "deletion_unit": "retained with production caller; no deletion required for this original module",
+      "sha256": "d03afdaa195d612a24f63fb2ea175c93ea81a03369d0413861b0d3b41ff95335"
+    },
+    {
+      "module": "model_unfolder/evidence/unet_selected_constructor.py",
+      "entry": "constructor_environments / selected_constructor_environment(s)",
+      "entry_line": 692,
+      "production_caller": "unet_root_preprocess.py:145; unet_selected_spatial.py:221; unet_attention_source.py:696",
+      "downstream": "shared selected constructor/guard proof dependency; helper module, not a ReaderResult entry",
+      "deletion_unit": "retained with production caller; no deletion required for this original module",
+      "sha256": "d642329861ab0746d4730efef5a2001e504a8159d306f8764e483285b3003996"
+    },
+    {
+      "module": "model_unfolder/evidence/unet_selected_spatial.py",
+      "entry": "read_unet_selected_spatial_operations",
+      "entry_line": 740,
+      "production_caller": "unet_runtime.py:86",
+      "downstream": "spatial_mechanisms via unet_cutover.py:50",
+      "deletion_unit": "retained with production caller; no deletion required for this original module",
+      "sha256": "bfa42dae34002c755a7720698ab1b94f9322257f92fabb791c7e33aeee85d457"
+    },
+    {
+      "module": "model_unfolder/evidence/unet_selected_stage_children.py",
+      "entry": "read_unet_selected_stage_children",
+      "entry_line": 522,
+      "production_caller": "unet_runtime.py:77",
+      "downstream": "selected child execution via unet_runtime.py:83",
+      "deletion_unit": "retained with production caller; no deletion required for this original module",
+      "sha256": "0581d9229f9b5b41b88ae0864ffded5c0959dcd503f617bbe2407289e91f07ac"
+    },
+    {
+      "module": "model_unfolder/evidence/unet_stage_cells.py",
+      "entry": "read_unet_stage_cells",
+      "entry_line": 541,
+      "production_caller": "unet_runtime.py:68",
+      "downstream": "mechanism/selection dependencies; exact runtime stage filter at unet_stage_cells.py:550\u2013555",
+      "deletion_unit": "retained with production caller; no deletion required for this original module",
+      "sha256": "4acf172366ab13936483e84e17f84381a1f7321bee8a3f099914a455fff91b40"
+    },
+    {
+      "module": "model_unfolder/evidence/unet_stage_construction.py",
+      "entry": "read_unet_stage_construction",
+      "entry_line": 660,
+      "production_caller": "unet_runtime.py:57",
+      "downstream": "stage execution and selected factory dependencies",
+      "deletion_unit": "retained with production caller; no deletion required for this original module",
+      "sha256": "a3c1dbfdaa7991b2209335a11599430908d9b7b872f28788e985f697ce49f377"
+    },
+    {
+      "module": "model_unfolder/evidence/unet_stage_constructor_operands.py",
+      "entry": "read_unet_selected_stage_constructor_operands",
+      "entry_line": 270,
+      "production_caller": "unet_runtime.py:75",
+      "downstream": "selected children at unet_runtime.py:77",
+      "deletion_unit": "retained with production caller; no deletion required for this original module",
+      "sha256": "0ad3fded1468f747c39ab7616f974c5f16239c2ce098f43198e1b0a180c913f7"
+    },
+    {
+      "module": "model_unfolder/evidence/unet_stage_execution.py",
+      "entry": "read_unet_stage_execution",
+      "entry_line": 261,
+      "production_caller": "unet_runtime.py:60",
+      "downstream": "constructed_stage_relations via unet_cutover.py:58 and cell reader",
+      "deletion_unit": "retained with production caller; no deletion required for this original module",
+      "sha256": "0214314a34611b601fe78bfc0bf5ba74b32c3d8a2bde727f963201d1b1217be8"
+    },
+    {
+      "module": "model_unfolder/evidence/unet_stage_operands.py",
+      "entry": "read_unet_selected_stage_operands",
+      "entry_line": 428,
+      "production_caller": "unet_runtime.py:73",
+      "downstream": "constructor operands at unet_runtime.py:75",
+      "deletion_unit": "retained with production caller; no deletion required for this original module",
+      "sha256": "5ee53fdc4ab8de8bba283a067a6d324732bb91f33d97faa537fb3435be55aee0"
+    },
+    {
+      "module": "model_unfolder/evidence/unet_stage_selection.py",
+      "entry": "read_unet_stage_selection",
+      "entry_line": 500,
+      "production_caller": "unet_runtime.py:71",
+      "downstream": "factory and root preprocessing at unet_runtime.py:73/:87",
+      "deletion_unit": "retained with production caller; no deletion required for this original module",
+      "sha256": "520b16a96796518149d549364a5f3eef0d141e477aa96d4b22c7ac41a72a918b"
+    }
+  ]
+}

@@ -1,0 +1,335 @@
+{
+  "scope": "Intermediate fresh production output; not final S8 acceptance",
+  "commit": "4637ef4b77a8139326a8643b9f7eb68ab9d0f93c",
+  "html_sha256": "40277c09576adda868d513ee0121a0dd84f18a5d8ff3917ef27e5b0bd0983db4",
+  "source_page": "/private/tmp/unfold-s8-4637ef4-family/sdxl/page.html",
+  "baked_svgs": 879,
+  "distinct_views": 51,
+  "views": [
+    {
+      "label": "architecture",
+      "png": "00__architecture.png",
+      "svg": "00__architecture.svg",
+      "visual_hash": "755023400d80f8f31a54a6c1202b7aab"
+    },
+    {
+      "label": "encoder_0",
+      "png": "01__encoder_0.png",
+      "svg": "01__encoder_0.svg",
+      "visual_hash": "50101523dc896b6cbe0617e49d6bd218"
+    },
+    {
+      "label": "encoder_1",
+      "png": "02__encoder_1.png",
+      "svg": "02__encoder_1.svg",
+      "visual_hash": "9fff6428457f65c73a86772ff068ba3d"
+    },
+    {
+      "label": "denoiser",
+      "png": "03__denoiser.png",
+      "svg": "03__denoiser.svg",
+      "visual_hash": "1bd7c649c9957406514cbc211105fcce"
+    },
+    {
+      "label": "scheduler",
+      "png": "04__scheduler.png",
+      "svg": "04__scheduler.svg",
+      "visual_hash": "2989690d90d82dded5881dedfe9065ca"
+    },
+    {
+      "label": "vae_decode",
+      "png": "05__vae_decode.png",
+      "svg": "05__vae_decode.svg",
+      "visual_hash": "19881dbe26ee6e9c28298b4f00967617"
+    },
+    {
+      "label": "encoder_0_op_selfattn",
+      "png": "06__encoder_0_op_selfattn.png",
+      "svg": "06__encoder_0_op_selfattn.svg",
+      "visual_hash": "8039bda2aac9986de2094b82f76b73cc"
+    },
+    {
+      "label": "encoder_0_op_ffn",
+      "png": "07__encoder_0_op_ffn.png",
+      "svg": "07__encoder_0_op_ffn.svg",
+      "visual_hash": "1f44c23d07a67ae2e7f392b093ff5cf8"
+    },
+    {
+      "label": "encoder_1_op_selfattn",
+      "png": "08__encoder_1_op_selfattn.png",
+      "svg": "08__encoder_1_op_selfattn.svg",
+      "visual_hash": "ae24e5f955ac82cfe38f3fe21cd0c556"
+    },
+    {
+      "label": "encoder_1_op_ffn",
+      "png": "09__encoder_1_op_ffn.png",
+      "svg": "09__encoder_1_op_ffn.svg",
+      "visual_hash": "bc6f7241f63e806321d67186218d8f87"
+    },
+    {
+      "label": "instance_down_blocks__0",
+      "png": "10__instance_down_blocks__0.png",
+      "svg": "10__instance_down_blocks__0.svg",
+      "visual_hash": "558191ca883de2c27cc0a9e43c91cb02"
+    },
+    {
+      "label": "instance_down_blocks__1",
+      "png": "11__instance_down_blocks__1.png",
+      "svg": "11__instance_down_blocks__1.svg",
+      "visual_hash": "f45e76aae779febe7a23424b925045c1"
+    },
+    {
+      "label": "instance_down_blocks__2",
+      "png": "12__instance_down_blocks__2.png",
+      "svg": "12__instance_down_blocks__2.svg",
+      "visual_hash": "d92d9a299eb123d0513a57f838c8971b"
+    },
+    {
+      "label": "instance_up_blocks__0",
+      "png": "13__instance_up_blocks__0.png",
+      "svg": "13__instance_up_blocks__0.svg",
+      "visual_hash": "9483150a0b99343d7f40e6cf7ed1dbdb"
+    },
+    {
+      "label": "instance_up_blocks__0",
+      "png": "14__instance_up_blocks__0__1.png",
+      "svg": "14__instance_up_blocks__0__1.svg",
+      "visual_hash": "bceb4626a6850f7d91ca801d946665b1"
+    },
+    {
+      "label": "instance_time_embedding",
+      "png": "15__instance_time_embedding.png",
+      "svg": "15__instance_time_embedding.svg",
+      "visual_hash": "30cf75e85c450d4efc71f76c6b65edd3"
+    },
+    {
+      "label": "vae_decoder_block_4",
+      "png": "16__vae_decoder_block_4.png",
+      "svg": "16__vae_decoder_block_4.svg",
+      "visual_hash": "c47dd23a8c0eb8df389dc310acb4ccac"
+    },
+    {
+      "label": "vae_decoder_block_3",
+      "png": "17__vae_decoder_block_3.png",
+      "svg": "17__vae_decoder_block_3.svg",
+      "visual_hash": "8d24f016deed8cbc7b7e8e5bd234dc2e"
+    },
+    {
+      "label": "vae_decoder_block_2",
+      "png": "18__vae_decoder_block_2.png",
+      "svg": "18__vae_decoder_block_2.svg",
+      "visual_hash": "498f27eac22f32eb6d48d602da830a91"
+    },
+    {
+      "label": "vae_decoder_block_1",
+      "png": "19__vae_decoder_block_1.png",
+      "svg": "19__vae_decoder_block_1.svg",
+      "visual_hash": "4b53d426a3dbc8f0c6e315f0d2a12cad"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets",
+      "png": "20__instance_down_blocks__0__resnets.png",
+      "svg": "20__instance_down_blocks__0__resnets.svg",
+      "visual_hash": "5c5c75a60037245db4612f1107aaed98"
+    },
+    {
+      "label": "instance_down_blocks__0__downsamplers",
+      "png": "21__instance_down_blocks__0__downsamplers.png",
+      "svg": "21__instance_down_blocks__0__downsamplers.svg",
+      "visual_hash": "cb4eb5c105a6b2e643d17fdd5a1fa953"
+    },
+    {
+      "label": "instance_mid_block__attentions",
+      "png": "22__instance_mid_block__attentions.png",
+      "svg": "22__instance_mid_block__attentions.svg",
+      "visual_hash": "19b18416dda394ed9f9a087a3576e208"
+    },
+    {
+      "label": "instance_up_blocks__0__attentions",
+      "png": "23__instance_up_blocks__0__attentions.png",
+      "svg": "23__instance_up_blocks__0__attentions.svg",
+      "visual_hash": "18ca25fbb302aed371fcc3eccdc74a25"
+    },
+    {
+      "label": "instance_up_blocks__0__upsamplers",
+      "png": "24__instance_up_blocks__0__upsamplers.png",
+      "svg": "24__instance_up_blocks__0__upsamplers.svg",
+      "visual_hash": "4d6af807a2f50ba96d7b5aa7463716f2"
+    },
+    {
+      "label": "instance_up_blocks__0__join_0_operand_1",
+      "png": "25__instance_up_blocks__0__join_0_operand_1.png",
+      "svg": "25__instance_up_blocks__0__join_0_operand_1.svg",
+      "visual_hash": "01989ccaf21b63e8177a0b4a0c653b42"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0",
+      "png": "26__instance_down_blocks__0__resnets__0.png",
+      "svg": "26__instance_down_blocks__0__resnets__0.svg",
+      "visual_hash": "19821f2789608dae0fcfd478cd630fd1"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0",
+      "png": "27__instance_down_blocks__0__resnets__0__1.png",
+      "svg": "27__instance_down_blocks__0__resnets__0__1.svg",
+      "visual_hash": "6c8b4208e9d1bfa17681e7daa2c1cfa7"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0",
+      "png": "28__instance_down_blocks__0__resnets__0__2.png",
+      "svg": "28__instance_down_blocks__0__resnets__0__2.svg",
+      "visual_hash": "58964789421698949303939e67370897"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0",
+      "png": "29__instance_down_blocks__0__resnets__0__3.png",
+      "svg": "29__instance_down_blocks__0__resnets__0__3.svg",
+      "visual_hash": "5c082d9519a99018d5a8d2372cecbe32"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0",
+      "png": "30__instance_down_blocks__0__resnets__0__4.png",
+      "svg": "30__instance_down_blocks__0__resnets__0__4.svg",
+      "visual_hash": "c1474ad01b6f72754b41f23ae8612f11"
+    },
+    {
+      "label": "instance_down_blocks__0__downsamplers__0",
+      "png": "31__instance_down_blocks__0__downsamplers__0.png",
+      "svg": "31__instance_down_blocks__0__downsamplers__0.svg",
+      "visual_hash": "c378b94855347edda38a446522ae1b5e"
+    },
+    {
+      "label": "instance_down_blocks__1__attentions__0",
+      "png": "32__instance_down_blocks__1__attentions__0.png",
+      "svg": "32__instance_down_blocks__1__attentions__0.svg",
+      "visual_hash": "6ae39c43d485e98ed0c2e565235e117c"
+    },
+    {
+      "label": "instance_down_blocks__1__resnets__0",
+      "png": "33__instance_down_blocks__1__resnets__0.png",
+      "svg": "33__instance_down_blocks__1__resnets__0.svg",
+      "visual_hash": "9a609d8b7985db5128e177d79c89cf1a"
+    },
+    {
+      "label": "instance_mid_block__resnets__0",
+      "png": "34__instance_mid_block__resnets__0.png",
+      "svg": "34__instance_mid_block__resnets__0.svg",
+      "visual_hash": "700b5464b77fb61adf202cde7c2a36a6"
+    },
+    {
+      "label": "instance_mid_block__resnets__0",
+      "png": "35__instance_mid_block__resnets__0__1.png",
+      "svg": "35__instance_mid_block__resnets__0__1.svg",
+      "visual_hash": "b52b07d82d463c01453ff2e336e097fa"
+    },
+    {
+      "label": "instance_mid_block__resnets__0",
+      "png": "36__instance_mid_block__resnets__0__2.png",
+      "svg": "36__instance_mid_block__resnets__0__2.svg",
+      "visual_hash": "b47ab0b0e9ee9cae96a1bba79d825775"
+    },
+    {
+      "label": "instance_mid_block__resnets__0",
+      "png": "37__instance_mid_block__resnets__0__3.png",
+      "svg": "37__instance_mid_block__resnets__0__3.svg",
+      "visual_hash": "712175200637ac61f4a67dcd8c5e0a15"
+    },
+    {
+      "label": "instance_up_blocks__0__join_0_operand_1__when_true",
+      "png": "38__instance_up_blocks__0__join_0_operand_1__when_true.png",
+      "svg": "38__instance_up_blocks__0__join_0_operand_1__when_true.svg",
+      "visual_hash": "6f34ca4ca8ae2058a8ae707b8e7e9b1e"
+    },
+    {
+      "label": "instance_up_blocks__0__join_0_operand_1__when_false",
+      "png": "39__instance_up_blocks__0__join_0_operand_1__when_false.png",
+      "svg": "39__instance_up_blocks__0__join_0_operand_1__when_false.svg",
+      "visual_hash": "1c3c2f35cf7c498749c978a3b68a23df"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0__conditioning_0_operand_0",
+      "png": "40__instance_down_blocks__0__resnets__0__conditioning_0_operand_0.png",
+      "svg": "40__instance_down_blocks__0__resnets__0__conditioning_0_operand_0.svg",
+      "visual_hash": "25a3e07bd251c0f0b59ac6251f2f36eb"
+    },
+    {
+      "label": "instance_down_blocks__2__attentions__0__transformer_blocks",
+      "png": "41__instance_down_blocks__2__attentions__0__transformer_blocks.png",
+      "svg": "41__instance_down_blocks__2__attentions__0__transformer_blocks.svg",
+      "visual_hash": "52216160fd0249c4ac42fe1dfad1fb01"
+    },
+    {
+      "label": "instance_mid_block__resnets__0__conditioning_1_operand_1",
+      "png": "42__instance_mid_block__resnets__0__conditioning_1_operand_1.png",
+      "svg": "42__instance_mid_block__resnets__0__conditioning_1_operand_1.svg",
+      "visual_hash": "d61096d6e594eadd95ead24c686e15f1"
+    },
+    {
+      "label": "instance_down_blocks__1__attentions__0__transformer_blocks__0",
+      "png": "43__instance_down_blocks__1__attentions__0__transformer_blocks__0.png",
+      "svg": "43__instance_down_blocks__1__attentions__0__transformer_blocks__0.svg",
+      "visual_hash": "977188b4b73b4d810031a9aacd10bfc2"
+    },
+    {
+      "label": "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn1",
+      "png": "44__instance_down_blocks__1__attentions__0__transformer_blocks__0__attn1.png",
+      "svg": "44__instance_down_blocks__1__attentions__0__transformer_blocks__0__attn1.svg",
+      "visual_hash": "26e1f51a66ebc82b0aea9f1c7c501e2d"
+    },
+    {
+      "label": "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2",
+      "png": "45__instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2.png",
+      "svg": "45__instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2.svg",
+      "visual_hash": "fb3fae341fd510eb75401572c97dd229"
+    },
+    {
+      "label": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff",
+      "png": "46__instance_down_blocks__1__attentions__0__transformer_blocks__0__ff.png",
+      "svg": "46__instance_down_blocks__1__attentions__0__transformer_blocks__0__ff.svg",
+      "visual_hash": "67df586cb6b372691dae502752f276de"
+    },
+    {
+      "label": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff",
+      "png": "47__instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__1.png",
+      "svg": "47__instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__1.svg",
+      "visual_hash": "5324731ff3096be6b85be9d757ca6382"
+    },
+    {
+      "label": "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn1__to_out",
+      "png": "48__instance_down_blocks__1__attentions__0__transformer_blocks__0__attn1__to_out.png",
+      "svg": "48__instance_down_blocks__1__attentions__0__transformer_blocks__0__attn1__to_out.svg",
+      "visual_hash": "82e27508ad660e0b94f1c722d8963f20"
+    },
+    {
+      "label": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__net",
+      "png": "49__instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__net.png",
+      "svg": "49__instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__net.svg",
+      "visual_hash": "dafc378b341c7b61bc59d25fc3db7715"
+    },
+    {
+      "label": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__net__0",
+      "png": "50__instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__net__0.png",
+      "svg": "50__instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__net__0.svg",
+      "visual_hash": "4222e18cecd469506f40fa860543fd73"
+    }
+  ],
+  "pixel_inspection": {
+    "inspected_view_indices": [
+      3,
+      13,
+      27,
+      28,
+      38,
+      40,
+      43,
+      46
+    ],
+    "count": 8,
+    "scope": "Eight of 51 distinct native SVG images inspected; no exhaustive Her Eyes or browser DOM/CSS acceptance.",
+    "findings": [
+      "Compact seven-argument incoming lanes, FFN ungated bypass, fitting transformer labels confirmed on actual fresh production output.",
+      "Overview primary stage spine/mid/bookend/conditioning connections remain incomplete; this checkpoint precedes executor primary-flow closure.",
+      "Inspected conditioning arithmetic is visibly limited; unresolved input and scale remain explicit."
+    ]
+  }
+}

@@ -15,6 +15,7 @@ from ...evidence.unet_claims import (
 )
 from ...evidence.unet_runtime import investigate_unet_runtime
 from ...evidence.unet_cell_connections import read_unet_cell_connections
+from ...evidence.unet_primary_ports import read_unet_primary_ports
 from ...ir import ModelIR
 from .unet_projection import project_unet
 
@@ -56,6 +57,7 @@ def build_unet_cutover(cfg, context, *, handoffs, name, source_overrides=()):
              read_unet_cell_connections(evidence.value("mechanisms"), evidence.bindings,
                                         evidence.value("child_execution")),
              read_unet_stage_relations(execution, evidence.bindings),
+             read_unet_primary_ports(execution, evidence.bindings),
              read_unet_ffn_claims(evidence.value("nested_ffns") or (), evidence.bindings),
              read_unet_join_claims(evidence.value("stage_joins") or (), evidence.bindings)]
     projected = {}

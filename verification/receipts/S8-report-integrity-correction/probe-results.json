@@ -1,0 +1,11 @@
+{
+  "scope": "Synthetic report-artifact integrity only, no model or output acceptance",
+  "results": {
+    "actual_matching_page_control": "PASS",
+    "replaced_html_rejected_and_observation_recomputed": "PASS",
+    "matching_scratch_control_and_changed_bytes_poison": "PASS",
+    "stale_confident_view_rejected": "PASS",
+    "stale_actual_ffn_nodes_rejected_after_ir_downgrade": "PASS",
+    "limited_view_without_old_operations_control": "PASS"
+  }
+}

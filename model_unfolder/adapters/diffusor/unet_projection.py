@@ -19,6 +19,7 @@ def _port_route_block(route, block_id, fact_key):
     """Project typed source port routes; opaque calls never become identity."""
     kind = route["kind"]
     labels = {"formal": "Input: " + route.get("formal", ""),
+              "region_input": "Region input", "source_operation": "Source operation",
               "loop_carried": "Loop input: " + route.get("formal", ""),
               "loop_result": "Loop result",
               "inplace_operation": "Conditional update",
@@ -29,8 +30,12 @@ def _port_route_block(route, block_id, fact_key):
              "title": labels[kind], "role": "source_port_route",
              "description": route.get("reason", "Exact source argument/result port wiring."),
              "source_fact_keys": [fact_key], "facts": []}
-    if kind in {"formal", "loop_carried"}:
+    if kind in {"formal", "loop_carried", "region_input"}:
         block["kind"] = "source"
+        if kind == "loop_carried" and "initial_route" in route:
+            block.update(view="constructed_children", children=[_port_route_block(
+                route["initial_route"], block_id + "__initial", fact_key)])
+            block["facts"].append("Current iteration input; first iteration is seeded by the shown initial route")
     elif kind == "literal":
         block["facts"] = ["Source value: " + json.dumps(route["value"])]
     elif kind == "selection":
@@ -38,11 +43,14 @@ def _port_route_block(route, block_id, fact_key):
                      view="runtime_port_route", detail={"port_route_kind": kind})
         block["facts"] = ["Selection: " + json.dumps(route["selection"], sort_keys=True)]
     elif kind == "call_result":
+        arguments = list(route["arguments"])
+        if route.get("receiver") is not None:
+            arguments.append({"port": "lookup receiver", "route": route["receiver"]["route"]})
         block.update(resolved=False, view="runtime_port_route",
                      detail={"port_route_kind": kind, "result_slot": route["result_slot"]},
                      children=[_port_route_block(argument["route"], block_id + f"__arg_{number}", fact_key)
-                               for number, argument in enumerate(route["arguments"])])
-        for child, argument in zip(block["children"], route["arguments"]):
+                               for number, argument in enumerate(arguments)])
+        for child, argument in zip(block["children"], arguments):
             child["facts"].append("Call argument port: " + argument["port"])
             child.setdefault("detail", {})["argument_port"] = argument["port"]
         block["detail"]["argument_ids"] = [child["id"] for child in block["children"]]
@@ -59,7 +67,7 @@ def _port_route_block(route, block_id, fact_key):
                      children=[_port_route_block(route[key], block_id + "__" + key, fact_key)
                                for key in ("when_true", "when_false")])
         block["children"][0]["facts"].append("Source guard true")
-        block["children"][1]["facts"].append("Source guard false: bypass")
+        block["children"][1]["facts"].append("Source guard false alternative")
         block["facts"] = ["Guard selection unresolved; both source alternatives retained"]
     elif kind == "loop_result":
         block.update(resolved=False, view="constructed_children", children=[
@@ -71,10 +79,10 @@ def _port_route_block(route, block_id, fact_key):
     elif kind == "sequence":
         block.update(view="constructed_children", children=[_port_route_block(
             item, block_id + f"__item_{number}", fact_key) for number, item in enumerate(route["items"])])
-    elif kind == "inplace_operation":
+    elif kind in {"inplace_operation", "source_operation"}:
         block.update(resolved=False, view="constructed_children", children=[_port_route_block(
             item, block_id + f"__operand_{number}", fact_key) for number, item in enumerate(route["operands"])])
-        block["facts"] = ["Source operator: " + route["operator"] + "=",
+        block["facts"] = ["Source operator: " + route["operator"] + ("=" if kind == "inplace_operation" else ""),
                           "investigation_missing · operand dispatch and mutation semantics · owner: S8"]
     elif kind == "unresolved":
         block.update(kind="unknown", resolved=False)
@@ -314,6 +322,22 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
     context_routes = list({(context_ids[row["source_formal"]], _block_id(row["stage"])): {
         "source": context_ids[row["source_formal"]], "target": _block_id(row["stage"])}
         for row in contexts.values()}.values())
+    primary_key = "root.denoiser.primary_state_ports"
+    primary = facts[primary_key].value if primary_key in facts else {"regions": []}
+    primary_regions = []
+    for row in primary["regions"]:
+        region_id = "unet_primary_region_" + str(row["position"])
+        region = _port_route_block(row["route"], region_id, primary_key)
+        label = {"for": "Repeat boundary", "while": "Repeat boundary", "if": "Conditional boundary"}.get(row["kind"], "Call / operation boundary")
+        if row["stage_fields"]:
+            label += ": " + ", ".join(row["stage_fields"])
+        region.update(label=label, title=label)
+        region["facts"].extend(["Source port wiring; call targets and guard choices remain unresolved",
+                                 "Constructed stages are contained here; individual iteration-to-module binding is not asserted"])
+        other_cards.append(region)
+        primary_regions.append({"id": region_id, "kind": row["kind"],
+                                "receives_previous_state": row["receives_previous_state"],
+                                "stage_block_ids": [_block_id(path) for path in row["constructed_stages"]]})
     geom = dict(handoffs)
     geom.update({
         "denoiser_family": "source_projected",
@@ -339,6 +363,8 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
                          source_fact_keys=[population_key, shape_key, relation_key])
             if contexts:
                 block["source_fact_keys"].append(context_key)
+            if primary["regions"]:
+                block["source_fact_keys"].append(primary_key)
             if defaults:
                 block["source_fact_keys"].append(defaults_key)
                 block["facts"] = list(block.get("facts") or ()) + [
@@ -353,6 +379,7 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
             "other_block_ids": [_block_id(path) for path in other_paths],
             "context_routes": context_routes,
             "skip_routes": skip_routes,
+            "primary_regions": primary_regions,
             "parameter_shapes": shapes,
         }},
         warnings=[row["reason"] for row in relations["unresolved_relations"]],

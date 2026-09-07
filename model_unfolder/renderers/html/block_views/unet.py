@@ -1,16 +1,14 @@
-"""Detail SVG for a UNet diffusion denoiser (UNet2DConditionModel).
+"""UNet detail views over canonical source-backed facts and constructed cards.
 
-Opened from the loop's ``denoiser`` node for UNet pipelines.  Drawn as a U: the
-down path (encoder) on the left going down, a mid block at the bottom, the up
-path (decoder) on the right coming back up, and dashed **skip connections**
-linking equal-resolution stages across the U.  Each stage shows its channel
-width, ResNet count, and whether it has cross-attention to text.
+The production overview connects source-port boundary summaries only where
+previous-state transport is proven. Constructed stages remain visible inside
+containment frames; their layout does not assert individual execution order.
+Skip accumulation and context links retain their separately proven endpoints.
+Unbound bookends remain explicit containment cards, and boundary drills expose
+local source-port details and unresolved call/guard meaning.
 
-Read from ``extras["unet"]`` (see ``adapters/diffusor/unet.py``).  Every stage box
-is a clickable node (``unet_down_i`` / ``unet_mid`` / ``unet_up_j`` / ``unet_conv_in``
-/ ``unet_conv_out``) coupled to a card declared in ``unet_denoiser_children`` —
-the box shows only the stage name; channels / ResNet / attention counts are chips
-on the card.
+The later legacy UNet view builders remain for the explicit old-path
+comparison. They are not the production overview's topology authority.
 """
 from __future__ import annotations
 
@@ -23,56 +21,149 @@ from ..tower import tower_graph
 
 
 def build_unet_constructed_view(ir, info, mount_id, block):
-    """One U-shaped view of stages and their independently proven side routes."""
+    """Bounded source-port boundaries, stage containment, and proven side routes."""
     unet = ir["extras"]["unet"]
-    relation = unet["stage_relations"]
-    ids = unet["stage_block_ids"]
+    relation, ids = unet["stage_relations"], unet["stage_block_ids"]
     arrow_id, shadow_id = _ids(mount_id, "unet_constructed")
-    parts, regions, placed = [], [], {}
+    parts, regions, placed, frames, wires = [], [], {}, [], []
     cards = {child["id"]: child for child in block.get("children", ())}
-    def place(block_id, x, y, width=230):
+
+    def place(block_id, x, y, width=230, label=None, resolved=None):
         child = cards[block_id]
-        geometry = _box(parts, x, y, width, 58, child["label"], shadow_id, node_id=block_id)
+        geometry = _box(parts, x, y, width, 58, child["label"] if label is None else label,
+                        shadow_id, node_id=block_id,
+                        resolved=child.get("resolved", True) if resolved is None else resolved)
         regions.append(geometry)
         placed[block_id] = geometry
-    producer = relation["producer_stages"]
-    consumer = relation["consumer_stages"]
-    for column, paths in enumerate((producer, list(reversed(consumer)))):
-        for row, path in enumerate(paths):
-            place(ids[path], 170 + column * 650, 40 + row * 125)
-    floor = 40 + max(len(producer), len(consumer)) * 125
-    for row, path in enumerate(relation["intermediate_stages"]):
-        place(ids[path], 495, floor + row * 95, 270)
-    place("unet_skip_bank", 495, 75)
-    bottom = floor + len(relation["intermediate_stages"]) * 95 + 60
+        return geometry
+
+    def wire(route, kind, path):
+        wires.append(_svg_tag("g", {"data-route-kind": kind,
+                                   "data-source": route["source"], "data-target": route["target"]},
+                              _path(path, arrow_id)))
+
+    def containment(x, y, width, height, label):
+        frames.append(_svg_tag("rect", {"x": x, "y": y, "width": width, "height": height,
+                       "rx": 14, "fill": "none", "stroke": C["border"], "stroke-width": 1,
+                       "stroke-dasharray": "5 4", "data-region-kind": "containment"}))
+        frames.append(_svg_text(x + width / 2, y + height - 12, label,
+                      {"text-anchor": "middle", "font-family": FONT_MONO, "font-size": 11,
+                       "fill": C["text"]}))
+        regions.extend((point(x, y), point(x + width, y + height)))
+
+    producer, consumer = relation["producer_stages"], relation["consumer_stages"]
+    primary = unet.get("primary_regions", ())
+    left_x, right_x = 170, 820
+    if primary:
+        down_ids = {ids[path] for path in producer}
+        up_ids = {ids[path] for path in consumer}
+        down_positions = [number for number, row in enumerate(primary)
+                          if down_ids.intersection(row["stage_block_ids"])]
+        up_positions = [number for number, row in enumerate(primary)
+                        if up_ids.intersection(row["stage_block_ids"])]
+        down_end = max(down_positions, default=-1) + 1
+        up_start = min(up_positions, default=len(primary))
+        # Source order chooses the route. Left/right columns are only layout;
+        # no order or execution edge is asserted between the contained stages.
+        left_rows, bridge_rows, right_rows = primary[:down_end], primary[down_end:up_start], primary[up_start:]
+        right_x = left_x + max(650, 560 * max(0, len(bridge_rows) - 1))
+        center_x = (left_x + right_x) / 2
+
+        def region(row, x, y):
+            child = cards[row["id"]]
+            heading = {"if": "Conditional boundary", "for": "Repeat boundary",
+                       "while": "Repeat boundary"}.get(row["kind"], "Operation boundary")
+            detail = str(child["label"]).partition(": ")[2] or "Source ports · drill for details"
+            place(row["id"], x, y, 280, [heading, detail], resolved=False)
+            stage_ids = list(row["stage_block_ids"])
+            if up_ids.intersection(stage_ids):
+                stage_ids.reverse()
+            for number, stage_id in enumerate(stage_ids):
+                place(stage_id, x, y + 90 + number * 86)
+            height = 58 if not stage_ids else 110 + len(stage_ids) * 86
+            if stage_ids:
+                containment(x - 155, y - 15, 310, height + 30, "Constructed stages · containment")
+            if not row["receives_previous_state"]:
+                parts.append(_svg_text(x, y - 24, "Input link unresolved",
+                             {"text-anchor": "middle", "font-family": FONT_MONO,
+                              "font-size": 11, "fill": C["text"]}))
+                regions.append(point(x, y - 35))
+            return height
+
+        floor = 40
+        for x, rows in ((left_x, left_rows), (right_x, list(reversed(right_rows)))):
+            cursor = 40
+            for row in rows:
+                cursor += region(row, x, cursor) + 52
+            floor = max(floor, cursor)
+        bridge_y = floor + 35
+        bottom = bridge_y
+        for number, row in enumerate(bridge_rows):
+            x = center_x if len(bridge_rows) == 1 else center_x + number * (right_x-center_x) / (len(bridge_rows)-1)
+            bottom = max(bottom, bridge_y + region(row, x, bridge_y))
+        for previous, current in zip(primary, primary[1:]):
+            if not current["receives_previous_state"]:
+                continue
+            source, target = placed[previous["id"]], placed[current["id"]]
+            if source["cx"] == target["cx"] and source["cy"] < target["cy"] and not previous["stage_block_ids"]:
+                path = f"M {source['cx']} {source['bottom']} L {target['cx']} {target['top'] - 5}"
+            elif source["cx"] == target["cx"] and source["cy"] > target["cy"] and not current["stage_block_ids"]:
+                path = f"M {source['cx']} {source['top']} L {target['cx']} {target['bottom'] + 5}"
+            elif source["cy"] == target["cy"]:
+                path = f"M {source['right']} {source['cy']} L {target['left'] - 5} {target['cy']}"
+            else:
+                left = source["cx"] == left_x
+                rail = left_x - 190 if left else right_x + 190
+                start = source["left"] if left else source["right"]
+                end = target["left"] - 5 if left else target["right"] + 5
+                path = f"M {start} {source['cy']} L {rail} {source['cy']} L {rail} {target['cy']} L {end} {target['cy']}"
+                regions.extend((point(rail, source["cy"]), point(rail, target["cy"])))
+            wire({"source": previous["id"], "target": current["id"]}, "primary_state_port", path)
+        # A newly proven stage without a matching region must still be visible.
+        unplaced = [block_id for block_id in ids.values() if block_id not in placed]
+        for number, block_id in enumerate(unplaced):
+            place(block_id, left_x + number % 3 * (right_x-left_x)/2, bottom + 75 + number//3 * 95)
+        if unplaced:
+            bottom += 75 + ((len(unplaced)+2)//3)*95
+        stage_tops = [placed[block_id]["top"] for block_id in ids.values()]
+        place("unet_skip_bank", center_x, max(230, min(stage_tops, default=300) + 65), 250)
+        bottom += 90
+    else:
+        center_x = (left_x + right_x) / 2
+        for column, paths in enumerate((producer, list(reversed(consumer)))):
+            for row, path in enumerate(paths):
+                place(ids[path], (left_x, right_x)[column], 40 + row * 125)
+        floor = 40 + max(len(producer), len(consumer)) * 125
+        for row, path in enumerate(relation["intermediate_stages"]):
+            place(ids[path], center_x, floor + row * 95, 270)
+        place("unet_skip_bank", center_x, 75)
+        bottom = floor + len(relation["intermediate_stages"]) * 95 + 60
     context_ids = list(dict.fromkeys(route["source"] for route in unet.get("context_routes", ())))
     for number, source_id in enumerate(context_ids):
-        place(source_id, 495, bottom + number * 95, 270)
+        place(source_id, center_x, bottom + number * 95, 270)
     bottom += len(context_ids) * 95
-    for number, block_id in enumerate(unet["other_block_ids"]):
-        child = cards[block_id]
-        place(block_id, 170 + number % 2 * 650, bottom + number // 2 * 95)
-    wires = []
+    other_ids = [block_id for block_id in unet["other_block_ids"] if block_id not in placed]
+    for number, block_id in enumerate(other_ids):
+        place(block_id, left_x + number % 3 * (right_x-left_x)/2, bottom + 50 + number//3 * 95)
+    if other_ids:
+        containment(left_x-145, bottom+25, right_x-left_x+290, ((len(other_ids)+2)//3)*95+35,
+                    "Other constructed modules · containment; targets not bound to source ports")
     for route in unet.get("skip_routes", ()):
         source, target = placed[route["source"]], placed[route["target"]]
         rail = (source["right"] + target["left"]) / 2
-        wire = _path(f"M {source['right']} {source['cy']} L {rail} {source['cy']} "
-                     f"L {rail} {target['cy']} L {target['left'] - 5} {target['cy']}", arrow_id)
-        wires.append(_svg_tag("g", {"data-route-kind": "skip_accumulation",
-                                   "data-source": route["source"], "data-target": route["target"]}, wire))
+        wire(route, "skip_accumulation", f"M {source['right']} {source['cy']} L {rail} {source['cy']} "
+             f"L {rail} {target['cy']} L {target['left'] - 5} {target['cy']}")
     for number, route in enumerate(unet.get("context_routes", ())):
         source, target = placed[route["source"]], placed[route["target"]]
-        left = target["cx"] < 495
-        rail = -15 - number * 5 if left else 1005 + number * 5
+        left = target["cx"] < center_x
+        rail = left_x - 250 - number*5 if left else right_x + 250 + number*5
         start = source["left"] if left else source["right"]
         end = target["left"] - 5 if left else target["right"] + 5
-        wire = _path(f"M {start} {source['cy']} L {rail} {source['cy']} "
-                     f"L {rail} {target['cy']} L {end} {target['cy']}", arrow_id)
-        wires.append(_svg_tag("g", {"data-route-kind": "external_context",
-                                   "data-source": route["source"], "data-target": route["target"]}, wire))
+        wire(route, "external_context", f"M {start} {source['cy']} L {rail} {source['cy']} "
+             f"L {rail} {target['cy']} L {end} {target['cy']}")
         regions.append(point(rail, source["cy"]))
-    return fit_svg(arrow_id, shadow_id, wires + parts, regions,
-                   "Skip accumulation and external context routes; primary state route under investigation",
+    return fit_svg(arrow_id, shadow_id, frames + wires + parts, regions,
+                   "Source port boundaries and constructed stages; containment is not execution order",
                    min_width=720, pad=44)
 
 

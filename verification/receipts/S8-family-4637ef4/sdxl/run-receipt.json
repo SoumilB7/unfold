@@ -1,0 +1,18 @@
+{
+  "checkpoint": "4637ef4b77a8139326a8643b9f7eb68ab9d0f93c",
+  "command": [
+    "python3",
+    "scripts/verify_s8_unet_family.py",
+    "--input",
+    "/private/tmp/unfold-s8-d3a4d61-demonstration/ordinary/input.json",
+    "--output",
+    "/private/tmp/unfold-s8-4637ef4-family/sdxl",
+    "--accepted-table",
+    "verification/s7/models/stable-diffusion-xl-base-1-0.json.gz"
+  ],
+  "elapsed_seconds": 139.761,
+  "returncode": 0,
+  "html_bytes": 4117524,
+  "html_sha256": "40277c09576adda868d513ee0121a0dd84f18a5d8ff3917ef27e5b0bd0983db4",
+  "svg_count": 879
+}

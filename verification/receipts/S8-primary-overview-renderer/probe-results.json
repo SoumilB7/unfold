@@ -1,0 +1,13 @@
+{
+  "scope": "Saved IR plus source-record region fixture; no production run or semantic acceptance",
+  "positive": {
+    "cards": 26,
+    "primary_links": 8,
+    "crossings": 0
+  },
+  "unproven_link_omitted_without_losing_cards": {
+    "cards": 26,
+    "primary_links": 7,
+    "crossings": 0
+  }
+}

@@ -1116,6 +1116,8 @@ def projection_claims_from_product(
     for path, module in module_by_path.items():
         exact_type = (module.class_ref.module, module.class_ref.qualname)
         if exact_type in _TORCH_CONTAINER_TYPES:
+            if path in claims_by_path and claims_by_path[path].axis.kind in {"rendered", "grouped"}:
+                continue
             claims_by_path[path] = ProjectionClaim(
                 path, ProjectionAxis("non_architectural", reason="container"))
             continue

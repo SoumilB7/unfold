@@ -246,12 +246,13 @@ def validate_fact_claim(fact, proof) -> None:
     from .instance_shape_claim import InstanceShapeClaimProof
     from .instance_population_claim import InstancePopulationClaimProof, ConstructorDefaultsClaimProof
     from .unet_claims import UNetStageRelationClaimProof, UNetFFNClaimProof, UNetJoinClaimProof, UNetContextConnectionClaimProof, UNetCellArithmeticClaimProof, UNetSpatialClaimProof
+    from .unet_primary_ports import UNetPrimaryPortProof
     from .runtime_source import RuntimePrimitiveClaimProof
     from .unet_cell_connections import UNetCellConnectionClaimProof
 
     if not isinstance(proof, (
             ConfigValueClaimProof, ConstructorExistenceClaimProof,
-            InstanceShapeClaimProof, InstancePopulationClaimProof, ConstructorDefaultsClaimProof, UNetStageRelationClaimProof, UNetFFNClaimProof, UNetJoinClaimProof, RuntimePrimitiveClaimProof, UNetCellConnectionClaimProof, UNetContextConnectionClaimProof, UNetCellArithmeticClaimProof, UNetSpatialClaimProof)):
+            InstanceShapeClaimProof, InstancePopulationClaimProof, ConstructorDefaultsClaimProof, UNetStageRelationClaimProof, UNetFFNClaimProof, UNetJoinClaimProof, RuntimePrimitiveClaimProof, UNetCellConnectionClaimProof, UNetContextConnectionClaimProof, UNetCellArithmeticClaimProof, UNetSpatialClaimProof, UNetPrimaryPortProof)):
         raise TypeError("unsupported claim proof type; S9 must add a typed variant")
     if fact.claim_kind != proof.claim_kind or fact.ledger_key() != proof.fact_id:
         raise ValueError("claim proof belongs to another fact or semantic kind")
@@ -261,7 +262,7 @@ def validate_fact_claim(fact, proof) -> None:
         if fact.status != "class_default" or fact.value != proof.value:
             raise ValueError("default declaration differs from its source evidence")
         return
-    if isinstance(proof, (InstanceShapeClaimProof, InstancePopulationClaimProof, UNetStageRelationClaimProof, UNetFFNClaimProof, UNetJoinClaimProof, RuntimePrimitiveClaimProof, UNetCellConnectionClaimProof, UNetContextConnectionClaimProof, UNetCellArithmeticClaimProof, UNetSpatialClaimProof)):
+    if isinstance(proof, (InstanceShapeClaimProof, InstancePopulationClaimProof, UNetStageRelationClaimProof, UNetFFNClaimProof, UNetJoinClaimProof, RuntimePrimitiveClaimProof, UNetCellConnectionClaimProof, UNetContextConnectionClaimProof, UNetCellArithmeticClaimProof, UNetSpatialClaimProof, UNetPrimaryPortProof)):
         if fact.status != "code_proven" or fact.value != proof.value:
             raise ValueError("runtime-bound claim differs from its reader evidence")
         return
