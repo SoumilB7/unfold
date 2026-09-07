@@ -39,7 +39,7 @@ def read_primary_regions(index, forward, local):
             span = loop.guard[0].span if loop.guard else loop.span
             regions.setdefault(span, [])
     for unsupported in index.unsupported_execution_in(forward.symbol):
-        if unsupported.construct_kind != "boolop":
+        if unsupported.construct_kind not in {"boolop", "ifexp"}:
             span = unsupported.guard[0].span if unsupported.guard else unsupported.span
             regions.setdefault(span, [])
     result, spans = [], set()

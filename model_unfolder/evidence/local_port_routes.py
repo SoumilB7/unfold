@@ -116,7 +116,7 @@ def read_local_port_route(index, forward, expression, before, guard=(), *, regio
                                  if any(_slot(target, value.name) is not None for target in binding.targets)
                                  and any(step.span == context[0].span for step in binding.guard)]
                 effects = [row for row in index.unsupported_execution_in(forward.symbol)
-                           if row.construct_kind != "boolop" and row.span is not None
+                           if row.construct_kind not in {"boolop", "ifexp"} and row.span is not None
                            and not _before(row.span, context[0].span) and _before(row.span, cutoff)]
                 target_writes = [loop for loop in index.loops_in(forward.symbol)
                                  if _slot(loop.target, value.name) is not None and loop.span is not None
@@ -149,7 +149,7 @@ def read_local_port_route(index, forward, expression, before, guard=(), *, regio
                     spans.add(loop.span)
                     return unknown("completed loop may have rebound this local; original formal identity is not established")
             for region in index.unsupported_execution_in(forward.symbol):
-                if region.construct_kind == "boolop":
+                if region.construct_kind in {"boolop", "ifexp"}:
                     # Short-circuit selection is opaque, but evaluating a
                     # predicate is not itself a local assignment. Named writes
                     # still enter the explicit binding/refusal checks above.
@@ -284,6 +284,18 @@ def read_local_port_route(index, forward, expression, before, guard=(), *, regio
             return call_result(call, (), cutoff, context, seen)
         if value.kind in {"tuple", "list"}:
             return {"kind": "sequence", "items": [visit(child, cutoff, context, seen) for child in value.children]}
+        if value.kind == "ifexp" and len(value.children) == 3:
+            body, test, alternative = value.children
+            if test is not None and test.span is not None:
+                spans.add(test.span)
+                if any(binding.assignment_kind == "walrus" and binding.span is not None
+                       and (test.span.line, test.span.col) <= (binding.span.line, binding.span.col)
+                       and (binding.span.end_line, binding.span.end_col) <= (test.span.end_line, test.span.end_col)
+                       for binding in bindings):
+                    return unknown("conditional expression guard rebinds a local before its selected operand")
+            return {"kind": "conditional", "condition": "source expression guard unresolved",
+                    "when_true": visit(body, cutoff, context, seen),
+                    "when_false": visit(alternative, cutoff, context, seen)}
         if value.kind == "binop":
             return {"kind": "source_operation", "operator": value.operator,
                     "operands": [visit(child, cutoff, context, seen) for child in value.children],

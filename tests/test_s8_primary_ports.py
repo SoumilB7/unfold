@@ -35,6 +35,20 @@ def test_conditioning_merge_before_loop_retains_call_routes(tmp_path):
     assert side["when_true"]["kind"] == side["when_false"]["kind"] == "call_result"
 
 
+def test_conditioning_expression_keeps_addition_and_bypass(tmp_path):
+    rows = regions(tmp_path, "conditioning = embed(conditioning)\nconditioning = conditioning + augment(items) if enabled else conditioning\nfor item in items:\n state = block(state, conditioning)")
+    side = rows[0]["route"]["iteration_result"]["arguments"][1]["route"]
+    assert side["kind"] == "conditional"
+    assert side["when_true"]["kind"] == "source_operation"
+    assert side["when_true"]["operands"][0]["kind"] == "call_result"
+    assert side["when_false"]["kind"] == "call_result"
+
+
+def test_expression_guard_rebinding_does_not_preserve_old_operand(tmp_path):
+    rows = regions(tmp_path, "state = block(conditioning) if (conditioning := 7) else state")
+    assert rows[0]["route"]["kind"] == "unresolved"
+
+
 def test_conditioning_entry_cannot_skip_inner_rebinding(tmp_path):
     rows = regions(tmp_path, "conditioning = embed(conditioning)\nfor item in items:\n with manager() as conditioning:\n  pass\n state = block(state, conditioning)")
     loop = rows[0]["route"]
