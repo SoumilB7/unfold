@@ -71,7 +71,7 @@ def main():
         ir.warnings = [authored.get(row, row) for row in record["warnings"]]
         assert set(authored).issubset(record["warnings"])
         restoration = "existing apply_ship_findings over exact persisted ShipFinding records"
-    assert ir.to_dict() == record, "saved IR or warning ordering changed"
+    assert ir.to_dict() == json.loads((args.source / "ir.json").read_text()), "saved IR or warning ordering changed"
     assert [str(row) for row in ir.warnings] == record["warnings"]
     diagram = experiment_diagram(ir)
     actual_input = render_input_record(diagram)
