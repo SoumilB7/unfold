@@ -91,8 +91,10 @@ def blocks(value):
     if isinstance(value, dict):
         if "id" in value and any(key in value for key in ("kind", "children", "view", "source_instance_path")):
             yield value
-        for child in value.values():
-            yield from blocks(child)
+        # JSON object ordering is not structural order. Persisting with sorted
+        # keys must preserve this inventory; list order below remains exact.
+        for key in sorted(value):
+            yield from blocks(value[key])
     elif isinstance(value, list):
         for child in value:
             yield from blocks(child)

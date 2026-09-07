@@ -1,0 +1,126 @@
+{
+  "blessed": false,
+  "blocking_checks": 1,
+  "conditions": {
+    "changed": {
+      "checks": [],
+      "status": "NOT_RUN"
+    },
+    "misleading": {
+      "checks": [],
+      "status": "NOT_RUN"
+    },
+    "missing": {
+      "checks": [],
+      "status": "NOT_RUN"
+    },
+    "ordinary": {
+      "checks": [
+        {
+          "check": "actual HTML generated",
+          "evidence": {
+            "actual_html_sha256": "d94f0b77dde02bb6c356ec344b0610216cb061ed673f677da1cb653a4f8b27a8",
+            "page_exists": true,
+            "page_hash_matches": true,
+            "recorded_html_sha256": "d94f0b77dde02bb6c356ec344b0610216cb061ed673f677da1cb653a4f8b27a8",
+            "saved_observation_matches": false
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "saved observations match actual HTML, IR and facts",
+          "evidence": {
+            "actual_html_sha256": "d94f0b77dde02bb6c356ec344b0610216cb061ed673f677da1cb653a4f8b27a8",
+            "page_exists": true,
+            "page_hash_matches": true,
+            "recorded_html_sha256": "d94f0b77dde02bb6c356ec344b0610216cb061ed673f677da1cb653a4f8b27a8",
+            "saved_observation_matches": false
+          },
+          "status": "FAIL"
+        },
+        {
+          "check": "ordinary reference HTML is intact",
+          "evidence": {
+            "actual_html_sha256": "d94f0b77dde02bb6c356ec344b0610216cb061ed673f677da1cb653a4f8b27a8",
+            "page_exists": true,
+            "page_hash_matches": true,
+            "recorded_html_sha256": "d94f0b77dde02bb6c356ec344b0610216cb061ed673f677da1cb653a4f8b27a8",
+            "saved_observation_matches": false
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "graph wiring",
+          "evidence": [],
+          "status": "PASS"
+        },
+        {
+          "check": "projected family fact inventory matches current IR",
+          "evidence": [
+            "root.denoiser.cell_arithmetic",
+            "root.denoiser.cell_connections",
+            "root.denoiser.constructed_modules",
+            "root.denoiser.constructed_parameter_shapes",
+            "root.denoiser.constructed_stage_relations",
+            "root.denoiser.context_connections",
+            "root.denoiser.declared_constructor_defaults",
+            "root.denoiser.ffn_mechanisms",
+            "root.denoiser.primary_state_ports",
+            "root.denoiser.runtime_primitives",
+            "root.denoiser.spatial_mechanisms",
+            "root.denoiser.stage_join_connections"
+          ],
+          "status": "PASS"
+        },
+        {
+          "check": "every projected family semantic fact participates",
+          "evidence": {
+            "metadata_exclusions": {
+              "root.denoiser.declared_constructor_defaults": "Omission provenance changes in the sparse control; its exact key/value/default card chips are checked separately."
+            },
+            "uncovered": []
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "every projected family fact carries a proof",
+          "evidence": [],
+          "status": "PASS"
+        },
+        {
+          "check": "cited custom implementation bytes are archived with matching hashes",
+          "evidence": {},
+          "status": "PASS"
+        },
+        {
+          "check": "same frozen implementation as ordinary",
+          "evidence": "5eaec74d3aea86765f381ddaf81d63aa9b5cb895915b999d78ee878c836a6f86",
+          "status": "PASS"
+        }
+      ],
+      "output_delta_count": 0,
+      "status": "FAIL"
+    },
+    "rewrite": {
+      "checks": [],
+      "status": "NOT_RUN"
+    },
+    "sparse": {
+      "checks": [],
+      "status": "NOT_RUN"
+    },
+    "unchanged": {
+      "checks": [],
+      "status": "NOT_RUN"
+    }
+  },
+  "not_run": [
+    "sparse",
+    "misleading",
+    "rewrite",
+    "unchanged",
+    "changed",
+    "missing"
+  ],
+  "status": "review_required"
+}

@@ -1,0 +1,1272 @@
+[
+  {
+    "path": "/block_structure/82/id",
+    "before": "instance_down_blocks__0__resnets__0__call_6",
+    "after": "instance_down_blocks__0__resnets__0__call_12"
+  },
+  {
+    "path": "/block_structure/82/kind",
+    "before": "conv2d",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/82/label",
+    "before": "2D convolution",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/83/id",
+    "before": "instance_down_blocks__0__resnets__0__call_9",
+    "after": "instance_down_blocks__0__resnets__0__call_13"
+  },
+  {
+    "path": "/block_structure/83/kind",
+    "before": "norm",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/83/label",
+    "before": "GroupNorm",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/84/id",
+    "before": "instance_down_blocks__0__resnets__0__call_12",
+    "after": "instance_down_blocks__0__resnets__0__call_14"
+  },
+  {
+    "path": "/block_structure/84/kind",
+    "before": "activation",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/84/label",
+    "before": "SiLU",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/85/id",
+    "before": "instance_down_blocks__0__resnets__0__call_13",
+    "after": "instance_down_blocks__0__resnets__0__call_6"
+  },
+  {
+    "path": "/block_structure/85/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/85/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/86/id",
+    "before": "instance_down_blocks__0__resnets__0__call_14",
+    "after": "instance_down_blocks__0__resnets__0__call_9"
+  },
+  {
+    "path": "/block_structure/86/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/86/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/block_structure/156/id",
+    "before": "instance_down_blocks__0__resnets__1__call_6",
+    "after": "instance_down_blocks__0__resnets__1__call_12"
+  },
+  {
+    "path": "/block_structure/156/kind",
+    "before": "conv2d",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/156/label",
+    "before": "2D convolution",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/157/id",
+    "before": "instance_down_blocks__0__resnets__1__call_9",
+    "after": "instance_down_blocks__0__resnets__1__call_13"
+  },
+  {
+    "path": "/block_structure/157/kind",
+    "before": "norm",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/157/label",
+    "before": "GroupNorm",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/158/id",
+    "before": "instance_down_blocks__0__resnets__1__call_12",
+    "after": "instance_down_blocks__0__resnets__1__call_14"
+  },
+  {
+    "path": "/block_structure/158/kind",
+    "before": "activation",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/158/label",
+    "before": "SiLU",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/159/id",
+    "before": "instance_down_blocks__0__resnets__1__call_13",
+    "after": "instance_down_blocks__0__resnets__1__call_6"
+  },
+  {
+    "path": "/block_structure/159/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/159/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/160/id",
+    "before": "instance_down_blocks__0__resnets__1__call_14",
+    "after": "instance_down_blocks__0__resnets__1__call_9"
+  },
+  {
+    "path": "/block_structure/160/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/160/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/block_structure/363/id",
+    "before": "instance_down_blocks__1__resnets__0__call_6",
+    "after": "instance_down_blocks__1__resnets__0__call_12"
+  },
+  {
+    "path": "/block_structure/363/kind",
+    "before": "conv2d",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/363/label",
+    "before": "2D convolution",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/364/id",
+    "before": "instance_down_blocks__1__resnets__0__call_9",
+    "after": "instance_down_blocks__1__resnets__0__call_13"
+  },
+  {
+    "path": "/block_structure/364/kind",
+    "before": "norm",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/364/label",
+    "before": "GroupNorm",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/365/id",
+    "before": "instance_down_blocks__1__resnets__0__call_12",
+    "after": "instance_down_blocks__1__resnets__0__call_14"
+  },
+  {
+    "path": "/block_structure/365/kind",
+    "before": "activation",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/365/label",
+    "before": "SiLU",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/366/id",
+    "before": "instance_down_blocks__1__resnets__0__call_13",
+    "after": "instance_down_blocks__1__resnets__0__call_6"
+  },
+  {
+    "path": "/block_structure/366/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/366/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/367/id",
+    "before": "instance_down_blocks__1__resnets__0__call_14",
+    "after": "instance_down_blocks__1__resnets__0__call_9"
+  },
+  {
+    "path": "/block_structure/367/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/367/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/block_structure/437/id",
+    "before": "instance_down_blocks__1__resnets__1__call_6",
+    "after": "instance_down_blocks__1__resnets__1__call_12"
+  },
+  {
+    "path": "/block_structure/437/kind",
+    "before": "conv2d",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/437/label",
+    "before": "2D convolution",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/438/id",
+    "before": "instance_down_blocks__1__resnets__1__call_9",
+    "after": "instance_down_blocks__1__resnets__1__call_13"
+  },
+  {
+    "path": "/block_structure/438/kind",
+    "before": "norm",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/438/label",
+    "before": "GroupNorm",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/439/id",
+    "before": "instance_down_blocks__1__resnets__1__call_12",
+    "after": "instance_down_blocks__1__resnets__1__call_14"
+  },
+  {
+    "path": "/block_structure/439/kind",
+    "before": "activation",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/439/label",
+    "before": "SiLU",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/440/id",
+    "before": "instance_down_blocks__1__resnets__1__call_13",
+    "after": "instance_down_blocks__1__resnets__1__call_6"
+  },
+  {
+    "path": "/block_structure/440/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/440/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/441/id",
+    "before": "instance_down_blocks__1__resnets__1__call_14",
+    "after": "instance_down_blocks__1__resnets__1__call_9"
+  },
+  {
+    "path": "/block_structure/441/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/441/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/block_structure/1108/id",
+    "before": "instance_down_blocks__2__resnets__0__call_6",
+    "after": "instance_down_blocks__2__resnets__0__call_12"
+  },
+  {
+    "path": "/block_structure/1108/kind",
+    "before": "conv2d",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/1108/label",
+    "before": "2D convolution",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/1109/id",
+    "before": "instance_down_blocks__2__resnets__0__call_9",
+    "after": "instance_down_blocks__2__resnets__0__call_13"
+  },
+  {
+    "path": "/block_structure/1109/kind",
+    "before": "norm",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/1109/label",
+    "before": "GroupNorm",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/1110/id",
+    "before": "instance_down_blocks__2__resnets__0__call_12",
+    "after": "instance_down_blocks__2__resnets__0__call_14"
+  },
+  {
+    "path": "/block_structure/1110/kind",
+    "before": "activation",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/1110/label",
+    "before": "SiLU",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/1111/id",
+    "before": "instance_down_blocks__2__resnets__0__call_13",
+    "after": "instance_down_blocks__2__resnets__0__call_6"
+  },
+  {
+    "path": "/block_structure/1111/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/1111/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/1112/id",
+    "before": "instance_down_blocks__2__resnets__0__call_14",
+    "after": "instance_down_blocks__2__resnets__0__call_9"
+  },
+  {
+    "path": "/block_structure/1112/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/1112/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/block_structure/1182/id",
+    "before": "instance_down_blocks__2__resnets__1__call_6",
+    "after": "instance_down_blocks__2__resnets__1__call_12"
+  },
+  {
+    "path": "/block_structure/1182/kind",
+    "before": "conv2d",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/1182/label",
+    "before": "2D convolution",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/1183/id",
+    "before": "instance_down_blocks__2__resnets__1__call_9",
+    "after": "instance_down_blocks__2__resnets__1__call_13"
+  },
+  {
+    "path": "/block_structure/1183/kind",
+    "before": "norm",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/1183/label",
+    "before": "GroupNorm",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/1184/id",
+    "before": "instance_down_blocks__2__resnets__1__call_12",
+    "after": "instance_down_blocks__2__resnets__1__call_14"
+  },
+  {
+    "path": "/block_structure/1184/kind",
+    "before": "activation",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/1184/label",
+    "before": "SiLU",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/1185/id",
+    "before": "instance_down_blocks__2__resnets__1__call_13",
+    "after": "instance_down_blocks__2__resnets__1__call_6"
+  },
+  {
+    "path": "/block_structure/1185/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/1185/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/1186/id",
+    "before": "instance_down_blocks__2__resnets__1__call_14",
+    "after": "instance_down_blocks__2__resnets__1__call_9"
+  },
+  {
+    "path": "/block_structure/1186/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/1186/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/block_structure/1639/id",
+    "before": "instance_mid_block__resnets__0__call_6",
+    "after": "instance_mid_block__resnets__0__call_10"
+  },
+  {
+    "path": "/block_structure/1639/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/1639/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/block_structure/1640/id",
+    "before": "instance_mid_block__resnets__0__call_10",
+    "after": "instance_mid_block__resnets__0__call_11"
+  },
+  {
+    "path": "/block_structure/1641/id",
+    "before": "instance_mid_block__resnets__0__call_11",
+    "after": "instance_mid_block__resnets__0__call_12"
+  },
+  {
+    "path": "/block_structure/1641/kind",
+    "before": "norm",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/1641/label",
+    "before": "GroupNorm",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/1642/id",
+    "before": "instance_mid_block__resnets__0__call_12",
+    "after": "instance_mid_block__resnets__0__call_13"
+  },
+  {
+    "path": "/block_structure/1642/kind",
+    "before": "activation",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/1642/label",
+    "before": "SiLU",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/1643/id",
+    "before": "instance_mid_block__resnets__0__call_13",
+    "after": "instance_mid_block__resnets__0__call_14"
+  },
+  {
+    "path": "/block_structure/1643/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/1643/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/1644/id",
+    "before": "instance_mid_block__resnets__0__call_14",
+    "after": "instance_mid_block__resnets__0__call_6"
+  },
+  {
+    "path": "/block_structure/1799/id",
+    "before": "instance_mid_block__resnets__1__call_6",
+    "after": "instance_mid_block__resnets__1__call_10"
+  },
+  {
+    "path": "/block_structure/1799/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/1799/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/block_structure/1800/id",
+    "before": "instance_mid_block__resnets__1__call_10",
+    "after": "instance_mid_block__resnets__1__call_11"
+  },
+  {
+    "path": "/block_structure/1801/id",
+    "before": "instance_mid_block__resnets__1__call_11",
+    "after": "instance_mid_block__resnets__1__call_12"
+  },
+  {
+    "path": "/block_structure/1801/kind",
+    "before": "norm",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/1801/label",
+    "before": "GroupNorm",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/1802/id",
+    "before": "instance_mid_block__resnets__1__call_12",
+    "after": "instance_mid_block__resnets__1__call_13"
+  },
+  {
+    "path": "/block_structure/1802/kind",
+    "before": "activation",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/1802/label",
+    "before": "SiLU",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/1803/id",
+    "before": "instance_mid_block__resnets__1__call_13",
+    "after": "instance_mid_block__resnets__1__call_14"
+  },
+  {
+    "path": "/block_structure/1803/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/1803/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/1804/id",
+    "before": "instance_mid_block__resnets__1__call_14",
+    "after": "instance_mid_block__resnets__1__call_6"
+  },
+  {
+    "path": "/block_structure/2763/id",
+    "before": "instance_up_blocks__0__resnets__0__call_6",
+    "after": "instance_up_blocks__0__resnets__0__call_12"
+  },
+  {
+    "path": "/block_structure/2763/kind",
+    "before": "conv2d",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/2763/label",
+    "before": "2D convolution",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/2764/id",
+    "before": "instance_up_blocks__0__resnets__0__call_9",
+    "after": "instance_up_blocks__0__resnets__0__call_13"
+  },
+  {
+    "path": "/block_structure/2764/kind",
+    "before": "norm",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/2764/label",
+    "before": "GroupNorm",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/2765/id",
+    "before": "instance_up_blocks__0__resnets__0__call_12",
+    "after": "instance_up_blocks__0__resnets__0__call_14"
+  },
+  {
+    "path": "/block_structure/2765/kind",
+    "before": "activation",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/2765/label",
+    "before": "SiLU",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/2766/id",
+    "before": "instance_up_blocks__0__resnets__0__call_13",
+    "after": "instance_up_blocks__0__resnets__0__call_6"
+  },
+  {
+    "path": "/block_structure/2766/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/2766/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/2767/id",
+    "before": "instance_up_blocks__0__resnets__0__call_14",
+    "after": "instance_up_blocks__0__resnets__0__call_9"
+  },
+  {
+    "path": "/block_structure/2767/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/2767/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/block_structure/2838/id",
+    "before": "instance_up_blocks__0__resnets__1__call_6",
+    "after": "instance_up_blocks__0__resnets__1__call_12"
+  },
+  {
+    "path": "/block_structure/2838/kind",
+    "before": "conv2d",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/2838/label",
+    "before": "2D convolution",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/2839/id",
+    "before": "instance_up_blocks__0__resnets__1__call_9",
+    "after": "instance_up_blocks__0__resnets__1__call_13"
+  },
+  {
+    "path": "/block_structure/2839/kind",
+    "before": "norm",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/2839/label",
+    "before": "GroupNorm",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/2840/id",
+    "before": "instance_up_blocks__0__resnets__1__call_12",
+    "after": "instance_up_blocks__0__resnets__1__call_14"
+  },
+  {
+    "path": "/block_structure/2840/kind",
+    "before": "activation",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/2840/label",
+    "before": "SiLU",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/2841/id",
+    "before": "instance_up_blocks__0__resnets__1__call_13",
+    "after": "instance_up_blocks__0__resnets__1__call_6"
+  },
+  {
+    "path": "/block_structure/2841/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/2841/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/2842/id",
+    "before": "instance_up_blocks__0__resnets__1__call_14",
+    "after": "instance_up_blocks__0__resnets__1__call_9"
+  },
+  {
+    "path": "/block_structure/2842/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/2842/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/block_structure/2913/id",
+    "before": "instance_up_blocks__0__resnets__2__call_6",
+    "after": "instance_up_blocks__0__resnets__2__call_12"
+  },
+  {
+    "path": "/block_structure/2913/kind",
+    "before": "conv2d",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/2913/label",
+    "before": "2D convolution",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/2914/id",
+    "before": "instance_up_blocks__0__resnets__2__call_9",
+    "after": "instance_up_blocks__0__resnets__2__call_13"
+  },
+  {
+    "path": "/block_structure/2914/kind",
+    "before": "norm",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/2914/label",
+    "before": "GroupNorm",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/2915/id",
+    "before": "instance_up_blocks__0__resnets__2__call_12",
+    "after": "instance_up_blocks__0__resnets__2__call_14"
+  },
+  {
+    "path": "/block_structure/2915/kind",
+    "before": "activation",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/2915/label",
+    "before": "SiLU",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/2916/id",
+    "before": "instance_up_blocks__0__resnets__2__call_13",
+    "after": "instance_up_blocks__0__resnets__2__call_6"
+  },
+  {
+    "path": "/block_structure/2916/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/2916/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/2917/id",
+    "before": "instance_up_blocks__0__resnets__2__call_14",
+    "after": "instance_up_blocks__0__resnets__2__call_9"
+  },
+  {
+    "path": "/block_structure/2917/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/2917/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/block_structure/3215/id",
+    "before": "instance_up_blocks__1__resnets__0__call_6",
+    "after": "instance_up_blocks__1__resnets__0__call_12"
+  },
+  {
+    "path": "/block_structure/3215/kind",
+    "before": "conv2d",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/3215/label",
+    "before": "2D convolution",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/3216/id",
+    "before": "instance_up_blocks__1__resnets__0__call_9",
+    "after": "instance_up_blocks__1__resnets__0__call_13"
+  },
+  {
+    "path": "/block_structure/3216/kind",
+    "before": "norm",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/3216/label",
+    "before": "GroupNorm",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/3217/id",
+    "before": "instance_up_blocks__1__resnets__0__call_12",
+    "after": "instance_up_blocks__1__resnets__0__call_14"
+  },
+  {
+    "path": "/block_structure/3217/kind",
+    "before": "activation",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/3217/label",
+    "before": "SiLU",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/3218/id",
+    "before": "instance_up_blocks__1__resnets__0__call_13",
+    "after": "instance_up_blocks__1__resnets__0__call_6"
+  },
+  {
+    "path": "/block_structure/3218/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/3218/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/3219/id",
+    "before": "instance_up_blocks__1__resnets__0__call_14",
+    "after": "instance_up_blocks__1__resnets__0__call_9"
+  },
+  {
+    "path": "/block_structure/3219/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/3219/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/block_structure/3290/id",
+    "before": "instance_up_blocks__1__resnets__1__call_6",
+    "after": "instance_up_blocks__1__resnets__1__call_12"
+  },
+  {
+    "path": "/block_structure/3290/kind",
+    "before": "conv2d",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/3290/label",
+    "before": "2D convolution",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/3291/id",
+    "before": "instance_up_blocks__1__resnets__1__call_9",
+    "after": "instance_up_blocks__1__resnets__1__call_13"
+  },
+  {
+    "path": "/block_structure/3291/kind",
+    "before": "norm",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/3291/label",
+    "before": "GroupNorm",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/3292/id",
+    "before": "instance_up_blocks__1__resnets__1__call_12",
+    "after": "instance_up_blocks__1__resnets__1__call_14"
+  },
+  {
+    "path": "/block_structure/3292/kind",
+    "before": "activation",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/3292/label",
+    "before": "SiLU",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/3293/id",
+    "before": "instance_up_blocks__1__resnets__1__call_13",
+    "after": "instance_up_blocks__1__resnets__1__call_6"
+  },
+  {
+    "path": "/block_structure/3293/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/3293/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/3294/id",
+    "before": "instance_up_blocks__1__resnets__1__call_14",
+    "after": "instance_up_blocks__1__resnets__1__call_9"
+  },
+  {
+    "path": "/block_structure/3294/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/3294/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/block_structure/3365/id",
+    "before": "instance_up_blocks__1__resnets__2__call_6",
+    "after": "instance_up_blocks__1__resnets__2__call_12"
+  },
+  {
+    "path": "/block_structure/3365/kind",
+    "before": "conv2d",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/3365/label",
+    "before": "2D convolution",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/3366/id",
+    "before": "instance_up_blocks__1__resnets__2__call_9",
+    "after": "instance_up_blocks__1__resnets__2__call_13"
+  },
+  {
+    "path": "/block_structure/3366/kind",
+    "before": "norm",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/3366/label",
+    "before": "GroupNorm",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/3367/id",
+    "before": "instance_up_blocks__1__resnets__2__call_12",
+    "after": "instance_up_blocks__1__resnets__2__call_14"
+  },
+  {
+    "path": "/block_structure/3367/kind",
+    "before": "activation",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/3367/label",
+    "before": "SiLU",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/3368/id",
+    "before": "instance_up_blocks__1__resnets__2__call_13",
+    "after": "instance_up_blocks__1__resnets__2__call_6"
+  },
+  {
+    "path": "/block_structure/3368/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/3368/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/3369/id",
+    "before": "instance_up_blocks__1__resnets__2__call_14",
+    "after": "instance_up_blocks__1__resnets__2__call_9"
+  },
+  {
+    "path": "/block_structure/3369/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/3369/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/block_structure/3477/id",
+    "before": "instance_up_blocks__2__resnets__0__call_6",
+    "after": "instance_up_blocks__2__resnets__0__call_12"
+  },
+  {
+    "path": "/block_structure/3477/kind",
+    "before": "conv2d",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/3477/label",
+    "before": "2D convolution",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/3478/id",
+    "before": "instance_up_blocks__2__resnets__0__call_9",
+    "after": "instance_up_blocks__2__resnets__0__call_13"
+  },
+  {
+    "path": "/block_structure/3478/kind",
+    "before": "norm",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/3478/label",
+    "before": "GroupNorm",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/3479/id",
+    "before": "instance_up_blocks__2__resnets__0__call_12",
+    "after": "instance_up_blocks__2__resnets__0__call_14"
+  },
+  {
+    "path": "/block_structure/3479/kind",
+    "before": "activation",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/3479/label",
+    "before": "SiLU",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/3480/id",
+    "before": "instance_up_blocks__2__resnets__0__call_13",
+    "after": "instance_up_blocks__2__resnets__0__call_6"
+  },
+  {
+    "path": "/block_structure/3480/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/3480/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/3481/id",
+    "before": "instance_up_blocks__2__resnets__0__call_14",
+    "after": "instance_up_blocks__2__resnets__0__call_9"
+  },
+  {
+    "path": "/block_structure/3481/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/3481/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/block_structure/3552/id",
+    "before": "instance_up_blocks__2__resnets__1__call_6",
+    "after": "instance_up_blocks__2__resnets__1__call_12"
+  },
+  {
+    "path": "/block_structure/3552/kind",
+    "before": "conv2d",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/3552/label",
+    "before": "2D convolution",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/3553/id",
+    "before": "instance_up_blocks__2__resnets__1__call_9",
+    "after": "instance_up_blocks__2__resnets__1__call_13"
+  },
+  {
+    "path": "/block_structure/3553/kind",
+    "before": "norm",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/3553/label",
+    "before": "GroupNorm",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/3554/id",
+    "before": "instance_up_blocks__2__resnets__1__call_12",
+    "after": "instance_up_blocks__2__resnets__1__call_14"
+  },
+  {
+    "path": "/block_structure/3554/kind",
+    "before": "activation",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/3554/label",
+    "before": "SiLU",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/3555/id",
+    "before": "instance_up_blocks__2__resnets__1__call_13",
+    "after": "instance_up_blocks__2__resnets__1__call_6"
+  },
+  {
+    "path": "/block_structure/3555/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/3555/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/3556/id",
+    "before": "instance_up_blocks__2__resnets__1__call_14",
+    "after": "instance_up_blocks__2__resnets__1__call_9"
+  },
+  {
+    "path": "/block_structure/3556/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/3556/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/block_structure/3627/id",
+    "before": "instance_up_blocks__2__resnets__2__call_6",
+    "after": "instance_up_blocks__2__resnets__2__call_12"
+  },
+  {
+    "path": "/block_structure/3627/kind",
+    "before": "conv2d",
+    "after": "activation"
+  },
+  {
+    "path": "/block_structure/3627/label",
+    "before": "2D convolution",
+    "after": "SiLU"
+  },
+  {
+    "path": "/block_structure/3628/id",
+    "before": "instance_up_blocks__2__resnets__2__call_9",
+    "after": "instance_up_blocks__2__resnets__2__call_13"
+  },
+  {
+    "path": "/block_structure/3628/kind",
+    "before": "norm",
+    "after": "dropout"
+  },
+  {
+    "path": "/block_structure/3628/label",
+    "before": "GroupNorm",
+    "after": "Dropout"
+  },
+  {
+    "path": "/block_structure/3629/id",
+    "before": "instance_up_blocks__2__resnets__2__call_12",
+    "after": "instance_up_blocks__2__resnets__2__call_14"
+  },
+  {
+    "path": "/block_structure/3629/kind",
+    "before": "activation",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/3629/label",
+    "before": "SiLU",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/3630/id",
+    "before": "instance_up_blocks__2__resnets__2__call_13",
+    "after": "instance_up_blocks__2__resnets__2__call_6"
+  },
+  {
+    "path": "/block_structure/3630/kind",
+    "before": "dropout",
+    "after": "conv2d"
+  },
+  {
+    "path": "/block_structure/3630/label",
+    "before": "Dropout",
+    "after": "2D convolution"
+  },
+  {
+    "path": "/block_structure/3631/id",
+    "before": "instance_up_blocks__2__resnets__2__call_14",
+    "after": "instance_up_blocks__2__resnets__2__call_9"
+  },
+  {
+    "path": "/block_structure/3631/kind",
+    "before": "conv2d",
+    "after": "norm"
+  },
+  {
+    "path": "/block_structure/3631/label",
+    "before": "2D convolution",
+    "after": "GroupNorm"
+  },
+  {
+    "path": "/signatures/block_structure",
+    "before": "a06973eb5866d0dee9d655db594d8d08da9ccc3e572eff8af229fddf8d065350",
+    "after": "36fe3cb590b2f75e5fdee6c7e29233d65df09fbaf0bb7657b4d5bba0dc3ecce2"
+  }
+]

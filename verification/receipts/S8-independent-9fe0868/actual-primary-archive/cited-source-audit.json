@@ -1,0 +1,14 @@
+{
+  "archived_hashes": [
+    "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+  ],
+  "cited_hashes": [
+    "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+  ],
+  "retained_index_fingerprints": [
+    "09fc7b6a95f66c670862b0660094bce1078a3b341e2c963b5da40d3e19673f9d",
+    "cf8296592f4a7d8a9eefaabc18c2ebf4c1a7d83903aff5d6f5a652a65deef06b"
+  ],
+  "status": "complete",
+  "unmatched_cited_hashes": []
+}

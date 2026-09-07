@@ -49,6 +49,16 @@ def test_expression_guard_rebinding_does_not_preserve_old_operand(tmp_path):
     assert rows[0]["route"]["kind"] == "unresolved"
 
 
+@pytest.mark.parametrize('expression', [
+    '((conditioning := items), conditioning) if enabled else (conditioning, conditioning)',
+    'block((conditioning := items), conditioning)',
+    '((conditioning := items), conditioning)',
+])
+def test_expression_local_write_does_not_restore_sibling_formal(tmp_path, expression):
+    rows = regions(tmp_path, 'state = ' + expression)
+    assert rows[0]["route"]["kind"] == "unresolved"
+
+
 def test_conditioning_entry_cannot_skip_inner_rebinding(tmp_path):
     rows = regions(tmp_path, "conditioning = embed(conditioning)\nfor item in items:\n with manager() as conditioning:\n  pass\n state = block(state, conditioning)")
     loop = rows[0]["route"]

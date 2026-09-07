@@ -72,6 +72,11 @@ def read_local_port_route(index, forward, expression, before, guard=(), *, regio
             return unknown("route outside the bounded local reader")
         if value.span is not None:
             spans.add(value.span)
+            if any(binding.assignment_kind == "walrus" and binding.span is not None
+                   and (value.span.line, value.span.col) <= (binding.span.line, binding.span.col)
+                   and (binding.span.end_line, binding.span.end_col) <= (value.span.end_line, value.span.end_col)
+                   for binding in bindings):
+                return unknown("expression-local assignment requires evaluation-order closure before routing sibling operands")
         for unsupported in index.unsupported_execution_in(forward.symbol):
             span = unsupported.span
             if span is not None and (span.line, span.col) <= (cutoff.line, cutoff.col) \
@@ -288,11 +293,6 @@ def read_local_port_route(index, forward, expression, before, guard=(), *, regio
             body, test, alternative = value.children
             if test is not None and test.span is not None:
                 spans.add(test.span)
-                if any(binding.assignment_kind == "walrus" and binding.span is not None
-                       and (test.span.line, test.span.col) <= (binding.span.line, binding.span.col)
-                       and (binding.span.end_line, binding.span.end_col) <= (test.span.end_line, test.span.end_col)
-                       for binding in bindings):
-                    return unknown("conditional expression guard rebinds a local before its selected operand")
             return {"kind": "conditional", "condition": "source expression guard unresolved",
                     "when_true": visit(body, cutoff, context, seen),
                     "when_false": visit(alternative, cutoff, context, seen)}
