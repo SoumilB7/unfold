@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/private/tmp/unfold-s8-retained-index-replay.py", line 69, in <module>
+    artifact,obs,rels=g._one(target,write_relations=False,output=original)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/scripts/generate_s7_shadow.py", line 496, in _one
+    signature_bundle = _run_signature_recipe(request, recipe_resolution)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/unfold-s8-retained-index-replay.py", line 62, in cached_signature
+    assert resolution.to_dict()==observations['resolution'],g._payload_differences(resolution.to_dict(),observations['resolution'])
+           ^^^^^^^^^^^^^^^^^^
+AttributeError: 'RecipeResolution' object has no attribute 'to_dict'. Did you mean: 'from_dict'?

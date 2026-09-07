@@ -1,0 +1,14 @@
+[
+  "$.extras.fact_provenance.root.denoiser.diffusion_root_topology: missing live; committed={'source': 'exact diffusion source occurrence', 'status': 'code_proven', 'value': 'repeated_stack'}",
+  "$.extras.render.loop_blocks[5].description: committed='The denoiser detail is projected from exact source occurrences and their checkpoint-bound operands. Unresolved mechanisms remain opaque.', live='The exact denoiser source/owner graph could not be closed. No transformer stack, attention, FFN, patchify, or output mechanism is inferred from the checkpoint vocabulary.'",
+  "$.extras.render.loop_blocks[5].label: committed length=1, live length=2",
+  "$.extras.render.loop_blocks[5].label[0]: committed='Diffusion denoiser', live='Denoiser'",
+  "$.extras.render.loop_blocks[5].title: committed='Source-proven diffusion denoiser', live='Denoiser structure unresolved'",
+  "$.extras.render.opaque_layer_block.description: committed='The source projection does not prove a materializable root layer stack. Nested or symbolic templates remain recorded in the evidence surface, but no main denoiser layer is invented.', live='The exact source or owner graph is incomplete, so no repeated cell, attention mechanism, or feed-forward mechanism is drawn.'",
+  "$.extras.render.opaque_layer_block.label[0]: committed='Repeated denoiser', live='Denoiser internals'",
+  "$.extras.render.opaque_layer_block.label[1]: committed='structure unresolved', live='unresolved'",
+  "$.extras.render.opaque_layer_block.title: committed='Repeated denoiser structure unresolved', live='Denoiser internals unresolved'",
+  "$.extras.source_provenance.components.root.architecture: committed='Transformer2DModel', live='PixArtTransformer2DModel'",
+  "$.warnings: committed length=1, live length=2",
+  "$.warnings[0]: committed='No root denoiser layers were materialized; the repeated denoiser structure remains visibly unresolved rather than being replaced by a zero-layer text transformer.', live='Exact denoiser source projection unavailable \u2014 architecture is kept opaque rather than inferred from config fields.'"
+]

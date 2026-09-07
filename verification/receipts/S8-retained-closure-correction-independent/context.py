@@ -247,12 +247,12 @@ class ParseContext:
             return
         if index.bundle_source != previous.bundle_source:
             raise ValueError("retained source closure must use the same bundle")
-        for observation_field in fields(ProgramIndex):
-            if observation_field.name in {"bundle_source", "fingerprint"}:
+        for field in fields(ProgramIndex):
+            if field.name in {"bundle_source", "fingerprint"}:
                 continue
-            before, after = getattr(previous, observation_field.name), getattr(index, observation_field.name)
+            before, after = getattr(previous, field.name), getattr(index, field.name)
             if not isinstance(after, tuple) or after[:len(before)] != before:
-                raise ValueError("retained source closure changed prior " + observation_field.name)
+                raise ValueError("retained source closure changed prior " + field.name)
         contents = {}
         source_ids = [node.source_id for node in index.source_nodes]
         source_ids.extend(row.source for row in index.parse_failures)

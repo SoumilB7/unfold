@@ -1,0 +1,11 @@
+{
+  "base_head": "9712d48e2e8abc8043585fe256286c7471a959f7",
+  "reviewed_working_tree_files": {
+    "model_unfolder/evidence/context.py": "08a50ab9b3c243dacb8ecd3735360c861df7be75ad1fcbcb975e29f27c6789ee",
+    "model_unfolder/adapters/diffusor/unet_cutover.py": "b832cfbc52d399fc7b60079ab6fbb84e87b0ed4c3d262a7f904a7b9f2dfd5c8e",
+    "scripts/generate_s7_shadow.py": "e415c5d0a4efac1ae655d4a992a08087daa015e6d2438dc8e4771fddbbead70c",
+    "tests/test_s8_retained_source_index.py": "ed9b4d56052c6a77b6af407061efa06781e8292200a7d96b864807fc4f750cc9",
+    "model_unfolder/evidence/reconciliation.py": "0a9c925498801b713fbe287e9b9a4689393f58efd2ddea57e787ed5b25555d68"
+  },
+  "review_type": "read-only source review; focused tests inspected but not run"
+}

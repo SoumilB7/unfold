@@ -285,7 +285,13 @@ ROOT_COMPONENT = "root.denoiser"
 
 
 def _shadow_diffusion_root_resolution(context):
-    """One call-local D0 root shared by every U10 shadow reader."""
+    """Retain the initial D0 root result shared by U10 shadow readers.
+
+    This is historical reader evidence, not a current-closure query. The UNet
+    path primes it and topology before cutover, then returns its result without
+    querying these caches again. Post-parse current ownership consumers resolve
+    explicitly from context.program_index() and context.source_bundle.
+    """
     def _read():
         from ...evidence.component_owner import resolve_component_root
         return resolve_component_root(

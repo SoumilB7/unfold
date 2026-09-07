@@ -1,0 +1,58 @@
+{
+  "argument_sources": {},
+  "checkpoint_dtype": {
+    "path": null,
+    "provenance": "",
+    "source_kind": "checkpoint",
+    "spelling": null,
+    "state": "absent",
+    "value": null
+  },
+  "execution_dtype": "float32",
+  "execution_dtype_source": {
+    "kind": "probe_default",
+    "reason": "checkpoint dtype is absent",
+    "value": "float32"
+  },
+  "failure_detail": "resolved owner has no forward callable",
+  "recipe": {
+    "cache_state": "disabled",
+    "conditioning_present": false,
+    "dtype": "float32",
+    "encoder_decoder_mode": "unspecified",
+    "flags": {
+      "argument_sources": {},
+      "callable": "unresolved",
+      "checkpoint_dtype": {
+        "path": null,
+        "provenance": "",
+        "source_kind": "checkpoint",
+        "spelling": null,
+        "state": "absent",
+        "value": null
+      },
+      "execution_dtype": "float32",
+      "execution_dtype_source": {
+        "kind": "probe_default",
+        "reason": "checkpoint dtype is absent",
+        "value": "float32"
+      },
+      "parameters": [],
+      "resolution": "absent",
+      "resolution_status": "failed",
+      "source": "resolved_callable_signature"
+    },
+    "input_modality": "callable_signature",
+    "library_versions": {
+      "diffusers": "0.38.0",
+      "python": "3.12.10",
+      "torch": "2.9.1"
+    },
+    "literal_arguments": {},
+    "recipe_id": "signature-4f53cda18c2baa0c",
+    "target_path": "",
+    "tensor_arguments": [],
+    "train_eval": "eval"
+  },
+  "status": "failed"
+}

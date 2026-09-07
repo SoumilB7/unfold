@@ -1,0 +1,7 @@
+{
+  "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q tests/test_s8_retained_source_index.py",
+  "passed": 5,
+  "elapsed_seconds": 0.34,
+  "pyflakes": "passed after loop variable rename",
+  "diff_check": "passed"
+}
