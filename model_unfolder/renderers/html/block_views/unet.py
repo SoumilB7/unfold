@@ -74,15 +74,38 @@ def build_unet_constructed_view(ir, info, mount_id, block):
             heading = {"if": "Conditional boundary", "for": "Repeat boundary",
                        "while": "Repeat boundary"}.get(row["kind"], "Operation boundary")
             detail = str(child["label"]).partition(": ")[2] or "Source ports · drill for details"
-            place(row["id"], x, y, 280, [heading, detail], resolved=False)
+            if row.get("primary_target_id"):
+                heading, detail = child["label"], "Conditional source-bound invocation"
+            geometry = place(row["id"], x, y, 280, [heading, detail], resolved=False)
+            if row.get("primary_target_id"):
+                placed[row["primary_target_id"]] = geometry
             stage_ids = list(row["stage_block_ids"])
             if up_ids.intersection(stage_ids):
                 stage_ids.reverse()
-            for number, stage_id in enumerate(stage_ids):
+            invocation_ids = [target for target in row.get("extra_target_ids", ()) if target not in placed]
+            visible_ids = list(dict.fromkeys((*stage_ids, *invocation_ids)))
+            for number, stage_id in enumerate(visible_ids):
                 place(stage_id, x, y + 90 + number * 86)
-            height = 58 if not stage_ids else 110 + len(stage_ids) * 86
-            if stage_ids:
-                containment(x - 155, y - 15, 310, height + 30, "Constructed stages · containment")
+            height = 58 if not visible_ids else 110 + len(visible_ids) * 86
+            if visible_ids:
+                bound = set(row.get("binding_target_ids", ()))
+                containment(x - 155, y - 15, 310, height + 30,
+                            "Conditional call targets · dashed links" if set(visible_ids) <= bound else
+                            "Constructed modules · open targets retained")
+                # These are target-identity relations, not tensor arrows or
+                # execution order between slots. Actual input/result ports
+                # remain in the selected source-bound call drill.
+                for target_id in visible_ids:
+                    if target_id not in bound:
+                        continue
+                    target = placed[target_id]
+                    rail = x - 171
+                    path = f"M {geometry['left']} {geometry['cy']} L {rail} {geometry['cy']} L {rail} {target['cy']} L {target['left']} {target['cy']}"
+                    wires.append(_svg_tag("path", {"d": path, "fill": "none", "stroke": C["border"],
+                        "stroke-width": 1.5, "stroke-dasharray": "5 3",
+                        "data-route-kind": "conditional_call_target", "data-source": row["id"],
+                        "data-target": target_id}))
+                    regions.append(point(rail, target["cy"]))
             if not row["receives_previous_state"]:
                 parts.append(_svg_text(x, y - 24, "Input link unresolved",
                              {"text-anchor": "middle", "font-family": FONT_MONO,
@@ -147,7 +170,9 @@ def build_unet_constructed_view(ir, info, mount_id, block):
         place(block_id, left_x + number % 3 * (right_x-left_x)/2, bottom + 50 + number//3 * 95)
     if other_ids:
         containment(left_x-145, bottom+25, right_x-left_x+290, ((len(other_ids)+2)//3)*95+35,
-                    "Other constructed modules · containment; targets not bound to source ports")
+                    ("Constructed call targets · conditional connections in source-port drills"
+                     if "unbound_bookend_paths" in unet and not unet["unbound_bookend_paths"] else
+                     "Other constructed modules · some call targets remain unbound"))
     for route in unet.get("skip_routes", ()):
         source, target = placed[route["source"]], placed[route["target"]]
         rail = (source["right"] + target["left"]) / 2

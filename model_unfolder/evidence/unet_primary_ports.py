@@ -56,6 +56,62 @@ def read_primary_regions(index, forward, local):
     return result, tuple(sorted(spans, key=lambda span: (span.line, span.col, span.end_line, span.end_col)))
 
 
+def _bind_invoked_routes(index, route, targets, spans, active=()):
+    """Expose exact selected helper ports and attach constructed call targets."""
+    import copy
+    if isinstance(route, list):
+        return [_bind_invoked_routes(index, item, targets, spans, active) for item in route]
+    if not isinstance(route, dict):
+        return route
+    result = {key: _bind_invoked_routes(index, value, targets, spans, active)
+              for key, value in route.items()}
+    if route.get("kind") != "call_result":
+        return result
+    binding = targets.get(route.get("call_source"))
+    if binding is None:
+        return result
+    result["target_binding"] = {key: binding[key] for key in ("kind", "conditions")}
+    if binding["kind"] == "constructed_target":
+        result["target_binding"]["targets"] = binding["targets"]
+        return result
+    method, call = binding["method"], binding["call"]
+    if method.symbol in active:
+        return result
+    returns = index.return_observations_in(method.symbol)
+    if len(returns) != 1 or returns[0].guard:
+        return result
+    parameters = list(method.params[1:])
+    if any(parameter.kind in {"vararg", "kwarg"} for parameter in parameters):
+        return result
+    if any(arg.kind == "starred" for arg in call.args) or any(name is None for name, _ in call.kwargs):
+        return result
+    positional = [parameter for parameter in parameters if parameter.kind in {"posonly", "positional"}]
+    supplied = {str(number): parameter.name for number, parameter in enumerate(positional)}
+    supplied.update({parameter.name: parameter.name for parameter in parameters if parameter.kind != "posonly"})
+    actuals = {supplied[arg["port"]]: arg["route"] for arg in result["arguments"]
+               if arg["port"] in supplied}
+    if len(actuals) != len(result["arguments"]):
+        return result
+    if any(parameter.name not in actuals for parameter in parameters):
+        return result  # Omitted helper arguments need their own default binding.
+    output = read_local_port_route(index, method, returns[0].value, returns[0].span)
+    spans.update(output.spans)
+    spans.update((method.span, returns[0].span))
+    def substitute(value):
+        if isinstance(value, list):
+            return [substitute(item) for item in value]
+        if not isinstance(value, dict):
+            return value
+        if value.get("kind") == "formal" and value.get("formal") in actuals:
+            return copy.deepcopy(actuals[value["formal"]])
+        return {key: substitute(item) for key, item in value.items()}
+    helper_route = _bind_invoked_routes(index, substitute(output.value), targets, spans,
+                                       (*active, method.symbol))
+    result["target_binding"]["helper_output"] = helper_route
+    result["target_binding"]["helper_name"] = binding["attribute"]
+    return result
+
+
 @dataclass(frozen=True)
 class UNetPrimaryPortProof:
     graph: UNetStageExecutionGraph = field(repr=False, compare=False)
@@ -89,6 +145,16 @@ class UNetPrimaryPortProof:
         forward = self.bindings.index.callable_by_symbol(SymbolId(owner.source, owner.qualified_name + ".forward"))
         local = self.graph.edges[0].route.carried_output
         rows, spans = read_primary_regions(self.bindings.index, forward, local)
+        from .unet_wrapper_binding import read_wrapper_binding
+        observed = next((row for row in self.bindings._modules[""].attribute_bindings
+                         if row.attribute == "forward"), None)
+        invocation = read_wrapper_binding(self.bindings.index, observed, forward.symbol)
+        from .unet_call_binding import read_root_invocations
+        targets, binding_spans, _ = read_root_invocations(self.bindings, forward, invocation)
+        all_spans = set((*spans, *invocation.spans, *binding_spans))
+        for row in rows:
+            row["route"] = _bind_invoked_routes(self.bindings.index, row["route"], targets, all_spans)
+        spans = tuple(all_spans)
         stages = (self.graph.edges[0].source, *self.graph.direct, self.graph.edges[0].target)
         for row in rows:
             # A region contains these source stage sites. This deliberately
@@ -99,8 +165,14 @@ class UNetPrimaryPortProof:
             row["stage_fields"] = fields
             row["constructed_stages"] = [path for name in fields for path in self.bindings.direct_members(
                 name, repeated=any(stage.node_id.field == name and stage.node_id.kind == "repeated" for stage in stages))]
-        return {"regions": rows, "input_is_formal": local in {p.name for p in forward.params},
-                "target_binding": "unresolved; regions prove ports, not individual stage invocation"}, spans
+        # Root input existence comes from the selected callable's parameter
+        # declaration. It must not be reconstructed from nested route labels:
+        # the carried primary formal becomes a region_input inside the graph.
+        return {"regions": rows, "root_inputs": [p.name for p in forward.params[1:]],
+                "invocation_binding": {"kind": invocation.kind, "reason": invocation.reason,
+                                       "conditions": list(invocation.conditions)},
+                "input_is_formal": local in {p.name for p in forward.params},
+                "target_binding": "Each annotated call carries its exact conditional runtime lookup; unannotated call targets remain unresolved"}, spans
 
     @property
     def value(self):

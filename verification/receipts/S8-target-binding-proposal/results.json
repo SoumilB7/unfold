@@ -1,0 +1,24 @@
+{
+  "actual_lookup_function": "replace_child",
+  "child_before_call": 6,
+  "existing_address_channels_after": {
+    "class": "Cell",
+    "instance_attribute_keys": [
+      "second"
+    ],
+    "source_sha256": "967f8df81233ea8e5822a80ff21a8970837d578059d12e81c55f8dc6ed4d6283"
+  },
+  "existing_address_channels_before": {
+    "class": "Cell",
+    "instance_attribute_keys": [
+      "second"
+    ],
+    "source_sha256": "967f8df81233ea8e5822a80ff21a8970837d578059d12e81c55f8dc6ed4d6283"
+  },
+  "forward_result": 103,
+  "indexed_candidate": "Cell.helper",
+  "indexed_candidate_writes": [],
+  "lookup_before": "Cell.helper",
+  "source": "def replace_child(owner):\n    owner.second = lambda value: value + 100\n\nclass Cell:\n    def __init__(self):\n        self.second = lambda value: value * 2\n\n    def helper(self):\n        return None\n\n    def forward(self, value):\n        self.helper()\n        return self.second(value)\n",
+  "source_sha256": "967f8df81233ea8e5822a80ff21a8970837d578059d12e81c55f8dc6ed4d6283"
+}

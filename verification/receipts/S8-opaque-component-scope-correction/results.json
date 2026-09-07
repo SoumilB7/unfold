@@ -1,0 +1,20 @@
+{
+  "block_ids": [
+    "denoiser"
+  ],
+  "component_scope": "denoiser",
+  "expanded_sampling_loop": false,
+  "scope": "Source-unresolved render producer used by failed UNet cutover; no full model run",
+  "source_hashes": {
+    "model_unfolder/adapters/diffusor/blocks.py": "2e5fe4bb9a6c139c98656076c5d460ce1620ff85331ac9d741bfe6e78e72239a",
+    "model_unfolder/adapters/diffusor/parser.py": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758",
+    "model_unfolder/expanded/loop.py": "accf5e4d2756c70f35ec156c6bdbf749335c007a5bdcd3f298f82c0baa5c8075",
+    "model_unfolder/renderers/html/views_diffusion.py": "5be3e118f2a1b0d058299de9c4ecd910d895406c3720363b0bdfe6a2ee8042b1"
+  },
+  "source_unchanged": true,
+  "visible_labels": {
+    "Noise": false,
+    "Scheduler": false,
+    "VAE": false
+  }
+}

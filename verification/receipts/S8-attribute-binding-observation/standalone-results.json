@@ -1,0 +1,16 @@
+{
+  "test_alternating_fallback_is_observation_not_future_target_proof": "PASS",
+  "test_changed_actual_super_anchor_is_recorded": "PASS",
+  "test_changed_iterator_and_custom_container_refused": "PASS",
+  "test_changed_length_does_not_manufacture_length_identity": "PASS",
+  "test_class_replacement_records_actual_function_not_demanded_name": "PASS",
+  "test_code_object_poison_and_shadowed_builtin_refused": "PASS",
+  "test_custom_lookup_observation_does_not_rewrite_construction_snapshot": "PASS",
+  "test_direct_method_does_not_consult_custom_fallback": "PASS",
+  "test_instance_shadow_custom_lookup_and_descriptor_refused": "PASS",
+  "test_iterator_global_adapter_shadow_refused": "PASS",
+  "test_optional_request_and_inventory_roundtrip": "PASS",
+  "test_plain_method_child_and_exact_iterator_with_alias_and_none": "PASS",
+  "test_property_storage_names_exclude_data_descriptor_shadow": "PASS",
+  "test_wrapped_metadata_never_selects_the_body_and_closure_is_actual": "PASS"
+}

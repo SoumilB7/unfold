@@ -182,7 +182,8 @@ def _rename_local(source):
 def _source_condition(context, config, condition, baseline, artifact):
     bundle = context.source_bundle
     root = resolve_component_root(context.program_index(), bundle, "root")
-    request = request_from_resolved_source(prepare_document(config, merge=False), bundle, root)
+    request = request_from_resolved_source(prepare_document(config, merge=False), bundle, root,
+                                           index=context.program_index())
     original = Path(root.graph.root.symbol.source.canonical_path)
     scratch = Path(tempfile.mkdtemp(prefix="unfold-s8-source-"))
     roots = {}

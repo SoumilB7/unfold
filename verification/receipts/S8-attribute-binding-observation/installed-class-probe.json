@@ -1,0 +1,561 @@
+{
+  "scope": "Tiny fixture with actual installed UNet class/MRO; __new__ plus Module initialization and small Linear/ModuleList. No actual SDXL constructor, model execution or final product run.",
+  "USE_PEFT_BACKEND": false,
+  "bindings": [
+    {
+      "owner_path": "",
+      "attribute": "forward",
+      "kind": "plain_bound_method",
+      "reason": "",
+      "lookup_kind": "object_getattribute",
+      "lookup_getattr": null,
+      "child_path": null,
+      "function": {
+        "module": "diffusers.utils.peft_utils",
+        "qualname": "apply_lora_scale.<locals>.decorator.<locals>.wrapper",
+        "source_file": "peft_utils.py",
+        "source_sha256": "78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc",
+        "first_line": 292,
+        "code_sha256": "7336300ae8a6b4ee8c64b4647b4bf219915c6a7f90affa07d0181f322015a0ae",
+        "canonical_builtins": [
+          "enumerate",
+          "getattr",
+          "hasattr",
+          "len",
+          "super"
+        ],
+        "closure_names": [
+          "forward_fn",
+          "kwargs_name"
+        ],
+        "code_matches_source": true,
+        "closure_values": [
+          {
+            "name": "forward_fn",
+            "kind": "function",
+            "function": {
+              "module": "diffusers.models.unets.unet_2d_condition",
+              "qualname": "UNet2DConditionModel.forward",
+              "source_file": "unet_2d_condition.py",
+              "source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+              "first_line": 980,
+              "code_sha256": "8bc5b16effdab35aef8fd057997529ec9ddba234feb7668f694eedfd6087c043",
+              "canonical_builtins": [
+                "enumerate",
+                "getattr",
+                "hasattr",
+                "len",
+                "super"
+              ],
+              "closure_names": [],
+              "code_matches_source": true,
+              "closure_values": []
+            },
+            "scalar": null,
+            "reason": ""
+          },
+          {
+            "name": "kwargs_name",
+            "kind": "scalar",
+            "function": null,
+            "scalar": "cross_attention_kwargs",
+            "reason": ""
+          }
+        ]
+      },
+      "scalar": null,
+      "iteration": null,
+      "iteration_reason": "",
+      "lookup_state_before": null,
+      "lookup_state_after": null,
+      "observed_state_changed": null,
+      "registered_slots_unchanged": null,
+      "super_target": null,
+      "super_reason": "",
+      "instance_storage_names": []
+    },
+    {
+      "owner_path": "",
+      "attribute": "get_time_embed",
+      "kind": "plain_bound_method",
+      "reason": "",
+      "lookup_kind": "object_getattribute",
+      "lookup_getattr": null,
+      "child_path": null,
+      "function": {
+        "module": "diffusers.models.unets.unet_2d_condition",
+        "qualname": "UNet2DConditionModel.get_time_embed",
+        "source_file": "unet_2d_condition.py",
+        "source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+        "first_line": 851,
+        "code_sha256": "21646bd9b1a299944e64bdc0df21ccbbd84c57965c7507ac700ca29f4e9ed062",
+        "canonical_builtins": [
+          "enumerate",
+          "getattr",
+          "hasattr",
+          "len",
+          "super"
+        ],
+        "closure_names": [],
+        "code_matches_source": true,
+        "closure_values": []
+      },
+      "scalar": null,
+      "iteration": null,
+      "iteration_reason": "",
+      "lookup_state_before": null,
+      "lookup_state_after": null,
+      "observed_state_changed": null,
+      "registered_slots_unchanged": null,
+      "super_target": null,
+      "super_reason": "",
+      "instance_storage_names": []
+    },
+    {
+      "owner_path": "",
+      "attribute": "conv_in",
+      "kind": "observed_registered_child",
+      "reason": "",
+      "lookup_kind": "observed_custom_fallback",
+      "lookup_getattr": {
+        "module": "diffusers.models.modeling_utils",
+        "qualname": "ModelMixin.__getattr__",
+        "source_file": "modeling_utils.py",
+        "source_sha256": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+        "first_line": 260,
+        "code_sha256": "7a9fb172899661f12e5a92421a4f83ddeab73570fb1b76bc1d71671bd658725b",
+        "canonical_builtins": [
+          "enumerate",
+          "getattr",
+          "hasattr",
+          "len",
+          "super"
+        ],
+        "closure_names": [
+          "__class__"
+        ],
+        "code_matches_source": true,
+        "closure_values": [
+          {
+            "name": "__class__",
+            "kind": "unresolved",
+            "function": null,
+            "scalar": null,
+            "reason": "unsupported_closure_value"
+          }
+        ]
+      },
+      "child_path": "conv_in",
+      "function": null,
+      "scalar": null,
+      "iteration": null,
+      "iteration_reason": "child_is_not_exact_modulelist",
+      "lookup_state_before": {
+        "_backward_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_backward_pre_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_buffers": {
+          "type": "builtins.dict"
+        },
+        "_forward_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_forward_hooks_always_called": {
+          "type": "collections.OrderedDict"
+        },
+        "_forward_hooks_with_kwargs": {
+          "type": "collections.OrderedDict"
+        },
+        "_forward_pre_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_forward_pre_hooks_with_kwargs": {
+          "type": "collections.OrderedDict"
+        },
+        "_internal_dict": {
+          "type": "builtins.dict"
+        },
+        "_is_full_backward_hook": null,
+        "_load_state_dict_post_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_load_state_dict_pre_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_modules": {
+          "type": "builtins.dict"
+        },
+        "_non_persistent_buffers_set": {
+          "type": "builtins.set"
+        },
+        "_parameters": {
+          "type": "builtins.dict"
+        },
+        "_state_dict_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_state_dict_pre_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "training": true
+      },
+      "lookup_state_after": {
+        "_backward_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_backward_pre_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_buffers": {
+          "type": "builtins.dict"
+        },
+        "_forward_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_forward_hooks_always_called": {
+          "type": "collections.OrderedDict"
+        },
+        "_forward_hooks_with_kwargs": {
+          "type": "collections.OrderedDict"
+        },
+        "_forward_pre_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_forward_pre_hooks_with_kwargs": {
+          "type": "collections.OrderedDict"
+        },
+        "_internal_dict": {
+          "type": "builtins.dict"
+        },
+        "_is_full_backward_hook": null,
+        "_load_state_dict_post_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_load_state_dict_pre_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_modules": {
+          "type": "builtins.dict"
+        },
+        "_non_persistent_buffers_set": {
+          "type": "builtins.set"
+        },
+        "_parameters": {
+          "type": "builtins.dict"
+        },
+        "_state_dict_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_state_dict_pre_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "training": true
+      },
+      "observed_state_changed": false,
+      "registered_slots_unchanged": true,
+      "super_target": {
+        "anchor_mro_index": 1,
+        "target": {
+          "module": "torch.nn.modules.module",
+          "qualname": "Module.__getattr__",
+          "source_file": "module.py",
+          "source_sha256": "d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd",
+          "first_line": 1951,
+          "code_sha256": "1f8d047d7d2bb63fb40c0f1a5b6e129f8cbe9b60c4f2190b54eafc37bdea52c3",
+          "canonical_builtins": [
+            "enumerate",
+            "getattr",
+            "hasattr",
+            "len",
+            "super"
+          ],
+          "closure_names": [],
+          "code_matches_source": true,
+          "closure_values": []
+        }
+      },
+      "super_reason": "",
+      "instance_storage_names": []
+    },
+    {
+      "owner_path": "",
+      "attribute": "up_blocks",
+      "kind": "observed_registered_child",
+      "reason": "",
+      "lookup_kind": "observed_custom_fallback",
+      "lookup_getattr": {
+        "module": "diffusers.models.modeling_utils",
+        "qualname": "ModelMixin.__getattr__",
+        "source_file": "modeling_utils.py",
+        "source_sha256": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+        "first_line": 260,
+        "code_sha256": "7a9fb172899661f12e5a92421a4f83ddeab73570fb1b76bc1d71671bd658725b",
+        "canonical_builtins": [
+          "enumerate",
+          "getattr",
+          "hasattr",
+          "len",
+          "super"
+        ],
+        "closure_names": [
+          "__class__"
+        ],
+        "code_matches_source": true,
+        "closure_values": [
+          {
+            "name": "__class__",
+            "kind": "unresolved",
+            "function": null,
+            "scalar": null,
+            "reason": "unsupported_closure_value"
+          }
+        ]
+      },
+      "child_path": "up_blocks",
+      "function": null,
+      "scalar": null,
+      "iteration": {
+        "iterator": {
+          "module": "torch.nn.modules.container",
+          "qualname": "ModuleList.__iter__",
+          "source_file": "container.py",
+          "source_sha256": "114f37d0b6d343570ae38ba9b0c024b098f040969e8b888072c978e106ebf08c",
+          "first_line": 403,
+          "code_sha256": "acd6f9e19b4f7816826c24090cb0aaf4e749b8c5572a90dab2f78831a3cb5003",
+          "canonical_builtins": [
+            "enumerate",
+            "getattr",
+            "hasattr",
+            "len",
+            "super"
+          ],
+          "closure_names": [],
+          "code_matches_source": true,
+          "closure_values": []
+        },
+        "slots": [
+          {
+            "name": "0",
+            "occurrence_path": "up_blocks.0"
+          },
+          {
+            "name": "1",
+            "occurrence_path": "up_blocks.1"
+          },
+          {
+            "name": "2",
+            "occurrence_path": null
+          }
+        ],
+        "length": {
+          "module": "torch.nn.modules.container",
+          "qualname": "ModuleList.__len__",
+          "source_file": "container.py",
+          "source_sha256": "114f37d0b6d343570ae38ba9b0c024b098f040969e8b888072c978e106ebf08c",
+          "first_line": 399,
+          "code_sha256": "62e34c1df75ac111238358289c8854ab1c9848a553f19eaa1e097e01361889a2",
+          "canonical_builtins": [
+            "enumerate",
+            "getattr",
+            "hasattr",
+            "len",
+            "super"
+          ],
+          "closure_names": [],
+          "code_matches_source": true,
+          "closure_values": []
+        },
+        "length_reason": ""
+      },
+      "iteration_reason": "",
+      "lookup_state_before": {
+        "_backward_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_backward_pre_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_buffers": {
+          "type": "builtins.dict"
+        },
+        "_forward_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_forward_hooks_always_called": {
+          "type": "collections.OrderedDict"
+        },
+        "_forward_hooks_with_kwargs": {
+          "type": "collections.OrderedDict"
+        },
+        "_forward_pre_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_forward_pre_hooks_with_kwargs": {
+          "type": "collections.OrderedDict"
+        },
+        "_internal_dict": {
+          "type": "builtins.dict"
+        },
+        "_is_full_backward_hook": null,
+        "_load_state_dict_post_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_load_state_dict_pre_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_modules": {
+          "type": "builtins.dict"
+        },
+        "_non_persistent_buffers_set": {
+          "type": "builtins.set"
+        },
+        "_parameters": {
+          "type": "builtins.dict"
+        },
+        "_state_dict_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_state_dict_pre_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "training": true
+      },
+      "lookup_state_after": {
+        "_backward_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_backward_pre_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_buffers": {
+          "type": "builtins.dict"
+        },
+        "_forward_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_forward_hooks_always_called": {
+          "type": "collections.OrderedDict"
+        },
+        "_forward_hooks_with_kwargs": {
+          "type": "collections.OrderedDict"
+        },
+        "_forward_pre_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_forward_pre_hooks_with_kwargs": {
+          "type": "collections.OrderedDict"
+        },
+        "_internal_dict": {
+          "type": "builtins.dict"
+        },
+        "_is_full_backward_hook": null,
+        "_load_state_dict_post_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_load_state_dict_pre_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_modules": {
+          "type": "builtins.dict"
+        },
+        "_non_persistent_buffers_set": {
+          "type": "builtins.set"
+        },
+        "_parameters": {
+          "type": "builtins.dict"
+        },
+        "_state_dict_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "_state_dict_pre_hooks": {
+          "type": "collections.OrderedDict"
+        },
+        "training": true
+      },
+      "observed_state_changed": false,
+      "registered_slots_unchanged": true,
+      "super_target": {
+        "anchor_mro_index": 1,
+        "target": {
+          "module": "torch.nn.modules.module",
+          "qualname": "Module.__getattr__",
+          "source_file": "module.py",
+          "source_sha256": "d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd",
+          "first_line": 1951,
+          "code_sha256": "1f8d047d7d2bb63fb40c0f1a5b6e129f8cbe9b60c4f2190b54eafc37bdea52c3",
+          "canonical_builtins": [
+            "enumerate",
+            "getattr",
+            "hasattr",
+            "len",
+            "super"
+          ],
+          "closure_names": [],
+          "code_matches_source": true,
+          "closure_values": []
+        }
+      },
+      "super_reason": "",
+      "instance_storage_names": []
+    },
+    {
+      "owner_path": "",
+      "attribute": "config",
+      "kind": "property_getter",
+      "reason": "",
+      "lookup_kind": "object_getattribute",
+      "lookup_getattr": null,
+      "child_path": null,
+      "function": {
+        "module": "diffusers.configuration_utils",
+        "qualname": "ConfigMixin.config",
+        "source_file": "configuration_utils.py",
+        "source_sha256": "4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960",
+        "first_line": 609,
+        "code_sha256": "900d8e388fd5978037180d70f95e4f72cbf302394a4cc057a46e0fbaa8443b97",
+        "canonical_builtins": [
+          "enumerate",
+          "getattr",
+          "hasattr",
+          "len",
+          "super"
+        ],
+        "closure_names": [],
+        "code_matches_source": true,
+        "closure_values": []
+      },
+      "scalar": null,
+      "iteration": null,
+      "iteration_reason": "",
+      "lookup_state_before": null,
+      "lookup_state_after": null,
+      "observed_state_changed": null,
+      "registered_slots_unchanged": null,
+      "super_target": null,
+      "super_reason": "",
+      "instance_storage_names": [
+        "_backward_hooks",
+        "_backward_pre_hooks",
+        "_buffers",
+        "_forward_hooks",
+        "_forward_hooks_always_called",
+        "_forward_hooks_with_kwargs",
+        "_forward_pre_hooks",
+        "_forward_pre_hooks_with_kwargs",
+        "_internal_dict",
+        "_is_full_backward_hook",
+        "_load_state_dict_post_hooks",
+        "_load_state_dict_pre_hooks",
+        "_modules",
+        "_non_persistent_buffers_set",
+        "_parameters",
+        "_state_dict_hooks",
+        "_state_dict_pre_hooks",
+        "training"
+      ]
+    }
+  ]
+}

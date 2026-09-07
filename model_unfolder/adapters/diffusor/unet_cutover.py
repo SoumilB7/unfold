@@ -36,7 +36,7 @@ def build_unet_cutover(cfg, context, *, handoffs, name, source_overrides=()):
         context.prepared_documents["root"] = binding
     root = resolve_component_root(context.program_index(), context.source_bundle, "root")
     result = build_resolved_instance(binding.prepared, context.source_bundle, root,
-                                     source_overrides=source_overrides)
+                                     source_overrides=source_overrides, index=context.program_index())
     if result.status != "ok":
         return UNetCutoverResult(None, result)
     evidence = investigate_unet_runtime(

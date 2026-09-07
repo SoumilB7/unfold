@@ -1,0 +1,68 @@
+[
+  {
+    "witness": "sdxl-refiner",
+    "command": [
+      "python3",
+      "scripts/demonstrate_s8_unet.py",
+      "--input",
+      "/private/tmp/unfold-s8-generalization-293c2d9/sdxl-refiner/input.json",
+      "--output",
+      "/private/tmp/unfold-s8-generalization-293c2d9/sdxl-refiner",
+      "--condition",
+      "ordinary",
+      "--expect-source-sha256",
+      "1bdc3f1e1212819747a79dd9f2d27eb435ed290ae1f67f91f0945a1abf73f6a9"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 92.814,
+    "commit": "293c2d98796c915f73e8422ddbf00b6fbc7492d4",
+    "scope": "Exploratory published denoiser-only config; not final S8 acceptance.",
+    "html_bytes": 10187713,
+    "html_sha256": "4aa54ff4bf56e3db1a8f25b4d25256aa7a4bbd14f4af8d38315cbd78841a5b04",
+    "report_failures": []
+  },
+  {
+    "witness": "sdxl-inpainting",
+    "command": [
+      "python3",
+      "scripts/demonstrate_s8_unet.py",
+      "--input",
+      "/private/tmp/unfold-s8-generalization-293c2d9/sdxl-inpainting/input.json",
+      "--output",
+      "/private/tmp/unfold-s8-generalization-293c2d9/sdxl-inpainting",
+      "--condition",
+      "ordinary",
+      "--expect-source-sha256",
+      "1bdc3f1e1212819747a79dd9f2d27eb435ed290ae1f67f91f0945a1abf73f6a9"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 86.286,
+    "commit": "293c2d98796c915f73e8422ddbf00b6fbc7492d4",
+    "scope": "Exploratory published denoiser-only config; not final S8 acceptance.",
+    "html_bytes": 10661355,
+    "html_sha256": "ac9a1f91f658db5cbcc343c46705cd9d6bde64c3fef425d84fdea79457c012bd",
+    "report_failures": []
+  },
+  {
+    "witness": "ddpm-cifar10",
+    "command": [
+      "python3",
+      "scripts/demonstrate_s8_unet.py",
+      "--input",
+      "/private/tmp/unfold-s8-generalization-293c2d9/ddpm-cifar10/input.json",
+      "--output",
+      "/private/tmp/unfold-s8-generalization-293c2d9/ddpm-cifar10",
+      "--condition",
+      "ordinary",
+      "--expect-source-sha256",
+      "1bdc3f1e1212819747a79dd9f2d27eb435ed290ae1f67f91f0945a1abf73f6a9"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 46.259,
+    "commit": "293c2d98796c915f73e8422ddbf00b6fbc7492d4",
+    "scope": "Exploratory published denoiser-only config; not final S8 acceptance.",
+    "html_bytes": 5781304,
+    "html_sha256": "f98fe5ee68b11a2ea72b6448356109a6fd985010a648f423d01eeb5fdf8d0a66",
+    "report_failures": []
+  }
+]

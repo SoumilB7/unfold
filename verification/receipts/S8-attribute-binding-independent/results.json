@@ -1,0 +1,550 @@
+{
+  "controls": {
+    "test_alternating_fallback_is_observation_not_future_target_proof": "PASS",
+    "test_changed_actual_super_anchor_is_recorded": "PASS",
+    "test_changed_iterator_and_custom_container_refused": "PASS",
+    "test_changed_length_does_not_manufacture_length_identity": "PASS",
+    "test_class_replacement_records_actual_function_not_demanded_name": "PASS",
+    "test_code_object_poison_and_shadowed_builtin_refused": "PASS",
+    "test_custom_lookup_observation_does_not_rewrite_construction_snapshot": "PASS",
+    "test_direct_method_does_not_consult_custom_fallback": "PASS",
+    "test_instance_shadow_custom_lookup_and_descriptor_refused": "PASS",
+    "test_iterator_global_adapter_shadow_refused": "PASS",
+    "test_optional_request_and_inventory_roundtrip": "PASS",
+    "test_plain_method_child_and_exact_iterator_with_alias_and_none": "PASS",
+    "test_property_storage_names_exclude_data_descriptor_shadow": "PASS",
+    "test_wrapped_metadata_never_selects_the_body_and_closure_is_actual": "PASS"
+  },
+  "failed_lookup_contamination": {
+    "actual_shapes": {
+      "first.bias": [
+        2
+      ],
+      "first.weight": [
+        2,
+        2
+      ],
+      "second.bias": [
+        3
+      ],
+      "second.weight": [
+        3,
+        3
+      ]
+    },
+    "constructed_shapes": {
+      "": [],
+      "first": [
+        [
+          2,
+          2
+        ],
+        [
+          2
+        ]
+      ],
+      "second": [
+        [
+          2,
+          2
+        ],
+        [
+          2
+        ]
+      ]
+    },
+    "lookups": [
+      {
+        "attribute": "first",
+        "child_path": null,
+        "function": null,
+        "instance_storage_names": [],
+        "iteration": null,
+        "iteration_reason": "",
+        "kind": "unresolved",
+        "lookup_getattr": null,
+        "lookup_kind": "object_getattribute",
+        "lookup_state_after": null,
+        "lookup_state_before": null,
+        "observed_state_changed": null,
+        "owner_path": "",
+        "reason": "custom_fallback_raised_RuntimeError",
+        "registered_slots_unchanged": null,
+        "scalar": null,
+        "super_reason": "",
+        "super_target": null
+      },
+      {
+        "attribute": "second",
+        "child_path": "second",
+        "function": null,
+        "instance_storage_names": [],
+        "iteration": null,
+        "iteration_reason": "child_is_not_exact_modulelist",
+        "kind": "observed_registered_child",
+        "lookup_getattr": {
+          "canonical_builtins": [
+            "enumerate",
+            "getattr",
+            "hasattr",
+            "len",
+            "super"
+          ],
+          "closure_names": [
+            "__class__"
+          ],
+          "closure_values": [
+            {
+              "function": null,
+              "kind": "unresolved",
+              "name": "__class__",
+              "reason": "unsupported_closure_value",
+              "scalar": null
+            }
+          ],
+          "code_matches_source": true,
+          "code_sha256": "7e675b3c1ead6537f5eccef9fa5366a5ebae7289c798b927816377d6f9f22035",
+          "first_line": 17,
+          "module": "__main__",
+          "qualname": "ChangingFallback.__getattr__",
+          "source_file": "replay.py",
+          "source_sha256": "bd8d31d2751cc8dfa1403654e444a8e274595fdd31efa18565ab87e44bf89517"
+        },
+        "lookup_kind": "observed_custom_fallback",
+        "lookup_state_after": {
+          "_backward_hooks": {},
+          "_backward_pre_hooks": {},
+          "_buffers": {},
+          "_forward_hooks": {},
+          "_forward_hooks_always_called": {},
+          "_forward_hooks_with_kwargs": {},
+          "_forward_pre_hooks": {},
+          "_forward_pre_hooks_with_kwargs": {},
+          "_is_full_backward_hook": null,
+          "_load_state_dict_post_hooks": {},
+          "_load_state_dict_pre_hooks": {},
+          "_modules": {
+            "first": {
+              "type": "torch.nn.modules.linear.Linear",
+              "value": null
+            },
+            "second": {
+              "type": "torch.nn.modules.linear.Linear",
+              "value": null
+            }
+          },
+          "_non_persistent_buffers_set": {
+            "type": "builtins.set",
+            "value": null
+          },
+          "_parameters": {},
+          "_state_dict_hooks": {},
+          "_state_dict_pre_hooks": {},
+          "training": true
+        },
+        "lookup_state_before": {
+          "_backward_hooks": {},
+          "_backward_pre_hooks": {},
+          "_buffers": {},
+          "_forward_hooks": {},
+          "_forward_hooks_always_called": {},
+          "_forward_hooks_with_kwargs": {},
+          "_forward_pre_hooks": {},
+          "_forward_pre_hooks_with_kwargs": {},
+          "_is_full_backward_hook": null,
+          "_load_state_dict_post_hooks": {},
+          "_load_state_dict_pre_hooks": {},
+          "_modules": {
+            "first": {
+              "type": "torch.nn.modules.linear.Linear",
+              "value": null
+            },
+            "second": {
+              "type": "torch.nn.modules.linear.Linear",
+              "value": null
+            }
+          },
+          "_non_persistent_buffers_set": {
+            "type": "builtins.set",
+            "value": null
+          },
+          "_parameters": {},
+          "_state_dict_hooks": {},
+          "_state_dict_pre_hooks": {},
+          "training": true
+        },
+        "observed_state_changed": false,
+        "owner_path": "",
+        "reason": "",
+        "registered_slots_unchanged": true,
+        "scalar": null,
+        "super_reason": "",
+        "super_target": {
+          "anchor_mro_index": 0,
+          "target": {
+            "canonical_builtins": [
+              "enumerate",
+              "getattr",
+              "hasattr",
+              "len",
+              "super"
+            ],
+            "closure_names": [],
+            "closure_values": [],
+            "code_matches_source": true,
+            "code_sha256": "1f8d047d7d2bb63fb40c0f1a5b6e129f8cbe9b60c4f2190b54eafc37bdea52c3",
+            "first_line": 1951,
+            "module": "torch.nn.modules.module",
+            "qualname": "Module.__getattr__",
+            "source_file": "module.py",
+            "source_sha256": "d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd"
+          }
+        }
+      }
+    ]
+  },
+  "hashes": {
+    "physics/attribute_bindings.py": "2fcb2b32c53061c9ced783bd7d6295d32e3dde2cb80e5711e734b11d30a5f377",
+    "physics/instance_inventory.py": "5da02e89ec8ac6ac5264fade1ffd13fb6da5b581450331dbc038750933d77a9b"
+  },
+  "slot_contamination": {
+    "actual_shapes": {
+      "first.bias": [
+        2
+      ],
+      "first.weight": [
+        2,
+        2
+      ],
+      "stages.0.bias": [
+        3
+      ],
+      "stages.0.weight": [
+        3,
+        3
+      ]
+    },
+    "constructed_shapes": {
+      "": [],
+      "first": [
+        [
+          2,
+          2
+        ],
+        [
+          2
+        ]
+      ],
+      "stages": [],
+      "stages.0": [
+        [
+          2,
+          2
+        ],
+        [
+          2
+        ]
+      ]
+    },
+    "lookups": [
+      {
+        "attribute": "first",
+        "child_path": "first",
+        "function": null,
+        "instance_storage_names": [],
+        "iteration": null,
+        "iteration_reason": "child_is_not_exact_modulelist",
+        "kind": "observed_registered_child",
+        "lookup_getattr": {
+          "canonical_builtins": [
+            "enumerate",
+            "getattr",
+            "hasattr",
+            "len",
+            "super"
+          ],
+          "closure_names": [
+            "__class__"
+          ],
+          "closure_values": [
+            {
+              "function": null,
+              "kind": "unresolved",
+              "name": "__class__",
+              "reason": "unsupported_closure_value",
+              "scalar": null
+            }
+          ],
+          "code_matches_source": true,
+          "code_sha256": "bdeb5b344587c463a9735e5134999121c18f04070eaa24303b23dc440fef57d2",
+          "first_line": 28,
+          "module": "__main__",
+          "qualname": "ChangingSlots.__getattr__",
+          "source_file": "replay.py",
+          "source_sha256": "bd8d31d2751cc8dfa1403654e444a8e274595fdd31efa18565ab87e44bf89517"
+        },
+        "lookup_kind": "observed_custom_fallback",
+        "lookup_state_after": {
+          "_backward_hooks": {},
+          "_backward_pre_hooks": {},
+          "_buffers": {},
+          "_forward_hooks": {},
+          "_forward_hooks_always_called": {},
+          "_forward_hooks_with_kwargs": {},
+          "_forward_pre_hooks": {},
+          "_forward_pre_hooks_with_kwargs": {},
+          "_is_full_backward_hook": null,
+          "_load_state_dict_post_hooks": {},
+          "_load_state_dict_pre_hooks": {},
+          "_modules": {
+            "first": {
+              "type": "torch.nn.modules.linear.Linear",
+              "value": null
+            },
+            "stages": {
+              "type": "torch.nn.modules.container.ModuleList",
+              "value": null
+            }
+          },
+          "_non_persistent_buffers_set": {
+            "type": "builtins.set",
+            "value": null
+          },
+          "_parameters": {},
+          "_state_dict_hooks": {},
+          "_state_dict_pre_hooks": {},
+          "training": true
+        },
+        "lookup_state_before": {
+          "_backward_hooks": {},
+          "_backward_pre_hooks": {},
+          "_buffers": {},
+          "_forward_hooks": {},
+          "_forward_hooks_always_called": {},
+          "_forward_hooks_with_kwargs": {},
+          "_forward_pre_hooks": {},
+          "_forward_pre_hooks_with_kwargs": {},
+          "_is_full_backward_hook": null,
+          "_load_state_dict_post_hooks": {},
+          "_load_state_dict_pre_hooks": {},
+          "_modules": {
+            "first": {
+              "type": "torch.nn.modules.linear.Linear",
+              "value": null
+            },
+            "stages": {
+              "type": "torch.nn.modules.container.ModuleList",
+              "value": null
+            }
+          },
+          "_non_persistent_buffers_set": {
+            "type": "builtins.set",
+            "value": null
+          },
+          "_parameters": {},
+          "_state_dict_hooks": {},
+          "_state_dict_pre_hooks": {},
+          "training": true
+        },
+        "observed_state_changed": false,
+        "owner_path": "",
+        "reason": "",
+        "registered_slots_unchanged": true,
+        "scalar": null,
+        "super_reason": "",
+        "super_target": {
+          "anchor_mro_index": 0,
+          "target": {
+            "canonical_builtins": [
+              "enumerate",
+              "getattr",
+              "hasattr",
+              "len",
+              "super"
+            ],
+            "closure_names": [],
+            "closure_values": [],
+            "code_matches_source": true,
+            "code_sha256": "1f8d047d7d2bb63fb40c0f1a5b6e129f8cbe9b60c4f2190b54eafc37bdea52c3",
+            "first_line": 1951,
+            "module": "torch.nn.modules.module",
+            "qualname": "Module.__getattr__",
+            "source_file": "module.py",
+            "source_sha256": "d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd"
+          }
+        }
+      },
+      {
+        "attribute": "stages",
+        "child_path": "stages",
+        "function": null,
+        "instance_storage_names": [],
+        "iteration": {
+          "iterator": {
+            "canonical_builtins": [
+              "enumerate",
+              "getattr",
+              "hasattr",
+              "len",
+              "super"
+            ],
+            "closure_names": [],
+            "closure_values": [],
+            "code_matches_source": true,
+            "code_sha256": "acd6f9e19b4f7816826c24090cb0aaf4e749b8c5572a90dab2f78831a3cb5003",
+            "first_line": 403,
+            "module": "torch.nn.modules.container",
+            "qualname": "ModuleList.__iter__",
+            "source_file": "container.py",
+            "source_sha256": "114f37d0b6d343570ae38ba9b0c024b098f040969e8b888072c978e106ebf08c"
+          },
+          "length": {
+            "canonical_builtins": [
+              "enumerate",
+              "getattr",
+              "hasattr",
+              "len",
+              "super"
+            ],
+            "closure_names": [],
+            "closure_values": [],
+            "code_matches_source": true,
+            "code_sha256": "62e34c1df75ac111238358289c8854ab1c9848a553f19eaa1e097e01361889a2",
+            "first_line": 399,
+            "module": "torch.nn.modules.container",
+            "qualname": "ModuleList.__len__",
+            "source_file": "container.py",
+            "source_sha256": "114f37d0b6d343570ae38ba9b0c024b098f040969e8b888072c978e106ebf08c"
+          },
+          "length_reason": "",
+          "slots": [
+            {
+              "name": "0",
+              "occurrence_path": "stages.0"
+            }
+          ]
+        },
+        "iteration_reason": "",
+        "kind": "observed_registered_child",
+        "lookup_getattr": {
+          "canonical_builtins": [
+            "enumerate",
+            "getattr",
+            "hasattr",
+            "len",
+            "super"
+          ],
+          "closure_names": [
+            "__class__"
+          ],
+          "closure_values": [
+            {
+              "function": null,
+              "kind": "unresolved",
+              "name": "__class__",
+              "reason": "unsupported_closure_value",
+              "scalar": null
+            }
+          ],
+          "code_matches_source": true,
+          "code_sha256": "bdeb5b344587c463a9735e5134999121c18f04070eaa24303b23dc440fef57d2",
+          "first_line": 28,
+          "module": "__main__",
+          "qualname": "ChangingSlots.__getattr__",
+          "source_file": "replay.py",
+          "source_sha256": "bd8d31d2751cc8dfa1403654e444a8e274595fdd31efa18565ab87e44bf89517"
+        },
+        "lookup_kind": "observed_custom_fallback",
+        "lookup_state_after": {
+          "_backward_hooks": {},
+          "_backward_pre_hooks": {},
+          "_buffers": {},
+          "_forward_hooks": {},
+          "_forward_hooks_always_called": {},
+          "_forward_hooks_with_kwargs": {},
+          "_forward_pre_hooks": {},
+          "_forward_pre_hooks_with_kwargs": {},
+          "_is_full_backward_hook": null,
+          "_load_state_dict_post_hooks": {},
+          "_load_state_dict_pre_hooks": {},
+          "_modules": {
+            "first": {
+              "type": "torch.nn.modules.linear.Linear",
+              "value": null
+            },
+            "stages": {
+              "type": "torch.nn.modules.container.ModuleList",
+              "value": null
+            }
+          },
+          "_non_persistent_buffers_set": {
+            "type": "builtins.set",
+            "value": null
+          },
+          "_parameters": {},
+          "_state_dict_hooks": {},
+          "_state_dict_pre_hooks": {},
+          "training": true
+        },
+        "lookup_state_before": {
+          "_backward_hooks": {},
+          "_backward_pre_hooks": {},
+          "_buffers": {},
+          "_forward_hooks": {},
+          "_forward_hooks_always_called": {},
+          "_forward_hooks_with_kwargs": {},
+          "_forward_pre_hooks": {},
+          "_forward_pre_hooks_with_kwargs": {},
+          "_is_full_backward_hook": null,
+          "_load_state_dict_post_hooks": {},
+          "_load_state_dict_pre_hooks": {},
+          "_modules": {
+            "first": {
+              "type": "torch.nn.modules.linear.Linear",
+              "value": null
+            },
+            "stages": {
+              "type": "torch.nn.modules.container.ModuleList",
+              "value": null
+            }
+          },
+          "_non_persistent_buffers_set": {
+            "type": "builtins.set",
+            "value": null
+          },
+          "_parameters": {},
+          "_state_dict_hooks": {},
+          "_state_dict_pre_hooks": {},
+          "training": true
+        },
+        "observed_state_changed": false,
+        "owner_path": "",
+        "reason": "",
+        "registered_slots_unchanged": true,
+        "scalar": null,
+        "super_reason": "",
+        "super_target": {
+          "anchor_mro_index": 0,
+          "target": {
+            "canonical_builtins": [
+              "enumerate",
+              "getattr",
+              "hasattr",
+              "len",
+              "super"
+            ],
+            "closure_names": [],
+            "closure_values": [],
+            "code_matches_source": true,
+            "code_sha256": "1f8d047d7d2bb63fb40c0f1a5b6e129f8cbe9b60c4f2190b54eafc37bdea52c3",
+            "first_line": 1951,
+            "module": "torch.nn.modules.module",
+            "qualname": "Module.__getattr__",
+            "source_file": "module.py",
+            "source_sha256": "d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd"
+          }
+        }
+      }
+    ]
+  }
+}

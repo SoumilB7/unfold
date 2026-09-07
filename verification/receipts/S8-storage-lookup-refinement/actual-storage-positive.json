@@ -1,0 +1,32 @@
+{
+  "scope": "Actual installed FrozenDict object, tiny fixture; no full model/render.",
+  "python": "3.12.10 (v3.12.10:0cc81280367, Apr  8 2025, 08:46:59) [Clang 13.0.0 (clang-1300.0.29.30)]",
+  "actual_lookup_is_dict_primitive": true,
+  "rows": {
+    "child": {
+      "storage_name": "_storage",
+      "attribute": "child",
+      "kind": "plain_attribute_lookup",
+      "reason": ""
+    },
+    "config": {
+      "storage_name": "_storage",
+      "attribute": "config",
+      "kind": "plain_attribute_lookup",
+      "reason": ""
+    },
+    "items": {
+      "storage_name": "_storage",
+      "attribute": "items",
+      "kind": "unresolved",
+      "reason": "stored_receiver_requested_attribute_is_descriptor"
+    },
+    "sample_size": {
+      "storage_name": "_storage",
+      "attribute": "sample_size",
+      "kind": "plain_attribute_lookup",
+      "reason": ""
+    }
+  },
+  "custom_receiver_negative": "PASS; custom getattr/getattribute not invoked"
+}

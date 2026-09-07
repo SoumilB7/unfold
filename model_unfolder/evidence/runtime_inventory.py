@@ -9,8 +9,9 @@ from .component_owner import require_resolved_component_root
 from .document import PreparedDocument
 
 
-def request_from_resolved_source(document, bundle, root, *, source_overrides=()):
+def request_from_resolved_source(document, bundle, root, *, source_overrides=(), index=None):
     from physics.instance_inventory import BuildRequest
+    from .unet_call_binding import demanded_root_lookups
 
     if not isinstance(document, PreparedDocument):
         raise TypeError("instance construction requires the prepared document")
@@ -43,15 +44,16 @@ def request_from_resolved_source(document, bundle, root, *, source_overrides=())
         config=document.checkpoint, framework="diffusers",
         factory_module=module, factory_qualname=symbol.qualified_name,
         factory_method="from_config", source_overrides=source_overrides,
-        capture_framework_primitives=True)
+        capture_framework_primitives=True,
+        attribute_lookups=(() if index is None else demanded_root_lookups(index, symbol)))
 
 
-def build_resolved_instance(document, bundle, root, *, source_overrides=()):
+def build_resolved_instance(document, bundle, root, *, source_overrides=(), index=None):
     from physics.instance_inventory import Failure, InventoryResult, inventory_in_subprocess
 
     try:
         request = request_from_resolved_source(document, bundle, root,
-                                               source_overrides=source_overrides)
+                                               source_overrides=source_overrides, index=index)
     except ValueError as exc:
         return InventoryResult("failed", failure=Failure(
             "ConfigurationFailed", "resolved_source_address", str(exc)))

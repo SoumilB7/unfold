@@ -1,0 +1,54 @@
+{
+  "results": [
+    {
+      "attribute": "forward",
+      "conditions": [],
+      "kind": "unresolved",
+      "reason": "callable_closure_requires_separate_delegation_proof",
+      "source_sha256": "78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc"
+    },
+    {
+      "attribute": "get_time_embed",
+      "conditions": [],
+      "kind": "plain_bound_method",
+      "reason": "",
+      "source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+    },
+    {
+      "attribute": "conv_in",
+      "conditions": [
+        {
+          "branch_kinds": [
+            "if"
+          ],
+          "return_line": 273
+        }
+      ],
+      "kind": "conditional_registered_child",
+      "reason": "",
+      "source_sha256": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe"
+    },
+    {
+      "attribute": "up_blocks",
+      "conditions": [
+        {
+          "branch_kinds": [
+            "if"
+          ],
+          "return_line": 273
+        }
+      ],
+      "kind": "conditional_registered_child",
+      "reason": "",
+      "source_sha256": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe"
+    },
+    {
+      "attribute": "config",
+      "conditions": [],
+      "kind": "property_storage",
+      "reason": "",
+      "source_sha256": "4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960"
+    }
+  ],
+  "scope": "existing small constructed witness replay plus current exact source index; not full SDXL inventory, product output or family completion"
+}

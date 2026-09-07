@@ -202,3 +202,40 @@ class Root:
     assert len(citation.summary.evidence_refs) > 1
     with pytest.raises(ValueError, match='semantic kind'):
         replace(fact, claim_kind='existence')
+
+
+def test_selected_helper_routes_bind_keyword_inputs_to_their_actual_formals(tmp_path):
+    from model_unfolder.evidence.local_port_routes import read_local_port_route
+    from model_unfolder.evidence.unet_primary_ports import _bind_invoked_routes, _ref
+    from model_unfolder.adapters.diffusor.unet_projection import _port_route_block
+    path = tmp_path / 'helper.py'
+    path.write_text('''class Cell:
+    def helper(owner, right, *, left):
+        return owner.affine(left) + right
+    def forward(owner, first, second):
+        return owner.helper(second, left=first)
+''')
+    index = build_program_index(SourceBundle(source='path', component_files={'root': (str(path),)}))
+    helper = next(row for row in index.callables if row.symbol.qualified_name == 'Cell.helper')
+    forward = next(row for row in index.callables if row.symbol.qualified_name == 'Cell.forward')
+    returned = index.return_observations_in(forward.symbol)[0]
+    helper_call = index.calls_in(forward.symbol)[0]
+    affine_call = index.calls_in(helper.symbol)[0]
+    route = read_local_port_route(index, forward, returned.value, returned.span)
+    bindings = {
+        _ref(helper_call.span): {'kind': 'helper', 'conditions': [], 'method': helper,
+                                 'call': helper_call, 'attribute': 'helper'},
+        _ref(affine_call.span): {'kind': 'constructed_target', 'conditions': [],
+                                 'call': affine_call, 'targets': ['affine']},
+    }
+    bound = _bind_invoked_routes(index, route.value, bindings, set())
+    output = bound['target_binding']['helper_output']
+    assert output['kind'] == 'source_operation'
+    affine, bypass = output['operands']
+    assert affine['arguments'][0]['route']['formal'] == 'first'
+    assert bypass['formal'] == 'second'
+    block = _port_route_block(affine, 'call', 'root.denoiser.primary_state_ports')
+    boundary = next(child for child in block['children'] if child['id'] == block['detail']['boundary_id'])
+    assert boundary['target'] == 'instance_affine'
+    assert boundary['source_instance_path'] == 'affine'
+    assert len(block['detail']['argument_ids']) == 1  # Bound owner is not a tensor argument.

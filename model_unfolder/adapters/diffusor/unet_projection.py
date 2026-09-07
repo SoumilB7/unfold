@@ -8,7 +8,7 @@ from ...block_schema import Block
 from ...ir import ModelIR
 from ...opgraph import ffn_region
 import json
-from .blocks import diffusion_loop_blocks, diffusion_loop_edges, diffusion_loop_region
+from .blocks import diffusion_loop_blocks, diffusion_loop_edges, diffusion_loop_region, restrict_to_supplied_components
 
 
 def _block_id(path):
@@ -43,8 +43,9 @@ def _port_route_block(route, block_id, fact_key):
                      view="runtime_port_route", detail={"port_route_kind": kind})
         block["facts"] = ["Selection: " + json.dumps(route["selection"], sort_keys=True)]
     elif kind == "call_result":
+        binding = route.get("target_binding")
         arguments = list(route["arguments"])
-        if route.get("receiver") is not None:
+        if route.get("receiver") is not None and binding is None:
             arguments.append({"port": "lookup receiver", "route": route["receiver"]["route"]})
         block.update(resolved=False, view="runtime_port_route",
                      detail={"port_route_kind": kind, "result_slot": route["result_slot"]},
@@ -62,6 +63,38 @@ def _port_route_block(route, block_id, fact_key):
                                   "source_fact_keys": [fact_key]})
         block["facts"] = ["Returned slot: " + json.dumps(route["result_slot"]),
                           "Internal computation unresolved; argument-to-result dependence not asserted"]
+        if binding is not None:
+            boundary_block = block["children"][-1]
+            condition_text = []
+            for condition in binding["conditions"]:
+                if condition.get("branch") is False:
+                    condition_text.append("Invocation condition: not (" + condition["predicate"] + ")")
+                elif "excluded_guard_path" in condition:
+                    condition_text.append("Lookup condition: earlier return excluded (" + "; ".join(
+                        item["kind"] + " " + item["predicate"] for item in condition["excluded_guard_path"]) + ")")
+                else:
+                    condition_text.append(condition["reason"])
+            boundary_block["detail"] = {"invocation_conditions": binding["conditions"]}
+            boundary_block["facts"] = ["Conditional source-selected invocation", *condition_text]
+            if binding["kind"] == "constructed_target":
+                targets = binding["targets"]
+                boundary_block.update(kind="opaque", label=(targets[0].rpartition(".")[2] if len(targets) == 1
+                                                           else "Stage selected by iteration"),
+                    title="Source-bound constructed call", resolved=True,
+                    description="The source call selects the listed constructed occurrence under the recorded conditions. Its inputs and selected result are connected here; internal mechanism belongs to the occurrence drill.")
+                if len(targets) == 1:
+                    boundary_block.update(target=_block_id(targets[0]), source_instance_path=targets[0])
+                else:
+                    boundary_block.update(view="constructed_children", children=[{
+                        "id": boundary + "__slot_" + str(number), "kind": "opaque", "label": path,
+                        "target": _block_id(path), "source_instance_path": path,
+                        "source_fact_keys": [fact_key], "facts": ["Target of this call at the corresponding recorded loop slot"]}
+                        for number, path in enumerate(targets)])
+            elif "helper_output" in binding:
+                helper_id = block_id + "__helper_output"
+                boundary_block.update(kind="opaque", label=binding["helper_name"],
+                                      title="Selected helper source", target=helper_id)
+                block["children"].append(_port_route_block(binding["helper_output"], helper_id, fact_key))
     elif kind == "conditional":
         block.update(resolved=False, view="runtime_port_route", detail={"port_route_kind": kind},
                      children=[_port_route_block(route[key], block_id + "__" + key, fact_key)
@@ -335,7 +368,24 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
         for row in contexts.values()}.values())
     primary_key = "root.denoiser.primary_state_ports"
     primary = facts[primary_key].value if primary_key in facts else {"regions": []}
+    bound_paths = set()
+    def collect_bound(value):
+        if isinstance(value, dict):
+            binding = value.get("target_binding", {})
+            if binding.get("kind") == "constructed_target":
+                bound_paths.update(binding["targets"])
+            for item in value.values():
+                collect_bound(item)
+        elif isinstance(value, list):
+            for item in value:
+                collect_bound(item)
+    collect_bound(primary["regions"])
+    for constructed in stage_cards + other_cards:
+        if constructed.get("source_instance_path") in bound_paths:
+            constructed["facts"].append("Conditional invocation connected in the source-port drills")
+            constructed["source_fact_keys"].append(primary_key)
     primary_regions = []
+    overview_bound = set()
     for row in primary["regions"]:
         region_id = "unet_primary_region_" + str(row["position"])
         region = _port_route_block(row["route"], region_id, primary_key)
@@ -343,11 +393,37 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
         if row["stage_fields"]:
             label += ": " + ", ".join(row["stage_fields"])
         region.update(label=label, title=label)
-        region["facts"].extend(["Source port wiring; call targets and guard choices remain unresolved",
-                                 "Constructed stages are contained here; individual iteration-to-module binding is not asserted"])
+        row_targets = set()
+        def collect_row_targets(value):
+            if isinstance(value, dict):
+                binding = value.get("target_binding", {})
+                if binding.get("kind") == "constructed_target":
+                    row_targets.update(binding["targets"])
+                for item in value.values():
+                    collect_row_targets(item)
+            elif isinstance(value, list):
+                for item in value:
+                    collect_row_targets(item)
+        collect_row_targets(row["route"])
+        direct = row["route"].get("target_binding", {})
+        primary_target = (direct["targets"][0] if direct.get("kind") == "constructed_target"
+                          and len(direct["targets"]) == 1 else None)
+        if primary_target is not None:
+            region.update(label=primary_target, title="Conditional invocation: " + primary_target,
+                          source_instance_path=primary_target)
+            region["facts"].append(f"{shapes['by_module'][primary_target]:,} parameters in invoked subtree")
+            region["source_fact_keys"].extend((population_key, shape_key))
+        new_targets = row_targets - overview_bound
+        overview_bound.update(row_targets)
+        region["facts"].extend(["Source port wiring; annotated call boundaries link to their exact constructed targets",
+                               "Invocation conditions and unbound targets remain visible in the drill"])
         other_cards.append(region)
         primary_regions.append({"id": region_id, "kind": row["kind"],
                                 "receives_previous_state": row["receives_previous_state"],
+                                "primary_target_id": _block_id(primary_target) if primary_target else None,
+                                "binding_target_ids": [_block_id(path) for path in sorted(row_targets)],
+                                "extra_target_ids": [_block_id(path) for path in sorted(new_targets)
+                                                     if path not in stage_paths and path != primary_target],
                                 "stage_block_ids": [_block_id(path) for path in row["constructed_stages"]]})
     geom = dict(handoffs)
     geom.update({
@@ -366,6 +442,23 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
         "loop_blocks": diffusion_loop_blocks(geom),
         "loop_edges": diffusion_loop_edges(geom), "loop_region": diffusion_loop_region(),
     }
+    # A denoiser checkpoint does not establish a sampler, text encoder or VAE.
+    # Keep independently supplied component handoffs, but do not let the old
+    # complete-pipeline display defaults manufacture their existence.
+    scoped_handoffs = dict(handoffs)
+    scoped_handoffs.setdefault("component_presence", {
+        "text_encoders": bool(handoffs.get("text_encoder_specs")),
+        "scheduler": bool(handoffs.get("scheduler_class")), "vae": handoffs.get("vae") is not None})
+    if restrict_to_supplied_components(render, scoped_handoffs):
+        for number, formal in enumerate(primary.get("root_inputs", ())):
+            key = "unet_root_input_" + str(number)
+            render["component_input_ids"].append(key)
+            render["loop_blocks"].append({
+                "id": key, "kind": "source", "label": formal,
+                "title": "Declared forward input: " + formal,
+                "description": "This input is declared by the selected denoiser method. Its external producer is not established by this checkpoint.",
+                "source_fact_keys": [primary_key]})
+            render["loop_edges"].append({"from": key, "to": "denoiser"})
     # The old loop builder has a denoiser-kind display default. Supply the
     # explicit view and citations at the actual block boundary.
     for block in render["loop_blocks"]:
@@ -376,6 +469,10 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
                 block["source_fact_keys"].append(context_key)
             if primary["regions"]:
                 block["source_fact_keys"].append(primary_key)
+                invocation = primary.get("invocation_binding", {})
+                if invocation.get("kind") == "unresolved":
+                    block["facts"] = list(block.get("facts") or ()) + [
+                        "investigation_missing · invoked method binding: " + invocation["reason"] + " · owner: S8"]
             if defaults:
                 block["source_fact_keys"].append(defaults_key)
                 block["facts"] = list(block.get("facts") or ()) + [
@@ -388,6 +485,8 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
             "stage_relations": relations,
             "stage_block_ids": {path: _block_id(path) for path in stage_paths},
             "other_block_ids": [_block_id(path) for path in other_paths],
+            "bound_target_paths": sorted(bound_paths),
+            "unbound_bookend_paths": [path for path in other_paths if path not in bound_paths],
             "context_routes": context_routes,
             "skip_routes": skip_routes,
             "primary_regions": primary_regions,

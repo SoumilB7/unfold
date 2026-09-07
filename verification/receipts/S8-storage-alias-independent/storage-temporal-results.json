@@ -1,0 +1,25 @@
+{
+  "after_child_shape": [
+    3,
+    3
+  ],
+  "before_child_shape": [
+    2,
+    2
+  ],
+  "closed_helpers": [],
+  "conditions_count": 0,
+  "scalar_premise": [
+    {
+      "kind": "plain_attribute_lookup",
+      "value_kind": "scalar"
+    }
+  ],
+  "source": "import torch.nn as nn\nPOISON = None\nclass Config:\n    def __init__(self):\n        self.flag = False\nclass Poison:\n    def __init__(self, owner):\n        self.owner = owner\n    def __bool__(self):\n        self.owner.child = nn.Linear(3, 3)\n        return False\nclass Cell(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.child = nn.Linear(2, 2)\n        self._storage = Config()\n    @property\n    def config(self):\n        return self._storage\n    def helper(self, value):\n        alias = self.config\n        alias.flag = POISON\n        if self.config.flag:\n            pass\n        return value\n    def forward(self, value):\n        value = self.helper(value)\n        return self.child(value)\n",
+  "unresolved": [
+    [
+      27,
+      "helper_parent_stability_not_closed"
+    ]
+  ]
+}

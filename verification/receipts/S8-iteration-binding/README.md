@@ -1,0 +1,11 @@
+# Conditional ModuleList iteration binding
+
+The new reader joins an exact observed ModuleList slot inventory with a source-local direct or canonical-enumerate loop and calls through its unchanged element local. Targets retain source guards and lookup conditions. Each target is conditional on that slot being selected and the call being reached; the cross-product does not assert that every slot executes, that both alternative call sites execute, or an observed runtime order. Aliased occurrence addresses remain distinct ordered slots; None slots remain explicit and have no callable target.
+
+Required premises: exact function/source witness, established container lookup, exact iterator witness, and caller-established parent-member stability. Canonical len requires its separate worker witness. Container alias/escape/write, receiver/local reassignment, nested rebind, import/definition, suspension and unsupported control effects conservatively refuse. Boolean guards retain their conditions; they do not establish truth values. Selected-container truthiness remains unresolved.
+
+Validation: seven focused tests passed, including multiple positive and poison cases per test. The actual-source replay uses the already constructed 1,930-occurrence SDXL inventory in S8-actual-lookup-positive, with no new model construction, forward execution or rendering. Both down_blocks and up_blocks have three slots and two guarded source call sites (six conditional targets each). The replay supplies parent_stable=True as an explicit premise: it does not independently prove that premise or constitute full production acceptance.
+
+The first focused boolean-truthiness poison exposed a missing control-expression check (6 passed, 1 failed). The reader now checks the existing ControlRecord controlling expression and the poison passes. Initial cached source replay conservatively refused call-bearing boolops; the final reader admits only their conditional selection while retaining separate effect and selected-container checks. No ProgramIndex schema or AST traversal was added.
+
+Files: actual-source-replay.json, replay_actual.py, source-hashes.json, focused-test.txt. Integration and final fresh pages remain executor-owned. No output was blessed.

@@ -1,0 +1,14 @@
+{
+  "base_commit": "293c2d98796c915f73e8422ddbf00b6fbc7492d4",
+  "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_s8_try_observation.py tests/test_program_index.py tests/test_execution_flow.py tests/test_execution_flow_graph.py -q",
+  "files": {
+    "model_unfolder/evidence/program_index.py": "54379ba1c4187f65654e4153f25794cee0e1a17121ab4fad819a0ef37b5b5a11",
+    "tests/test_execution_flow.py": "344108fccdbe8f31b2b1cdbbc9a45cb0c2ad28dbb4b44f988ed736ae3fe3ee80",
+    "tests/test_execution_flow_graph.py": "be1edf305f13b039919333de9d884cb2931a8ee586a883894294a99d80dbd738",
+    "tests/test_program_index.py": "eec46b15f4b6e27869773fd7607ce2d341a124f99b730f56081c357e4300cfdc",
+    "tests/test_s8_try_observation.py": "4983d4ed61c0746d9124773c7f2b176474fa275e498a8500b35ff9c1db5d9ef1",
+    "verification/receipts/S8-try-observation/focused.log": "03c5f1d03cb4c09b7abbb3649ea36cd7e9c01e68e3743798c2f28010315336b9"
+  },
+  "result": "139 passed in 0.52s",
+  "scope": "neutral ast.Try syntax producer and source-only regression tests; no model run or execution semantics"
+}

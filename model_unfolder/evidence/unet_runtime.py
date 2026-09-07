@@ -95,4 +95,6 @@ def investigate_unet_runtime(*, model, inventory, observations, document, bundle
     if nested is not None:
         bindings = replace(bindings, index=nested.index)
         run("nested_ffns", read_unet_runtime_nested_ffns, nested, bindings)
+    from .unet_call_binding import extend_lookup_sources
+    bindings = replace(bindings, index=extend_lookup_sources(bindings.index, bundle, inventory))
     return UNetRuntimeEvidence(bindings, root, tuple(results))

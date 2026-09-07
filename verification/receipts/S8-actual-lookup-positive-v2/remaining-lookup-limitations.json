@@ -1,0 +1,26 @@
+[
+  {
+    "attribute": "__class__",
+    "observation_kind": "unresolved",
+    "closure_kind": "unresolved",
+    "reason": "custom_descriptor_lookup"
+  },
+  {
+    "attribute": "forward",
+    "observation_kind": "plain_bound_method",
+    "closure_kind": "unresolved",
+    "reason": "callable_closure_requires_separate_delegation_proof"
+  },
+  {
+    "attribute": "position_net",
+    "observation_kind": "unresolved",
+    "closure_kind": "unresolved",
+    "reason": "custom_fallback_has_no_registered_candidate"
+  },
+  {
+    "attribute": "text_encoder_hid_proj",
+    "observation_kind": "unresolved",
+    "closure_kind": "unresolved",
+    "reason": "custom_fallback_has_no_registered_candidate"
+  }
+]

@@ -1,0 +1,63 @@
+{
+  "scope": "Saved actual SDXL inventory and current exact source syntax; parent_stable=True is supplied as a probe premise, not independently established here. No model/forward/render run.",
+  "rows": [
+    {
+      "field": "down_blocks",
+      "line": 1138,
+      "kind": "iteration",
+      "reason": "",
+      "slot_count": 3,
+      "target_count": 6,
+      "element_name": "downsample_block",
+      "slots": [
+        {
+          "index": 0,
+          "name": "0",
+          "occurrence_path": "down_blocks.0",
+          "kind": "constructed"
+        },
+        {
+          "index": 1,
+          "name": "1",
+          "occurrence_path": "down_blocks.1",
+          "kind": "constructed"
+        },
+        {
+          "index": 2,
+          "name": "2",
+          "occurrence_path": "down_blocks.2",
+          "kind": "constructed"
+        }
+      ]
+    },
+    {
+      "field": "up_blocks",
+      "line": 1198,
+      "kind": "iteration",
+      "reason": "",
+      "slot_count": 3,
+      "target_count": 6,
+      "element_name": "upsample_block",
+      "slots": [
+        {
+          "index": 0,
+          "name": "0",
+          "occurrence_path": "up_blocks.0",
+          "kind": "constructed"
+        },
+        {
+          "index": 1,
+          "name": "1",
+          "occurrence_path": "up_blocks.1",
+          "kind": "constructed"
+        },
+        {
+          "index": 2,
+          "name": "2",
+          "occurrence_path": "up_blocks.2",
+          "kind": "constructed"
+        }
+      ]
+    }
+  ]
+}

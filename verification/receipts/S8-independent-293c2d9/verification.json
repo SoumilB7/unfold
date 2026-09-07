@@ -1,0 +1,15 @@
+{
+  "checkpoint": "293c2d98796c915f73e8422ddbf00b6fbc7492d4",
+  "clean_checkout": true,
+  "reviewed_sha256": {
+    "model_unfolder/evidence/local_port_routes.py": "b4b440d0cdecc3e2a529aec4c03f8a6d7154e3c476de8038eb1b3a2f9e9d2c85",
+    "scripts/report_s8_demonstration.py": "8b96fb064c1a59a753e9eb064816d001b02253cf8fc2984b8a11999e971d524c"
+  },
+  "exit_codes": {
+    "replay_ifexp.py": 0,
+    "replay_mapping.py": 0
+  },
+  "verdict": "ACCEPT named-write and mapping-order corrections only; full S8/product connections not accepted",
+  "pytest_run": false,
+  "model_run": false
+}

@@ -1,0 +1,23 @@
+{
+  "after_closed_helpers": [
+    "get_time_embed",
+    "get_class_embed",
+    "get_aug_embed"
+  ],
+  "before_closed_helpers": [
+    "get_time_embed",
+    "get_class_embed",
+    "get_aug_embed",
+    "process_encoder_hidden_states"
+  ],
+  "removed_exact_premise": [
+    "_internal_dict",
+    "encoder_hid_dim_type"
+  ],
+  "unresolved": [
+    [
+      1105,
+      "helper_parent_stability_not_closed"
+    ]
+  ]
+}

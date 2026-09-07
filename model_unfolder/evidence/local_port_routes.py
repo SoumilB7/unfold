@@ -324,6 +324,7 @@ def read_local_port_route(index, forward, expression, before, guard=(), *, regio
             receiver = {"kind": "lookup_receiver", "route": visit(base, cutoff, context, seen),
                         "reason": "attribute lookup receiver; descriptor binding and computation unresolved"}
         return {"kind": "call_result", "result_slot": list(slot),
+                "call_source": f"sha256:{call.span.source.content_fingerprint}:{call.span.line}:{call.span.col}:{call.span.end_line}:{call.span.end_col}",
                 "arguments": arguments, "mechanism": "unresolved",
                 "receiver": receiver,
                 "reason": "call argument and result wiring proven; internal computation not established"}
