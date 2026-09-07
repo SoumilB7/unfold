@@ -1,0 +1,45 @@
+{
+  "blessed": false,
+  "groups": {
+    "audit": 452,
+    "legacy_geometry": 28,
+    "limited_metadata": 2,
+    "proofs": 12,
+    "render": 1242,
+    "shapes": 1,
+    "source_address": 1
+  },
+  "input_sha256": {
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-sd14-differential-review/per-output-review.json.gz": "7a419db1676939ac444098bc7204930af4482196eb877b72fa65ebf37082d88d",
+    "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/differential-report.json": "d370f2247c3412496c6abf822cdb72e339f187224193a9374f6bd54134a67d68",
+    "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/facts.json": "552bd48ff5847db2e601a2a5b3aca83cc8e02d400499ed78f0a1aedf9b61ad86",
+    "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/ir.json": "2eb261804a766914295a12acc6ec5a9e2edf65382379f1ce1018cd355f53421f",
+    "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/qualified-facts.json": "e7b663ee9c1334a7932fa82291ab494997d0a562c53754451f7ff83d479efb6c"
+  },
+  "owner_dispositions": {
+    "named_blocking_accounting_finding_retained": 452,
+    "named_reproof": 14,
+    "named_reproof_of_limited_result": 2,
+    "named_reproof_or_explicit_limitation": 1270
+  },
+  "production": "96d0c1e (c38 producer bytes; separately verified renderer-only phase)",
+  "public_fact_values_statuses_and_claim_kinds_checked": [
+    "root.denoiser.cell_arithmetic",
+    "root.denoiser.cell_connections",
+    "root.denoiser.constructed_modules",
+    "root.denoiser.constructed_parameter_shapes",
+    "root.denoiser.constructed_stage_relations",
+    "root.denoiser.context_connections",
+    "root.denoiser.declared_constructor_defaults",
+    "root.denoiser.ffn_mechanisms",
+    "root.denoiser.primary_state_ports",
+    "root.denoiser.runtime_primitives",
+    "root.denoiser.spatial_mechanisms",
+    "root.denoiser.stage_join_connections"
+  ],
+  "rows": 1738,
+  "scope": "Every delta has a named evidence-backed result or retained accounting finding. Open accounting debt is not declared solved. No output approval or blessing.",
+  "unexplained": 0,
+  "user_output_approval": "pending",
+  "witness": "sd-v1-4"
+}
