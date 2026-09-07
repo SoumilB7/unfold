@@ -49,7 +49,7 @@ class _ExactSourceLoader(importlib.abc.Loader):
 
     def exec_module(self, module):
         source = self.override.read_verified()
-        exec(compile(source, self.override.path, "exec"), module.__dict__)
+        exec(compile(source, self.override.path, "exec", dont_inherit=True), module.__dict__)
         self.loaded.add(self.override.module)
 
 

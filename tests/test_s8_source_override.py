@@ -89,3 +89,26 @@ def test_duplicate_import_address_is_rejected(tmp_path):
     override = _scratch(tmp_path)
     with pytest.raises(ValueError, match="unique"):
         _request((override, override))
+
+
+@pytest.mark.parametrize("future", [False, True])
+def test_loader_preserves_only_requested_sources_compiler_flags(tmp_path, future):
+    from types import ModuleType
+    from physics.source_override import _ExactSourceLoader
+    from physics.attribute_bindings import _function_witness, capture_attribute_lookup_types
+
+    source = ("from __future__ import annotations\n" if future else "") + \
+             "def apply(value: int) -> int:\n    return value + 1\n"
+    path = tmp_path / "requested.py"
+    path.write_text(source)
+    override = SourceOverride("fixture.requested", str(path),
+                              hashlib.sha256(path.read_bytes()).hexdigest())
+    actual = ModuleType("fixture.requested")
+    _ExactSourceLoader(override, set()).exec_module(actual)
+    expected = {"__name__": "fixture.requested"}
+    exec(compile(source, str(path), "exec", dont_inherit=True), expected)
+    assert actual.apply.__code__ == expected["apply"].__code__
+    assert actual.apply.__annotations__["value"] == ("int" if future else int)
+    witness, reason = _function_witness(actual.apply, capture_attribute_lookup_types())
+    assert witness is not None, reason
+    assert witness.source_sha256 == override.sha256
