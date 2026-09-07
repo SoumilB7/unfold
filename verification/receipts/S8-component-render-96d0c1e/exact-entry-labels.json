@@ -1,0 +1,56 @@
+{
+  "sdxl-refiner": {
+    "every_actual_node_label_character_preserved": true,
+    "node_count": 14,
+    "input_count": 13,
+    "labels": {
+      "denoiser": "U-NetDenoiser",
+      "unet_root_input_0": "sample",
+      "unet_root_input_1": "timestep",
+      "unet_root_input_2": "encoder_hidden_states",
+      "unet_root_input_3": "class_labels",
+      "unet_root_input_4": "timestep_cond",
+      "unet_root_input_5": "attention_mask",
+      "unet_root_input_6": "cross_attention_kwargs",
+      "unet_root_input_7": "added_cond_kwargs",
+      "unet_root_input_8": "down_block_additional_residuals",
+      "unet_root_input_9": "mid_block_additional_residual",
+      "unet_root_input_10": "down_intrablock_additional_residuals",
+      "unet_root_input_11": "encoder_attention_mask",
+      "unet_root_input_12": "return_dict"
+    }
+  },
+  "sdxl-inpainting": {
+    "every_actual_node_label_character_preserved": true,
+    "node_count": 14,
+    "input_count": 13,
+    "labels": {
+      "denoiser": "U-NetDenoiser",
+      "unet_root_input_0": "sample",
+      "unet_root_input_1": "timestep",
+      "unet_root_input_2": "encoder_hidden_states",
+      "unet_root_input_3": "class_labels",
+      "unet_root_input_4": "timestep_cond",
+      "unet_root_input_5": "attention_mask",
+      "unet_root_input_6": "cross_attention_kwargs",
+      "unet_root_input_7": "added_cond_kwargs",
+      "unet_root_input_8": "down_block_additional_residuals",
+      "unet_root_input_9": "mid_block_additional_residual",
+      "unet_root_input_10": "down_intrablock_additional_residuals",
+      "unet_root_input_11": "encoder_attention_mask",
+      "unet_root_input_12": "return_dict"
+    }
+  },
+  "ddpm-cifar10": {
+    "every_actual_node_label_character_preserved": true,
+    "node_count": 5,
+    "input_count": 4,
+    "labels": {
+      "denoiser": "U-NetDenoiser",
+      "unet_root_input_0": "sample",
+      "unet_root_input_1": "timestep",
+      "unet_root_input_2": "class_labels",
+      "unet_root_input_3": "return_dict"
+    }
+  }
+}

@@ -4,6 +4,7 @@
   "supplied-pipeline-positive.json": "28a01e29fd970deec88a0aa8d104cd621b2a60d292ddd9b33bfa1da5c439fb55",
   "check-changed-correspondence.py": "779fd7635c290dff68b49bc96324283fa1cdbf2eb0fc4807f124e49995ac1044",
   "run-phase.py": "9d6b6ab2a20705bdb80e63e3aeb8f3f150307053b67468d881560bca68d161c6",
+  "README.md": "62579a2181d9156886c325dc0ea12572b49ae6c15b4ad21c766b68b56e44e98f",
   "changed-exact-correspondence.json": "9a3aae2954780228d1e7618a8ef9ebf6fa1005ad95815ef1348391590a7949b8",
   "missing-visual-pair.py": "79b0511c116874199f894bc7d3c27609384e67bb1b49022866b56fff762f1172",
   "script-pin.json": "c464f04a204c98723fe6f062c5679118351aa53fed5a62e67481531dd2187b4e",
