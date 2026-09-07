@@ -73,7 +73,8 @@ def main():
         "prior_positive_paths": len(old_positive), "lost_positive_paths": sorted(old_positive-new_positive),
         "prior_table_status": "accepted table supplied" if baseline is not None else "no prior accepted execution table",
         "additional_positive_paths": sorted(new_positive-old_positive),
-        "additional_root_reason": "root was present in prior raw observation but dropped by the old empty-path join",
+        "additional_root_reason": ("root was present in prior raw observation but dropped by the old empty-path join"
+                                   if baseline is not None and "" in new_positive - old_positive else None),
         "unet_fact_findings": fact_findings, "wiring_problems": diagram.wiring_problems(),
         "production_observation_policy": "ordinary parse may have no observation; this exit table uses the actual fresh compatible attempt",
         "family_execution_unresolved": [{"path": r.provenance.instance_path, **dataclasses.asdict(r.execution)}

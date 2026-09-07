@@ -346,6 +346,18 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         notes="S8: constructor-selected input transform and returned FFN computation; caller reachability is separate",
     ),
     FactDefinition(
+        key="primary_state_ports", value_types=frozenset({"dict"}),
+        allowed_statuses=frozenset({"code_proven"}),
+        owner_patterns=frozenset({"root.denoiser"}),
+        projections=frozenset({"json", "architecture_view", "card_chip"}),
+        projection_routes=(ProjectionRoute(
+            "root.denoiser", "primary_state_ports", "block", "denoiser",
+            frozenset({"field"}), frozenset({("denoiser",)}),
+            frozenset({"adapters.diffusor.unet_projection.project_unet"})),),
+        unknown_policy="unknown_banner",
+        notes="S8: guarded primary local-state input/result ports; opaque targets and iteration-to-module binding remain unresolved",
+    ),
+    FactDefinition(
         key="constructed_stage_relations", value_types=frozenset({"dict"}),
         allowed_statuses=frozenset({"code_proven"}),
         owner_patterns=frozenset({"root.denoiser"}),

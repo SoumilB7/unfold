@@ -691,6 +691,7 @@ FACT_CLAIM_REQUIREMENTS = {
     "constructed_modules": "existence",
     "constructed_parameter_shapes": "value",
     "constructed_stage_relations": "relation",
+    "primary_state_ports": "connection",
     "ffn_mechanisms": "applied_function",
     "stage_join_connections": "connection",
     "runtime_primitives": "applied_function",

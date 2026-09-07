@@ -92,3 +92,21 @@ def test_method_receiver_and_constant_overwrite_are_distinct(tmp_path):
 def test_short_circuit_named_write_is_not_ignored(tmp_path):
     rows = regions(tmp_path, "if enabled and (state := 7):\n state = block(state)")
     assert rows[0]["route"]["kind"] == "unresolved"
+
+
+
+def test_primary_reader_declaration_enters_catalogue_and_requires_connection():
+    """Exercise the actual reader declaration at the closed ledger boundary."""
+    from model_unfolder.evidence.context import FactLedger
+    from model_unfolder.evidence.facts import EvidenceFact
+    from model_unfolder.evidence.reconciliation import FACT_CLAIM_REQUIREMENTS
+    from model_unfolder.evidence.unet_primary_ports import UNetPrimaryPortProof
+
+    owner, _, key = UNetPrimaryPortProof.fact_id.rpartition('.')
+    fact = EvidenceFact(key=key, owner=owner, value={"regions": []},
+                        status="code_proven", claim_kind=UNetPrimaryPortProof.claim_kind,
+                        claim_readers=UNetPrimaryPortProof.reader_symbols)
+    ledger = FactLedger()
+    ledger.record_typed(fact)
+    assert ledger.typed[fact.ledger_key()] is fact
+    assert FACT_CLAIM_REQUIREMENTS[key] == UNetPrimaryPortProof.claim_kind == "connection"

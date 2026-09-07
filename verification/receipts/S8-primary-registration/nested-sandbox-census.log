@@ -1,0 +1,25 @@
+........................................................................ [ 73%]
+...............F..........                                               [100%]
+=================================== FAILURES ===================================
+_______ test_every_registered_fact_is_observed_in_an_evidence_population _______
+
+evidence_fact_rows = [('auraflow-v0-3.json', 'root.denoiser', 'diffusion_bookend_operations', 'code_proven', 'dict'), ('auraflow-v0-3.json'...('auraflow-v0-3.json', 'root.denoiser.stacks[i].attention[i]', 'diffusion_stream_relation', 'code_proven', 'str'), ...]
+
+    def test_every_registered_fact_is_observed_in_an_evidence_population(
+            evidence_fact_rows):
+        """Bidirectional closed world over preservation and qualification.
+    
+        A definition must be emitted by the production parser.  Frontier source
+        shapes need not be forced into the blessed preservation corpus, but a fact
+        name written directly into a test still cannot satisfy this gate.
+        """
+        observed = {fact for _, _, fact, _, _ in evidence_fact_rows}
+        stale = set(REGISTRY) - observed
+>       assert not stale, f"registered but never observed: {sorted(stale)}"
+E       AssertionError: registered but never observed: ['cell_arithmetic', 'cell_connections', 'constructed_modules', 'constructed_parameter_shapes', 'constructed_stage_relations', 'context_connections', 'declared_constructor_defaults', 'ffn_mechanisms', 'primary_state_ports', 'runtime_primitives', 'spatial_mechanisms', 'stage_join_connections']
+E       assert not {'cell_arithmetic', 'cell_connections', 'constructed_modules', 'constructed_parameter_shapes', 'constructed_stage_relations', 'context_connections', ...}
+
+tests/test_fact_registry.py:324: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_fact_registry.py::test_every_registered_fact_is_observed_in_an_evidence_population
+1 failed, 97 passed in 49.48s
