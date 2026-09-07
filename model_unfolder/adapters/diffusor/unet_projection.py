@@ -6,9 +6,10 @@ connection facts and cannot be inferred from the order of these cards.
 """
 from ...block_schema import Block
 from ...ir import ModelIR
+from ...labels import activation_label
 from ...opgraph import ffn_region
 import json
-from .blocks import diffusion_loop_blocks, diffusion_loop_edges, diffusion_loop_region, restrict_to_supplied_components
+from .blocks import diffusion_loop_blocks, diffusion_loop_edges, diffusion_loop_region, restrict_to_supplied_components, component_entry_for_handoffs
 
 
 def _block_id(path):
@@ -135,6 +136,9 @@ def _port_route_block(route, block_id, fact_key):
 
 
 def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_findings=None):
+    from ...evidence.construction_summary import project_construction_summary
+
+    construction_summary = project_construction_summary(facts)
     modules = facts["root.denoiser.constructed_modules"].value
     shapes = facts["root.denoiser.constructed_parameter_shapes"].value
     relations = facts["root.denoiser.constructed_stage_relations"].value
@@ -226,10 +230,12 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
             for op in ffn_region(ffn, None).ops:
                 if op.kind == "input":
                     continue
+                display_label = (activation_label(op.fn) if op.kind == "activation" and op.fn
+                                 else op.label or op.fn or op.id)
                 operations.append({
                     "id": namespace + op.id, "kind": op.kind,
-                    "role": "operation", "label": op.label or op.fn or op.id,
-                    "title": op.label or op.fn or op.id,
+                    "role": "operation", "label": display_label,
+                    "title": display_label,
                     "description": "Operation on the source-proven returned FFN computation.",
                     "source_fact_keys": [ffn_key],
                 })
@@ -333,11 +339,13 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
             row = spatial[path]
             label = "Spatial reduction" if row["effect"] == "reduce" else "Spatial resize"
             block.update(label=label, title=label)
-            block["facts"].append("Source-proven spatial primitive: " + row["primitive"])
+            spatial_lines = ["Source-proven spatial primitive: " + row["primitive"]]
             if row["operand"] is not None:
-                block["facts"].append("Stride: " + str(row["operand"]))
+                spatial_lines.append("Stride: " + str(row["operand"]))
             else:
-                block["facts"].append("Resize direction: investigation_missing")
+                spatial_lines.append("Resize direction: investigation_missing")
+            block["facts"].extend(spatial_lines)
+            block.setdefault("detail", {}).setdefault("fact_display_lines", {})[spatial_key] = spatial_lines
             block["source_fact_keys"].append(spatial_key)
         return block
 
@@ -453,10 +461,11 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
     scoped_handoffs.setdefault("component_presence", {
         "text_encoders": bool(handoffs.get("text_encoder_specs")),
         "scheduler": bool(handoffs.get("scheduler_class")), "vae": handoffs.get("vae") is not None})
+    component_input_ids = []
     if restrict_to_supplied_components(render, scoped_handoffs):
         for number, formal in enumerate(primary.get("root_inputs", ())):
             key = "unet_root_input_" + str(number)
-            render["component_input_ids"].append(key)
+            component_input_ids.append(key)
             render["loop_blocks"].append({
                 "id": key, "kind": "source", "label": formal,
                 "title": "Declared forward input: " + formal,
@@ -479,12 +488,16 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
                         "investigation_missing · invoked method binding: " + invocation["reason"] + " · owner: S8"]
             if defaults:
                 block["source_fact_keys"].append(defaults_key)
-                block["facts"] = list(block.get("facts") or ()) + [
+                default_lines = [
                     f"Declared class default · {key}: {json.dumps(row['value'])} (checkpoint omitted)"
                     for key, row in defaults.items()]
+                block["facts"] = list(block.get("facts") or ()) + default_lines
+                block.setdefault("detail", {}).setdefault("fact_display_lines", {})[defaults_key] = default_lines
     return ModelIR(
         name=name, architecture=architecture, vocab_size=0, hidden_size=None,
         max_position_embeddings=None, tie_word_embeddings=None, layers=[],
+        construction_summary=construction_summary,
+        component_entry=component_entry_for_handoffs(scoped_handoffs, component_input_ids),
         extras={"render": render, "unet": {
             "stage_relations": relations,
             "stage_block_ids": {path: _block_id(path) for path in stage_paths},

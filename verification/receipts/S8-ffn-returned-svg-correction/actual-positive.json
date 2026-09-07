@@ -1,0 +1,13 @@
+{
+  "saved_ir_sha256": "0cad810cef5381794b874c8d253fcb7066f942b8e2a882a2c0782988888f4aaf",
+  "block_id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff",
+  "visible_operation_ids": [
+    "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation",
+    "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_down_proj",
+    "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_gate_up_proj",
+    "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_gate_up_split",
+    "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_multiply"
+  ],
+  "svg_sha256": "fb1f0bc833e23ccc461adc8f948292ddecc3b4b3c540c3821cde763cf27af43e",
+  "no_model_or_source_readers": true
+}

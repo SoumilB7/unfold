@@ -15,6 +15,7 @@ live in approved ``diffusion_stage`` tags plus titles and descriptions.
 """
 from __future__ import annotations
 
+from ...ir import ComponentEntry
 from ...block_schema import Block
 from ...labels import attention_summary, kind_long
 from ...submodel import submodel_cell_blocks
@@ -246,10 +247,20 @@ def diffusion_projected_render_spec(projection, handoff_geom: dict) -> dict:
     }
 
 
+def component_entry_for_handoffs(handoffs: dict, input_ids=()) -> ComponentEntry | None:
+    """Declare a component interface only when pipeline existence is incomplete."""
+    presence = handoffs.get("component_presence")
+    if presence is None or all(presence.get(key) for key in ("text_encoders", "scheduler", "vae")):
+        return None
+    return ComponentEntry(
+        root_id="denoiser", input_ids=tuple(input_ids), title="DENOISER COMPONENT",
+        subtitle="Declared denoiser interface · click to open its architecture")
+
+
 def restrict_to_supplied_components(render: dict, handoffs: dict) -> bool:
     """Keep explicit component existence on both successful and limited views."""
     presence = handoffs.get("component_presence")
-    if presence is None or all(presence.get(key) for key in ("text_encoders", "scheduler", "vae")):
+    if component_entry_for_handoffs(handoffs) is None:
         return False
     retained = {"denoiser"}
     if presence.get("vae"):
@@ -260,8 +271,6 @@ def restrict_to_supplied_components(render: dict, handoffs: dict) -> bool:
     render["loop_blocks"] = [block for block in render["loop_blocks"] if block["id"] in retained]
     render["loop_edges"] = []
     render.pop("loop_region", None)
-    render["component_scope"] = "denoiser" if len(retained) == 1 else "partial_pipeline"
-    render["component_input_ids"] = []
     return True
 
 

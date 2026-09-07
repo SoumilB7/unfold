@@ -26,7 +26,7 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
         if not dominant and node_id != "tok_text" \
                 and block.get("resolved") is not True:
             continue
-        panels.append(_simple_card(node_id, *_meta(info, node_id)))
+        panels.append(_simple_card(node_id, *_meta(info, node_id), block=info.get("blocks", {}).get(node_id)))
 
     # With no materialized layer, the model-level entry/output boundary cards
     # are still real and clickable.  Return them without inventing any layer
@@ -36,7 +36,7 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
             block = info.get("blocks", {}).get(node_id)
             if block is not None and (
                     node_id == "lm_head" or block.get("resolved") is True):
-                panels.append(_simple_card(node_id, *_meta(info, node_id)))
+                panels.append(_simple_card(node_id, *_meta(info, node_id), block=info.get("blocks", {}).get(node_id)))
         return "".join(panels)
 
     spec = dominant["spec"]
@@ -49,9 +49,9 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
         svg = block_detail_svg(ir, info, mount_id, block)
         title, desc, facts = _meta(info, node_id)
         if svg:
-            panels.append(_rich_card(node_id, title, desc, svg, facts))
+            panels.append(_rich_card(node_id, title, desc, svg, facts, block=block))
         else:
-            panels.append(_simple_card(node_id, title, desc, facts))
+            panels.append(_simple_card(node_id, title, desc, facts, block=block))
 
     for block in layer_blocks:
         kind = block.get("kind")
@@ -64,7 +64,7 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
             svg = block_detail_svg(ir, info, mount_id, block)
             if svg:
                 title, desc, facts = _meta(info, node_id)
-                panels.append(_rich_card(node_id, title, desc, svg, facts + _io_dim_fact(ir)))
+                panels.append(_rich_card(node_id, title, desc, svg, facts + _io_dim_fact(ir), block=block))
             else:
                 panels.append(attention_card(ir, info, lambda nid: _meta(info, nid)))
             continue
@@ -72,31 +72,31 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
         svg = block_detail_svg(ir, info, mount_id, block)
         if svg:
             title, desc, facts = _meta(info, node_id)
-            panels.append(_rich_card(node_id, title, desc, svg, facts + _io_dim_fact(ir)))
+            panels.append(_rich_card(node_id, title, desc, svg, facts + _io_dim_fact(ir), block=block))
         else:
-            panels.append(_simple_card(node_id, *_meta(info, node_id)))
+            panels.append(_simple_card(node_id, *_meta(info, node_id), block=info.get("blocks", {}).get(node_id)))
 
     for node_id in ("final_rms", "lm_head"):
         if node_id in info.get("blocks", {}):
-            panels.append(_simple_card(node_id, *_meta(info, node_id)))
+            panels.append(_simple_card(node_id, *_meta(info, node_id), block=info.get("blocks", {}).get(node_id)))
 
     entry_block = info.get("blocks", {}).get("entry_stage")
     if entry_block:
         svg = block_detail_svg(ir, info, mount_id, entry_block)
         title, desc, facts = _meta(info, "entry_stage")
         if svg:
-            panels.append(_rich_card("entry_stage", title, desc, svg, facts))
+            panels.append(_rich_card("entry_stage", title, desc, svg, facts, block=entry_block))
         else:
-            panels.append(_simple_card("entry_stage", title, desc, facts))
+            panels.append(_simple_card("entry_stage", title, desc, facts, block=entry_block))
 
     mtp_block = info.get("blocks", {}).get("mtp")
     if mtp_block:
         svg = block_detail_svg(ir, info, mount_id, mtp_block)
         title, desc, facts = _meta(info, "mtp")
         if svg:
-            panels.append(_rich_card("mtp", title, desc, svg, facts))
+            panels.append(_rich_card("mtp", title, desc, svg, facts, block=mtp_block))
         else:
-            panels.append(_simple_card("mtp", title, desc, facts))
+            panels.append(_simple_card("mtp", title, desc, facts, block=mtp_block))
 
     return "".join(panels)
 
@@ -120,13 +120,40 @@ def _io_dim_fact(ir: dict) -> list[str]:
     return [f"in/out {hidden}"] if hidden else []
 
 
-def _simple_card(node_id: str, title: str, desc: str, facts: list[str] | None = None) -> str:
+def _card_facts_html(node_id: str, facts, block: dict | None) -> str:
+    """Receipt only the exact declared lines emitted on this card."""
+    rendered = facts_html(facts)
+    if block is None or block.get("id") != node_id:
+        return rendered
+    from .render_context import current_render_context
+
+    context = current_render_context()
+    lines_by_fact = (block.get("detail") or {}).get("fact_display_lines")
+    if context is None or not isinstance(lines_by_fact, dict):
+        return rendered
+    cited = set(block.get("source_fact_keys") or ())
+    displayed = frozenset(
+        key for key, lines in lines_by_fact.items()
+        if isinstance(key, str) and key in cited
+        and isinstance(lines, (list, tuple)) and lines
+        and all(isinstance(line, str) and line.strip()
+                and f'<span class="uf-fact">{_html(line)}</span>' in rendered
+                for line in lines)
+    )
+    if displayed:
+        with context.block(block):
+            context.note_facts_projected("card_fact_lines", displayed, node_ids=(node_id,))
+    return rendered
+
+
+def _simple_card(node_id: str, title: str, desc: str, facts: list[str] | None = None,
+                 *, block: dict | None = None) -> str:
     return (
         f'<div class="uf-card-detail uf-card-{_attr(node_id)}" '
         f'data-card-id="{_attr(node_id)}" data-card-size="compact">'
         f'<div class="uf-card-title">{_html(title)}</div>'
         f'<div class="uf-card-desc">{_html(desc)}</div>'
-        f"{facts_html(facts)}"
+        f"{_card_facts_html(node_id, facts, block)}"
         "</div>"
     )
 
@@ -149,33 +176,33 @@ def _nested_panel(ir: dict, info: dict, mount_id: str, children: list[dict]) -> 
         svg = sub_block_detail_svg(ir, info, mount_id, child)
         title = child.get("title") or child.get("label") or child_id
         panels.append(_nested_card(child_id, title, child.get("description", ""), svg,
-                                   child.get("facts")))
+                                   child.get("facts"), block=child))
     return "".join(panels)
 
 
 def _nested_card(node_id: str, title: str, desc: str, svg: str | None = None,
-                 facts: list[str] | None = None) -> str:
+                 facts: list[str] | None = None, *, block: dict | None = None) -> str:
     svg_html = f'<div class="uf-card-svg">{svg}</div>' if svg else ""
     size_attrs = _size_attrs(svg)
     return (
         f'<div class="uf-card-detail" data-card-id="{_attr(node_id)}"{size_attrs}>'
         f'<div class="uf-card-title">{_html(title)}</div>'
         f'<div class="uf-card-desc">{_html(desc)}</div>'
-        f"{facts_html(facts)}"
+        f"{_card_facts_html(node_id, facts, block)}"
         f"{svg_html}"
         "</div>"
     )
 
 
 def _rich_card(node_id: str, title: str, desc: str, svg: str,
-               facts: list[str] | None = None) -> str:
+               facts: list[str] | None = None, *, block: dict | None = None) -> str:
     size_attrs = _size_attrs(svg)
     return (
         f'<div class="uf-card-detail uf-card-{_attr(node_id)}" '
         f'data-card-id="{_attr(node_id)}"{size_attrs}>'
         f'<div class="uf-card-title">{_html(title)}</div>'
         f'<div class="uf-card-desc">{_html(desc)}</div>'
-        f"{facts_html(facts)}"
+        f"{_card_facts_html(node_id, facts, block)}"
         f'<div class="uf-card-svg">{svg}</div>'
         "</div>"
     )

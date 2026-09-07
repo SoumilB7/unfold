@@ -1,0 +1,12 @@
+{
+  "command": "python3 -m pytest tests/test_s8_card_projection_receipts.py -q",
+  "passed": 20,
+  "reported_seconds": 0.07,
+  "independent_discarded_output_poison": "rejected",
+  "saved_actual_ffn_positive": "passed",
+  "source_sha256": {
+    "model_unfolder/renderers/html/block_views/unet.py": "677e74f6cc2b5793fc5177cdb8593d641bd44e98b56b392ab123b2ab6ea449ce",
+    "tests/test_s8_card_projection_receipts.py": "64d0a0556cbc3131ce6ea9baee19a56f2e3584f68737995e29077a3ce9def076"
+  },
+  "blessed": false
+}

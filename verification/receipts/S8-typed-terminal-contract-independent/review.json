@@ -1,0 +1,8 @@
+{
+  "base_head": "4fdc741081a66071daede1401bd4187f8d13289f",
+  "execution": "no pytest, models, standalone proof probes or production edits",
+  "reviewed_surface": "15 frozen working-tree files identified by source-pins.json",
+  "source_pins_before_after_identical": true,
+  "structural_debt_changed": false,
+  "verdict": "ACCEPT bounded source contract and integrated producer/reconciliation audit; actual outputs and gate results remain separate"
+}

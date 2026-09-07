@@ -133,6 +133,7 @@ _SPEC_FIELDS = frozenset({
     'LayerSpec.parallel_norm_count', 'LayerSpec.residual_scale',
     'LayerSpec.residual_topology',
     'ModelIR.architecture', 'ModelIR.cross_layer_edges',
+    'ModelIR.component_entry', 'ModelIR.construction_summary',
     'ModelIR.embedding_norm_kind', 'ModelIR.extras', 'ModelIR.final_norm_kind',
     'ModelIR.hidden_size', 'ModelIR.layers', 'ModelIR.max_position_embeddings', 'ModelIR.name',
     'ModelIR.notes', 'ModelIR.tie_word_embeddings', 'ModelIR.vocab_size',
@@ -626,6 +627,15 @@ __all__ = [
 # set, which structurally could not see a second author of one target).
 # --------------------------------------------------------------------------- #
 _STRUCTURAL_WRITERS_BASELINE = frozenset({
+    # S8: independently reviewed typed-ledger author and canonical IR projector.
+    ('model_unfolder/adapters/diffusor/unet_cutover.py', 'build_unet_cutover', 'ledger', '<dynamic>'),
+    ('model_unfolder/adapters/diffusor/unet_projection.py', 'project_unet', 'spec', 'ModelIR'),
+    # S8: exact dict-to-validated-DTO normalization, not a new fact author.
+    ('model_unfolder/ir.py', '__post_init__', 'spec_mutation', 'component_entry'),
+    ('model_unfolder/ir.py', '__post_init__', 'spec_mutation', 'construction_summary'),
+    # S8: optional source-free typed terminal records, omitted when absent.
+    ('model_unfolder/ir.py', '<module>', 'spec_field', 'ModelIR.component_entry'),
+    ('model_unfolder/ir.py', '<module>', 'spec_field', 'ModelIR.construction_summary'),
     # U2-R6 (reviewed): top-level setdefault/dict-literal/AnnAssign extras
     # authors the scanner previously missed — the writers behind the
     # formerly writer-less LEGACY_EXTRAS rows (rope/softcap/unet/render) —

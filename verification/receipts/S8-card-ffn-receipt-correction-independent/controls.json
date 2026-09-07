@@ -1,0 +1,53 @@
+[
+  {
+    "actual_svg_length": 5486,
+    "case": "ordinary",
+    "ffn_events": 1,
+    "pass": true,
+    "receipts": [
+      {
+        "block_path": [
+          "exact_ffn"
+        ],
+        "facts": [
+          "root.denoiser.ffn_mechanisms"
+        ],
+        "nodes": [
+          "activation",
+          "down_proj",
+          "gate_up_proj",
+          "gate_up_split",
+          "multiply"
+        ]
+      }
+    ]
+  },
+  {
+    "actual_svg_length": 782,
+    "case": "discard",
+    "ffn_events": 1,
+    "pass": true,
+    "receipts": []
+  },
+  {
+    "actual_svg_length": 5494,
+    "case": "partial",
+    "ffn_events": 1,
+    "pass": true,
+    "receipts": []
+  },
+  {
+    "actual_svg_length": 5486,
+    "case": "foreign_block",
+    "ffn_events": 1,
+    "pass": true,
+    "receipts": []
+  },
+  {
+    "actual_svg_length": 5486,
+    "case": "uncited",
+    "ffn_events": 1,
+    "pass": true,
+    "receipts": []
+  }
+]

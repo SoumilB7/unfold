@@ -84,4 +84,8 @@ def build_unet_cutover(cfg, context, *, handoffs, name, source_overrides=()):
     ir = project_unet(facts=projected, handoffs=handoffs, name=name,
                       architecture=result.inventory.provenance.resolved_class.qualname,
                       table=evidence.bindings.table, mechanism_findings=limitations)
+    from ...evidence.construction_summary import construction_summary_problems
+    problems = construction_summary_problems(ir, projected)
+    if problems:
+        raise ValueError("; ".join(problems))
     return UNetCutoverResult(ir, result, evidence)

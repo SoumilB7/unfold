@@ -1,0 +1,20 @@
+{
+  "blessed": false,
+  "command": "python3 -m pytest tests/test_s8_card_projection_receipts.py tests/test_construction_summary.py tests/test_unet_stage_execution.py -q",
+  "diff_check": "passed",
+  "exit_code": 0,
+  "passed": 52,
+  "pyflakes": "passed on the seven listed files",
+  "reported_seconds": 3.96,
+  "scope": "Working-tree focused receipt controls; executor owns producer fact_display_lines metadata and final actual output replay.",
+  "source_ownership": "Only card helpers, runtime FFN function, targeted card caller keyword arguments and test fixture relocation were edited by this task; other concurrent typed-entry edits remain executor-owned.",
+  "source_sha256_after_test": {
+    "model_unfolder/renderers/html/block_views/unet.py": "0b6d44b9f7dd258ddc55e0f148c28aa88c175ac6989f4e4cb2ecacfbffd961f1",
+    "model_unfolder/renderers/html/cards.py": "89608410534b74db158a7ea56677e38c1d2a00dd3200ce7c2d1ed787866bd8c2",
+    "model_unfolder/renderers/html/views_diffusion.py": "a61e23ddb828f9a93af60a93fdffdf5f2126f87306bd0a4ba0c625df0be76a07",
+    "test_support/unet_stage_fixture.py": "47a8b3824cc735d74e6f0b8d2322da716f8ef0763cac6d432f9d419565819c88",
+    "tests/test_construction_summary.py": "e3142f6c5aec7c1d3fe420d06cfec9164b2b7c749c4625739b74f779018abd6c",
+    "tests/test_s8_card_projection_receipts.py": "003bf76f8ce52a0e9535e38b2d133c616ffc3c7bf4ee5c57bc8665f49f0922c9",
+    "tests/test_unet_stage_execution.py": "f59e2c5f500da80d0b6f9e29bf48d653fd46be3f9e297a2a66ee1346c78bdadb"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "command": [
+    "python3",
+    "-u",
+    "/private/tmp/unfold-s8-coverage-capture.py",
+    "/private/tmp/unfold-s8-final-verification-5227e9c",
+    "/private/tmp/unfold-s8-coverage-5227e9c/actual-generate"
+  ],
+  "elapsed_seconds": 1258.903,
+  "exit_code": 1,
+  "implementation_unchanged": true
+}

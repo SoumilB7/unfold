@@ -230,9 +230,40 @@ def build_constructed_children_view(ir, info, mount_id, block):
 def build_runtime_ffn_view(ir, info, mount_id, block):
     """Reuse the canonical FFN graph and keep its actual children inspectable."""
     from .feed_forward import build_ffn_view
+    from ..render_context import current_render_context
+    from xml.etree import ElementTree
+
+    context = current_render_context()
+    start = len(context.events) if context is not None else 0
+    block_path = tuple(str(item.get("id") or item.get("view") or "?")
+                       for item in context.block_stack) if context is not None else ()
+    ffn_svg = build_ffn_view(ir, info, mount_id, block)
+    key = "root.denoiser.ffn_mechanisms"
+    if (context is not None and ffn_svg and block_path
+            and block_path[-1] == block.get("id")
+            and key in block.get("source_fact_keys", ())):
+        try:
+            returned = ElementTree.fromstring(ffn_svg)
+            visible_nodes = frozenset(
+                element.get("data-id") for element in returned.iter()
+                if element.tag.rsplit("}", 1)[-1] == "g"
+                and "uf-node" in element.get("class", "").split()
+                and element.get("data-id") and len(element))
+        except ElementTree.ParseError:
+            visible_nodes = frozenset()
+        operation_ids = frozenset(child["id"] for child in block.get("children", ())
+                                  if child.get("role") == "operation")
+        graphs = [event for event in context.events[start:]
+                  if event.view == "ffn" and event.block_path == block_path
+                  and operation_ids and operation_ids <= event.node_ids
+                  and operation_ids <= visible_nodes]
+        if graphs:
+            context.note_facts_projected(
+                "runtime_ffn_fact", (key,),
+                node_ids=operation_ids)
     constructed = [child for child in block.get("children", ())
                    if "source_instance_path" in child]
-    return (build_ffn_view(ir, info, mount_id, block)
+    return (ffn_svg
             + build_constructed_children_view(ir, info, mount_id,
                                               {"children": constructed}))
 

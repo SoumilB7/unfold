@@ -952,6 +952,10 @@ def projection_claims_from_product(
         raise TypeError("product projection consumes typed EvidenceFact rows")
     if any(key != value.ledger_key() for key, value in facts.items()):
         raise ValueError("product fact mapping keys must equal typed ledger keys")
+    from .construction_summary import construction_summary_problems
+    summary_problems = construction_summary_problems(ir, facts)
+    if summary_problems:
+        raise ValueError("; ".join(summary_problems))
     event_type = ("model_unfolder.renderers.html.render_context", "RenderEvent")
     for event in render_events:
         if (type(event).__module__, type(event).__qualname__) != event_type:

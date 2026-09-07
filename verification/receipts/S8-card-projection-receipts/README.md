@@ -1,0 +1,7 @@
+# Actual display controls for projection receipts
+
+Block.detail.fact_display_lines declares the exact nonempty chip strings that visibly carry each explicitly cited fact. The card helper first produces the actual facts HTML, then records only declared keys whose declared exact escaped chips are all present on that card. It does not union all source_fact_keys, borrow another card's lines or count title/description text. Existing block-aware callers pass their metadata; no HTML is added or changed by recording the event. Producer metadata creation remains executor-owned.
+
+The runtime FFN view records its one mechanism key only when that key is cited, a nonempty FFN SVG is returned and the actual FFN renderer emitted a new graph event with nodes. A remaining constructed-child subview, empty SVG or missing source key cannot supply that receipt. No global drawn-fact whitelist was expanded.
+
+52 focused controls passed in3.96s: exact card output and provenance, missing/altered/blank/uncited/wrong-card/description-only lines, actual chip-renderer omission, no HTML change from receipt metadata, real FFN graph, empty graph and containment-only negatives, plus construction-summary and original stage-execution controls after the unchanged tiny fixture moved into test_support. Pyflakes and diff-check passed. No model run or output blessing occurred; final integrated actual-page/source verification remains executor-owned.

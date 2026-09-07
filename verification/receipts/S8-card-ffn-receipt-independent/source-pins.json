@@ -1,0 +1,7 @@
+{
+  "model_unfolder/adapters/diffusor/unet_projection.py": "143b25fbf774aee62ffc1c004bbfb6db36895fc51609abc1ad6864acbd4c5be6",
+  "model_unfolder/renderers/html/block_views/unet.py": "0b6d44b9f7dd258ddc55e0f148c28aa88c175ac6989f4e4cb2ecacfbffd961f1",
+  "model_unfolder/renderers/html/cards.py": "89608410534b74db158a7ea56677e38c1d2a00dd3200ce7c2d1ed787866bd8c2",
+  "model_unfolder/renderers/html/views_diffusion.py": "a61e23ddb828f9a93af60a93fdffdf5f2126f87306bd0a4ba0c625df0be76a07",
+  "tests/test_s8_card_projection_receipts.py": "003bf76f8ce52a0e9535e38b2d133c616ffc3c7bf4ee5c57bc8665f49f0922c9"
+}

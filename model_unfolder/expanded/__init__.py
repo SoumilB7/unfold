@@ -65,7 +65,7 @@ def build_expanded(ir: ModelIR, params: dict | None = None) -> dict:
         "layer_groups":   [build_layer_group(g, raw, evidence) for g in groups],
     }
 
-    loop = build_sampling_loop(extras)
+    loop = build_sampling_loop(extras, component_entry=ir.component_entry)
     if loop:
         out["sampling_loop"] = loop
 

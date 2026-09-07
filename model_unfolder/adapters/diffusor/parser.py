@@ -24,6 +24,7 @@ from ...ir import ModelIR
 from ..transformer.common import architecture_name, format_dim as _fmt, get_config_value as _g, model_name
 from .blocks import (
     diffusion_opaque_render_spec,
+    component_entry_for_handoffs,
     diffusion_projected_render_spec,
 )
 
@@ -633,6 +634,7 @@ def _parse_projected_denoiser(cfg, arch_name, context, bound_result) -> ModelIR:
         max_position_embeddings=None,
         tie_word_embeddings=True,
         layers=layers,
+        component_entry=component_entry_for_handoffs(handoffs) if projection is None else None,
         extras=extras,
         warnings=warnings,
         notes=notes,

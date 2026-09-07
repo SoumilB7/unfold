@@ -154,14 +154,11 @@ def _stats_banner(ir: dict) -> str:
 def _diffusion_stats(ir: dict, extras: dict, param_text: str) -> list[tuple[str, str]]:
     """Diffusion replaces the (meaningless) Vocab / Context cells with the
     denoising schedule length and the latent channels it operates on."""
-    unet = extras.get("unet") or {}
-    shapes = unet.get("parameter_shapes")
-    if shapes is not None:
-        relation = unet["stage_relations"]
+    summary = ir.get("construction_summary")
+    if summary is not None:
         return [
-            ("Stages", str(len(relation["producer_stages"]) + len(relation["consumer_stages"])
-                           + len(relation["intermediate_stages"]))),
-            ("Weighted modules", _fmt_int(shapes["parameterized_modules"])),
+            ("Stages", str(summary["stage_count"])),
+            ("Weighted modules", _fmt_int(summary["parameterized_module_count"])),
             ("Denoiser params", param_text),
         ]
     meta = extras.get("diffusion") or {}

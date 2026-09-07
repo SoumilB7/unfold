@@ -13,6 +13,8 @@ hierarchy down by one; everything below the denoiser reuses the existing engine.
 """
 from __future__ import annotations
 
+from html import escape
+
 from .block_views import block_detail_svg
 from .cards import (
     _build_inspect_cards,
@@ -87,11 +89,15 @@ def render_diffusion_fragment(ir: dict, mount_id: str, include_font_import: bool
     else:
         loop_cards = _build_loop_cards(ir, info, mount_id)      # panel[0]  (L2)
 
+    entry = ir.get("component_entry")
+    entry_title = entry["title"] if entry is not None else "SAMPLING LOOP"
+    entry_subtitle = (entry["subtitle"] if entry is not None else
+                      "Denoiser applied iteratively · click it to open its architecture")
     arch_section = (
         '<details class="uf-section uf-section-arch uf-section-collapsible" open>'
         '<summary class="uf-section-head">'
-        '<span class="uf-section-label">SAMPLING LOOP</span>'
-        '<span class="uf-section-sub">Denoiser applied iteratively · click it to open its architecture</span>'
+        f'<span class="uf-section-label">{escape(entry_title)}</span>'
+        f'<span class="uf-section-sub">{escape(entry_subtitle)}</span>'
         '<span class="uf-chevron" aria-hidden="true">›</span>'
         '</summary>'
         f'<div class="uf-section-body">{loop_svg}</div>'
@@ -229,15 +235,15 @@ def _build_loop_cards(ir: dict, info: dict, mount_id: str, *, denoiser_arch: str
                 svg = block_detail_svg(ir, info, mount_id, block)
             else:
                 svg = _build_architecture_view(ir, info, mount_id)
-            cards.append(_rich_card(bid, title, desc, svg, facts) if svg
-                         else _simple_card(bid, title, desc, facts))
+            cards.append(_rich_card(bid, title, desc, svg, facts, block=block) if svg
+                         else _simple_card(bid, title, desc, facts, block=block))
         elif block.get("view"):
             # e.g. the VAE decoder — render its own drill-down view as the card.
             svg = block_detail_svg(ir, info, mount_id, block)
-            cards.append(_rich_card(bid, title, desc, svg, facts) if svg
-                         else _simple_card(bid, title, desc, facts))
+            cards.append(_rich_card(bid, title, desc, svg, facts, block=block) if svg
+                         else _simple_card(bid, title, desc, facts, block=block))
         else:
-            cards.append(_simple_card(bid, title, desc, facts))
+            cards.append(_simple_card(bid, title, desc, facts, block=block))
     return "".join(cards)
 
 
@@ -274,8 +280,8 @@ def _cards_for_children(ir: dict, info: dict, mount_id: str, children: list[dict
         desc = child.get("description", "")
         facts = child.get("facts")
         svg = block_detail_svg(ir, info, mount_id, child)
-        cards.append(_rich_card(cid, title, desc, svg, facts) if svg
-                     else _simple_card(cid, title, desc, facts))
+        cards.append(_rich_card(cid, title, desc, svg, facts, block=child) if svg
+                     else _simple_card(cid, title, desc, facts, block=child))
     return "".join(cards)
 
 
@@ -296,14 +302,16 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
     render = (ir.get("extras") or {}).get("render") or {}
     blocks = {b["id"]: b for b in (render.get("loop_blocks") or [])}
     loop_edges = render.get("loop_edges") or []
-    if render.get("component_scope") in {"denoiser", "partial_pipeline"}:
+    entry = ir.get("component_entry")
+    if entry is not None:
         # The producer explicitly supplied a component, not a sampling loop.
         # Reuse independent incoming lanes; there is no synthetic noise,
         # scheduler recurrence, text encoder, decoder or image boundary.
         from .graph import Graph, Node, Parallel, Lane
         from .graph_engine import render_graph
-        inputs = render.get("component_input_ids", ())
-        visible = [blocks[key] for key in (*inputs, "denoiser") if key in blocks]
+        inputs = entry["input_ids"]
+        root_id = entry["root_id"]
+        visible = [blocks[key] for key in (*inputs, root_id) if key in blocks]
 
         def input_lines(label):
             # Keep the exact declared name, including underscores, while
@@ -322,11 +330,11 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
                       w=164 if row["id"] in inputs else 240,
                       font=11 if row["id"] in inputs else 12)
                  for row in visible]
-        graph = Graph(nodes, ["denoiser"], parallels=[
-            Parallel(None, "denoiser", [Lane([key]) for key in inputs])] if inputs else [])
+        graph = Graph(nodes, [root_id], parallels=[
+            Parallel(None, root_id, [Lane([key]) for key in inputs])] if inputs else [])
         result = render_graph(graph, info, mount_id, "denoiser_component",
                               "Declared denoiser inputs; external components require their own evidence")
-        others = [row for key, row in blocks.items() if key not in {*inputs, "denoiser"}]
+        others = [row for key, row in blocks.items() if key not in {*inputs, root_id}]
         if others:
             result += block_detail_svg(ir, info, mount_id, {
                 "id": "supplied_components", "view": "constructed_children", "children": others})
@@ -741,17 +749,17 @@ def _build_block_diffusion_loop_cards(ir: dict, info: dict, mount_id: str) -> st
         if bid in arch_embed_ids:
             svg = _build_architecture_view(ir, info, mount_id)
             cards.append(
-                _rich_card(bid, title, desc, svg, facts) if svg
-                else _simple_card(bid, title, desc, facts)
+                _rich_card(bid, title, desc, svg, facts, block=block) if svg
+                else _simple_card(bid, title, desc, facts, block=block)
             )
         elif block.get("view"):
             svg = block_detail_svg(ir, info, mount_id, block)
             cards.append(
-                _rich_card(bid, title, desc, svg, facts) if svg
-                else _simple_card(bid, title, desc, facts)
+                _rich_card(bid, title, desc, svg, facts, block=block) if svg
+                else _simple_card(bid, title, desc, facts, block=block)
             )
         else:
-            cards.append(_simple_card(bid, title, desc, facts))
+            cards.append(_simple_card(bid, title, desc, facts, block=block))
     return "".join(cards)
 
 

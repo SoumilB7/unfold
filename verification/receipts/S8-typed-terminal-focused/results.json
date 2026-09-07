@@ -1,0 +1,24 @@
+{
+  "construction_summary": {
+    "passed": 12,
+    "elapsed_seconds": 0.33,
+    "receipt": "S8-construction-summary-focused"
+  },
+  "component_entry": {
+    "passed": 6
+  },
+  "reconciliation": {
+    "passed": 56
+  },
+  "first_combined_lane": {
+    "passed": 72,
+    "failed": 3,
+    "failure": "two approved fields absent from _SPEC_FIELDS; exact vocabulary added"
+  },
+  "structural_retry": {
+    "passed": 13,
+    "elapsed_seconds": 32.49
+  },
+  "source_contract_review": "S8-typed-terminal-contract-independent",
+  "scope": "Focused implementation gates, not full final acceptance; subsequent fact-chip/FFN edits separately reviewed."
+}

@@ -485,6 +485,61 @@ class EvidenceWarning(str):
         return self.check, self.summary, self.details, self.detail
 
 
+@dataclass(frozen=True)
+class ConstructionSummary:
+    """Projected construction quantities; citations are checked at the evidence boundary.
+
+    This value record carries no execution count or mechanism inference.
+    """
+
+    scope: str
+    parameter_count: int
+    parameterized_module_count: int
+    stage_count: int
+    shape_fact_key: str
+    stage_relation_fact_key: str
+    population_fact_key: str
+
+    def __post_init__(self) -> None:
+        for name in ("parameter_count", "parameterized_module_count", "stage_count"):
+            value = getattr(self, name)
+            if type(value) is not int or value < 0:
+                raise ValueError(f"{name} must be a nonnegative integer")
+        for name in ("scope", "shape_fact_key", "stage_relation_fact_key", "population_fact_key"):
+            value = getattr(self, name)
+            if not isinstance(value, str) or not value:
+                raise ValueError(f"{name} must be a nonempty string")
+
+    def to_dict(self) -> dict:
+        return {item.name: getattr(self, item.name) for item in fields(self)}
+
+
+@dataclass(frozen=True)
+class ComponentEntry:
+    """Producer-authored component interface, without sampling-loop semantics."""
+
+    root_id: str
+    input_ids: tuple[str, ...]
+    title: str
+    subtitle: str
+
+    def __post_init__(self) -> None:
+        if isinstance(self.input_ids, list):
+            object.__setattr__(self, "input_ids", tuple(self.input_ids))
+        for name in ("root_id", "title", "subtitle"):
+            if not isinstance(getattr(self, name), str) or not getattr(self, name):
+                raise ValueError(f"{name} must be nonempty text")
+        if (not isinstance(self.input_ids, tuple)
+                or any(not isinstance(value, str) or not value for value in self.input_ids)
+                or len(set(self.input_ids)) != len(self.input_ids)
+                or self.root_id in self.input_ids):
+            raise ValueError("component input IDs must be unique nonempty text distinct from the root")
+
+    def to_dict(self) -> dict:
+        return {"root_id": self.root_id, "input_ids": list(self.input_ids),
+                "title": self.title, "subtitle": self.subtitle}
+
+
 @dataclass
 class ModelIR:
     """Top-level IR for a complete model."""
@@ -512,8 +567,19 @@ class ModelIR:
     # API/JSON compatibility while carrying display-only metadata in memory.
     warnings: list = field(default_factory=list)
     notes: list = field(default_factory=list)     # by-design advisories (not deficiencies) → neutral ⓘ
+    construction_summary: ConstructionSummary | None = None
+    component_entry: ComponentEntry | None = None
 
     def __post_init__(self) -> None:
+        if isinstance(self.component_entry, dict):
+            self.component_entry = ComponentEntry(**self.component_entry)
+        if self.component_entry is not None and not isinstance(self.component_entry, ComponentEntry):
+            raise TypeError("component_entry must be a ComponentEntry")
+        if isinstance(self.construction_summary, dict):
+            self.construction_summary = ConstructionSummary(**self.construction_summary)
+        if self.construction_summary is not None and not isinstance(
+                self.construction_summary, ConstructionSummary):
+            raise TypeError("construction_summary must be a ConstructionSummary")
         for field_name in ("embedding_norm_kind", "final_norm_kind"):
             value = getattr(self, field_name)
             if value not in {None, "rmsnorm", "layernorm", "unknown"}:
@@ -541,6 +607,10 @@ class ModelIR:
             "extras": self.extras,
             "warnings": self.warnings,
             "notes": self.notes,
+            **({"component_entry": self.component_entry.to_dict()}
+               if self.component_entry is not None else {}),
+            **({"construction_summary": self.construction_summary.to_dict()}
+               if self.construction_summary is not None else {}),
         }
         return document
 
