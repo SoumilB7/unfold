@@ -1,0 +1,196 @@
+{
+  "status": "ok",
+  "recipe": {
+    "recipe_id": "class-lookup",
+    "input_modality": "synthetic_tensor",
+    "train_eval": "eval",
+    "cache_state": "disabled",
+    "encoder_decoder_mode": "unspecified",
+    "conditioning_present": false,
+    "dtype": "float32",
+    "library_versions": {
+      "python": "3.12.10",
+      "test_support": "local",
+      "torch": "2.9.1"
+    },
+    "target_path": "",
+    "tensor_arguments": [
+      {
+        "name": "value",
+        "shape": [
+          1,
+          4
+        ],
+        "dtype": "float32",
+        "fill": "zeros",
+        "values": null,
+        "device": "meta"
+      }
+    ],
+    "literal_arguments": {},
+    "flags": {}
+  },
+  "observation": {
+    "schema_version": 1,
+    "provenance": {
+      "packages": [
+        {
+          "package": "python",
+          "version": "3.12.10"
+        },
+        {
+          "package": "test_support",
+          "version": "local"
+        },
+        {
+          "package": "torch",
+          "version": "2.9.1"
+        }
+      ],
+      "source_files": [
+        {
+          "module": "test_support.s6_models",
+          "path": "present.py",
+          "sha256": "d425aeeab9a296e56f58e00651286d3db63a5d0bd41247d16ff426eae0506bfb"
+        },
+        {
+          "module": "torch.nn.modules.linear",
+          "path": "linear.py",
+          "sha256": "63fb3cae2a1561fec5e183e45c171d177080113a3996f1046eea35530cd33247"
+        },
+        {
+          "module": "torch.nn.modules.module",
+          "path": "module.py",
+          "sha256": "d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd"
+        }
+      ],
+      "config_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "resolved_class": {
+        "module": "test_support.s6_models",
+        "qualname": "ClassLookupFixture"
+      },
+      "requested_factory": "test_support.s6_models.ClassLookupFixture",
+      "constructor_used": "test_support.s6_models.ClassLookupFixture(config)",
+      "build_flags": {},
+      "environment": {
+        "diffusers_offline": "1",
+        "hash_seed": "0",
+        "hf_hub_offline": "1",
+        "network": "macos-sandbox-exec+python-audit-hook",
+        "platform": "macOS-26.5.1-arm64-arm-64bit",
+        "python": "3.12.10",
+        "transformers_offline": "1"
+      }
+    },
+    "recipe": {
+      "recipe_id": "class-lookup",
+      "input_modality": "synthetic_tensor",
+      "train_eval": "eval",
+      "cache_state": "disabled",
+      "encoder_decoder_mode": "unspecified",
+      "conditioning_present": false,
+      "dtype": "float32",
+      "library_versions": {
+        "python": "3.12.10",
+        "test_support": "local",
+        "torch": "2.9.1"
+      },
+      "target_path": "",
+      "tensor_arguments": [
+        {
+          "name": "value",
+          "shape": [
+            1,
+            4
+          ],
+          "dtype": "float32",
+          "fill": "zeros",
+          "values": null,
+          "device": "meta"
+        }
+      ],
+      "literal_arguments": {},
+      "flags": {}
+    },
+    "module_calls": [
+      {
+        "index": 0,
+        "path": "",
+        "class_ref": {
+          "module": "test_support.s6_models",
+          "qualname": "ClassLookupFixture"
+        }
+      },
+      {
+        "index": 1,
+        "path": "projection",
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        }
+      }
+    ],
+    "functional_ops": [
+      {
+        "index": 0,
+        "op": "mul",
+        "callable": "mul"
+      }
+    ],
+    "lazy_observed": [],
+    "outcome": "observed"
+  },
+  "provenance": {
+    "packages": [
+      {
+        "package": "python",
+        "version": "3.12.10"
+      },
+      {
+        "package": "test_support",
+        "version": "local"
+      },
+      {
+        "package": "torch",
+        "version": "2.9.1"
+      }
+    ],
+    "source_files": [
+      {
+        "module": "test_support.s6_models",
+        "path": "present.py",
+        "sha256": "d425aeeab9a296e56f58e00651286d3db63a5d0bd41247d16ff426eae0506bfb"
+      },
+      {
+        "module": "torch.nn.modules.linear",
+        "path": "linear.py",
+        "sha256": "63fb3cae2a1561fec5e183e45c171d177080113a3996f1046eea35530cd33247"
+      },
+      {
+        "module": "torch.nn.modules.module",
+        "path": "module.py",
+        "sha256": "d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd"
+      }
+    ],
+    "config_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "resolved_class": {
+      "module": "test_support.s6_models",
+      "qualname": "ClassLookupFixture"
+    },
+    "requested_factory": "test_support.s6_models.ClassLookupFixture",
+    "constructor_used": "test_support.s6_models.ClassLookupFixture(config)",
+    "build_flags": {},
+    "environment": {
+      "diffusers_offline": "1",
+      "hash_seed": "0",
+      "hf_hub_offline": "1",
+      "network": "macos-sandbox-exec+python-audit-hook",
+      "platform": "macOS-26.5.1-arm64-arm-64bit",
+      "python": "3.12.10",
+      "transformers_offline": "1"
+    }
+  },
+  "failure": null,
+  "stdout": "",
+  "stderr": ""
+}

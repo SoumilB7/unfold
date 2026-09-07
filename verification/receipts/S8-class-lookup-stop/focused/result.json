@@ -1,0 +1,24 @@
+{
+  "tree": "bb48a31e336c1721f0a111862bd081acf390bb25",
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_s8_cell_connections.py",
+    "tests/test_s8_constructor_bindings.py",
+    "tests/test_s8_runtime_source.py",
+    "tests/test_s8_source_override.py",
+    "tests/test_s8_unet_routing.py",
+    "tests/test_s7_reconciliation.py",
+    "tests/test_unet_stage_cells.py",
+    "-k",
+    "not real_sdxl and not installed"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 49.929,
+  "tracked_fingerprint_before": "d8295cc669f0dc7a5b2223f2e73645320b3ba0dab4763991c28102046a674764",
+  "tracked_fingerprint_after": "d8295cc669f0dc7a5b2223f2e73645320b3ba0dab4763991c28102046a674764",
+  "identical": true,
+  "scope": "focused checks only; not the S8 broad gate; no baseline blessing"
+}

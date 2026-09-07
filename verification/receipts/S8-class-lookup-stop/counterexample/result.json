@@ -1,0 +1,23 @@
+{
+  "cases": {
+    "present": {
+      "source_sha256": "d425aeeab9a296e56f58e00651286d3db63a5d0bd41247d16ff426eae0506bfb",
+      "indexed_conditional_member_declarations": [],
+      "instance_attribute_present": false,
+      "observed_ops_under_recipe": [
+        "mul"
+      ],
+      "observation_status": "ok"
+    },
+    "absent": {
+      "source_sha256": "1c1a59dc8cc08d96f17bbff999a2bb0b93d8ff37579a73cc112d23e32df64785",
+      "indexed_conditional_member_declarations": [],
+      "instance_attribute_present": false,
+      "observed_ops_under_recipe": [],
+      "observation_status": "ok"
+    }
+  },
+  "module_populations_identical": true,
+  "gap": "ClassRecord has no conditional class-member address or class-body coverage record; an absent instance attribute cannot establish getattr's default branch.",
+  "scope": "The trace is a positive-only counterexample, never a static negative proof."
+}
