@@ -108,7 +108,7 @@ class UNetPrimaryPortProof:
 
     def summary(self):
         return ClaimProofSummary(self.fact_id, self.claim_kind, self.proof_kind, self.reader_symbols,
-            tuple(_ref(span) for span in self.investigation[1]),
+            tuple(sorted({_ref(span) for span in self.investigation[1]})),
             document_fingerprints=(self.bindings.table.config_sha256,),
             index_fingerprints=(self.bindings.index.fingerprint,))
 

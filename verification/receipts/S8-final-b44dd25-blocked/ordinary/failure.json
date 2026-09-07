@@ -1,0 +1,6 @@
+{
+  "blessed": false,
+  "detail": "claim proof summary values are canonical",
+  "exception_type": "ValueError",
+  "status": "failed"
+}

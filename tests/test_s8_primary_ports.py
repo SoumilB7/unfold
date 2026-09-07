@@ -1,5 +1,6 @@
 """Primary region boundaries preserve source history without helper semantics."""
 import textwrap
+import pytest
 
 from model_unfolder.evidence.models import SourceBundle
 from model_unfolder.evidence.program_index import build_program_index
@@ -110,3 +111,70 @@ def test_primary_reader_declaration_enters_catalogue_and_requires_connection():
     ledger.record_typed(fact)
     assert ledger.typed[fact.ledger_key()] is fact
     assert FACT_CLAIM_REQUIREMENTS[key] == UNetPrimaryPortProof.claim_kind == "connection"
+
+
+def test_actual_primary_proof_passes_summary_and_fact_qualification(tmp_path):
+    from dataclasses import replace
+    import hashlib
+    from model_unfolder.evidence.component_owner import resolve_component_root
+    from model_unfolder.evidence.context import FactLedger
+    from model_unfolder.evidence.diffusion_root import read_diffusion_root_topology
+    from model_unfolder.evidence.document import prepare_document
+    from model_unfolder.evidence.reconciliation import reconcile, ProjectionFactCitation
+    from model_unfolder.evidence.runtime_source import RuntimeSourceBindings
+    from model_unfolder.evidence.unet_primary_ports import read_unet_primary_ports
+    from model_unfolder.evidence.unet_stage_construction import read_unet_stage_construction
+    from model_unfolder.evidence.unet_stage_execution import read_unet_stage_execution
+    from physics.instance_inventory import InstanceInventory, ModuleNode, PackageVersion, Provenance, ResolvedClass, SourceFile
+
+    source = '''from torch.nn import ModuleList
+class Unit:
+    def forward(self, value, side=None): return value, (value,)
+def build(token):
+    if token == 'one': return Unit()
+    return Unit()
+class Root:
+    def __init__(self, config):
+        self.left = ModuleList([])
+        self.right = ModuleList([])
+        for token in config.left:
+            self.left.append(build(token))
+        for token in config.right:
+            self.right.append(build(token))
+    def forward(self, value):
+        saved = (value,)
+        for first in self.left:
+            value, branch = first(value)
+            saved += branch
+        for second in self.right:
+            side = saved[-1:]
+            value = second(value, side)
+        return value
+'''
+    source = source.replace('        saved = (value,)\n',
+                            '        value = preprocess(value)\n' + '\n' * 90 + '        saved = (value,)\n')
+    path = tmp_path / 'model.py'; path.write_text(source)
+    bundle = SourceBundle(source='test', architecture='Root',
+                          component_files={'root': (str(path),)}, component_architectures={'root': 'Root'})
+    index = build_program_index(bundle)
+    root = resolve_component_root(index, bundle, 'root')
+    topology = read_diffusion_root_topology(index, root).require_value()
+    construction = read_unet_stage_construction(index, bundle, root, topology).require_value()
+    graph = read_unet_stage_execution(construction, bundle, root).require_value()
+    cls = ResolvedClass('fixture.model', 'Root')
+    provenance = Provenance((PackageVersion('fixture', 'test'),),
+        (SourceFile('fixture.model', 'model.py', hashlib.sha256(path.read_bytes()).hexdigest()),),
+        hashlib.sha256(b'{}').hexdigest(), cls, 'fixture.model.Root', 'fixture.model.Root(config)', {},
+        {'python': '3.12', 'platform': 'test', 'hash_seed': '0', 'network': 'denied',
+         'hf_hub_offline': '1', 'transformers_offline': '1', 'diffusers_offline': '1'})
+    inventory = InstanceInventory(1, provenance, (ModuleNode('', cls, cls.module, (cls,), (), (), {}, ()),), (), ())
+    table = reconcile(model='fixture', inventory=inventory, observations=(),
+                      config_document=prepare_document({}, merge=False), program_index=graph.index)
+    bindings = RuntimeSourceBindings(table, inventory, graph.index)
+    fact = read_unet_primary_ports(graph, bindings)
+    ledger = FactLedger(); ledger.record_typed(fact)
+    citation = ProjectionFactCitation(fact)
+    assert citation.summary.evidence_refs == tuple(sorted(set(citation.summary.evidence_refs)))
+    assert len(citation.summary.evidence_refs) > 1
+    with pytest.raises(ValueError, match='semantic kind'):
+        replace(fact, claim_kind='existence')
