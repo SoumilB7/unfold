@@ -1,0 +1,17 @@
+[
+  [
+    ".extras.render.loop_blocks[6].detail.fact_display_lines.root.denoiser.declared_constructor_defaults[0]",
+    "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)",
+    "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)"
+  ],
+  [
+    ".extras.render.loop_blocks[6].detail.fact_display_lines.root.denoiser.declared_constructor_defaults[1]",
+    "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)",
+    "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)"
+  ],
+  [
+    ".extras.render.loop_blocks[6].detail.fact_display_lines.root.denoiser.declared_constructor_defaults[2]",
+    "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)",
+    "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)"
+  ]
+]

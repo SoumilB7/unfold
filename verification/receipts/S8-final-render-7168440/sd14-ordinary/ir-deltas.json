@@ -1,0 +1,378 @@
+{
+  "block_fields": [
+    {
+      "after": {
+        "root.denoiser.declared_constructor_defaults": [
+          "Declared class default \u00b7 addition_embed_type: null (checkpoint omitted)",
+          "Declared class default \u00b7 addition_embed_type_num_heads: 64 (checkpoint omitted)",
+          "Declared class default \u00b7 addition_time_embed_dim: null (checkpoint omitted)",
+          "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)",
+          "Declared class default \u00b7 class_embed_type: null (checkpoint omitted)",
+          "Declared class default \u00b7 class_embeddings_concat: false (checkpoint omitted)",
+          "Declared class default \u00b7 conv_in_kernel: 3 (checkpoint omitted)",
+          "Declared class default \u00b7 conv_out_kernel: 3 (checkpoint omitted)",
+          "Declared class default \u00b7 cross_attention_norm: null (checkpoint omitted)",
+          "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)",
+          "Declared class default \u00b7 dual_cross_attention: false (checkpoint omitted)",
+          "Declared class default \u00b7 encoder_hid_dim: null (checkpoint omitted)",
+          "Declared class default \u00b7 encoder_hid_dim_type: null (checkpoint omitted)",
+          "Declared class default \u00b7 mid_block_only_cross_attention: null (checkpoint omitted)",
+          "Declared class default \u00b7 mid_block_type: \"UNetMidBlock2DCrossAttn\" (checkpoint omitted)",
+          "Declared class default \u00b7 num_attention_heads: null (checkpoint omitted)",
+          "Declared class default \u00b7 num_class_embeds: null (checkpoint omitted)",
+          "Declared class default \u00b7 only_cross_attention: false (checkpoint omitted)",
+          "Declared class default \u00b7 projection_class_embeddings_input_dim: null (checkpoint omitted)",
+          "Declared class default \u00b7 resnet_out_scale_factor: 1.0 (checkpoint omitted)",
+          "Declared class default \u00b7 resnet_skip_time_act: false (checkpoint omitted)",
+          "Declared class default \u00b7 resnet_time_scale_shift: \"default\" (checkpoint omitted)",
+          "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)",
+          "Declared class default \u00b7 time_cond_proj_dim: null (checkpoint omitted)",
+          "Declared class default \u00b7 time_embedding_act_fn: null (checkpoint omitted)",
+          "Declared class default \u00b7 time_embedding_dim: null (checkpoint omitted)",
+          "Declared class default \u00b7 time_embedding_type: \"positional\" (checkpoint omitted)",
+          "Declared class default \u00b7 timestep_post_act: null (checkpoint omitted)",
+          "Declared class default \u00b7 transformer_layers_per_block: 1 (checkpoint omitted)",
+          "Declared class default \u00b7 upcast_attention: false (checkpoint omitted)",
+          "Declared class default \u00b7 use_linear_projection: false (checkpoint omitted)"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "denoiser"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__0__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__0__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__0__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__0__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": {
+        "root.denoiser.spatial_mechanisms": [
+          "Source-proven spatial primitive: torch.nn.Conv2d",
+          "Stride: 2"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "instance_down_blocks__0__downsamplers__0"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": {
+        "root.denoiser.spatial_mechanisms": [
+          "Source-proven spatial primitive: torch.nn.Conv2d",
+          "Stride: 2"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "instance_down_blocks__1__downsamplers__0"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": {
+        "root.denoiser.spatial_mechanisms": [
+          "Source-proven spatial primitive: torch.nn.Conv2d",
+          "Stride: 2"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "instance_down_blocks__2__downsamplers__0"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_mid_block__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_mid_block__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": {
+        "root.denoiser.spatial_mechanisms": [
+          "Source-proven spatial primitive: torch.nn.functional.interpolate",
+          "Resize direction: investigation_missing"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "instance_up_blocks__0__upsamplers__0"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__1__attentions__2__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__1__attentions__2__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": {
+        "root.denoiser.spatial_mechanisms": [
+          "Source-proven spatial primitive: torch.nn.functional.interpolate",
+          "Resize direction: investigation_missing"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "instance_up_blocks__1__upsamplers__0"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__2__attentions__2__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__2__attentions__2__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": {
+        "root.denoiser.spatial_mechanisms": [
+          "Source-proven spatial primitive: torch.nn.functional.interpolate",
+          "Resize direction: investigation_missing"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "instance_up_blocks__2__upsamplers__0"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__3__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__3__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__3__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__3__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__3__attentions__2__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__3__attentions__2__transformer_blocks__0__ff__op_activation"
+    }
+  ],
+  "block_occurrences_changed": [
+    "denoiser",
+    "instance_down_blocks__0__attentions__0__transformer_blocks__0__ff__op_activation",
+    "instance_down_blocks__0__attentions__1__transformer_blocks__0__ff__op_activation",
+    "instance_down_blocks__0__downsamplers__0",
+    "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation",
+    "instance_down_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation",
+    "instance_down_blocks__1__downsamplers__0",
+    "instance_down_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation",
+    "instance_down_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation",
+    "instance_down_blocks__2__downsamplers__0",
+    "instance_mid_block__attentions__0__transformer_blocks__0__ff__op_activation",
+    "instance_up_blocks__0__upsamplers__0",
+    "instance_up_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation",
+    "instance_up_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation",
+    "instance_up_blocks__1__attentions__2__transformer_blocks__0__ff__op_activation",
+    "instance_up_blocks__1__upsamplers__0",
+    "instance_up_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation",
+    "instance_up_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation",
+    "instance_up_blocks__2__attentions__2__transformer_blocks__0__ff__op_activation",
+    "instance_up_blocks__2__upsamplers__0",
+    "instance_up_blocks__3__attentions__0__transformer_blocks__0__ff__op_activation",
+    "instance_up_blocks__3__attentions__1__transformer_blocks__0__ff__op_activation",
+    "instance_up_blocks__3__attentions__2__transformer_blocks__0__ff__op_activation"
+  ],
+  "component_entry": null,
+  "construction_summary": {
+    "parameter_count": 859520964,
+    "parameterized_module_count": 391,
+    "population_fact_key": "root.denoiser.constructed_modules",
+    "scope": "denoiser",
+    "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+    "stage_count": 9,
+    "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+  },
+  "removed_legacy_component_input_ids": null,
+  "removed_legacy_component_scope": null
+}

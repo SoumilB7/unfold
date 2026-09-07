@@ -1,0 +1,42 @@
+[
+  {
+    "case": "sdxl-rewrite",
+    "exit_code": 0,
+    "elapsed_seconds": 11.185
+  },
+  {
+    "case": "sdxl-unchanged",
+    "exit_code": 0,
+    "elapsed_seconds": 10.294
+  },
+  {
+    "case": "sdxl-changed",
+    "exit_code": 0,
+    "elapsed_seconds": 10.665
+  },
+  {
+    "case": "sdxl-missing",
+    "exit_code": 0,
+    "elapsed_seconds": 10.355
+  },
+  {
+    "case": "sd14-ordinary",
+    "exit_code": 0,
+    "elapsed_seconds": 9.632
+  },
+  {
+    "case": "sdxl-refiner",
+    "exit_code": 0,
+    "elapsed_seconds": 6.931
+  },
+  {
+    "case": "sdxl-inpainting",
+    "exit_code": 0,
+    "elapsed_seconds": 7.35
+  },
+  {
+    "case": "ddpm-cifar10",
+    "exit_code": 0,
+    "elapsed_seconds": 6.517
+  }
+]

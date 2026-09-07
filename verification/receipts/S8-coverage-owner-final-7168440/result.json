@@ -1,0 +1,43 @@
+{
+  "all44_non_silent_fields_equal_prior_red": true,
+  "blessed": false,
+  "changed_inputs": [
+    "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json",
+    "tests/unseen_model_configs/sd-v1-4.json"
+  ],
+  "denominator": 44,
+  "new_model_execution_by_this_audit": false,
+  "other42_complete_coverage_rows_equal_accepted": true,
+  "pins": {
+    "accepted": {
+      "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-coverage-5227e9c-return/accepted-coverage.json",
+      "sha256": "769ff9d45e47cb2107d3b7a89f89a640656bdce34f5be0284ef8d534088cc767"
+    },
+    "final": {
+      "path": "/private/tmp/unfold-s8-coverage-7168440/current-coverage.json",
+      "sha256": "98d8c6777daa939584a564af302d8ad784d88405f0e2214850b296eaa6a0a675"
+    },
+    "prior_red": {
+      "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-coverage-5227e9c-return/current-coverage.json",
+      "sha256": "dc5ff6b649a1b463718f54a96f7651c0a3c154655885939e28ab18bc518add75"
+    }
+  },
+  "status": "PASS",
+  "totals": {
+    "accepted": {
+      "flagged": 241,
+      "proven": 621,
+      "silent": 0
+    },
+    "final": {
+      "flagged": 294,
+      "proven": 645,
+      "silent": 0
+    },
+    "prior_red": {
+      "flagged": 294,
+      "proven": 645,
+      "silent": 620
+    }
+  }
+}

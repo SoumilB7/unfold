@@ -1,0 +1,197 @@
+[
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "auraflow-v0-3"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "bloom"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "dbrx-base"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "deepseek-v3"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "flux-2-dev"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "gemma-2-2b-it"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "glm-4-5"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "gpt-oss-20b"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "granite-3-0-8b-instruct"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "llama-7b"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "ltx-video"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "mochi-1-preview"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "musicgen-small"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "olmo-2-1124-7b"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "pixart-sigma-xl-2-1024-ms"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "qwen-image"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "qwen2-vl-7b-instruct"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "qwen3-5-27b-text"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "qwen3-8b"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "stable-diffusion-3-5-large"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "actual_saved_evidence_reconciliation_7168440",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "stablelm-2-1-6b"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "wan2-2-t2v-a14b-diffusers"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "command-a-03-2025"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "deepseek-coder-v2-lite"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "deepseek-v4-flash"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "gemma-3n-e2b"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "jamba-v0-1"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "lfm2-1-2b"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "nemotron-h-8b"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "qwen3-5-27b"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "qwen3-omni-30b"
+  },
+  {
+    "new_model_or_execution": false,
+    "phase": "owner_source_input_proven_unchanged_payload",
+    "slug": "qwen3-vl-235b"
+  }
+]

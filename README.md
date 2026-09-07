@@ -66,11 +66,11 @@ architecture.
 
 [`coverage.json`](coverage.json) is the machine-readable denominator for this
 release. Across its 29 reviewed corpus witnesses and 15 frozen unseen-model
-checks, the exact S4 receipt is:
+checks, the current receipt is:
 
 | Proven | Visibly flagged | Silent |
 |---:|---:|---:|
-| **621** | **241** | **0** |
+| **645** | **294** | **0** |
 
 `flagged` is not a hidden success: the drawing tells the reader which evidence
 is unresolved. `silent = 0` means no known blocking audit result or crash is
@@ -103,8 +103,8 @@ gate, not additions to the reviewed support set.
 - Stable Diffusion 3.5 and PixArt currently show the denoiser shell and an
   explicit “repeated denoiser structure unresolved” warning; they do not invent
   a conventional transformer stack.
-- SDXL exposes eleven exact denoiser config reads that are not yet proven into
-  the drawing. The exact rows are available under the warning disclosure.
+- SDXL exposes 45 denoiser config reads whose use is not yet fully accounted
+  for. The exact rows are available under the warning disclosure.
 - The unseen Jamba control visibly reports that its current attention drawing
   does not yet match every Mamba/attention layer; the warning is not a fix.
 - Some Qwen3.x multimodal configs preserve the proven text tower while showing

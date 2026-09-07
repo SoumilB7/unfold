@@ -1,0 +1,434 @@
+{
+  "activation_card_changes": [
+    {
+      "count": 1,
+      "id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__1__attentions__0__transformer_blocks__1__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__1__attentions__1__transformer_blocks__1__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__1__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__2__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__3__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__4__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__5__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__6__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__7__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__8__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__9__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__1__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__2__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__3__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__4__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__5__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__6__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__7__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__8__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__9__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_mid_block__attentions__0__transformer_blocks__0__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_mid_block__attentions__0__transformer_blocks__1__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_mid_block__attentions__0__transformer_blocks__2__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_mid_block__attentions__0__transformer_blocks__3__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_mid_block__attentions__0__transformer_blocks__4__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_mid_block__attentions__0__transformer_blocks__5__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_mid_block__attentions__0__transformer_blocks__6__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_mid_block__attentions__0__transformer_blocks__7__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_mid_block__attentions__0__transformer_blocks__8__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_mid_block__attentions__0__transformer_blocks__9__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__0__transformer_blocks__0__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__0__transformer_blocks__1__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__0__transformer_blocks__2__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__0__transformer_blocks__3__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__0__transformer_blocks__4__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__0__transformer_blocks__5__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__0__transformer_blocks__6__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__0__transformer_blocks__7__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__0__transformer_blocks__8__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__0__transformer_blocks__9__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__1__transformer_blocks__0__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__1__transformer_blocks__1__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__1__transformer_blocks__2__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__1__transformer_blocks__3__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__1__transformer_blocks__4__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__1__transformer_blocks__5__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__1__transformer_blocks__6__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__1__transformer_blocks__7__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__1__transformer_blocks__8__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__1__transformer_blocks__9__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__2__transformer_blocks__0__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__2__transformer_blocks__1__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__2__transformer_blocks__2__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__2__transformer_blocks__3__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__2__transformer_blocks__4__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__2__transformer_blocks__5__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__2__transformer_blocks__6__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__2__transformer_blocks__7__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__2__transformer_blocks__8__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__0__attentions__2__transformer_blocks__9__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__1__attentions__0__transformer_blocks__1__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__1__attentions__1__transformer_blocks__1__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__1__attentions__2__transformer_blocks__0__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    },
+    {
+      "count": 1,
+      "id": "instance_up_blocks__1__attentions__2__transformer_blocks__1__ff__op_activation",
+      "new_title": "GELU",
+      "old_title": "gelu"
+    }
+  ],
+  "actual_html_only_declared_card_titles_and_component_header": true,
+  "added_exact_receipt_events": 75,
+  "after_event_count": 2610,
+  "before_event_count": 2535,
+  "case": "sdxl-misleading",
+  "component_header_change": null,
+  "new_html_sha256": "3dfc7b490f6792cc19a1b12d3700eca053a23ff886422f0f9901a26ed1ec839f",
+  "old_html_sha256": "c323a34cceecbbd051540d809305a6f6be340fbd20594e5ea4091b65390d2728",
+  "prior_events_retained": true,
+  "svg_bytes_unchanged": true
+}

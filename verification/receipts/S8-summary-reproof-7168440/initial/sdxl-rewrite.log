@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/private/tmp/unfold-s8-final-verification-7168440/verification/receipts/S8-typed-terminal-focused/reprove_summary.py", line 49, in <module>
+    request=request_from_resolved_source(document,bundle,selected,index=index)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/unfold-s8-final-verification-7168440/model_unfolder/evidence/runtime_inventory.py", line 38, in request_from_resolved_source
+    raise ValueError("the resolved root lacks one exact supported import address")
+ValueError: the resolved root lacks one exact supported import address

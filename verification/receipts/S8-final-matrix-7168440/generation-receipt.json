@@ -1,0 +1,9 @@
+{
+  "all117_artifact_bytes_equal_5227": true,
+  "all_model_summaries_equal_5227": true,
+  "denominator": 39,
+  "elapsed_seconds": 10.624,
+  "lineage": "25original96 +1separatePixArt +1savedSDXL +12actual5227;716derivation adds38source-input no-op proofs +1savedSDXL reconciliation",
+  "new_model_or_execution": false,
+  "source_manifest_refreshed_by_real_generator": true
+}

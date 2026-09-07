@@ -1,0 +1,8 @@
+{
+  "command": [
+    "python3",
+    "scripts/generate_s7_shadow.py",
+    "--check"
+  ],
+  "exit_code": 0
+}

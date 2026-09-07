@@ -1,0 +1,15 @@
+# Final saved-evidence render phase:7168440
+
+All eleven actual pages pass the five existing click, tree, ID and stroke validators, label lint and the projection audit. Seven SDXL controls, SD-v1-4 ordinary and the three extra component witnesses retain exact canonical fact bytes and exact parameter records. This phase never rebuilds a model, executes a model, reinterprets missing mechanisms or blesses outputs.
+
+Each case transports its own final rederived ConstructionSummary after verifying the three full qualified values, claim kinds, original input/inventory/fact hashes, exact summary fields and production manifests. Full reproof records and archive-byte checks are retained per case. Historical scratch/source/model records remain at their original pins. The three proof source reads are separately recorded by the executor; they are not a new full architecture parse.
+
+Old5227 and current pure projectors consume the same saved values in separate source-pinned subprocesses. The only transferred changes are enumerated activation operation labels, fact_display_lines metadata for already present exact chips, the optional typed component interface and the qualified construction summary. Reversing these exact transfers must recover the complete original IR. Empty outer handoffs used for the bounded comparison never replace the supplied complete pipeline. Typed component-entry input IDs must match the original producer-owned scope and exact input IDs; full supplied SDXL has no component entry.
+
+Every actual SVG is byte-identical to5227. The complete actual HTML equals the prior page after only the listed activation card-title capitalization and, on component-only cases, explicit DENOISER COMPONENT heading/subtitle replacements. No HTML bytes are rewritten to achieve this result: this equality is a diagnostic against actual Diagram output. The missing-evidence page remains byte-identical. Warnings and quantities remain exact.
+
+All prior render events remain; the new events are only exact displayed default/spatial chips and FFN mechanisms whose returned SVG contains their declared operation nodes. These are enumerated additions, not an event-equality claim. Each case records the complete new event sequence and added/removed event ledger. The original old/new architecture differential remains unchanged in authority and owner disposition; this receipt is its incremental presentation/receipt delta only.
+
+Ordinary, supported equivalent rewrite and unchanged scratch actual HTML bytes are identical at the final renderer. Exact hashes are in summary.json and raw-control-identity.json. Previous phases and failure artifacts remain preserved. DDPM still has six unbound bookend connections and open stage-target limitations; the bounded ResNet claim remains a member-connection fragment. Native diagram review carries forward solely through exact SVG equality; HTML card prose changes are artifact checks, not new browser pixel review.
+
+Decision page: root z-docs/12-design/S8/final-7168440/index.html. Executor owns the independent final coverage/matrix and broad gates. Nothing is automatically approved or blessed here.

@@ -1,0 +1,9 @@
+{
+  "label_lint": [],
+  "projection_audit": [],
+  "validate_block_tree": [],
+  "validate_click_coupling": [],
+  "validate_no_dotted_arrows": [],
+  "validate_no_dotted_boundaries": [],
+  "validate_unique_ref_ids": []
+}

@@ -1,0 +1,1003 @@
+[
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/auraflow-v0-3.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/bloom.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/cogvideox-5b.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/dbrx-base.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/deepseek-v3.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/flux-2-dev.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/fluxtransformer2dmodel.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/gemma-2-2b-it.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/glm-4-5.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/gpt-oss-20b.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/granite-3-0-8b-instruct.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/hunyuanvideo.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/llama-7b.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/ltx-video.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/lumina-image-2-0.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/mochi-1-preview.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/musicgen-small.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/olmo-2-1124-7b.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/pixart-sigma-xl-2-1024-ms.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/prxpixel-t2i.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/qwen-image.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/qwen2-vl-7b-instruct.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/qwen3-5-27b-text.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/qwen3-8b.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/sana-1600m-1024px-diffusers.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/stable-diffusion-3-5-large.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {
+      "flagged": {
+        "after": 48,
+        "before": 11
+      },
+      "flagged_findings": {
+        "after": [
+          "config_accessed_unprojected: config occurrence root.denoiser:'act_fn' (spelled 'act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'addition_embed_type_num_heads' (spelled 'addition_embed_type_num_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'attention_head_dim' (spelled 'attention_head_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'center_input_sample' (spelled 'center_input_sample') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'class_embed_type' (spelled 'class_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'class_embeddings_concat' (spelled 'class_embeddings_concat') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'conv_in_kernel' (spelled 'conv_in_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'conv_out_kernel' (spelled 'conv_out_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'cross_attention_dim' (spelled 'cross_attention_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'cross_attention_norm' (spelled 'cross_attention_norm') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'downsample_padding' (spelled 'downsample_padding') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'dual_cross_attention' (spelled 'dual_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'encoder_hid_dim' (spelled 'encoder_hid_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'encoder_hid_dim_type' (spelled 'encoder_hid_dim_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'flip_sin_to_cos' (spelled 'flip_sin_to_cos') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'freq_shift' (spelled 'freq_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'in_channels' (spelled 'in_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'mid_block_only_cross_attention' (spelled 'mid_block_only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'mid_block_scale_factor' (spelled 'mid_block_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'mid_block_type' (spelled 'mid_block_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'norm_eps' (spelled 'norm_eps') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'norm_num_groups' (spelled 'norm_num_groups') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'num_attention_heads' (spelled 'num_attention_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'num_class_embeds' (spelled 'num_class_embeds') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'only_cross_attention' (spelled 'only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'out_channels' (spelled 'out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'projection_class_embeddings_input_dim' (spelled 'projection_class_embeddings_input_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'resnet_out_scale_factor' (spelled 'resnet_out_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'resnet_skip_time_act' (spelled 'resnet_skip_time_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'resnet_time_scale_shift' (spelled 'resnet_time_scale_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'sample_size' (spelled 'sample_size') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'time_cond_proj_dim' (spelled 'time_cond_proj_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'time_embedding_act_fn' (spelled 'time_embedding_act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'time_embedding_dim' (spelled 'time_embedding_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'time_embedding_type' (spelled 'time_embedding_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'timestep_post_act' (spelled 'timestep_post_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'transformer_layers_per_block' (spelled 'transformer_layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'upcast_attention' (spelled 'upcast_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'use_linear_projection' (spelled 'use_linear_projection') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_standing_unconsumed: root.denoiser:act_fn (as act_fn) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+          "config_standing_unconsumed: root.denoiser:norm_eps (as norm_eps) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+          "config_audit_incomplete: root.denoiser"
+        ],
+        "before": [
+          "config_accessed_unprojected: config occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'encoder_hid_dim' (spelled 'encoder_hid_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'encoder_hid_dim_type' (spelled 'encoder_hid_dim_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'mid_block_type' (spelled 'mid_block_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'projection_class_embeddings_input_dim' (spelled 'projection_class_embeddings_input_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'transformer_layers_per_block' (spelled 'transformer_layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored"
+        ]
+      },
+      "proven": {
+        "after": 12,
+        "before": 0
+      }
+    },
+    "input": "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json",
+    "removed_silent_findings": [
+      "label_lint: block 'instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__1__attentions__0__transformer_blocks__1__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__1__attentions__1__transformer_blocks__1__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__0__transformer_blocks__1__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__0__transformer_blocks__2__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__0__transformer_blocks__3__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__0__transformer_blocks__4__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__0__transformer_blocks__5__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__0__transformer_blocks__6__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__0__transformer_blocks__7__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__0__transformer_blocks__8__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__0__transformer_blocks__9__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__1__transformer_blocks__1__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__1__transformer_blocks__2__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__1__transformer_blocks__3__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__1__transformer_blocks__4__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__1__transformer_blocks__5__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__1__transformer_blocks__6__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__1__transformer_blocks__7__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__1__transformer_blocks__8__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__1__transformer_blocks__9__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_mid_block__attentions__0__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_mid_block__attentions__0__transformer_blocks__1__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_mid_block__attentions__0__transformer_blocks__2__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_mid_block__attentions__0__transformer_blocks__3__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_mid_block__attentions__0__transformer_blocks__4__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_mid_block__attentions__0__transformer_blocks__5__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_mid_block__attentions__0__transformer_blocks__6__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_mid_block__attentions__0__transformer_blocks__7__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_mid_block__attentions__0__transformer_blocks__8__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_mid_block__attentions__0__transformer_blocks__9__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__0__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__0__transformer_blocks__1__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__0__transformer_blocks__2__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__0__transformer_blocks__3__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__0__transformer_blocks__4__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__0__transformer_blocks__5__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__0__transformer_blocks__6__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__0__transformer_blocks__7__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__0__transformer_blocks__8__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__0__transformer_blocks__9__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__1__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__1__transformer_blocks__1__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__1__transformer_blocks__2__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__1__transformer_blocks__3__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__1__transformer_blocks__4__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__1__transformer_blocks__5__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__1__transformer_blocks__6__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__1__transformer_blocks__7__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__1__transformer_blocks__8__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__1__transformer_blocks__9__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__2__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__2__transformer_blocks__1__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__2__transformer_blocks__2__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__2__transformer_blocks__3__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__2__transformer_blocks__4__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__2__transformer_blocks__5__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__2__transformer_blocks__6__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__2__transformer_blocks__7__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__2__transformer_blocks__8__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__0__attentions__2__transformer_blocks__9__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__1__attentions__0__transformer_blocks__1__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__1__attentions__1__transformer_blocks__1__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__1__attentions__2__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__1__attentions__2__transformer_blocks__1__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "projection_audit: ledger fact 'root.denoiser.declared_constructor_defaults' (class_default) is proven from evidence but no render surface projects it \u2014 add its leaf to the surface's facts_projected (a proven fact the diagram silently drops)",
+      "projection_audit: ledger fact 'root.denoiser.ffn_mechanisms' (code_proven) is proven from evidence but no render surface projects it \u2014 add its leaf to the surface's facts_projected (a proven fact the diagram silently drops)",
+      "projection_audit: ledger fact 'root.denoiser.spatial_mechanisms' (code_proven) is proven from evidence but no render surface projects it \u2014 add its leaf to the surface's facts_projected (a proven fact the diagram silently drops)",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/stablelm-2-1-6b.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/sable_test_corpus/wan2-2-t2v-a14b-diffusers.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/unseen_model_configs/command-a-03-2025.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/unseen_model_configs/deepseek-coder-v2-lite.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/unseen_model_configs/glm-4-9b.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/unseen_model_configs/gpt-neox-20b.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/unseen_model_configs/hunyuandit-v1-2.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/unseen_model_configs/jamba-v0-1.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/unseen_model_configs/lfm2-1-2b.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/unseen_model_configs/minimax-m2.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/unseen_model_configs/qwen3-5-27b-full.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/unseen_model_configs/qwen3-6-35b-a3b.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/unseen_model_configs/qwen3-omni-30b.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/unseen_model_configs/qwen3-vl-235b.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/unseen_model_configs/sana-1-5-4-8b.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {
+      "flagged": {
+        "after": 22,
+        "before": 6
+      },
+      "flagged_findings": {
+        "after": [
+          "config_field_audit: unread config field 'feature_extractor' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'safety_checker' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_accessed_unprojected: config occurrence root.denoiser:'act_fn' (spelled 'act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'attention_head_dim' (spelled 'attention_head_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'center_input_sample' (spelled 'center_input_sample') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'cross_attention_dim' (spelled 'cross_attention_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'downsample_padding' (spelled 'downsample_padding') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'flip_sin_to_cos' (spelled 'flip_sin_to_cos') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'freq_shift' (spelled 'freq_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'in_channels' (spelled 'in_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'mid_block_scale_factor' (spelled 'mid_block_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'norm_eps' (spelled 'norm_eps') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'norm_num_groups' (spelled 'norm_num_groups') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'out_channels' (spelled 'out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'sample_size' (spelled 'sample_size') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_standing_unconsumed: root.denoiser:act_fn (as act_fn) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+          "config_standing_unconsumed: root.denoiser:norm_eps (as norm_eps) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+          "config_audit_incomplete: root.denoiser"
+        ],
+        "before": [
+          "config_field_audit: unread config field 'feature_extractor' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'safety_checker' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_accessed_unprojected: config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored"
+        ]
+      },
+      "proven": {
+        "after": 12,
+        "before": 0
+      }
+    },
+    "input": "tests/unseen_model_configs/sd-v1-4.json",
+    "removed_silent_findings": [
+      "label_lint: block 'instance_down_blocks__0__attentions__0__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__0__attentions__1__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_down_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_mid_block__attentions__0__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__1__attentions__2__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__2__attentions__2__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__3__attentions__0__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__3__attentions__1__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "label_lint: block 'instance_up_blocks__3__attentions__2__transformer_blocks__0__ff__op_activation': activation label 'gelu' is a raw backend spelling \u2014 draw the clean math name (e.g. 'GELU').",
+      "projection_audit: ledger fact 'root.denoiser.declared_constructor_defaults' (class_default) is proven from evidence but no render surface projects it \u2014 add its leaf to the surface's facts_projected (a proven fact the diagram silently drops)",
+      "projection_audit: ledger fact 'root.denoiser.ffn_mechanisms' (code_proven) is proven from evidence but no render surface projects it \u2014 add its leaf to the surface's facts_projected (a proven fact the diagram silently drops)",
+      "projection_audit: ledger fact 'root.denoiser.spatial_mechanisms' (code_proven) is proven from evidence but no render surface projects it \u2014 add its leaf to the surface's facts_projected (a proven fact the diagram silently drops)",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  },
+  {
+    "differences_vs_accepted": {},
+    "input": "tests/unseen_model_configs/seed-oss-36b.json",
+    "removed_silent_findings": [
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_cutover.py::build_unet_cutover -> ledger:<dynamic>",
+      "structural_debt_register: unregistered structural writer: model_unfolder/adapters/diffusor/unet_projection.py::project_unet -> spec:ModelIR",
+      "structural_debt_register: dead writer: model_unfolder/expanded/loop.py::build_sampling_loop for consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/sections.py::_diffusion_stats for consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: dead writer: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view for consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/expanded/loop.py::build_sampling_loop:consumer_read:json.raw_extras.6857ba8217a73268) \u2014 delete the row: consumer_read:json.raw_extras.6857ba8217a73268",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/sections.py::_diffusion_stats:consumer_read:renderer.raw_extras.da27bb4cf97df230) \u2014 delete the row: consumer_read:renderer.raw_extras.da27bb4cf97df230",
+      "structural_debt_register: deletion condition already met (writer_gone:model_unfolder/renderers/html/views_diffusion.py::_build_loop_view:consumer_read:renderer.raw_extras.07d25d5749cfe49b) \u2014 delete the row: consumer_read:renderer.raw_extras.07d25d5749cfe49b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/expanded/loop.py::build_sampling_loop -> json.raw_extras.d0ee07a956d485d0",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/params.py::estimate_params -> params.raw_extras.73859e94d9daf045",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/sections.py::_diffusion_stats -> renderer.raw_extras.7f1b3f1b0ce8f10b",
+      "structural_debt_register: terminal consumer read without an exact debt row: model_unfolder/renderers/html/views_diffusion.py::_build_loop_view -> renderer.raw_extras.98a0a19126cf7d00"
+    ]
+  }
+]

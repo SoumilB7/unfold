@@ -1,0 +1,9 @@
+# Eleven exact construction-summary reproofs at7168440
+
+All11saved cases rederive the three newly consumed real typed proofs: constructed population, parameter shapes and source stage relation. Their complete values equal their own original facts; no summary is copied across cases. The factory and reverse checker accept each summary. Ordinary is2,567,463,684parameters/1,050weighted modules/7stages; changed keeps its own2,656,985,604total. Missing nested FFN evidence still retains its independently proved construction summary. DDPM and the other two published denoisers each retain their own proof.
+
+Each case checks the exact config digest, factory identity, static/runtime root SHA and original inventory/fact hashes. Root-owned and external source nodes in the stage closure match the cited source archive; other supplied component nodes are recorded separately and do not supply these proofs. A supplemental check verifies every cited archived gzip payload against its actual content hash. No model construction, forward execution, source mutation or baseline blessing occurred.
+
+The initial script passes ordinary/sparse/misleading then refuses rewrite because the verification harness omitted the original exact SourceOverride tuple. That red and executed script are preserved. The resumed script forwards the already-recorded module/path/SHA through the unchanged production API and passes the remaining8cases. All production before/after manifests remain7168440; script phases are separately pinned. The /var versus /private/var path alias is resolved by the existing SourceOverride address check, never by guessing a source owner.
+
+These are new source-to-fact-to-summary receipts over saved construction, not fresh model or execution measurements. Final page transport, actual public44coverage and matrix reconciliation have separate receipts.

@@ -1,0 +1,22 @@
+[
+  {
+    "case": "sdxl-ordinary",
+    "exit_code": 0,
+    "elapsed_seconds": 12.082
+  },
+  {
+    "case": "sdxl-sparse",
+    "exit_code": 0,
+    "elapsed_seconds": 10.19
+  },
+  {
+    "case": "sdxl-misleading",
+    "exit_code": 0,
+    "elapsed_seconds": 9.902
+  },
+  {
+    "case": "sdxl-rewrite",
+    "exit_code": 1,
+    "elapsed_seconds": 9.241
+  }
+]

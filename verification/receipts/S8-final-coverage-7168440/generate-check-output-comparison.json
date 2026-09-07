@@ -1,0 +1,26 @@
+[
+  {
+    "model": "stable-diffusion-xl-base-1-0",
+    "actual_ir_and_display_ir_bytes_identical": true,
+    "actual_html_only_exact_mount_token_differs": true,
+    "generate_html_sha256": "f360b448fedfe57ddf9904a8b075ed547947f61de03f7635ddc4cf6b0ad36904",
+    "check_html_sha256": "b18177ec408dd211dd28659bbd2eaac9eb61744b7fd93c01193d149cfd47ca03",
+    "mounts": [
+      "uf-0fd80a3fd4",
+      "uf-bfcb5c4bb7"
+    ],
+    "diagnostic_only_original_pages_untouched": true
+  },
+  {
+    "model": "sd-v1-4",
+    "actual_ir_and_display_ir_bytes_identical": true,
+    "actual_html_only_exact_mount_token_differs": true,
+    "generate_html_sha256": "4dfc407c6c1f0c0a0a60d02499e6d4a7545b80eba6d844824da852a63002b73a",
+    "check_html_sha256": "ea462160f7329bd635c137770e9aac38010a780dcf853cacf2e3cfc8e3b87a56",
+    "mounts": [
+      "uf-41090357b6",
+      "uf-dfbe361cb6"
+    ],
+    "diagnostic_only_original_pages_untouched": true
+  }
+]

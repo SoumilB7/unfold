@@ -1,0 +1,7 @@
+# Final actual44 coverage at7168440
+
+PASS: both actual generation and the independent live `--check` completed the unchanged29corpus+15unseen denominator. The serial runner pins full production/script manifests and its observer helper before/after; all remain unchanged. Exact commands, timings, full logs, per-model comparisons and actual public SDXL/SD14 IR/display-IR/HTML captures from both passes are retained. This is a fresh44-input coverage campaign, separate from the historical25+1+1+12 derived39 execution matrix.
+
+Measured totals are645proven/294visibly flagged/0silent, compared with accepted83140f1 totals621/241/0. Only SDXL(+12proven/+37flagged) and SD-v1-4(+12/+16) differ; every complete row for the other42 models is unchanged. All44non-silent fields equal the original5227red denominator; its620silent findings are resolved by the separately reviewed typed-contract/label/actual-receipt corrections. Original red outputs remain preserved. The owner comparison and public-output controls are in S8-coverage-owner-final-7168440 and S8-actual-public-output-control-7168440.
+
+README and the exact-count release assertion are refreshed to these measured645/294 totals. The29+15denominator, silent0 requirement and all audit behavior remain unchanged. This does not bless product or preservation output baselines; the isolated broad coordinator remains separate. Every original capture is retained losslessly, with original and stored hashes in artifact-manifest.json.

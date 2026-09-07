@@ -1,0 +1,84 @@
+{
+  "changed_production_files": {
+    "model_unfolder/adapters/diffusor/blocks.py": {
+      "5227e9c": "2e5fe4bb9a6c139c98656076c5d460ce1620ff85331ac9d741bfe6e78e72239a",
+      "7168440": "1a5fc911410ae75749aa3e2734cd78d6a97d886c1de8a437d0a836dcf3ef61d8"
+    },
+    "model_unfolder/adapters/diffusor/parser.py": {
+      "5227e9c": "96c4f809fcc971d566a9ad2d19d73d2b784127ddd494d3415ea7f66f138cba9b",
+      "7168440": "0b46066f535105f673268beae2798ec5e97576c74cae74a284e5ed28d94c460b"
+    },
+    "model_unfolder/adapters/diffusor/unet_cutover.py": {
+      "5227e9c": "b832cfbc52d399fc7b60079ab6fbb84e87b0ed4c3d262a7f904a7b9f2dfd5c8e",
+      "7168440": "2f01b67d5152a10b07424eba398225b65b37171e00ed609e1f4d6aa629e3514b"
+    },
+    "model_unfolder/adapters/diffusor/unet_projection.py": {
+      "5227e9c": "08ab9f29b10678785dcc5a2f89c43b5a7cae5ac3597ab3b828a06eee6bbb4584",
+      "7168440": "143b25fbf774aee62ffc1c004bbfb6db36895fc51609abc1ad6864acbd4c5be6"
+    },
+    "model_unfolder/evidence/construction_summary.py": {
+      "7168440": "58a97eefd6079b239cb161cb85ae2a5d25d8c712008b6768ea6b03fbabfc7e1f"
+    },
+    "model_unfolder/evidence/reconciliation.py": {
+      "5227e9c": "0a9c925498801b713fbe287e9b9a4689393f58efd2ddea57e787ed5b25555d68",
+      "7168440": "e02796bb0121962a2b41d153a208977f900fb985b643d887622f6dbe48b5feb4"
+    },
+    "model_unfolder/evidence/structural_writes.py": {
+      "5227e9c": "f640dcaf2eb2aa2677caf61983f308e607de6ff47d2a6f15f846a56581323008",
+      "7168440": "cd7c443fd88510e00463305b97e0d912252d44a8955aebf6badf22d793ebd745"
+    },
+    "model_unfolder/expanded/__init__.py": {
+      "5227e9c": "85863e10459578a7c26cf50c15d6a98ab26762874da5866d350b184bc6afeafc",
+      "7168440": "1328c4b463824befb432a2f42af2e4d565599aec118d67544307699c247346aa"
+    },
+    "model_unfolder/expanded/loop.py": {
+      "5227e9c": "accf5e4d2756c70f35ec156c6bdbf749335c007a5bdcd3f298f82c0baa5c8075",
+      "7168440": "42af502e34ca4292bf74ad0605c0e1b07d5090c8f09575f0e18fe2b18bb4b662"
+    },
+    "model_unfolder/ir.py": {
+      "5227e9c": "99933df551ee6c621d65c7e82e488bd0fce336fea9d56ff1d021e81721ae2a31",
+      "7168440": "7f4bd0beddfb73691eb54e2823c1481ca4ad2b6daa9005fe97b1d3259ae8b320"
+    },
+    "model_unfolder/params.py": {
+      "5227e9c": "3193bf7c58135b082a6b722768b48677ee3bf4f050c97f3ea8e80b12b335635a",
+      "7168440": "d030e07e5142b9b0baf79e82a557e553e03b09d4417875f8d8fe64834295c121"
+    },
+    "model_unfolder/renderers/html/block_views/unet.py": {
+      "5227e9c": "751155e32f10715b10c6fc04406542ad47e627f3200bb6c143d8b1fd507b91fa",
+      "7168440": "677e74f6cc2b5793fc5177cdb8593d641bd44e98b56b392ab123b2ab6ea449ce"
+    },
+    "model_unfolder/renderers/html/cards.py": {
+      "5227e9c": "eef4515c131f40e2f6d595e00f65f6de9259f5ee94d091c2181f28d0019067fb",
+      "7168440": "89608410534b74db158a7ea56677e38c1d2a00dd3200ce7c2d1ed787866bd8c2"
+    },
+    "model_unfolder/renderers/html/sections.py": {
+      "5227e9c": "6c263501d1b03d08168063019a7bf030dcfe3a5f5066fb135d50d416ce4c4d49",
+      "7168440": "22c585ae8e4062763e5aa1a4d123f50ef949032999e0e16e921df2fb017c6153"
+    },
+    "model_unfolder/renderers/html/views_diffusion.py": {
+      "5227e9c": "51773a01f75c24db0d6518dcdeb4023dd4b7c8eda33729d531d6ddea509b6182",
+      "7168440": "a61e23ddb828f9a93af60a93fdffdf5f2126f87306bd0a4ba0c625df0be76a07"
+    }
+  },
+  "complete_38_saved_IR_available": false,
+  "component_only_HTML_identity_claim": false,
+  "fresh_model_or_execution": false,
+  "separate_sdxl_replay": {
+    "new_sha256": "f5a35dc2e3177578d3af8f5eb65828f4430bafeddb8044c562a01f157e0415b5",
+    "occurrences": 3551,
+    "old_sha256": "886a13ba0f4740d73094cf68395e9e90b3add24da3d0e3dc2901303ff8adfd26",
+    "whole_model_value_equal": true
+  },
+  "status": "ACCEPT_bounded_table_reuse_source_input_scope",
+  "table_byte_preservation_check": "executor_final_derivative_pending",
+  "targets": 38,
+  "unchanged_dispatch_functions": [
+    "parse",
+    "_shadow_diffusion_root_topology",
+    "_projected_pipeline_handoffs"
+  ],
+  "unchanged_generation_sources": {
+    "model_unfolder/evidence/diffusion_root.py": "8cad47800434d6f071938a446458b11beef20423aa0956c1ec6b5038a6713a89",
+    "scripts/generate_s7_shadow.py": "e415c5d0a4efac1ae655d4a992a08087daa015e6d2438dc8e4771fddbbead70c"
+  }
+}

@@ -1,0 +1,803 @@
+{
+  "block_fields": [
+    {
+      "after": {
+        "root.denoiser.declared_constructor_defaults": [
+          "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)",
+          "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)",
+          "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "denoiser"
+    },
+    {
+      "after": {
+        "root.denoiser.spatial_mechanisms": [
+          "Source-proven spatial primitive: torch.nn.Conv2d",
+          "Stride: 2"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "instance_down_blocks__0__downsamplers__0"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__1__attentions__0__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__1__attentions__0__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__1__attentions__0__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__1__attentions__0__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__1__attentions__0__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__1__attentions__0__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__1__attentions__1__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__1__attentions__1__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__1__attentions__1__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__1__attentions__1__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__1__attentions__1__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__1__attentions__1__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": {
+        "root.denoiser.spatial_mechanisms": [
+          "Source-proven spatial primitive: torch.nn.Conv2d",
+          "Stride: 2"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "instance_down_blocks__1__downsamplers__0"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__2__attentions__0__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_down_blocks__2__attentions__1__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": {
+        "root.denoiser.spatial_mechanisms": [
+          "Source-proven spatial primitive: torch.nn.Conv2d",
+          "Stride: 2"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "instance_down_blocks__2__downsamplers__0"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_mid_block__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_mid_block__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_mid_block__attentions__0__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_mid_block__attentions__0__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_mid_block__attentions__0__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_mid_block__attentions__0__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_mid_block__attentions__0__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_mid_block__attentions__0__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": {
+        "root.denoiser.spatial_mechanisms": [
+          "Source-proven spatial primitive: torch.nn.functional.interpolate",
+          "Resize direction: investigation_missing"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "instance_up_blocks__0__upsamplers__0"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__1__attentions__0__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__1__attentions__0__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__1__attentions__0__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__1__attentions__0__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__1__attentions__0__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__1__attentions__0__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__1__attentions__1__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__1__attentions__1__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__1__attentions__1__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__1__attentions__1__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__1__attentions__1__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__1__attentions__1__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__1__attentions__2__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__1__attentions__2__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__1__attentions__2__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__1__attentions__2__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__1__attentions__2__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__1__attentions__2__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__1__attentions__2__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__1__attentions__2__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": {
+        "root.denoiser.spatial_mechanisms": [
+          "Source-proven spatial primitive: torch.nn.functional.interpolate",
+          "Resize direction: investigation_missing"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "instance_up_blocks__1__upsamplers__0"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__2__attentions__0__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__2__attentions__0__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__2__attentions__0__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__2__attentions__0__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__2__attentions__0__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__2__attentions__0__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__2__attentions__1__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__2__attentions__1__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__2__attentions__1__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__2__attentions__1__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__2__attentions__1__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__2__attentions__1__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__2__attentions__2__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__2__attentions__2__transformer_blocks__0__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__2__attentions__2__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__2__attentions__2__transformer_blocks__1__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__2__attentions__2__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__2__attentions__2__transformer_blocks__2__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "label",
+      "id": "instance_up_blocks__2__attentions__2__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": "GELU",
+      "before": "gelu",
+      "cause": "existing activation label vocabulary",
+      "field": "title",
+      "id": "instance_up_blocks__2__attentions__2__transformer_blocks__3__ff__op_activation"
+    },
+    {
+      "after": {
+        "root.denoiser.spatial_mechanisms": [
+          "Source-proven spatial primitive: torch.nn.functional.interpolate",
+          "Resize direction: investigation_missing"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "instance_up_blocks__2__upsamplers__0"
+    }
+  ],
+  "block_occurrences_changed": [
+    "denoiser",
+    "instance_down_blocks__0__downsamplers__0",
+    "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation",
+    "instance_down_blocks__1__attentions__0__transformer_blocks__1__ff__op_activation",
+    "instance_down_blocks__1__attentions__0__transformer_blocks__2__ff__op_activation",
+    "instance_down_blocks__1__attentions__0__transformer_blocks__3__ff__op_activation",
+    "instance_down_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation",
+    "instance_down_blocks__1__attentions__1__transformer_blocks__1__ff__op_activation",
+    "instance_down_blocks__1__attentions__1__transformer_blocks__2__ff__op_activation",
+    "instance_down_blocks__1__attentions__1__transformer_blocks__3__ff__op_activation",
+    "instance_down_blocks__1__downsamplers__0",
+    "instance_down_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation",
+    "instance_down_blocks__2__attentions__0__transformer_blocks__1__ff__op_activation",
+    "instance_down_blocks__2__attentions__0__transformer_blocks__2__ff__op_activation",
+    "instance_down_blocks__2__attentions__0__transformer_blocks__3__ff__op_activation",
+    "instance_down_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation",
+    "instance_down_blocks__2__attentions__1__transformer_blocks__1__ff__op_activation",
+    "instance_down_blocks__2__attentions__1__transformer_blocks__2__ff__op_activation",
+    "instance_down_blocks__2__attentions__1__transformer_blocks__3__ff__op_activation",
+    "instance_down_blocks__2__downsamplers__0",
+    "instance_mid_block__attentions__0__transformer_blocks__0__ff__op_activation",
+    "instance_mid_block__attentions__0__transformer_blocks__1__ff__op_activation",
+    "instance_mid_block__attentions__0__transformer_blocks__2__ff__op_activation",
+    "instance_mid_block__attentions__0__transformer_blocks__3__ff__op_activation",
+    "instance_up_blocks__0__upsamplers__0",
+    "instance_up_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation",
+    "instance_up_blocks__1__attentions__0__transformer_blocks__1__ff__op_activation",
+    "instance_up_blocks__1__attentions__0__transformer_blocks__2__ff__op_activation",
+    "instance_up_blocks__1__attentions__0__transformer_blocks__3__ff__op_activation",
+    "instance_up_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation",
+    "instance_up_blocks__1__attentions__1__transformer_blocks__1__ff__op_activation",
+    "instance_up_blocks__1__attentions__1__transformer_blocks__2__ff__op_activation",
+    "instance_up_blocks__1__attentions__1__transformer_blocks__3__ff__op_activation",
+    "instance_up_blocks__1__attentions__2__transformer_blocks__0__ff__op_activation",
+    "instance_up_blocks__1__attentions__2__transformer_blocks__1__ff__op_activation",
+    "instance_up_blocks__1__attentions__2__transformer_blocks__2__ff__op_activation",
+    "instance_up_blocks__1__attentions__2__transformer_blocks__3__ff__op_activation",
+    "instance_up_blocks__1__upsamplers__0",
+    "instance_up_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation",
+    "instance_up_blocks__2__attentions__0__transformer_blocks__1__ff__op_activation",
+    "instance_up_blocks__2__attentions__0__transformer_blocks__2__ff__op_activation",
+    "instance_up_blocks__2__attentions__0__transformer_blocks__3__ff__op_activation",
+    "instance_up_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation",
+    "instance_up_blocks__2__attentions__1__transformer_blocks__1__ff__op_activation",
+    "instance_up_blocks__2__attentions__1__transformer_blocks__2__ff__op_activation",
+    "instance_up_blocks__2__attentions__1__transformer_blocks__3__ff__op_activation",
+    "instance_up_blocks__2__attentions__2__transformer_blocks__0__ff__op_activation",
+    "instance_up_blocks__2__attentions__2__transformer_blocks__1__ff__op_activation",
+    "instance_up_blocks__2__attentions__2__transformer_blocks__2__ff__op_activation",
+    "instance_up_blocks__2__attentions__2__transformer_blocks__3__ff__op_activation",
+    "instance_up_blocks__2__upsamplers__0"
+  ],
+  "component_entry": {
+    "input_ids": [
+      "unet_root_input_0",
+      "unet_root_input_1",
+      "unet_root_input_2",
+      "unet_root_input_3",
+      "unet_root_input_4",
+      "unet_root_input_5",
+      "unet_root_input_6",
+      "unet_root_input_7",
+      "unet_root_input_8",
+      "unet_root_input_9",
+      "unet_root_input_10",
+      "unet_root_input_11",
+      "unet_root_input_12"
+    ],
+    "root_id": "denoiser",
+    "subtitle": "Declared denoiser interface \u00b7 click to open its architecture",
+    "title": "DENOISER COMPONENT"
+  },
+  "construction_summary": {
+    "parameter_count": 2259526660,
+    "parameterized_module_count": 742,
+    "population_fact_key": "root.denoiser.constructed_modules",
+    "scope": "denoiser",
+    "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+    "stage_count": 9,
+    "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+  },
+  "removed_legacy_component_input_ids": [
+    "unet_root_input_0",
+    "unet_root_input_1",
+    "unet_root_input_2",
+    "unet_root_input_3",
+    "unet_root_input_4",
+    "unet_root_input_5",
+    "unet_root_input_6",
+    "unet_root_input_7",
+    "unet_root_input_8",
+    "unet_root_input_9",
+    "unet_root_input_10",
+    "unet_root_input_11",
+    "unet_root_input_12"
+  ],
+  "removed_legacy_component_scope": "denoiser"
+}

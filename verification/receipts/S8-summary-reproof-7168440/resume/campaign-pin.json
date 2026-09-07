@@ -1,0 +1,17 @@
+{
+  "commit": "7168440c81a3e79b1e220437e2f9fa77e25bc296",
+  "script_sha256": "a0d091ceca6d9d36dc2ef2808d365896e4b467693dcb8fe4429d93e5014b6826",
+  "cases": {
+    "sdxl-ordinary": "/private/tmp/unfold-s8-final-c38b008/sdxl/ordinary",
+    "sdxl-sparse": "/private/tmp/unfold-s8-final-c38b008/sdxl/sparse",
+    "sdxl-misleading": "/private/tmp/unfold-s8-final-c38b008/sdxl/misleading",
+    "sdxl-rewrite": "/private/tmp/unfold-s8-final-c38b008/sdxl/rewrite",
+    "sdxl-unchanged": "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/unchanged",
+    "sdxl-changed": "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/changed",
+    "sdxl-missing": "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/missing",
+    "sd14-ordinary": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary",
+    "sdxl-refiner": "/private/tmp/unfold-s8-render-phase-c38-v2/generalization/sdxl-refiner/ordinary",
+    "sdxl-inpainting": "/private/tmp/unfold-s8-render-phase-c38-v2/generalization/sdxl-inpainting/ordinary",
+    "ddpm-cifar10": "/private/tmp/unfold-s8-render-phase-c38-v2/generalization/ddpm-cifar10/ordinary"
+  }
+}
