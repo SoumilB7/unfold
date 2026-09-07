@@ -1,0 +1,258 @@
+{
+  "checkpoint": "36935453403ed792272f90cc84eda37972bb1165",
+  "results": {
+    "mismatched_scratch_hashes": [
+      {
+        "check": "static reader and builder share exact scratch root bytes",
+        "evidence": {
+          "archived_scratch_sha256": null,
+          "runtime_source_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "scratch_source_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "source_control_scratch_sha256": null,
+          "static_source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "status": "FAIL"
+      },
+      {
+        "check": "unchanged scratch is byte-identical HTML",
+        "evidence": {
+          "ordinary": {
+            "actual_html_sha256": null,
+            "page_exists": false,
+            "page_hash_matches": false,
+            "recorded_html_sha256": "179d13319c1df22849513682dec88a38183adf46a0301830361b741cad2412ce",
+            "saved_observation_matches": false
+          },
+          "unchanged": {
+            "actual_html_sha256": null,
+            "page_exists": false,
+            "page_hash_matches": false,
+            "recorded_html_sha256": "179d13319c1df22849513682dec88a38183adf46a0301830361b741cad2412ce",
+            "saved_observation_matches": false
+          }
+        },
+        "status": "FAIL"
+      }
+    ],
+    "missing_actual_page": {
+      "actual_page_exists": false,
+      "checks": [
+        {
+          "check": "actual HTML generated",
+          "evidence": {
+            "actual_html_sha256": null,
+            "page_exists": false,
+            "page_hash_matches": false,
+            "recorded_html_sha256": "179d13319c1df22849513682dec88a38183adf46a0301830361b741cad2412ce",
+            "saved_observation_matches": false
+          },
+          "status": "FAIL"
+        },
+        {
+          "check": "saved observations match actual HTML, IR and facts",
+          "evidence": {
+            "actual_html_sha256": null,
+            "page_exists": false,
+            "page_hash_matches": false,
+            "recorded_html_sha256": "179d13319c1df22849513682dec88a38183adf46a0301830361b741cad2412ce",
+            "saved_observation_matches": false
+          },
+          "status": "FAIL"
+        },
+        {
+          "check": "ordinary reference HTML is intact",
+          "evidence": {
+            "actual_html_sha256": null,
+            "page_exists": false,
+            "page_hash_matches": false,
+            "recorded_html_sha256": "179d13319c1df22849513682dec88a38183adf46a0301830361b741cad2412ce",
+            "saved_observation_matches": false
+          },
+          "status": "FAIL"
+        },
+        {
+          "check": "graph wiring",
+          "evidence": [],
+          "status": "PASS"
+        },
+        {
+          "check": "projected family fact inventory matches current IR",
+          "evidence": [
+            "root.denoiser.cell_arithmetic",
+            "root.denoiser.cell_connections",
+            "root.denoiser.constructed_modules",
+            "root.denoiser.constructed_parameter_shapes",
+            "root.denoiser.constructed_stage_relations",
+            "root.denoiser.context_connections",
+            "root.denoiser.declared_constructor_defaults",
+            "root.denoiser.ffn_mechanisms",
+            "root.denoiser.runtime_primitives",
+            "root.denoiser.spatial_mechanisms",
+            "root.denoiser.stage_join_connections"
+          ],
+          "status": "PASS"
+        },
+        {
+          "check": "every projected family semantic fact participates",
+          "evidence": {
+            "metadata_exclusions": {
+              "root.denoiser.declared_constructor_defaults": "Omission provenance changes in the sparse control; its exact key/value/default card chips are checked separately."
+            },
+            "uncovered": []
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "every projected family fact carries a proof",
+          "evidence": [],
+          "status": "PASS"
+        },
+        {
+          "check": "cited custom implementation bytes are archived with matching hashes",
+          "evidence": {
+            "root.denoiser.cell_arithmetic": [
+              "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+              "8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502",
+              "b601e45d78a640e66b05822d3d008e40a039b92bb126abd1a9bdef6124666d84"
+            ],
+            "root.denoiser.cell_connections": [
+              "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+              "2852f787a39f6f679578b9992c37b114c4b76cb9449b473267490429c22c396c",
+              "55173237780f25219fe14498d5ddb1c82a85fb56dd6200133f02b85bdf05ecee",
+              "8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502",
+              "b601e45d78a640e66b05822d3d008e40a039b92bb126abd1a9bdef6124666d84"
+            ],
+            "root.denoiser.constructed_stage_relations": [
+              "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+            ],
+            "root.denoiser.context_connections": [
+              "0192998d3979533cdbc8eef9c8f783d0b4a4a547dec9e4388a17c9ae3b1c8ea8",
+              "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+              "4a382975333be2e8bbd1f970cfa81e9442bfcc15485e30749654e267e8e5a0fc",
+              "74282409d3da265bb999a5cf52746b3dcb3dd955b740fed48aa200e1da142c36",
+              "8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502"
+            ],
+            "root.denoiser.declared_constructor_defaults": [
+              "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+            ],
+            "root.denoiser.ffn_mechanisms": [
+              "0192998d3979533cdbc8eef9c8f783d0b4a4a547dec9e4388a17c9ae3b1c8ea8",
+              "74282409d3da265bb999a5cf52746b3dcb3dd955b740fed48aa200e1da142c36",
+              "8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502",
+              "ab1767e8e44e7d4bf1cb18299ba33654329e2711fa983b1423fc4fe12de2c3ab"
+            ],
+            "root.denoiser.spatial_mechanisms": [
+              "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+              "2852f787a39f6f679578b9992c37b114c4b76cb9449b473267490429c22c396c",
+              "55173237780f25219fe14498d5ddb1c82a85fb56dd6200133f02b85bdf05ecee",
+              "8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502"
+            ],
+            "root.denoiser.stage_join_connections": [
+              "8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502"
+            ]
+          },
+          "status": "FAIL"
+        },
+        {
+          "check": "same frozen implementation as ordinary",
+          "evidence": "c37ce9558bf6174f0f5bbc144d2f499feafa1ae6db0d3968534e62a15c026b20",
+          "status": "PASS"
+        }
+      ],
+      "false_positive": false
+    },
+    "new_projected_fact_omitted_from_semantics": {
+      "fact_key": "root.denoiser.primary_state_routes",
+      "raw_values_differ": true,
+      "scope": "hypothetical new cutover fact; existing fixed selection cannot cover it without update",
+      "selected_fact_keys": [
+        "cell_arithmetic",
+        "cell_connections",
+        "constructed_modules",
+        "constructed_parameter_shapes",
+        "constructed_stage_relations",
+        "context_connections",
+        "ffn_mechanisms",
+        "primary_state_routes",
+        "runtime_primitives",
+        "spatial_mechanisms",
+        "stage_join_connections"
+      ],
+      "semantic_facts_equal": false
+    },
+    "removed_block_fact_links": [
+      {
+        "block_fact_keys": [],
+        "canonical_fact": "root.denoiser.ffn_mechanisms",
+        "changed_chain_gaps": [
+          "actual HTML artifact integrity",
+          "canonical fact cited by this block",
+          "archived matching implementation bytes",
+          "stage overview",
+          "actual card",
+          "actual drill SVG",
+          "shape-backed numbers on exact cards"
+        ],
+        "claim": "Selected FFN computation and projection shapes",
+        "original_chain_gaps": [
+          "actual HTML artifact integrity",
+          "archived matching implementation bytes",
+          "stage overview",
+          "actual card",
+          "actual drill SVG",
+          "shape-backed numbers on exact cards"
+        ],
+        "status": "REVIEW_REQUIRED"
+      },
+      {
+        "block_fact_keys": [],
+        "canonical_fact": "root.denoiser.cell_connections",
+        "changed_chain_gaps": [
+          "actual HTML artifact integrity",
+          "canonical fact cited by this block",
+          "archived matching implementation bytes",
+          "stage overview",
+          "actual card",
+          "actual drill SVG",
+          "shape-backed numbers on exact cards"
+        ],
+        "claim": "Exact cell-member call connections",
+        "original_chain_gaps": [
+          "actual HTML artifact integrity",
+          "archived matching implementation bytes",
+          "stage overview",
+          "actual card",
+          "actual drill SVG",
+          "shape-backed numbers on exact cards"
+        ],
+        "status": "REVIEW_REQUIRED"
+      },
+      {
+        "block_fact_keys": [],
+        "canonical_fact": "root.denoiser.spatial_mechanisms",
+        "changed_chain_gaps": [
+          "actual HTML artifact integrity",
+          "canonical fact cited by this block",
+          "archived matching implementation bytes",
+          "stage overview",
+          "actual card",
+          "actual drill SVG",
+          "shape-backed numbers on exact cards"
+        ],
+        "claim": "Selected spatial operation and constructed shapes",
+        "original_chain_gaps": [
+          "actual HTML artifact integrity",
+          "archived matching implementation bytes",
+          "stage overview",
+          "actual card",
+          "actual drill SVG",
+          "shape-backed numbers on exact cards"
+        ],
+        "status": "REVIEW_REQUIRED"
+      }
+    ]
+  },
+  "saved_ordinary": "/private/tmp/unfold-s8-d3a4d61-demonstration/ordinary",
+  "saved_result_sha256": "7fa570588bb55366df4d3551de7600bc77af0fcc216aee08e21ba4c66960cba3",
+  "scope": "report integrity and linkage only; generator and semantic acceptance not bypassed by this probe"
+}

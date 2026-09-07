@@ -1,0 +1,9 @@
+{
+  "scope": "Only source/inplace operator projection branch and shared port-view handling changed; no new graph primitive, reader, IR or model run",
+  "source_sha256": {
+    "model_unfolder/adapters/diffusor/unet_projection.py": "129e45cff869a044146eb8aafc7fb440840de3ecfcf6cb3712078de84a8576bd",
+    "model_unfolder/renderers/html/block_views/unet.py": "d40f62a55770153b28fb44d4224008bf135fd28b8cd5f2bd0de30346d213204d"
+  },
+  "pixel_inspection": "Both synthetic native PNGs individually inspected; two separate operand rails enter an unknown source-operator boundary and one result arrow leaves, with no card crossings.",
+  "additional_control": "Existing compact seven-call-argument view standalone assertion passed; no pytest lane"
+}

@@ -1,0 +1,73 @@
+{
+  "id": "operator_fixture",
+  "kind": "opaque",
+  "label": "Source operation",
+  "title": "Source operation",
+  "role": "source_port_route",
+  "description": "Exact source argument/result port wiring.",
+  "source_fact_keys": [
+    "root.denoiser.primary_state_ports"
+  ],
+  "facts": [
+    "Source operator: +",
+    "investigation_missing \u00b7 operand dispatch and mutation semantics \u00b7 owner: S8"
+  ],
+  "resolved": false,
+  "view": "runtime_port_route",
+  "detail": {
+    "port_route_kind": "source_operation",
+    "source_operator": "+",
+    "argument_ids": [
+      "operator_fixture__operand_0",
+      "operator_fixture__operand_1"
+    ],
+    "boundary_id": "operator_fixture__operator"
+  },
+  "children": [
+    {
+      "id": "operator_fixture__operand_0",
+      "kind": "source",
+      "label": "Input: emb",
+      "title": "Input: emb",
+      "role": "source_port_route",
+      "description": "Exact source argument/result port wiring.",
+      "source_fact_keys": [
+        "root.denoiser.primary_state_ports"
+      ],
+      "facts": [
+        "Source operand port: 0"
+      ],
+      "detail": {
+        "argument_port": "0"
+      }
+    },
+    {
+      "id": "operator_fixture__operand_1",
+      "kind": "source",
+      "label": "Input: aug_emb",
+      "title": "Input: aug_emb",
+      "role": "source_port_route",
+      "description": "Exact source argument/result port wiring.",
+      "source_fact_keys": [
+        "root.denoiser.primary_state_ports"
+      ],
+      "facts": [
+        "Source operand port: 1"
+      ],
+      "detail": {
+        "argument_port": "1"
+      }
+    },
+    {
+      "id": "operator_fixture__operator",
+      "kind": "unknown",
+      "label": "Source +",
+      "title": "Source operator boundary: +",
+      "resolved": false,
+      "description": "These source operands enter the operator boundary. Operand dispatch, internal dependence and mutation behavior remain unresolved.",
+      "source_fact_keys": [
+        "root.denoiser.primary_state_ports"
+      ]
+    }
+  ]
+}

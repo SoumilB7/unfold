@@ -1,0 +1,100 @@
+{
+  "checkpoint": "36935453403ed792272f90cc84eda37972bb1165",
+  "fallback": {
+    "kind": "non_architectural",
+    "parent": null,
+    "rule": "",
+    "reason": "container",
+    "fact_keys": [],
+    "block_ids": [],
+    "fact_claim_kinds": [],
+    "fact_claim_readers": [],
+    "fact_claim_proofs": [],
+    "unqualified_fact_keys": [],
+    "undeclared_fact_keys": [],
+    "declared_unproven_fact_keys": [],
+    "fact_findings": [],
+    "reason_class": null,
+    "investigation": null
+  },
+  "drawn": {
+    "kind": "rendered",
+    "parent": null,
+    "rule": "",
+    "reason": "",
+    "fact_keys": [],
+    "block_ids": [],
+    "fact_claim_kinds": [
+      [
+        "root.denoiser.diffusion_stack_depth",
+        "value"
+      ]
+    ],
+    "fact_claim_readers": [
+      [
+        "root.denoiser.diffusion_stack_depth",
+        [
+          "fixture.depth"
+        ]
+      ]
+    ],
+    "fact_claim_proofs": [],
+    "unqualified_fact_keys": [
+      "root.denoiser.diffusion_stack_depth"
+    ],
+    "undeclared_fact_keys": [],
+    "declared_unproven_fact_keys": [
+      "root.denoiser.diffusion_stack_depth"
+    ],
+    "fact_findings": [
+      {
+        "fact_key": "root.denoiser.diffusion_stack_depth",
+        "reason_class": "investigation_missing",
+        "concrete_reason": "claim_proof_unstamped",
+        "owner": "S9 reader migration"
+      }
+    ],
+    "reason_class": null,
+    "investigation": null
+  },
+  "grouped": {
+    "kind": "grouped",
+    "parent": "blocks.0",
+    "rule": "fact source occurrence is drawn inside its proven parent",
+    "reason": "",
+    "fact_keys": [],
+    "block_ids": [],
+    "fact_claim_kinds": [
+      [
+        "root.denoiser.diffusion_stack_depth",
+        "value"
+      ]
+    ],
+    "fact_claim_readers": [
+      [
+        "root.denoiser.diffusion_stack_depth",
+        [
+          "fixture.depth"
+        ]
+      ]
+    ],
+    "fact_claim_proofs": [],
+    "unqualified_fact_keys": [
+      "root.denoiser.diffusion_stack_depth"
+    ],
+    "undeclared_fact_keys": [],
+    "declared_unproven_fact_keys": [
+      "root.denoiser.diffusion_stack_depth"
+    ],
+    "fact_findings": [
+      {
+        "fact_key": "root.denoiser.diffusion_stack_depth",
+        "reason_class": "investigation_missing",
+        "concrete_reason": "claim_proof_unstamped",
+        "owner": "S9 reader migration"
+      }
+    ],
+    "reason_class": null,
+    "investigation": null
+  }
+}

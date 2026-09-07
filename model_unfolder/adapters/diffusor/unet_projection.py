@@ -80,9 +80,20 @@ def _port_route_block(route, block_id, fact_key):
         block.update(view="constructed_children", children=[_port_route_block(
             item, block_id + f"__item_{number}", fact_key) for number, item in enumerate(route["items"])])
     elif kind in {"inplace_operation", "source_operation"}:
-        block.update(resolved=False, view="constructed_children", children=[_port_route_block(
+        operator = route["operator"] + ("=" if kind == "inplace_operation" else "")
+        block.update(resolved=False, view="runtime_port_route",
+                     detail={"port_route_kind": kind, "source_operator": operator}, children=[_port_route_block(
             item, block_id + f"__operand_{number}", fact_key) for number, item in enumerate(route["operands"])])
-        block["facts"] = ["Source operator: " + route["operator"] + ("=" if kind == "inplace_operation" else ""),
+        for number, child in enumerate(block["children"]):
+            child.setdefault("detail", {})["argument_port"] = str(number)
+            child["facts"].append("Source operand port: " + str(number))
+        boundary = block_id + "__operator"
+        block["detail"].update(argument_ids=[child["id"] for child in block["children"]], boundary_id=boundary)
+        block["children"].append({"id": boundary, "kind": "unknown", "label": "Source " + operator,
+                                  "title": "Source operator boundary: " + operator, "resolved": False,
+                                  "description": "These source operands enter the operator boundary. Operand dispatch, internal dependence and mutation behavior remain unresolved.",
+                                  "source_fact_keys": [fact_key]})
+        block["facts"] = ["Source operator: " + operator,
                           "investigation_missing · operand dispatch and mutation semantics · owner: S8"]
     elif kind == "unresolved":
         block.update(kind="unknown", resolved=False)

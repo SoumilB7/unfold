@@ -244,11 +244,13 @@ def build_runtime_port_route(ir, info, mount_id, block):
         nodes.append(Node(child["id"], child["kind"], label,
                           resolved=child.get("resolved", True), **layout))
     end = block["id"] + "__result_port"
-    label = "Selected value" if kind == "selection" else "Returned slot " + str(block["detail"].get("result_slot", []))
+    operator_boundary = kind in {"source_operation", "inplace_operation"}
+    label = ("Operation result" if operator_boundary else "Selected value" if kind == "selection"
+             else "Returned slot " + str(block["detail"].get("result_slot", [])))
     nodes.append(Node(end, "port", label, static=True))
     arguments = block["detail"].get("argument_ids", [child["id"] for child in children])
     boundary = block["detail"].get("boundary_id", end)
-    if kind == "call_result":
+    if kind == "call_result" or operator_boundary:
         flow = ([boundary] if boundary != end else []) + [end]
         parallels = [Parallel(None, boundary, [Lane([argument]) for argument in arguments])] if arguments else []
     else:
@@ -256,7 +258,8 @@ def build_runtime_port_route(ir, info, mount_id, block):
         parallels = []
     return render_graph(Graph(nodes, flow, parallels=parallels),
                         info, mount_id, "runtime_port_route",
-                        "Call boundary ports only; internal dependency unresolved" if kind == "call_result"
+                        "Source operator ports only; dispatch and mutation unresolved" if operator_boundary
+                        else "Call boundary ports only; internal dependency unresolved" if kind == "call_result"
                         else "Source-proven selection from the input value",
                         facts_projected=frozenset(block.get("source_fact_keys", ())))
 
