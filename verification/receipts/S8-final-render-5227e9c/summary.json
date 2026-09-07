@@ -1,0 +1,598 @@
+{
+  "all_checks_pass": true,
+  "blessed": false,
+  "case_count": 11,
+  "cases": [
+    {
+      "added_actual_card_count": 0,
+      "added_reference_card_count": 0,
+      "all_five_existing_validators": {
+        "validate_block_tree": [],
+        "validate_click_coupling": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      },
+      "all_svg_bytes_identical_to_f7": true,
+      "blessed": false,
+      "case": "ddpm-cifar10",
+      "final_actual_html": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/final-5227e9c/ddpm-cifar10.html",
+      "final_actual_html_sha256": "534f8a861f4f5640e74481d845184079649543db3a1c1613871db594028ca909",
+      "final_ir_sha256": "1d7c1489df6b95f28aece7bece9078e14780e1619caf1a09080905b0bed48097",
+      "final_projection_renderer_commit": "5227e9cb05d5cfeca414a26615fd158bc6c83650",
+      "final_render_input_sha256": "b55cf607c8ee27628c4e4666115d7c92d91852f83466e2c3687e579d67486d76",
+      "historical_parse_input_pins": {
+        "facts.json": "3150cc01176e786a322f5308f1d7555ab3631ac7270f1625f59e1cd165a3688e",
+        "ir.json": "1d7c1489df6b95f28aece7bece9078e14780e1619caf1a09080905b0bed48097",
+        "qualified-facts.json": "c44250cfb311bcb9d867bd1dca714046b75c4268b305f8d5b4a674a7fa889857",
+        "render-input.json": "b55cf607c8ee27628c4e4666115d7c92d91852f83466e2c3687e579d67486d76",
+        "result.json": "74dec7a2c6c9f32e3de66a13e451a12034b4b583a992e8076a1a0cd2462ad98b"
+      },
+      "historical_parse_receipt": "S8-generalization-c38b008/ddpm-cifar10/ordinary",
+      "prior_actual_html_sha256": "534f8a861f4f5640e74481d845184079649543db3a1c1613871db594028ca909",
+      "production_source_delta_from_f7": {
+        "model_unfolder/adapters/diffusor/parser.py": {
+          "final_sha256": "96c4f809fcc971d566a9ad2d19d73d2b784127ddd494d3415ea7f66f138cba9b",
+          "prior_sha256": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758"
+        },
+        "model_unfolder/adapters/diffusor/unet_cutover.py": {
+          "final_sha256": "b832cfbc52d399fc7b60079ab6fbb84e87b0ed4c3d262a7f904a7b9f2dfd5c8e",
+          "prior_sha256": "c5fd32202221461c99ec312c35d0c448d2f4a2646ad70c0ea5a8bb57740750e9"
+        },
+        "model_unfolder/adapters/diffusor/unet_projection.py": {
+          "final_sha256": "08ab9f29b10678785dcc5a2f89c43b5a7cae5ac3597ab3b828a06eee6bbb4584",
+          "prior_sha256": "e3e955c0a025f8c7d780d4385e0d8f19bab438cb507a1f2f3871f3dbe4d1176c"
+        },
+        "model_unfolder/evidence/context.py": {
+          "final_sha256": "b8a788b63d34c29976e93dcf5cca9bcba86127963e841e7f2fb27840043fc574",
+          "prior_sha256": "eeff3eb8c1da9a36b2314e5e3ebeece778d5e817121b616df0dc7f528f60e09f"
+        },
+        "model_unfolder/renderers/html/block_views/unet.py": {
+          "final_sha256": "751155e32f10715b10c6fc04406542ad47e627f3200bb6c143d8b1fd507b91fa",
+          "prior_sha256": "e664a2520272879d81344f558cd039f5ac520324b7225e2446ea6659c3144aed"
+        }
+      },
+      "render_event_bytes_identical": true,
+      "render_event_count": 789,
+      "render_event_sha256_before_and_after": "1fbb204b0e29c245988da030fd4abbb159936422086fda3c59e5a49cb43d46b2"
+    },
+    {
+      "added_actual_card_count": 1,
+      "added_reference_card_count": 15,
+      "all_five_existing_validators": {
+        "validate_block_tree": [],
+        "validate_click_coupling": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      },
+      "all_svg_bytes_identical_to_f7": true,
+      "blessed": false,
+      "case": "sd14-ordinary",
+      "final_actual_html": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/final-5227e9c/sd14-ordinary.html",
+      "final_actual_html_sha256": "24c44a91b2dc885aa66e2c753ddcbee148d67f9aea339e76a4188b9f73d16349",
+      "final_ir_sha256": "8a9c75640daeb16a5401abd9fd2d304affc1599a82b520e8280e91e3600feec7",
+      "final_projection_renderer_commit": "5227e9cb05d5cfeca414a26615fd158bc6c83650",
+      "final_render_input_sha256": "feba0e2ede619912ce939a500f20cda9c3ecd178bfe2843199b96174b77646f2",
+      "historical_parse_input_pins": {
+        "facts.json": "552bd48ff5847db2e601a2a5b3aca83cc8e02d400499ed78f0a1aedf9b61ad86",
+        "ir.json": "2eb261804a766914295a12acc6ec5a9e2edf65382379f1ce1018cd355f53421f",
+        "qualified-facts.json": "e7b663ee9c1334a7932fa82291ab494997d0a562c53754451f7ff83d479efb6c",
+        "render-input.json": "d19334a9cf804fe5e62f7483b4851eb8fab5f2ebb6863cd78a134ec52c6b4217",
+        "result.json": "a1b93b232bdf739bd9d8f23238d63921715b7ee152e70503766116418ae3a6ec"
+      },
+      "historical_parse_receipt": "S8-final-c38b008/sd-v1-4/ordinary",
+      "prior_actual_html_sha256": "6c2dcc6d057d207828a752ddf09a0c0701e036f4d3d3379d883c324b4c3e6474",
+      "production_source_delta_from_f7": {
+        "model_unfolder/adapters/diffusor/parser.py": {
+          "final_sha256": "96c4f809fcc971d566a9ad2d19d73d2b784127ddd494d3415ea7f66f138cba9b",
+          "prior_sha256": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758"
+        },
+        "model_unfolder/adapters/diffusor/unet_cutover.py": {
+          "final_sha256": "b832cfbc52d399fc7b60079ab6fbb84e87b0ed4c3d262a7f904a7b9f2dfd5c8e",
+          "prior_sha256": "c5fd32202221461c99ec312c35d0c448d2f4a2646ad70c0ea5a8bb57740750e9"
+        },
+        "model_unfolder/adapters/diffusor/unet_projection.py": {
+          "final_sha256": "08ab9f29b10678785dcc5a2f89c43b5a7cae5ac3597ab3b828a06eee6bbb4584",
+          "prior_sha256": "e3e955c0a025f8c7d780d4385e0d8f19bab438cb507a1f2f3871f3dbe4d1176c"
+        },
+        "model_unfolder/evidence/context.py": {
+          "final_sha256": "b8a788b63d34c29976e93dcf5cca9bcba86127963e841e7f2fb27840043fc574",
+          "prior_sha256": "eeff3eb8c1da9a36b2314e5e3ebeece778d5e817121b616df0dc7f528f60e09f"
+        },
+        "model_unfolder/renderers/html/block_views/unet.py": {
+          "final_sha256": "751155e32f10715b10c6fc04406542ad47e627f3200bb6c143d8b1fd507b91fa",
+          "prior_sha256": "e664a2520272879d81344f558cd039f5ac520324b7225e2446ea6659c3144aed"
+        }
+      },
+      "render_event_bytes_identical": true,
+      "render_event_count": 2534,
+      "render_event_sha256_before_and_after": "556338450caa48782c426128ec305cb45bc9b5af49d07d135ce33ae29800f353"
+    },
+    {
+      "added_actual_card_count": 1,
+      "added_reference_card_count": 64,
+      "all_five_existing_validators": {
+        "validate_block_tree": [],
+        "validate_click_coupling": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      },
+      "all_svg_bytes_identical_to_f7": true,
+      "blessed": false,
+      "case": "sdxl-changed",
+      "final_actual_html": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/final-5227e9c/sdxl-changed.html",
+      "final_actual_html_sha256": "5eb407028dc994a8443e15fcdd9d202d0afc0a7d9a8e113a2d5228463868164b",
+      "final_ir_sha256": "0d757648f46a4dbb9d74fae3879224a6c662d82daf99d83a391fd8fdb468c4b1",
+      "final_projection_renderer_commit": "5227e9cb05d5cfeca414a26615fd158bc6c83650",
+      "final_render_input_sha256": "d780efb519c26c9d1007ecb4a570aba83d836f07ff596291515624533edfc156",
+      "historical_parse_input_pins": {
+        "facts.json": "d603168c3ada91e62df1856e311919ea94869cc2b6dadf1844359094638ab6a6",
+        "ir.json": "9aff63592e7fd763157f264f99dbaf93dd08e470f051eecd4714c6ea08c80709",
+        "qualified-facts.json": "3531b18a2649869b1fdfac8eeb26f1b931c9bcb33e40bbe67854db229bd32a4c",
+        "render-input.json": "0464a9b3b9e0d322f1dda71d45f7c3e0f8ab57557b3295a39aa81e4fba46467c",
+        "result.json": "62ff96b85db8286895de93262c5c1600e9a77c71c3335067cd2dc04008327033"
+      },
+      "historical_parse_receipt": "S8-final-c38b008/sdxl/changed",
+      "prior_actual_html_sha256": "7c7e7062f3c759b5a4a07ea19009d76219bb09252b8814d44b5b4e56f6de5e56",
+      "production_source_delta_from_f7": {
+        "model_unfolder/adapters/diffusor/parser.py": {
+          "final_sha256": "96c4f809fcc971d566a9ad2d19d73d2b784127ddd494d3415ea7f66f138cba9b",
+          "prior_sha256": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758"
+        },
+        "model_unfolder/adapters/diffusor/unet_cutover.py": {
+          "final_sha256": "b832cfbc52d399fc7b60079ab6fbb84e87b0ed4c3d262a7f904a7b9f2dfd5c8e",
+          "prior_sha256": "c5fd32202221461c99ec312c35d0c448d2f4a2646ad70c0ea5a8bb57740750e9"
+        },
+        "model_unfolder/adapters/diffusor/unet_projection.py": {
+          "final_sha256": "08ab9f29b10678785dcc5a2f89c43b5a7cae5ac3597ab3b828a06eee6bbb4584",
+          "prior_sha256": "e3e955c0a025f8c7d780d4385e0d8f19bab438cb507a1f2f3871f3dbe4d1176c"
+        },
+        "model_unfolder/evidence/context.py": {
+          "final_sha256": "b8a788b63d34c29976e93dcf5cca9bcba86127963e841e7f2fb27840043fc574",
+          "prior_sha256": "eeff3eb8c1da9a36b2314e5e3ebeece778d5e817121b616df0dc7f528f60e09f"
+        },
+        "model_unfolder/renderers/html/block_views/unet.py": {
+          "final_sha256": "751155e32f10715b10c6fc04406542ad47e627f3200bb6c143d8b1fd507b91fa",
+          "prior_sha256": "e664a2520272879d81344f558cd039f5ac520324b7225e2446ea6659c3144aed"
+        }
+      },
+      "render_event_bytes_identical": true,
+      "render_event_count": 2543,
+      "render_event_sha256_before_and_after": "a5a8595185b54c552529d7d69fab1ee95bcbeac179ab7f6d416cd555f3202d87"
+    },
+    {
+      "added_actual_card_count": 1,
+      "added_reference_card_count": 60,
+      "all_five_existing_validators": {
+        "validate_block_tree": [],
+        "validate_click_coupling": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      },
+      "all_svg_bytes_identical_to_f7": true,
+      "blessed": false,
+      "case": "sdxl-inpainting",
+      "final_actual_html": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/final-5227e9c/sdxl-inpainting.html",
+      "final_actual_html_sha256": "379da64e2fff106ed322bfbb002001a6f113d2604e260180fb6af78767f8a7b7",
+      "final_ir_sha256": "a8f7dc3603b170df17ed1a3bad283ab457e8060f125a7834d17dffa1ae108bf9",
+      "final_projection_renderer_commit": "5227e9cb05d5cfeca414a26615fd158bc6c83650",
+      "final_render_input_sha256": "3878d6cd1361cdcf2bca8317bbfff48b3deda36764699b9fa5668a7f0c897a1d",
+      "historical_parse_input_pins": {
+        "facts.json": "30131ec52aa2deff402520ad12e5b9bd151b0b4f0fa0f8e47e46c12369a82000",
+        "ir.json": "61d8adb0e950156ebb3a7b92389bcb101d5f6c838fdebab63307384d3e7354fe",
+        "qualified-facts.json": "ceeba5052a8d23c75ec85c572cdd7ace76919ec718d09a33bbe18629605042ed",
+        "render-input.json": "b21a8c7ad70aa0845587af8361021e9b2290d53b90ba0930c0ece17994e53f39",
+        "result.json": "701be7118e5c69c65d634f268c439af4ea2647b7b2f9569199afd2a6ec635b27"
+      },
+      "historical_parse_receipt": "S8-generalization-c38b008/sdxl-inpainting/ordinary",
+      "prior_actual_html_sha256": "9e84d64e0da2138caa66ba32b2dcb2a29708cc66b26b76bf489087e8e9606794",
+      "production_source_delta_from_f7": {
+        "model_unfolder/adapters/diffusor/parser.py": {
+          "final_sha256": "96c4f809fcc971d566a9ad2d19d73d2b784127ddd494d3415ea7f66f138cba9b",
+          "prior_sha256": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758"
+        },
+        "model_unfolder/adapters/diffusor/unet_cutover.py": {
+          "final_sha256": "b832cfbc52d399fc7b60079ab6fbb84e87b0ed4c3d262a7f904a7b9f2dfd5c8e",
+          "prior_sha256": "c5fd32202221461c99ec312c35d0c448d2f4a2646ad70c0ea5a8bb57740750e9"
+        },
+        "model_unfolder/adapters/diffusor/unet_projection.py": {
+          "final_sha256": "08ab9f29b10678785dcc5a2f89c43b5a7cae5ac3597ab3b828a06eee6bbb4584",
+          "prior_sha256": "e3e955c0a025f8c7d780d4385e0d8f19bab438cb507a1f2f3871f3dbe4d1176c"
+        },
+        "model_unfolder/evidence/context.py": {
+          "final_sha256": "b8a788b63d34c29976e93dcf5cca9bcba86127963e841e7f2fb27840043fc574",
+          "prior_sha256": "eeff3eb8c1da9a36b2314e5e3ebeece778d5e817121b616df0dc7f528f60e09f"
+        },
+        "model_unfolder/renderers/html/block_views/unet.py": {
+          "final_sha256": "751155e32f10715b10c6fc04406542ad47e627f3200bb6c143d8b1fd507b91fa",
+          "prior_sha256": "e664a2520272879d81344f558cd039f5ac520324b7225e2446ea6659c3144aed"
+        }
+      },
+      "render_event_bytes_identical": true,
+      "render_event_count": 2524,
+      "render_event_sha256_before_and_after": "cf44b69145b5490965db779b4b4e8b11e4a209b9790a09cdf1a8c98a31b5f423"
+    },
+    {
+      "added_actual_card_count": 1,
+      "added_reference_card_count": 60,
+      "all_five_existing_validators": {
+        "validate_block_tree": [],
+        "validate_click_coupling": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      },
+      "all_svg_bytes_identical_to_f7": true,
+      "blessed": false,
+      "case": "sdxl-misleading",
+      "final_actual_html": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/final-5227e9c/sdxl-misleading.html",
+      "final_actual_html_sha256": "c323a34cceecbbd051540d809305a6f6be340fbd20594e5ea4091b65390d2728",
+      "final_ir_sha256": "ab7002f0822b0b009eb5f2036a703d22827b2a70cc086b78cd2dadfb565457b5",
+      "final_projection_renderer_commit": "5227e9cb05d5cfeca414a26615fd158bc6c83650",
+      "final_render_input_sha256": "097d2a976066c2f09aa8a1d120beb0652f3f737ab5a546234627c6decdc2b1bd",
+      "historical_parse_input_pins": {
+        "facts.json": "d69b1e1e628bee58bf4600232826ceb227dac820ac7d8e6f906a2a45cf5f5908",
+        "ir.json": "fcba38a607b56101bbe384fd5d0de26e82ac80ebfe49f0ef0c36ca021284f5d0",
+        "qualified-facts.json": "8a10eab3a38e433b30504083065a7a5732c660722e193404cb78d3ebbfe24a34",
+        "render-input.json": "73c5567e772f7fc5fb6abb8c2b276a5f97548fc2b392df7887fc2aac9dda4bb6",
+        "result.json": "1e167ed21dfc8a2c651ded1f60b8390eeb4ba28e0f06b024b412eb60f3d3cc8c"
+      },
+      "historical_parse_receipt": "S8-final-c38b008/sdxl/misleading",
+      "prior_actual_html_sha256": "51822484cabf3846106fea9888ec45e5f2080770dc3ef664a3573db1e21bb1ff",
+      "production_source_delta_from_f7": {
+        "model_unfolder/adapters/diffusor/parser.py": {
+          "final_sha256": "96c4f809fcc971d566a9ad2d19d73d2b784127ddd494d3415ea7f66f138cba9b",
+          "prior_sha256": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758"
+        },
+        "model_unfolder/adapters/diffusor/unet_cutover.py": {
+          "final_sha256": "b832cfbc52d399fc7b60079ab6fbb84e87b0ed4c3d262a7f904a7b9f2dfd5c8e",
+          "prior_sha256": "c5fd32202221461c99ec312c35d0c448d2f4a2646ad70c0ea5a8bb57740750e9"
+        },
+        "model_unfolder/adapters/diffusor/unet_projection.py": {
+          "final_sha256": "08ab9f29b10678785dcc5a2f89c43b5a7cae5ac3597ab3b828a06eee6bbb4584",
+          "prior_sha256": "e3e955c0a025f8c7d780d4385e0d8f19bab438cb507a1f2f3871f3dbe4d1176c"
+        },
+        "model_unfolder/evidence/context.py": {
+          "final_sha256": "b8a788b63d34c29976e93dcf5cca9bcba86127963e841e7f2fb27840043fc574",
+          "prior_sha256": "eeff3eb8c1da9a36b2314e5e3ebeece778d5e817121b616df0dc7f528f60e09f"
+        },
+        "model_unfolder/renderers/html/block_views/unet.py": {
+          "final_sha256": "751155e32f10715b10c6fc04406542ad47e627f3200bb6c143d8b1fd507b91fa",
+          "prior_sha256": "e664a2520272879d81344f558cd039f5ac520324b7225e2446ea6659c3144aed"
+        }
+      },
+      "render_event_bytes_identical": true,
+      "render_event_count": 2535,
+      "render_event_sha256_before_and_after": "77b027f5c80f9864bfcb7e74cf7773e977cfd33ec3b4c54a97f9eb0631023657"
+    },
+    {
+      "added_actual_card_count": 0,
+      "added_reference_card_count": 0,
+      "all_five_existing_validators": {
+        "validate_block_tree": [],
+        "validate_click_coupling": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      },
+      "all_svg_bytes_identical_to_f7": true,
+      "blessed": false,
+      "case": "sdxl-missing",
+      "final_actual_html": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/final-5227e9c/sdxl-missing.html",
+      "final_actual_html_sha256": "1204f6c7766c1e2b1aa671dfd223a95610eef85d11cb8d4b769b54e8cb4f2257",
+      "final_ir_sha256": "5118aa8cd9ae0eca52b33b7b02fe37b1430cde2695f7d10a18ba64ccc1c43a8c",
+      "final_projection_renderer_commit": "5227e9cb05d5cfeca414a26615fd158bc6c83650",
+      "final_render_input_sha256": "eadb3da7cb297fcfb6462cbfb5b36b9e11b0dd82ccfdb663efa2d1bc551b790c",
+      "historical_parse_input_pins": {
+        "facts.json": "5509aae733fab024bf83f676bc4e9b5ec54054e231fe45672bbfdbc470c3896a",
+        "ir.json": "5118aa8cd9ae0eca52b33b7b02fe37b1430cde2695f7d10a18ba64ccc1c43a8c",
+        "qualified-facts.json": "ed2908e343e3c14efe2f106652bf7e6854e12e01e0b601ed7d6f013cc235404c",
+        "render-input.json": "eadb3da7cb297fcfb6462cbfb5b36b9e11b0dd82ccfdb663efa2d1bc551b790c",
+        "result.json": "2b9b9a1616a5e9890a5740ca67eeaeb8b2466d15855d38c5ec17ca6ecf50c11a"
+      },
+      "historical_parse_receipt": "S8-final-c38b008/sdxl/missing",
+      "prior_actual_html_sha256": "1204f6c7766c1e2b1aa671dfd223a95610eef85d11cb8d4b769b54e8cb4f2257",
+      "production_source_delta_from_f7": {
+        "model_unfolder/adapters/diffusor/parser.py": {
+          "final_sha256": "96c4f809fcc971d566a9ad2d19d73d2b784127ddd494d3415ea7f66f138cba9b",
+          "prior_sha256": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758"
+        },
+        "model_unfolder/adapters/diffusor/unet_cutover.py": {
+          "final_sha256": "b832cfbc52d399fc7b60079ab6fbb84e87b0ed4c3d262a7f904a7b9f2dfd5c8e",
+          "prior_sha256": "c5fd32202221461c99ec312c35d0c448d2f4a2646ad70c0ea5a8bb57740750e9"
+        },
+        "model_unfolder/adapters/diffusor/unet_projection.py": {
+          "final_sha256": "08ab9f29b10678785dcc5a2f89c43b5a7cae5ac3597ab3b828a06eee6bbb4584",
+          "prior_sha256": "e3e955c0a025f8c7d780d4385e0d8f19bab438cb507a1f2f3871f3dbe4d1176c"
+        },
+        "model_unfolder/evidence/context.py": {
+          "final_sha256": "b8a788b63d34c29976e93dcf5cca9bcba86127963e841e7f2fb27840043fc574",
+          "prior_sha256": "eeff3eb8c1da9a36b2314e5e3ebeece778d5e817121b616df0dc7f528f60e09f"
+        },
+        "model_unfolder/renderers/html/block_views/unet.py": {
+          "final_sha256": "751155e32f10715b10c6fc04406542ad47e627f3200bb6c143d8b1fd507b91fa",
+          "prior_sha256": "e664a2520272879d81344f558cd039f5ac520324b7225e2446ea6659c3144aed"
+        }
+      },
+      "render_event_bytes_identical": true,
+      "render_event_count": 2405,
+      "render_event_sha256_before_and_after": "2cee5d5025439d5d80a14d171ace51e05bbeb5e17b8e2b1ae2326c537a4ba041"
+    },
+    {
+      "added_actual_card_count": 1,
+      "added_reference_card_count": 60,
+      "all_five_existing_validators": {
+        "validate_block_tree": [],
+        "validate_click_coupling": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      },
+      "all_svg_bytes_identical_to_f7": true,
+      "blessed": false,
+      "case": "sdxl-ordinary",
+      "final_actual_html": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/final-5227e9c/sdxl-ordinary.html",
+      "final_actual_html_sha256": "d499a0e62b809bbf52f6408255628b85a6bb1c1b70c773591bcc00e7ee07b047",
+      "final_ir_sha256": "0cad810cef5381794b874c8d253fcb7066f942b8e2a882a2c0782988888f4aaf",
+      "final_projection_renderer_commit": "5227e9cb05d5cfeca414a26615fd158bc6c83650",
+      "final_render_input_sha256": "c1163f15c58d6cd7fde9c41556d20b0b9ff76e4b56ba0a63706be044c1e8eb3b",
+      "historical_parse_input_pins": {
+        "facts.json": "d69b1e1e628bee58bf4600232826ceb227dac820ac7d8e6f906a2a45cf5f5908",
+        "ir.json": "626520e0ec47b3ecec570c44342021ffbfbe7835e3239052de08131987bbcf81",
+        "qualified-facts.json": "f00292a7de873147bff78e0fa60c466e42e401e3651033c41406eb74d0aa5287",
+        "render-input.json": "54e18079e61ac5a4b9c7ca544a42912ad64a50c66ca0d722374bfcfb4d54e7c2",
+        "result.json": "98dc3b1d6037847ff6f12f09dc1d0409526c037bdbd36a5f4adf2823af101a3f"
+      },
+      "historical_parse_receipt": "S8-final-c38b008/sdxl/ordinary",
+      "prior_actual_html_sha256": "86bb0629771f875bdba3e1fb219c403160938254c4ec2ee5199baaec562bc5bf",
+      "production_source_delta_from_f7": {
+        "model_unfolder/adapters/diffusor/parser.py": {
+          "final_sha256": "96c4f809fcc971d566a9ad2d19d73d2b784127ddd494d3415ea7f66f138cba9b",
+          "prior_sha256": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758"
+        },
+        "model_unfolder/adapters/diffusor/unet_cutover.py": {
+          "final_sha256": "b832cfbc52d399fc7b60079ab6fbb84e87b0ed4c3d262a7f904a7b9f2dfd5c8e",
+          "prior_sha256": "c5fd32202221461c99ec312c35d0c448d2f4a2646ad70c0ea5a8bb57740750e9"
+        },
+        "model_unfolder/adapters/diffusor/unet_projection.py": {
+          "final_sha256": "08ab9f29b10678785dcc5a2f89c43b5a7cae5ac3597ab3b828a06eee6bbb4584",
+          "prior_sha256": "e3e955c0a025f8c7d780d4385e0d8f19bab438cb507a1f2f3871f3dbe4d1176c"
+        },
+        "model_unfolder/evidence/context.py": {
+          "final_sha256": "b8a788b63d34c29976e93dcf5cca9bcba86127963e841e7f2fb27840043fc574",
+          "prior_sha256": "eeff3eb8c1da9a36b2314e5e3ebeece778d5e817121b616df0dc7f528f60e09f"
+        },
+        "model_unfolder/renderers/html/block_views/unet.py": {
+          "final_sha256": "751155e32f10715b10c6fc04406542ad47e627f3200bb6c143d8b1fd507b91fa",
+          "prior_sha256": "e664a2520272879d81344f558cd039f5ac520324b7225e2446ea6659c3144aed"
+        }
+      },
+      "render_event_bytes_identical": true,
+      "render_event_count": 2535,
+      "render_event_sha256_before_and_after": "77b027f5c80f9864bfcb7e74cf7773e977cfd33ec3b4c54a97f9eb0631023657"
+    },
+    {
+      "added_actual_card_count": 1,
+      "added_reference_card_count": 40,
+      "all_five_existing_validators": {
+        "validate_block_tree": [],
+        "validate_click_coupling": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      },
+      "all_svg_bytes_identical_to_f7": true,
+      "blessed": false,
+      "case": "sdxl-refiner",
+      "final_actual_html": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/final-5227e9c/sdxl-refiner.html",
+      "final_actual_html_sha256": "69c51a29bc62027cda19d8912d3f5543a50cfd766e7e24ce312d0472816996b2",
+      "final_ir_sha256": "f08b63eac5f6326ccf8548ecb956a5af11dac095daa0a8d6f0b6e47b1593d94d",
+      "final_projection_renderer_commit": "5227e9cb05d5cfeca414a26615fd158bc6c83650",
+      "final_render_input_sha256": "6b7667bff249e3d1f0e12148a68d9da4bcfa6ac5fd61a858379f6f3a13eb4307",
+      "historical_parse_input_pins": {
+        "facts.json": "3e62849ea1b11f10be535066b06666a3c8cfb69cf24cd325a7a5d2e7cefed197",
+        "ir.json": "b6f8aede957eb1849c537cdde397e6a097e8b3965ac36c333eb213288cf492d2",
+        "qualified-facts.json": "ce8d7c333f0564ab271abe39bc085928dc8f04f649de1b0685fe3725d8bbb76b",
+        "render-input.json": "ce9121e0d2c043dfe74f40b3bd81ca13825e0130c89a6f97b54ed4daa1d03a6e",
+        "result.json": "60ac663016cec4babfbaa427d05c50227fd2b74c5c7d04b29eb6b448b7b96ce8"
+      },
+      "historical_parse_receipt": "S8-generalization-c38b008/sdxl-refiner/ordinary",
+      "prior_actual_html_sha256": "9ffd13b3d1ff36a97ff54b87ce8a80b507dbb58c0fd2cee4c2b27a631976a2ee",
+      "production_source_delta_from_f7": {
+        "model_unfolder/adapters/diffusor/parser.py": {
+          "final_sha256": "96c4f809fcc971d566a9ad2d19d73d2b784127ddd494d3415ea7f66f138cba9b",
+          "prior_sha256": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758"
+        },
+        "model_unfolder/adapters/diffusor/unet_cutover.py": {
+          "final_sha256": "b832cfbc52d399fc7b60079ab6fbb84e87b0ed4c3d262a7f904a7b9f2dfd5c8e",
+          "prior_sha256": "c5fd32202221461c99ec312c35d0c448d2f4a2646ad70c0ea5a8bb57740750e9"
+        },
+        "model_unfolder/adapters/diffusor/unet_projection.py": {
+          "final_sha256": "08ab9f29b10678785dcc5a2f89c43b5a7cae5ac3597ab3b828a06eee6bbb4584",
+          "prior_sha256": "e3e955c0a025f8c7d780d4385e0d8f19bab438cb507a1f2f3871f3dbe4d1176c"
+        },
+        "model_unfolder/evidence/context.py": {
+          "final_sha256": "b8a788b63d34c29976e93dcf5cca9bcba86127963e841e7f2fb27840043fc574",
+          "prior_sha256": "eeff3eb8c1da9a36b2314e5e3ebeece778d5e817121b616df0dc7f528f60e09f"
+        },
+        "model_unfolder/renderers/html/block_views/unet.py": {
+          "final_sha256": "751155e32f10715b10c6fc04406542ad47e627f3200bb6c143d8b1fd507b91fa",
+          "prior_sha256": "e664a2520272879d81344f558cd039f5ac520324b7225e2446ea6659c3144aed"
+        }
+      },
+      "render_event_bytes_identical": true,
+      "render_event_count": 2579,
+      "render_event_sha256_before_and_after": "e2fb0bf6a30f631bb2e064a00de5cb20b964f07197a185eeb7ba607960720d92"
+    },
+    {
+      "added_actual_card_count": 1,
+      "added_reference_card_count": 60,
+      "all_five_existing_validators": {
+        "validate_block_tree": [],
+        "validate_click_coupling": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      },
+      "all_svg_bytes_identical_to_f7": true,
+      "blessed": false,
+      "case": "sdxl-rewrite",
+      "final_actual_html": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/final-5227e9c/sdxl-rewrite.html",
+      "final_actual_html_sha256": "d499a0e62b809bbf52f6408255628b85a6bb1c1b70c773591bcc00e7ee07b047",
+      "final_ir_sha256": "c81a2f1382946f546afd3fa75fae62aef30cf7aacc4df283df23d2eff6bd37cf",
+      "final_projection_renderer_commit": "5227e9cb05d5cfeca414a26615fd158bc6c83650",
+      "final_render_input_sha256": "1ec166fdb9514ac666aa4b468533501e7d7057e0a8c4c94eeaef1135c1460864",
+      "historical_parse_input_pins": {
+        "facts.json": "cc492cdde7f80bff51537c5c7c58960ed0fa7dd9c79763d04f5a4dd1a9d1abce",
+        "ir.json": "fb5034d56f82972e6f60779846cebdb0ff712d90c22a6de9cd58f31da1016621",
+        "qualified-facts.json": "fb16ec97e165f92370f8f61992e62669a1ba6296e231caaf48c362a168008904",
+        "render-input.json": "711163030c4b014b5a852e9f6c78f2c173b8f53b8ebac64f2e0d7f59d65792b0",
+        "result.json": "cc44436e3d99b2a5085de727ef786bee5b7f4a6c78e2769ef9fe1702b5c45bec"
+      },
+      "historical_parse_receipt": "S8-final-c38b008/sdxl/rewrite",
+      "prior_actual_html_sha256": "86bb0629771f875bdba3e1fb219c403160938254c4ec2ee5199baaec562bc5bf",
+      "production_source_delta_from_f7": {
+        "model_unfolder/adapters/diffusor/parser.py": {
+          "final_sha256": "96c4f809fcc971d566a9ad2d19d73d2b784127ddd494d3415ea7f66f138cba9b",
+          "prior_sha256": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758"
+        },
+        "model_unfolder/adapters/diffusor/unet_cutover.py": {
+          "final_sha256": "b832cfbc52d399fc7b60079ab6fbb84e87b0ed4c3d262a7f904a7b9f2dfd5c8e",
+          "prior_sha256": "c5fd32202221461c99ec312c35d0c448d2f4a2646ad70c0ea5a8bb57740750e9"
+        },
+        "model_unfolder/adapters/diffusor/unet_projection.py": {
+          "final_sha256": "08ab9f29b10678785dcc5a2f89c43b5a7cae5ac3597ab3b828a06eee6bbb4584",
+          "prior_sha256": "e3e955c0a025f8c7d780d4385e0d8f19bab438cb507a1f2f3871f3dbe4d1176c"
+        },
+        "model_unfolder/evidence/context.py": {
+          "final_sha256": "b8a788b63d34c29976e93dcf5cca9bcba86127963e841e7f2fb27840043fc574",
+          "prior_sha256": "eeff3eb8c1da9a36b2314e5e3ebeece778d5e817121b616df0dc7f528f60e09f"
+        },
+        "model_unfolder/renderers/html/block_views/unet.py": {
+          "final_sha256": "751155e32f10715b10c6fc04406542ad47e627f3200bb6c143d8b1fd507b91fa",
+          "prior_sha256": "e664a2520272879d81344f558cd039f5ac520324b7225e2446ea6659c3144aed"
+        }
+      },
+      "render_event_bytes_identical": true,
+      "render_event_count": 2535,
+      "render_event_sha256_before_and_after": "77b027f5c80f9864bfcb7e74cf7773e977cfd33ec3b4c54a97f9eb0631023657"
+    },
+    {
+      "added_actual_card_count": 1,
+      "added_reference_card_count": 60,
+      "all_five_existing_validators": {
+        "validate_block_tree": [],
+        "validate_click_coupling": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      },
+      "all_svg_bytes_identical_to_f7": true,
+      "blessed": false,
+      "case": "sdxl-sparse",
+      "final_actual_html": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/final-5227e9c/sdxl-sparse.html",
+      "final_actual_html_sha256": "8eee98a90eba288c18a0ff745bda6f88ee5d6a35b381b4b0d98c128977d10d58",
+      "final_ir_sha256": "3ea29de8fd493f242dded8ae85c40bb591e90d810e0b9c1c875d0b95fc4842b0",
+      "final_projection_renderer_commit": "5227e9cb05d5cfeca414a26615fd158bc6c83650",
+      "final_render_input_sha256": "b270359bcd9cd74f1067dd72dfe8a21a3084c038b03ff26ba91c4ab2427be266",
+      "historical_parse_input_pins": {
+        "facts.json": "325948f53d82d86802f6124326af27d6153566151e033d836ded19bc522d2b86",
+        "ir.json": "f449b0b9dbc9ee8b0e126c28cbd7b82443379b3f7bd777f216437493a5619f57",
+        "qualified-facts.json": "06604712e07714a3432c3b188cd874b994a5a8efc6bea7fb1d32b6e81a5b8e3f",
+        "render-input.json": "53b3e05bdad248f7d45715a3abe63f2d49e141666ad48e2675ec0c2b38f7d9a8",
+        "result.json": "32ea1bbd0a43e66e188bac4e580b9d88ec34d501010dab62217d413edd70f3f8"
+      },
+      "historical_parse_receipt": "S8-final-c38b008/sdxl/sparse",
+      "prior_actual_html_sha256": "1a86a0bfdee6e532106182a9a7f64f41212f40ad52e49bb4ed48df7f12107bde",
+      "production_source_delta_from_f7": {
+        "model_unfolder/adapters/diffusor/parser.py": {
+          "final_sha256": "96c4f809fcc971d566a9ad2d19d73d2b784127ddd494d3415ea7f66f138cba9b",
+          "prior_sha256": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758"
+        },
+        "model_unfolder/adapters/diffusor/unet_cutover.py": {
+          "final_sha256": "b832cfbc52d399fc7b60079ab6fbb84e87b0ed4c3d262a7f904a7b9f2dfd5c8e",
+          "prior_sha256": "c5fd32202221461c99ec312c35d0c448d2f4a2646ad70c0ea5a8bb57740750e9"
+        },
+        "model_unfolder/adapters/diffusor/unet_projection.py": {
+          "final_sha256": "08ab9f29b10678785dcc5a2f89c43b5a7cae5ac3597ab3b828a06eee6bbb4584",
+          "prior_sha256": "e3e955c0a025f8c7d780d4385e0d8f19bab438cb507a1f2f3871f3dbe4d1176c"
+        },
+        "model_unfolder/evidence/context.py": {
+          "final_sha256": "b8a788b63d34c29976e93dcf5cca9bcba86127963e841e7f2fb27840043fc574",
+          "prior_sha256": "eeff3eb8c1da9a36b2314e5e3ebeece778d5e817121b616df0dc7f528f60e09f"
+        },
+        "model_unfolder/renderers/html/block_views/unet.py": {
+          "final_sha256": "751155e32f10715b10c6fc04406542ad47e627f3200bb6c143d8b1fd507b91fa",
+          "prior_sha256": "e664a2520272879d81344f558cd039f5ac520324b7225e2446ea6659c3144aed"
+        }
+      },
+      "render_event_bytes_identical": true,
+      "render_event_count": 2535,
+      "render_event_sha256_before_and_after": "77b027f5c80f9864bfcb7e74cf7773e977cfd33ec3b4c54a97f9eb0631023657"
+    },
+    {
+      "added_actual_card_count": 1,
+      "added_reference_card_count": 60,
+      "all_five_existing_validators": {
+        "validate_block_tree": [],
+        "validate_click_coupling": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      },
+      "all_svg_bytes_identical_to_f7": true,
+      "blessed": false,
+      "case": "sdxl-unchanged",
+      "final_actual_html": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/final-5227e9c/sdxl-unchanged.html",
+      "final_actual_html_sha256": "d499a0e62b809bbf52f6408255628b85a6bb1c1b70c773591bcc00e7ee07b047",
+      "final_ir_sha256": "0cad810cef5381794b874c8d253fcb7066f942b8e2a882a2c0782988888f4aaf",
+      "final_projection_renderer_commit": "5227e9cb05d5cfeca414a26615fd158bc6c83650",
+      "final_render_input_sha256": "c1163f15c58d6cd7fde9c41556d20b0b9ff76e4b56ba0a63706be044c1e8eb3b",
+      "historical_parse_input_pins": {
+        "facts.json": "d69b1e1e628bee58bf4600232826ceb227dac820ac7d8e6f906a2a45cf5f5908",
+        "ir.json": "626520e0ec47b3ecec570c44342021ffbfbe7835e3239052de08131987bbcf81",
+        "qualified-facts.json": "0ee6be076f0e4ab4b4ee7eadce24a0d8fd9927f14a7abfa305e2da13da519c0f",
+        "render-input.json": "54e18079e61ac5a4b9c7ca544a42912ad64a50c66ca0d722374bfcfb4d54e7c2",
+        "result.json": "e44de91706f7f6269e3f28747937f7086ff53370a0c6b0bdfee9f64f5410a2c8"
+      },
+      "historical_parse_receipt": "S8-final-c38b008/sdxl/unchanged",
+      "prior_actual_html_sha256": "86bb0629771f875bdba3e1fb219c403160938254c4ec2ee5199baaec562bc5bf",
+      "production_source_delta_from_f7": {
+        "model_unfolder/adapters/diffusor/parser.py": {
+          "final_sha256": "96c4f809fcc971d566a9ad2d19d73d2b784127ddd494d3415ea7f66f138cba9b",
+          "prior_sha256": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758"
+        },
+        "model_unfolder/adapters/diffusor/unet_cutover.py": {
+          "final_sha256": "b832cfbc52d399fc7b60079ab6fbb84e87b0ed4c3d262a7f904a7b9f2dfd5c8e",
+          "prior_sha256": "c5fd32202221461c99ec312c35d0c448d2f4a2646ad70c0ea5a8bb57740750e9"
+        },
+        "model_unfolder/adapters/diffusor/unet_projection.py": {
+          "final_sha256": "08ab9f29b10678785dcc5a2f89c43b5a7cae5ac3597ab3b828a06eee6bbb4584",
+          "prior_sha256": "e3e955c0a025f8c7d780d4385e0d8f19bab438cb507a1f2f3871f3dbe4d1176c"
+        },
+        "model_unfolder/evidence/context.py": {
+          "final_sha256": "b8a788b63d34c29976e93dcf5cca9bcba86127963e841e7f2fb27840043fc574",
+          "prior_sha256": "eeff3eb8c1da9a36b2314e5e3ebeece778d5e817121b616df0dc7f528f60e09f"
+        },
+        "model_unfolder/renderers/html/block_views/unet.py": {
+          "final_sha256": "751155e32f10715b10c6fc04406542ad47e627f3200bb6c143d8b1fd507b91fa",
+          "prior_sha256": "e664a2520272879d81344f558cd039f5ac520324b7225e2446ea6659c3144aed"
+        }
+      },
+      "render_event_bytes_identical": true,
+      "render_event_count": 2535,
+      "render_event_sha256_before_and_after": "77b027f5c80f9864bfcb7e74cf7773e977cfd33ec3b4c54a97f9eb0631023657"
+    }
+  ],
+  "production_commit": "5227e9cb05d5cfeca414a26615fd158bc6c83650",
+  "raw_ordinary_rewrite_unchanged": {
+    "ordinary": "d499a0e62b809bbf52f6408255628b85a6bb1c1b70c773591bcc00e7ee07b047",
+    "rewrite": "d499a0e62b809bbf52f6408255628b85a6bb1c1b70c773591bcc00e7ee07b047",
+    "unchanged": "d499a0e62b809bbf52f6408255628b85a6bb1c1b70c773591bcc00e7ee07b047"
+  },
+  "scope": "Saved historical facts plus exact captured full IR; final projector additions and actual renderer only. No model/source reader execution is restamped as final fresh execution.",
+  "table_verification": "Owned by executor final matrix lane; this phase proves unchanged full render-event bytes and explicitly enumerated presentation IR reference additions only."
+}
