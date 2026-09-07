@@ -1,0 +1,2898 @@
+{
+  "baseline": "83140f1",
+  "files": [
+    {
+      "added": 22,
+      "deleted": 1,
+      "path": "model_unfolder/adapters/diffusor/blocks.py"
+    },
+    {
+      "added": 41,
+      "deleted": 11,
+      "path": "model_unfolder/adapters/diffusor/parser.py"
+    },
+    {
+      "added": 86,
+      "deleted": 0,
+      "path": "model_unfolder/adapters/diffusor/unet_cutover.py"
+    },
+    {
+      "added": 20,
+      "deleted": 0,
+      "path": "model_unfolder/adapters/diffusor/unet_differential.py"
+    },
+    {
+      "added": 496,
+      "deleted": 0,
+      "path": "model_unfolder/adapters/diffusor/unet_projection.py"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "model_unfolder/block_schema.py"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "model_unfolder/diagram.py"
+    },
+    {
+      "added": 17,
+      "deleted": 1,
+      "path": "model_unfolder/evidence/claim_evidence.py"
+    },
+    {
+      "added": 3,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/context.py"
+    },
+    {
+      "added": 783,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/execution_recipe.py"
+    },
+    {
+      "added": 14,
+      "deleted": 1,
+      "path": "model_unfolder/evidence/import_source.py"
+    },
+    {
+      "added": 117,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/instance_population_claim.py"
+    },
+    {
+      "added": 87,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/instance_shape_claim.py"
+    },
+    {
+      "added": 334,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/local_port_routes.py"
+    },
+    {
+      "added": 36,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/primitive_semantics.py"
+    },
+    {
+      "added": 108,
+      "deleted": 1,
+      "path": "model_unfolder/evidence/program_index.py"
+    },
+    {
+      "added": 58,
+      "deleted": 5,
+      "path": "model_unfolder/evidence/reconciliation.py"
+    },
+    {
+      "added": 146,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/registry.py"
+    },
+    {
+      "added": 60,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/runtime_inventory.py"
+    },
+    {
+      "added": 193,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/runtime_source.py"
+    },
+    {
+      "added": 250,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/unet_call_binding.py"
+    },
+    {
+      "added": 330,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/unet_cell_connections.py"
+    },
+    {
+      "added": 118,
+      "deleted": 1,
+      "path": "model_unfolder/evidence/unet_cell_mechanism.py"
+    },
+    {
+      "added": 541,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/unet_claims.py"
+    },
+    {
+      "added": 199,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/unet_iteration_binding.py"
+    },
+    {
+      "added": 466,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/unet_lookup_closure.py"
+    },
+    {
+      "added": 133,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/unet_nested_mechanism.py"
+    },
+    {
+      "added": 194,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/unet_primary_ports.py"
+    },
+    {
+      "added": 100,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/unet_runtime.py"
+    },
+    {
+      "added": 45,
+      "deleted": 9,
+      "path": "model_unfolder/evidence/unet_selected_constructor.py"
+    },
+    {
+      "added": 16,
+      "deleted": 3,
+      "path": "model_unfolder/evidence/unet_stage_cells.py"
+    },
+    {
+      "added": 133,
+      "deleted": 0,
+      "path": "model_unfolder/evidence/unet_wrapper_binding.py"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "model_unfolder/expanded/loop.py"
+    },
+    {
+      "added": 7,
+      "deleted": 0,
+      "path": "model_unfolder/params.py"
+    },
+    {
+      "added": 12,
+      "deleted": 0,
+      "path": "model_unfolder/parser.py"
+    },
+    {
+      "added": 14,
+      "deleted": 0,
+      "path": "model_unfolder/renderers/html/block_views/registry.py"
+    },
+    {
+      "added": 360,
+      "deleted": 13,
+      "path": "model_unfolder/renderers/html/block_views/unet.py"
+    },
+    {
+      "added": 12,
+      "deleted": 1,
+      "path": "model_unfolder/renderers/html/graph.py"
+    },
+    {
+      "added": 43,
+      "deleted": 6,
+      "path": "model_unfolder/renderers/html/graph_engine.py"
+    },
+    {
+      "added": 10,
+      "deleted": 0,
+      "path": "model_unfolder/renderers/html/sections.py"
+    },
+    {
+      "added": 22,
+      "deleted": 0,
+      "path": "model_unfolder/renderers/html/views_diffusion.py"
+    },
+    {
+      "added": 596,
+      "deleted": 0,
+      "path": "physics/attribute_bindings.py"
+    },
+    {
+      "added": 42,
+      "deleted": 0,
+      "path": "physics/framework_primitives.py"
+    },
+    {
+      "added": 91,
+      "deleted": 4,
+      "path": "physics/instance_inventory.py"
+    },
+    {
+      "added": 89,
+      "deleted": 0,
+      "path": "physics/source_override.py"
+    },
+    {
+      "added": 4,
+      "deleted": 2,
+      "path": "pyproject.toml"
+    },
+    {
+      "added": 365,
+      "deleted": 0,
+      "path": "scripts/demonstrate_s8_unet.py"
+    },
+    {
+      "added": 4,
+      "deleted": 612,
+      "path": "scripts/generate_s7_shadow.py"
+    },
+    {
+      "added": 504,
+      "deleted": 0,
+      "path": "scripts/report_s8_demonstration.py"
+    },
+    {
+      "added": 89,
+      "deleted": 0,
+      "path": "scripts/verify_s8_unet_family.py"
+    },
+    {
+      "added": 27,
+      "deleted": 0,
+      "path": "tests/test_opgraph.py"
+    },
+    {
+      "added": 20,
+      "deleted": 4,
+      "path": "tests/test_s6_physics.py"
+    },
+    {
+      "added": 2,
+      "deleted": 1,
+      "path": "tests/test_s7_artifacts.py"
+    },
+    {
+      "added": 34,
+      "deleted": 0,
+      "path": "tests/test_s7_reconciliation.py"
+    },
+    {
+      "added": 504,
+      "deleted": 0,
+      "path": "tests/test_s8_attribute_bindings.py"
+    },
+    {
+      "added": 133,
+      "deleted": 0,
+      "path": "tests/test_s8_call_port_layout.py"
+    },
+    {
+      "added": 73,
+      "deleted": 0,
+      "path": "tests/test_s8_cell_connections.py"
+    },
+    {
+      "added": 61,
+      "deleted": 0,
+      "path": "tests/test_s8_component_scope.py"
+    },
+    {
+      "added": 32,
+      "deleted": 0,
+      "path": "tests/test_s8_constructor_bindings.py"
+    },
+    {
+      "added": 37,
+      "deleted": 0,
+      "path": "tests/test_s8_framework_primitives.py"
+    },
+    {
+      "added": 134,
+      "deleted": 0,
+      "path": "tests/test_s8_iteration_binding.py"
+    },
+    {
+      "added": 283,
+      "deleted": 0,
+      "path": "tests/test_s8_lookup_closure.py"
+    },
+    {
+      "added": 230,
+      "deleted": 0,
+      "path": "tests/test_s8_port_routes.py"
+    },
+    {
+      "added": 241,
+      "deleted": 0,
+      "path": "tests/test_s8_primary_ports.py"
+    },
+    {
+      "added": 206,
+      "deleted": 0,
+      "path": "tests/test_s8_runtime_source.py"
+    },
+    {
+      "added": 91,
+      "deleted": 0,
+      "path": "tests/test_s8_source_override.py"
+    },
+    {
+      "added": 196,
+      "deleted": 0,
+      "path": "tests/test_s8_try_observation.py"
+    },
+    {
+      "added": 43,
+      "deleted": 0,
+      "path": "tests/test_s8_unet_routing.py"
+    },
+    {
+      "added": 77,
+      "deleted": 0,
+      "path": "tests/test_s8_wrapper_binding.py"
+    },
+    {
+      "added": 13,
+      "deleted": 0,
+      "path": "tests/test_unet_nested_mechanism.py"
+    },
+    {
+      "added": 54,
+      "deleted": 0,
+      "path": "tests/test_unet_stage_cells.py"
+    },
+    {
+      "added": 11,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/README.md"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/checkout.json"
+    },
+    {
+      "added": 37,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/config-storage-summary.json"
+    },
+    {
+      "added": 355,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/construction-request.json"
+    },
+    {
+      "added": 4,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/construction-timing.json"
+    },
+    {
+      "added": 42,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/indexed-sources.json"
+    },
+    {
+      "added": 4,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/input-pin.json"
+    },
+    {
+      "added": 232,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/input.json"
+    },
+    {
+      "added": 2719,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/lookup-closures.json"
+    },
+    {
+      "added": 39,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/probe.py"
+    },
+    {
+      "added": 26,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/remaining-lookup-limitations.json"
+    },
+    {
+      "added": 11933,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/root-invocations.json"
+    },
+    {
+      "added": 4,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/run.log"
+    },
+    {
+      "added": 22,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/source-after.json"
+    },
+    {
+      "added": 22,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/source-before.json"
+    },
+    {
+      "added": 4,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/source-comparison.json"
+    },
+    {
+      "added": 16,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/summary.json"
+    },
+    {
+      "added": 181,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive-v2/wrapper-binding.json"
+    },
+    {
+      "added": 9,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive/README.md"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive/checkout.json"
+    },
+    {
+      "added": 345,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive/construction-request.json"
+    },
+    {
+      "added": 4,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive/construction-timing.json"
+    },
+    {
+      "added": 42,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive/indexed-sources.json"
+    },
+    {
+      "added": 4,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive/input-pin.json"
+    },
+    {
+      "added": 232,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive/input.json"
+    },
+    {
+      "added": 2719,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive/lookup-closures.json"
+    },
+    {
+      "added": 38,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive/probe.py"
+    },
+    {
+      "added": 19,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive/source-after.json"
+    },
+    {
+      "added": 19,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive/source-before.json"
+    },
+    {
+      "added": 4,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive/source-comparison.json"
+    },
+    {
+      "added": 16,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive/summary.json"
+    },
+    {
+      "added": 181,
+      "deleted": 0,
+      "path": "verification/receipts/S8-actual-lookup-positive/wrapper-binding.json"
+    },
+    {
+      "added": 11,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-identity-correction/README.md"
+    },
+    {
+      "added": 466,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-identity-correction/independent-replay.json"
+    },
+    {
+      "added": 516,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-identity-correction/installed-class.json"
+    },
+    {
+      "added": 24,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-identity-correction/installed_class.py"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-identity-correction/source-manifest.json"
+    },
+    {
+      "added": 20,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-identity-correction/standalone-results.json"
+    },
+    {
+      "added": 22,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-identity-independent/README.md"
+    },
+    {
+      "added": 11,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-identity-independent/final-fingerprints.json"
+    },
+    {
+      "added": 516,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-identity-independent/installed-class.json"
+    },
+    {
+      "added": 24,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-identity-independent/installed_class.py"
+    },
+    {
+      "added": 28,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-identity-independent/replay.py"
+    },
+    {
+      "added": 475,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-identity-independent/results.json"
+    },
+    {
+      "added": 490,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-identity-independent/source/attribute_bindings.py"
+    },
+    {
+      "added": 1007,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-identity-independent/source/instance_inventory.py"
+    },
+    {
+      "added": 32,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-independent/README.md"
+    },
+    {
+      "added": 516,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-independent/installed-class.json"
+    },
+    {
+      "added": 22,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-independent/installed_class.py"
+    },
+    {
+      "added": 54,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-independent/replay.py"
+    },
+    {
+      "added": 550,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-independent/results.json"
+    },
+    {
+      "added": 434,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-independent/source/attribute_bindings.py"
+    },
+    {
+      "added": 1001,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-independent/source/instance_inventory.py"
+    },
+    {
+      "added": 13,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-observation/README.md"
+    },
+    {
+      "added": 561,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-observation/installed-class-probe.json"
+    },
+    {
+      "added": 16,
+      "deleted": 0,
+      "path": "verification/receipts/S8-attribute-binding-observation/standalone-results.json"
+    },
+    {
+      "added": 46,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-corrections/README.md"
+    },
+    {
+      "added": 36,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-corrections/focused/pytest.log"
+    },
+    {
+      "added": 25,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-corrections/focused/result.json"
+    },
+    {
+      "added": 44,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-corrections/independent/README.md"
+    },
+    {
+      "added": 144,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-corrections/independent/authority-results.json"
+    },
+    {
+      "added": 48,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-corrections/independent/ffn-results.json"
+    },
+    {
+      "added": 119,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-corrections/independent/replay_authority.py"
+    },
+    {
+      "added": 72,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-corrections/independent/replay_ffn.py"
+    },
+    {
+      "added": 104,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-corrections/independent/replay_spatial.py"
+    },
+    {
+      "added": 20,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-corrections/independent/spatial-results.json"
+    },
+    {
+      "added": 35,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-corrections/independent/verification.json"
+    },
+    {
+      "added": 7,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-followup/README.md"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-followup/focused.log"
+    },
+    {
+      "added": 67,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-followup/independent/README.md"
+    },
+    {
+      "added": 156,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-followup/independent/binding-results.json"
+    },
+    {
+      "added": 18,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-followup/independent/execution-scope.md"
+    },
+    {
+      "added": 61,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-followup/independent/ffn-results.json"
+    },
+    {
+      "added": 296,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-followup/independent/fresh-evidence/implementation-before.json"
+    },
+    {
+      "added": 232,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-followup/independent/fresh-evidence/input.json"
+    },
+    {
+      "added": 30,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-followup/independent/fresh-evidence/result.json"
+    },
+    {
+      "added": 136,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-followup/independent/replay_bindings.py"
+    },
+    {
+      "added": 86,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-followup/independent/replay_ffn_fresh.py"
+    },
+    {
+      "added": 33,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-followup/independent/verification.json"
+    },
+    {
+      "added": 7,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-followup/owner-storage-writes/README.md"
+    },
+    {
+      "added": 313,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-followup/owner-storage-writes/reader-under-review.py.txt"
+    },
+    {
+      "added": 35,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-followup/owner-storage-writes/red-results.json"
+    },
+    {
+      "added": 45,
+      "deleted": 0,
+      "path": "verification/receipts/S8-authority-followup/owner-storage-writes/reproduce.py"
+    },
+    {
+      "added": 32,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/README.md"
+    },
+    {
+      "added": 25,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/artifact-manifest.json"
+    },
+    {
+      "added": 173,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/counterexample/absent-inventory.json"
+    },
+    {
+      "added": 190,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/counterexample/absent-observation.json"
+    },
+    {
+      "added": 15,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/counterexample/absent.py"
+    },
+    {
+      "added": 173,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/counterexample/present-inventory.json"
+    },
+    {
+      "added": 196,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/counterexample/present-observation.json"
+    },
+    {
+      "added": 15,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/counterexample/present.py"
+    },
+    {
+      "added": 23,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/counterexample/result.json"
+    },
+    {
+      "added": 3,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/focused/pytest.log"
+    },
+    {
+      "added": 24,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/focused/result.json"
+    },
+    {
+      "added": 9,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/growth.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/ordinary/controls.json"
+    },
+    {
+      "added": 232,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/ordinary/input.json"
+    },
+    {
+      "added": 15,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/ordinary/result.json"
+    },
+    {
+      "added": 21,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/poisons.md"
+    },
+    {
+      "added": 85,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/reproduce.py"
+    },
+    {
+      "added": 17,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/source-boundary.json"
+    },
+    {
+      "added": 43,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/source-manifest.json"
+    },
+    {
+      "added": 79,
+      "deleted": 0,
+      "path": "verification/receipts/S8-class-lookup-stop/status-sheet.md"
+    },
+    {
+      "added": 7,
+      "deleted": 0,
+      "path": "verification/receipts/S8-component-regression-preparation/README.md"
+    },
+    {
+      "added": 79,
+      "deleted": 0,
+      "path": "verification/receipts/S8-component-regression-preparation/manifest.json"
+    },
+    {
+      "added": 41,
+      "deleted": 0,
+      "path": "verification/receipts/S8-component-scope-independent/README.md"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-component-scope-independent/denoiser_only.svg"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-component-scope-independent/encoder_only.svg"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-component-scope-independent/full_pipeline.svg"
+    },
+    {
+      "added": 1072,
+      "deleted": 0,
+      "path": "verification/receipts/S8-component-scope-independent/model_unfolder__adapters__diffusor__parser.py.txt"
+    },
+    {
+      "added": 439,
+      "deleted": 0,
+      "path": "verification/receipts/S8-component-scope-independent/model_unfolder__adapters__diffusor__unet_projection.py.txt"
+    },
+    {
+      "added": 81,
+      "deleted": 0,
+      "path": "verification/receipts/S8-component-scope-independent/model_unfolder__expanded__loop.py.txt"
+    },
+    {
+      "added": 890,
+      "deleted": 0,
+      "path": "verification/receipts/S8-component-scope-independent/model_unfolder__renderers__html__views_diffusion.py.txt"
+    },
+    {
+      "added": 56,
+      "deleted": 0,
+      "path": "verification/receipts/S8-component-scope-independent/replay_scope.py"
+    },
+    {
+      "added": 171,
+      "deleted": 0,
+      "path": "verification/receipts/S8-component-scope-independent/results.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-component-scope-independent/scheduler_only.svg"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-component-scope-independent/vae_only.svg"
+    },
+    {
+      "added": 7,
+      "deleted": 0,
+      "path": "verification/receipts/S8-conditioning-expression/README.md"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-conditioning-expression/focused.log"
+    },
+    {
+      "added": 44,
+      "deleted": 0,
+      "path": "verification/receipts/S8-demonstration-review-independent/README.md"
+    },
+    {
+      "added": 55,
+      "deleted": 0,
+      "path": "verification/receipts/S8-demonstration-review-independent/reproduce_report.py"
+    },
+    {
+      "added": 155,
+      "deleted": 0,
+      "path": "verification/receipts/S8-demonstration-review-independent/results.json"
+    },
+    {
+      "added": 11,
+      "deleted": 0,
+      "path": "verification/receipts/S8-demonstration-review-independent/verification.json"
+    },
+    {
+      "added": 9,
+      "deleted": 0,
+      "path": "verification/receipts/S8-expression-write-boundary/README.md"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-expression-write-boundary/focused.log"
+    },
+    {
+      "added": 14,
+      "deleted": 0,
+      "path": "verification/receipts/S8-family-4637ef4/README.md"
+    },
+    {
+      "added": 136,
+      "deleted": 0,
+      "path": "verification/receipts/S8-family-4637ef4/sd-v1-4/input.json"
+    },
+    {
+      "added": 318,
+      "deleted": 0,
+      "path": "verification/receipts/S8-family-4637ef4/sd-v1-4/native-visual-manifest.json"
+    },
+    {
+      "added": 16,
+      "deleted": 0,
+      "path": "verification/receipts/S8-family-4637ef4/sd-v1-4/run-receipt.json"
+    },
+    {
+      "added": 16,
+      "deleted": 0,
+      "path": "verification/receipts/S8-family-4637ef4/sd-v1-4/run.log"
+    },
+    {
+      "added": 1441,
+      "deleted": 0,
+      "path": "verification/receipts/S8-family-4637ef4/sd-v1-4/summary.json"
+    },
+    {
+      "added": 232,
+      "deleted": 0,
+      "path": "verification/receipts/S8-family-4637ef4/sdxl/input.json"
+    },
+    {
+      "added": 335,
+      "deleted": 0,
+      "path": "verification/receipts/S8-family-4637ef4/sdxl/native-visual-manifest.json"
+    },
+    {
+      "added": 18,
+      "deleted": 0,
+      "path": "verification/receipts/S8-family-4637ef4/sdxl/run-receipt.json"
+    },
+    {
+      "added": 16,
+      "deleted": 0,
+      "path": "verification/receipts/S8-family-4637ef4/sdxl/run.log"
+    },
+    {
+      "added": 2180,
+      "deleted": 0,
+      "path": "verification/receipts/S8-family-4637ef4/sdxl/summary.json"
+    },
+    {
+      "added": 7,
+      "deleted": 0,
+      "path": "verification/receipts/S8-family-probe-sdxl/README.md"
+    },
+    {
+      "added": 15,
+      "deleted": 0,
+      "path": "verification/receipts/S8-family-probe-sdxl/comparison.json"
+    },
+    {
+      "added": 464,
+      "deleted": 0,
+      "path": "verification/receipts/S8-family-probe-sdxl/resolution.json"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-3693545-blocked/README.md"
+    },
+    {
+      "added": 317,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-3693545-blocked/campaign-pin.json"
+    },
+    {
+      "added": 19,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-3693545-blocked/logs/sdxl-ordinary-run.json"
+    },
+    {
+      "added": 21,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-3693545-blocked/logs/sdxl-ordinary.log"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-3693545-blocked/sdxl/ordinary/controls.json"
+    },
+    {
+      "added": 6,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-3693545-blocked/sdxl/ordinary/failure.json"
+    },
+    {
+      "added": 297,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-3693545-blocked/sdxl/ordinary/implementation-before.json"
+    },
+    {
+      "added": 232,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-3693545-blocked/sdxl/ordinary/input.json"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-9fe0868-report-stop/README.md"
+    },
+    {
+      "added": 318,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-9fe0868-report-stop/campaign-pin.json"
+    },
+    {
+      "added": 126,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-9fe0868-report-stop/demonstration-report.json"
+    },
+    {
+      "added": 21,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-9fe0868-report-stop/logs/sdxl-ordinary-run.json"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-9fe0868-report-stop/logs/sdxl-ordinary.log"
+    },
+    {
+      "added": 695,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-9fe0868-report-stop/native-manifest.json"
+    },
+    {
+      "added": 1272,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-9fe0868-report-stop/observation-mismatch.json"
+    },
+    {
+      "added": 101,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-9fe0868-report-stop/ordinary/cited-source-audit.json"
+    },
+    {
+      "added": 114,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-9fe0868-report-stop/ordinary/cited-source.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-9fe0868-report-stop/ordinary/controls.json"
+    },
+    {
+      "added": 297,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-9fe0868-report-stop/ordinary/implementation-after.json"
+    },
+    {
+      "added": 297,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-9fe0868-report-stop/ordinary/implementation-before.json"
+    },
+    {
+      "added": 232,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-9fe0868-report-stop/ordinary/input.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-9fe0868-report-stop/ordinary/output-deltas.json"
+    },
+    {
+      "added": 31,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-9fe0868-report-stop/ordinary/result.json"
+    },
+    {
+      "added": 37,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-9fe0868-report-stop/run_campaign.py"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-b44dd25-blocked/README.md"
+    },
+    {
+      "added": 318,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-b44dd25-blocked/campaign-pin.json"
+    },
+    {
+      "added": 21,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-b44dd25-blocked/logs/sdxl-ordinary-run.json"
+    },
+    {
+      "added": 16,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-b44dd25-blocked/logs/sdxl-ordinary.log"
+    },
+    {
+      "added": 637,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-b44dd25-blocked/native-visual-manifest.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-b44dd25-blocked/ordinary/controls.json"
+    },
+    {
+      "added": 6,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-b44dd25-blocked/ordinary/failure.json"
+    },
+    {
+      "added": 297,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-b44dd25-blocked/ordinary/implementation-before.json"
+    },
+    {
+      "added": 232,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-b44dd25-blocked/ordinary/input.json"
+    },
+    {
+      "added": 37,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-b44dd25-blocked/run_campaign.py"
+    },
+    {
+      "added": 15,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-run-preparation/README.md"
+    },
+    {
+      "added": 136,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-run-preparation/inputs/sd-v1-4.json"
+    },
+    {
+      "added": 232,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-run-preparation/inputs/sdxl.json"
+    },
+    {
+      "added": 332,
+      "deleted": 0,
+      "path": "verification/receipts/S8-final-run-preparation/run-manifest.json"
+    },
+    {
+      "added": 17,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/README.md"
+    },
+    {
+      "added": 13,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/audit_placement.py"
+    },
+    {
+      "added": 318,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/campaign-pin.json"
+    },
+    {
+      "added": 153,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/config-downloads.json"
+    },
+    {
+      "added": 124,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/ddpm-cifar10/demonstration-report.json"
+    },
+    {
+      "added": 38,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/ddpm-cifar10/input.json"
+    },
+    {
+      "added": 581,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/ddpm-cifar10/native/manifest.json"
+    },
+    {
+      "added": 87,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/ddpm-cifar10/ordinary/cited-source-audit.json"
+    },
+    {
+      "added": 72,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/ddpm-cifar10/ordinary/cited-source.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/ddpm-cifar10/ordinary/controls.json"
+    },
+    {
+      "added": 297,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/ddpm-cifar10/ordinary/implementation-after.json"
+    },
+    {
+      "added": 297,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/ddpm-cifar10/ordinary/implementation-before.json"
+    },
+    {
+      "added": 38,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/ddpm-cifar10/ordinary/input.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/ddpm-cifar10/ordinary/output-deltas.json"
+    },
+    {
+      "added": 26,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/ddpm-cifar10/ordinary/result.json"
+    },
+    {
+      "added": 1221,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/ddpm-cifar10/placement-shape-audit.json"
+    },
+    {
+      "added": 36,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/ddpm-cifar10/raw-config.json"
+    },
+    {
+      "added": 22,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/ddpm-cifar10/run.json"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/ddpm-cifar10/run.log"
+    },
+    {
+      "added": 68,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/results.json"
+    },
+    {
+      "added": 18,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/run_generalization.py"
+    },
+    {
+      "added": 38,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sd15-inpainting/input.json"
+    },
+    {
+      "added": 36,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sd15-inpainting/raw-config.json"
+    },
+    {
+      "added": 126,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-inpainting/demonstration-report.json"
+    },
+    {
+      "added": 79,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-inpainting/input.json"
+    },
+    {
+      "added": 629,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-inpainting/native/manifest.json"
+    },
+    {
+      "added": 101,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-inpainting/ordinary/cited-source-audit.json"
+    },
+    {
+      "added": 114,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-inpainting/ordinary/cited-source.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-inpainting/ordinary/controls.json"
+    },
+    {
+      "added": 297,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-inpainting/ordinary/implementation-after.json"
+    },
+    {
+      "added": 297,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-inpainting/ordinary/implementation-before.json"
+    },
+    {
+      "added": 79,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-inpainting/ordinary/input.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-inpainting/ordinary/output-deltas.json"
+    },
+    {
+      "added": 31,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-inpainting/ordinary/result.json"
+    },
+    {
+      "added": 78,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-inpainting/raw-config.json"
+    },
+    {
+      "added": 22,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-inpainting/run.json"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-inpainting/run.log"
+    },
+    {
+      "added": 126,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-refiner/demonstration-report.json"
+    },
+    {
+      "added": 71,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-refiner/input.json"
+    },
+    {
+      "added": 642,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-refiner/native/manifest.json"
+    },
+    {
+      "added": 101,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-refiner/ordinary/cited-source-audit.json"
+    },
+    {
+      "added": 114,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-refiner/ordinary/cited-source.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-refiner/ordinary/controls.json"
+    },
+    {
+      "added": 297,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-refiner/ordinary/implementation-after.json"
+    },
+    {
+      "added": 297,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-refiner/ordinary/implementation-before.json"
+    },
+    {
+      "added": 71,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-refiner/ordinary/input.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-refiner/ordinary/output-deltas.json"
+    },
+    {
+      "added": 31,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-refiner/ordinary/result.json"
+    },
+    {
+      "added": 69,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-refiner/raw-config.json"
+    },
+    {
+      "added": 22,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-refiner/run.json"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-generalization-293c2d9/sdxl-refiner/run.log"
+    },
+    {
+      "added": 46,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-293c2d9/README.md"
+    },
+    {
+      "added": 89,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-293c2d9/ifexp-results.json"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-293c2d9/mapping-results.json"
+    },
+    {
+      "added": 38,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-293c2d9/replay_ifexp.py"
+    },
+    {
+      "added": 28,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-293c2d9/replay_mapping.py"
+    },
+    {
+      "added": 15,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-293c2d9/verification.json"
+    },
+    {
+      "added": 56,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-3693545/README.md"
+    },
+    {
+      "added": 159,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-3693545/binding-results.json"
+    },
+    {
+      "added": 100,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-3693545/container-results.json"
+    },
+    {
+      "added": 395,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-3693545/primary-results.json"
+    },
+    {
+      "added": 136,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-3693545/replay_bindings.py"
+    },
+    {
+      "added": 38,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-3693545/replay_container.py"
+    },
+    {
+      "added": 69,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-3693545/replay_primary.py"
+    },
+    {
+      "added": 55,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-3693545/replay_report.py"
+    },
+    {
+      "added": 19,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-3693545/replay_root_source.py"
+    },
+    {
+      "added": 49,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-3693545/replay_routes.py"
+    },
+    {
+      "added": 11,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-3693545/report-controls-results.json"
+    },
+    {
+      "added": 258,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-3693545/report-replay-results.json"
+    },
+    {
+      "added": 82,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-3693545/report_controls.py"
+    },
+    {
+      "added": 1472,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-3693545/root-source-results.json"
+    },
+    {
+      "added": 499,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-3693545/route-results.json"
+    },
+    {
+      "added": 25,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-3693545/verification.json"
+    },
+    {
+      "added": 52,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-9fe0868/README.md"
+    },
+    {
+      "added": 14,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-9fe0868/actual-primary-archive/cited-source-audit.json"
+    },
+    {
+      "added": 9,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-9fe0868/actual-primary-archive/cited-source.json"
+    },
+    {
+      "added": 236,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-9fe0868/actual-primary-archive/qualified-facts.json"
+    },
+    {
+      "added": 115,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-9fe0868/ifexp-results.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-9fe0868/inplace_operation.svg"
+    },
+    {
+      "added": 159,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-9fe0868/operator-results.json"
+    },
+    {
+      "added": 238,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-9fe0868/qualification-results.json"
+    },
+    {
+      "added": 37,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-9fe0868/replay_ifexp.py"
+    },
+    {
+      "added": 25,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-9fe0868/replay_operator.py"
+    },
+    {
+      "added": 52,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-9fe0868/replay_qualification.py"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-9fe0868/source_operation.svg"
+    },
+    {
+      "added": 20,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-9fe0868/verification.json"
+    },
+    {
+      "added": 7,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-call-lanes/README.md"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-call-lanes/after.svg"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-call-lanes/before.svg"
+    },
+    {
+      "added": 66,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-call-lanes/input-route.json"
+    },
+    {
+      "added": 29,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-call-lanes/manifest.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-call-lanes/preservation-after/0.svg"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-call-lanes/preservation-after/1.svg"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-call-lanes/preservation-after/2.svg"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-call-lanes/preservation-after/hashes.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-call-lanes/preservation-before/0.svg"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-call-lanes/preservation-before/1.svg"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-call-lanes/preservation-before/2.svg"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-call-lanes/preservation-before/hashes.json"
+    },
+    {
+      "added": 197,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-call-lanes/projected-block.json"
+    },
+    {
+      "added": 26,
+      "deleted": 0,
+      "path": "verification/receipts/S8-independent-call-lanes/storage-write-probes.json"
+    },
+    {
+      "added": 11,
+      "deleted": 0,
+      "path": "verification/receipts/S8-invocation-binding-checkpoint/README.md"
+    },
+    {
+      "added": 303,
+      "deleted": 0,
+      "path": "verification/receipts/S8-invocation-binding-checkpoint/focused-initial-fixture-return.log"
+    },
+    {
+      "added": 4,
+      "deleted": 0,
+      "path": "verification/receipts/S8-invocation-binding-checkpoint/focused.log"
+    },
+    {
+      "added": 317,
+      "deleted": 0,
+      "path": "verification/receipts/S8-invocation-binding-checkpoint/source-manifest.json"
+    },
+    {
+      "added": 11,
+      "deleted": 0,
+      "path": "verification/receipts/S8-iteration-binding/README.md"
+    },
+    {
+      "added": 63,
+      "deleted": 0,
+      "path": "verification/receipts/S8-iteration-binding/actual-source-replay.json"
+    },
+    {
+      "added": 3,
+      "deleted": 0,
+      "path": "verification/receipts/S8-iteration-binding/focused-test.txt"
+    },
+    {
+      "added": 22,
+      "deleted": 0,
+      "path": "verification/receipts/S8-iteration-binding/replay_actual.py"
+    },
+    {
+      "added": 7,
+      "deleted": 0,
+      "path": "verification/receipts/S8-iteration-binding/source-hashes.json"
+    },
+    {
+      "added": 37,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/README.md"
+    },
+    {
+      "added": 27,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/fingerprints.json"
+    },
+    {
+      "added": 35,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/helper-condition-results.json"
+    },
+    {
+      "added": 20,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/lookup-receiver-results.json"
+    },
+    {
+      "added": 23,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/missing-nested-premise-results.json"
+    },
+    {
+      "added": 40,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/replay_helper_conditions.py"
+    },
+    {
+      "added": 45,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/replay_lookup_receiver.py"
+    },
+    {
+      "added": 18,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/replay_missing_nested_premise.py"
+    },
+    {
+      "added": 29,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/replay_saved_helpers.py"
+    },
+    {
+      "added": 52,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/replay_storage_temporal.py"
+    },
+    {
+      "added": 329,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/saved-helper-results.json"
+    },
+    {
+      "added": 596,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/source/attribute_bindings.py"
+    },
+    {
+      "added": 1018,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/source/instance_inventory.py"
+    },
+    {
+      "added": 250,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/source/unet_call_binding.py"
+    },
+    {
+      "added": 330,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/source/unet_cell_connections.py"
+    },
+    {
+      "added": 451,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/source/unet_lookup_closure.py"
+    },
+    {
+      "added": 133,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/source/unet_wrapper_binding.py"
+    },
+    {
+      "added": 22,
+      "deleted": 0,
+      "path": "verification/receipts/S8-l1-l2-independent/storage-temporal-results.json"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/README.md"
+    },
+    {
+      "added": 14,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/manifest.json"
+    },
+    {
+      "added": 9,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sd-v1-4/cited-source-audit.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sd-v1-4/cited-source.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sd-v1-4/controls.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sd-v1-4/facts.json"
+    },
+    {
+      "added": 296,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sd-v1-4/implementation-after.json"
+    },
+    {
+      "added": 296,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sd-v1-4/implementation-before.json"
+    },
+    {
+      "added": 136,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sd-v1-4/input.json"
+    },
+    {
+      "added": 3942,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sd-v1-4/ir.json"
+    },
+    {
+      "added": 1287,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sd-v1-4/observation.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sd-v1-4/qualified-facts.json"
+    },
+    {
+      "added": 11,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sd-v1-4/result.json"
+    },
+    {
+      "added": 15,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sd-v1-4/run-receipt.json"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sd-v1-4/run.log"
+    },
+    {
+      "added": 9,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sdxl/cited-source-audit.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sdxl/cited-source.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sdxl/controls.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sdxl/facts.json"
+    },
+    {
+      "added": 296,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sdxl/implementation-after.json"
+    },
+    {
+      "added": 296,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sdxl/implementation-before.json"
+    },
+    {
+      "added": 232,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sdxl/input.json"
+    },
+    {
+      "added": 4348,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sdxl/ir.json"
+    },
+    {
+      "added": 1284,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sdxl/observation.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sdxl/qualified-facts.json"
+    },
+    {
+      "added": 11,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sdxl/result.json"
+    },
+    {
+      "added": 15,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sdxl/run-receipt.json"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-legacy-4637ef4/sdxl/run.log"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-source-closure/focused-final-21.log"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-source-closure/focused-final.log"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-source-closure/focused.log"
+    },
+    {
+      "added": 54,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-source-closure/installed-source-results.json"
+    },
+    {
+      "added": 33,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-source-closure/installed_source_probe.py"
+    },
+    {
+      "added": 50,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-wrapper-followup-independent/README.md"
+    },
+    {
+      "added": 15,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-wrapper-followup-independent/fingerprints.json"
+    },
+    {
+      "added": 54,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-wrapper-followup-independent/helper-condition-results.json"
+    },
+    {
+      "added": 30,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-wrapper-followup-independent/lookup-receiver-results.json"
+    },
+    {
+      "added": 40,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-wrapper-followup-independent/replay_helper_conditions.py"
+    },
+    {
+      "added": 45,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-wrapper-followup-independent/replay_lookup_receiver.py"
+    },
+    {
+      "added": 29,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-wrapper-followup-independent/replay_saved_helpers.py"
+    },
+    {
+      "added": 54,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-wrapper-followup-independent/replay_try_actual.py"
+    },
+    {
+      "added": 63,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-wrapper-followup-independent/replay_wrapper.py"
+    },
+    {
+      "added": 273,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-wrapper-followup-independent/saved-helper-results.json"
+    },
+    {
+      "added": 201,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-wrapper-followup-independent/source/unet_call_binding.py"
+    },
+    {
+      "added": 330,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-wrapper-followup-independent/source/unet_cell_connections.py"
+    },
+    {
+      "added": 413,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-wrapper-followup-independent/source/unet_lookup_closure.py"
+    },
+    {
+      "added": 131,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-wrapper-followup-independent/source/unet_wrapper_binding.py"
+    },
+    {
+      "added": 370,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-wrapper-followup-independent/try-actual-results.json"
+    },
+    {
+      "added": 275,
+      "deleted": 0,
+      "path": "verification/receipts/S8-lookup-wrapper-followup-independent/wrapper-results.json"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-observation-mapping-order/README.md"
+    },
+    {
+      "added": 28,
+      "deleted": 0,
+      "path": "verification/receipts/S8-observation-mapping-order/probe_order.py"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-observation-mapping-order/results.json"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-opaque-component-scope-correction/README.md"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-opaque-component-scope-correction/overview.svg"
+    },
+    {
+      "added": 45,
+      "deleted": 0,
+      "path": "verification/receipts/S8-opaque-component-scope-correction/replay.py"
+    },
+    {
+      "added": 20,
+      "deleted": 0,
+      "path": "verification/receipts/S8-opaque-component-scope-correction/results.json"
+    },
+    {
+      "added": 1424,
+      "deleted": 0,
+      "path": "verification/receipts/S8-opaque-component-scope-correction/source/model_unfolder/adapters/diffusor/blocks.py.txt"
+    },
+    {
+      "added": 1072,
+      "deleted": 0,
+      "path": "verification/receipts/S8-opaque-component-scope-correction/source/model_unfolder/adapters/diffusor/parser.py.txt"
+    },
+    {
+      "added": 81,
+      "deleted": 0,
+      "path": "verification/receipts/S8-opaque-component-scope-correction/source/model_unfolder/expanded/loop.py.txt"
+    },
+    {
+      "added": 890,
+      "deleted": 0,
+      "path": "verification/receipts/S8-opaque-component-scope-correction/source/model_unfolder/renderers/html/views_diffusion.py.txt"
+    },
+    {
+      "added": 9,
+      "deleted": 0,
+      "path": "verification/receipts/S8-opaque-component-scope/README.md"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-opaque-component-scope/overview.svg"
+    },
+    {
+      "added": 45,
+      "deleted": 0,
+      "path": "verification/receipts/S8-opaque-component-scope/replay.py"
+    },
+    {
+      "added": 27,
+      "deleted": 0,
+      "path": "verification/receipts/S8-opaque-component-scope/results.json"
+    },
+    {
+      "added": 1403,
+      "deleted": 0,
+      "path": "verification/receipts/S8-opaque-component-scope/source/model_unfolder/adapters/diffusor/blocks.py.txt"
+    },
+    {
+      "added": 1072,
+      "deleted": 0,
+      "path": "verification/receipts/S8-opaque-component-scope/source/model_unfolder/adapters/diffusor/parser.py.txt"
+    },
+    {
+      "added": 81,
+      "deleted": 0,
+      "path": "verification/receipts/S8-opaque-component-scope/source/model_unfolder/expanded/loop.py.txt"
+    },
+    {
+      "added": 890,
+      "deleted": 0,
+      "path": "verification/receipts/S8-opaque-component-scope/source/model_unfolder/renderers/html/views_diffusion.py.txt"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ordinary-293c2d9/README.md"
+    },
+    {
+      "added": 318,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ordinary-293c2d9/campaign-pin.json"
+    },
+    {
+      "added": 21,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ordinary-293c2d9/logs/sdxl-ordinary-run.json"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ordinary-293c2d9/logs/sdxl-ordinary.log"
+    },
+    {
+      "added": 126,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ordinary-293c2d9/sdxl/demonstration-report.json"
+    },
+    {
+      "added": 101,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ordinary-293c2d9/sdxl/ordinary/cited-source-audit.json"
+    },
+    {
+      "added": 114,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ordinary-293c2d9/sdxl/ordinary/cited-source.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ordinary-293c2d9/sdxl/ordinary/controls.json"
+    },
+    {
+      "added": 297,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ordinary-293c2d9/sdxl/ordinary/implementation-after.json"
+    },
+    {
+      "added": 297,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ordinary-293c2d9/sdxl/ordinary/implementation-before.json"
+    },
+    {
+      "added": 232,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ordinary-293c2d9/sdxl/ordinary/input.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ordinary-293c2d9/sdxl/ordinary/output-deltas.json"
+    },
+    {
+      "added": 31,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ordinary-293c2d9/sdxl/ordinary/result.json"
+    },
+    {
+      "added": 81,
+      "deleted": 0,
+      "path": "verification/receipts/S8-owner-review-initial/README.md"
+    },
+    {
+      "added": 19,
+      "deleted": 0,
+      "path": "verification/receipts/S8-owner-review-initial/ffn-override-results.json"
+    },
+    {
+      "added": 93,
+      "deleted": 0,
+      "path": "verification/receipts/S8-owner-review-initial/local-port-results.json"
+    },
+    {
+      "added": 51,
+      "deleted": 0,
+      "path": "verification/receipts/S8-owner-review-initial/local-port-review.md"
+    },
+    {
+      "added": 191,
+      "deleted": 0,
+      "path": "verification/receipts/S8-owner-review-initial/reproduce.py"
+    },
+    {
+      "added": 49,
+      "deleted": 0,
+      "path": "verification/receipts/S8-owner-review-initial/reproduce_ffn_override.py"
+    },
+    {
+      "added": 90,
+      "deleted": 0,
+      "path": "verification/receipts/S8-owner-review-initial/reproduce_local_ports.py"
+    },
+    {
+      "added": 104,
+      "deleted": 0,
+      "path": "verification/receipts/S8-owner-review-initial/reproduce_spatial_occurrence.py"
+    },
+    {
+      "added": 46,
+      "deleted": 0,
+      "path": "verification/receipts/S8-owner-review-initial/results.json"
+    },
+    {
+      "added": 29,
+      "deleted": 0,
+      "path": "verification/receipts/S8-owner-review-initial/spatial-occurrence-results.json"
+    },
+    {
+      "added": 49,
+      "deleted": 0,
+      "path": "verification/receipts/S8-owner-review-initial/supplementary-review.md"
+    },
+    {
+      "added": 11,
+      "deleted": 0,
+      "path": "verification/receipts/S8-owner-trace-precheck-4637ef4/README.md"
+    },
+    {
+      "added": 86,
+      "deleted": 0,
+      "path": "verification/receipts/S8-owner-trace-precheck-4637ef4/evidence.json"
+    },
+    {
+      "added": 54,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ports-review-independent/README.md"
+    },
+    {
+      "added": 156,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ports-review-independent/binding-results.json"
+    },
+    {
+      "added": 61,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ports-review-independent/ffn-results.json"
+    },
+    {
+      "added": 136,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ports-review-independent/replay_bindings.py"
+    },
+    {
+      "added": 86,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ports-review-independent/replay_ffn_fresh.py"
+    },
+    {
+      "added": 48,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ports-review-independent/replay_routes.py"
+    },
+    {
+      "added": 45,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ports-review-independent/replay_storage.py"
+    },
+    {
+      "added": 503,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ports-review-independent/route-results.json"
+    },
+    {
+      "added": 35,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ports-review-independent/storage-results.json"
+    },
+    {
+      "added": 14,
+      "deleted": 0,
+      "path": "verification/receipts/S8-ports-review-independent/verification.json"
+    },
+    {
+      "added": 9,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-overview-renderer/README.md"
+    },
+    {
+      "added": 4,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-overview-renderer/geometry.json"
+    },
+    {
+      "added": 9,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-overview-renderer/manifest.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-overview-renderer/overview.svg"
+    },
+    {
+      "added": 13,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-overview-renderer/probe-results.json"
+    },
+    {
+      "added": 44,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-overview-renderer/probe_geometry.py"
+    },
+    {
+      "added": 11,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-port-checkpoint/README.md"
+    },
+    {
+      "added": 4,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-port-checkpoint/focused.log"
+    },
+    {
+      "added": 66,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-ports-early-independent/README.md"
+    },
+    {
+      "added": 292,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-ports-early-independent/local_port_routes.py.txt"
+    },
+    {
+      "added": 62,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-ports-early-independent/reproduce.py"
+    },
+    {
+      "added": 278,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-ports-early-independent/results.json"
+    },
+    {
+      "added": 111,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-ports-early-independent/unet_primary_ports.py.txt"
+    },
+    {
+      "added": 24,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-ports-followup-independent/README.md"
+    },
+    {
+      "added": 292,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-ports-followup-independent/local_port_routes.py.txt"
+    },
+    {
+      "added": 69,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-ports-followup-independent/reproduce.py"
+    },
+    {
+      "added": 394,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-ports-followup-independent/results.json"
+    },
+    {
+      "added": 111,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-ports-followup-independent/unet_primary_ports.py.txt"
+    },
+    {
+      "added": 11,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-registration/README.md"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-registration/focused.log"
+    },
+    {
+      "added": 25,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-registration/nested-sandbox-census.log"
+    },
+    {
+      "added": 9,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-summary/README.md"
+    },
+    {
+      "added": 14,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-summary/archive-check.json"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-summary/focused.log"
+    },
+    {
+      "added": 176,
+      "deleted": 0,
+      "path": "verification/receipts/S8-primary-summary/summary.json"
+    },
+    {
+      "added": 14,
+      "deleted": 0,
+      "path": "verification/receipts/S8-probe-and-route-checkpoint/README.md"
+    },
+    {
+      "added": 4,
+      "deleted": 0,
+      "path": "verification/receipts/S8-probe-and-route-checkpoint/focused-final.log"
+    },
+    {
+      "added": 4,
+      "deleted": 0,
+      "path": "verification/receipts/S8-probe-and-route-checkpoint/focused-green.log"
+    },
+    {
+      "added": 30,
+      "deleted": 0,
+      "path": "verification/receipts/S8-probe-and-route-checkpoint/focused-red.log"
+    },
+    {
+      "added": 42,
+      "deleted": 0,
+      "path": "verification/receipts/S8-reader-caller-audit/README.md"
+    },
+    {
+      "added": 132,
+      "deleted": 0,
+      "path": "verification/receipts/S8-reader-caller-audit/caller-ledger.json"
+    },
+    {
+      "added": 2428,
+      "deleted": 0,
+      "path": "verification/receipts/S8-reader-caller-audit/classification-audit.json"
+    },
+    {
+      "added": 15,
+      "deleted": 0,
+      "path": "verification/receipts/S8-report-integrity-correction/README.md"
+    },
+    {
+      "added": 258,
+      "deleted": 0,
+      "path": "verification/receipts/S8-report-integrity-correction/independent-replay.json"
+    },
+    {
+      "added": 11,
+      "deleted": 0,
+      "path": "verification/receipts/S8-report-integrity-correction/probe-results.json"
+    },
+    {
+      "added": 82,
+      "deleted": 0,
+      "path": "verification/receipts/S8-report-integrity-correction/probe_report.py"
+    },
+    {
+      "added": 9,
+      "deleted": 0,
+      "path": "verification/receipts/S8-report-integrity-correction/source-manifest.json"
+    },
+    {
+      "added": 68,
+      "deleted": 0,
+      "path": "verification/receipts/S8-root-primary-route-review/README.md"
+    },
+    {
+      "added": 60,
+      "deleted": 0,
+      "path": "verification/receipts/S8-root-primary-route-review/inspect_premises.py"
+    },
+    {
+      "added": 1459,
+      "deleted": 0,
+      "path": "verification/receipts/S8-root-primary-route-review/premises.json"
+    },
+    {
+      "added": 7,
+      "deleted": 0,
+      "path": "verification/receipts/S8-source-operator-ports/README.md"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-source-operator-ports/focused.log"
+    },
+    {
+      "added": 73,
+      "deleted": 0,
+      "path": "verification/receipts/S8-source-operator-ports/inplace_operation.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-source-operator-ports/inplace_operation.svg"
+    },
+    {
+      "added": 9,
+      "deleted": 0,
+      "path": "verification/receipts/S8-source-operator-ports/manifest.json"
+    },
+    {
+      "added": 46,
+      "deleted": 0,
+      "path": "verification/receipts/S8-source-operator-ports/probe_ports.py"
+    },
+    {
+      "added": 21,
+      "deleted": 0,
+      "path": "verification/receipts/S8-source-operator-ports/results.json"
+    },
+    {
+      "added": 73,
+      "deleted": 0,
+      "path": "verification/receipts/S8-source-operator-ports/source_operation.json"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-source-operator-ports/source_operation.svg"
+    },
+    {
+      "added": 14,
+      "deleted": 0,
+      "path": "verification/receipts/S8-storage-alias-independent/README.md"
+    },
+    {
+      "added": 19,
+      "deleted": 0,
+      "path": "verification/receipts/S8-storage-alias-independent/fingerprints.json"
+    },
+    {
+      "added": 29,
+      "deleted": 0,
+      "path": "verification/receipts/S8-storage-alias-independent/replay_saved_helpers.py"
+    },
+    {
+      "added": 52,
+      "deleted": 0,
+      "path": "verification/receipts/S8-storage-alias-independent/replay_storage_temporal.py"
+    },
+    {
+      "added": 329,
+      "deleted": 0,
+      "path": "verification/receipts/S8-storage-alias-independent/saved-helper-results.json"
+    },
+    {
+      "added": 466,
+      "deleted": 0,
+      "path": "verification/receipts/S8-storage-alias-independent/source/unet_lookup_closure.py"
+    },
+    {
+      "added": 25,
+      "deleted": 0,
+      "path": "verification/receipts/S8-storage-alias-independent/storage-temporal-results.json"
+    },
+    {
+      "added": 12,
+      "deleted": 0,
+      "path": "verification/receipts/S8-storage-lookup-refinement/README.md"
+    },
+    {
+      "added": 32,
+      "deleted": 0,
+      "path": "verification/receipts/S8-storage-lookup-refinement/actual-storage-positive.json"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-storage-lookup-refinement/focused-test.txt"
+    },
+    {
+      "added": 2,
+      "deleted": 0,
+      "path": "verification/receipts/S8-storage-lookup-refinement/nested-focused-test.txt"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-storage-lookup-refinement/nested-source-hashes.json"
+    },
+    {
+      "added": 14,
+      "deleted": 0,
+      "path": "verification/receipts/S8-storage-lookup-refinement/probe_actual_storage.py"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-storage-lookup-refinement/source-hashes.json"
+    },
+    {
+      "added": 28,
+      "deleted": 0,
+      "path": "verification/receipts/S8-target-binding-proposal/README.md"
+    },
+    {
+      "added": 65,
+      "deleted": 0,
+      "path": "verification/receipts/S8-target-binding-proposal/reproduce.py"
+    },
+    {
+      "added": 24,
+      "deleted": 0,
+      "path": "verification/receipts/S8-target-binding-proposal/results.json"
+    },
+    {
+      "added": 3,
+      "deleted": 0,
+      "path": "verification/receipts/S8-try-observation/focused.log"
+    },
+    {
+      "added": 14,
+      "deleted": 0,
+      "path": "verification/receipts/S8-try-observation/manifest.json"
+    },
+    {
+      "added": 38,
+      "deleted": 0,
+      "path": "verification/receipts/S8-try-wrapper-independent/README.md"
+    },
+    {
+      "added": 13,
+      "deleted": 0,
+      "path": "verification/receipts/S8-try-wrapper-independent/fingerprints.json"
+    },
+    {
+      "added": 54,
+      "deleted": 0,
+      "path": "verification/receipts/S8-try-wrapper-independent/replay_try_actual.py"
+    },
+    {
+      "added": 63,
+      "deleted": 0,
+      "path": "verification/receipts/S8-try-wrapper-independent/replay_wrapper.py"
+    },
+    {
+      "added": 3132,
+      "deleted": 0,
+      "path": "verification/receipts/S8-try-wrapper-independent/source/program_index.py"
+    },
+    {
+      "added": 201,
+      "deleted": 0,
+      "path": "verification/receipts/S8-try-wrapper-independent/source/unet_call_binding.py"
+    },
+    {
+      "added": 129,
+      "deleted": 0,
+      "path": "verification/receipts/S8-try-wrapper-independent/source/unet_wrapper_binding.py"
+    },
+    {
+      "added": 370,
+      "deleted": 0,
+      "path": "verification/receipts/S8-try-wrapper-independent/try-actual-results.json"
+    },
+    {
+      "added": 289,
+      "deleted": 0,
+      "path": "verification/receipts/S8-try-wrapper-independent/wrapper-results.json"
+    },
+    {
+      "added": 5,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wheel-4637ef4/README.md"
+    },
+    {
+      "added": 10,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wheel-4637ef4/build.log"
+    },
+    {
+      "added": 1,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wheel-4637ef4/import.log"
+    },
+    {
+      "added": 4,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wheel-4637ef4/install.log"
+    },
+    {
+      "added": 28,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wheel-4637ef4/result.json"
+    },
+    {
+      "added": 42,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wrapper-control-independent/README.md"
+    },
+    {
+      "added": 33,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wrapper-control-independent/replay.py"
+    },
+    {
+      "added": 80,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wrapper-control-independent/results.json"
+    },
+    {
+      "added": 27,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wrapper-control-stop/README.md"
+    },
+    {
+      "added": 22,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wrapper-control-stop/green-results.json"
+    },
+    {
+      "added": 9,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wrapper-control-stop/owner-decision.md"
+    },
+    {
+      "added": 180,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wrapper-control-stop/proposed-source/test_s8_lookup_closure.py"
+    },
+    {
+      "added": 330,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wrapper-control-stop/proposed-source/unet_cell_connections.py"
+    },
+    {
+      "added": 361,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wrapper-control-stop/proposed-source/unet_lookup_closure.py"
+    },
+    {
+      "added": 93,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wrapper-control-stop/proposed-source/unet_wrapper_binding-before-refusal.py"
+    },
+    {
+      "added": 22,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wrapper-control-stop/red-results.json"
+    },
+    {
+      "added": 46,
+      "deleted": 0,
+      "path": "verification/receipts/S8-wrapper-control-stop/reproduce.py"
+    }
+  ],
+  "groups": {
+    "production": {
+      "added": 6450,
+      "deleted": 57,
+      "files": 45
+    },
+    "scripts": {
+      "added": 962,
+      "deleted": 612,
+      "files": 4
+    },
+    "tests": {
+      "added": 2491,
+      "deleted": 5,
+      "files": 21
+    },
+    "verification": {
+      "added": 100384,
+      "deleted": 0,
+      "files": 503
+    }
+  },
+  "tree": "4560449"
+}

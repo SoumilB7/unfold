@@ -46,9 +46,11 @@ def build_unet_constructed_view(ir, info, mount_id, block):
         frames.append(_svg_tag("rect", {"x": x, "y": y, "width": width, "height": height,
                        "rx": 14, "fill": "none", "stroke": C["border"], "stroke-width": 1,
                        "stroke-dasharray": "5 4", "data-region-kind": "containment"}))
-        frames.append(_svg_text(x + width / 2, y + height - 12, label,
-                      {"text-anchor": "middle", "font-family": FONT_MONO, "font-size": 11,
-                       "fill": C["text"]}))
+        labels = label if isinstance(label, (tuple, list)) else (label,)
+        for number, text in enumerate(labels):
+            frames.append(_svg_text(x + width / 2, y + height - 12 - (len(labels)-number-1)*16, text,
+                          {"text-anchor": "middle", "font-family": FONT_MONO, "font-size": 11,
+                           "fill": C["text"]}))
         regions.extend((point(x, y), point(x + width, y + height)))
 
     producer, consumer = relation["producer_stages"], relation["consumer_stages"]
@@ -68,6 +70,7 @@ def build_unet_constructed_view(ir, info, mount_id, block):
         left_rows, bridge_rows, right_rows = primary[:down_end], primary[down_end:up_start], primary[up_start:]
         right_x = left_x + max(650, 560 * max(0, len(bridge_rows) - 1))
         center_x = (left_x + right_x) / 2
+        region_heights = {}
 
         def region(row, x, y):
             child = cards[row["id"]]
@@ -75,7 +78,7 @@ def build_unet_constructed_view(ir, info, mount_id, block):
                        "while": "Repeat boundary"}.get(row["kind"], "Operation boundary")
             detail = str(child["label"]).partition(": ")[2] or "Source ports · drill for details"
             if row.get("primary_target_id"):
-                heading, detail = child["label"], "Conditional source-bound invocation"
+                heading, detail = child["label"], "Conditional invocation"
             geometry = place(row["id"], x, y, 280, [heading, detail], resolved=False)
             if row.get("primary_target_id"):
                 placed[row["primary_target_id"]] = geometry
@@ -84,14 +87,25 @@ def build_unet_constructed_view(ir, info, mount_id, block):
                 stage_ids.reverse()
             invocation_ids = [target for target in row.get("extra_target_ids", ()) if target not in placed]
             visible_ids = list(dict.fromkeys((*stage_ids, *invocation_ids)))
-            for number, stage_id in enumerate(visible_ids):
+            for number, stage_id in enumerate(stage_ids):
                 place(stage_id, x, y + 90 + number * 86)
-            height = 58 if not visible_ids else 110 + len(visible_ids) * 86
-            if visible_ids:
-                bound = set(row.get("binding_target_ids", ()))
+            height = 58 if not stage_ids else 110 + len(stage_ids) * 86
+            bound = set(row.get("binding_target_ids", ()))
+            if stage_ids:
                 containment(x - 155, y - 15, 310, height + 30,
-                            "Conditional call targets · dashed links" if set(visible_ids) <= bound else
-                            "Constructed modules · open targets retained")
+                            ("Conditional slot targets · dashed links" if row["kind"] in {"for", "while"}
+                             else "Conditional call targets · dashed links") if set(stage_ids) <= bound else
+                            "Constructed stages · open targets retained")
+            if invocation_ids:
+                extra_top = y + height + 55 if stage_ids else y + 75
+                for number, target_id in enumerate(invocation_ids):
+                    place(target_id, x, extra_top + 20 + number * 86)
+                extra_height = 50 + len(invocation_ids) * 86
+                containment(x - 155, extra_top, 310, extra_height,
+                            ("Conditioning / argument call targets", "No loop execution implied")
+                            if stage_ids else "Conditional call targets · dashed links")
+                height = extra_top - y + extra_height
+            if visible_ids:
                 # These are target-identity relations, not tensor arrows or
                 # execution order between slots. Actual input/result ports
                 # remain in the selected source-bound call drill.
@@ -101,7 +115,7 @@ def build_unet_constructed_view(ir, info, mount_id, block):
                     target = placed[target_id]
                     rail = x - 171
                     path = f"M {geometry['left']} {geometry['cy']} L {rail} {geometry['cy']} L {rail} {target['cy']} L {target['left']} {target['cy']}"
-                    wires.append(_svg_tag("path", {"d": path, "fill": "none", "stroke": C["border"],
+                    wires.append(_svg_tag("path", {"d": path, "fill": "none", "stroke": C["muted"],
                         "stroke-width": 1.5, "stroke-dasharray": "5 3",
                         "data-route-kind": "conditional_call_target", "data-source": row["id"],
                         "data-target": target_id}))
@@ -111,6 +125,7 @@ def build_unet_constructed_view(ir, info, mount_id, block):
                              {"text-anchor": "middle", "font-family": FONT_MONO,
                               "font-size": 11, "fill": C["text"]}))
                 regions.append(point(x, y - 35))
+            region_heights[row["id"]] = height
             return height
 
         floor = 40
@@ -128,10 +143,17 @@ def build_unet_constructed_view(ir, info, mount_id, block):
             if not current["receives_previous_state"]:
                 continue
             source, target = placed[previous["id"]], placed[current["id"]]
-            if source["cx"] == target["cx"] and source["cy"] < target["cy"] and not previous["stage_block_ids"]:
+            if source["cx"] == target["cx"] and source["cy"] < target["cy"] and region_heights[previous["id"]] == 58:
                 path = f"M {source['cx']} {source['bottom']} L {target['cx']} {target['top'] - 5}"
-            elif source["cx"] == target["cx"] and source["cy"] > target["cy"] and not current["stage_block_ids"]:
+            elif source["cx"] == target["cx"] and source["cy"] > target["cy"] and region_heights[current["id"]] == 58:
                 path = f"M {source['cx']} {source['top']} L {target['cx']} {target['bottom'] + 5}"
+            elif source["cx"] == target["cx"] and source["cy"] > target["cy"]:
+                # Leave through the upper port before taking a separate outer
+                # rail. Sharing the incoming side port would look like a
+                # bidirectional branch at this source boundary.
+                rail, elbow = source["cx"] + 215, source["top"] - 22
+                path = f"M {source['cx']} {source['top']} L {source['cx']} {elbow} L {rail} {elbow} L {rail} {target['cy']} L {target['right'] + 5} {target['cy']}"
+                regions.extend((point(rail, elbow), point(rail, target["cy"])))
             elif source["cy"] == target["cy"]:
                 path = f"M {source['right']} {source['cy']} L {target['left'] - 5} {target['cy']}"
             else:

@@ -18,14 +18,17 @@ from model_unfolder.evidence.program_index import (
     ProgramIndex, SourceFileNode, SourceId,
 )
 from scripts.generate_s7_shadow import (
-    RecipeAttemptBundle, RecipeResolution, _assert_live_shadow_matches,
+    RecipeAttemptBundle, _assert_live_shadow_matches,
     _assert_logical_payload_matches, _assert_model_summary_matches,
-    _bf16_retry, _execution_rows_for_run, _generation_sources,
+    _execution_rows_for_run, _generation_sources,
     _inventory_for_run, _portable_source_index_fingerprint, _semantic_payload,
     _signature_recipe,
-    _require_schema_version, _source_hashes, _stable_observation_payload, _targets,
+    _require_schema_version, _source_hashes, _targets,
     _validate_relation_cross_file, _validate_relation_payload,
     _validate_projection_summary, _validate_target_metadata, check,
+)
+from model_unfolder.evidence.execution_recipe import (
+    RecipeResolution, _bf16_retry, _stable_observation_payload,
 )
 from model_unfolder.evidence.relation_probe import RelationProbePlanReceipt
 from physics.execution_observation import ExecutionRecipe, ObservationResult

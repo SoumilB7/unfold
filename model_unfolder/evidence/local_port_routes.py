@@ -6,7 +6,7 @@ Unsupported joins stay explicit. This consumes the one ProgramIndex only.
 """
 from dataclasses import dataclass
 
-from .program_index import BindingObservation, ExprNode, SourceSpan
+from .program_index import SourceSpan
 
 
 def _before(left, right):

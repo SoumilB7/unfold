@@ -12,7 +12,6 @@ import gzip
 import hashlib
 import json
 from pathlib import Path
-import re
 import sys
 from typing import Any, Mapping
 
@@ -24,8 +23,7 @@ from model_unfolder import config_to_ir
 from model_unfolder.diagram import Diagram
 from model_unfolder.evidence.component_owner import resolve_component_root
 from model_unfolder.evidence.context import ParseContext
-from model_unfolder.evidence.document import DocumentBinding, prepare_document
-from model_unfolder.evidence.config_access import bound_document, resolve
+from model_unfolder.evidence.document import DocumentBinding
 from model_unfolder.evidence.claim_evidence import qualify_config_value_fact
 from model_unfolder.evidence.program_index import (
     build_program_index,
@@ -42,11 +40,11 @@ from model_unfolder.evidence.relation_probe import (
 )
 from model_unfolder.ir import detect_layer_period, distinct_layer_groups
 from physics.execution_observation import (
-    ExecutionRecipe, ObservationResult, TensorArgument,
+    ExecutionRecipe, ObservationResult,
     observe_in_subprocess,
 )
 from physics.instance_inventory import (
-    BuildRequest, Failure, InventoryResult, inventory_in_subprocess,
+    BuildRequest, InventoryResult, inventory_in_subprocess,
 )
 from physics.relation_observation import (
     RelationObservationResult, observe_relations_in_subprocess,
@@ -305,8 +303,7 @@ def _execution_rows_for_run(request: BuildRequest, slug: str, config_hash: str,
 
 # The same recipe resolver now serves production and the S7 experiment.
 from model_unfolder.evidence.execution_recipe import (
-    RecipeResolution, RecipeAttemptBundle, _signature_recipe,
-    _bf16_retry, _known_dtype_failure, _run_signature_recipe, _stable_observation_payload,
+    RecipeAttemptBundle, _signature_recipe, _run_signature_recipe,
 )
 
 

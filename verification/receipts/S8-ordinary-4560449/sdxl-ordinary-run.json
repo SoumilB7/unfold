@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python3",
+    "scripts/demonstrate_s8_unet.py",
+    "--input",
+    "/private/tmp/unfold-s8-invocation-review/verification/receipts/S8-final-run-preparation/inputs/sdxl.json",
+    "--output",
+    "/private/tmp/unfold-s8-final-4560449/sdxl",
+    "--condition",
+    "ordinary",
+    "--expect-source-sha256",
+    "ec893dca97431dd21236c9fa50ccd7b5aabe860a81cdb0473426231d2a5bbb5d"
+  ],
+  "condition": "ordinary",
+  "witness": "sdxl",
+  "elapsed_seconds": 303.468,
+  "returncode": 0,
+  "commit": "45604499d44b3131a75777da1df32ebac6da20f3",
+  "html_bytes": 23579094,
+  "html_sha256": "4bda5cc91f150fba8cfcedb859502df0ef24b85785787e44edf7b8f4acbc9291"
+}

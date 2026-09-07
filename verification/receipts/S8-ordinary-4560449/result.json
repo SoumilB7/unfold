@@ -1,0 +1,31 @@
+{
+  "blessed": false,
+  "condition": "ordinary",
+  "constructed": 1930,
+  "elapsed_seconds": 291.536,
+  "html_sha256": "4bda5cc91f150fba8cfcedb859502df0ef24b85785787e44edf7b8f4acbc9291",
+  "implementation_source_sha256": "ec893dca97431dd21236c9fa50ccd7b5aabe860a81cdb0473426231d2a5bbb5d",
+  "implementation_unchanged_during_run": true,
+  "nested_source_address": "models/attention.py",
+  "nested_source_package": "diffusers",
+  "nested_source_root": 0,
+  "parameters": 2567463684,
+  "projected_fact_keys": [
+    "root.denoiser.cell_arithmetic",
+    "root.denoiser.cell_connections",
+    "root.denoiser.constructed_modules",
+    "root.denoiser.constructed_parameter_shapes",
+    "root.denoiser.constructed_stage_relations",
+    "root.denoiser.context_connections",
+    "root.denoiser.declared_constructor_defaults",
+    "root.denoiser.ffn_mechanisms",
+    "root.denoiser.primary_state_ports",
+    "root.denoiser.runtime_primitives",
+    "root.denoiser.spatial_mechanisms",
+    "root.denoiser.stage_join_connections"
+  ],
+  "runtime_source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+  "static_source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+  "status": "review_required",
+  "wiring_problems": []
+}

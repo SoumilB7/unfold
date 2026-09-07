@@ -15,7 +15,7 @@ from model_unfolder.evidence.component_owner import resolve_component_root
 from model_unfolder.evidence.context import ParseContext
 from model_unfolder.evidence.document import prepare_document
 from model_unfolder.evidence.execution_recipe import _signature_recipe, _run_signature_recipe, with_optional_concat_probe
-from model_unfolder.evidence.reconciliation import reconcile, projection_claims_from_product, unresolved_axis_findings
+from model_unfolder.evidence.reconciliation import reconcile, projection_claims_from_product
 from model_unfolder.evidence.runtime_inventory import request_from_resolved_source
 
 
