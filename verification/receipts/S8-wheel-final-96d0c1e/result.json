@@ -1,0 +1,18 @@
+{
+  "commit": "96d0c1e",
+  "archive_sha256": "4d3aabff41c4ec40dbc6dc065137d2c24e7ef233cba2512e8ac998876c4d7d80",
+  "wheel_sha256": "0cf87509fa1952bd42073c83aadebae41d8d2a80fb90f2edea858aa2a9ef2adc",
+  "installed_imports": {
+    "model_unfolder.adapters.diffusor.unet_cutover": "/private/tmp/unfold-s8-wheel-96d0c1e/installed/model_unfolder/adapters/diffusor/unet_cutover.py",
+    "model_unfolder.evidence.unet_call_binding": "/private/tmp/unfold-s8-wheel-96d0c1e/installed/model_unfolder/evidence/unet_call_binding.py",
+    "model_unfolder.evidence.unet_iteration_binding": "/private/tmp/unfold-s8-wheel-96d0c1e/installed/model_unfolder/evidence/unet_iteration_binding.py",
+    "physics.attribute_bindings": "/private/tmp/unfold-s8-wheel-96d0c1e/installed/physics/attribute_bindings.py",
+    "physics.execution_observation": "/private/tmp/unfold-s8-wheel-96d0c1e/installed/physics/execution_observation.py",
+    "physics.framework_primitives": "/private/tmp/unfold-s8-wheel-96d0c1e/installed/physics/framework_primitives.py",
+    "physics.instance_inventory": "/private/tmp/unfold-s8-wheel-96d0c1e/installed/physics/instance_inventory.py",
+    "physics.relation_observation": "/private/tmp/unfold-s8-wheel-96d0c1e/installed/physics/relation_observation.py",
+    "physics.source_override": "/private/tmp/unfold-s8-wheel-96d0c1e/installed/physics/source_override.py"
+  },
+  "status": "PASS",
+  "scope": "offline wheel build/install outside checkout using host dependencies; no clean dependency resolution or model execution"
+}

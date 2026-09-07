@@ -1,0 +1,45 @@
+{
+  "blessed": false,
+  "groups": {
+    "audit": 772,
+    "legacy_geometry": 28,
+    "limited_metadata": 2,
+    "proofs": 12,
+    "render": 1188,
+    "shapes": 1,
+    "source_address": 1
+  },
+  "input_sha256": {
+    "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/differential-report.json": "6bbd770203c14033437ddf952be53f8f66b7765c7c41864be3435346a961b8f0",
+    "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/ordinary/facts.json": "d69b1e1e628bee58bf4600232826ceb227dac820ac7d8e6f906a2a45cf5f5908",
+    "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/ordinary/ir.json": "626520e0ec47b3ecec570c44342021ffbfbe7835e3239052de08131987bbcf81",
+    "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/ordinary/qualified-facts.json": "f00292a7de873147bff78e0fa60c466e42e401e3651033c41406eb74d0aa5287",
+    "verification/receipts/S8-sdxl-final-disposition-map/rows.json.gz": "caa2ffc4127aed4d5fa3c208596547702d569b82ce6265b9c07139789f25b8dd"
+  },
+  "owner_dispositions": {
+    "named_blocking_accounting_finding_retained": 772,
+    "named_reproof": 14,
+    "named_reproof_of_limited_result": 2,
+    "named_reproof_or_explicit_limitation": 1216
+  },
+  "production": "96d0c1e (c38 producer bytes; separately verified renderer-only phase)",
+  "public_fact_values_statuses_and_claim_kinds_checked": [
+    "root.denoiser.cell_arithmetic",
+    "root.denoiser.cell_connections",
+    "root.denoiser.constructed_modules",
+    "root.denoiser.constructed_parameter_shapes",
+    "root.denoiser.constructed_stage_relations",
+    "root.denoiser.context_connections",
+    "root.denoiser.declared_constructor_defaults",
+    "root.denoiser.ffn_mechanisms",
+    "root.denoiser.primary_state_ports",
+    "root.denoiser.runtime_primitives",
+    "root.denoiser.spatial_mechanisms",
+    "root.denoiser.stage_join_connections"
+  ],
+  "rows": 2004,
+  "scope": "Every delta has a named evidence-backed result or retained accounting finding. Open accounting debt is not declared solved. No output approval or blessing.",
+  "unexplained": 0,
+  "user_output_approval": "pending",
+  "witness": "sdxl"
+}

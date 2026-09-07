@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python3",
+    "scripts/verify_s8_unet_family.py",
+    "--input",
+    "/private/tmp/unfold-s8-family-96d0c1e/sdxl/input.json",
+    "--output",
+    "/private/tmp/unfold-s8-family-96d0c1e/sdxl",
+    "--accepted-table",
+    "/private/tmp/unfold-s8-final-verification-96d0c1e/verification/s7/models/stable-diffusion-xl-base-1-0.json.gz"
+  ],
+  "elapsed_seconds": 291.398,
+  "exit_code": 0,
+  "checkpoint": "96d0c1e5c08727a784af51664df6d0329e9b90dd",
+  "implementation_unchanged": true
+}

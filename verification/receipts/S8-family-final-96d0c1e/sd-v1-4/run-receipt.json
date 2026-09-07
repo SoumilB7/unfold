@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python3",
+    "scripts/verify_s8_unet_family.py",
+    "--input",
+    "/private/tmp/unfold-s8-family-96d0c1e/sd-v1-4/input.json",
+    "--output",
+    "/private/tmp/unfold-s8-family-96d0c1e/sd-v1-4"
+  ],
+  "elapsed_seconds": 306.93,
+  "exit_code": 0,
+  "checkpoint": "96d0c1e5c08727a784af51664df6d0329e9b90dd",
+  "implementation_unchanged": true
+}

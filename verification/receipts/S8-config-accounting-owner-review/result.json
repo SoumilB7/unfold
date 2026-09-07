@@ -1,0 +1,160 @@
+{
+  "sd-v1-4": {
+    "artifact_sha256": {
+      "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/legacy/ir.json": "82d1bf8c15bfc14d7477f8a05402788ff7f00ff8a7bdcb99767769d8274ae178",
+      "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/legacy/page.html": "be967b80b81aa8541d69dee70ac8b01d89d2293e6b5dc7288359ffbf7ac5b18d",
+      "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/legacy/result.json": "e604d5d80e7ba5d42212b2279863c0dc7d0e26428e5b81d4b8df37f11884f221",
+      "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/ir.json": "2eb261804a766914295a12acc6ec5a9e2edf65382379f1ce1018cd355f53421f",
+      "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/page.html": "3860d1bb550a295e69ea5cd252ea3e9743a5cf58c02c4022faeaf21b7e17800c",
+      "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/result.json": "a1b93b232bdf739bd9d8f23238d63921715b7ee152e70503766116418ae3a6ec"
+    },
+    "artifacts_unchanged": true,
+    "disposition": "named_visible_accounting_limitation_not_config_completion",
+    "findings": {
+      "config_accessed_unprojected": {
+        "actual_diagnostic_text_present": true,
+        "exact_ship_receipts": true,
+        "messages": [
+          "config occurrence root.denoiser:'act_fn' (spelled 'act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'attention_head_dim' (spelled 'attention_head_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'center_input_sample' (spelled 'center_input_sample') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'cross_attention_dim' (spelled 'cross_attention_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'downsample_padding' (spelled 'downsample_padding') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'flip_sin_to_cos' (spelled 'flip_sin_to_cos') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'freq_shift' (spelled 'freq_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'in_channels' (spelled 'in_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'mid_block_scale_factor' (spelled 'mid_block_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'norm_eps' (spelled 'norm_eps') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'norm_num_groups' (spelled 'norm_num_groups') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'out_channels' (spelled 'out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'sample_size' (spelled 'sample_size') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored"
+        ]
+      },
+      "config_audit_incomplete": {
+        "actual_diagnostic_text_present": true,
+        "exact_ship_receipts": true,
+        "messages": [
+          "root.denoiser"
+        ]
+      },
+      "config_standing_unconsumed": {
+        "actual_diagnostic_text_present": true,
+        "exact_ship_receipts": true,
+        "messages": [
+          "root.denoiser:act_fn (as act_fn) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+          "root.denoiser:norm_eps (as norm_eps) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt"
+        ]
+      }
+    },
+    "legacy_denoiser_consumed": [
+      "root.denoiser:act_fn",
+      "root.denoiser:attention_head_dim",
+      "root.denoiser:cross_attention_dim",
+      "root.denoiser:in_channels",
+      "root.denoiser:out_channels"
+    ],
+    "migration_claim_violations": [],
+    "new_denoiser_consumed": []
+  },
+  "sdxl": {
+    "artifact_sha256": {
+      "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/legacy/ir.json": "7541a3d2db9f958cf89c78835dd8e5a5940d4a6e656cc56404191b5d4ed19ea1",
+      "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/legacy/page.html": "17796f43d3596e8cf526f8427c26720c75d5342bf61ad7ccb7b4822e94e21b30",
+      "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/legacy/result.json": "71188d5633a607fc242f3ccb64e1ebb75ab2af062ad509142128ca1ecfd376e3",
+      "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/ordinary/ir.json": "626520e0ec47b3ecec570c44342021ffbfbe7835e3239052de08131987bbcf81",
+      "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/ordinary/page.html": "be92daf75f328e17f93e68d625a9c6fe114ff14f22173c4e494dbe434e456049",
+      "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/ordinary/result.json": "98dc3b1d6037847ff6f12f09dc1d0409526c037bdbd36a5f4adf2823af101a3f"
+    },
+    "artifacts_unchanged": true,
+    "disposition": "named_visible_accounting_limitation_not_config_completion",
+    "findings": {
+      "config_accessed_unprojected": {
+        "actual_diagnostic_text_present": true,
+        "exact_ship_receipts": true,
+        "messages": [
+          "config occurrence root.denoiser:'act_fn' (spelled 'act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'addition_embed_type_num_heads' (spelled 'addition_embed_type_num_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'attention_head_dim' (spelled 'attention_head_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'center_input_sample' (spelled 'center_input_sample') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'class_embed_type' (spelled 'class_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'class_embeddings_concat' (spelled 'class_embeddings_concat') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'conv_in_kernel' (spelled 'conv_in_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'conv_out_kernel' (spelled 'conv_out_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'cross_attention_dim' (spelled 'cross_attention_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'cross_attention_norm' (spelled 'cross_attention_norm') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'downsample_padding' (spelled 'downsample_padding') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'dual_cross_attention' (spelled 'dual_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'encoder_hid_dim' (spelled 'encoder_hid_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'encoder_hid_dim_type' (spelled 'encoder_hid_dim_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'flip_sin_to_cos' (spelled 'flip_sin_to_cos') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'freq_shift' (spelled 'freq_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'in_channels' (spelled 'in_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'mid_block_only_cross_attention' (spelled 'mid_block_only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'mid_block_scale_factor' (spelled 'mid_block_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'mid_block_type' (spelled 'mid_block_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'norm_eps' (spelled 'norm_eps') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'norm_num_groups' (spelled 'norm_num_groups') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'num_attention_heads' (spelled 'num_attention_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'num_class_embeds' (spelled 'num_class_embeds') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'only_cross_attention' (spelled 'only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'out_channels' (spelled 'out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'projection_class_embeddings_input_dim' (spelled 'projection_class_embeddings_input_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'resnet_out_scale_factor' (spelled 'resnet_out_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'resnet_skip_time_act' (spelled 'resnet_skip_time_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'resnet_time_scale_shift' (spelled 'resnet_time_scale_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'sample_size' (spelled 'sample_size') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'time_cond_proj_dim' (spelled 'time_cond_proj_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'time_embedding_act_fn' (spelled 'time_embedding_act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'time_embedding_dim' (spelled 'time_embedding_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'time_embedding_type' (spelled 'time_embedding_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'timestep_post_act' (spelled 'timestep_post_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'transformer_layers_per_block' (spelled 'transformer_layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'upcast_attention' (spelled 'upcast_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config occurrence root.denoiser:'use_linear_projection' (spelled 'use_linear_projection') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored"
+        ]
+      },
+      "config_audit_incomplete": {
+        "actual_diagnostic_text_present": true,
+        "exact_ship_receipts": true,
+        "messages": [
+          "root.denoiser"
+        ]
+      },
+      "config_standing_unconsumed": {
+        "actual_diagnostic_text_present": true,
+        "exact_ship_receipts": true,
+        "messages": [
+          "root.denoiser:act_fn (as act_fn) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+          "root.denoiser:norm_eps (as norm_eps) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt"
+        ]
+      }
+    },
+    "legacy_denoiser_consumed": [
+      "root.denoiser:act_fn",
+      "root.denoiser:attention_head_dim",
+      "root.denoiser:cross_attention_dim",
+      "root.denoiser:in_channels",
+      "root.denoiser:num_attention_heads",
+      "root.denoiser:out_channels"
+    ],
+    "migration_claim_violations": [],
+    "new_denoiser_consumed": []
+  },
+  "source_sha256": {
+    "model_unfolder/adapters/diffusor/unet.py": "d0eab97ea6abc8301b49d1f90ee7e2d28145eb4a84abe667f72ad78f08ae4030",
+    "model_unfolder/adapters/diffusor/unet_cutover.py": "c5fd32202221461c99ec312c35d0c448d2f4a2646ad70c0ea5a8bb57740750e9",
+    "model_unfolder/evidence/ship_findings.py": "c99432c128861ebb94e0671192b513d2ca483a96e6e8ff5b040318a41103554e",
+    "model_unfolder/parser.py": "84348825d63709d912e591679fff6e3ce0f92e31914089d429a5d3e53c25c75f",
+    "model_unfolder/sable.py": "2d243b5d371cbb3d0c986d89ae2ad47b7958ff53f7c1947e638c7f828580f7c2"
+  }
+}

@@ -1,0 +1,3 @@
+# Exact SDXL final disposition map
+
+All 2,004 original deltas and original statuses are retained in rows.json.gz. Each receives its concrete reviewed evidence group and receipt references. Explicit owner-accepted config limitations and independent aggregate preservation are recorded at their bounded scope. Remaining groups are mapped for final owner disposition; citation presence does not promote them to accepted. No output is blessed. Positional edge-list changes are explicitly grouped as removal of presence-only encoder arrows plus reindexing of retained prompt edges, not independent rewiring of each scalar field.
