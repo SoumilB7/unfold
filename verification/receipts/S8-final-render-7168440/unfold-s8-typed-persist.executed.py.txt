@@ -1,5 +1,5 @@
 from pathlib import Path
-import json,gzip,hashlib,shutil
+import json,gzip,hashlib,shutil,html
 base=Path('/Users/soumil/Code/Projects/Understand/llmvisualizer');run=Path('/private/tmp/unfold-s8-typed-phase-7168440');receipt=base/'unfold-pkg/verification/receipts/S8-final-render-7168440';pages=base/'z-docs/12-design/S8/final-7168440'
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def read(p):return json.loads(Path(p).read_text())

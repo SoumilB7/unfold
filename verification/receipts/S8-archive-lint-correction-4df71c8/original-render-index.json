@@ -1,6 +1,5 @@
 {
-  "README.md": "fa061f2f551d00c44d84ceb6edacb2181f532ef3e4d3aa69fdb3376989c0f2f5",
-  "artifact-sha256.executed-4df71c8.json": "4fc12ceeb2f8771a58012b4e826d175988c172af85d7ab938532036beed29c29",
+  "README.md": "39930947ceda94eafd2b33472e99e6b1b8ec093aeff4257b41e854283a0f5244",
   "ddpm-cifar10/actual-delta-audit.json": "a696a719fcd169eb68b288736eee47c6cd0fd6c43e41dd30a5efce5acc4e7391",
   "ddpm-cifar10/checks.json": "321623d0d32803762e0770b76f2df4330871f62f7db145b6ee93f0412e33bbb1",
   "ddpm-cifar10/event-deltas.json": "82c4bad0cc560e4cba076ef8bfae118809960d88243a4c017f22ea8309d15d09",
@@ -249,8 +248,6 @@
   "summary.json": "cd016f0b7bfa13a6c4e7b9bd62366d316b478ef95377e32061ebdfdf27b6b84e",
   "unfold-s8-final-typed-render.py": "a6517e457a9ea447377addeb95cad41123c2f80ede5862a54a2bbc8cdd187779",
   "unfold-s8-typed-campaign.py": "8217b96a3d84c838a2cd1747d5c5c7d7fa49b6c95df42516cd3fbd6e7c17dff3",
-  "unfold-s8-typed-delta-audit.executed.py.txt": "49930624a6d9ae8f14d2261163a1c3d733feac87f251941af1ae9e0122af8ae2",
-  "unfold-s8-typed-delta-audit.py": "4d22dd47ea9ba51b989b6525a004792822ad366b94c2aa9851ebc0e2b28eede4",
-  "unfold-s8-typed-persist.executed.py.txt": "fccf1afe754f85c6c7151925a823aa5d583ef0b967ac8d4f32ec888ea21e78d2",
-  "unfold-s8-typed-persist.py": "1b755458554dffdc89be0cf31fc26d4bde9e2abff9b0dfffcd03c3a21581217f"
+  "unfold-s8-typed-delta-audit.py": "49930624a6d9ae8f14d2261163a1c3d733feac87f251941af1ae9e0122af8ae2",
+  "unfold-s8-typed-persist.py": "fccf1afe754f85c6c7151925a823aa5d583ef0b967ac8d4f32ec888ea21e78d2"
 }

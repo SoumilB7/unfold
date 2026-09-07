@@ -1,5 +1,5 @@
 """Run the unchanged coverage entry point, retaining actual UNet render outputs."""
-import gzip,importlib.util,json,sys
+import gzip,hashlib,importlib.util,json,sys
 from pathlib import Path
 from unittest.mock import patch
 root=Path(sys.argv.pop(1));out=Path(sys.argv.pop(1));out.mkdir(parents=True,exist_ok=True);sys.path.insert(0,str(root))

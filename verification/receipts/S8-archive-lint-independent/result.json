@@ -1,0 +1,27 @@
+{
+  "authority_passed": 44,
+  "cleaned_copies_claimed_historically_executed": false,
+  "collected": 4476,
+  "current_packaging_index_valid": true,
+  "exact_historical_scripts_preserved": 3,
+  "failed_commit": "4df71c8ca919161e6995192eae0d49deffecb6b7",
+  "focused_passed": 439,
+  "fresh_whole_coordinator_still_required": true,
+  "lane_and_global_pins_equal": true,
+  "missing_lanes": [
+    "full",
+    "preservation"
+  ],
+  "only_removed_imports": [
+    "hashlib",
+    "re",
+    "hashlib",
+    "gzip",
+    "html"
+  ],
+  "original_artifact_index_preserved": true,
+  "production_tests_gate_unchanged": true,
+  "red_archive_equals_actual_logs": true,
+  "static_correction_result_scope": "executor recorded unchanged21-file static check; not independently rerun",
+  "verdict": "ACCEPT bounded archival correction; original broad remains FAIL"
+}

@@ -1,5 +1,5 @@
 from pathlib import Path
-import json,html
+import json,re,html,hashlib,gzip
 root=Path('/private/tmp/unfold-s8-typed-phase-7168440')
 rows=[]
 for result in sorted(root.glob('*/result.json')):

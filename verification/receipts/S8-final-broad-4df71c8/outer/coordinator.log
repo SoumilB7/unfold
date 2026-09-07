@@ -1,0 +1,20 @@
+[PASS] focused: 97.5s
+........................................................................ [ 98%]
+.......                                                                  [100%]
+439 passed in 94.36s (0:01:34)
+[PASS] u2-authority: 698.1s
+
+............................................                             [100%]
+44 passed in 696.44s (0:11:36)
+[PASS] collect: 12.0s
+tests/test_wrapper_features.py::test_real_mllama_internal_encoder_output_proves_multi_layer_concat
+
+4476 tests collected in 9.67s
+[FAIL] static: 0.3s
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/Library/Frameworks/Python.framework/Versions/3.12/bin/python3', '-m', 'pyflakes', 'tests/test_s5_release.py', 'verification/receipts/S8-actual-public-output-control-7168440/replay.py', 'verification/receipts/S8-caller-growth-refresh-7168440/replay.py', 'verification/receipts/S8-coverage-owner-final-7168440/verify.py', 'verification/receipts/S8-final-716-replay-independent/reproduce.py', 'verification/receipts/S8-final-coverage-7168440/unfold-s8-coverage-capture.py', 'verification/receipts/S8-final-coverage-7168440/unfold-s8-final-coverage-runner-7168440.py', 'verification/receipts/S8-final-coverage-7168440/unfold-s8-persist-coverage-7168440.py', 'verification/receipts/S8-final-gate-input-7168440/broad-runner.py', 'verification/receipts/S8-final-matrix-7168440/derive.py', 'verification/receipts/S8-final-matrix-7168440/sdxl-replay/replay.py', 'verification/receipts/S8-final-render-7168440/unfold-s8-final-typed-render.py', 'verification/receipts/S8-final-render-7168440/unfold-s8-typed-campaign.py', 'verification/receipts/S8-final-render-7168440/unfold-s8-typed-delta-audit.py', 'verification/receipts/S8-final-render-7168440/unfold-s8-typed-persist.py', 'verification/receipts/S8-metadata-order-control-7168440/replay.py', 'verification/receipts/S8-summary-reproof-7168440/reprove_summary-initial.py', 'verification/receipts/S8-summary-reproof-7168440/reprove_summary-resume.py', 'verification/receipts/S8-summary-reproof-7168440/unfold-s8-summary-campaign-7168440-resume.py', 'verification/receipts/S8-summary-reproof-7168440/unfold-s8-summary-campaign-7168440.py', 'verification/receipts/S8-typed-terminal-focused/reprove_summary.py']' returned non-zero exit status 1.
+commit: 4df71c8ca919161e6995192eae0d49deffecb6b7
+logs: /private/tmp/model-unfolder-verification/ee416b74b1
+wall time: 852.7s; full workers: 10; preservation workers: 4; authority workers: 3
+VERIFICATION FAIL: missing=['full', 'preservation'] failed=['static']

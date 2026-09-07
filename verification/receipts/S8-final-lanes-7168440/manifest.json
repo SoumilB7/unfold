@@ -86,7 +86,7 @@
     "final_artifact_commit",
     "isolated_serial_broad_coordinator"
   ],
-  "status": "actual11_source_and_render_pass_derived39_check_pass_actual44_generate_and_check_pass_broad_pending",
+  "status": "all_model_source_render_matrix_coverage_pass_first_broad_static_only_fail_archive_cleanup_pending_fresh_coordinator",
   "prior_matrix_lineage": {
     "fresh_39_model_run": false,
     "fresh_final_source_targets": 12,
@@ -115,5 +115,18 @@
     "exit_code": 0,
     "elapsed_seconds": 1231.294,
     "implementation_unchanged": true
-  }
+  },
+  "historical_broad": {
+    "commit": "4df71c8ca919161e6995192eae0d49deffecb6b7",
+    "receipt": "S8-final-broad-4df71c8",
+    "failed_lanes": [
+      "static"
+    ],
+    "missing_lanes": [
+      "full",
+      "preservation"
+    ]
+  },
+  "next_broad_runner": "/private/tmp/unfold-s8-final-broad-runner-clean-7168440.py",
+  "next_broad_output": "/private/tmp/unfold-s8-final-broad-clean-7168440"
 }

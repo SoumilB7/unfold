@@ -1,6 +1,6 @@
 {
-  "directory_count": 41,
-  "file_count": 281,
+  "directory_count": 43,
+  "file_count": 300,
   "files": [
     {
       "path": "verification/receipts/S8-authority-corrections/README.md",
@@ -604,7 +604,7 @@
     },
     {
       "path": "verification/receipts/S8-coverage-5227e9c-return/README.md",
-      "sha256": "b918d9e4786b994ba2a6d2aeb824bf0e0321b88f802457e01a18de1d03b4e340"
+      "sha256": "3ccb6c835e8b303dbc3b10fce5f7943a762f327773ee436c23c958854b776f06"
     },
     {
       "path": "verification/receipts/S8-coverage-5227e9c-return/accepted-coverage.json",
@@ -1125,6 +1125,82 @@
     {
       "path": "verification/receipts/S8-summary-reproof-7168440/unfold-s8-summary-campaign-7168440.py",
       "sha256": "745d8762563712cad21128b6440d9bca7cb221345328bb329c961f799dd93086"
+    },
+    {
+      "path": "verification/receipts/S8-archive-lint-correction-4df71c8/README.md",
+      "sha256": "a4f88ba3c923092a553ee25eddac3257fcca7c5215f43ee9910c5680ba4ff931"
+    },
+    {
+      "path": "verification/receipts/S8-archive-lint-correction-4df71c8/correction.py.txt",
+      "sha256": "6db5dc3ca24f0b773ace89858263cda2b1ea26b8bab1614ab478fc9bc1befbf3"
+    },
+    {
+      "path": "verification/receipts/S8-archive-lint-correction-4df71c8/next-broad-runner.py",
+      "sha256": "416c47fde542ce187b0dd70f4513b430d91eb3e514afff7588b76d196749f8ec"
+    },
+    {
+      "path": "verification/receipts/S8-archive-lint-correction-4df71c8/original-render-index.json",
+      "sha256": "4fc12ceeb2f8771a58012b4e826d175988c172af85d7ab938532036beed29c29"
+    },
+    {
+      "path": "verification/receipts/S8-archive-lint-correction-4df71c8/source-map.json",
+      "sha256": "347faf36c07ac7837e2a4f4e0ad926d0854f0d07c5cd8cd8a2d5a38db4b5c564"
+    },
+    {
+      "path": "verification/receipts/S8-archive-lint-correction-4df71c8/static-result.json",
+      "sha256": "c129f89a30e3275b754a2eae975ae88d12f54812adce6be55f6d9bff8ec5d697"
+    },
+    {
+      "path": "verification/receipts/S8-archive-lint-correction-4df71c8/static.log",
+      "sha256": "b1488aa49f60976379dde17773e09bebcf53fda1b2c687225d97587a3d5bedce"
+    },
+    {
+      "path": "verification/receipts/S8-final-broad-4df71c8/README.md",
+      "sha256": "f79c1f62caf4134cecc6675da68696d8f01385ed754d17d10bfe0690e2773d08"
+    },
+    {
+      "path": "verification/receipts/S8-final-broad-4df71c8/artifact-manifest.json",
+      "sha256": "1081cb5fa84bdf826261368088f05d1d0ac13280488e7b4584e9427d15e1bb3a"
+    },
+    {
+      "path": "verification/receipts/S8-final-broad-4df71c8/coordinator/collect.log",
+      "sha256": "67ef8bf2f7721d22da412ec87b9df1802d94e5cf9006cbd190dd87549f9d0ba2"
+    },
+    {
+      "path": "verification/receipts/S8-final-broad-4df71c8/coordinator/focused.log",
+      "sha256": "481708ec01b3d9cd6441c4e8afee2ece9f41beba9040bca74f07d5350e921914"
+    },
+    {
+      "path": "verification/receipts/S8-final-broad-4df71c8/coordinator/receipt.json",
+      "sha256": "512a4c0960fd88c74b85c4e9601134c6621765bfc74d973a96ffee383e744391"
+    },
+    {
+      "path": "verification/receipts/S8-final-broad-4df71c8/coordinator/static.log",
+      "sha256": "ed65b5eda23b5fb0f1570decbd2e1ad92c7c0dd8927244300971327261a56251"
+    },
+    {
+      "path": "verification/receipts/S8-final-broad-4df71c8/coordinator/u2-authority.log",
+      "sha256": "7a361841f03b126be20ab62d4cead62c930f1f7661049716adc1a1d76ef4c78b"
+    },
+    {
+      "path": "verification/receipts/S8-final-broad-4df71c8/outer/command.json",
+      "sha256": "58c83112e8e426472501d6751aabba49b64400a85c7d2f04c1f8813197affee6"
+    },
+    {
+      "path": "verification/receipts/S8-final-broad-4df71c8/outer/coordinator.log",
+      "sha256": "bac6f756cc15bc8f8fafd247b4c72fafbf9130d42a69cf4ce05b571542303b75"
+    },
+    {
+      "path": "verification/receipts/S8-final-broad-4df71c8/outer/receipt.json",
+      "sha256": "549d9aff29448ae5d1e4aa62f98a3b510123cc5f1ee735f3a7b28dfa395bbcba"
+    },
+    {
+      "path": "verification/receipts/S8-final-broad-4df71c8/unfold-s8-final-broad-runner-7168440.py",
+      "sha256": "7b56ca74c80f3d65579155e9422836eb18e4cb7171ff96c8055cbd4f05fc4523"
+    },
+    {
+      "path": "verification/receipts/S8-final-broad-4df71c8/unfold-s8-persist-broad-7168440.py",
+      "sha256": "cbba8e49afe9e08a0171c15d1c9a321f050b949a1286f3e477b92341ef87d2b6"
     }
   ],
   "receipt_directories": [
@@ -1168,7 +1244,9 @@
     "S8-card-ffn-receipt-independent",
     "S8-card-ffn-receipt-correction-independent",
     "S8-ffn-returned-svg-correction",
-    "S8-summary-reproof-7168440"
+    "S8-summary-reproof-7168440",
+    "S8-final-broad-4df71c8",
+    "S8-archive-lint-correction-4df71c8"
   ],
   "scope": "Exact historical red/control/replay receipt addresses; files retain their original source pins and limited verdicts. This index does not rerun or upgrade them."
 }
