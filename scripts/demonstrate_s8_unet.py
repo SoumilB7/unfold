@@ -39,6 +39,27 @@ from physics.source_override import SourceOverride
 from model_unfolder.adapters.diffusor.unet_differential import legacy_unet_comparison
 from report_s8_demonstration import observation, blocks
 
+EXPERIMENT_MOUNT_ID = "uf-s8-demonstration"
+
+
+def experiment_diagram(ir):
+    """One isolated experiment namespace; normal Diagram mounts stay random."""
+    diagram = Diagram(ir)
+    diagram._mount_id = EXPERIMENT_MOUNT_ID
+    return diagram
+
+
+def render_input_record(diagram):
+    """Preserve display metadata that the public string-compatible IR omits."""
+    from model_unfolder.ir import EvidenceWarning
+    return {"ir": diagram.to_ir(), "parameters": diagram.param_count(),
+            "warnings": [
+                {"kind": "evidence", "text": str(row), "check": row.check,
+                 "summary": row.summary, "details": list(row.details), "detail": row.detail}
+                if isinstance(row, EvidenceWarning) else {"kind": "string", "text": row}
+                for row in diagram.ir.warnings],
+            "mount_id": diagram._mount_id}
+
 
 def _hash(data):
     return hashlib.sha256(data).hexdigest()
@@ -297,7 +318,8 @@ def main():
     print("Parsing", args.condition, flush=True)
     with legacy_unet_comparison() if args.condition == "legacy" else nullcontext():
         ir = config_to_ir(config, parse_context=context)
-    diagram = Diagram(ir)
+    diagram = experiment_diagram(ir)
+    _write(artifact / "render-input.json", render_input_record(diagram))
     html = diagram.to_html()
     (artifact / "page.html").write_text(html)
     ir_record = ir.to_dict()
