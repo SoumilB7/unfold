@@ -45,7 +45,7 @@ def build_unet_constructed_view(ir, info, mount_id, block):
     def containment(x, y, width, height, label):
         frames.append(_svg_tag("rect", {"x": x, "y": y, "width": width, "height": height,
                        "rx": 14, "fill": "none", "stroke": C["border"], "stroke-width": 1,
-                       "stroke-dasharray": "5 4", "data-region-kind": "containment"}))
+                       "data-region-kind": "containment"}))
         labels = label if isinstance(label, (tuple, list)) else (label,)
         for number, text in enumerate(labels):
             frames.append(_svg_text(x + width / 2, y + height - 12 - (len(labels)-number-1)*16, text,
@@ -93,8 +93,8 @@ def build_unet_constructed_view(ir, info, mount_id, block):
             bound = set(row.get("binding_target_ids", ()))
             if stage_ids:
                 containment(x - 155, y - 15, 310, height + 30,
-                            ("Conditional slot targets · dashed links" if row["kind"] in {"for", "while"}
-                             else "Conditional call targets · dashed links") if set(stage_ids) <= bound else
+                            ("Conditional slot identity links" if row["kind"] in {"for", "while"}
+                             else "Conditional call identity links") if set(stage_ids) <= bound else
                             "Constructed stages · open targets retained")
             if invocation_ids:
                 extra_top = y + height + 55 if stage_ids else y + 75
@@ -103,7 +103,7 @@ def build_unet_constructed_view(ir, info, mount_id, block):
                 extra_height = 50 + len(invocation_ids) * 86
                 containment(x - 155, extra_top, 310, extra_height,
                             ("Conditioning / argument call targets", "No loop execution implied")
-                            if stage_ids else "Conditional call targets · dashed links")
+                            if stage_ids else "Conditional call identity links")
                 height = extra_top - y + extra_height
             if visible_ids:
                 # These are target-identity relations, not tensor arrows or
@@ -116,7 +116,7 @@ def build_unet_constructed_view(ir, info, mount_id, block):
                     rail = x - 171
                     path = f"M {geometry['left']} {geometry['cy']} L {rail} {geometry['cy']} L {rail} {target['cy']} L {target['left']} {target['cy']}"
                     wires.append(_svg_tag("path", {"d": path, "fill": "none", "stroke": C["muted"],
-                        "stroke-width": 1.5, "stroke-dasharray": "5 3",
+                        "stroke-width": 1.5,
                         "data-route-kind": "conditional_call_target", "data-source": row["id"],
                         "data-target": target_id}))
                     regions.append(point(rail, target["cy"]))

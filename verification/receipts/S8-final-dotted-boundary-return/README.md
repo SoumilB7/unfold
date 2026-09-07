@@ -1,0 +1,3 @@
+# Actual overview versus existing no-dotted-boundary invariant
+
+The actual final ordinary page has zero dotted dataflow arrows but 18 dashed non-arrow elements. Existing block_schema.validate_no_dotted_boundaries rejects them: the new containment frames and conditional target identity paths conflict with the blanket existing renderer invariant. tests/test_coverage.py applies that validator to test_support.CORPUS, which includes SDXL_UNET. This is a concrete existing-validator replay on the actual page, not a claimed pytest run. The owner previously accepted the dashed target presentation visually; policy/style disposition remains necessary. No source changes or baseline blessing in this receipt.

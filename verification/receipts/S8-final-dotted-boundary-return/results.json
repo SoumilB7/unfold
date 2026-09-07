@@ -1,0 +1,52 @@
+{
+  "input": "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/ordinary/page.html",
+  "html_sha256": "be92daf75f328e17f93e68d625a9c6fe114ff14f22173c4e494dbe434e456049",
+  "arrow_findings": [],
+  "boundary_findings": [
+    "dotted rect structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted rect structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted rect structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted rect structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted rect structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted path structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted path structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted path structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted path structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted path structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted path structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted path structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted path structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted path structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted path structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted path structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted path structural boundary \u2014 generated regions/highlights must use solid strokes",
+    "dotted path structural boundary \u2014 generated regions/highlights must use solid strokes"
+  ],
+  "actual_elements": [
+    "<rect x=\"15\" y=\"355\" width=\"310\" height=\"398\" rx=\"14\" fill=\"none\" stroke=\"#B6DDCB\" stroke-width=\"1\" stroke-dasharray=\"5 4\" data-region-kind=\"containment\"/>",
+    "<rect x=\"15\" y=\"793\" width=\"310\" height=\"394\" rx=\"14\" fill=\"none\" stroke=\"#B6DDCB\" stroke-width=\"1\" stroke-dasharray=\"5 4\" data-region-kind=\"containment\"/>",
+    "<rect x=\"665\" y=\"225\" width=\"310\" height=\"222\" rx=\"14\" fill=\"none\" stroke=\"#B6DDCB\" stroke-width=\"1\" stroke-dasharray=\"5 4\" data-region-kind=\"containment\"/>",
+    "<rect x=\"665\" y=\"484\" width=\"310\" height=\"398\" rx=\"14\" fill=\"none\" stroke=\"#B6DDCB\" stroke-width=\"1\" stroke-dasharray=\"5 4\" data-region-kind=\"containment\"/>",
+    "<rect x=\"340\" y=\"1259\" width=\"310\" height=\"226\" rx=\"14\" fill=\"none\" stroke=\"#B6DDCB\" stroke-width=\"1\" stroke-dasharray=\"5 4\" data-region-kind=\"containment\"/>",
+    "<path d=\"M 30.0 399.0 L -1 399.0 L -1 489.0 L 55.0 489.0\" fill=\"none\" stroke=\"#5F7C73\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\" data-route-kind=\"conditional_call_target\" data-source=\"unet_primary_region_3\" data-target=\"instance_down_blocks__0\"/>",
+    "<path d=\"M 30.0 399.0 L -1 399.0 L -1 575.0 L 55.0 575.0\" fill=\"none\" stroke=\"#5F7C73\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\" data-route-kind=\"conditional_call_target\" data-source=\"unet_primary_region_3\" data-target=\"instance_down_blocks__1\"/>",
+    "<path d=\"M 30.0 399.0 L -1 399.0 L -1 661.0 L 55.0 661.0\" fill=\"none\" stroke=\"#5F7C73\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\" data-route-kind=\"conditional_call_target\" data-source=\"unet_primary_region_3\" data-target=\"instance_down_blocks__2\"/>",
+    "<path d=\"M 30.0 399.0 L -1 399.0 L -1 842.0 L 55.0 842.0\" fill=\"none\" stroke=\"#5F7C73\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\" data-route-kind=\"conditional_call_target\" data-source=\"unet_primary_region_3\" data-target=\"instance_add_embedding\"/>",
+    "<path d=\"M 30.0 399.0 L -1 399.0 L -1 928.0 L 55.0 928.0\" fill=\"none\" stroke=\"#5F7C73\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\" data-route-kind=\"conditional_call_target\" data-source=\"unet_primary_region_3\" data-target=\"instance_add_time_proj\"/>",
+    "<path d=\"M 30.0 399.0 L -1 399.0 L -1 1014.0 L 55.0 1014.0\" fill=\"none\" stroke=\"#5F7C73\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\" data-route-kind=\"conditional_call_target\" data-source=\"unet_primary_region_3\" data-target=\"instance_time_embedding\"/>",
+    "<path d=\"M 30.0 399.0 L -1 399.0 L -1 1100.0 L 55.0 1100.0\" fill=\"none\" stroke=\"#5F7C73\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\" data-route-kind=\"conditional_call_target\" data-source=\"unet_primary_region_3\" data-target=\"instance_time_proj\"/>",
+    "<path d=\"M 680.0 179.0 L 649 179.0 L 649 274.0 L 705.0 274.0\" fill=\"none\" stroke=\"#5F7C73\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\" data-route-kind=\"conditional_call_target\" data-source=\"unet_primary_region_7\" data-target=\"instance_conv_act\"/>",
+    "<path d=\"M 680.0 179.0 L 649 179.0 L 649 360.0 L 705.0 360.0\" fill=\"none\" stroke=\"#5F7C73\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\" data-route-kind=\"conditional_call_target\" data-source=\"unet_primary_region_7\" data-target=\"instance_conv_norm_out\"/>",
+    "<path d=\"M 680.0 528.0 L 649 528.0 L 649 618.0 L 705.0 618.0\" fill=\"none\" stroke=\"#5F7C73\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\" data-route-kind=\"conditional_call_target\" data-source=\"unet_primary_region_6\" data-target=\"instance_up_blocks__2\"/>",
+    "<path d=\"M 680.0 528.0 L 649 528.0 L 649 704.0 L 705.0 704.0\" fill=\"none\" stroke=\"#5F7C73\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\" data-route-kind=\"conditional_call_target\" data-source=\"unet_primary_region_6\" data-target=\"instance_up_blocks__1\"/>",
+    "<path d=\"M 680.0 528.0 L 649 528.0 L 649 790.0 L 705.0 790.0\" fill=\"none\" stroke=\"#5F7C73\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\" data-route-kind=\"conditional_call_target\" data-source=\"unet_primary_region_6\" data-target=\"instance_up_blocks__0\"/>",
+    "<path d=\"M 355.0 1303.0 L 324.0 1303.0 L 324.0 1393.0 L 380.0 1393.0\" fill=\"none\" stroke=\"#5F7C73\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\" data-route-kind=\"conditional_call_target\" data-source=\"unet_primary_region_4\" data-target=\"instance_mid_block\"/>"
+  ],
+  "sources": {
+    "model_unfolder/block_schema.py": "0779e9bd8dae3843f84f8a1643eb083f1c10cfc56ab83e70cd8bfa4a842004c5",
+    "model_unfolder/renderers/html/block_views/unet.py": "9d052fa81bb50af0ae0db4f825486cd242b08c68cfa71b1b69afcf73136403f7",
+    "tests/test_coverage.py": "741cb0ac37a104e215842c2815d3933cea7223f73759a175a197a17a46dae4ed",
+    "test_support/__init__.py": "ebba5b1e3841505aab082c885a0c63a4aa82654b36b5cc8e607d2b3291d2eae4"
+  },
+  "scope": "existing validator applied to actual saved HTML, no pytest or new parse"
+}
