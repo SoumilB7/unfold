@@ -1,0 +1,9 @@
+# Final derived 39-target matrix at 5227e9c
+
+All 39 exact targets are accounted for; the unchanged generator --check exits 0. This is explicitly a derived matrix: 25 original96 completed targets preserve exact model/observation/relation bytes; PixArt separately replays both old and corrected caller addresses with those same exact artifacts; SDXL re-reconciles exact saved construction and execution through the corrected retained source closure; the remaining 12 targets execute on final5227 sources. The final12 phase plus assembly took 1211.069 seconds. It is not a fresh39model run.
+
+Per-target generation lineage/duration and recipe status are retained separately. Recipe status counts: {'failed': 17, 'ok': 22}. Typed failed recipes remain failed; artifact freshness does not turn them into observed behavior. Per-model comparison against accepted83140f1 includes every original field and named delta path. Owner disposition is separate and no product output is blessed here.
+
+Original96 sources, all preserved artifact bytes, initial failure and raw SDXL attempts are committed at S8-matrix-96d0c1e-source-index-return/. Completed26 bundle/non-UNet premises, strict saved SDXL request/source/recipe joins and exact PixArt replay are committed at S8-retained-closure-correction/. The six-file96→5227 code hash delta and actual SDXL parsed IR equality with final reviewed5227page are in S8-final-lanes-5227e9c/. Renderer/reference changes have their independent actual input/event/validator receipts.
+
+The final matrix/models/observations/relations live in verification/s7; final-artifact-sha256.json binds every byte. The original26 compressed artifacts remain byte-identical. The generator's conservative full production dependency surface is unchanged; the source manifest now names the explicit final derivation rather than claiming old model runs used new source.

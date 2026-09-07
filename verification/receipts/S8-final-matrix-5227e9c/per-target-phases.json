@@ -1,0 +1,197 @@
+[
+  {
+    "elapsed_seconds": 0.01,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "auraflow-v0-3"
+  },
+  {
+    "elapsed_seconds": 0.012,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "bloom"
+  },
+  {
+    "elapsed_seconds": 0.013,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "elapsed_seconds": 0.009,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "dbrx-base"
+  },
+  {
+    "elapsed_seconds": 0.023,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "deepseek-v3"
+  },
+  {
+    "elapsed_seconds": 0.007,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "flux-2-dev"
+  },
+  {
+    "elapsed_seconds": 0.016,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "elapsed_seconds": 0.007,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "gemma-2-2b-it"
+  },
+  {
+    "elapsed_seconds": 0.029,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "glm-4-5"
+  },
+  {
+    "elapsed_seconds": 0.007,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "gpt-oss-20b"
+  },
+  {
+    "elapsed_seconds": 0.012,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "granite-3-0-8b-instruct"
+  },
+  {
+    "elapsed_seconds": 0.018,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "elapsed_seconds": 0.008,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "llama-7b"
+  },
+  {
+    "elapsed_seconds": 0.008,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "ltx-video"
+  },
+  {
+    "elapsed_seconds": 0.008,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "elapsed_seconds": 0.022,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "mochi-1-preview"
+  },
+  {
+    "elapsed_seconds": 0.009,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "musicgen-small"
+  },
+  {
+    "elapsed_seconds": 0.01,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "olmo-2-1124-7b"
+  },
+  {
+    "elapsed_seconds": 0.011,
+    "phase": "preserved_96d0c1e_separately_replayed_address",
+    "slug": "pixart-sigma-xl-2-1024-ms"
+  },
+  {
+    "elapsed_seconds": 0.011,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "elapsed_seconds": 0.023,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "qwen-image"
+  },
+  {
+    "elapsed_seconds": 0.01,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "qwen2-vl-7b-instruct"
+  },
+  {
+    "elapsed_seconds": 0.021,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "qwen3-5-27b-text"
+  },
+  {
+    "elapsed_seconds": 0.011,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "qwen3-8b"
+  },
+  {
+    "elapsed_seconds": 0.008,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "elapsed_seconds": 0.015,
+    "phase": "preserved_generation_96d0c1e",
+    "slug": "stable-diffusion-3-5-large"
+  },
+  {
+    "elapsed_seconds": 0.112,
+    "phase": "saved_evidence_final_source_reconciliation",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "elapsed_seconds": 75.482,
+    "phase": "fresh_final_source_generation",
+    "slug": "stablelm-2-1-6b"
+  },
+  {
+    "elapsed_seconds": 68.677,
+    "phase": "fresh_final_source_generation",
+    "slug": "wan2-2-t2v-a14b-diffusers"
+  },
+  {
+    "elapsed_seconds": 69.52,
+    "phase": "fresh_final_source_generation",
+    "slug": "command-a-03-2025"
+  },
+  {
+    "elapsed_seconds": 70.437,
+    "phase": "fresh_final_source_generation",
+    "slug": "deepseek-coder-v2-lite"
+  },
+  {
+    "elapsed_seconds": 103.027,
+    "phase": "fresh_final_source_generation",
+    "slug": "deepseek-v4-flash"
+  },
+  {
+    "elapsed_seconds": 262.159,
+    "phase": "fresh_final_source_generation",
+    "slug": "gemma-3n-e2b"
+  },
+  {
+    "elapsed_seconds": 78.245,
+    "phase": "fresh_final_source_generation",
+    "slug": "jamba-v0-1"
+  },
+  {
+    "elapsed_seconds": 69.626,
+    "phase": "fresh_final_source_generation",
+    "slug": "lfm2-1-2b"
+  },
+  {
+    "elapsed_seconds": 75.452,
+    "phase": "fresh_final_source_generation",
+    "slug": "nemotron-h-8b"
+  },
+  {
+    "elapsed_seconds": 116.833,
+    "phase": "fresh_final_source_generation",
+    "slug": "qwen3-5-27b"
+  },
+  {
+    "elapsed_seconds": 70.44,
+    "phase": "fresh_final_source_generation",
+    "slug": "qwen3-omni-30b"
+  },
+  {
+    "elapsed_seconds": 139.641,
+    "phase": "fresh_final_source_generation",
+    "slug": "qwen3-vl-235b"
+  }
+]

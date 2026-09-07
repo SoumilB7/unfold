@@ -1,0 +1,44 @@
+S7 shadow corpus auraflow-v0-3
+S7 shadow corpus bloom
+S7 shadow corpus cogvideox-5b
+S7 shadow corpus dbrx-base
+S7 shadow corpus deepseek-v3
+S7 shadow corpus flux-2-dev
+S7 shadow corpus fluxtransformer2dmodel
+S7 shadow corpus gemma-2-2b-it
+S7 shadow corpus glm-4-5
+S7 shadow corpus gpt-oss-20b
+S7 shadow corpus granite-3-0-8b-instruct
+S7 shadow corpus hunyuanvideo
+S7 shadow corpus llama-7b
+S7 shadow corpus ltx-video
+S7 shadow corpus lumina-image-2-0
+S7 shadow corpus mochi-1-preview
+S7 shadow corpus musicgen-small
+S7 shadow corpus olmo-2-1124-7b
+S7 shadow corpus pixart-sigma-xl-2-1024-ms
+S7 shadow corpus prxpixel-t2i
+S7 shadow corpus qwen-image
+S7 shadow corpus qwen2-vl-7b-instruct
+S7 shadow corpus qwen3-5-27b-text
+S7 shadow corpus qwen3-8b
+S7 shadow corpus sana-1600m-1024px-diffusers
+S7 shadow corpus stable-diffusion-3-5-large
+S7 shadow corpus stable-diffusion-xl-base-1-0
+S7 shadow corpus stablelm-2-1-6b
+S7 shadow corpus wan2-2-t2v-a14b-diffusers
+S7 shadow to_serve command-a-03-2025
+S7 shadow to_serve deepseek-coder-v2-lite
+S7 shadow to_serve deepseek-v4-flash
+S7 shadow to_serve gemma-3n-e2b
+S7 shadow to_serve jamba-v0-1
+S7 shadow to_serve lfm2-1-2b
+S7 shadow to_serve nemotron-h-8b
+S7 shadow to_serve qwen3-5-27b
+S7 shadow to_serve qwen3-omni-30b
+[transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'interleaved'}
+[transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'interleaved'}
+[transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'interleaved'}
+[transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'interleaved'}
+S7 shadow to_serve qwen3-vl-235b
+Derived matrix and unchanged --check complete

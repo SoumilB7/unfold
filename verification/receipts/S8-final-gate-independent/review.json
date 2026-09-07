@@ -1,0 +1,23 @@
+{
+  "accepted_s7_manifest_sha256": "a1fe7d578c16bbed0d44b77ad9c60f77a210ded565473b25777c2b61716743a9",
+  "mode": "read-only source and saved receipt review; no pytest/model execution",
+  "preservation_manifest_equals_accepted_s7": true,
+  "production_candidate": "5227e9cb05d5cfeca414a26615fd158bc6c83650",
+  "reviewed_head": "7da0d198cdf53fb9878f904eeb9e049b568b2f3d",
+  "source_sha256": {
+    "scripts/coverage.py": "93f8abdf31f12162dbbe39996d9f88eb6b418adb0376fd8813d6e88cf04310ee",
+    "scripts/generate_s7_shadow.py": "e415c5d0a4efac1ae655d4a992a08087daa015e6d2438dc8e4771fddbbead70c",
+    "scripts/pytest_file_bracket.py": "be6e93097a6aa95f17cf02a829bdf9ba30dafcfe6c3b2c7de58e7d4d99adb8ce",
+    "scripts/verify_commit.py": "5c5af14bb0a74c3f6b0b993a40cebe8f4f048a10a03e21bed51067e93daba84f",
+    "test_support/preservation.py": "22470d509c5c3198719de6419ed97cf9ec32783f046a344753e80272eaea52cb",
+    "test_support/tree_state.py": "4a270ef2248eef33f55ea86b9c68d7fa65acd1e00cd7c951504e29139c55f3ba",
+    "tests/preservation_expected_manifest.json": "a1fe7d578c16bbed0d44b77ad9c60f77a210ded565473b25777c2b61716743a9",
+    "tests/test_preservation.py": "dfbbade3a31e7bb0bb39f5add0a1a659bcb139850265e190c9a9691e87298251",
+    "tests/test_s7_artifacts.py": "80cbd1858e824862179fc1d9f54622d52c8d7d388ad9fd8aae301cb8002830e0",
+    "verification/receipts/S8-final-lanes-5227e9c/manifest.json": "96422c402e32b01564ec169470dea94e17140cf36cc41f9fd877bc43be1ccb71",
+    "verification/receipts/S8-final-lanes-5227e9c/unfold-s8-coverage-capture.py": "e9a0c53c772bb18f96e28bcfb9174bfc4a66071eb50e5b5e55a9d9feac2525cb",
+    "verification/receipts/S8-final-lanes-5227e9c/unfold-s8-resume-derived-matrix.py": "6fd29ec14ad4436cdf7f31fe8eb6c94e9a48f19bb2eff26da9effe689525e208",
+    "verification/receipts/S8-final-render-5227e9c/README.md": "0275e0f29122e0a060d7b4b8109a39f1a7e8899b9335b0c5f92b10ffe6bd3ece"
+  },
+  "verdict": "ACCEPT coordinator control flow within inspected scope; final lane results and output approval pending"
+}
