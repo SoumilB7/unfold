@@ -1,0 +1,48 @@
+{
+  "checkpoint": "f58170931e3cd05b1b699df5428920f7fc4c0147",
+  "evidence": "fresh static investigation against persisted ordinary SDXL inventory, then explicit DTO poisons; class changes regenerate reconciliation",
+  "inventory_root_hashes": [
+    "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+  ],
+  "ordinary_fact": {
+    "activation": "gelu",
+    "gated": true,
+    "input_projection": "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.0.proj",
+    "output_projection": "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.2",
+    "projection_mode": "fused_gate_up"
+  },
+  "ordinary_ffn_count": 70,
+  "ordinary_inventory_framework_witnesses": 0,
+  "path": "down_blocks.1.attentions.0.transformer_blocks.0.ff",
+  "results": {
+    "down_blocks.1.attentions.0.transformer_blocks.0.ff": {
+      "claim_survives": false,
+      "kind": "recorded_forward_override"
+    },
+    "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.0": {
+      "claim_survives": false,
+      "kind": "recorded_forward_override"
+    },
+    "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.0.proj": {
+      "claim_survives": true,
+      "kind": "recorded_forward_override"
+    },
+    "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.0.proj:type": {
+      "claim_survives": true,
+      "framework_forward_hash": "86dea99bd64aeca10aecfa90a61afa1b4ddd6a0b62261c9df1b3128a82b1d4b9",
+      "framework_primitive_key": "relu",
+      "kind": "actual_runtime_class_ReLU"
+    },
+    "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.2": {
+      "claim_survives": true,
+      "kind": "recorded_forward_override"
+    },
+    "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.2:type": {
+      "claim_survives": true,
+      "framework_forward_hash": "86dea99bd64aeca10aecfa90a61afa1b4ddd6a0b62261c9df1b3128a82b1d4b9",
+      "framework_primitive_key": "relu",
+      "kind": "actual_runtime_class_ReLU"
+    }
+  },
+  "source_hash": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+}

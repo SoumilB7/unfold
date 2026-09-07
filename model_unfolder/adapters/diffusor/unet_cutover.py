@@ -65,7 +65,20 @@ def build_unet_cutover(cfg, context, *, handoffs, name, source_overrides=()):
         if fact is not None:
             context.facts.record_typed(fact)
             projected[fact.ledger_key()] = fact
+    limitations = {}
+    for module in result.inventory.modules:
+        if evidence.bindings.symbol_at(module.path) is None and module.framework_primitive is None:
+            limitations[module.path] = "investigation_missing · mechanism source unavailable in the indexed closure · owner: S8"
+    qualified_ffns = projected.get("root.denoiser.ffn_mechanisms")
+    for attempt in evidence.value("nested_ffns") or ():
+        for path in attempt.instance_paths:
+            if qualified_ffns is not None and path in qualified_ffns.value:
+                continue
+            reason = ("invoked affine/transparent callable witness unavailable or modified"
+                      if attempt.result.has_value else
+                      "; ".join(failure.detail for failure in attempt.result.failures))
+            limitations[path] = "investigation_missing · mechanism investigation: " + reason + " · owner: S8"
     ir = project_unet(facts=projected, handoffs=handoffs, name=name,
                       architecture=result.inventory.provenance.resolved_class.qualname,
-                      table=evidence.bindings.table)
+                      table=evidence.bindings.table, mechanism_findings=limitations)
     return UNetCutoverResult(ir, result, evidence)

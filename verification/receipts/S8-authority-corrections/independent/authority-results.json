@@ -1,0 +1,144 @@
+{
+  "checkpoint": "f58170931e3cd05b1b699df5428920f7fc4c0147",
+  "results": {
+    "R1_container_escape": {
+      "source": "class Cell:\n def forward(self, value):\n  holder = [self]\n  helper(holder)\n  value = self.first(value)\n  return self.second(value)\n",
+      "value": {
+        "member_stays_bound": true
+      }
+    },
+    "R1_direct_alias": {
+      "direct_edge_found": true,
+      "member_stays_bound": false,
+      "source": "class Arbitrary:\n    def forward(self, value):\n        alias = self\n        helper(alias)\n        value = self.first(value)\n        return self.second(value)\n"
+    },
+    "R2_spoofed_name": {
+      "actual_at_zero": 10.0,
+      "claimed_meaning": null,
+      "framework_SiLU_at_zero": 0.0,
+      "is_framework_SiLU": false,
+      "serialized_ref": "ResolvedClass(module='torch.nn.modules.activation', qualname='SiLU')"
+    },
+    "R2_worker_membership": {
+      "canonical_key": "silu",
+      "spoof_rejected": true
+    },
+    "R3_wrong_concat": {
+      "reason": "join result does not reach the cited child input",
+      "rejected": true
+    },
+    "R4_opaque_helper": {
+      "source": "def ignore(argument):\n return 7\nclass Cell:\n def forward(self, side):\n  result = ignore(side)\n  consume(result)\n",
+      "value": {
+        "arguments": [
+          {
+            "port": "0",
+            "route": {
+              "formal": "side",
+              "kind": "formal"
+            }
+          }
+        ],
+        "kind": "call_result",
+        "mechanism": "unresolved",
+        "reason": "call argument and result wiring proven; internal computation not established",
+        "result_slot": []
+      }
+    },
+    "R7_R8_original_controls": {
+      "carried_local": {
+        "source": "class Cell:\n def forward(self, seed, items):\n  state = seed\n  for item in items:\n   consume(state)\n   state = update(item)\n",
+        "value": {
+          "formal": "state",
+          "initial_route": {
+            "formal": "seed",
+            "kind": "formal"
+          },
+          "kind": "loop_carried",
+          "reason": "initial value seeds the loop; subsequent iterations use the carried value"
+        }
+      },
+      "guarded_assignment_control": {
+        "source": "class Cell:\n def forward(self, seed, flag):\n  state = seed\n  if flag:\n   state = replace(seed)\n   return consume(state)\n  return state\n",
+        "value": {
+          "arguments": [
+            {
+              "port": "0",
+              "route": {
+                "formal": "seed",
+                "kind": "formal"
+              }
+            }
+          ],
+          "kind": "call_result",
+          "mechanism": "unresolved",
+          "reason": "call argument and result wiring proven; internal computation not established",
+          "result_slot": []
+        }
+      },
+      "loop_target_overwrites_formal": {
+        "source": "class Cell:\n def forward(self, state, items):\n  for state in items:\n   consume(state)\n",
+        "value": {
+          "kind": "unresolved",
+          "reason": "loop target supplies this local; formal identity does not survive binding"
+        }
+      },
+      "opaque_call_control": {
+        "source": "class Cell:\n def forward(self, seed):\n  result = helper(seed)\n  consume(result)\n",
+        "value": {
+          "arguments": [
+            {
+              "port": "0",
+              "route": {
+                "formal": "seed",
+                "kind": "formal"
+              }
+            }
+          ],
+          "kind": "call_result",
+          "mechanism": "unresolved",
+          "reason": "call argument and result wiring proven; internal computation not established",
+          "result_slot": []
+        }
+      },
+      "ordinary_alias_control": {
+        "source": "class Cell:\n def forward(self, seed):\n  state = seed\n  consume(state)\n",
+        "value": {
+          "formal": "seed",
+          "kind": "formal"
+        }
+      },
+      "starred_unpack": {
+        "source": "class Cell:\n def forward(self, seed):\n  first, *middle, last = helper(seed)\n  consume(last)\n",
+        "value": {
+          "kind": "unresolved",
+          "reason": "starred unpack has no proven fixed result slot"
+        }
+      },
+      "with_target_overwrites_formal": {
+        "source": "class Cell:\n def forward(self, seed):\n  with manager() as seed:\n   consume(seed)\n",
+        "value": {
+          "kind": "unresolved",
+          "reason": "input occurs inside unsupported execution syntax"
+        }
+      }
+    },
+    "R7_after_loop": {
+      "source": "class Cell:\n def forward(self, state, items):\n  for state in items:\n   pass\n  consume(state)\n",
+      "value": {
+        "formal": "state",
+        "kind": "formal"
+      }
+    },
+    "R7_after_with": {
+      "source": "class Cell:\n def forward(self, seed):\n  with manager() as seed:\n   pass\n  consume(seed)\n",
+      "value": {
+        "formal": "seed",
+        "kind": "formal"
+      }
+    }
+  },
+  "tracked_fingerprint_after": "a01ddb8fa1e062ad069bcb0ce08d24ca7cfb1e28f900ee9907e3256d259dd8a6",
+  "tracked_fingerprint_before": "a01ddb8fa1e062ad069bcb0ce08d24ca7cfb1e28f900ee9907e3256d259dd8a6",
+  "verdict": "RETURN: R1, R5 and R7 remain partly open; other bounded controls corrected"
+}

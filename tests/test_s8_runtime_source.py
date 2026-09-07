@@ -179,3 +179,28 @@ def test_framework_primitive_is_exact_type_not_bare_class_name(tmp_path):
     patched = replace(inventory.modules[1], init_attributes={"forward": {"type": "builtins.function", "value": None}})
     changed = replace(inventory, modules=(inventory.modules[0], patched))
     assert "child" not in read_runtime_primitives(RuntimeSourceBindings(table, changed, binding.index)).value
+
+
+def test_affine_identity_cannot_survive_replacement_or_invoked_route_override(tmp_path):
+    import torch.nn as nn
+    from physics.framework_primitives import capture_framework_types, witness_framework_type
+    binding = _binding(tmp_path)
+    root, child = binding.inventory.modules
+    linear = ResolvedClass("torch.nn.modules.linear", "Linear")
+    child = replace(child, class_ref=linear, origin_module=linear.module,
+                    mro_entries=(linear,), framework_primitive=witness_framework_type(nn.Linear(2, 2), capture_framework_types()))
+    inventory = replace(binding.inventory, modules=(root, child))
+    def bound(value):
+        table = reconcile(model="fixture", inventory=value, observations=(),
+                          config_document=prepare_document({}, merge=False), program_index=binding.index)
+        return RuntimeSourceBindings(table, value, binding.index)
+    assert bound(inventory).primitive_at("child") == "linear"
+    for path in ("", "child"):
+        modified = replace(inventory, modules=tuple(
+            replace(row, init_attributes={"forward": {"type": "builtins.function", "value": None}})
+            if row.path == path else row for row in inventory.modules))
+        assert bound(modified).primitive_at("child") is None
+    relu = ResolvedClass("torch.nn.modules.activation", "ReLU")
+    replaced = replace(inventory, modules=(root, replace(child, class_ref=relu,
+                       origin_module=relu.module, mro_entries=(relu,))))
+    assert bound(replaced).primitive_at("child") is None

@@ -133,9 +133,6 @@ class UNetFFNClaimProof:
                    "projection_mode": proof.projection_mode}
             for path in attempt.instance_paths:
                 position = proof.execution.append_calls.index(proof.execution.selected_append)
-                if not self.bindings.forward_is_unmodified(path) or not self.bindings.forward_is_unmodified(
-                        f"{path}.{proof.execution.field}.{position}"):
-                    continue
                 output_positions = [number for number, call in enumerate(proof.execution.append_calls)
                                     if call.span.source == proof.execution.output_site.span.source
                                     and (call.span.line, call.span.col) <= (proof.execution.output_site.span.line, proof.execution.output_site.span.col)
@@ -145,6 +142,21 @@ class UNetFFNClaimProof:
                 scoped = {**row,
                           "input_projection": f"{path}.{proof.execution.field}.{position}.{proof.input_transform.projection_resolution.selected.site.target}",
                           "output_projection": f"{path}.{proof.execution.field}.{output_positions[0]}"}
+                required_primitives = {
+                    scoped["input_projection"]: "linear",
+                    scoped["output_projection"]: "linear",
+                }
+                for site in proof.execution.transparent_sites:
+                    slots = [number for number, call in enumerate(proof.execution.append_calls)
+                             if call.span.source == site.span.source
+                             and (call.span.line, call.span.col) <= (site.span.line, site.span.col)
+                             and (call.span.end_line, call.span.end_col) >= (site.span.end_line, site.span.end_col)]
+                    if len(slots) != 1:
+                        raise ValueError("transparent callable needs its exact container slot")
+                    required_primitives[f"{path}.{proof.execution.field}.{slots[0]}"] = "dropout"
+                if any(self.bindings.primitive_at(member) != primitive
+                       for member, primitive in required_primitives.items()):
+                    continue
                 if path in rows and rows[path] != scoped:
                     raise ValueError("source alternatives disagree on the constructed FFN mechanism")
                 rows[path] = scoped

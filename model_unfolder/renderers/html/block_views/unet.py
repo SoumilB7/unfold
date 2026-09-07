@@ -23,48 +23,57 @@ from ..tower import tower_graph
 
 
 def build_unet_constructed_view(ir, info, mount_id, block):
-    """Place canonical constructed stages; never invent execution edges."""
+    """One U-shaped view of stages and their independently proven side routes."""
     unet = ir["extras"]["unet"]
     relation = unet["stage_relations"]
     ids = unet["stage_block_ids"]
     arrow_id, shadow_id = _ids(mount_id, "unet_constructed")
-    parts, regions = [], []
+    parts, regions, placed = [], [], {}
+    cards = {child["id"]: child for child in block.get("children", ())}
+    def place(block_id, x, y, width=230):
+        child = cards[block_id]
+        geometry = _box(parts, x, y, width, 58, child["label"], shadow_id, node_id=block_id)
+        regions.append(geometry)
+        placed[block_id] = geometry
     producer = relation["producer_stages"]
     consumer = relation["consumer_stages"]
     for column, paths in enumerate((producer, list(reversed(consumer)))):
         for row, path in enumerate(paths):
-            regions.append(_box(parts, 170 + column * 390, 40 + row * 105,
-                                240, 58, path, shadow_id, node_id=ids[path]))
-    floor = 40 + max(len(producer), len(consumer)) * 105
+            place(ids[path], 170 + column * 650, 40 + row * 125)
+    floor = 40 + max(len(producer), len(consumer)) * 125
     for row, path in enumerate(relation["intermediate_stages"]):
-        regions.append(_box(parts, 365, floor + row * 95, 270, 58,
-                            path, shadow_id, node_id=ids[path]))
-    bottom = floor + len(relation["intermediate_stages"]) * 95 + 35
-    cards = {child["id"]: child for child in block.get("children", ())}
+        place(ids[path], 495, floor + row * 95, 270)
+    place("unet_skip_bank", 495, 75)
+    bottom = floor + len(relation["intermediate_stages"]) * 95 + 60
+    context_ids = list(dict.fromkeys(route["source"] for route in unet.get("context_routes", ())))
+    for number, source_id in enumerate(context_ids):
+        place(source_id, 495, bottom + number * 95, 270)
+    bottom += len(context_ids) * 95
     for number, block_id in enumerate(unet["other_block_ids"]):
         child = cards[block_id]
-        regions.append(_box(parts, 170 + number % 2 * 390,
-                            bottom + number // 2 * 95, 240, 58,
-                            child["label"], shadow_id, node_id=block_id))
-    result = fit_svg(arrow_id, shadow_id, parts, regions,
-                   "Constructed U-Net stages; execution relations under investigation",
-                   min_width=720, pad=44)
-    from ..graph import Graph, Node
+        place(block_id, 170 + number % 2 * 650, bottom + number // 2 * 95)
+    wires = []
+    for route in unet.get("skip_routes", ()):
+        source, target = placed[route["source"]], placed[route["target"]]
+        rail = (source["right"] + target["left"]) / 2
+        wire = _path(f"M {source['right']} {source['cy']} L {rail} {source['cy']} "
+                     f"L {rail} {target['cy']} L {target['left'] - 5} {target['cy']}", arrow_id)
+        wires.append(_svg_tag("g", {"data-route-kind": "skip_accumulation",
+                                   "data-source": route["source"], "data-target": route["target"]}, wire))
     for number, route in enumerate(unet.get("context_routes", ())):
-        graph = Graph([Node(route["source"], "source", cards[route["source"]]["label"]),
-                       Node(route["target"], "opaque", cards[route["target"]]["label"])],
-                      [route["source"], route["target"]])
-        result += render_graph(graph, info, f"{mount_id}_context_{number}", "unet_context_route",
-                               "Proven external context route into the stage",
-                               facts_projected=frozenset(block.get("source_fact_keys", ())))
-    for number, route in enumerate(unet.get("skip_routes", ())):
-        graph = Graph([Node(route["source"], "opaque", cards[route["source"]]["label"]),
-                       Node(route["target"], "opaque", cards[route["target"]]["label"])],
-                      [route["source"], route["target"]])
-        result += render_graph(graph, info, f"{mount_id}_skip_{number}", "unet_skip_route",
-                               "Accumulated skip route; individual tensor pairing remains under investigation",
-                               facts_projected=frozenset(block.get("source_fact_keys", ())))
-    return result
+        source, target = placed[route["source"]], placed[route["target"]]
+        left = target["cx"] < 495
+        rail = -15 - number * 5 if left else 1005 + number * 5
+        start = source["left"] if left else source["right"]
+        end = target["left"] - 5 if left else target["right"] + 5
+        wire = _path(f"M {start} {source['cy']} L {rail} {source['cy']} "
+                     f"L {rail} {target['cy']} L {end} {target['cy']}", arrow_id)
+        wires.append(_svg_tag("g", {"data-route-kind": "external_context",
+                                   "data-source": route["source"], "data-target": route["target"]}, wire))
+        regions.append(point(rail, source["cy"]))
+    return fit_svg(arrow_id, shadow_id, wires + parts, regions,
+                   "Skip accumulation and external context routes; primary state route under investigation",
+                   min_width=720, pad=44)
 
 
 def build_constructed_children_view(ir, info, mount_id, block):

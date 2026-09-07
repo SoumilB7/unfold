@@ -1,0 +1,35 @@
+{
+  "checkpoint": "f58170931e3cd05b1b699df5428920f7fc4c0147",
+  "commands": [
+    {
+      "exit_code": 0,
+      "output": "authority-results.json",
+      "script": "replay_authority.py"
+    },
+    {
+      "exit_code": 0,
+      "output": "spatial-results.json",
+      "script": "replay_spatial.py"
+    },
+    {
+      "exit_code": 0,
+      "output": "ffn-results.json",
+      "script": "replay_ffn.py"
+    }
+  ],
+  "no_blessing": true,
+  "no_pytest": true,
+  "receipt_files": {
+    "README.md": "1d22d3e6804a5f7939d312b197ef39535194cc0fe8f65953b22ecc10d0ff4889",
+    "authority-results.json": "ce0d511d9b527ac4ecd6c0b991493c59a0ca7fe3750fcc31bd69c34aa48ac4e4",
+    "ffn-results.json": "1f2987cdda25cba20aaccf541029049ea0c1325dd35bcd61a58513b4a9a0c470",
+    "replay_authority.py": "de00fe3026fdd4de8b5fc88b36fa8736e1a26a8920912b1cdd2b3a940d251908",
+    "replay_ffn.py": "aca34a17286e200d30e42d86fbd6417eaad806634802364abb127bf44d53f7a8",
+    "replay_spatial.py": "e713455cea6761adfd4df14d38267a5239a06f1ad41eaf91395d420e2770006f",
+    "spatial-results.json": "fc3e41e2980c0fc54b14a349196a18adf2e5907ae8a8dc0a2aa2da64058193f5"
+  },
+  "tracked_fingerprint_final": "a01ddb8fa1e062ad069bcb0ce08d24ca7cfb1e28f900ee9907e3256d259dd8a6",
+  "tracked_fingerprint_matches_authority_start": true,
+  "verdict": "RETURN: R1/R5/R7 partial corrections",
+  "worktree_clean_at_start_and_end": true
+}

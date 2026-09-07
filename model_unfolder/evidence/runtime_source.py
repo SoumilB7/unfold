@@ -97,6 +97,32 @@ class RuntimeSourceBindings:
         return all(self.forward_is_unmodified(".".join(parts[:offset]))
                    for offset in range(len(parts) + 1))
 
+    def primitive_at(self, path: str) -> str | None:
+        """Worker identity plus an unchanged invoked route, never an address vote."""
+        module = self._modules.get(path)
+        if module is None or not self.route_forwards_unmodified(path):
+            return None
+        from .primitive_semantics import runtime_primitive_definition
+        witness = module.framework_primitive
+        if runtime_primitive_definition(witness) is None:
+            return None
+        # This is a consistency check on the two worker channels, not positive
+        # authority from a spelling. A replaced occurrence cannot retain an
+        # earlier primitive's witness after the reconciliation row is rebuilt.
+        addresses = {
+            "linear": ("linear", "Linear"),
+            "conv1d": ("conv", "Conv1d"), "conv2d": ("conv", "Conv2d"),
+            "conv3d": ("conv", "Conv3d"), "group_norm": ("normalization", "GroupNorm"),
+            "layer_norm": ("normalization", "LayerNorm"), "rms_norm": ("normalization", "RMSNorm"),
+            "silu": ("activation", "SiLU"), "gelu": ("activation", "GELU"),
+            "relu": ("activation", "ReLU"), "dropout": ("dropout", "Dropout"),
+        }
+        module_name, qualname = addresses[witness.key]
+        if (module.class_ref.module, module.class_ref.qualname) != (
+                "torch.nn.modules." + module_name, qualname):
+            return None
+        return witness.key
+
     def construction_members(self, population, construction) -> tuple[str, ...]:
         """Join a selected constructor occurrence to its exact runtime slot."""
         stage = population.stage.occurrence_id.parent_field
@@ -144,7 +170,8 @@ class RuntimePrimitiveClaimProof:
                 # forward replacement or hook's computation.
                 continue
             meaning = self.bindings._rows[module.path].provenance.meaning.framework_primitive
-            definition = runtime_primitive_definition(module.framework_primitive)
+            definition = (runtime_primitive_definition(module.framework_primitive)
+                          if self.bindings.primitive_at(module.path) is not None else None)
             if meaning is not None and definition is not None:
                 kind, label, function = definition
                 rows[module.path] = {"kind": kind, "label": label, "function": function,

@@ -24,13 +24,18 @@ def _disjoint(left, right):
 
 
 def _slot(target, name, prefix=()):
+    if target is None:
+        return None
     if target.kind == "name":
         return prefix if target.name == name else None
+    if target.kind == "starred":
+        return (("unresolved_unpack",) if any(_slot(child, name) is not None
+                                              for child in target.children) else None)
     if target.kind in {"tuple", "list"}:
         for number, child in enumerate(target.children):
             found = _slot(child, name, (*prefix, number))
             if found is not None:
-                if any(item.kind == "starred" for item in target.children):
+                if any(item is not None and item.kind == "starred" for item in target.children):
                     return ("unresolved_unpack",)
                 return found
     return None
@@ -96,6 +101,28 @@ def read_local_port_route(index, forward, expression, before, guard=()):
                           if context[:len(binding.guard)] == binding.guard]
             base = guaranteed[-1] if guaranteed else -1
             later = matches[base + 1:]
+
+            def overwritten_after(region):
+                # The latest guaranteed assignment can close a prior local
+                # rebinding. Its RHS is still investigated at its own cutoff.
+                return base >= 0 and _before(region, matches[base][0].span)
+
+            for loop in index.loops_in(forward.symbol):
+                if loop.span is not None and _before(loop.span, cutoff) \
+                        and not _disjoint(loop.guard, context) \
+                        and _slot(loop.target, value.name) is not None \
+                        and not overwritten_after(loop.span):
+                    spans.add(loop.span)
+                    return unknown("completed loop may have rebound this local; original formal identity is not established")
+            for region in index.unsupported_execution_in(forward.symbol):
+                if region.span is not None and _before(region.span, cutoff) \
+                        and not _disjoint(region.guard, context) \
+                        and not overwritten_after(region.span):
+                    # With/try/match target bindings are not exhaustively
+                    # indexed. Their effects on locals can outlive the region;
+                    # absence from BindingObservation proves no preservation.
+                    spans.add(region.span)
+                    return unknown("prior unsupported execution may have rebound this local; no later guaranteed assignment closes it")
 
             def assigned(binding, slot):
                 spans.add(binding.span)

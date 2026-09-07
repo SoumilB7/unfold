@@ -50,6 +50,11 @@ def test_only_direct_reaching_call_results_connect(tmp_path, body, expected):
     ("alias = self\nhelper(alias)\nvalue = self.first(value)\nreturn self.second(value)", False),
     ("alias = self\nother = alias\nhelper([other])\nvalue = self.first(value)\nreturn self.second(value)", False),
     ("alias = self\nalias.mutate()\nvalue = self.first(value)\nreturn self.second(value)", False),
+    ("holder = [self]\nhelper(holder)\nvalue = self.first(value)\nreturn self.second(value)", False),
+    ("alias = self\nholder = {'owner': (alias,)}\ncopy = holder\nhelper(copy)\nvalue = self.first(value)\nreturn self.second(value)", False),
+    ("holder = [None]\nholder[0] = self\nhelper(holder)\nvalue = self.first(value)\nreturn self.second(value)", False),
+    ("holder = [value]\nhelper(holder)\nvalue = self.first(value)\nreturn self.second(value)", True),
+    ("helper(value[:, 1:])\nvalue = self.first(value)\nreturn self.second(value)", True),
 ])
 def test_init_member_is_not_reused_after_possible_replacement(tmp_path, body, expected):
     index, forward, calls, target = _source(tmp_path, body)

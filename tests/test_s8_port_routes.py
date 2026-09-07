@@ -1,6 +1,8 @@
 """Call boundary wiring is not input/output semantic dependency."""
 import textwrap
 
+import pytest
+
 from model_unfolder.evidence.models import SourceBundle
 from model_unfolder.evidence.program_index import build_program_index
 from model_unfolder.evidence.local_port_routes import read_local_port_route
@@ -93,4 +95,42 @@ def test_with_binding_does_not_retain_original_formal(tmp_path):
 
 def test_starred_unpack_has_no_guessed_fixed_result_slot(tmp_path):
     found = route(tmp_path, "first, *middle, value = helper(saved)\nconsume(value)").value
+    assert found["kind"] == "unresolved"
+
+
+@pytest.mark.parametrize("body", [
+    "for value in saved:\n    pass\nconsume(value)",
+    "for value, item in saved:\n    pass\nconsume(value)",
+    "for *value, item in saved:\n    pass\nconsume(value)",
+    "with manager() as value:\n    pass\nconsume(value)",
+    "state = value\nfor state in saved:\n    pass\nconsume(state)",
+    "state = value\nwith manager() as state:\n    pass\nconsume(state)",
+])
+def test_region_target_rebinding_outlives_the_region(tmp_path, body):
+    found = route(tmp_path, body)
+    assert found.value["kind"] == "unresolved"
+    assert found.spans
+
+
+def test_unrelated_loop_target_does_not_overwrite_formal(tmp_path):
+    found = route(tmp_path, "for item in saved:\n    pass\nconsume(value)").value
+    assert found == {"kind": "formal", "formal": "value"}
+
+
+@pytest.mark.parametrize("region", [
+    "for value in saved:\n    pass",
+    "with manager() as value:\n    pass",
+])
+def test_guaranteed_literal_assignment_closes_prior_region_rebinding(tmp_path, region):
+    found = route(tmp_path, region + "\nvalue = 17\nconsume(value)").value
+    assert found == {"kind": "literal", "value": 17}
+
+
+def test_assignment_after_loop_can_restore_an_unrebound_formal(tmp_path):
+    found = route(tmp_path, "for value in saved:\n    pass\nvalue = condition\nconsume(value)").value
+    assert found == {"kind": "formal", "formal": "condition"}
+
+
+def test_optional_assignment_does_not_close_prior_region_rebinding(tmp_path):
+    found = route(tmp_path, "for value in saved:\n    pass\nif condition:\n    value = 17\nconsume(value)").value
     assert found["kind"] == "unresolved"

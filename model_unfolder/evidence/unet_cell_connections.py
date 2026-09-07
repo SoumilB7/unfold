@@ -15,9 +15,9 @@ from .unet_cell_mechanism import UNetCellMechanismInventory, _lexically_disjoint
 
 
 def _member(expression):
-    if expression.kind == "attribute" and len(expression.children) == 1:
+    if expression is not None and expression.kind == "attribute" and len(expression.children) == 1:
         base = expression.children[0]
-        if base.kind == "name" and base.name == "self":
+        if base is not None and base.kind == "name" and base.name == "self":
             return expression.name
     return None
 
@@ -54,21 +54,15 @@ def _direct_origin(index, forward, target, actual, sources, guard_state=None):
 def _member_stays_bound(index, forward, call, module_path, bindings):
     """Refuse mutation/unsupported-control gaps rather than borrowing init state."""
     member = _member(call.callee)
-    # A local alias does not stop an unknown helper from receiving the parent.
-    # This is a conservative escape check, not a claim about helper effects.
+    # Carry possible parent references through local aliases and containers.
+    # This monotone refusal check proves no alias equality or helper effects:
+    # even a later overwrite cannot turn a possible escape into a proof.
     aliases = {"self"}
-    changed = True
-    while changed:
-        changed = False
-        for binding in index.bindings_in(forward.symbol):
-            if binding.value is not None and binding.value.kind == "name" \
-                    and binding.value.name in aliases:
-                for target in binding.targets:
-                    if target.kind == "name" and target.name not in aliases:
-                        aliases.add(target.name)
-                        changed = True
 
     def parent_escapes(expression):
+        if expression is None:
+            # Omitted slice bounds are absent expressions, not parent values.
+            return False
         if expression.kind == "name":
             return expression.name in aliases
         # Reading a member is distinct from passing its parent object.
@@ -76,6 +70,30 @@ def _member_stays_bound(index, forward, call, module_path, bindings):
             return False
         return any(parent_escapes(child) for child in expression.children) or any(
             parent_escapes(child) for _, child in expression.keyword_children)
+
+    def local_targets(expression):
+        if expression is None:
+            return ()
+        if expression.kind == "name":
+            return (expression.name,)
+        if expression.kind in {"tuple", "list", "starred"}:
+            return tuple(name for child in expression.children for name in local_targets(child))
+        if expression.kind in {"subscript", "attribute"} and expression.children:
+            # Storing self into holder[slot]/holder.field exposes the holder
+            # too. This only invalidates a proof; it does not resolve an alias.
+            return local_targets(expression.children[0])
+        return ()
+
+    changed = True
+    while changed:
+        changed = False
+        for binding in index.bindings_in(forward.symbol):
+            if parent_escapes(binding.value):
+                for target in binding.targets:
+                    names = set(local_targets(target)) - aliases
+                    if names:
+                        aliases.update(names)
+                        changed = True
 
     for access in index.attribute_accesses:
         if access.enclosing_callable == forward.symbol and access.mode == "write" \

@@ -67,7 +67,7 @@ def _port_route_block(route, block_id, fact_key):
     return block
 
 
-def project_unet(*, facts, handoffs, name, architecture, table=None):
+def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_findings=None):
     modules = facts["root.denoiser.constructed_modules"].value
     shapes = facts["root.denoiser.constructed_parameter_shapes"].value
     relations = facts["root.denoiser.constructed_stage_relations"].value
@@ -101,6 +101,8 @@ def project_unet(*, facts, handoffs, name, architecture, table=None):
         parameters = [(key, row) for key, row in shapes["parameters"].items()
                       if key.rpartition(".")[0] == path]
         chips = [f"{shapes['by_module'][path]:,} parameters in subtree"]
+        if path in (mechanism_findings or {}):
+            chips.append(mechanism_findings[path])
         disposition = dispositions.get(path)
         if disposition is not None and disposition.execution.kind == "execution_unresolved":
             chips.append("Execution: " + disposition.execution.reason_class)
