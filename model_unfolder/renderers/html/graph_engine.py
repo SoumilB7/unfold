@@ -146,6 +146,9 @@ def _render_graph_in_context(
     top_members = {g.members[-1] for g in graph.groups if g.members}
     bottom_members = {g.members[0] for g in graph.groups if g.members}
     par_by_pair = {(p.src, p.dst): p for p in graph.parallels}
+    if any(p.src is None and (not graph.flow or p.dst != graph.flow[0])
+           for p in graph.parallels):
+        raise ValueError("independent incoming lanes must enter the first flow boundary")
     flow_set = set(graph.flow)
     par_height = {(p.src, p.dst): _parallel_height(p, by_id, flow_set) for p in graph.parallels}
     # nodes whose outgoing stem carries a side-lane tap dot need a longer stem,
@@ -367,12 +370,12 @@ def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, 
     block like cross-attention's image states), merge into spine nodes *above*
     ``dst`` (attention's V joining at ⊙), or exit upward as labelled outputs.
     """
-    if par.src not in geom or par.dst not in geom:
+    if par.dst not in geom or (par.src is not None and par.src not in geom):
         return
-    src_g = geom[par.src]
+    src_g = geom[par.src] if par.src is not None else None
     lanes = _lane_draw_order(par.norm_lanes(), par.dst)
-    split_y = src_g["top"] - 16
-    if any(lane.src is None for lane in lanes):
+    split_y = src_g["top"] - 16 if src_g is not None else None
+    if src_g is not None and any(lane.src is None for lane in lanes):
         # the stem that carries the source up into the split dot — without it
         # the fan-out floats disconnected above its source
         parts.append(_svg_tag("line", {
@@ -393,7 +396,10 @@ def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, 
         edge += w + _BRANCH_GAP
     # Off-flow side sources get their own band between ``src`` and the lanes.
     ext_extra = _ext_source_extra(par, by_id, set(geom))
-    lane_bottom = src_g["top"] - _BRANCH_STUB - ext_extra   # lanes' first-node bottom edge
+    independent_merge_band = max(_MERGE_STUB, 24 + 8 * ((len(lanes) - 1) // 2))
+    lane_bottom = (src_g["top"] - _BRANCH_STUB - ext_extra if src_g is not None else
+                   geom[par.dst]["bottom"] + independent_merge_band +
+                   max((_lane_height(lane.ids, by_id) for lane in lanes), default=0.0))
 
     # Several parallel lanes may enter the same small connector from one side
     # (MoE experts → weighted-sum ⊕). Giving every route its own arrowhead stacks
@@ -453,7 +459,7 @@ def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, 
         lane_geoms.append(lane_geom)
 
         # branch: this lane's source -> first (bottom) node
-        if lane.src is None:
+        if lane.src is None and src_g is not None:
             parts.append(_elbow_hv(cx, split_y, lane_x, lane_geom[0]["bottom"] + GAP, arrow_id))
         elif lane.src in geom:
             # tap a lower spine node: dot on its outgoing stem, elbow to the lane
@@ -490,8 +496,18 @@ def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, 
                 # so it can't cut through a taller neighbouring lane.
                 entry_x = (d_g["cx"] if d_g["w"] < 60
                            else min(max(lane_x, d_g["left"] + 26), d_g["right"] - 26))
+                if src_g is None and len(lanes) > 1 and d_g["w"] >= 60:
+                    # Independent arguments have distinct incoming ports;
+                    # spread their arrowheads instead of stacking every outer
+                    # lane onto the same clamped corner entry point.
+                    entry_x = d_g["left"] + 26 + lane_idx * (d_g["w"] - 52) / (len(lanes) - 1)
                 entry_y = d_g["bottom"] + GAP
                 lane_y = min(d_g["bottom"] + 26, (top_g["top"] + entry_y) / 2)
+                if src_g is None:
+                    # Outer arguments rise farther before turning inward.
+                    # Separate approach bands keep their independent edges
+                    # from looking like a shared value bus outside the call.
+                    lane_y = d_g["bottom"] + 12 + 8 * min(lane_idx, len(lanes) - 1 - lane_idx)
                 parts.append(_merge_up_route(lane_x, top_g["top"], entry_x, entry_y, lane_y, arrow_id))
             else:
                 # A rectangular target further up the spine (linear attention's

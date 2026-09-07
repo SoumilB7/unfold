@@ -641,3 +641,143 @@ def _run_signature_recipe(request: BuildRequest,
     return RecipeAttemptBundle(resolution, tuple(attempts))
 
 
+
+
+def with_optional_concat_probe(resolution, bindings):
+    """Try a source-addressed optional dictionary lane, without claiming activity.
+
+    This is a degenerate stimulus: one dictionary value fills a constructed
+    affine input width; a second supplies an empty sequence through an explicit
+    flatten/project/reshape lane. Runtime success, not this recipe, establishes
+    which calls execute. No deployment dimensions are inferred.
+    """
+    from .diffusion_stream import local_lineage_at_callable
+    from .framework_operations import functional_operation_protocol_for_call
+    from .program_index import SymbolId
+    index = bindings.index
+    root = bindings.symbol_at("")
+    if root is None or resolution.status != "ok":
+        return resolution
+    forward = index.callable_by_symbol(SymbolId(root.source, root.qualified_name + ".forward"))
+    if forward is None:
+        return resolution
+    root_formals = {p.name for p in forward.params if p.name != "self"}
+    candidates = []
+    def member(expr):
+        if expr is not None and expr.kind == "attribute" and len(expr.children) == 1:
+            base = expr.children[0]
+            if base is not None and base.kind == "name" and base.name == "self":
+                return expr.name
+        return None
+    for invocation in index.calls_in(forward.symbol):
+        helper_name = member(invocation.callee)
+        if helper_name is None:
+            continue
+        helper = index.callable_by_symbol(SymbolId(root.source, root.qualified_name + "." + helper_name))
+        if helper is None:
+            continue
+        parameters = [p for p in helper.params if p.name != "self"]
+        actuals = dict(zip((p.name for p in parameters), invocation.args))
+        actuals.update(dict(invocation.kwargs))
+        forwarded = {name: actual.name for name, actual in actuals.items()
+                     if actual.kind == "name" and actual.name in root_formals}
+        calls = {c.span: c for c in index.calls_in(helper.symbol)}
+        lineage = local_lineage_at_callable(index, helper)
+        def resolve_value(expr, cutoff, guard, seen=()):
+            while expr is not None and expr.kind == "name":
+                if expr.name in seen:
+                    return None
+                seen = (*seen, expr.name)
+                expr, unresolved = lineage.definition(expr.name, cutoff, guard)
+                if unresolved:
+                    return None
+            return expr
+        def dictionary_value(expr, cutoff, guard):
+            expr = resolve_value(expr, cutoff, guard)
+            call = calls.get(expr.span) if expr is not None else None
+            if call is None or call.callee.kind != "attribute" or call.callee.name != "get" \
+                    or len(call.args) != 1 or call.args[0].kind != "constant" \
+                    or not isinstance(call.args[0].const_value, str):
+                return None
+            receiver = call.receiver
+            if receiver is None or receiver.kind != "name" or receiver.name not in forwarded:
+                return None
+            key = call.args[0].const_value
+            if not key or "." in key:
+                return None
+            return forwarded[receiver.name] + "." + key
+        for concat in calls.values():
+            protocol = functional_operation_protocol_for_call(index, concat)
+            if protocol is None or protocol.kind != "concat" or not concat.args:
+                continue
+            values = concat.args[0]
+            if values.kind not in {"list", "tuple"} or len(values.children) != 2:
+                continue
+            direct = dictionary_value(values.children[0], concat.span, concat.guard)
+            shaped = resolve_value(values.children[1], concat.span, concat.guard)
+            reshape = calls.get(shaped.span) if shaped is not None else None
+            if not direct or reshape is None or reshape.callee.name != "reshape":
+                continue
+            projected = resolve_value(reshape.receiver, reshape.span, reshape.guard)
+            projection = calls.get(projected.span) if projected is not None else None
+            projection_path = member(projection.callee) if projection is not None else None
+            if projection_path is None or len(projection.args) != 1 \
+                    or bindings.symbol_at(projection_path) is None \
+                    or not bindings.route_forwards_unmodified(projection_path):
+                continue
+            flatten = calls.get(projection.args[0].span)
+            if flatten is None or flatten.callee.name != "flatten" or flatten.args or flatten.kwargs:
+                continue
+            empty = dictionary_value(flatten.receiver, flatten.span, flatten.guard)
+            if empty is None or empty.split(".")[0] != direct.split(".")[0]:
+                continue
+            for consumer in calls.values():
+                target = member(consumer.callee)
+                if target is None or not consumer.args:
+                    continue
+                value = resolve_value(consumer.args[0], consumer.span, consumer.guard)
+                cast = calls.get(value.span) if value is not None else None
+                if cast is not None and cast.callee.kind == "attribute" and cast.callee.name == "to":
+                    value = resolve_value(cast.receiver, cast.span, cast.guard)
+                if value is None or value.span != concat.span:
+                    continue
+                target_symbol = bindings.symbol_at(target)
+                if target_symbol is None or not bindings.route_forwards_unmodified(target):
+                    continue
+                target_forward = index.callable_by_symbol(SymbolId(target_symbol.source, target_symbol.qualified_name + ".forward"))
+                if target_forward is None:
+                    continue
+                formal = next((p.name for p in target_forward.params if p.name != "self"), None)
+                affines = [c for c in index.calls_in(target_forward.symbol)
+                           if member(c.callee) is not None and c.args
+                           and c.args[0].kind == "name" and c.args[0].name == formal
+                           and bindings.primitive_at(target + "." + member(c.callee)) == "linear"]
+                if not affines:
+                    continue
+                affine = min(affines, key=lambda c: (c.span.line, c.span.col))
+                affine_path = target + "." + member(affine.callee)
+                weights = [p for p in bindings._modules[affine_path].parameters if p.name == "weight" and len(p.shape) == 2]
+                if len(weights) != 1 or weights[0].shape[1] <= 0:
+                    continue
+                width = weights[0].shape[1]
+                spans = (invocation.span, concat.span, reshape.span, projection.span,
+                         flatten.span, consumer.span, affine.span)
+                evidence = {"kind": "degenerate_source_port_probe", "branch_guard": "unresolved",
+                            "source_refs": sorted({f"sha256:{s.source.content_fingerprint}:{s.line}:{s.col}" for s in spans}),
+                            "affine_parameter": affine_path + ".weight", "affine_shape": list(weights[0].shape),
+                            "empty_sequence_length": 0, "direct_feature_width": width,
+                            "meaning": "attempted input ports only; no deployment shape or active-branch claim"}
+                candidates.append((direct, empty, width, evidence))
+    unique = {(a, b, width): evidence for a, b, width, evidence in candidates}
+    if len(unique) != 1:
+        return resolution
+    (direct, empty, width), evidence = next(iter(unique.items()))
+    additions = (TensorArgument(direct, (1, width), resolution.execution_dtype),
+                 TensorArgument(empty, (1, 0), resolution.execution_dtype))
+    sources = {**resolution.argument_sources, **{row.name: {
+        "shape": list(row.shape), "dtype": row.dtype, "calculation": evidence,
+        "config_inputs": {}} for row in additions}}
+    flags = {**resolution.recipe.flags, "argument_sources": sources}
+    recipe = dataclasses.replace(resolution.recipe,
+        tensor_arguments=resolution.recipe.tensor_arguments + additions, flags=flags)
+    return dataclasses.replace(resolution, recipe=recipe, argument_sources=sources)

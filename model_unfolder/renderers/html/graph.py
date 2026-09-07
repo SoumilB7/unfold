@@ -212,11 +212,22 @@ class Parallel:
     dst for the lanes and draws the split dot + branch/merge elbows.  A lane may
     be a plain ``list[str]`` (the common merge-into-``dst`` case) or a
     :class:`Lane` carrying its own source / merge targets.
+
+    ``src=None`` declares independent incoming lanes at the first flow node.
+    The lane nodes themselves are the inputs: no shared source, split dot, or
+    incoming stem exists. Each lane must contain its own actual node(s), with
+    no additional ``Lane.src``. This is layout vocabulary, not a common-input
+    claim or an assertion about how the destination computes its result.
     """
 
-    src: str
+    src: str | None
     dst: str
     lanes: list
+
+    def __post_init__(self):
+        if self.src is None and (not self.lanes or any(
+                not lane.ids or lane.src is not None for lane in self.norm_lanes())):
+            raise ValueError("independent incoming lanes need actual nodes and no separate source")
 
     def norm_lanes(self) -> list[Lane]:
         return [lane if isinstance(lane, Lane) else Lane(list(lane)) for lane in self.lanes]

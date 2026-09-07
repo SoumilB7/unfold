@@ -134,3 +134,83 @@ def test_assignment_after_loop_can_restore_an_unrebound_formal(tmp_path):
 def test_optional_assignment_does_not_close_prior_region_rebinding(tmp_path):
     found = route(tmp_path, "for value in saved:\n    pass\nif condition:\n    value = 17\nconsume(value)").value
     assert found["kind"] == "unresolved"
+
+
+def test_completed_loop_retains_seed_and_exact_final_body_value(tmp_path):
+    found = route(tmp_path, '''
+        state = value
+        for item in saved:
+            state = discarded(item)
+            state = final(item)
+        consume(state)
+    ''').value
+    assert found['kind'] == 'loop_result'
+    assert found['initial_route'] == {'kind': 'formal', 'formal': 'value'}
+    assert found['iteration_result']['kind'] == 'call_result'
+    # The final result's argument is the loop target, never the old formal.
+    assert found['iteration_result']['arguments'][0]['route']['kind'] == 'unresolved'
+
+
+def test_completed_loop_cannot_choose_one_optional_final_write(tmp_path):
+    found = route(tmp_path, '''
+        state = value
+        for item in saved:
+            if condition:
+                state = left(item)
+            else:
+                state = right(item)
+        consume(state)
+    ''').value
+    assert found['kind'] == 'loop_result'
+    assert found['initial_route'] == {'kind': 'formal', 'formal': 'value'}
+    choice = found['iteration_result']
+    assert choice['kind'] == 'conditional'
+    assert choice['when_true']['kind'] == 'call_result'
+    assert choice['when_false']['kind'] == 'call_result'
+
+
+def test_optional_augmented_update_retains_operator_and_bypass(tmp_path):
+    found = route(tmp_path, '''
+        state = value
+        if condition:
+            state += saved
+        consume(state)
+    ''').value
+    assert found['kind'] == 'conditional'
+    assert found['when_false'] == {'kind': 'formal', 'formal': 'value'}
+    update = found['when_true']
+    assert update['kind'] == 'inplace_operation' and update['operator'] == '+'
+    assert update['operands'] == [{'kind': 'formal', 'formal': 'value'},
+                                   {'kind': 'formal', 'formal': 'saved'}]
+
+
+def test_sequential_optional_writes_preserve_both_guards(tmp_path):
+    found = route(tmp_path, '''
+        state = value
+        if condition:
+            state = first(saved)
+        if saved:
+            state = second(value)
+        consume(state)
+    ''').value
+    assert found['kind'] == 'conditional'
+    assert found['when_true']['arguments'][0]['route'] == {'kind': 'formal', 'formal': 'value'}
+    assert found['when_false']['kind'] == 'conditional'
+    assert found['when_false']['when_true']['arguments'][0]['route'] == {'kind': 'formal', 'formal': 'saved'}
+    assert found['when_false']['when_false'] == {'kind': 'formal', 'formal': 'value'}
+
+
+@pytest.mark.parametrize('transfer', ['break', 'continue'])
+def test_loop_transfer_cannot_promote_lexically_last_write(tmp_path, transfer):
+    found = route(tmp_path, f'''
+        state = value
+        for item in saved:
+            state = early(item)
+            if condition:
+                {transfer}
+            state = late(item)
+        consume(state)
+    ''').value
+    assert found['kind'] == 'loop_result'
+    assert found['iteration_result']['kind'] == 'unresolved'
+    assert 'control transfer' in found['iteration_result']['reason']

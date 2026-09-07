@@ -20,6 +20,8 @@ def _port_route_block(route, block_id, fact_key):
     kind = route["kind"]
     labels = {"formal": "Input: " + route.get("formal", ""),
               "loop_carried": "Loop input: " + route.get("formal", ""),
+              "loop_result": "Loop result",
+              "inplace_operation": "Conditional update",
               "selection": "Select saved value", "call_result": "Call result",
               "conditional": "Conditional route", "literal": "Source literal",
               "sequence": "Input sequence", "unresolved": "Input unresolved"}
@@ -42,6 +44,7 @@ def _port_route_block(route, block_id, fact_key):
                                for number, argument in enumerate(route["arguments"])])
         for child, argument in zip(block["children"], route["arguments"]):
             child["facts"].append("Call argument port: " + argument["port"])
+            child.setdefault("detail", {})["argument_port"] = argument["port"]
         block["detail"]["argument_ids"] = [child["id"] for child in block["children"]]
         boundary = block_id + "__call"
         block["detail"]["boundary_id"] = boundary
@@ -58,9 +61,21 @@ def _port_route_block(route, block_id, fact_key):
         block["children"][0]["facts"].append("Source guard true")
         block["children"][1]["facts"].append("Source guard false: bypass")
         block["facts"] = ["Guard selection unresolved; both source alternatives retained"]
+    elif kind == "loop_result":
+        block.update(resolved=False, view="constructed_children", children=[
+            _port_route_block(route["initial_route"], block_id + "__initial", fact_key),
+            _port_route_block(route["iteration_result"], block_id + "__iteration", fact_key)])
+        block["children"][0]["facts"].append("Initial value; also the result when no iteration executes")
+        block["children"][1]["facts"].append("Value at the end of a loop iteration; count and guarded choice unresolved")
+        block["facts"] = ["Source loop boundary; iteration count unresolved"]
     elif kind == "sequence":
         block.update(view="constructed_children", children=[_port_route_block(
             item, block_id + f"__item_{number}", fact_key) for number, item in enumerate(route["items"])])
+    elif kind == "inplace_operation":
+        block.update(resolved=False, view="constructed_children", children=[_port_route_block(
+            item, block_id + f"__operand_{number}", fact_key) for number, item in enumerate(route["operands"])])
+        block["facts"] = ["Source operator: " + route["operator"] + "=",
+                          "investigation_missing · operand dispatch and mutation semantics · owner: S8"]
     elif kind == "unresolved":
         block.update(kind="unknown", resolved=False)
         block["facts"] = ["investigation_missing · input route · owner: S8"]
@@ -174,7 +189,7 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
         if path in arithmetic:
             mechanism = arithmetic[path]
             operands = []
-            for number, label in enumerate(("Primary input branch", "Transformed branch")):
+            for number, label in enumerate(("First add input", "Second add input")):
                 operand_id = _block_id(path) + f"__return_operand_{number}"
                 operands.append(operand_id)
                 children.append({"id": operand_id, "kind": "unknown", "role": "unresolved_branch",
@@ -186,6 +201,34 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
             detail.setdefault("connections", [])
             detail.setdefault("connection_calls", {})
             detail["return_arithmetic"] = {"operands": operands, "scale": mechanism["return_scale"]}
+            add_id = _block_id(path) + "__return_add"
+            children.append({"id": add_id, "kind": "residual_add", "label": "Add",
+                             "title": "Return addition", "description": "Source-proven addition on the returned computation.",
+                             "source_fact_keys": [arithmetic_key]})
+            if mechanism["return_scale"] == "divide":
+                children.append({"id": _block_id(path) + "__return_scale", "kind": "opaque",
+                                 "label": "Divide", "title": "Return division",
+                                 "description": "The returned sum is divided by the source expression; divisor value is unresolved.",
+                                 "facts": ["investigation_missing · divisor value · owner: S8"],
+                                 "source_fact_keys": [arithmetic_key]})
+            conditioning_routes = []
+            for number, injection in enumerate(mechanism["conditioning"]):
+                ports = []
+                for slot, route in enumerate(injection["operand_routes"]):
+                    operand_id = _block_id(path) + f"__conditioning_{number}_operand_{slot}"
+                    ports.append(operand_id)
+                    children.append(_port_route_block(route, operand_id, arithmetic_key))
+                if len(ports) != 2:
+                    continue
+                merge_id = _block_id(path) + f"__conditioning_{number}_add"
+                children.append({"id": merge_id, "kind": "residual_add", "label": "Add",
+                                 "title": "Conditional addition" if injection["conditional"] else "Addition",
+                                 "description": "The source applies addition to these exact operand ports; internal helper dependence remains open.",
+                                 "facts": ["Guard selection unresolved"] if injection["conditional"] else [],
+                                 "source_fact_keys": [arithmetic_key]})
+                conditioning_routes.append({"operands": ports, "merge": merge_id,
+                                             "conditional": injection["conditional"]})
+            detail["conditioning_arithmetic"] = conditioning_routes
             block.update(view="runtime_cell_connections", detail=detail, children=children)
             block["source_fact_keys"].append(arithmetic_key)
             for injection in mechanism["conditioning"]:

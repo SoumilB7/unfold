@@ -93,7 +93,7 @@ def read_local_port_route(index, forward, expression, before, guard=()):
                     continue
                 slots = [slot for target in binding.targets if (slot := _slot(target, value.name)) is not None]
                 if slots:
-                    if len(slots) != 1 or binding.assignment_kind not in {"assign", "annassign"}:
+                    if len(slots) != 1 or binding.assignment_kind not in {"assign", "annassign", "augassign"}:
                         return unknown("unsupported assignment to routed local")
                     matches.append((binding, slots[0]))
             matches.sort(key=lambda row: (row[0].span.line, row[0].span.col))
@@ -126,6 +126,16 @@ def read_local_port_route(index, forward, expression, before, guard=()):
 
             def assigned(binding, slot):
                 spans.add(binding.span)
+                if binding.assignment_kind == "augassign":
+                    operations = [row for row in index.dataflow
+                                  if row.enclosing_callable == forward.symbol
+                                  and row.span == binding.span and row.op.startswith("aug:")]
+                    if slot or len(operations) != 1:
+                        return unknown("augmented update has no exact indexed operator")
+                    return {"kind": "inplace_operation", "operator": operations[0].op[4:],
+                            "operands": [visit(binding.targets[0], binding.span, binding.guard, seen),
+                                         visit(binding.value, binding.span, binding.guard, seen)],
+                            "reason": "source augmented operator boundary; operand dispatch and mutation semantics remain unresolved"}
                 if slot:
                     if any(type(position) is not int for position in slot):
                         return unknown("starred unpack has no proven fixed result slot")
@@ -159,16 +169,55 @@ def read_local_port_route(index, forward, expression, before, guard=()):
 
             if not later:
                 return seed()
-            if len(later) != 1:
-                return unknown("multiple optional reaching assignments")
+            completed = [loop for loop in index.loops_in(forward.symbol)
+                         if loop.span is not None and loop.body_span is not None
+                         and _before(loop.span, cutoff)
+                         and not any(step.span == loop.span for step in context)
+                         and not _disjoint(loop.guard, context)
+                         and all(any(step.span == loop.span for step in binding.guard)
+                                 for binding, _ in later)]
+            if len(completed) == 1:
+                loop = completed[0]
+                spans.add(loop.span)
+                # A loop boundary carries the zero-iteration seed and the
+                # independently investigated end-of-body value. It does not
+                # pick an iteration or promote an arbitrary earlier write to
+                # the final value.
+                inside = next(step for binding, _ in later for step in binding.guard
+                              if step.span == loop.span)
+                end = loop.body_span
+                body_end = SourceSpan(end.source, end.end_line or end.line,
+                                      (end.end_col or end.col) + 1,
+                                      end.end_line or end.line, (end.end_col or end.col) + 1)
+                transfers = [row for row in index.control_transfers_in(forward.symbol)
+                             if row.span is not None
+                             and (loop.span.line, loop.span.col) <= (row.span.line, row.span.col)
+                             and (row.span.end_line or row.span.line, row.span.end_col or row.span.col)
+                                 <= (loop.span.end_line or loop.span.line, loop.span.end_col or loop.span.col)]
+                spans.update(row.span for row in transfers)
+                return {"kind": "loop_result", "local": value.name,
+                        "initial_route": visit(value, loop.span, loop.guard, seen),
+                        "iteration_result": (unknown("loop control transfer prevents one final body value") if transfers else
+                                             visit(value, body_end, (*loop.guard, inside), seen)),
+                        "reason": "loop result retains the zero-iteration input and end-of-body value; iteration count and guarded selection remain unresolved"}
             binding, slot = later[0]
+            if len(later) > 1:
+                binding, slot = later[-1]
             extra = binding.guard[len(context):] if binding.guard[:len(context)] == context else ()
-            if len(extra) != 1 or extra[0].kind != "if":
+            if len(extra) != 1 or extra[0].kind not in {"if", "else"}:
                 return unknown("optional assignment is not one exact if arm")
             step = extra[0]
             spans.add(step.span)
+            if step.kind == "else":
+                if_steps = [candidate for row in (*bindings, *calls.values()) for candidate in row.guard
+                            if candidate.span == step.span and candidate.kind == "if"]
+                prior = (visit(value, binding.span, (*context, if_steps[0]), seen) if if_steps else
+                         visit(value, step.span, context, seen))
+                return {"kind": "conditional", "condition": "source guard unresolved",
+                        "when_true": prior, "when_false": assigned(binding, slot)}
             return {"kind": "conditional", "condition": "source guard unresolved",
-                    "when_true": assigned(binding, slot), "when_false": seed()}
+                    "when_true": assigned(binding, slot),
+                    "when_false": visit(value, step.span, context, seen)}
         if value.kind == "subscript" and len(value.children) == 2:
             return {"kind": "selection", "source": visit(value.children[0], cutoff, context, seen),
                     "selection": describe_selection(value.children[1])}

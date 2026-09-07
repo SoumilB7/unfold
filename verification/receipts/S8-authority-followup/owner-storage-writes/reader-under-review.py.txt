@@ -89,16 +89,6 @@ def _member_stays_bound(index, forward, call, module_path, bindings):
             return local_targets(expression.children[0])
         return ()
 
-    def parent_storage(expression):
-        """A write receiver rooted in parent/holder memory is not closed here."""
-        if expression is None:
-            return False
-        if expression.kind == "name":
-            return expression.name in aliases
-        if expression.kind in {"attribute", "subscript"} and expression.children:
-            return parent_storage(expression.children[0])
-        return False
-
     changed = True
     while changed:
         changed = False
@@ -122,7 +112,8 @@ def _member_stays_bound(index, forward, call, module_path, bindings):
             # Alias/holder writes are outside the direct-self field closure.
             # They can replace the same member, including through __dict__ or
             # another container, so refuse rather than infer object identity.
-            if parent_storage(receiver):
+            if receiver is not None and not (receiver.kind == "name" and receiver.name == "self") \
+                    and parent_escapes(receiver):
                 return False
     # An unexamined self helper can replace members. Calls to the actual
     # constructed children do not receive the parent instance implicitly.
@@ -149,12 +140,6 @@ def _member_stays_bound(index, forward, call, module_path, bindings):
                 return False
     for unsupported in index.unsupported_execution_in(forward.symbol):
         span = unsupported.span
-        # Unknown statements include deletion. Their target effects are not a
-        # closed binding record, so an earlier statement cannot preserve an
-        # init-time member identity merely because no assignment was emitted.
-        if span is not None and unsupported.construct_kind == "unknown_statement" \
-                and (span.line, span.col) < (call.span.line, call.span.col):
-            return False
         if span is not None and (span.line, span.col) <= (call.span.line, call.span.col) \
                 and (call.span.end_line, call.span.end_col) <= (span.end_line, span.end_col):
             return False

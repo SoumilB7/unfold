@@ -1,0 +1,29 @@
+{
+  "scope": "Current producer/renderer projected from saved d3a4d61 qualified port-route fact; not fresh complete production parse",
+  "source_fact": "root.denoiser.stage_join_connections",
+  "occurrence": "up_blocks.0",
+  "input_facts_sha256": "12421c94c7a15526a35f6fec86244736076be4cb57bdd13631a1db89ed06e4fa",
+  "source_files": {
+    "model_unfolder/renderers/html/graph.py": "8b89d35ba2295a6cc8ce82ec3f09cc4018685cb90dbddc050d4dfa471a21d15f",
+    "model_unfolder/renderers/html/graph_engine.py": "b7a206c3677cecd013afef9b0835d1aaa428898b67fc393e8277177c231ad0cc",
+    "model_unfolder/renderers/html/block_views/unet.py": "800804d84918aad8ba6acb4916fd1c33a43ec71aa5e84d98a6c6737763ee8168",
+    "model_unfolder/adapters/diffusor/unet_projection.py": "f63f4c526b9505ab4e2f20b8872fce6c74333621e483c2ed38271cd88686f2f1"
+  },
+  "geometry_probe": [
+    {
+      "independent": false,
+      "crossings": 6,
+      "cards": 8,
+      "split_circles": 0
+    },
+    {
+      "independent": true,
+      "crossings": 0,
+      "cards": 8,
+      "split_circles": 0
+    }
+  ],
+  "preservation_probes": "Three saved non-None graph outputs byte-identical; preservation-before and preservation-after hashes.json",
+  "actual_saved_route_crossings": 0,
+  "compact_svg_width": 1456.0
+}

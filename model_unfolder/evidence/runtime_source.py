@@ -159,7 +159,7 @@ class RuntimePrimitiveClaimProof:
         if self.fact_id != "root.denoiser.runtime_primitives" or not isinstance(self.bindings, RuntimeSourceBindings):
             raise ValueError("primitive claims require the exact reconciled framework types")
 
-    @property
+    @cached_property
     def value(self):
         from .primitive_semantics import runtime_primitive_definition
         rows = {}
@@ -179,6 +179,10 @@ class RuntimePrimitiveClaimProof:
         return rows
 
     def summary(self):
+        return self._summary
+
+    @cached_property
+    def _summary(self):
         from .claim_evidence import ClaimProofSummary
         from .receipts import value_status_hash
         return ClaimProofSummary(

@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 import hashlib
+import gzip
 from html.parser import HTMLParser
 import json
 from pathlib import Path
@@ -173,6 +174,19 @@ def condition_checks(ordinary, current):
     qualified = current["qualified-facts"]
     gaps = [key for key in projected if key not in qualified or not qualified[key].get("proof")]
     check("every projected family fact carries a proof", bool(projected) and not gaps, gaps)
+    archive_gaps = {}
+    for key in projected:
+        row = qualified.get(key, {})
+        expected = set(re.findall(r"sha256:([0-9a-f]{64}):", "\n".join((row.get("proof") or {}).get("evidence_refs", []))))
+        artifacts = row.get("source_archive", {}).get("artifacts", {})
+        failures = []
+        for fingerprint in sorted(expected):
+            path = Path(current["path"]) / artifacts.get(fingerprint, "<missing>")
+            if not path.is_file() or hashlib.sha256(gzip.decompress(path.read_bytes())).hexdigest() != fingerprint:
+                failures.append(fingerprint)
+        if failures:
+            archive_gaps[key] = failures
+    check("cited custom implementation bytes are archived with matching hashes", not archive_gaps, archive_gaps)
     check("same frozen implementation as ordinary", current["result"].get("implementation_source_sha256") == ordinary["result"].get("implementation_source_sha256")
           and current["result"].get("implementation_unchanged_during_run") is True,
           current["result"].get("implementation_source_sha256"))
@@ -348,6 +362,13 @@ def claim_traces(root):
                       if occurrence.startswith(path + ".") and path.count(".") == 1), None)
         card = cards.get(block["id"], {})
         proof = qualified.get(key, {}).get("proof")
+        source_archive = qualified.get(key, {}).get("source_archive", {})
+        required_sources = set(re.findall(r"sha256:([0-9a-f]{64}):", "\n".join((proof or {}).get("evidence_refs", []))))
+        archived_sources = source_archive.get("artifacts", {})
+        source_bytes_present = bool(required_sources) and all(
+            fingerprint in archived_sources and (Path(case["path"]) / archived_sources[fingerprint]).is_file()
+            and hashlib.sha256(gzip.decompress((Path(case["path"]) / archived_sources[fingerprint]).read_bytes())).hexdigest() == fingerprint
+            for fingerprint in required_sources)
         shape_key = "root.denoiser.constructed_parameter_shapes"
         shapes = facts.get(shape_key, {}).get("value", {})
         expected_numbers = []
@@ -387,13 +408,14 @@ def claim_traces(root):
                        "output_projection": mechanism.get("output_projection")}
                       if short == "ffn_mechanisms" else mechanism)
         traces.append({"claim": description, "status": "REVIEW_REQUIRED", "occurrence": occurrence,
-                       "implementation_evidence": proof, "established_connection_or_function": connection,
+                       "implementation_evidence": proof, "implementation_source_archive": source_archive,
+                       "established_connection_or_function": connection,
                        "canonical_fact": {"key": key, "claim_kind": qualified.get(key, {}).get("claim_kind"), "value": values[occurrence]},
                        "overview_stage": {"id": stage["id"], "label": stage.get("label"), "drawn_in_actual_denoiser_svg": stage_visible} if stage else None,
                        "block": {name: block.get(name) for name in ("id", "kind", "view", "source_fact_keys")},
                        "actual_card": card, "shape_evidence": qualified.get(shape_key, {}).get("proof"),
                        "numbers_on_actual_cards": expected_numbers,
-                       "chain_gaps": [name for name, present in (("qualified proof", bool(proof)), ("stage overview", stage_visible),
+                       "chain_gaps": [name for name, present in (("qualified proof", bool(proof)), ("archived matching implementation bytes", source_bytes_present), ("stage overview", stage_visible),
                            ("actual card", bool(card)), ("actual drill SVG", bool(card.get("svg_count"))),
                            ("shape-backed numbers on exact cards", bool(expected_numbers) and all(row["present_on_its_actual_card"] for row in expected_numbers))) if not present],
                        "limitation": "An artifact linkage is not a semantic re-proof. Review the typed proof's exact claims and cited source before acceptance."})

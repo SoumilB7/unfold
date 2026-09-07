@@ -1,0 +1,35 @@
+{
+  "reader_sha256_before": "37a6c552ac054449728de44f2c01df86a47f736bd3be2ba588a5700d0b0b4ccd",
+  "reader_sha256_after": "37a6c552ac054449728de44f2c01df86a47f736bd3be2ba588a5700d0b0b4ccd",
+  "reader_unchanged": true,
+  "results": [
+    {
+      "source": "class Cell:\n def forward(self,value,replacement):\n  pass\n  value=self.first(value)\n  return self.second(value)\n",
+      "change": "pass",
+      "member_stays_bound": true,
+      "expected": true,
+      "passed": true
+    },
+    {
+      "source": "class Cell:\n def forward(self,value,replacement):\n  self._modules[\"second\"] = replacement\n  value=self.first(value)\n  return self.second(value)\n",
+      "change": "self._modules[\"second\"] = replacement",
+      "member_stays_bound": true,
+      "expected": false,
+      "passed": false
+    },
+    {
+      "source": "class Cell:\n def forward(self,value,replacement):\n  self.__dict__[\"second\"] = replacement\n  value=self.first(value)\n  return self.second(value)\n",
+      "change": "self.__dict__[\"second\"] = replacement",
+      "member_stays_bound": true,
+      "expected": false,
+      "passed": false
+    },
+    {
+      "source": "class Cell:\n def forward(self,value,replacement):\n  del self.second\n  value=self.first(value)\n  return self.second(value)\n",
+      "change": "del self.second",
+      "member_stays_bound": true,
+      "expected": false,
+      "passed": false
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "arguments": [
+    {
+      "port": "0",
+      "route": {
+        "kind": "unresolved",
+        "reason": "expression requires another mechanism reader"
+      }
+    },
+    {
+      "port": "1",
+      "route": {
+        "kind": "unresolved",
+        "reason": "prior unsupported execution may have rebound this local; no later guaranteed assignment closes it"
+      }
+    },
+    {
+      "port": "2",
+      "route": {
+        "kind": "selection",
+        "selection": {
+          "kind": "index",
+          "value": -1
+        },
+        "source": {
+          "kind": "unresolved",
+          "reason": "prior unsupported execution may have rebound this local; no later guaranteed assignment closes it"
+        }
+      }
+    },
+    {
+      "port": "s1",
+      "route": {
+        "kind": "unresolved",
+        "reason": "expression requires another mechanism reader"
+      }
+    },
+    {
+      "port": "s2",
+      "route": {
+        "kind": "unresolved",
+        "reason": "expression requires another mechanism reader"
+      }
+    },
+    {
+      "port": "b1",
+      "route": {
+        "kind": "unresolved",
+        "reason": "expression requires another mechanism reader"
+      }
+    },
+    {
+      "port": "b2",
+      "route": {
+        "kind": "unresolved",
+        "reason": "expression requires another mechanism reader"
+      }
+    }
+  ],
+  "kind": "call_result",
+  "mechanism": "unresolved",
+  "reason": "call argument and result wiring proven; internal computation not established",
+  "result_slot": [
+    1
+  ]
+}

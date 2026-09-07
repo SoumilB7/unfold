@@ -15,6 +15,7 @@ import gzip
 import hashlib
 import json
 from pathlib import Path
+import re
 import shutil
 import sys
 import tempfile
@@ -32,6 +33,8 @@ from model_unfolder.evidence.document import prepare_document
 from model_unfolder.evidence.expression_eval import ConfigExpressionEvaluator
 from model_unfolder.evidence.models import SourceImportRoot
 from model_unfolder.evidence.runtime_inventory import request_from_resolved_source
+from model_unfolder.evidence.program_index import ProgramIndex
+from model_unfolder.evidence.runtime_source import RuntimeSourceBindings
 from physics.source_override import SourceOverride
 from model_unfolder.adapters.diffusor.unet_differential import legacy_unet_comparison
 from report_s8_demonstration import observation, blocks
@@ -55,7 +58,9 @@ def _tree_sources():
 
 def _qualified_facts(context, artifact):
     qualified = {}
-    source_hashes = set()
+    cited = {}
+    runtime_modules = {}
+    proofs = []
     for key, fact in sorted(context.facts.typed.items()):
         summary = fact.claim_evidence.summary() if fact.claim_evidence is not None else None
         proof = dataclasses.asdict(summary) if summary is not None else None
@@ -64,27 +69,96 @@ def _qualified_facts(context, artifact):
                           "source_spans": [dataclasses.asdict(span) for span in fact.source_spans],
                           "proof": proof}
         if proof:
-            import re
-            source_hashes.update(re.findall(r"sha256:([0-9a-f]{64}):", "\n".join(proof["evidence_refs"])))
-    _write(artifact / "qualified-facts.json", qualified)
+            proofs.append(fact.claim_evidence)
+            spans = set(re.findall(r"sha256:([0-9a-f]{64}):", "\n".join(proof["evidence_refs"])))
+            modules = {match.group(2): match.group(1) for reference in proof["evidence_refs"]
+                       if (match := re.fullmatch(r"source:([^:]+):([0-9a-f]{64})", reference))}
+            cited[key] = {"span_source_hashes": spans, "runtime_source_hashes": set(modules)}
+            runtime_modules.update(modules)
+    # The ParseContext's initial index predates demand-driven closure. Follow
+    # retained proof/reader DTOs to their actual indexes, never rediscover code
+    # or traverse their syntax observations to reconstruct another analysis.
+    pending = [context.program_index(), *proofs, *context.reader_results.values()]
+    visited, indexes = set(), {}
+    while pending:
+        value = pending.pop()
+        if value is None or id(value) in visited:
+            continue
+        visited.add(id(value))
+        if isinstance(value, ProgramIndex):
+            indexes[value.fingerprint] = value
+        elif isinstance(value, RuntimeSourceBindings):
+            pending.append(value.index)
+        elif type(value).__module__ == ProgramIndex.__module__:
+            continue  # Raw source observations are not an archive discovery API.
+        elif dataclasses.is_dataclass(value) and not isinstance(value, type):
+            pending.extend(getattr(value, field.name) for field in dataclasses.fields(value)
+                           if field.name not in {"prepared_document", "prepared_document_token"})
+        elif isinstance(value, dict):
+            pending.extend(value.values())
+        elif isinstance(value, (tuple, list)):
+            pending.extend(value)
+    source_hashes = {fingerprint for row in cited.values() for values in row.values() for fingerprint in values}
+    candidates = {}
+    for index in indexes.values():
+        for node in index.source_nodes:
+            source = node.source_id
+            if source.content_fingerprint in source_hashes:
+                candidates.setdefault(source.content_fingerprint, set()).add(source.canonical_path)
+    # Runtime citations retain canonical module addresses. Resolve those only
+    # against the source roots already supplied to this exact ParseContext;
+    # never import a model in the parent or search the host by a filename.
+    for fingerprint, module in runtime_modules.items():
+        for roots in context.source_bundle.import_roots.values():
+            for root in roots:
+                if module == root.package:
+                    paths = (Path(root.path) / "__init__.py",)
+                elif module.startswith(root.package + "."):
+                    relative = module[len(root.package)+1:].replace(".", "/")
+                    paths = (Path(root.path) / (relative + ".py"), Path(root.path) / relative / "__init__.py")
+                else:
+                    continue
+                candidates.setdefault(fingerprint, set()).update(str(path) for path in paths if path.is_file())
     # Source files are review evidence, not new reader input or blessed output.
     archive = artifact / "cited-source"
     archive.mkdir()
-    sources = []
-    for node in context.program_index().source_nodes:
-        source = node.source_id
-        if source.content_fingerprint not in source_hashes:
-            continue
-        path = Path(source.canonical_path)
-        if not path.is_file():
-            sources.append({"sha256": source.content_fingerprint, "path": str(path), "status": "missing_after_read"})
-            continue
-        target = archive / (source.content_fingerprint + ".py.gz")
-        content = path.read_bytes()
-        target.write_bytes(gzip.compress(content, mtime=0))
-        sources.append({"sha256": source.content_fingerprint, "path": str(path),
-                        "content_sha256": _hash(content), "artifact": str(target.relative_to(artifact))})
+    sources, archived, failures = [], {}, []
+    for fingerprint in sorted(source_hashes):
+        attempts = []
+        for name in sorted(candidates.get(fingerprint, ())):
+            path = Path(name)
+            if not path.is_file():
+                attempts.append({"path": name, "status": "missing_after_read"})
+                continue
+            content = path.read_bytes()
+            actual_hash = _hash(content)
+            if actual_hash != fingerprint:
+                attempts.append({"path": name, "status": "source_hash_mismatch", "actual_sha256": actual_hash})
+                continue
+            target = archive / (fingerprint + ".py.gz")
+            target.write_bytes(gzip.compress(content, mtime=0))
+            row = {"sha256": fingerprint, "path": name, "content_sha256": actual_hash,
+                   "artifact": str(target.relative_to(artifact)), "status": "archived_exact_bytes"}
+            sources.append(row)
+            archived[fingerprint] = row["artifact"]
+            break
+        if fingerprint not in archived:
+            failures.append({"sha256": fingerprint, "status": "unmatched_cited_source_hash", "attempts": attempts,
+                             "reason": "No exact bytes found in retained proof/reader indexes or source roots."})
+    for key, row in cited.items():
+        all_hashes = row["span_source_hashes"] | row["runtime_source_hashes"]
+        qualified[key]["source_archive"] = {
+            **{kind: sorted(values) for kind, values in row.items()},
+            "artifacts": {fingerprint: archived[fingerprint] for fingerprint in sorted(all_hashes & archived.keys())},
+            "unmatched_hashes": sorted(all_hashes - archived.keys()),
+        }
+    _write(artifact / "qualified-facts.json", qualified)
     _write(artifact / "cited-source.json", sources)
+    _write(artifact / "cited-source-audit.json", {
+        "retained_index_fingerprints": sorted(indexes), "cited_hashes": sorted(source_hashes),
+        "archived_hashes": sorted(archived), "unmatched_cited_hashes": failures,
+        "status": "complete" if not failures else "incomplete",
+    })
     return qualified
 
 

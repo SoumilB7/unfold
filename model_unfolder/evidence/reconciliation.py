@@ -1153,8 +1153,11 @@ def _call_paths(observations: Sequence[Any]) -> tuple[dict[str, set[str]], set[s
             continue
         recipe_id = observation.recipe.recipe_id
         for call in getattr(observation, "module_calls", ()):
-            aliases = tuple(part.strip() for part in call.path.split("|") if part.strip())
-            if len(aliases) != 1:
+            if call.path == "":
+                exact.setdefault("", set()).add(recipe_id)
+                continue
+            aliases = tuple(part.strip() for part in call.path.split("|"))
+            if len(aliases) != 1 or not aliases[0]:
                 ambiguous.update(aliases)
                 continue
             exact.setdefault(aliases[0], set()).add(recipe_id)

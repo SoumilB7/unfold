@@ -1,5 +1,6 @@
 """UNet claim-kind proofs project existing reader evidence, never templates."""
 from dataclasses import dataclass, field
+from functools import cached_property
 
 from .claim_evidence import ClaimProofSummary
 from .facts import EvidenceFact, SourceSpan as FactSpan
@@ -40,7 +41,7 @@ class UNetStageRelationClaimProof:
         if len(self.graph.edges) != 1:
             raise ValueError("stage relation projection requires one exact skip route")
 
-    @property
+    @cached_property
     def value(self):
         edge = self.graph.edges[0]
         source = edge.source.node_id.field
@@ -67,6 +68,10 @@ class UNetStageRelationClaimProof:
         }
 
     def summary(self):
+        return self._summary
+
+    @cached_property
+    def _summary(self):
         refs = tuple(sorted({_span_ref(span) for span in self.graph.edges[0].route.spans}))
         return ClaimProofSummary(
             self.fact_id, self.claim_kind, self.proof_kind, self.reader_symbols, refs,
@@ -124,7 +129,7 @@ class UNetFFNClaimProof:
         # if the projected computation agrees. Never take the first rival.
         self.value
 
-    @property
+    @cached_property
     def value(self):
         rows = {}
         for attempt in self.attempts:
@@ -163,6 +168,10 @@ class UNetFFNClaimProof:
         return dict(sorted(rows.items()))
 
     def summary(self):
+        return self._summary
+
+    @cached_property
+    def _summary(self):
         refs = tuple(sorted({_span_ref(span) for attempt in self.attempts
                              for span in attempt.result.require_value().spans}))
         return ClaimProofSummary(
@@ -221,7 +230,7 @@ class UNetJoinClaimProof:
             if not any(route is not None and route[1] == row.bindings for route in routes):
                 raise ValueError("join result does not reach the cited consumer through its declared bindings")
 
-    @property
+    @cached_property
     def value(self):
         stages = {}
         for row in self.connections:
@@ -257,6 +266,10 @@ class UNetJoinClaimProof:
         return stages
 
     def summary(self):
+        return self._summary
+
+    @cached_property
+    def _summary(self):
         refs_set = {_span_ref(span) for row in self.connections
                              for span in (row.join.span, row.invocation.call.span,
                                           *(binding.span for binding in row.bindings))}
@@ -304,7 +317,7 @@ class UNetContextConnectionClaimProof:
                for row in self.sources.sources):
             raise ValueError("context source route belongs to another constructed root")
 
-    @property
+    @cached_property
     def value(self):
         connections = {}
         for row in self.sources.sources:
@@ -338,6 +351,10 @@ class UNetContextConnectionClaimProof:
         return dict(sorted(connections.items()))
 
     def summary(self):
+        return self._summary
+
+    @cached_property
+    def _summary(self):
         return ClaimProofSummary(
             self.fact_id, self.claim_kind, self.proof_kind, self.reader_symbols,
             tuple(sorted({_span_ref(span) for row in self.sources.sources for span in row.spans})),
@@ -375,7 +392,7 @@ class UNetCellArithmeticClaimProof:
         if self.execution is not None and not isinstance(self.execution, UNetSelectedChildExecution):
             raise TypeError("conditional arithmetic uses typed constructor operands")
 
-    @property
+    @cached_property
     def value(self):
         from .unet_cell_connections import _instance_environments
         from .unet_selected_constructor import selected_instance_guard_evidence
@@ -417,6 +434,10 @@ class UNetCellArithmeticClaimProof:
         return dict(sorted(result.items()))
 
     def summary(self):
+        return self._summary
+
+    @cached_property
+    def _summary(self):
         spans = {span for row in self.mechanisms.mechanisms if row.residual_merge is not None
                  for span in (row.residual_merge.span,
                               *(item.binding.span for item in row.conditioning),
@@ -476,7 +497,7 @@ class UNetSpatialClaimProof:
         if not isinstance(self.spatial, UNetSelectedSpatialOperations) or not isinstance(self.bindings, RuntimeSourceBindings):
             raise TypeError("spatial claims require the selected execution and mechanism reader")
 
-    @property
+    @cached_property
     def value(self):
         rows = {}
         for operation in self.spatial.spatial_operations:
@@ -499,6 +520,10 @@ class UNetSpatialClaimProof:
         return dict(sorted(rows.items()))
 
     def summary(self):
+        return self._summary
+
+    @cached_property
+    def _summary(self):
         return ClaimProofSummary(self.fact_id, self.claim_kind, self.proof_kind, self.reader_symbols,
                                  tuple(sorted({_span_ref(span) for row in self.spatial.spatial_operations
                                                for span in row.operand_spans})),

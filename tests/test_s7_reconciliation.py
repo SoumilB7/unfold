@@ -566,6 +566,26 @@ def test_trace_alias_does_not_claim_which_occurrence_path_executed():
     assert axes["blocks.1"].kind == "execution_unresolved"
 
 
+@pytest.mark.parametrize("path,root_observed,child_observed", [
+    ("", True, False), ("blocks.0", False, True),
+    (" | blocks.0", False, False), ("blocks.0 | ", False, False),
+    (" ", False, False), ("|", False, False),
+])
+def test_exact_root_trace_is_preserved_but_empty_alias_is_ambiguous(path, root_observed, child_observed):
+    from physics.execution_observation import ModuleCall
+    inventory = _inventory()
+    recipe = ExecutionRecipe("root-probe", "tokens", "eval", "disabled", "decoder", False,
+                             "float32", {"fixture": "1"})
+    observation = ExecutionObservation(1, inventory.provenance, recipe,
+                                      (ModuleCall(0, path, CLASS),), (), ())
+    result = ObservationResult("ok", recipe=recipe, observation=observation,
+                               provenance=inventory.provenance)
+    table = reconcile(model="fixture", inventory=inventory, observations=(result,), config_document=_document())
+    axes = {row.provenance.instance_path: row.execution.kind for row in table.occurrences}
+    assert (axes[""] == "observed") is root_observed
+    assert (axes["blocks.0"] == "observed") is child_observed
+
+
 def test_execution_unresolved_separates_no_attempt_from_unobserved_attempt():
     no_attempt = reconcile(
         model="fixture", inventory=_inventory(), observations=(),

@@ -131,25 +131,39 @@ def build_runtime_stage_connections(ir, info, mount_id, block):
 
 def build_runtime_port_route(ir, info, mount_id, block):
     """Arguments enter one call boundary; result ports assert no inner algebra."""
-    from ..graph import Graph, Node, SideInput
+    from ..graph import Graph, Node, Parallel, Lane
     children = block.get("children", ())
     kind = block["detail"]["port_route_kind"]
     if kind == "conditional":
         return build_constructed_children_view(ir, info, mount_id, block)
     if not children:
         return ""
-    nodes = [Node(child["id"], child["kind"], child["label"],
-                  resolved=child.get("resolved", True)) for child in children]
+    nodes = []
+    for child in children:
+        label = child["label"]
+        layout = {}
+        if "argument_port" in child.get("detail", {}):
+            from textwrap import wrap
+            headings = label if isinstance(label, list) else [label]
+            if child["kind"] == "unknown" and headings == ["Input unresolved"]:
+                headings = ["Unresolved"]
+            label = [line for heading in (*headings, "Port " + str(child["detail"]["argument_port"]))
+                     for line in wrap(str(heading), width=14, break_on_hyphens=False)]
+            layout = {"w": 164, "font": 12}
+        nodes.append(Node(child["id"], child["kind"], label,
+                          resolved=child.get("resolved", True), **layout))
     end = block["id"] + "__result_port"
     label = "Selected value" if kind == "selection" else "Returned slot " + str(block["detail"].get("result_slot", []))
     nodes.append(Node(end, "port", label, static=True))
     arguments = block["detail"].get("argument_ids", [child["id"] for child in children])
     boundary = block["detail"].get("boundary_id", end)
-    flow = ([arguments[0]] if arguments else []) + ([boundary] if boundary != end else []) + [end]
-    return render_graph(Graph(nodes, flow,
-                              side_inputs=[SideInput(argument, boundary,
-                                                     "left" if number % 2 else "right")
-                                           for number, argument in enumerate(arguments[1:])]),
+    if kind == "call_result":
+        flow = ([boundary] if boundary != end else []) + [end]
+        parallels = [Parallel(None, boundary, [Lane([argument]) for argument in arguments])] if arguments else []
+    else:
+        flow = list(arguments) + [end]
+        parallels = []
+    return render_graph(Graph(nodes, flow, parallels=parallels),
                         info, mount_id, "runtime_port_route",
                         "Call boundary ports only; internal dependency unresolved" if kind == "call_result"
                         else "Source-proven selection from the input value",
@@ -194,17 +208,29 @@ def build_runtime_cell_connections(ir, info, mount_id, block):
         merge_id = block["id"] + "__return_add"
         nodes = [Node(operand, "unknown", children[operand]["label"], resolved=False)
                  for operand in operands]
-        nodes.append(Node(merge_id, "residual_add", static=True))
+        nodes.append(Node(merge_id, "residual_add"))
         flow = [operands[0], merge_id]
         if arithmetic["scale"] == "divide":
             scale_id = block["id"] + "__return_scale"
-            nodes.append(Node(scale_id, "opaque", "Divide by scale", static=True,
+            nodes.append(Node(scale_id, "opaque", "Divide by scale",
                               sub="value unresolved"))
             flow.append(scale_id)
         rendered.append(render_graph(
             Graph(nodes, flow, side_inputs=[SideInput(operands[1], merge_id)]),
             info, f"{mount_id}_return", "runtime_cell_return",
             "Proven return arithmetic; complete operand routes remain under investigation",
+            facts_projected=frozenset(block.get("source_fact_keys", ()))))
+    children = {child["id"]: child for child in block.get("children", ())}
+    for number, route in enumerate(block["detail"].get("conditioning_arithmetic", ())):
+        operands = route["operands"]
+        nodes = [Node(operand, children[operand]["kind"], children[operand]["label"],
+                      resolved=children[operand].get("resolved", True)) for operand in operands]
+        nodes.append(Node(route["merge"], "residual_add"))
+        rendered.append(render_graph(
+            Graph(nodes, [operands[0], route["merge"]],
+                  side_inputs=[SideInput(operands[1], route["merge"])]),
+            info, f"{mount_id}_conditioning_{number}", "runtime_cell_conditioning",
+            "Conditional operand addition; guard unresolved" if route["conditional"] else "Source-proven operand addition",
             facts_projected=frozenset(block.get("source_fact_keys", ()))))
     contained = [child for child in block.get("children", ()) if "source_instance_path" in child]
     rendered.append(build_constructed_children_view(ir, info, mount_id, {"children": contained}))
