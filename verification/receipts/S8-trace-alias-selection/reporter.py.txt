@@ -406,34 +406,21 @@ def claim_traces(root):
     case = read_case(root / "ordinary")
     facts, qualified = case["facts"], case["qualified-facts"]
     all_blocks = list(blocks(case["ir"].get("extras", {}).get("render", {})))
+    by_occurrence = {row["source_instance_path"]: row for row in all_blocks if row.get("source_instance_path")}
     cards = case["observation"]["page"]["cards"]
-    # A source occurrence may have many invocation aliases. Select its own
-    # actual card, never whichever alias happens to be visited last.
-    by_occurrence = {}
-    for row in all_blocks:
-        path = row.get("source_instance_path")
-        if path and not row.get("target") and row.get("id") in cards:
-            by_occurrence.setdefault(path, []).append(row)
-    def select(path, fact=None, visible_ids=None):
-        candidates = [row for row in by_occurrence.get(path, [])
-                      if (fact is None or fact in row.get("source_fact_keys", []))
-                      and (visible_ids is None or row["id"] in visible_ids)]
-        return min(candidates, key=lambda row: row["id"]) if candidates else None
     traces = []
     for short, description in (("ffn_mechanisms", "Selected FFN computation and projection shapes"),
                                ("cell_connections", "Exact cell-member call connections"),
                                ("spatial_mechanisms", "Selected spatial operation and constructed shapes")):
         key = "root.denoiser." + short
         values = facts.get(key, {}).get("value", {})
-        occurrence = next((path for path in sorted(values) if select(path, key) is not None), None)
+        occurrence = next((path for path in sorted(values) if path in by_occurrence), None)
         if occurrence is None:
             traces.append({"claim": description, "status": "BLOCKING", "reason": "No qualified occurrence and actual canonical block pair."})
             continue
-        block = select(occurrence, key)
-        visible_ids = set(cards.get("denoiser", {}).get("node_ids", []))
-        stage = next((selected for path in sorted(by_occurrence)
-                      if occurrence.startswith(path + ".") and path.count(".") == 1
-                      and (selected := select(path, visible_ids=visible_ids)) is not None), None)
+        block = by_occurrence[occurrence]
+        stage = next((row for path, row in by_occurrence.items()
+                      if occurrence.startswith(path + ".") and path.count(".") == 1), None)
         card = cards.get(block["id"], {})
         proof = qualified.get(key, {}).get("proof")
         source_archive = qualified.get(key, {}).get("source_archive", {})
@@ -468,7 +455,7 @@ def claim_traces(root):
                     if call.get("member"):
                         connected_members.add(call["member"])
         for member in sorted(connected_members):
-            member_block = select(member) or {}
+            member_block = by_occurrence.get(member, {})
             for parameter, value in shapes.get("parameters", {}).items():
                 if parameter.rpartition(".")[0] == member:
                     expected_numbers.append({"card_id": member_block.get("id"),
