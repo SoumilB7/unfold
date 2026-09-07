@@ -419,6 +419,27 @@ def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, 
         nodes = [by_id[i] for i in lane.ids if i in by_id]
         if not nodes:
             lane_geoms.append([])
+            # An empty lane is an evidenced direct edge, such as the value
+            # half of a fused gated FFN. It has no operation box, but still
+            # needs the rail and incoming arrow at the multiplication.
+            source_id = lane.src or par.src
+            source = geom.get(source_id)
+            if not lane.ids and source is not None:
+                tap_y = source["top"] - 16
+                parts.append(_branch_dot(source["cx"], tap_y))
+                parts.append(_elbow_hv(source["cx"], tap_y, lane_x, tap_y - 12, None))
+                for dst_id in (lane.dst or [par.dst]):
+                    target = geom.get(dst_id)
+                    if target is None:
+                        continue
+                    side, offset, count = circle_entries.get((lane_idx, dst_id), (None, 0.0, 1))
+                    target_x = (target["left"] - GAP - (18 if count > 1 else 0) if side == "left"
+                                else target["right"] + GAP + (18 if count > 1 else 0) if side == "right"
+                                else target["cx"])
+                    target_y = target["cy"] + offset if side in {"left", "right"} else target["bottom"] + GAP
+                    parts.append(_elbow_vh(lane_x, tap_y - 12, target_x, target_y,
+                                           None if count > 1 and side in {"left", "right"} else arrow_id))
+                    regions.append(point(lane_x, tap_y))
             continue
         # stack bottom -> top
         lane_geom = []

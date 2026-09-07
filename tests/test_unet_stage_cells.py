@@ -152,6 +152,21 @@ def test_stage_join_follows_exact_output_into_child(tmp_path, function):
     assert all(len(row.bindings) == 2 for row in rows)
 
 
+def test_stage_join_rejects_an_unrelated_concat_with_original_bindings(tmp_path):
+    from dataclasses import replace
+    from model_unfolder.evidence.unet_cell_mechanism import read_unet_stage_join_connections
+    stages = STAGES.replace("from torch.nn import ModuleList", "from torch.nn import ModuleList\n    from torch import cat")
+    stages = stages.replace("value = unit(value)",
+                           "ignored = cat([side, side], dim=0)\n                joined = cat([value, side], dim=1)\n                value = unit(joined)")
+    cells, _ = _read(_bundle(tmp_path, stages=stages))
+    evidence = cells.require_value()
+    row = read_unet_stage_join_connections(evidence).require_value()[0]
+    rival = next(call for call in evidence.index.calls_in(row.join.enclosing_callable)
+                 if call.callee.name == "cat" and call.span != row.join.span)
+    with pytest.raises(ValueError, match="does not reach"):
+        replace(row, join=rival)
+
+
 @pytest.mark.parametrize("replacement", ["alias = side", "alias = unknown(joined)"])
 def test_stage_join_does_not_invent_connection_through_replacement_or_helper(tmp_path, replacement):
     from model_unfolder.evidence.unet_cell_mechanism import read_unet_stage_join_connections

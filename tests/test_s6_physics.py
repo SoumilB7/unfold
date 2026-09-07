@@ -332,15 +332,18 @@ def test_production_can_request_isolated_inventory_but_cannot_construct_in_paren
     # S8 is the authorized first consumer of S6. Its production boundary may
     # carry requests/results and call the isolated parent API, never import
     # the worker's construction or observation internals into an adapter.
-    public_boundary = {"BuildRequest", "Failure", "InventoryResult", "inventory_in_subprocess"}
+    public_boundary = {"BuildRequest", "Failure", "InventoryResult", "inventory_in_subprocess",
+                       "FrameworkPrimitiveWitness"}
     for path in production:
         for node in ast.walk(ast.parse(path.read_text())):
             if isinstance(node, ast.Import):
                 assert not any(alias.name == "physics" or alias.name.startswith("physics.")
                                for alias in node.names), path
             if isinstance(node, ast.ImportFrom) and (node.module or "").startswith("physics"):
-                assert node.module == "physics.instance_inventory", path
-                assert {alias.name for alias in node.names} <= public_boundary, path
+                boundary = (public_boundary if node.module == "physics.instance_inventory" else
+                            {"ExecutionRecipe", "ObservationResult", "TensorArgument", "observe_in_subprocess"}
+                            if node.module == "physics.execution_observation" else set())
+                assert boundary and {alias.name for alias in node.names} <= boundary, path
 
 
 def test_physics_has_no_model_identity_branch():

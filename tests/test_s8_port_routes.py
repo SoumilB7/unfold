@@ -1,0 +1,96 @@
+"""Call boundary wiring is not input/output semantic dependency."""
+import textwrap
+
+from model_unfolder.evidence.models import SourceBundle
+from model_unfolder.evidence.program_index import build_program_index
+from model_unfolder.evidence.local_port_routes import read_local_port_route
+
+
+def route(tmp_path, body):
+    path = tmp_path / "source.py"
+    path.write_text("class Arbitrary:\n    def forward(self, value, saved, condition):\n" +
+                    textwrap.indent(textwrap.dedent(body).strip() + "\n", "        "))
+    index = build_program_index(SourceBundle(source="path", files=(str(path),),
+                                             component_files={"root": (str(path),)}))
+    forward = index.callables[0]
+    call = next(row for row in index.calls_in(forward.symbol) if row.callee.name == "consume")
+    return read_local_port_route(index, forward, call.args[0], call.span, call.guard)
+
+
+def test_optional_transform_preserves_call_boundary_and_bypass(tmp_path):
+    found = route(tmp_path, """
+        side = saved[-1]
+        if condition:
+            value, side = arbitrary(value, side)
+        consume(side)
+    """)
+    choice = found.value
+    assert choice["kind"] == "conditional"
+    assert choice["when_false"]["kind"] == "selection"
+    assert choice["when_false"]["source"] == {"kind": "formal", "formal": "saved"}
+    call = choice["when_true"]
+    assert call["kind"] == "call_result" and call["result_slot"] == [1]
+    assert call["mechanism"] == "unresolved"
+    assert call["arguments"][1]["route"] == choice["when_false"]
+    assert found.spans
+
+
+def test_changed_result_slot_changes_route(tmp_path):
+    left = route(tmp_path, "value, side = arbitrary(value, saved)\nconsume(side)").value
+    right = route(tmp_path, "side, value = arbitrary(value, saved)\nconsume(side)").value
+    assert left["result_slot"] == [1]
+    assert right["result_slot"] == [0]
+
+
+def test_unknown_helper_never_becomes_identity(tmp_path):
+    found = route(tmp_path, "side = ignore(saved)\nconsume(side)").value
+    assert found["kind"] == "call_result"
+    assert found["arguments"][0]["route"] == {"kind": "formal", "formal": "saved"}
+    assert found["mechanism"] == "unresolved"
+    assert "depends_on" not in found
+
+
+def test_loop_carrier_is_not_original_formal_each_iteration(tmp_path):
+    found = route(tmp_path, """
+        for unit in self.units:
+            side = saved[-1]
+            saved = saved[:-1]
+            consume(side)
+    """).value
+    assert found["kind"] == "selection"
+    assert found["source"]["kind"] == "loop_carried"
+
+
+def test_missing_local_evidence_is_limited(tmp_path):
+    assert route(tmp_path, "consume(unbound)").value["kind"] == "unresolved"
+
+
+def test_rhs_reads_before_its_own_assignment(tmp_path):
+    found = route(tmp_path, "value = consume(value)").value
+    assert found == {"kind": "formal", "formal": "value"}
+
+
+def test_loop_carrier_with_outside_alias_is_not_replaced_by_seed(tmp_path):
+    found = route(tmp_path, """
+        state = value
+        for item in saved:
+            consume(state)
+            state = update(item)
+    """).value
+    assert found["kind"] == "loop_carried"
+    assert found["initial_route"] == {"kind": "formal", "formal": "value"}
+
+
+def test_loop_binding_overrides_formal_identity(tmp_path):
+    found = route(tmp_path, "for value in saved:\n    consume(value)").value
+    assert found["kind"] == "unresolved"
+
+
+def test_with_binding_does_not_retain_original_formal(tmp_path):
+    found = route(tmp_path, "with manager() as value:\n    consume(value)").value
+    assert found["kind"] == "unresolved"
+
+
+def test_starred_unpack_has_no_guessed_fixed_result_slot(tmp_path):
+    found = route(tmp_path, "first, *middle, value = helper(saved)\nconsume(value)").value
+    assert found["kind"] == "unresolved"

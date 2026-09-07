@@ -15,6 +15,58 @@ def _block_id(path):
     return "instance_" + path.replace(".", "__") if path else "denoiser"
 
 
+def _port_route_block(route, block_id, fact_key):
+    """Project typed source port routes; opaque calls never become identity."""
+    kind = route["kind"]
+    labels = {"formal": "Input: " + route.get("formal", ""),
+              "loop_carried": "Loop input: " + route.get("formal", ""),
+              "selection": "Select saved value", "call_result": "Call result",
+              "conditional": "Conditional route", "literal": "Source literal",
+              "sequence": "Input sequence", "unresolved": "Input unresolved"}
+    block = {"id": block_id, "kind": "opaque", "label": labels[kind],
+             "title": labels[kind], "role": "source_port_route",
+             "description": route.get("reason", "Exact source argument/result port wiring."),
+             "source_fact_keys": [fact_key], "facts": []}
+    if kind in {"formal", "loop_carried"}:
+        block["kind"] = "source"
+    elif kind == "literal":
+        block["facts"] = ["Source value: " + json.dumps(route["value"])]
+    elif kind == "selection":
+        block.update(kind="slice", children=[_port_route_block(route["source"], block_id + "__source", fact_key)],
+                     view="runtime_port_route", detail={"port_route_kind": kind})
+        block["facts"] = ["Selection: " + json.dumps(route["selection"], sort_keys=True)]
+    elif kind == "call_result":
+        block.update(resolved=False, view="runtime_port_route",
+                     detail={"port_route_kind": kind, "result_slot": route["result_slot"]},
+                     children=[_port_route_block(argument["route"], block_id + f"__arg_{number}", fact_key)
+                               for number, argument in enumerate(route["arguments"])])
+        for child, argument in zip(block["children"], route["arguments"]):
+            child["facts"].append("Call argument port: " + argument["port"])
+        block["detail"]["argument_ids"] = [child["id"] for child in block["children"]]
+        boundary = block_id + "__call"
+        block["detail"]["boundary_id"] = boundary
+        block["children"].append({"id": boundary, "kind": "unknown", "label": "Unresolved call",
+                                  "title": "Source call boundary", "resolved": False,
+                                  "description": "These arguments enter this call; the selected output leaves it. No particular input-to-output dependence is asserted.",
+                                  "source_fact_keys": [fact_key]})
+        block["facts"] = ["Returned slot: " + json.dumps(route["result_slot"]),
+                          "Internal computation unresolved; argument-to-result dependence not asserted"]
+    elif kind == "conditional":
+        block.update(resolved=False, view="runtime_port_route", detail={"port_route_kind": kind},
+                     children=[_port_route_block(route[key], block_id + "__" + key, fact_key)
+                               for key in ("when_true", "when_false")])
+        block["children"][0]["facts"].append("Source guard true")
+        block["children"][1]["facts"].append("Source guard false: bypass")
+        block["facts"] = ["Guard selection unresolved; both source alternatives retained"]
+    elif kind == "sequence":
+        block.update(view="constructed_children", children=[_port_route_block(
+            item, block_id + f"__item_{number}", fact_key) for number, item in enumerate(route["items"])])
+    elif kind == "unresolved":
+        block.update(kind="unknown", resolved=False)
+        block["facts"] = ["investigation_missing · input route · owner: S8"]
+    return block
+
+
 def project_unet(*, facts, handoffs, name, architecture, table=None):
     modules = facts["root.denoiser.constructed_modules"].value
     shapes = facts["root.denoiser.constructed_parameter_shapes"].value
@@ -136,7 +188,7 @@ def project_unet(*, facts, handoffs, name, architecture, table=None):
             block["source_fact_keys"].append(arithmetic_key)
             for injection in mechanism["conditioning"]:
                 block["facts"].append(("Conditional " if injection["conditional"] else "")
-                                      + injection["operation"] + " side input from " + injection["source_formal"])
+                                      + injection["operation"] + " arithmetic; operand call boundaries retained")
         if path in joins:
             routes = []
             by_path = {child.get("source_instance_path"): child for child in children}
@@ -149,15 +201,13 @@ def project_unet(*, facts, handoffs, name, architecture, table=None):
                 for slot in row["operand_slots"]:
                     operand_id = _block_id(path) + f"__join_{number}_operand_{slot}"
                     operands.append(operand_id)
-                    children.append({
-                        "id": operand_id, "kind": "unknown", "role": "unresolved_input",
-                        "label": "Operand source unresolved", "title": "Concat operand lineage",
-                        "resolved": False,
-                        "description": row["input_lineage_reason"],
-                        "facts": ["investigation_missing · owner: S8"],
-                        "source_fact_keys": [join_key],
-                    })
-                routes.append({"operands": operands, "target": target["id"]})
+                    children.append(_port_route_block(row["operand_routes"][slot], operand_id, join_key))
+                join_id = _block_id(path) + f"__join_{number}"
+                children.append({"id": join_id, "kind": "concat", "role": "connector",
+                                 "label": "Concatenate", "title": "Concatenate inputs",
+                                 "description": "The source concatenates these operand values before the repeated child call.",
+                                 "source_fact_keys": [join_key]})
+                routes.append({"operands": operands, "target": target["id"], "join": join_id})
                 target["facts"].append("Source-proven concat output feeds the repeated child call")
                 target["source_fact_keys"].append(join_key)
             if routes:

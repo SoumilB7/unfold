@@ -133,6 +133,9 @@ class UNetFFNClaimProof:
                    "projection_mode": proof.projection_mode}
             for path in attempt.instance_paths:
                 position = proof.execution.append_calls.index(proof.execution.selected_append)
+                if not self.bindings.forward_is_unmodified(path) or not self.bindings.forward_is_unmodified(
+                        f"{path}.{proof.execution.field}.{position}"):
+                    continue
                 output_positions = [number for number, call in enumerate(proof.execution.append_calls)
                                     if call.span.source == proof.execution.output_site.span.source
                                     and (call.span.line, call.span.col) <= (proof.execution.output_site.span.line, proof.execution.output_site.span.col)
@@ -188,12 +191,23 @@ class UNetJoinClaimProof:
         if not isinstance(self.bindings, RuntimeSourceBindings):
             raise TypeError("join claims require runtime bindings")
         from .framework_operations import functional_operation_protocol_for_call
+        from .unet_cell_connections import _direct_origin
         for row in self.connections:
             if not isinstance(row, StageJoinConnection):
                 raise TypeError("join claims require exact reader connections")
             protocol = functional_operation_protocol_for_call(self.bindings.index, row.join)
             if protocol is None or protocol.kind != "concat":
                 raise ValueError("the connected operation is not a proven framework concat")
+            invocation = row.invocation.call
+            forward = self.bindings.index.callable_by_symbol(invocation.enclosing_callable)
+            if forward is None or row.join not in self.bindings.index.calls_in(forward.symbol) \
+                    or invocation not in self.bindings.index.calls_in(forward.symbol):
+                raise ValueError("join proof must cite exact indexed call observations")
+            routes = [_direct_origin(self.bindings.index, forward, invocation, actual,
+                                     {row.join.span: row.join})
+                      for actual in (*invocation.args, *(value for key, value in invocation.kwargs if key != "**"))]
+            if not any(route is not None and route[1] == row.bindings for route in routes):
+                raise ValueError("join result does not reach the cited consumer through its declared bindings")
 
     @property
     def value(self):
@@ -204,6 +218,8 @@ class UNetJoinClaimProof:
             for path in self.bindings.matching_members(
                     stage.occurrence_id.parent_field, stage.occurrence_id.symbol,
                     repeated=isinstance(stage.construction, RepeatedStageConstruction)):
+                if not self.bindings.forward_is_unmodified(path):
+                    continue
                 targets = tuple(dict.fromkeys(
                     target for construction in invocation.constructions
                     for candidate in construction.candidates
@@ -219,14 +235,28 @@ class UNetJoinClaimProof:
                               "operand_slots": list(range(len(operands.children))),
                               "input_lineage": "investigation_missing",
                               "input_lineage_reason": "caller formal to concat operand route remains open"}
+                from .local_port_routes import read_local_port_route
+                forward = self.bindings.index.callable_by_symbol(row.join.enclosing_callable)
+                connection["operand_routes"] = [read_local_port_route(
+                    self.bindings.index, forward, operand, row.join.span, row.join.guard).value
+                    for operand in operands.children]
                 if connection not in stages.setdefault(path, []):
                     stages[path].append(connection)
         return stages
 
     def summary(self):
-        refs = tuple(sorted({_span_ref(span) for row in self.connections
+        refs_set = {_span_ref(span) for row in self.connections
                              for span in (row.join.span, row.invocation.call.span,
-                                          *(binding.span for binding in row.bindings))}))
+                                          *(binding.span for binding in row.bindings))}
+        from .local_port_routes import read_local_port_route
+        for row in self.connections:
+            operands = row.join.args[0] if row.join.args else dict(row.join.kwargs).get("tensors")
+            forward = self.bindings.index.callable_by_symbol(row.join.enclosing_callable)
+            if operands is not None and operands.kind in {"list", "tuple"}:
+                refs_set.update(_span_ref(span) for operand in operands.children for span in
+                                read_local_port_route(self.bindings.index, forward, operand,
+                                                      row.join.span, row.join.guard).spans)
+        refs = tuple(sorted(refs_set))
         return ClaimProofSummary(self.fact_id, self.claim_kind, self.proof_kind,
                                  self.reader_symbols, refs,
                                  document_fingerprints=(self.bindings.table.config_sha256,),
@@ -281,6 +311,8 @@ class UNetContextConnectionClaimProof:
             for block_path in resolved[2]:
                 target = f"{block_path}.{row.lane.construction.target}"
                 if self.bindings.symbol_at(target) != row.lane.child_symbol:
+                    continue
+                if not self.bindings.route_forwards_unmodified(target):
                     continue
                 value = {"source_formal": route.source_formal.name,
                          "target_formal": route.target_formal.name,
@@ -351,12 +383,21 @@ class UNetCellArithmeticClaimProof:
                     if decisions and all(value is not None and value.value is False for value in decisions):
                         continue
                     conditional = not decisions or not all(value is not None and value.value is True for value in decisions)
-                    conditioning.append({"operation": item.kind, "source_formal": item.side_parameter,
-                                         "conditional": bool(item.guard) and conditional})
+                    # A syntactic origin set locates candidates; it does not
+                    # prove dependence through an arbitrary helper return.
+                    from .local_port_routes import read_local_port_route
+                    forward = self.bindings.index.callable_by_symbol(item.binding.enclosing_callable)
+                    expression = item.binding.value
+                    operands = expression.children if expression is not None and expression.kind == "binop" else ()
+                    conditioning.append({"operation": item.kind,
+                                         "conditional": bool(item.guard) and conditional,
+                                         "operand_routes": [read_local_port_route(
+                                             self.bindings.index, forward, operand,
+                                             item.binding.span, item.guard).value for operand in operands],
+                                         "dependency": "call ports only; helper input-to-output dependence unresolved"})
                 value = {"return_merge": "add", "return_scale": "divide" if row.residual_merge.scale_expression else None,
                          "branch_lineage": "investigation_missing", "conditioning": conditioning}
-                if "forward" in module.init_attributes or module.init_attributes.get("_forward_pre_hooks") \
-                        or module.init_attributes.get("_forward_hooks"):
+                if not self.bindings.forward_is_unmodified(module.path):
                     continue
                 if module.path in result and result[module.path] != value:
                     raise ValueError("source alternatives disagree on exact return arithmetic")
@@ -369,6 +410,25 @@ class UNetCellArithmeticClaimProof:
                               *(item.binding.span for item in row.conditioning),
                               *((row.residual_merge.scale_expression.span,)
                                 if row.residual_merge.scale_expression is not None else ()))}
+        from .local_port_routes import read_local_port_route
+        from .unet_cell_connections import _instance_environments
+        from .unet_selected_constructor import selected_instance_guard_evidence
+        environments = _instance_environments(self.execution, self.bindings)
+        for row in self.mechanisms.mechanisms:
+            for item in row.conditioning:
+                forward = self.bindings.index.callable_by_symbol(item.binding.enclosing_callable)
+                expression = item.binding.value
+                if expression is not None and expression.kind == "binop":
+                    for operand in expression.children:
+                        spans.update(read_local_port_route(self.bindings.index, forward,
+                                     operand, item.binding.span, item.guard).spans)
+                for module in self.bindings.inventory.modules:
+                    if self.bindings.symbol_at(module.path) == row.occurrence_id.symbol:
+                        for environment in environments.get(module.path, ()):
+                            decision = selected_instance_guard_evidence(environment,
+                                item.binding.enclosing_callable, item.guard, item.binding.span)
+                            if decision is not None:
+                                spans.update(decision.spans)
         return ClaimProofSummary(self.fact_id, self.claim_kind, self.proof_kind, self.reader_symbols,
                                  tuple(sorted(_span_ref(span) for span in spans)),
                                  document_fingerprints=(self.bindings.table.config_sha256,),
@@ -409,14 +469,15 @@ class UNetSpatialClaimProof:
         rows = {}
         for operation in self.spatial.spatial_operations:
             population = operation.execution.population
-            stage = population.stage.occurrence_id.parent_field
-            if population.selected.position is not None:
-                stage += f".{population.selected.position}"
-            field = f"{stage}.{population.field}"
-            for path in self.bindings._modules:
-                if path != field and path.rpartition(".")[0] != field:
-                    continue
+            constructions = [item for item in population.present_constructions
+                             if (item.site.span if item.site is not None else item.field_assign.value.span)
+                             == operation.occurrence_id.construction_span]
+            if len(constructions) != 1:
+                continue
+            for path in self.bindings.construction_members(population, constructions[0]):
                 if self.bindings.symbol_at(path) != operation.occurrence_id.symbol:
+                    continue
+                if not self.bindings.forward_is_unmodified(path):
                     continue
                 value = {"effect": operation.effect, "operand": operation.numeric_operand,
                          "primitive": operation.mechanism}

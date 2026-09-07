@@ -47,6 +47,9 @@ def test_only_direct_reaching_call_results_connect(tmp_path, body, expected):
     ("if flag:\n    self.second = replacement\nvalue = self.first(value)\nreturn self.second(value)", False),
     ("self.mutate()\nvalue = self.first(value)\nreturn self.second(value)", False),
     ("helper(self)\nvalue = self.first(value)\nreturn self.second(value)", False),
+    ("alias = self\nhelper(alias)\nvalue = self.first(value)\nreturn self.second(value)", False),
+    ("alias = self\nother = alias\nhelper([other])\nvalue = self.first(value)\nreturn self.second(value)", False),
+    ("alias = self\nalias.mutate()\nvalue = self.first(value)\nreturn self.second(value)", False),
 ])
 def test_init_member_is_not_reused_after_possible_replacement(tmp_path, body, expected):
     index, forward, calls, target = _source(tmp_path, body)

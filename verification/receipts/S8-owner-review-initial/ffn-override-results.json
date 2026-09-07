@@ -1,0 +1,19 @@
+{
+  "before": {
+    "activation": "gelu",
+    "gated": true,
+    "input_projection": "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.0.proj",
+    "output_projection": "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.2",
+    "projection_mode": "fused_gate_up"
+  },
+  "checkout_head": "349c02d2fcc41139ed770a1fe72233da4d5f6250",
+  "claim_survives": true,
+  "evidence": "fresh static investigation against persisted ordinary SDXL inventory; then a DTO poison",
+  "facts_identical": true,
+  "inventory_root_hashes": [
+    "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+  ],
+  "override_recorded": true,
+  "path": "down_blocks.1.attentions.0.transformer_blocks.0.ff",
+  "source_hash": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+}

@@ -568,7 +568,8 @@ def test_class_default_dtype_is_not_recorded_as_checkpoint_deployment_fact(
     prepared = PreparedDocument(
         document={}, checkpoint={}, class_overlay={"dtype": "bfloat16"},
         provenance={})
-    monkeypatch.setattr(shadow_generator, "prepare_document",
+    from model_unfolder.evidence import execution_recipe
+    monkeypatch.setattr(execution_recipe, "prepare_document",
                         lambda *_args, **_kwargs: prepared)
 
     result = _signature_recipe(index, root, inventory, {})

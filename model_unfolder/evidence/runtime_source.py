@@ -83,6 +83,40 @@ class RuntimeSourceBindings:
         return tuple(path for path in self.direct_members(field_path, repeated=repeated)
                      if self.symbol_at(path) == symbol)
 
+    def forward_is_unmodified(self, path: str) -> bool:
+        """Recorded instance overrides/hooks defeat class-forward authority."""
+        module = self._modules.get(path)
+        if module is None:
+            return False
+        attrs = module.init_attributes
+        return ("forward" not in attrs and not attrs.get("_forward_hooks")
+                and not attrs.get("_forward_pre_hooks") and not attrs.get("_compiled_call_impl"))
+
+    def route_forwards_unmodified(self, path: str) -> bool:
+        parts = path.split(".") if path else []
+        return all(self.forward_is_unmodified(".".join(parts[:offset]))
+                   for offset in range(len(parts) + 1))
+
+    def construction_members(self, population, construction) -> tuple[str, ...]:
+        """Join a selected constructor occurrence to its exact runtime slot."""
+        stage = population.stage.occurrence_id.parent_field
+        if population.selected.position is not None:
+            stage += f".{population.selected.position}"
+        field_path = f"{stage}.{population.field}"
+        if construction not in population.present_constructions:
+            return ()
+        if population.storage_kind == "direct":
+            return (field_path,) if field_path in self._modules else ()
+        record = population.container_record
+        members = self.direct_members(field_path, repeated=True)
+        if record is None or len(record.elements) != len(members):
+            # A symbolic template with varying constructor operands needs its
+            # own iteration-to-slot proof, never same-class broadcasting.
+            return ()
+        positions = [number for number, site in enumerate(record.elements)
+                     if construction.site == site]
+        return (members[positions[0]],) if len(positions) == 1 else ()
+
 
 @dataclass(frozen=True)
 class RuntimePrimitiveClaimProof:
@@ -110,10 +144,11 @@ class RuntimePrimitiveClaimProof:
                 # forward replacement or hook's computation.
                 continue
             meaning = self.bindings._rows[module.path].provenance.meaning.framework_primitive
-            definition = runtime_primitive_definition(module.class_ref)
+            definition = runtime_primitive_definition(module.framework_primitive)
             if meaning is not None and definition is not None:
                 kind, label, function = definition
-                rows[module.path] = {"kind": kind, "label": label, "function": function}
+                rows[module.path] = {"kind": kind, "label": label, "function": function,
+                                     "method_source_sha256": module.framework_primitive.forward_source_sha256}
         return rows
 
     def summary(self):

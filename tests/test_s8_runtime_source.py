@@ -161,11 +161,15 @@ def test_explicit_occurrence_placement_keeps_fact_qualification_separate(tmp_pat
 def test_framework_primitive_is_exact_type_not_bare_class_name(tmp_path):
     from model_unfolder.evidence.primitive_semantics import read_runtime_primitives, runtime_primitive_definition
     assert runtime_primitive_definition(ResolvedClass("fixture.model", "SiLU")) is None
-    assert runtime_primitive_definition(ResolvedClass("torch.nn.modules.activation", "SiLU")) == ("activation", "SiLU", "silu")
+    assert runtime_primitive_definition(ResolvedClass("torch.nn.modules.activation", "SiLU")) is None
+    from physics.framework_primitives import capture_framework_types, witness_framework_type
+    import torch.nn as nn
+    witness = witness_framework_type(nn.SiLU(), capture_framework_types())
+    assert runtime_primitive_definition(witness) == ("activation", "SiLU", "silu")
     binding = _binding(tmp_path)
     cls = ResolvedClass("torch.nn.modules.activation", "SiLU")
     root, child = binding.inventory.modules
-    inventory = replace(binding.inventory, modules=(root, replace(child, class_ref=cls, origin_module=cls.module, mro_entries=(cls,))))
+    inventory = replace(binding.inventory, modules=(root, replace(child, class_ref=cls, origin_module=cls.module, mro_entries=(cls,), framework_primitive=witness)))
     table = reconcile(model="fixture", inventory=inventory, observations=(),
                       config_document=prepare_document({}, merge=False), program_index=binding.index)
     fact = read_runtime_primitives(RuntimeSourceBindings(table, inventory, binding.index))

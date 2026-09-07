@@ -52,6 +52,33 @@ def test_gated_ffn_resolves_to_a_gated_region():
     assert r.merges() == ["multiply"]          # the single branch-merge point
 
 
+def test_fused_gate_bypass_is_painted_in_the_actual_svg():
+    import re
+    import xml.etree.ElementTree as ET
+    from model_unfolder.renderers.html.graph_engine import render_graph
+    region = ffn_region({"kind": "dense", "gated": True, "activation": "gelu",
+                         "projection_mode": "fused_gate_up"}, None)
+    graph = region_to_graph(region, clickable=True)
+    assert any(not lane.ids for parallel in graph.parallels for lane in parallel.norm_lanes())
+    svg = ET.fromstring(render_graph(graph, {}, "probe", "ffn", "FFN"))
+    # The actual bypass rail must run on the opposite side from the GELU
+    # branch and enter the multiplication. Graph-level wiring alone passed
+    # even when the renderer silently discarded the empty lane.
+    endpoints = []
+    for path in svg.iter("{http://www.w3.org/2000/svg}path"):
+        if "marker-end" not in path.attrib:
+            continue
+        numbers = re.findall(r"-?\d+(?:\.\d+)?", path.attrib.get("d", ""))
+        if len(numbers) >= 4:
+            endpoints.append(tuple(float(x) for x in numbers[-2:]))
+    connector = next(group for group in svg.iter("{http://www.w3.org/2000/svg}g")
+                     if group.attrib.get("data-id") == "multiply")
+    circle = connector.find("{http://www.w3.org/2000/svg}circle")
+    cx, cy = float(circle.attrib["cx"]), float(circle.attrib["cy"])
+    assert any(x < cx and y == cy and (2 * cx - x, cy) in endpoints
+               for x, y in endpoints), endpoints
+
+
 def test_exact_additive_gate_operand_is_visible_and_not_dangling():
     r = ffn_region({
         "kind": "dense",

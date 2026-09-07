@@ -42,7 +42,8 @@ def request_from_resolved_source(document, bundle, root, *, source_overrides=())
     return BuildRequest(
         config=document.checkpoint, framework="diffusers",
         factory_module=module, factory_qualname=symbol.qualified_name,
-        factory_method="from_config", source_overrides=source_overrides)
+        factory_method="from_config", source_overrides=source_overrides,
+        capture_framework_primitives=True)
 
 
 def build_resolved_instance(document, bundle, root, *, source_overrides=()):

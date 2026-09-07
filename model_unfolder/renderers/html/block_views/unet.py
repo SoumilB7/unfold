@@ -74,7 +74,7 @@ def build_constructed_children_view(ir, info, mount_id, block):
     for number, child in enumerate(block.get("children", ())):
         regions.append(_box(parts, 145 + number % 3 * 270,
                             35 + number // 3 * 100, 235, 64,
-                            [child["label"], child["title"]], shadow_id,
+                            child["label"], shadow_id,
                             node_id=child["id"]))
     return fit_svg(arrow_id, shadow_id, parts, regions,
                    "Constructed children; containment only", min_width=720, pad=40)
@@ -99,10 +99,10 @@ def build_runtime_stage_connections(ir, info, mount_id, block):
         operands = route["operands"]
         if not operands:
             continue
-        join_id = block["id"] + f"__join_{number}"
-        nodes = [Node(operand, "unknown", children[operand]["label"],
-                      resolved=False) for operand in operands]
-        nodes.extend((Node(join_id, "concat", static=True),
+        join_id = route["join"]
+        nodes = [Node(operand, children[operand]["kind"], children[operand]["label"],
+                      resolved=children[operand].get("resolved", True)) for operand in operands]
+        nodes.extend((Node(join_id, "concat"),
                       Node(route["target"], "opaque", "Repeated child calls")))
         graph = Graph(nodes, [operands[0], join_id, route["target"]],
                       side_inputs=[SideInput(operand, join_id,
@@ -110,14 +110,41 @@ def build_runtime_stage_connections(ir, info, mount_id, block):
                                    for offset, operand in enumerate(operands[1:])])
         rendered.append(render_graph(
             graph, info, mount_id, "runtime_stage_connections",
-            "Concat output to child calls; operand lineage remains under investigation",
+            "Source-proven concat; conditional input routes remain explicit",
             facts_projected=frozenset(block.get("source_fact_keys", ()))))
-        used.update((*operands, route["target"]))
+        used.update((*operands, join_id, route["target"]))
     remaining = [child for child in children.values() if child["id"] not in used]
     if remaining:
         rendered.append(build_constructed_children_view(ir, info, mount_id,
                                                         {"children": remaining}))
     return "".join(rendered)
+
+
+def build_runtime_port_route(ir, info, mount_id, block):
+    """Arguments enter one call boundary; result ports assert no inner algebra."""
+    from ..graph import Graph, Node, SideInput
+    children = block.get("children", ())
+    kind = block["detail"]["port_route_kind"]
+    if kind == "conditional":
+        return build_constructed_children_view(ir, info, mount_id, block)
+    if not children:
+        return ""
+    nodes = [Node(child["id"], child["kind"], child["label"],
+                  resolved=child.get("resolved", True)) for child in children]
+    end = block["id"] + "__result_port"
+    label = "Selected value" if kind == "selection" else "Returned slot " + str(block["detail"].get("result_slot", []))
+    nodes.append(Node(end, "port", label, static=True))
+    arguments = block["detail"].get("argument_ids", [child["id"] for child in children])
+    boundary = block["detail"].get("boundary_id", end)
+    flow = ([arguments[0]] if arguments else []) + ([boundary] if boundary != end else []) + [end]
+    return render_graph(Graph(nodes, flow,
+                              side_inputs=[SideInput(argument, boundary,
+                                                     "left" if number % 2 else "right")
+                                           for number, argument in enumerate(arguments[1:])]),
+                        info, mount_id, "runtime_port_route",
+                        "Call boundary ports only; internal dependency unresolved" if kind == "call_result"
+                        else "Source-proven selection from the input value",
+                        facts_projected=frozenset(block.get("source_fact_keys", ())))
 
 
 def build_runtime_cell_connections(ir, info, mount_id, block):

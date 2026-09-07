@@ -31,6 +31,7 @@ import time
 from typing import Any, Mapping
 
 from physics.source_override import SourceOverride, source_overrides
+from physics.framework_primitives import FrameworkPrimitiveWitness
 
 
 SCHEMA_VERSION = 1
@@ -72,6 +73,7 @@ class BuildRequest:
     memory_limit_bytes: int = 16 * 1024**3
     label: str = "unnamed"
     source_overrides: tuple[SourceOverride, ...] = ()
+    capture_framework_primitives: bool = False
 
     def __post_init__(self) -> None:
         if self.framework not in {"custom", "transformers", "diffusers"}:
@@ -100,6 +102,8 @@ class BuildRequest:
         if not self.source_overrides:
             # Preserve the original request bytes outside this demonstration.
             row.pop("source_overrides")
+        if not self.capture_framework_primitives:
+            row.pop("capture_framework_primitives")
         return row
 
     @classmethod
@@ -202,6 +206,7 @@ class ModuleNode:
     parameters: tuple[ParameterShape, ...]
     init_attributes: Mapping[str, Any]
     guarded_none_children: tuple[Mapping[str, Any], ...]
+    framework_primitive: FrameworkPrimitiveWitness | None = None
 
     def __post_init__(self) -> None:
         if self.origin_module != self.class_ref.module:
@@ -287,7 +292,12 @@ class InventoryResult:
             raise ValueError("result status must be ok or failed")
 
     def to_dict(self) -> dict[str, Any]:
-        return dataclasses.asdict(self)
+        row = dataclasses.asdict(self)
+        if row.get("inventory"):
+            for module in row["inventory"]["modules"]:
+                if module.get("framework_primitive") is None:
+                    module.pop("framework_primitive", None)
+        return row
 
     @classmethod
     def from_dict(cls, row: Mapping[str, Any]) -> "InventoryResult":
@@ -326,6 +336,8 @@ def _inventory_from_dict(row: Mapping[str, Any]) -> InstanceInventory:
                 requires_grad=x["requires_grad"]) for x in node["parameters"]),
             init_attributes=node["init_attributes"],
             guarded_none_children=tuple(node["guarded_none_children"]),
+            framework_primitive=(FrameworkPrimitiveWitness(**node["framework_primitive"])
+                                 if node.get("framework_primitive") else None),
         ))
     return InstanceInventory(
         schema_version=row["schema_version"], provenance=provenance,
@@ -559,7 +571,9 @@ def _signature(module: Any) -> str:
     return hashlib.sha256(_canon(row)).hexdigest()
 
 
-def inventory_model(model: Any, request: BuildRequest, constructor_used: str) -> InstanceInventory:
+def inventory_model(model: Any, request: BuildRequest, constructor_used: str,
+                    *, framework_types=None) -> InstanceInventory:
+    from physics.framework_primitives import witness_framework_type
     modules: list[ModuleNode] = []
     repetitions: list[RepetitionGroup] = []
     classes: set[type] = set()
@@ -575,6 +589,8 @@ def inventory_model(model: Any, request: BuildRequest, constructor_used: str) ->
             parameters=_direct_parameter_shapes(module),
             init_attributes=attrs,
             guarded_none_children=_guarded_none(cls, path, module),
+            framework_primitive=(witness_framework_type(module, framework_types)
+                                 if framework_types is not None else None),
         ))
         groups: dict[str, list[str]] = {}
         for name, child in module.named_children():
@@ -619,8 +635,11 @@ def _worker(request_path: Path, result_path: Path) -> int:
         for path in reversed(request.import_paths):
             sys.path.insert(0, path)
         try:
+            from physics.framework_primitives import capture_framework_types
+            captured = capture_framework_types() if request.capture_framework_primitives else None
             model, used = _construct(request)
-            result = InventoryResult("ok", inventory=inventory_model(model, request, used))
+            result = InventoryResult("ok", inventory=inventory_model(
+                model, request, used, framework_types=captured))
         except NetworkRefused as exc:
             result = _failure("NetworkRefused", "construct", exc)
         except (ImportError, ModuleNotFoundError, AttributeError) as exc:

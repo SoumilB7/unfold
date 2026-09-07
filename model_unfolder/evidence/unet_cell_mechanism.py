@@ -18,7 +18,7 @@ remains open: positive local evidence is useful, absence is not a negative.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .component_owner import OwnerOccurrenceId, resolve_owner_graph
 from .construction_calls import resolve_construction_call_in_graph
@@ -60,6 +60,7 @@ class StageJoinConnection:
     dimension: ExprNode | None
     bindings: tuple[BindingObservation, ...]
     excluded_bindings: tuple[BindingObservation, ...] = ()
+    index: ProgramIndex | None = field(default=None, repr=False, compare=False)
 
     def __post_init__(self):
         if not isinstance(self.invocation, StageChildInvocation) or not isinstance(self.join, CallObservation):
@@ -71,6 +72,19 @@ class StageJoinConnection:
         if any(not _lexically_disjoint(row.guard, self.invocation.call.guard)
                for row in self.excluded_bindings):
             raise ValueError("excluded writes must belong to the opposite exact branch")
+        if not isinstance(self.index, ProgramIndex):
+            raise TypeError("join routes require their exact authoritative index")
+        from .unet_cell_connections import _direct_origin
+        call = self.invocation.call
+        forward = self.index.callable_by_symbol(call.enclosing_callable)
+        if forward is None or self.join not in self.index.calls_in(forward.symbol) \
+                or call not in self.index.calls_in(forward.symbol):
+            raise ValueError("join route cites foreign source call observations")
+        actuals = (*call.args, *(value for name, value in call.kwargs if name != "**"))
+        routes = [_direct_origin(self.index, forward, call, actual, {self.join.span: self.join})
+                  for actual in actuals]
+        if not any(route is not None and route[1] == self.bindings for route in routes):
+            raise ValueError("join result does not reach the cited child input")
 
 
 def _lexically_disjoint(left, right):
@@ -125,7 +139,7 @@ def read_unet_stage_join_connections(cells):
                     dimension = dict(join.kwargs).get("dim")
                     if dimension is None and len(join.args) > 1:
                         dimension = join.args[1]
-                    connections.append(StageJoinConnection(invocation, join, dimension, tuple(route), excluded))
+                    connections.append(StageJoinConnection(invocation, join, dimension, tuple(route), excluded, index))
                     break
     spans = tuple(dict.fromkeys(span for row in connections
                                for span in (row.join.span, row.invocation.call.span,

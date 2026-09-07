@@ -51,23 +51,26 @@ _REASSEMBLY_PROTOCOLS = frozenset({"torch.cat"})
 # not subclass names or class-name patterns. Custom implementations continue
 # to their exact source reader even if their bare class name matches a row.
 _RUNTIME_PRIMITIVES = {
-    ("torch.nn.modules.linear", "Linear"): ("linear", "Linear", ""),
-    ("torch.nn.modules.conv", "Conv1d"): ("conv1d", "1D convolution", ""),
-    ("torch.nn.modules.conv", "Conv2d"): ("conv2d", "2D convolution", ""),
-    ("torch.nn.modules.conv", "Conv3d"): ("conv3d", "3D convolution", ""),
-    ("torch.nn.modules.normalization", "GroupNorm"): ("norm", "GroupNorm", "groupnorm"),
-    ("torch.nn.modules.normalization", "LayerNorm"): ("norm", "LayerNorm", "layernorm"),
-    ("torch.nn.modules.normalization", "RMSNorm"): ("norm", "RMSNorm", "rmsnorm"),
-    ("torch.nn.modules.activation", "SiLU"): ("activation", "SiLU", "silu"),
-    ("torch.nn.modules.activation", "GELU"): ("activation", "GELU", "gelu"),
-    ("torch.nn.modules.activation", "ReLU"): ("activation", "ReLU", "relu"),
-    ("torch.nn.modules.dropout", "Dropout"): ("dropout", "Dropout", ""),
+    "linear": ("linear", "Linear", ""),
+    "conv1d": ("conv1d", "1D convolution", ""),
+    "conv2d": ("conv2d", "2D convolution", ""),
+    "conv3d": ("conv3d", "3D convolution", ""),
+    "group_norm": ("norm", "GroupNorm", "groupnorm"),
+    "layer_norm": ("norm", "LayerNorm", "layernorm"),
+    "rms_norm": ("norm", "RMSNorm", "rmsnorm"),
+    "silu": ("activation", "SiLU", "silu"),
+    "gelu": ("activation", "GELU", "gelu"),
+    "relu": ("activation", "ReLU", "relu"),
+    "dropout": ("dropout", "Dropout", ""),
 }
 
 
-def runtime_primitive_definition(class_ref):
-    """The exact serialized class object from the isolated instance witness."""
-    return _RUNTIME_PRIMITIVES.get((class_ref.module, class_ref.qualname))
+def runtime_primitive_definition(witness):
+    """Only a worker's exact-object witness authorizes a framework operation."""
+    from physics.instance_inventory import FrameworkPrimitiveWitness
+    if not isinstance(witness, FrameworkPrimitiveWitness):
+        return None
+    return _RUNTIME_PRIMITIVES.get(witness.key)
 
 
 def read_runtime_primitives(bindings):

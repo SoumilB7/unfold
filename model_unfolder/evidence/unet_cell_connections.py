@@ -54,6 +54,29 @@ def _direct_origin(index, forward, target, actual, sources, guard_state=None):
 def _member_stays_bound(index, forward, call, module_path, bindings):
     """Refuse mutation/unsupported-control gaps rather than borrowing init state."""
     member = _member(call.callee)
+    # A local alias does not stop an unknown helper from receiving the parent.
+    # This is a conservative escape check, not a claim about helper effects.
+    aliases = {"self"}
+    changed = True
+    while changed:
+        changed = False
+        for binding in index.bindings_in(forward.symbol):
+            if binding.value is not None and binding.value.kind == "name" \
+                    and binding.value.name in aliases:
+                for target in binding.targets:
+                    if target.kind == "name" and target.name not in aliases:
+                        aliases.add(target.name)
+                        changed = True
+
+    def parent_escapes(expression):
+        if expression.kind == "name":
+            return expression.name in aliases
+        # Reading a member is distinct from passing its parent object.
+        if expression.kind == "attribute":
+            return False
+        return any(parent_escapes(child) for child in expression.children) or any(
+            parent_escapes(child) for _, child in expression.keyword_children)
+
     for access in index.attribute_accesses:
         if access.enclosing_callable == forward.symbol and access.mode == "write" \
                 and _member(access.target) == member:
@@ -73,8 +96,12 @@ def _member_stays_bound(index, forward, call, module_path, bindings):
                            for access in index.attribute_accesses)
             if not non_callable or replaced:
                 return False
-        if any(arg.kind == "name" and arg.name == "self"
+        if any(parent_escapes(arg)
                for arg in (*prior.args, *(arg for _, arg in prior.kwargs))):
+            return False
+        if prior.callee.kind == "attribute" and prior.callee.children \
+                and prior.callee.children[0].kind == "name" \
+                and prior.callee.children[0].name in aliases - {"self"}:
             return False
     for unsupported in index.unsupported_execution_in(forward.symbol):
         span = unsupported.span

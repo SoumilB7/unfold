@@ -61,6 +61,7 @@ from .unet import (
     build_runtime_stage_connections,
     build_runtime_cell_connections,
     build_runtime_context_connection,
+    build_runtime_port_route,
 )
 from .vae import build_vae_decoder_block_view, build_vae_decoder_view
 
@@ -220,6 +221,7 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     "constructed_children": _from_block(build_constructed_children_view),
     "runtime_ffn": _from_block(build_runtime_ffn_view),
     "runtime_stage_connections": _from_block(build_runtime_stage_connections),
+    "runtime_port_route": _from_block(build_runtime_port_route),
     "runtime_cell_connections": _from_block(build_runtime_cell_connections),
     "runtime_context_connection": _from_block(build_runtime_context_connection),
     "encoded_text_concat": _from_block(build_encoded_text_concat_view),

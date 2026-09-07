@@ -8,8 +8,10 @@ from __future__ import annotations
 
 import argparse
 import ast
+from contextlib import nullcontext
 import dataclasses
 import difflib
+import gzip
 import hashlib
 import json
 from pathlib import Path
@@ -31,6 +33,8 @@ from model_unfolder.evidence.expression_eval import ConfigExpressionEvaluator
 from model_unfolder.evidence.models import SourceImportRoot
 from model_unfolder.evidence.runtime_inventory import request_from_resolved_source
 from physics.source_override import SourceOverride
+from model_unfolder.adapters.diffusor.unet_differential import legacy_unet_comparison
+from report_s8_demonstration import observation, blocks
 
 
 def _hash(data):
@@ -39,6 +43,49 @@ def _hash(data):
 
 def _write(path, value):
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+
+
+def _tree_sources():
+    """Bind a long model run to the exact implementation it imported."""
+    rows = {str(path.relative_to(ROOT)): _hash(path.read_bytes())
+            for folder in ("model_unfolder", "physics")
+            for path in sorted((ROOT / folder).rglob("*.py"))}
+    return {"files": rows, "sha256": _hash(json.dumps(rows, sort_keys=True).encode())}
+
+
+def _qualified_facts(context, artifact):
+    qualified = {}
+    source_hashes = set()
+    for key, fact in sorted(context.facts.typed.items()):
+        summary = fact.claim_evidence.summary() if fact.claim_evidence is not None else None
+        proof = dataclasses.asdict(summary) if summary is not None else None
+        qualified[key] = {"claim_kind": fact.claim_kind, "claim_readers": fact.claim_readers,
+                          "status": fact.status, "completeness": fact.completeness,
+                          "source_spans": [dataclasses.asdict(span) for span in fact.source_spans],
+                          "proof": proof}
+        if proof:
+            import re
+            source_hashes.update(re.findall(r"sha256:([0-9a-f]{64}):", "\n".join(proof["evidence_refs"])))
+    _write(artifact / "qualified-facts.json", qualified)
+    # Source files are review evidence, not new reader input or blessed output.
+    archive = artifact / "cited-source"
+    archive.mkdir()
+    sources = []
+    for node in context.program_index().source_nodes:
+        source = node.source_id
+        if source.content_fingerprint not in source_hashes:
+            continue
+        path = Path(source.canonical_path)
+        if not path.is_file():
+            sources.append({"sha256": source.content_fingerprint, "path": str(path), "status": "missing_after_read"})
+            continue
+        target = archive / (source.content_fingerprint + ".py.gz")
+        content = path.read_bytes()
+        target.write_bytes(gzip.compress(content, mtime=0))
+        sources.append({"sha256": source.content_fingerprint, "path": str(path),
+                        "content_sha256": _hash(content), "artifact": str(target.relative_to(artifact))})
+    _write(artifact / "cited-source.json", sources)
+    return qualified
 
 
 def _rename_local(source):
@@ -95,18 +142,24 @@ def _source_condition(context, config, condition, baseline, artifact):
             raise ValueError("controlled computation edit has no unique source site")
         after = before.replace(needle, "transformer_layers_per_block=transformer_layers_per_block[i] + 1,")
     modified.write_text(after)
+    removed = None
     if condition == "missing":
         ordinary = json.loads((baseline / "ordinary" / "result.json").read_text())
         dependency = Path(ordinary["nested_source_address"])
         target = scratch / str(ordinary["nested_source_root"]) / ordinary["nested_source_package"] / dependency
         if not target.is_file() or target == modified:
             raise ValueError("missing-evidence control must remove the prior exact nested dependency")
+        removed = {"path": str(target), "sha256": _hash(target.read_bytes()),
+                   "ordinary_dependency": str(dependency)}
         target.unlink()
     _write(artifact / "source-control.json", {
         "module": request.factory_module, "original_sha256": _hash(before.encode()),
         "scratch_sha256": _hash(modified.read_bytes()), "condition": condition,
-        "same_source_required": True,
+        "same_source_required": True, "original_path": str(original),
+        "scratch_path": str(modified), "removed_dependency": removed,
+        "scope": "one-time witness experiment; no production per-model hook",
     })
+    (artifact / "scratch-modeling-source.py").write_bytes(modified.read_bytes())
     (artifact / "source.diff").write_text("".join(difflib.unified_diff(
         before.splitlines(keepends=True), after.splitlines(keepends=True),
         fromfile="installed-modeling-source", tofile="scratch-modeling-source")))
@@ -130,10 +183,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--condition", choices=("ordinary", "sparse", "misleading", "rewrite", "unchanged", "changed", "missing"), required=True)
+    parser.add_argument("--condition", choices=("ordinary", "sparse", "misleading", "rewrite", "unchanged", "changed", "missing", "legacy"), required=True)
+    parser.add_argument("--expect-source-sha256", help="Refuse a run against a changed production source manifest")
     args = parser.parse_args()
     artifact = args.output / args.condition
     artifact.mkdir(parents=True, exist_ok=False)
+    tree_before = _tree_sources()
+    _write(artifact / "implementation-before.json", tree_before)
+    if args.expect_source_sha256 and args.expect_source_sha256 != tree_before["sha256"]:
+        raise ValueError("production sources differ from the frozen experiment tree")
     raw = json.loads(args.input.read_text())
     config = dict(raw.get("config", raw))
     context = ParseContext.build(config)
@@ -162,16 +220,25 @@ def main():
     _write(artifact / "controls.json", controls)
     start = time.monotonic()
     print("Parsing", args.condition, flush=True)
-    ir = config_to_ir(config, parse_context=context)
+    with legacy_unet_comparison() if args.condition == "legacy" else nullcontext():
+        ir = config_to_ir(config, parse_context=context)
     diagram = Diagram(ir)
     html = diagram.to_html()
     (artifact / "page.html").write_text(html)
-    _write(artifact / "ir.json", ir.to_dict())
-    _write(artifact / "facts.json", {key: dataclasses.asdict(fact.to_record()) for key, fact in context.facts.typed.items()})
+    ir_record = ir.to_dict()
+    facts = {key: dataclasses.asdict(fact.to_record()) for key, fact in context.facts.typed.items()}
+    _write(artifact / "ir.json", ir_record)
+    _write(artifact / "facts.json", facts)
+    _qualified_facts(context, artifact)
+    _write(artifact / "observation.json", observation(ir_record, facts, html))
     population = context.facts.typed.get("root.denoiser.constructed_modules")
     result = {"condition": args.condition, "status": "review_required", "blessed": False,
               "html_sha256": _hash(html.encode()), "wiring_problems": diagram.wiring_problems(),
               "elapsed_seconds": round(time.monotonic() - start, 3)}
+    result["projected_fact_keys"] = sorted({key for block in blocks(ir_record.get("extras", {}).get("render", {}))
+                                            for key in block.get("source_fact_keys", ())
+                                            if key.startswith("root.denoiser.")})
+    result["implementation_source_sha256"] = tree_before["sha256"]
     if population is not None:
         bindings = population.claim_evidence.bindings
         inventory = bindings.inventory
@@ -184,6 +251,7 @@ def main():
         _write(artifact / "inventory.json", dataclasses.asdict(inventory))
         if context.source_overrides:
             expected = context.source_overrides[0].sha256
+            result["scratch_source_sha256"] = expected
             result["same_source"] = result["static_source_sha256"] == result["runtime_source_sha256"] == expected
             if not result["same_source"]:
                 raise ValueError("static reader and instance builder did not examine the same scratch bytes")
@@ -196,9 +264,27 @@ def main():
                     result.update(nested_source_address=str(address.relative_to(import_root.path)),
                                   nested_source_root=number, nested_source_package=import_root.package)
                     break
+    tree_after = _tree_sources()
+    _write(artifact / "implementation-after.json", tree_after)
+    result["implementation_unchanged_during_run"] = tree_after == tree_before
     _write(artifact / "result.json", result)
+    if tree_after != tree_before:
+        raise ValueError("production source changed during the experiment; outputs are not a frozen-tree receipt")
     print(json.dumps(result, sort_keys=True), flush=True)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as exc:
+        # Preserve failed experiments as failed attempts, not missing runs.
+        failure_parser = argparse.ArgumentParser(add_help=False)
+        failure_parser.add_argument("--output", type=Path)
+        failure_parser.add_argument("--condition")
+        failed, _ = failure_parser.parse_known_args()
+        if failed.output is not None and failed.condition:
+            folder = failed.output / failed.condition
+            if folder.is_dir():
+                _write(folder / "failure.json", {"status": "failed", "blessed": False,
+                    "exception_type": type(exc).__name__, "detail": str(exc)})
+        raise

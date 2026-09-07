@@ -1,0 +1,46 @@
+{
+  "R1_self_alias_escape": {
+    "direct_edge_found": true,
+    "member_stays_bound": true,
+    "source": "class Arbitrary:\n    def forward(self, value):\n        alias = self\n        helper(alias)\n        value = self.first(value)\n        return self.second(value)\n"
+  },
+  "R2_serialized_type_spoof": {
+    "actual_at_zero": 10.0,
+    "claimed_meaning": [
+      "activation",
+      "SiLU",
+      "silu"
+    ],
+    "framework_SiLU_at_zero": 0.0,
+    "is_framework_SiLU": false,
+    "serialized_ref": "ResolvedClass(module='torch.nn.modules.activation', qualname='SiLU')"
+  },
+  "R3_unrelated_concat": {
+    "actual_child_call_line": 14,
+    "actual_join_line": 13,
+    "bindings_still_justify_original_join": true,
+    "forged_connection_constructed": true,
+    "limit": "DTO constructor reproduced; wrapper acceptance checked by source inspection, not a full forged EvidenceFact probe",
+    "stage_source": "\nfrom torch.nn import ModuleList\nfrom torch import cat\nfrom .cells import CellOne, CellTwo\n\nclass PlainStage:\n    def __init__(self):\n        self.units = ModuleList([CellOne(), CellTwo()])\n        self.direct = CellOne()\n    def forward(self, value, side=None):\n        for unit in self.units:\n            ignored = cat([side, side], dim=0)\n            joined = cat([value, side], dim=1)\n            value = unit(joined)\n        value = self.direct(value)\n        return value, (value,)\n\nclass PairedStage:\n    def __init__(self):\n        self.left = ModuleList([CellOne()])\n        self.right = ModuleList([CellTwo()])\n        self.unused = ModuleList([CellOne()])\n    def forward(self, value, side=None):\n        for index, (one, two) in enumerate(zip(self.left, self.right)):\n            value = one(value)\n            value = two(value)\n        return value, (value,)\n\ndef build(token):\n    if token == \"plain\":\n        return PlainStage()\n    return PairedStage()\n",
+    "unused_join_line": 12
+  },
+  "R4_discarded_conditioning_argument": {
+    "claims": [
+      {
+        "binding_line": 7,
+        "claimed_side_formal": "side",
+        "kind": "additive"
+      }
+    ],
+    "result_side_999": 10,
+    "result_side_zero": 10,
+    "source": "def ignore(arg):\n    return 7\nclass Cell:\n    def forward(self, value, side):\n        hidden = value * 2\n        detached_side = ignore(side)\n        hidden = hidden + detached_side\n        return value + hidden\n"
+  },
+  "checkout": "/private/tmp/unfold-s8-stop-review",
+  "checkout_head": "349c02d2fcc41139ed770a1fe72233da4d5f6250",
+  "reviewed_implementation": "bb48a31e336c1721f0a111862bd081acf390bb25",
+  "scope": "initial authority review; not the full S8 acceptance bracket",
+  "tracked_fingerprint_after": "8d0c0a31f22da471bc0e376340f45934972ade7521ff84e23fc40329d78a13f5",
+  "tracked_fingerprint_before": "8d0c0a31f22da471bc0e376340f45934972ade7521ff84e23fc40329d78a13f5",
+  "verdict": "RETURN"
+}
