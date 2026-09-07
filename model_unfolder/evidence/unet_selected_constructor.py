@@ -30,6 +30,7 @@ from .expression_eval import (
 from .program_index import (
     CallObservation,
     ExprNode,
+    FieldAssignRecord,
     ProgramIndex,
     SourceSpan,
     SymbolId,
@@ -452,8 +453,7 @@ def _possible_helper_writes(index, candidate, callable_symbol, visiting=()):
         return frozenset()
     rows = {
         f"self.{item.field}"
-        for item in index.field_assigns_of(candidate)
-        if item.enclosing_callable == callable_symbol
+        for item in _field_assignments(index, candidate, callable_symbol)
     }
     for call in index.calls_in(callable_symbol):
         target = _self_helper_symbol(candidate, call)
@@ -493,6 +493,23 @@ class _CallableState:
     spans: tuple[SourceSpan, ...]
 
 
+def _field_assignments(index, candidate, callable_symbol):
+    """Use the existing exact binding record for every chained self target."""
+    assignments = {(item.span, item.field): item
+                   for item in index.field_assigns_of(candidate)
+                   if item.enclosing_callable == callable_symbol}
+    for binding in index.bindings_in(callable_symbol):
+        if binding.assignment_kind not in {"assign", "annassign"}:
+            continue
+        for target in binding.targets:
+            key = _expr_key(target)
+            if key is not None and key.startswith("self.") and key.count(".") == 1:
+                assignments.setdefault((binding.span, key[5:]), FieldAssignRecord(
+                    candidate, callable_symbol, key[5:], binding.value,
+                    binding.guard, binding.span))
+    return tuple(assignments.values())
+
+
 def _walk_callable(index, candidate, constructor, authority_spans,
                    callable_symbol, route, route_spans, route_premises,
                    incoming, visiting):
@@ -502,21 +519,24 @@ def _walk_callable(index, candidate, constructor, authority_spans,
     unresolved = set()
     states = []
     unresolved_calls = []
-    assignments = tuple(item for item in index.field_assigns_of(candidate)
-                        if item.enclosing_callable == callable_symbol)
+    assignments = _field_assignments(index, candidate, callable_symbol)
+    assignment_groups = {}
+    for item in assignments:
+        assignment_groups.setdefault(item.span, []).append(item)
     calls = index.calls_in(callable_symbol)
     events = tuple(sorted((
-        *((item.span, "field", item) for item in assignments),
+        *((span, "field", tuple(items)) for span, items in assignment_groups.items()),
         *((item.span, "call", item) for item in calls),
     ), key=lambda item: _execution_key(item[0], item[1])))
     unsupported = tuple(
         item for item in index.unsupported_execution_in(callable_symbol)
         if item.span is not None)
-    for _span, kind, item in events:
+    for _span, kind, event in events:
+        item = event[0] if kind == "field" else event
         if any(_within(item.span, region.span) for region in unsupported):
             if kind == "field":
                 _invalidate_addresses(
-                    (f"self.{item.field}",), env, unresolved)
+                    tuple(f"self.{assignment.field}" for assignment in event), env, unresolved)
             else:
                 target = _self_helper_symbol(candidate, item)
                 if target is not None:
@@ -528,8 +548,24 @@ def _walk_callable(index, candidate, constructor, authority_spans,
                             index, candidate, target, env, unresolved)
             continue
         if kind == "field":
-            _field_assign(
-                index, callable_symbol, item, env, unresolved, route_premises)
+            # All simple self targets share one pre-assignment environment.
+            # In ``self.a = self.b = self.a + 1``, updating a must not make
+            # b evaluate the RHS again against the new a.
+            incoming_fields = dict(env)
+            incoming_unresolved = set(unresolved)
+            for assignment in event:
+                evaluated, gaps = dict(incoming_fields), set(incoming_unresolved)
+                _field_assign(index, callable_symbol, assignment,
+                              evaluated, gaps, route_premises)
+                key = f"self.{assignment.field}"
+                if key in evaluated:
+                    env[key] = evaluated[key]
+                else:
+                    env.pop(key, None)
+                if key in gaps:
+                    unresolved.add(key)
+                else:
+                    unresolved.discard(key)
             continue
         target = _self_helper_symbol(candidate, item)
         if target is None:

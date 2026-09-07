@@ -55,6 +55,12 @@ from .unet import (
     build_unet_stage_view,
     build_unet_transformer_view,
     build_unet_view,
+    build_unet_constructed_view,
+    build_constructed_children_view,
+    build_runtime_ffn_view,
+    build_runtime_stage_connections,
+    build_runtime_cell_connections,
+    build_runtime_context_connection,
 )
 from .vae import build_vae_decoder_block_view, build_vae_decoder_view
 
@@ -210,6 +216,12 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     "vae_decoder_block": _from_block(build_vae_decoder_block_view),
     "text_encoder": _from_block(build_text_encoder_view),
     "unet": _from_block(build_unet_view),
+    "unet_constructed": _from_block(build_unet_constructed_view),
+    "constructed_children": _from_block(build_constructed_children_view),
+    "runtime_ffn": _from_block(build_runtime_ffn_view),
+    "runtime_stage_connections": _from_block(build_runtime_stage_connections),
+    "runtime_cell_connections": _from_block(build_runtime_cell_connections),
+    "runtime_context_connection": _from_block(build_runtime_context_connection),
     "encoded_text_concat": _from_block(build_encoded_text_concat_view),
     "unet_stage": _from_block(build_unet_stage_view),
     "unet_resnet": _from_block(build_unet_resnet_view),

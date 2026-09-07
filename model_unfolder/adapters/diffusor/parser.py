@@ -25,7 +25,6 @@ from .blocks import (
     diffusion_opaque_render_spec,
     diffusion_projected_render_spec,
 )
-from .unet import parse_unet, unet_geom, unet_render_spec
 
 
 _ALIASES: dict[str, list[str]] = load_diffusion_aliases()
@@ -45,8 +44,11 @@ _ENCODER_NAMES = load_diffusion_text_encoders()
 # ---------------------------------------------------------------------------
 
 def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str], context=None) -> ModelIR:
-    """Build the IR for a UNet denoiser: no flat layer stack — the U-net
-    structure lives in ``extras["unet"]`` and is drawn by the UNet view."""
+    """Legacy S8 differential only; ordinary parsing cannot enter this body."""
+    from .unet_differential import legacy_comparison_enabled
+    if not legacy_comparison_enabled():
+        raise RuntimeError("legacy UNet authority is restricted to differential verification")
+    from .unet import parse_unet, unet_geom, unet_render_spec
     unet = parse_unet(cfg)
     # The Transformer2D FFN's inner shape, ANCHORED to the block classes the
     # config's own block-type strings name (identity-as-address) — restores
@@ -640,7 +642,26 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # proven handoff internally, but it can no longer route an unknown root into
     # a U-net architecture.
     if topology.has_value and topology.value.kind == "u_shaped":
-        return _parse_unet_model(cfg, arch_name, warnings, context=context)
+        from .unet_differential import legacy_comparison_enabled
+        if legacy_comparison_enabled():
+            return _parse_unet_model(cfg, arch_name, warnings, context=context)
+        from .unet_cutover import build_unet_cutover
+        result = build_unet_cutover(
+            cfg, context, handoffs=_projected_pipeline_handoffs(
+                cfg, context, conditioning_proven=False),
+            name=_diffusion_name(cfg, arch_name),
+            source_overrides=context.source_overrides)
+        if result.ir is not None:
+            return result.ir
+        from ...evidence.reader_result import ReaderFailure, ReaderResult
+        failure = result.inventory_result.failure
+        reason = (failure.detail if failure is not None else
+                  "the exact selected source reader did not close the UNet root")
+        ir = _parse_projected_denoiser(
+            cfg, arch_name, context, ReaderResult.failed(None, (
+                ReaderFailure("missing_source", reason),)))
+        ir.warnings.append("UNet investigation_missing: " + reason)
+        return ir
 
     # U10-F3/F4 is the sole production path for every non-U-shaped diffusion
     # root. It performs the exact F2 operand join and consumes only those bound

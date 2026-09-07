@@ -30,6 +30,8 @@ import threading
 import time
 from typing import Any, Mapping
 
+from physics.source_override import SourceOverride, source_overrides
+
 
 SCHEMA_VERSION = 1
 _CAPTURE_LIMIT = 65536
@@ -69,6 +71,7 @@ class BuildRequest:
     timeout_seconds: float = 120.0
     memory_limit_bytes: int = 16 * 1024**3
     label: str = "unnamed"
+    source_overrides: tuple[SourceOverride, ...] = ()
 
     def __post_init__(self) -> None:
         if self.framework not in {"custom", "transformers", "diffusers"}:
@@ -82,6 +85,10 @@ class BuildRequest:
             raise ValueError("timeout and memory limit must be positive")
         if self.build_flags.get("trust_remote_code"):
             raise ValueError("remote custom code is outside the S6 contract")
+        if any(not isinstance(row, SourceOverride) for row in self.source_overrides):
+            raise TypeError("source overrides must be exact typed module substitutions")
+        if len({row.module for row in self.source_overrides}) != len(self.source_overrides):
+            raise ValueError("source override module addresses must be unique")
         # Prove the payload can cross the process boundary before launching it.
         json.dumps(self.to_dict(), sort_keys=True)
 
@@ -90,11 +97,17 @@ class BuildRequest:
         row["config"] = dict(self.config)
         row["build_flags"] = dict(self.build_flags)
         row["import_paths"] = list(self.import_paths)
+        if not self.source_overrides:
+            # Preserve the original request bytes outside this demonstration.
+            row.pop("source_overrides")
         return row
 
     @classmethod
     def from_dict(cls, row: Mapping[str, Any]) -> "BuildRequest":
-        return cls(**dict(row))
+        values = dict(row)
+        values["source_overrides"] = tuple(
+            SourceOverride(**item) for item in values.get("source_overrides", ()))
+        return cls(**values)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -391,6 +404,11 @@ def _config_object(request: BuildRequest) -> Any:
 
 
 def _construct(request: BuildRequest) -> tuple[Any, str]:
+    with source_overrides(request.source_overrides):
+        return _construct_from_import(request)
+
+
+def _construct_from_import(request: BuildRequest) -> tuple[Any, str]:
     import torch
 
     factory = _resolve(request.factory_module, request.factory_qualname)

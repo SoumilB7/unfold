@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import dataclasses
+import ast
 import hashlib
 import importlib
 import importlib.metadata
@@ -322,15 +323,27 @@ def test_result_dtos_are_closed():
         FunctionalOp(0, "conventional_attention", "torch.guess")
 
 
-def test_physics_has_no_production_consumer_and_no_model_identity_branch():
+def test_production_can_request_isolated_inventory_but_cannot_construct_in_parent():
     consumers = [*ROOT.glob("model_unfolder/adapters/**/*.py"),
                  *ROOT.glob("model_unfolder/renderers/**/*.py")]
     assert not [(path, line) for path in consumers
                 for line in path.read_text().splitlines() if "physics" in line]
     production = list((ROOT / "model_unfolder").rglob("*.py"))
-    assert not [(path, line) for path in production
-                for line in path.read_text().splitlines()
-                if line.lstrip().startswith(("import physics", "from physics"))]
+    # S8 is the authorized first consumer of S6. Its production boundary may
+    # carry requests/results and call the isolated parent API, never import
+    # the worker's construction or observation internals into an adapter.
+    public_boundary = {"BuildRequest", "Failure", "InventoryResult", "inventory_in_subprocess"}
+    for path in production:
+        for node in ast.walk(ast.parse(path.read_text())):
+            if isinstance(node, ast.Import):
+                assert not any(alias.name == "physics" or alias.name.startswith("physics.")
+                               for alias in node.names), path
+            if isinstance(node, ast.ImportFrom) and (node.module or "").startswith("physics"):
+                assert node.module == "physics.instance_inventory", path
+                assert {alias.name for alias in node.names} <= public_boundary, path
+
+
+def test_physics_has_no_model_identity_branch():
     source = "\n".join((ROOT / "physics" / name).read_text()
                        for name in ("instance_inventory.py", "execution_observation.py"))
     for identity in ("llama", "deepseek", "qwen", "pixart", "sdxl", "musicgen", "dbrx"):

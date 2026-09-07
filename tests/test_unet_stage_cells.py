@@ -139,6 +139,45 @@ def _candidate_names(invocation):
     }
 
 
+@pytest.mark.parametrize("function", ["cat", "concat"])
+def test_stage_join_follows_exact_output_into_child(tmp_path, function):
+    from model_unfolder.evidence.unet_cell_mechanism import read_unet_stage_join_connections
+    stages = STAGES.replace("from torch.nn import ModuleList", "from torch.nn import ModuleList\n    from torch import " + function)
+    stages = stages.replace("value = unit(value)",
+                            f"joined = {function}([value, side], dim=1)\n                alias = joined\n                value = unit(alias)")
+    cells, _ = _read(_bundle(tmp_path, stages=stages))
+    rows = read_unet_stage_join_connections(cells.require_value()).require_value()
+    assert rows
+    assert all(row.dimension.const_value == 1 for row in rows)
+    assert all(len(row.bindings) == 2 for row in rows)
+
+
+@pytest.mark.parametrize("replacement", ["alias = side", "alias = unknown(joined)"])
+def test_stage_join_does_not_invent_connection_through_replacement_or_helper(tmp_path, replacement):
+    from model_unfolder.evidence.unet_cell_mechanism import read_unet_stage_join_connections
+    stages = STAGES.replace("from torch.nn import ModuleList", "from torch.nn import ModuleList\n    from torch import cat")
+    stages = stages.replace("value = unit(value)",
+                            "joined = cat([value, side], dim=1)\n                " + replacement + "\n                value = unit(alias)")
+    cells, _ = _read(_bundle(tmp_path, stages=stages))
+    assert not read_unet_stage_join_connections(cells.require_value()).require_value()
+
+
+def test_stage_join_excludes_only_the_opposite_exact_branch(tmp_path):
+    from model_unfolder.evidence.unet_cell_mechanism import read_unet_stage_join_connections
+    stages = STAGES.replace("from torch.nn import ModuleList", "from torch.nn import ModuleList\n    from torch import cat")
+    stages = stages.replace("value = unit(value)",
+                            "value = cat([value, side], dim=1)\n                if side is None:\n                    value = unknown(value)\n                else:\n                    value = unit(value)")
+    cells, _ = _read(_bundle(tmp_path, stages=stages))
+    rows = read_unet_stage_join_connections(cells.require_value()).require_value()
+    assert rows and all(row.excluded_bindings for row in rows)
+    # Two independent conditions can both run. Source proximity never makes
+    # their writes mutually exclusive.
+    independent = stages.replace("                else:\n                    value = unit(value)",
+                                 "                if value is not None:\n                    value = unit(value)")
+    cells, _ = _read(_bundle(tmp_path / "independent", stages=independent))
+    assert not read_unet_stage_join_connections(cells.require_value()).require_value()
+
+
 def test_exact_repeated_and_direct_children_are_preserved(tmp_path):
     result, _graph = _read(_bundle(tmp_path))
     assert result.status == "incomplete"

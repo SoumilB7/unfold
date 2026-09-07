@@ -13,7 +13,7 @@ typed unresolved and whole-callable coverage remains open.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from .execution_flow import execution_taint_reason, unshadowed_builtin
 from .component_owner import OwnerOccurrenceId
@@ -31,6 +31,7 @@ from .program_index import (
     SymbolId,
 )
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
+from .runtime_source import RuntimeSourceBindings
 from .unet_stage_construction import (
     DirectFieldConstruction,
     RepeatedStageConstruction,
@@ -407,8 +408,12 @@ class UNetStageCellInventory:
     unresolved: tuple[UnresolvedStageChild, ...]
     index: ProgramIndex
     bundle: SourceBundle
+    runtime_bindings: RuntimeSourceBindings | None = None
 
     def __post_init__(self) -> None:
+        if self.runtime_bindings is not None and not isinstance(
+                self.runtime_bindings, RuntimeSourceBindings):
+            raise TypeError("runtime cell selection requires reconciled source bindings")
         if not self.stages:
             raise ValueError("a cell inventory retains exact stage candidates")
         if not isinstance(self.index, ProgramIndex) \
@@ -534,13 +539,20 @@ def _direct_constructions(index, bundle, component, symbol, field):
 
 
 def read_unet_stage_cells(graph: UNetStageExecutionGraph,
-                          bundle: SourceBundle) \
+                          bundle: SourceBundle, *,
+                          runtime_bindings: RuntimeSourceBindings | None = None) \
         -> ReaderResult[UNetStageCellInventory]:
     """Inventory every exact constructed child call under U11-C stages."""
     if not isinstance(graph, UNetStageExecutionGraph) \
             or not isinstance(bundle, SourceBundle):
         raise TypeError("U11-D1 requires U11-C graph + SourceBundle")
     stages = _stage_occurrences(graph)
+    if runtime_bindings is not None:
+        if runtime_bindings.index is not graph.index:
+            raise ValueError("runtime stage selection must use the graph's exact index")
+        stages = tuple(stage for stage in stages if runtime_bindings.matching_members(
+            stage.occurrence_id.parent_field, stage.occurrence_id.symbol,
+            repeated=isinstance(stage.construction, RepeatedStageConstruction)))
     if not stages:
         return ReaderResult.failed(graph.owner, (ReaderFailure(
             "incomplete_graph", "U11-C exposes no exact stage-class candidate"),))
@@ -644,7 +656,8 @@ def read_unet_stage_cells(graph: UNetStageExecutionGraph,
                   if item.span is not None),
             )))))
     inventory = UNetStageCellInventory(
-        graph, stages, tuple(invocations), tuple(unresolved), expanded, bundle)
+        graph, stages, tuple(invocations), tuple(unresolved), expanded, bundle,
+        replace(runtime_bindings, index=expanded) if runtime_bindings is not None else None)
     spans = tuple(dict.fromkeys(
         span for item in (*inventory.invocations, *inventory.unresolved)
         for span in ((item.call.span,) if isinstance(item, StageChildInvocation)

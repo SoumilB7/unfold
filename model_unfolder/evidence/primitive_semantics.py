@@ -47,6 +47,39 @@ _PARTITION_PROTOCOLS = frozenset({"torch.split"})
 _REASSEMBLY_PROTOCOLS = frozenset({"torch.cat"})
 
 
+# S8's closed runtime-type authority. These are canonical library types,
+# not subclass names or class-name patterns. Custom implementations continue
+# to their exact source reader even if their bare class name matches a row.
+_RUNTIME_PRIMITIVES = {
+    ("torch.nn.modules.linear", "Linear"): ("linear", "Linear", ""),
+    ("torch.nn.modules.conv", "Conv1d"): ("conv1d", "1D convolution", ""),
+    ("torch.nn.modules.conv", "Conv2d"): ("conv2d", "2D convolution", ""),
+    ("torch.nn.modules.conv", "Conv3d"): ("conv3d", "3D convolution", ""),
+    ("torch.nn.modules.normalization", "GroupNorm"): ("norm", "GroupNorm", "groupnorm"),
+    ("torch.nn.modules.normalization", "LayerNorm"): ("norm", "LayerNorm", "layernorm"),
+    ("torch.nn.modules.normalization", "RMSNorm"): ("norm", "RMSNorm", "rmsnorm"),
+    ("torch.nn.modules.activation", "SiLU"): ("activation", "SiLU", "silu"),
+    ("torch.nn.modules.activation", "GELU"): ("activation", "GELU", "gelu"),
+    ("torch.nn.modules.activation", "ReLU"): ("activation", "ReLU", "relu"),
+    ("torch.nn.modules.dropout", "Dropout"): ("dropout", "Dropout", ""),
+}
+
+
+def runtime_primitive_definition(class_ref):
+    """The exact serialized class object from the isolated instance witness."""
+    return _RUNTIME_PRIMITIVES.get((class_ref.module, class_ref.qualname))
+
+
+def read_runtime_primitives(bindings):
+    from .facts import EvidenceFact
+    from .runtime_source import RuntimePrimitiveClaimProof
+    proof = RuntimePrimitiveClaimProof("root.denoiser.runtime_primitives", bindings)
+    return EvidenceFact(key="runtime_primitives", owner="root.denoiser", value=proof.value,
+                        status="code_proven", completeness="presence_only",
+                        claim_kind=proof.claim_kind, claim_readers=proof.reader_symbols,
+                        claim_evidence=proof)
+
+
 def external_primitive_kind(qualified_target: str) -> str | None:
     """Return the closed semantic protocol for one exact external address."""
     return _EXTERNAL_PRIMITIVES.get(qualified_target)

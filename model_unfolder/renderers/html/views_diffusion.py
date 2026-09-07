@@ -225,6 +225,8 @@ def _build_loop_cards(ir: dict, info: dict, mount_id: str, *, denoiser_arch: str
                 svg = denoiser_arch
             elif denoiser_view == "unet":
                 svg = block_detail_svg(ir, info, mount_id, {"id": "denoiser", "view": "unet"})
+            elif block.get("view"):
+                svg = block_detail_svg(ir, info, mount_id, block)
             else:
                 svg = _build_architecture_view(ir, info, mount_id)
             cards.append(_rich_card(bid, title, desc, svg, facts) if svg

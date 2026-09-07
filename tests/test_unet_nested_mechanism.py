@@ -223,6 +223,19 @@ def test_nested_modulelist_reaches_exact_attention_and_ffn_children(tmp_path):
     assert rows[-1].ffn.projection_mode == "split"
 
 
+def test_nested_called_imports_do_not_need_an_unconstructed_rival_to_preload_them(tmp_path):
+    prefix, nested = textwrap.dedent(CELLS).split("class InnerBlock:", 1)
+    bundle = _bundle(tmp_path, cells=(
+        "from torch import nn\nfrom .lanes import MathLane, SplitPath\n\n"
+        "class InnerBlock:" + nested))
+    _write(tmp_path / "pkg" / "lanes.py", prefix)
+    result = _read(bundle)
+    _parent, rows = _for_parent(result)
+    assert [item.kind for item in rows] == ["attention", "attention", "ffn"]
+    assert rows[-1].ffn.gated is True
+    assert rows[-1].ffn.owner_symbol.source.canonical_path.endswith("lanes.py")
+
+
 def test_call_inputs_retain_formal_origins_without_self_cross_labels(tmp_path):
     _parent, rows = _for_parent(_read(_bundle(tmp_path)))
     first, second = rows[:2]

@@ -213,6 +213,9 @@ class ParseContext:
     # migrate onto it from U3-D), so building it never runs on the render hot
     # path and preservation stays byte-identical.
     _program_index: Any = None
+    # One-time S8 scratch demonstration capability. No product/config field
+    # selects an override; the static bundle and isolated builder must agree.
+    source_overrides: tuple[Any, ...] = ()
     # U9-A: the ONE exact root/nested-component ownership inventory derived
     # from this context's ProgramIndex.  It is address evidence only and stays
     # lazy until a modality reader asks for it.

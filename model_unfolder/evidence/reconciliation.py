@@ -20,6 +20,7 @@ import dataclasses
 import hashlib
 import json
 from dataclasses import dataclass
+from functools import cached_property
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -687,6 +688,17 @@ class StaticOccurrenceClaim:
 # claim NEEDS.  It is not evidence and cannot qualify a fact.  Qualification
 # comes exclusively from the typed proof carried by that exact EvidenceFact.
 FACT_CLAIM_REQUIREMENTS = {
+    "constructed_modules": "existence",
+    "constructed_parameter_shapes": "value",
+    "constructed_stage_relations": "relation",
+    "ffn_mechanisms": "applied_function",
+    "stage_join_connections": "connection",
+    "runtime_primitives": "applied_function",
+    "cell_connections": "connection",
+    "context_connections": "connection",
+    "cell_arithmetic": "applied_function",
+    "declared_constructor_defaults": "value",
+    "spatial_mechanisms": "applied_function",
     "diffusion_root_topology": "connection",
     "diffusion_bookend_operations": "connection",
     # Composite payloads require a stronger typed derivation/relationship proof;
@@ -730,7 +742,7 @@ class ProjectionFactCitation:
                 f"projected fact {self.fact.ledger_key()!r} lacks a "
                 f"qualified {required} proof")
 
-    @property
+    @cached_property
     def summary(self) -> ClaimProofSummary:
         return self.fact.claim_evidence.summary()
 
@@ -953,6 +965,41 @@ def projection_claims_from_product(
     grouped_facts: dict[str, dict[str, dict[str, EvidenceFact]]] = {}
     nodes_by_parent: dict[str, set[str]] = {}
     fact_claim_cache: dict[str, tuple[StaticOccurrenceClaim, ...]] = {}
+    # One invocation observes a fixed product and fixed fact objects. Reuse
+    # their reader-issued citations across occurrences; shape/source proofs
+    # must not be re-investigated thousands of times for the same fact.
+    citation_cache = {}
+
+    def citations_for(rows):
+        citations = []
+        for fact in rows:
+            key = fact.ledger_key()
+            if key not in citation_cache:
+                citation_cache[key] = ProjectionFactCitation(fact)
+            citations.append(citation_cache[key])
+        return tuple(citations)
+
+    # A family cutover may cite the exact occurrence directly on a canonical
+    # block. That establishes placement, independently of fact qualification
+    # (S7 R4). A string elsewhere in extras is not a placement claim.
+    def collect_explicit(value):
+        if isinstance(value, Mapping):
+            if value.get("id") in block_ids and "source_instance_path" in value \
+                    and any(key in value for key in ("kind", "role", "view", "children", "label")):
+                path = value["source_instance_path"]
+                if not isinstance(path, str) or path not in paths:
+                    raise ValueError("canonical block cites an absent runtime occurrence")
+                keys = value.get("source_fact_keys", ())
+                if not isinstance(keys, (list, tuple)) or any(key not in facts for key in keys):
+                    raise ValueError("canonical block cites facts absent from the typed ledger")
+                rendered_facts.setdefault(path, {}).update({key: facts[key] for key in keys})
+            for child in value.values():
+                collect_explicit(child)
+        elif isinstance(value, (list, tuple)):
+            for child in value:
+                collect_explicit(child)
+
+    collect_explicit(ir.to_dict())
     for event in render_events:
         event_facts = tuple(sorted(event.facts_projected))
         missing = tuple(key for key in event_facts if key not in facts)
@@ -1011,7 +1058,7 @@ def projection_claims_from_product(
         qualified_facts = tuple(
             fact for fact in ordered_facts
             if fact.ledger_key() not in set(unqualified))
-        citations = _projection_citations(qualified_facts)
+        citations = citations_for(qualified_facts)
         claims_by_path[path] = ProjectionClaim(
             path,
             ProjectionAxis(
@@ -1042,7 +1089,7 @@ def projection_claims_from_product(
         qualified_facts = tuple(
             fact for fact in ordered_facts
             if fact.ledger_key() not in set(unqualified))
-        citations = _projection_citations(qualified_facts)
+        citations = citations_for(qualified_facts)
         claims_by_path[path] = ProjectionClaim(
             path,
             ProjectionAxis(

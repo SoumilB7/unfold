@@ -100,9 +100,22 @@ def _merge_index(base: ProgramIndex, added: ProgramIndex) -> ProgramIndex:
         if not isinstance(left, tuple) or not isinstance(right, tuple):
             raise TypeError("ProgramIndex observation surfaces are immutable tuples")
         merged = list(left)
+        # Source closure adds thousands of observations at a time. Compare
+        # equality only inside exact-address buckets, retaining the original
+        # left-first order and object identities. A bucket is not identity:
+        # same-address rival observations still undergo full equality checks.
+        def address(item):
+            return (type(item), getattr(item, "span", None),
+                    getattr(item, "symbol", None), getattr(item, "source_id", None))
+
+        buckets = {}
+        for item in left:
+            buckets.setdefault(address(item), []).append(item)
         for item in right:
-            if item not in merged:
+            bucket = buckets.setdefault(address(item), [])
+            if item not in bucket:
                 merged.append(item)
+                bucket.append(item)
         updates[field.name] = tuple(merged)
     source_ids = [node.source_id for node in updates["source_nodes"]]
     source_ids.extend(item.source for item in updates["parse_failures"])

@@ -47,6 +47,98 @@ from .unet_stage_cells import (
 )
 
 
+@dataclass(frozen=True)
+class StageJoinConnection:
+    """An exact framework join whose output is passed to a constructed child.
+
+    Input meanings are deliberately separate: a concat call does not by
+    itself establish which input is a saved skip or a conditioning stream.
+    """
+
+    invocation: StageChildInvocation
+    join: CallObservation
+    dimension: ExprNode | None
+    bindings: tuple[BindingObservation, ...]
+    excluded_bindings: tuple[BindingObservation, ...] = ()
+
+    def __post_init__(self):
+        if not isinstance(self.invocation, StageChildInvocation) or not isinstance(self.join, CallObservation):
+            raise TypeError("join connections retain exact stage and call addresses")
+        if self.join.owner != self.invocation.call.owner or self.join.enclosing_callable != self.invocation.call.enclosing_callable:
+            raise ValueError("the join and child call share one exact callable")
+        if not self.bindings or any(not isinstance(row, BindingObservation) for row in self.bindings):
+            raise ValueError("the output-to-input route retains its reaching definitions")
+        if any(not _lexically_disjoint(row.guard, self.invocation.call.guard)
+               for row in self.excluded_bindings):
+            raise ValueError("excluded writes must belong to the opposite exact branch")
+
+
+def _lexically_disjoint(left, right):
+    """Opposite arms of the same indexed if, with the same outer guard path."""
+    for number, (a, b) in enumerate(zip(left, right)):
+        if a == b:
+            continue
+        return (left[:number] == right[:number] and a.span == b.span
+                and {a.kind, b.kind} == {"if", "else"})
+    return False
+
+
+def read_unet_stage_join_connections(cells):
+    """Read positive concat-output connections over the runtime-selected D cells."""
+    from .diffusion_stream import local_lineage_at_callable
+    from .framework_operations import functional_operation_protocol_for_call
+
+    if not isinstance(cells, UNetStageCellInventory):
+        raise TypeError("stage joins require the exact stage-cell inventory")
+    index = cells.index
+    connections = []
+    for invocation in cells.invocations:
+        call = invocation.call
+        forward = index.callable_by_symbol(call.enclosing_callable)
+        if forward is None:
+            continue
+        excluded = tuple(row for row in index.bindings_in(forward.symbol)
+                         if _lexically_disjoint(row.guard, call.guard))
+        lineage = local_lineage_at_callable(
+            index, forward, binding_guard_state=lambda row:
+            False if row in excluded else None)
+        joins = {row.span: row for row in index.calls_in(forward.symbol)
+                 if (protocol := functional_operation_protocol_for_call(index, row)) is not None
+                 and protocol.kind == "concat"}
+        for actual in (*call.args, *(value for key, value in call.kwargs if key != "**")):
+            expression, before, guard = actual, call.span, call.guard
+            route, seen = [], set()
+            while expression is not None and expression.kind == "name" and expression.name not in seen:
+                seen.add(expression.name)
+                value, unresolved = lineage.definition(expression.name, before, guard)
+                if unresolved or value is None:
+                    break
+                matches = [(binding, candidate) for binding, candidate in lineage.definitions(expression.name, before)
+                           if candidate == value]
+                if len(matches) != 1:
+                    break
+                binding, expression = matches[0]
+                route.append(binding)
+                before, guard = binding.span, binding.guard
+                if expression.span in joins:
+                    join = joins[expression.span]
+                    dimension = dict(join.kwargs).get("dim")
+                    if dimension is None and len(join.args) > 1:
+                        dimension = join.args[1]
+                    connections.append(StageJoinConnection(invocation, join, dimension, tuple(route), excluded))
+                    break
+    spans = tuple(dict.fromkeys(span for row in connections
+                               for span in (row.join.span, row.invocation.call.span,
+                                            *(binding.span for binding in row.bindings))))
+    provenance = ((ReaderProvenance("source", spans=spans,
+                    detail="framework concat result passed through exact aliases to the child input"),)
+                  if spans else (ReaderProvenance("derived", detail="no closed concat-to-child route"),))
+    return ReaderResult.incomplete(
+        cells.graph.owner, tuple(connections),
+        failures=(ReaderFailure("incomplete_graph", "join input meanings and whole-stage execution remain separate"),),
+        provenance=provenance)
+
+
 ISSUE_KINDS = frozenset({
     "missing_forward",
     "operation_path_incomplete",
@@ -409,6 +501,17 @@ def _cell_groups(cells: UNetStageCellInventory):
     for invocation in cells.invocations:
         for construction in invocation.constructions:
             for candidate in construction.candidates:
+                if cells.runtime_bindings is not None:
+                    from .unet_stage_construction import RepeatedStageConstruction
+                    parent = invocation.parent
+                    runtime = cells.runtime_bindings
+                    parents = runtime.matching_members(
+                        parent.occurrence_id.parent_field, parent.occurrence_id.symbol,
+                        repeated=isinstance(parent.construction, RepeatedStageConstruction))
+                    if not any(runtime.matching_members(
+                            f"{path}.{invocation.field}", candidate.symbol,
+                            repeated=invocation.kind == "repeated") for path in parents):
+                        continue
                 ident = _candidate_id(invocation, construction, candidate)
                 grouped.setdefault(ident, []).append(invocation)
     return tuple((ident, tuple(dict.fromkeys(invocations)))

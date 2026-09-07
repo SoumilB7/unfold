@@ -115,6 +115,18 @@ def config_to_ir(
             for component, files in component_files.items()
         },
     }
+    population = parse_context.facts.typed.get("root.denoiser.constructed_modules")
+    if population is not None:
+        # S8's source-override witness may live at another filesystem path.
+        # Provenance names the exact module bytes, so copying those bytes
+        # cannot change the product's identity or serialized output.
+        inventory = population.claim_evidence.bindings.inventory
+        module = inventory.provenance.resolved_class.module
+        root_sources = [f"{source.module}@sha256:{source.sha256}"
+                        for source in inventory.provenance.source_files if source.module == module]
+        root_provenance = ir.extras["source_provenance"]["components"].get("root")
+        if root_provenance is not None and root_sources:
+            root_provenance["files"] = root_sources
     # U1 (§5.1 Decision): ``accessed`` is PRESENT-ONLY — absence lives only in
     # ``absent_default`` premises, never in accessed/touched/config_consumed.
     # (The unread diagnostic is unchanged either way: unread subtracts from

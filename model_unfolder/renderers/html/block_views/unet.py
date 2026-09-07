@@ -22,6 +22,172 @@ from ..theme import C, FONT_HEAD, FONT_MONO
 from ..tower import tower_graph
 
 
+def build_unet_constructed_view(ir, info, mount_id, block):
+    """Place canonical constructed stages; never invent execution edges."""
+    unet = ir["extras"]["unet"]
+    relation = unet["stage_relations"]
+    ids = unet["stage_block_ids"]
+    arrow_id, shadow_id = _ids(mount_id, "unet_constructed")
+    parts, regions = [], []
+    producer = relation["producer_stages"]
+    consumer = relation["consumer_stages"]
+    for column, paths in enumerate((producer, list(reversed(consumer)))):
+        for row, path in enumerate(paths):
+            regions.append(_box(parts, 170 + column * 390, 40 + row * 105,
+                                240, 58, path, shadow_id, node_id=ids[path]))
+    floor = 40 + max(len(producer), len(consumer)) * 105
+    for row, path in enumerate(relation["intermediate_stages"]):
+        regions.append(_box(parts, 365, floor + row * 95, 270, 58,
+                            path, shadow_id, node_id=ids[path]))
+    bottom = floor + len(relation["intermediate_stages"]) * 95 + 35
+    cards = {child["id"]: child for child in block.get("children", ())}
+    for number, block_id in enumerate(unet["other_block_ids"]):
+        child = cards[block_id]
+        regions.append(_box(parts, 170 + number % 2 * 390,
+                            bottom + number // 2 * 95, 240, 58,
+                            child["label"], shadow_id, node_id=block_id))
+    result = fit_svg(arrow_id, shadow_id, parts, regions,
+                   "Constructed U-Net stages; execution relations under investigation",
+                   min_width=720, pad=44)
+    from ..graph import Graph, Node
+    for number, route in enumerate(unet.get("context_routes", ())):
+        graph = Graph([Node(route["source"], "source", cards[route["source"]]["label"]),
+                       Node(route["target"], "opaque", cards[route["target"]]["label"])],
+                      [route["source"], route["target"]])
+        result += render_graph(graph, info, f"{mount_id}_context_{number}", "unet_context_route",
+                               "Proven external context route into the stage",
+                               facts_projected=frozenset(block.get("source_fact_keys", ())))
+    for number, route in enumerate(unet.get("skip_routes", ())):
+        graph = Graph([Node(route["source"], "opaque", cards[route["source"]]["label"]),
+                       Node(route["target"], "opaque", cards[route["target"]]["label"])],
+                      [route["source"], route["target"]])
+        result += render_graph(graph, info, f"{mount_id}_skip_{number}", "unet_skip_route",
+                               "Accumulated skip route; individual tensor pairing remains under investigation",
+                               facts_projected=frozenset(block.get("source_fact_keys", ())))
+    return result
+
+
+def build_constructed_children_view(ir, info, mount_id, block):
+    """A containment view has no implied sequential arrows."""
+    arrow_id, shadow_id = _ids(mount_id, "constructed_children")
+    parts, regions = [], []
+    for number, child in enumerate(block.get("children", ())):
+        regions.append(_box(parts, 145 + number % 3 * 270,
+                            35 + number // 3 * 100, 235, 64,
+                            [child["label"], child["title"]], shadow_id,
+                            node_id=child["id"]))
+    return fit_svg(arrow_id, shadow_id, parts, regions,
+                   "Constructed children; containment only", min_width=720, pad=40)
+
+
+def build_runtime_ffn_view(ir, info, mount_id, block):
+    """Reuse the canonical FFN graph and keep its actual children inspectable."""
+    from .feed_forward import build_ffn_view
+    constructed = [child for child in block.get("children", ())
+                   if "source_instance_path" in child]
+    return (build_ffn_view(ir, info, mount_id, block)
+            + build_constructed_children_view(ir, info, mount_id,
+                                              {"children": constructed}))
+
+
+def build_runtime_stage_connections(ir, info, mount_id, block):
+    """Project declared connections through the shared graph/wiring engine."""
+    from ..graph import Graph, Node, SideInput
+    children = {child["id"]: child for child in block.get("children", ())}
+    used, rendered = set(), []
+    for number, route in enumerate(block["detail"]["join_routes"]):
+        operands = route["operands"]
+        if not operands:
+            continue
+        join_id = block["id"] + f"__join_{number}"
+        nodes = [Node(operand, "unknown", children[operand]["label"],
+                      resolved=False) for operand in operands]
+        nodes.extend((Node(join_id, "concat", static=True),
+                      Node(route["target"], "opaque", "Repeated child calls")))
+        graph = Graph(nodes, [operands[0], join_id, route["target"]],
+                      side_inputs=[SideInput(operand, join_id,
+                                             "right" if offset % 2 == 0 else "left")
+                                   for offset, operand in enumerate(operands[1:])])
+        rendered.append(render_graph(
+            graph, info, mount_id, "runtime_stage_connections",
+            "Concat output to child calls; operand lineage remains under investigation",
+            facts_projected=frozenset(block.get("source_fact_keys", ()))))
+        used.update((*operands, route["target"]))
+    remaining = [child for child in children.values() if child["id"] not in used]
+    if remaining:
+        rendered.append(build_constructed_children_view(ir, info, mount_id,
+                                                        {"children": remaining}))
+    return "".join(rendered)
+
+
+def build_runtime_cell_connections(ir, info, mount_id, block):
+    """Only the edges supplied by the connection fact become arrows."""
+    from ..graph import Graph, Node, SideInput
+    calls = block["detail"]["connection_calls"]
+    edges = list(dict.fromkeys((row["source"], row["target"])
+                               for row in block["detail"]["connections"]))
+    remaining, fragments = set(edges), []
+    while remaining:
+        source, target = next(edge for edge in edges if edge in remaining)
+        chain = [source, target]
+        remaining.remove((source, target))
+        while True:
+            following = [edge for edge in edges if edge in remaining and edge[0] == chain[-1]]
+            if len(following) != 1 or following[0][1] in chain:
+                break
+            edge = following[0]
+            remaining.remove(edge)
+            chain.append(edge[1])
+        fragments.append(chain)
+    rendered = []
+    for number, fragment in enumerate(fragments):
+        nodes = []
+        for key in fragment:
+            row = calls[key]
+            kind = "conv" if row["kind"] in {"conv1d", "conv2d", "conv3d"} else row["kind"]
+            nodes.append(Node(row["id"], kind, row["label"], target=row["target"],
+                              sub="conditional call" if row["guard"] == "conditional" else None))
+        rendered.append(render_graph(
+            Graph(nodes, [node.id for node in nodes]), info, f"{mount_id}_{number}",
+            "runtime_cell_connections", "Source-proven local call connections",
+            facts_projected=frozenset(block.get("source_fact_keys", ()))))
+    arithmetic = block["detail"].get("return_arithmetic")
+    if arithmetic:
+        operands = arithmetic["operands"]
+        children = {child["id"]: child for child in block.get("children", ())}
+        merge_id = block["id"] + "__return_add"
+        nodes = [Node(operand, "unknown", children[operand]["label"], resolved=False)
+                 for operand in operands]
+        nodes.append(Node(merge_id, "residual_add", static=True))
+        flow = [operands[0], merge_id]
+        if arithmetic["scale"] == "divide":
+            scale_id = block["id"] + "__return_scale"
+            nodes.append(Node(scale_id, "opaque", "Divide by scale", static=True,
+                              sub="value unresolved"))
+            flow.append(scale_id)
+        rendered.append(render_graph(
+            Graph(nodes, flow, side_inputs=[SideInput(operands[1], merge_id)]),
+            info, f"{mount_id}_return", "runtime_cell_return",
+            "Proven return arithmetic; complete operand routes remain under investigation",
+            facts_projected=frozenset(block.get("source_fact_keys", ()))))
+    contained = [child for child in block.get("children", ()) if "source_instance_path" in child]
+    rendered.append(build_constructed_children_view(ir, info, mount_id, {"children": contained}))
+    return "".join(rendered)
+
+
+def build_runtime_context_connection(ir, info, mount_id, block):
+    from ..graph import Graph, Node
+    detail = block["detail"]
+    target = block["id"] + "__context_argument"
+    graph = Graph([Node(detail["source"], "source", detail["source_label"]),
+                   Node(target, "port", detail["target_formal"], static=True)],
+                  [detail["source"], target])
+    return (render_graph(graph, info, mount_id, "runtime_context_connection",
+                         "Context input proven; query role remains under investigation",
+                         facts_projected=frozenset(block.get("source_fact_keys", ())))
+            + build_constructed_children_view(ir, info, mount_id, block))
+
+
 def _text_source_label(ir: dict):
     """Label for the 'encoded text' source — makes the two-CLIP origin visible.
 

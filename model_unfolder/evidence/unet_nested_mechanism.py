@@ -426,6 +426,18 @@ def _scan_graph(index: ProgramIndex, bundle,
                 index, bundle, parent, unresolved)
             alternatives.extend(new_alternatives)
         for external in invocation_result.external_addressed:
+            # S8: a constructed cell must not depend on an unconstructed
+            # rival having incidentally imported its children into the index.
+            # Extend only the exact called constructor address, then rebind
+            # this graph in the expanded (same) ProgramIndex universe.
+            call = _call_for_site(index, external.construction.site)
+            if call is not None:
+                imported = resolve_called_import_source(
+                    index, bundle, parent.symbol.source.component_key, call)
+                if imported.status == "resolved" and imported.index.fingerprint != index.fingerprint:
+                    return _scan_graph(
+                        imported.index, bundle, parent, scope,
+                        resolve_owner_graph(imported.index, graph.root.symbol))
             issues.append(NestedMechanismIssue(
                 parent, "external_unclassified",
                 "an exact external invocation has no U11 nested mechanism proof",
@@ -531,6 +543,125 @@ def read_unet_nested_mechanisms(cells: UNetCellMechanismInventory) \
             detail="exact U11 cell→nested invocation→U6/U7 positive evidence"),))
 
 
+@dataclass(frozen=True)
+class RuntimeNestedFFNAttempt:
+    """One existing U7 investigation bound to constructed nested objects."""
+
+    alternative: AlternativeCellRoot
+    site: ConstructionSite
+    instance_paths: tuple[str, ...]
+    result: ReaderResult
+
+    def __post_init__(self):
+        if not isinstance(self.alternative, AlternativeCellRoot) or not isinstance(self.site, ConstructionSite):
+            raise TypeError("a runtime FFN attempt retains exact source construction addresses")
+        if self.site.owner != self.alternative.symbol or not self.instance_paths:
+            raise ValueError("the attempted child belongs to the bound nested owner")
+        if len(set(self.instance_paths)) != len(self.instance_paths):
+            raise ValueError("runtime FFN occurrence addresses are unique")
+        if not isinstance(self.result, ReaderResult):
+            raise TypeError("the attempt retains the reader's own result")
+
+
+def runtime_nested_block_paths(nested, bindings, alternative, *, selected_stage_path=None):
+    """One shared exact constructor/address join for nested reader consumers."""
+    from .unet_stage_construction import RepeatedStageConstruction
+    parents = tuple(dict.fromkeys(
+        (invocation, construction, candidate)
+        for invocation in nested.cells.cells.invocations
+        for construction in invocation.constructions
+        for candidate in construction.candidates
+        if invocation.parent.occurrence_id == alternative.parent.parent
+        and candidate.symbol == alternative.parent.symbol
+        and candidate.span == alternative.parent.candidate_span
+        and construction.site is not None
+        and construction.site.span == alternative.parent.construction_span))
+    constructors = tuple(dict.fromkeys((construction, candidate)
+                                       for _, construction, candidate in parents))
+    if len(constructors) != 1:
+        return None
+    construction, candidate = constructors[0]
+    cell_paths = tuple(dict.fromkeys(
+        path for invocation, _, _ in parents
+        for stage_path in bindings.matching_members(
+            invocation.parent.occurrence_id.parent_field,
+            invocation.parent.occurrence_id.symbol,
+            repeated=isinstance(invocation.parent.construction, RepeatedStageConstruction))
+        if selected_stage_path is None or stage_path == selected_stage_path
+        for path in bindings.matching_members(
+            f"{stage_path}.{invocation.field}", candidate.symbol,
+            repeated=invocation.kind == "repeated")))
+    block_paths = tuple(path for cell_path in cell_paths
+                        for path in bindings.matching_members(
+                            f"{cell_path}.{alternative.field}", alternative.symbol,
+                            repeated=True))
+    return construction, candidate, block_paths
+
+
+def read_unet_runtime_nested_ffns(nested, bindings):
+    """Address E2's existing constructor/FFN readers from actual occurrences.
+
+    The initializer alternatives remain evidence. A positive result is usable
+    only where the instance also contains its exact selected implementation.
+    An operand spelling never supplies activation or gating semantics.
+    """
+    from .constructor_values import canonical_construction_target, constructor_frame
+    from .runtime_source import RuntimeSourceBindings
+    from .selected_composite_ffn import selected_composite_ffn_mechanism
+
+    if not isinstance(nested, UNetNestedMechanismInventory) or not isinstance(bindings, RuntimeSourceBindings):
+        raise TypeError("runtime FFN addressing requires nested evidence and instance bindings")
+    if bindings.index is not nested.index:
+        raise ValueError("runtime FFN addressing requires the same exact source universe")
+    index = nested.index
+    bundle = nested.cells.cells.bundle
+    alternatives = tuple(dict.fromkeys(
+        row.occurrence_id.alternative for row in nested.mechanisms
+        if isinstance(row.occurrence_id, AlternativeNestedOccurrenceId)))
+    attempts = []
+
+    def target(site, candidate):
+        imported = (canonical_called_import_target(bundle, candidate.import_chain[-1])
+                    if candidate.import_chain else None)
+        return canonical_construction_target(index, site, candidate.symbol, canonical_import=imported)
+
+    for alternative in alternatives:
+        resolved = runtime_nested_block_paths(nested, bindings, alternative)
+        if resolved is None:
+            continue
+        construction, candidate, block_paths = resolved
+        # Checkpointed and ordinary execution may call the same constructed
+        # child. Preserve both call addresses without making construction rival.
+        if not block_paths:
+            continue
+        cell_frame = constructor_frame(index, target(construction.site, candidate))
+        block_frame = constructor_frame(index, target(alternative.site, alternative.candidate), cell_frame)
+        for site in index.construction_sites_of(alternative.symbol):
+            symbols = tuple(item.symbol for item in site.candidates if item.symbol is not None)
+            if site.target_kind != "field" or len(symbols) != 1:
+                continue
+            paths = tuple(path for block_path in block_paths
+                          for path in bindings.matching_members(
+                              f"{block_path}.{site.target}", symbols[0], repeated=False))
+            if not paths:
+                continue
+            frame = constructor_frame(index, canonical_construction_target(index, site, symbols[0]), block_frame)
+            result = selected_composite_ffn_mechanism(index, bundle, frame)
+            if result.has_value:
+                proof = result.require_value()
+                selected_position = proof.execution.append_calls.index(proof.execution.selected_append)
+                matching = tuple(path for path in paths if bindings.symbol_at(
+                    f"{path}.{proof.execution.field}.{selected_position}") == proof.input_transform.owner_symbol)
+                if matching != paths:
+                    result = ReaderResult.failed(frame.graph.root.occurrence, (ReaderFailure(
+                        "conflict", "constructed input transform differs from the selected source implementation"),))
+            attempts.append(RuntimeNestedFFNAttempt(alternative, site, paths, result))
+    return ReaderResult.incomplete(
+        nested.cells.cells.graph.owner, tuple(attempts),
+        failures=(ReaderFailure("incomplete_graph", "exact nested FFN attempts; caller execution remains separately qualified"),),
+        provenance=(ReaderProvenance("derived", detail="existing constructor and FFN reader results joined to exact runtime classes"),))
+
+
 __all__ = [
     "AlternativeCellRoot",
     "AlternativeNestedOccurrenceId",
@@ -542,4 +673,6 @@ __all__ = [
     "NestedMechanismIssue",
     "UNetNestedMechanismInventory",
     "read_unet_nested_mechanisms",
+    "RuntimeNestedFFNAttempt",
+    "read_unet_runtime_nested_ffns",
 ]

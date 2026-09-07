@@ -126,6 +126,13 @@ def estimate_params(ir: ModelIR) -> dict:
             "is_sparse": bool,
         }
     """
+    shapes = (ir.extras.get("unet") or {}).get("parameter_shapes")
+    if shapes is not None:
+        # S8's canonical value is already counted from exact shapes and
+        # parameter identities. Construction supplies no active-path count.
+        return {"total": shapes["total"], "active": None, "embed": None,
+                "output": None, "per_layer": [], "is_sparse": None,
+                "scope": shapes["scope"], "measurement": "parameter_shapes"}
     h = ir.hidden_size
     v = ir.vocab_size
     # COR-3 (§8.A): unresolved width -> an explicitly INCOMPLETE estimate.

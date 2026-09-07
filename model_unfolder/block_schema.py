@@ -53,6 +53,8 @@ class Block(TypedDict, total=False):
     source_component: str         # qualified owning component (e.g. "text_encoder.text_config")
     source_owner: str             # the exact class the block's facts were read from
     source_file: str              # that class's modeling file
+    source_instance_path: str     # exact reconciled runtime occurrence; "" is the root
+    source_fact_keys: list[str]    # qualified facts consumed by this block
     components: list[dict]        # typed sub-facts inside a compound stage
     resolved: bool                # honest-unknown switch (U2/B2): False renders the
                                   # block PALE on any family — the fact/structure is
