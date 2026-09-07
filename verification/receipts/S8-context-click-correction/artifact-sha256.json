@@ -1,0 +1,15 @@
+{
+  "README.md": "0d24324b4652767eb93b1214d395e1c037802fe64080e0c2be4c77c75fb869d6",
+  "sd14-ordinary/ir.json.gz": "f2606ca99ed744558919b39a1c9f5c57b563f77aace94cbb330a23b8c7ced0d4",
+  "sd14-ordinary/page.html.gz": "af0012757bebb079dd522e32d3b4329258b091d1d02fdbce7278ff80f5719f4b",
+  "sd14-ordinary/render-events.json.gz": "027a00ec202ea5e6293c698b4a9bd65aff1d32578430cf3814ccdd94cda2e509",
+  "sd14-ordinary/render-input.json": "feba0e2ede619912ce939a500f20cda9c3ecd178bfe2843199b96174b77646f2",
+  "sd14-ordinary/result.json": "79d58cc5b0a582fb902f5b29416227cdf70d9b5c853ac3af0b072cc4067a5fbe",
+  "sdxl-ordinary/ir.json.gz": "47758ff06247a436d7fe22ee5e3c114762eb712fd15a45ebd7cb47fc415597da",
+  "sdxl-ordinary/page.html.gz": "36477532d685b2b05aa19982079bce5607431b6d2c813c6649d4f423a11900ee",
+  "sdxl-ordinary/render-events.json.gz": "ef8026394ed67783c4b92af387a35bb9c4017b65ef09e1eed0dba4e48f0b8329",
+  "sdxl-ordinary/render-input.json": "c1163f15c58d6cd7fde9c41556d20b0b9ff76e4b56ba0a63706be044c1e8eb3b",
+  "sdxl-ordinary/result.json": "4e90b72ed9683d45c7a26f3474e36b7a253ee71d7d3ee7800dde3c5934915ca4",
+  "summary.json": "aa27dc3f302ede9de5273e416be5537185484dca5c2909cfe21778a80ea1f1c5",
+  "verify.py": "d5a81d896089b08273f85031e171b2ead5a06c438ad915b3f0068e26c66a5e3e"
+}

@@ -1,0 +1,332 @@
+{
+  "sdxl-ordinary": {
+    "sha256": "86bb0629771f875bdba3e1fb219c403160938254c4ec2ee5199baaec562bc5bf",
+    "context_nodes": [
+      {
+        "data-depth": "2",
+        "data-card-id": "denoiser"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__1__attentions__0__transformer_blocks__1__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__1__attentions__1__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__1__attentions__1__transformer_blocks__1__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__0__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__0__transformer_blocks__1__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__0__transformer_blocks__2__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__0__transformer_blocks__3__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__0__transformer_blocks__4__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__0__transformer_blocks__5__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__0__transformer_blocks__6__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__0__transformer_blocks__7__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__0__transformer_blocks__8__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__0__transformer_blocks__9__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__1__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__1__transformer_blocks__1__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__1__transformer_blocks__2__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__1__transformer_blocks__3__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__1__transformer_blocks__4__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__1__transformer_blocks__5__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__1__transformer_blocks__6__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__1__transformer_blocks__7__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__1__transformer_blocks__8__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__1__transformer_blocks__9__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__0__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__0__transformer_blocks__1__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__0__transformer_blocks__2__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__0__transformer_blocks__3__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__0__transformer_blocks__4__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__0__transformer_blocks__5__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__0__transformer_blocks__6__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__0__transformer_blocks__7__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__0__transformer_blocks__8__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__0__transformer_blocks__9__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__1__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__1__transformer_blocks__1__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__1__transformer_blocks__2__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__1__transformer_blocks__3__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__1__transformer_blocks__4__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__1__transformer_blocks__5__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__1__transformer_blocks__6__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__1__transformer_blocks__7__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__1__transformer_blocks__8__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__1__transformer_blocks__9__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__2__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__2__transformer_blocks__1__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__2__transformer_blocks__2__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__2__transformer_blocks__3__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__2__transformer_blocks__4__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__2__transformer_blocks__5__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__2__transformer_blocks__6__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__2__transformer_blocks__7__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__2__transformer_blocks__8__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__0__attentions__2__transformer_blocks__9__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__1__attentions__0__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__1__attentions__0__transformer_blocks__1__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__1__attentions__1__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__1__attentions__1__transformer_blocks__1__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__1__attentions__2__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__1__attentions__2__transformer_blocks__1__attn2"
+      }
+    ],
+    "context_cards": [
+      {
+        "data-depth": "3",
+        "data-card-id": "unet_context_0"
+      }
+    ]
+  },
+  "sd14-ordinary": {
+    "sha256": "6c2dcc6d057d207828a752ddf09a0c0701e036f4d3d3379d883c324b4c3e6474",
+    "context_nodes": [
+      {
+        "data-depth": "2",
+        "data-card-id": "denoiser"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__0__attentions__0__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__0__attentions__1__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__1__attentions__1__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__0__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_down_blocks__2__attentions__1__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__1__attentions__0__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__1__attentions__1__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__1__attentions__2__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__2__attentions__0__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__2__attentions__1__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__2__attentions__2__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__3__attentions__0__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__3__attentions__1__transformer_blocks__0__attn2"
+      },
+      {
+        "data-depth": "8",
+        "data-card-id": "instance_up_blocks__3__attentions__2__transformer_blocks__0__attn2"
+      }
+    ],
+    "context_cards": [
+      {
+        "data-depth": "3",
+        "data-card-id": "unet_context_0"
+      }
+    ]
+  }
+}

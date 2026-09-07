@@ -388,7 +388,9 @@ def build_runtime_context_connection(ir, info, mount_id, block):
     return (render_graph(graph, info, mount_id, "runtime_context_connection",
                          "Context input proven; query role remains under investigation",
                          facts_projected=frozenset(block.get("source_fact_keys", ())))
-            + build_constructed_children_view(ir, info, mount_id, block))
+            + build_constructed_children_view(ir, info, mount_id, {
+                "children": [child for child in block.get("children", ())
+                             if "source_instance_path" in child]}))
 
 
 def _text_source_label(ir: dict):

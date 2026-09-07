@@ -159,6 +159,13 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
     spatial = facts[spatial_key].value if spatial_key in facts else {}
     context_formals = list(dict.fromkeys(row["source_formal"] for row in contexts.values()))
     context_ids = {formal: f"unet_context_{number}" for number, formal in enumerate(context_formals)}
+    context_cards = {formal: {
+        "id": context_ids[formal], "kind": "source", "role": "context_input",
+        "label": "External context input", "title": "Root input: " + formal,
+        "description": "Required root input transported by the proven source route to the selected context argument.",
+        "facts": ["Connection proven; cross-attention query role remains under investigation"],
+        "source_fact_keys": [context_key],
+    } for formal in context_formals}
     dispositions = ({row.provenance.instance_path: row for row in table.occurrences}
                     if table is not None else {})
 
@@ -319,6 +326,9 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
                 "source": context_ids[row["source_formal"]],
                 "source_label": "External context input",
                 "target_formal": row["target_formal"]})
+            # Declare the input's drill card at this depth too. It is a source
+            # reference, not a constructed child of the attention module.
+            block.setdefault("children", []).append(context_cards[row["source_formal"]])
         if path in spatial:
             row = spatial[path]
             label = "Spatial reduction" if row["effect"] == "reduce" else "Spatial resize"
@@ -356,13 +366,7 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
                     for path in relations["producer_stages"]]
                    + [{"source": "unet_skip_bank", "target": _block_id(path)}
                       for path in relations["consumer_stages"]])
-    other_cards.extend({
-        "id": context_ids[formal], "kind": "source", "role": "context_input",
-        "label": "External context input", "title": "Root input: " + formal,
-        "description": "Required root input transported by the proven source route to the selected context argument.",
-        "facts": ["Connection proven; cross-attention query role remains under investigation"],
-        "source_fact_keys": [context_key],
-    } for formal in context_formals)
+    other_cards.extend(context_cards.values())
     context_routes = list({(context_ids[row["source_formal"]], _block_id(row["stage"])): {
         "source": context_ids[row["source_formal"]], "target": _block_id(row["stage"])}
         for row in contexts.values()}.values())
