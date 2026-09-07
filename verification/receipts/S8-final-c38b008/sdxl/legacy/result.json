@@ -1,0 +1,11 @@
+{
+  "blessed": false,
+  "condition": "legacy",
+  "elapsed_seconds": 3.062,
+  "html_sha256": "17796f43d3596e8cf526f8427c26720c75d5342bf61ad7ccb7b4822e94e21b30",
+  "implementation_source_sha256": "6a5ef52aed7986d1e3a52f601ae0cf95224f3178d652aca47c3b57d512819ff7",
+  "implementation_unchanged_during_run": true,
+  "projected_fact_keys": [],
+  "status": "review_required",
+  "wiring_problems": []
+}

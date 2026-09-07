@@ -1,0 +1,51 @@
+{
+  "actual_cards": {
+    "legacy": 106,
+    "ordinary": 11716
+  },
+  "all_raw_rows_preserved": true,
+  "artifact_pins": {
+    "phase-pin.json": "78484600ce0adf0627b8e9b8e854708411e7cfd420f19169d856e2aedd6fb544",
+    "scripts/report_s8_demonstration.py": "c9c57c33fdf7515fad52faf481c2fa53dbe388f0c4ef7d414c7c5e099977f07d",
+    "sdxl/differential-report.json": "6bbd770203c14033437ddf952be53f8f66b7765c7c41864be3435346a961b8f0",
+    "sdxl/html.diff": "237c55cd64c911a8cc073f16c2638403d6ae64615b38c89c1eaae0cc803b3224",
+    "sdxl/legacy/facts.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "sdxl/legacy/ir.json": "7541a3d2db9f958cf89c78835dd8e5a5940d4a6e656cc56404191b5d4ed19ea1",
+    "sdxl/legacy/observation.json": "46d48040811590db69d931db21a3184851a313f11fe6ae69413d91cd651f82d4",
+    "sdxl/legacy/page.html": "17796f43d3596e8cf526f8427c26720c75d5342bf61ad7ccb7b4822e94e21b30",
+    "sdxl/legacy/qualified-facts.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "sdxl/legacy/result.json": "71188d5633a607fc242f3ccb64e1ebb75ab2af062ad509142128ca1ecfd376e3",
+    "sdxl/ordinary/facts.json": "d69b1e1e628bee58bf4600232826ceb227dac820ac7d8e6f906a2a45cf5f5908",
+    "sdxl/ordinary/ir.json": "626520e0ec47b3ecec570c44342021ffbfbe7835e3239052de08131987bbcf81",
+    "sdxl/ordinary/observation.json": "5333c30b076b7310ab5f9a482dfb91bce0ac90abab1a6beb01caa04c263cbb1c",
+    "sdxl/ordinary/page.html": "be92daf75f328e17f93e68d625a9c6fe114ff14f22173c4e494dbe434e456049",
+    "sdxl/ordinary/qualified-facts.json": "f00292a7de873147bff78e0fa60c466e42e401e3651033c41406eb74d0aa5287",
+    "sdxl/ordinary/result.json": "98dc3b1d6037847ff6f12f09dc1d0409526c037bdbd36a5f4adf2823af101a3f"
+  },
+  "canonical_quantity_chips_checked": 1927,
+  "checkpoint": "c38b008af8153302d85bbaf2a8e3593841d87e1a",
+  "constructed_modules": 1930,
+  "groups": {
+    "audit": 772,
+    "legacy_geometry": 28,
+    "limited_metadata": 2,
+    "proofs": 12,
+    "render": 1188,
+    "shapes": 1,
+    "source_address": 1
+  },
+  "raw_delta_count": 2004,
+  "report_counts": {
+    "blocking_finding": 846,
+    "named_reproof_candidate": 1158
+  },
+  "shape_total": 2567463684,
+  "status": "review_findings_remain; no blanket re-proof acceptance",
+  "svg_added": 4512,
+  "svg_counts": {
+    "legacy": 50,
+    "ordinary": 4522
+  },
+  "svg_removed": 40,
+  "unchanged_svg_multiplicity": 10
+}

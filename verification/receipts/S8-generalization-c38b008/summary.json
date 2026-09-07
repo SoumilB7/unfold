@@ -1,0 +1,117 @@
+{
+  "script_pins_unchanged_after_all_runs": true,
+  "results": [
+    {
+      "witness": "sdxl-refiner",
+      "constructed": 1359,
+      "canonical": 1357,
+      "actual_svg_placed": 1357,
+      "stages": [
+        4,
+        1,
+        4
+      ],
+      "input_conv": [
+        384,
+        4,
+        3,
+        3
+      ],
+      "parameters": 2259526660,
+      "unplaced": [
+        "down_blocks",
+        "up_blocks"
+      ],
+      "unbound_bookends": [],
+      "context_route_count": 4,
+      "checks": {
+        "stage_counts": true,
+        "input_conv_shape": true,
+        "parameter_total": true,
+        "no_orphan_occurrence": true,
+        "component_scope": true,
+        "no_invented_components_in_any_svg": true,
+        "root_sample_input_in_actual_overview": true,
+        "expanded_has_no_sampling_loop": true,
+        "unconditional_has_no_context": true
+      }
+    },
+    {
+      "witness": "sdxl-inpainting",
+      "constructed": 1930,
+      "canonical": 1928,
+      "actual_svg_placed": 1928,
+      "stages": [
+        3,
+        1,
+        3
+      ],
+      "input_conv": [
+        320,
+        9,
+        3,
+        3
+      ],
+      "parameters": 2567478084,
+      "unplaced": [
+        "down_blocks",
+        "up_blocks"
+      ],
+      "unbound_bookends": [],
+      "context_route_count": 4,
+      "checks": {
+        "stage_counts": true,
+        "input_conv_shape": true,
+        "parameter_total": true,
+        "no_orphan_occurrence": true,
+        "component_scope": true,
+        "no_invented_components_in_any_svg": true,
+        "root_sample_input_in_actual_overview": true,
+        "expanded_has_no_sampling_loop": true,
+        "unconditional_has_no_context": true
+      }
+    },
+    {
+      "witness": "ddpm-cifar10",
+      "constructed": 288,
+      "canonical": 286,
+      "actual_svg_placed": 286,
+      "stages": [
+        4,
+        1,
+        4
+      ],
+      "input_conv": [
+        128,
+        3,
+        3,
+        3
+      ],
+      "parameters": 35746307,
+      "unplaced": [
+        "down_blocks",
+        "up_blocks"
+      ],
+      "unbound_bookends": [
+        "conv_in",
+        "time_proj",
+        "time_embedding",
+        "conv_norm_out",
+        "conv_act",
+        "conv_out"
+      ],
+      "context_route_count": 0,
+      "checks": {
+        "stage_counts": true,
+        "input_conv_shape": true,
+        "parameter_total": true,
+        "no_orphan_occurrence": true,
+        "component_scope": true,
+        "no_invented_components_in_any_svg": true,
+        "root_sample_input_in_actual_overview": true,
+        "expanded_has_no_sampling_loop": true,
+        "unconditional_has_no_context": true
+      }
+    }
+  ]
+}

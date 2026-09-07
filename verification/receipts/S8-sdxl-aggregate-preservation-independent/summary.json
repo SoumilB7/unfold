@@ -1,0 +1,19 @@
+{
+  "checkpoint": "c38b008af8153302d85bbaf2a8e3593841d87e1a",
+  "dispositions": {
+    "carried_bounded_with_named_limitation": 10,
+    "carried_proven": 54,
+    "demoted_unsupported_old_author": 37
+  },
+  "legacy_unique_cards": 53,
+  "new_resnet_count": 17,
+  "qualified_ffn_count": 70,
+  "scope_verdict": "ACCEPT named preservation/limitation mapping; no actual lost old proved drawing found in the53-card legacy UNet subtree. Not approval to bless output.",
+  "semantic_assertions": 101,
+  "source_pins": {
+    "model_unfolder/adapters/diffusor/parser.py": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758",
+    "model_unfolder/adapters/diffusor/unet.py": "d0eab97ea6abc8301b49d1f90ee7e2d28145eb4a84abe667f72ad78f08ae4030",
+    "model_unfolder/evidence/patterns.py": "1b8ca4250fe9c00ebe3c8977571785072e36ab05c399d0be584d233a9f4d71ee",
+    "model_unfolder/renderers/html/block_views/unet.py": "9d052fa81bb50af0ae0db4f825486cd242b08c68cfa71b1b69afcf73136403f7"
+  }
+}

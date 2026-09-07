@@ -1,0 +1,24 @@
+{
+  "command": [
+    "python3",
+    "/private/tmp/unfold-s8-render-phase-c38-v2/phase-entry.py",
+    "--checkout",
+    "/private/tmp/unfold-s8-compiler-final",
+    "--scripts",
+    "/private/tmp/unfold-s8-render-phase-c38-v2/scripts",
+    "--input",
+    "/private/tmp/unfold-s8-compiler-final/verification/receipts/S8-final-run-preparation/inputs/sdxl.json",
+    "--output",
+    "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl",
+    "--condition",
+    "missing",
+    "--expect-source-sha256",
+    "6a5ef52aed7986d1e3a52f601ae0cf95224f3178d652aca47c3b57d512819ff7"
+  ],
+  "returncode": 0,
+  "elapsed_seconds": 145.662,
+  "input_sha256": "1dc8ec0a5612bdd2165d4610672ed552bcdee3cd76522dea89359dbab487d1db",
+  "phase_pin_sha256": "78484600ce0adf0627b8e9b8e854708411e7cfd420f19169d856e2aedd6fb544",
+  "html_sha256": "673608e3a3f189239d3408aba837d717db2def33b9d53f9954b50238d2ab9794",
+  "html_bytes": 23133387
+}

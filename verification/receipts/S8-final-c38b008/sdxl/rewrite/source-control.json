@@ -1,0 +1,11 @@
+{
+  "condition": "rewrite",
+  "module": "diffusers.models.unets.unet_2d_condition",
+  "original_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/unets/unet_2d_condition.py",
+  "original_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+  "removed_dependency": null,
+  "same_source_required": true,
+  "scope": "one-time witness experiment; no production per-model hook",
+  "scratch_path": "/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-tmxvaqj6/0/diffusers/models/unets/unet_2d_condition.py",
+  "scratch_sha256": "017493cd16b3a9b1695f15ddfb663922ee7edb9c55fba5c511603961650e8a36"
+}
