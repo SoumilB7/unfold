@@ -1,0 +1,31 @@
+{
+  "status": "ACCEPTED within matrix-caller scope",
+  "matrix_gzip_byte_identity": {
+    "model.json.gz": true,
+    "observation.json.gz": true,
+    "relations.json.gz": true
+  },
+  "unexplained": 0,
+  "source_receipt": "verification/receipts/S8-retained-closure-correction",
+  "input_sha256": {
+    "verification/receipts/S8-retained-closure-correction/pixart-before/facts.json.gz": "19bb9bf32b5979ad9d1244ac086120c56e3fd0da1a57756cbfa4eb4b6953f51f",
+    "verification/receipts/S8-retained-closure-correction/pixart-before/ir.json.gz": "26d76c4ec55a79fc403f40801fd9c72ab65add588f5c6f248bd419aab4915684",
+    "verification/receipts/S8-retained-closure-correction/pixart-before/model.json.gz": "fc86a498e7a367c9b48f2b3abbf1e6a83e62121ded44e70f2bb88d58b45bf2b3",
+    "verification/receipts/S8-retained-closure-correction/pixart-before/observation.json.gz": "8a90578b83b399f06b0eb6a985b183c83e4fa0debbd30bf06b30382ed2ebf3fa",
+    "verification/receipts/S8-retained-closure-correction/pixart-before/recomputed-resolution.json": "eff1149c23c72d65dd3ae3a4b14d29adba583cc7111fe3c56b5c3db9d566e3be",
+    "verification/receipts/S8-retained-closure-correction/pixart-before/relations.json.gz": "be03d615ba84f66463c6495dd11203cfcb1b68d5b97b49752ed33283e63a4e25",
+    "verification/receipts/S8-retained-closure-correction/pixart-before/source-after.json": "c157ac56cfe4a6d3e55b2eee5bcff76a69c073e6100e58a79f79c6012fd462eb",
+    "verification/receipts/S8-retained-closure-correction/pixart-before/source-before.json": "c157ac56cfe4a6d3e55b2eee5bcff76a69c073e6100e58a79f79c6012fd462eb",
+    "verification/receipts/S8-retained-closure-correction/pixart-before/summary.json": "b39587af9079c28c72ffb972411dca1bcb82d9168fdad71946faedb13e1b81d3",
+    "verification/receipts/S8-retained-closure-correction/pixart-after/facts.json.gz": "ade9160c02662012bfb70dcfccc8622477a74dcde5f4cfac20e3992eb0ad4119",
+    "verification/receipts/S8-retained-closure-correction/pixart-after/ir.json.gz": "4f986863d0632cec3a8f4bc5aedfa55924f08be351ccedb39e5eeda403553151",
+    "verification/receipts/S8-retained-closure-correction/pixart-after/model.json.gz": "fc86a498e7a367c9b48f2b3abbf1e6a83e62121ded44e70f2bb88d58b45bf2b3",
+    "verification/receipts/S8-retained-closure-correction/pixart-after/observation.json.gz": "8a90578b83b399f06b0eb6a985b183c83e4fa0debbd30bf06b30382ed2ebf3fa",
+    "verification/receipts/S8-retained-closure-correction/pixart-after/recomputed-resolution.json": "eff1149c23c72d65dd3ae3a4b14d29adba583cc7111fe3c56b5c3db9d566e3be",
+    "verification/receipts/S8-retained-closure-correction/pixart-after/relations.json.gz": "be03d615ba84f66463c6495dd11203cfcb1b68d5b97b49752ed33283e63a4e25",
+    "verification/receipts/S8-retained-closure-correction/pixart-after/source-after.json": "464acf675ca44b91d68e82c8a798bd1a7ad24747621c5e45d396245c81885bab",
+    "verification/receipts/S8-retained-closure-correction/pixart-after/source-before.json": "464acf675ca44b91d68e82c8a798bd1a7ad24747621c5e45d396245c81885bab",
+    "verification/receipts/S8-retained-closure-correction/pixart-after/summary.json": "77d09527f6b9ad19edce30807575eb93dd1ea686558e207434b8dc828c0eed74"
+  },
+  "blessed": false
+}

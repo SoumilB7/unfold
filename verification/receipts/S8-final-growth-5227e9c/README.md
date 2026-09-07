@@ -1,0 +1,9 @@
+# Final production growth at 5227e9c
+
+Exact Git tree comparison against accepted S7 `83140f1`, including every formerly untracked new module: production 45 files, +6,543/-67 lines; scripts five files, +1,204/-622; tests/test_support 22 files, +2,635/-8. The complete per-file counts are in growth.json. Artifacts and documentation are excluded from these code units.
+
+The shared execution_recipe module includes the former generator's recipe implementation (the old generator recipe block was removed); those moved lines are not all new architectural authority. The neutral prerequisite cost covers demanded construction lookup observations, exact function/property/iterator witnesses and the bounded TryObservation source record. The source readers connect those observations to existing canonical facts and port/instance cards. The retained-context change exports the same source closure rather than creating another fact or index author.
+
+The caller/deletion ledger records all fourteen original UNet readers as live, and sixteen added live modules with their callers and removal units. There is one temporary comparison bridge added and zero retired: unet_differential.py. Old author entry is unreachable from ordinary and failed production cutover; its files remain for this explicit private comparison until output acceptance permits retirement. This is not a claim that all legacy code was deleted.
+
+Debt counting units remain separate: 68 surfaced config-accounting findings across SDXL and SD14 are classified and zero eliminated; 327 constructed execution-unknown occurrences are independently classified; one old empty-root observation join omission is eliminated. The 101 old aggregate assertions are tracked separately as 54 carried, ten bounded and 37 named template/config demotions. No unlike units are summed and no projection limitation is labelled a proved mechanism.

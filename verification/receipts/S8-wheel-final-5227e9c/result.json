@@ -1,0 +1,49 @@
+{
+  "commit": "5227e9c",
+  "archive_sha256": "b79e7ad48b02093a06b1286ae2017bb0aac604686f0d96b253e888a304900e97",
+  "wheel_sha256": "2f74d124a1a968a2fbc9088d8757b44ea51088ca53dbbd546351af5a0323d291",
+  "installed_imports": {
+    "model_unfolder.adapters.diffusor.unet_cutover": "/private/tmp/unfold-s8-wheel-5227e9c/installed/model_unfolder/adapters/diffusor/unet_cutover.py",
+    "model_unfolder.evidence.unet_call_binding": "/private/tmp/unfold-s8-wheel-5227e9c/installed/model_unfolder/evidence/unet_call_binding.py",
+    "model_unfolder.evidence.unet_iteration_binding": "/private/tmp/unfold-s8-wheel-5227e9c/installed/model_unfolder/evidence/unet_iteration_binding.py",
+    "model_unfolder.evidence.context": "/private/tmp/unfold-s8-wheel-5227e9c/installed/model_unfolder/evidence/context.py",
+    "physics.attribute_bindings": "/private/tmp/unfold-s8-wheel-5227e9c/installed/physics/attribute_bindings.py",
+    "physics.execution_observation": "/private/tmp/unfold-s8-wheel-5227e9c/installed/physics/execution_observation.py",
+    "physics.framework_primitives": "/private/tmp/unfold-s8-wheel-5227e9c/installed/physics/framework_primitives.py",
+    "physics.instance_inventory": "/private/tmp/unfold-s8-wheel-5227e9c/installed/physics/instance_inventory.py",
+    "physics.relation_observation": "/private/tmp/unfold-s8-wheel-5227e9c/installed/physics/relation_observation.py",
+    "physics.source_override": "/private/tmp/unfold-s8-wheel-5227e9c/installed/physics/source_override.py"
+  },
+  "status": "PASS",
+  "scope": "Offline wheel build/install outside checkout using host dependencies; no clean dependency resolution or model execution",
+  "commands": [
+    [
+      "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+      "-m",
+      "pip",
+      "wheel",
+      "--no-index",
+      "--no-deps",
+      "--no-build-isolation",
+      "--wheel-dir",
+      "/private/tmp/unfold-s8-wheel-5227e9c/wheels",
+      "/private/tmp/unfold-s8-wheel-5227e9c/source"
+    ],
+    [
+      "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+      "-m",
+      "pip",
+      "install",
+      "--no-index",
+      "--no-deps",
+      "--target",
+      "/private/tmp/unfold-s8-wheel-5227e9c/installed",
+      "/private/tmp/unfold-s8-wheel-5227e9c/wheels/model_unfolder-0.3.0-py3-none-any.whl"
+    ],
+    [
+      "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+      "-c",
+      "import importlib,json,pathlib; root=pathlib.Path('/private/tmp/unfold-s8-wheel-5227e9c/installed'); result={m:importlib.import_module(m).__file__ for m in ['model_unfolder.adapters.diffusor.unet_cutover', 'model_unfolder.evidence.unet_call_binding', 'model_unfolder.evidence.unet_iteration_binding', 'model_unfolder.evidence.context', 'physics.attribute_bindings', 'physics.execution_observation', 'physics.framework_primitives', 'physics.instance_inventory', 'physics.relation_observation', 'physics.source_override']}; assert all(pathlib.Path(v).is_relative_to(root) for v in result.values()); print(json.dumps(result))"
+    ]
+  ]
+}

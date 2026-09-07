@@ -1,37 +1,6 @@
 {
-  "scope": "Exact historical red/control/replay receipt addresses; files retain their original source pins and limited verdicts. This index does not rerun or upgrade them.",
-  "receipt_directories": [
-    "S8-authority-corrections",
-    "S8-authority-followup",
-    "S8-ports-review-independent",
-    "S8-primary-ports-early-independent",
-    "S8-primary-ports-followup-independent",
-    "S8-independent-9fe0868",
-    "S8-independent-293c2d9",
-    "S8-attribute-binding-independent",
-    "S8-attribute-binding-identity-correction",
-    "S8-attribute-binding-identity-independent",
-    "S8-try-wrapper-independent",
-    "S8-wrapper-control-independent",
-    "S8-lookup-wrapper-followup-independent",
-    "S8-l1-l2-independent",
-    "S8-storage-alias-independent",
-    "S8-demonstration-review-independent",
-    "S8-report-integrity-correction",
-    "S8-trace-alias-correction",
-    "S8-third-trace-report-correction",
-    "S8-final-3693545-blocked",
-    "S8-final-b44dd25-blocked",
-    "S8-final-9fe0868-report-stop",
-    "S8-final-f664467",
-    "S8-override-compiler-flags-correction",
-    "S8-experiment-render-namespace",
-    "S8-opaque-component-scope",
-    "S8-opaque-component-scope-correction",
-    "S8-component-entry-label-return",
-    "S8-component-entry-label-correction",
-    "S8-overview-456-correction"
-  ],
+  "directory_count": 35,
+  "file_count": 150,
   "files": [
     {
       "path": "verification/receipts/S8-authority-corrections/README.md",
@@ -444,6 +413,232 @@
     {
       "path": "verification/receipts/S8-overview-456-correction/replay_geometry.py",
       "sha256": "c1edbcb3deb5a90364efaf2477f8ad43169f735c69c2bb4f6124f870bd6acb1c"
+    },
+    {
+      "path": "verification/receipts/S8-final-dotted-boundary-return/README.md",
+      "sha256": "f795dd934cd89f72d042c0adea16b9b3e95679496661bf1b4c484e4629bcbf23"
+    },
+    {
+      "path": "verification/receipts/S8-final-dotted-boundary-return/results.json",
+      "sha256": "2b24aface2756e6e93d99f702cec58539817659e49eb05a4d287ed1c7055be4f"
+    },
+    {
+      "path": "verification/receipts/S8-context-click-return/README.md",
+      "sha256": "ae08f3575eb57b1793a07a93b36cdea4f33d468fcd74e7c75f2ef1e328093bbb"
+    },
+    {
+      "path": "verification/receipts/S8-context-click-return/projection-counterexample.json",
+      "sha256": "86797e95959882355451ec9de3a0eeaada48eb4898e46b13308d4a2f5d634a00"
+    },
+    {
+      "path": "verification/receipts/S8-context-click-return/replay.py",
+      "sha256": "b6e3b9724d622ca26ea8d14b6b7296f8a82a1f0ad20edcaf755d01da7abf59a8"
+    },
+    {
+      "path": "verification/receipts/S8-context-click-return/results.json",
+      "sha256": "9bb32632cf4edb91e01dc3602fa7ca425256bbf7cf42b498fe361176378e34ba"
+    },
+    {
+      "path": "verification/receipts/S8-context-click-return/source-sha256.json",
+      "sha256": "0c25cdff9512ecffeadf2e83c05a44c0a2f8df1842492759f1e5146cd92cb996"
+    },
+    {
+      "path": "verification/receipts/S8-context-click-correction/README.md",
+      "sha256": "0d24324b4652767eb93b1214d395e1c037802fe64080e0c2be4c77c75fb869d6"
+    },
+    {
+      "path": "verification/receipts/S8-context-click-correction/artifact-sha256.json",
+      "sha256": "6b990aee442e10f5a030284acf525a8417cb1db0f68d0a0eb12b202d9d393400"
+    },
+    {
+      "path": "verification/receipts/S8-context-click-correction/sd14-ordinary/result.json",
+      "sha256": "79d58cc5b0a582fb902f5b29416227cdf70d9b5c853ac3af0b072cc4067a5fbe"
+    },
+    {
+      "path": "verification/receipts/S8-context-click-correction/sdxl-ordinary/result.json",
+      "sha256": "4e90b72ed9683d45c7a26f3474e36b7a253ee71d7d3ee7800dde3c5934915ca4"
+    },
+    {
+      "path": "verification/receipts/S8-context-click-correction/summary.json",
+      "sha256": "aa27dc3f302ede9de5273e416be5537185484dca5c2909cfe21778a80ea1f1c5"
+    },
+    {
+      "path": "verification/receipts/S8-context-click-correction/verify.py",
+      "sha256": "d5a81d896089b08273f85031e171b2ead5a06c438ad915b3f0068e26c66a5e3e"
+    },
+    {
+      "path": "verification/receipts/S8-matrix-96d0c1e-source-index-return/README.md",
+      "sha256": "f198694d49713411e6ab2d411882b6f0873e3978dea5eaca17bcf77beac8bdd1"
+    },
+    {
+      "path": "verification/receipts/S8-matrix-96d0c1e-source-index-return/accepted-matrix.json",
+      "sha256": "cb27e7a66f126a8ddfb5aa3651eb91dfd483d2efdbf297f5ac8b7b9fce006a15"
+    },
+    {
+      "path": "verification/receipts/S8-matrix-96d0c1e-source-index-return/generate-receipt.json",
+      "sha256": "f729187823a1a348dd96545f96e55a2b928c48ec8c4b70297ee8b4a47b2a1374"
+    },
+    {
+      "path": "verification/receipts/S8-matrix-96d0c1e-source-index-return/generate.log",
+      "sha256": "01c91d047e78ba5532db797dedfbff5b51ed9ac14d7b1822818a0aed3a0516d5"
+    },
+    {
+      "path": "verification/receipts/S8-matrix-96d0c1e-source-index-return/implementation-before.json",
+      "sha256": "c157ac56cfe4a6d3e55b2eee5bcff76a69c073e6100e58a79f79c6012fd462eb"
+    },
+    {
+      "path": "verification/receipts/S8-matrix-96d0c1e-source-index-return/preserved-manifest.json",
+      "sha256": "ec4682def469273bfda260b35a85dfcf615fe57dadfb526324db26f17f0e2759"
+    },
+    {
+      "path": "verification/receipts/S8-matrix-96d0c1e-source-index-return/preserved-s7/README.md",
+      "sha256": "bc4fb41ceacf94332e77ee5df9372ad5c8004f95bb6ca5f6239b15229a88e019"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/README.md",
+      "sha256": "e6f65bf6d0ff06652cd3f3c192c9014fe596eecaa9626386b685672c2faddd61"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/actual-sdxl/construction-request.json",
+      "sha256": "c9fc1243361169b5fa6b4384e1d9cd5cc2787f1325c803f70c88dc95de78fcf6"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/actual-sdxl/saved-source-checks.json",
+      "sha256": "bbacef8fa7cb939b25f4dd499c5cf4bb873e8b513e855445a8893334ec31dc4d"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/actual-sdxl/source-after.json",
+      "sha256": "464acf675ca44b91d68e82c8a798bd1a7ad24747621c5e45d396245c81885bab"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/actual-sdxl/source-before.json",
+      "sha256": "464acf675ca44b91d68e82c8a798bd1a7ad24747621c5e45d396245c81885bab"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/actual-sdxl/source-join.json",
+      "sha256": "29259ae8a530c3da94918367c3180e9f10c9ce579c6183892b48e8d8febe754c"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/actual-sdxl/summary.json",
+      "sha256": "33eede49d38ef6c25ee8ab296f3af65d8aab2fdd11d1f5ff3e5b3bb6d978369d"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/completed26-premises/completed26-premises.json",
+      "sha256": "e3ad0d3694c44d89147e4dfcd9757322489c76c52e2ba1ebf43bad4074ac04eb"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/facts.json.gz.deltas.json",
+      "sha256": "9f4a5eba3c1a60d3558add1a32a494111fbbb63fd88b2ede6bb9816823057df1"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/focused-results.json",
+      "sha256": "9d16034292cf201a12186663192f064cd3ac267cfdeb94b038799d8740f8be08"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/harness-red-v1.log",
+      "sha256": "f7036b1c1a2a65bc120123d74b38c78fe41f5907f4a939f8e0096a7f192e5054"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/harness-red-v2.log",
+      "sha256": "a154ac1f8ccc98767846daadaa10dca5e01319f3461948f58147c1ff5b16eb0a"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/ir.json.gz.deltas.json",
+      "sha256": "741437b917f697e1675411d807a966637c4f89884228b5f41c1ab2d3fd892c6d"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/pixart-after/recomputed-resolution.json",
+      "sha256": "eff1149c23c72d65dd3ae3a4b14d29adba583cc7111fe3c56b5c3db9d566e3be"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/pixart-after/source-after.json",
+      "sha256": "464acf675ca44b91d68e82c8a798bd1a7ad24747621c5e45d396245c81885bab"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/pixart-after/source-before.json",
+      "sha256": "464acf675ca44b91d68e82c8a798bd1a7ad24747621c5e45d396245c81885bab"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/pixart-after/summary.json",
+      "sha256": "77d09527f6b9ad19edce30807575eb93dd1ea686558e207434b8dc828c0eed74"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/pixart-before/recomputed-resolution.json",
+      "sha256": "eff1149c23c72d65dd3ae3a4b14d29adba583cc7111fe3c56b5c3db9d566e3be"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/pixart-before/source-after.json",
+      "sha256": "c157ac56cfe4a6d3e55b2eee5bcff76a69c073e6100e58a79f79c6012fd462eb"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/pixart-before/source-before.json",
+      "sha256": "c157ac56cfe4a6d3e55b2eee5bcff76a69c073e6100e58a79f79c6012fd462eb"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/pixart-before/summary.json",
+      "sha256": "b39587af9079c28c72ffb972411dca1bcb82d9168fdad71946faedb13e1b81d3"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/replay-v3.log",
+      "sha256": "c88022a2e2fb3f282f6bdec079897da9005787c9c2cf0baa56e2780b0b378534"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/replay-v4.log",
+      "sha256": "a7bc53248f01c999649bf6da08a1ec278bb982c56af15bb21fd17d7f6dcfb6ef"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/source-pins.json",
+      "sha256": "412715a01c85aeac7306eceaf808a63a3bfcf52b23414c57152fc3a0bc3086f2"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/unfold-s8-addressed-target-replay.py",
+      "sha256": "73f57531969e6407cdcef46a73142e820390da622bde9b68c7c3bc624545c65b"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/unfold-s8-completed-matrix-premises.py",
+      "sha256": "7b914de9488cf1da9cac364b1313ae57bb76933cafacd27e1c884484fc8e3a40"
+    },
+    {
+      "path": "verification/receipts/S8-retained-closure-correction/unfold-s8-retained-index-replay.py",
+      "sha256": "96e898b41992efc7c2bd9ddded21bfa2e02cac4753e304185e79819bc90f6bc8"
     }
-  ]
+  ],
+  "receipt_directories": [
+    "S8-authority-corrections",
+    "S8-authority-followup",
+    "S8-ports-review-independent",
+    "S8-primary-ports-early-independent",
+    "S8-primary-ports-followup-independent",
+    "S8-independent-9fe0868",
+    "S8-independent-293c2d9",
+    "S8-attribute-binding-independent",
+    "S8-attribute-binding-identity-correction",
+    "S8-attribute-binding-identity-independent",
+    "S8-try-wrapper-independent",
+    "S8-wrapper-control-independent",
+    "S8-lookup-wrapper-followup-independent",
+    "S8-l1-l2-independent",
+    "S8-storage-alias-independent",
+    "S8-demonstration-review-independent",
+    "S8-report-integrity-correction",
+    "S8-trace-alias-correction",
+    "S8-third-trace-report-correction",
+    "S8-final-3693545-blocked",
+    "S8-final-b44dd25-blocked",
+    "S8-final-9fe0868-report-stop",
+    "S8-final-f664467",
+    "S8-override-compiler-flags-correction",
+    "S8-experiment-render-namespace",
+    "S8-opaque-component-scope",
+    "S8-opaque-component-scope-correction",
+    "S8-component-entry-label-return",
+    "S8-component-entry-label-correction",
+    "S8-overview-456-correction",
+    "S8-final-dotted-boundary-return",
+    "S8-context-click-return",
+    "S8-context-click-correction",
+    "S8-matrix-96d0c1e-source-index-return",
+    "S8-retained-closure-correction"
+  ],
+  "scope": "Exact historical red/control/replay receipt addresses; files retain their original source pins and limited verdicts. This index does not rerun or upgrade them."
 }

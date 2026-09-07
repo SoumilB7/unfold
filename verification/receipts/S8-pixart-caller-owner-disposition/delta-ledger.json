@@ -1,0 +1,94 @@
+{
+  "ir.json.gz": [
+    {
+      "path": "$.extras.fact_provenance.root.denoiser.diffusion_root_topology",
+      "before_present": true,
+      "after_present": false,
+      "before": {
+        "source": "exact diffusion source occurrence",
+        "status": "code_proven",
+        "value": "repeated_stack"
+      },
+      "after": null,
+      "owner_disposition": "Accepted matrix-caller limited result: resolve the actually constructed PixArtTransformer2DModel; do not retain topology authority from Transformer2DModel. No new PixArt grammar or ordinary public input-path change."
+    },
+    {
+      "path": "$.extras.render.loop_blocks[5].description",
+      "before": "The denoiser detail is projected from exact source occurrences and their checkpoint-bound operands. Unresolved mechanisms remain opaque.",
+      "after": "The exact denoiser source/owner graph could not be closed. No transformer stack, attention, FFN, patchify, or output mechanism is inferred from the checkpoint vocabulary.",
+      "owner_disposition": "Accepted matrix-caller limited result: resolve the actually constructed PixArtTransformer2DModel; do not retain topology authority from Transformer2DModel. No new PixArt grammar or ordinary public input-path change."
+    },
+    {
+      "path": "$.extras.render.loop_blocks[5].label",
+      "before": [
+        "Diffusion denoiser"
+      ],
+      "after": [
+        "Denoiser",
+        "structure unresolved"
+      ],
+      "owner_disposition": "Accepted matrix-caller limited result: resolve the actually constructed PixArtTransformer2DModel; do not retain topology authority from Transformer2DModel. No new PixArt grammar or ordinary public input-path change."
+    },
+    {
+      "path": "$.extras.render.loop_blocks[5].title",
+      "before": "Source-proven diffusion denoiser",
+      "after": "Denoiser structure unresolved",
+      "owner_disposition": "Accepted matrix-caller limited result: resolve the actually constructed PixArtTransformer2DModel; do not retain topology authority from Transformer2DModel. No new PixArt grammar or ordinary public input-path change."
+    },
+    {
+      "path": "$.extras.render.opaque_layer_block.description",
+      "before": "The source projection does not prove a materializable root layer stack. Nested or symbolic templates remain recorded in the evidence surface, but no main denoiser layer is invented.",
+      "after": "The exact source or owner graph is incomplete, so no repeated cell, attention mechanism, or feed-forward mechanism is drawn.",
+      "owner_disposition": "Accepted matrix-caller limited result: resolve the actually constructed PixArtTransformer2DModel; do not retain topology authority from Transformer2DModel. No new PixArt grammar or ordinary public input-path change."
+    },
+    {
+      "path": "$.extras.render.opaque_layer_block.label[0]",
+      "before": "Repeated denoiser",
+      "after": "Denoiser internals",
+      "owner_disposition": "Accepted matrix-caller limited result: resolve the actually constructed PixArtTransformer2DModel; do not retain topology authority from Transformer2DModel. No new PixArt grammar or ordinary public input-path change."
+    },
+    {
+      "path": "$.extras.render.opaque_layer_block.label[1]",
+      "before": "structure unresolved",
+      "after": "unresolved",
+      "owner_disposition": "Accepted matrix-caller limited result: resolve the actually constructed PixArtTransformer2DModel; do not retain topology authority from Transformer2DModel. No new PixArt grammar or ordinary public input-path change."
+    },
+    {
+      "path": "$.extras.render.opaque_layer_block.title",
+      "before": "Repeated denoiser structure unresolved",
+      "after": "Denoiser internals unresolved",
+      "owner_disposition": "Accepted matrix-caller limited result: resolve the actually constructed PixArtTransformer2DModel; do not retain topology authority from Transformer2DModel. No new PixArt grammar or ordinary public input-path change."
+    },
+    {
+      "path": "$.extras.source_provenance.components.root.architecture",
+      "before": "Transformer2DModel",
+      "after": "PixArtTransformer2DModel",
+      "owner_disposition": "Accepted matrix-caller limited result: resolve the actually constructed PixArtTransformer2DModel; do not retain topology authority from Transformer2DModel. No new PixArt grammar or ordinary public input-path change."
+    },
+    {
+      "path": "$.warnings",
+      "before": [
+        "No root denoiser layers were materialized; the repeated denoiser structure remains visibly unresolved rather than being replaced by a zero-layer text transformer."
+      ],
+      "after": [
+        "Exact denoiser source projection unavailable \u2014 architecture is kept opaque rather than inferred from config fields.",
+        "No root denoiser layers were materialized; the repeated denoiser structure remains visibly unresolved rather than being replaced by a zero-layer text transformer."
+      ],
+      "owner_disposition": "Accepted matrix-caller limited result: resolve the actually constructed PixArtTransformer2DModel; do not retain topology authority from Transformer2DModel. No new PixArt grammar or ordinary public input-path change."
+    }
+  ],
+  "facts.json.gz": [
+    {
+      "path": "$.root.denoiser.diffusion_root_topology",
+      "before_present": true,
+      "after_present": false,
+      "before": {
+        "source": "exact diffusion source occurrence",
+        "status": "code_proven",
+        "value": "repeated_stack"
+      },
+      "after": null,
+      "owner_disposition": "Accepted matrix-caller limited result: resolve the actually constructed PixArtTransformer2DModel; do not retain topology authority from Transformer2DModel. No new PixArt grammar or ordinary public input-path change."
+    }
+  ]
+}
