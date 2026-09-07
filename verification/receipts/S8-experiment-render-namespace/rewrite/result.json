@@ -1,0 +1,31 @@
+{
+  "blessed": false,
+  "condition": "rewrite",
+  "constructed": 1930,
+  "elapsed_seconds": 236.826,
+  "html_sha256": "be92daf75f328e17f93e68d625a9c6fe114ff14f22173c4e494dbe434e456049",
+  "implementation_source_sha256": "6a5ef52aed7986d1e3a52f601ae0cf95224f3178d652aca47c3b57d512819ff7",
+  "implementation_unchanged_during_run": true,
+  "parameters": 2567463684,
+  "projected_fact_keys": [
+    "root.denoiser.cell_arithmetic",
+    "root.denoiser.cell_connections",
+    "root.denoiser.constructed_modules",
+    "root.denoiser.constructed_parameter_shapes",
+    "root.denoiser.constructed_stage_relations",
+    "root.denoiser.context_connections",
+    "root.denoiser.declared_constructor_defaults",
+    "root.denoiser.ffn_mechanisms",
+    "root.denoiser.primary_state_ports",
+    "root.denoiser.runtime_primitives",
+    "root.denoiser.spatial_mechanisms",
+    "root.denoiser.stage_join_connections"
+  ],
+  "render_phase": "render-phase.json",
+  "runtime_source_sha256": "017493cd16b3a9b1695f15ddfb663922ee7edb9c55fba5c511603961650e8a36",
+  "same_source": true,
+  "scratch_source_sha256": "017493cd16b3a9b1695f15ddfb663922ee7edb9c55fba5c511603961650e8a36",
+  "static_source_sha256": "017493cd16b3a9b1695f15ddfb663922ee7edb9c55fba5c511603961650e8a36",
+  "status": "review_required",
+  "wiring_problems": []
+}

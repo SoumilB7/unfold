@@ -1,0 +1,510 @@
+{
+  "blessed": false,
+  "blocking_checks": 0,
+  "conditions": {
+    "changed": {
+      "checks": [],
+      "status": "NOT_RUN"
+    },
+    "misleading": {
+      "checks": [
+        {
+          "check": "actual HTML generated",
+          "evidence": {
+            "actual_html_sha256": "e6466577680d2390a9ac53ba833f5ae067415ae49f90d71a55b02557f0626926",
+            "page_exists": true,
+            "page_hash_matches": true,
+            "recorded_html_sha256": "e6466577680d2390a9ac53ba833f5ae067415ae49f90d71a55b02557f0626926",
+            "saved_observation_matches": true
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "saved observations match actual HTML, IR and facts",
+          "evidence": {
+            "actual_html_sha256": "e6466577680d2390a9ac53ba833f5ae067415ae49f90d71a55b02557f0626926",
+            "page_exists": true,
+            "page_hash_matches": true,
+            "recorded_html_sha256": "e6466577680d2390a9ac53ba833f5ae067415ae49f90d71a55b02557f0626926",
+            "saved_observation_matches": true
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "ordinary reference HTML is intact",
+          "evidence": {
+            "actual_html_sha256": "1bceaf584aa602a420c6e298cac9ed1191389ee758efa84f680b3e8b95df1a75",
+            "page_exists": true,
+            "page_hash_matches": true,
+            "recorded_html_sha256": "1bceaf584aa602a420c6e298cac9ed1191389ee758efa84f680b3e8b95df1a75",
+            "saved_observation_matches": true
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "graph wiring",
+          "evidence": [],
+          "status": "PASS"
+        },
+        {
+          "check": "projected family fact inventory matches current IR",
+          "evidence": [
+            "root.denoiser.cell_arithmetic",
+            "root.denoiser.cell_connections",
+            "root.denoiser.constructed_modules",
+            "root.denoiser.constructed_parameter_shapes",
+            "root.denoiser.constructed_stage_relations",
+            "root.denoiser.context_connections",
+            "root.denoiser.declared_constructor_defaults",
+            "root.denoiser.ffn_mechanisms",
+            "root.denoiser.primary_state_ports",
+            "root.denoiser.runtime_primitives",
+            "root.denoiser.spatial_mechanisms",
+            "root.denoiser.stage_join_connections"
+          ],
+          "status": "PASS"
+        },
+        {
+          "check": "every projected family semantic fact participates",
+          "evidence": {
+            "metadata_exclusions": {
+              "root.denoiser.declared_constructor_defaults": "Omission provenance changes in the sparse control; its exact key/value/default card chips are checked separately."
+            },
+            "uncovered": []
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "every projected family fact carries a proof",
+          "evidence": [],
+          "status": "PASS"
+        },
+        {
+          "check": "cited custom implementation bytes are archived with matching hashes",
+          "evidence": {},
+          "status": "PASS"
+        },
+        {
+          "check": "same frozen implementation as ordinary",
+          "evidence": "6a5ef52aed7986d1e3a52f601ae0cf95224f3178d652aca47c3b57d512819ff7",
+          "status": "PASS"
+        },
+        {
+          "check": "mechanism, population and shape facts preserved",
+          "evidence": {
+            "condition": "3fbef8b36d99f956336c45ff1920656fdc5c0869cd49ca4bcc15596db23c78ba",
+            "ordinary": "3fbef8b36d99f956336c45ff1920656fdc5c0869cd49ca4bcc15596db23c78ba"
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "canonical block structure preserved",
+          "evidence": {
+            "condition": "26f74f0cd8904b84e598f8d081a09e32fd6ea3c2d88855e0b8827cf3461068fe",
+            "ordinary": "26f74f0cd8904b84e598f8d081a09e32fd6ea3c2d88855e0b8827cf3461068fe"
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "actual SVG diagrams preserved",
+          "evidence": {
+            "condition_count": 4522,
+            "ordinary_count": 4522
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "misleading field flagged in HTML prose",
+          "evidence": [
+            " stage evidence; whole-callable CFG coverage is open\ninter-loop source position does not prove unconditional execution order\n1 item: configuration fields are not yet interpreted.\nunread config field 'hidden_act' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason\n45 items: configuration values are read but not yet proven into the drawing.\nconfig occurrence root.denoiser:'act_fn' (spelled 'act_fn') was accessed but never consumed in"
+          ],
+          "status": "PASS"
+        }
+      ],
+      "output_delta_count": 104,
+      "status": "PASS"
+    },
+    "missing": {
+      "checks": [],
+      "status": "NOT_RUN"
+    },
+    "ordinary": {
+      "checks": [
+        {
+          "check": "actual HTML generated",
+          "evidence": {
+            "actual_html_sha256": "1bceaf584aa602a420c6e298cac9ed1191389ee758efa84f680b3e8b95df1a75",
+            "page_exists": true,
+            "page_hash_matches": true,
+            "recorded_html_sha256": "1bceaf584aa602a420c6e298cac9ed1191389ee758efa84f680b3e8b95df1a75",
+            "saved_observation_matches": true
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "saved observations match actual HTML, IR and facts",
+          "evidence": {
+            "actual_html_sha256": "1bceaf584aa602a420c6e298cac9ed1191389ee758efa84f680b3e8b95df1a75",
+            "page_exists": true,
+            "page_hash_matches": true,
+            "recorded_html_sha256": "1bceaf584aa602a420c6e298cac9ed1191389ee758efa84f680b3e8b95df1a75",
+            "saved_observation_matches": true
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "ordinary reference HTML is intact",
+          "evidence": {
+            "actual_html_sha256": "1bceaf584aa602a420c6e298cac9ed1191389ee758efa84f680b3e8b95df1a75",
+            "page_exists": true,
+            "page_hash_matches": true,
+            "recorded_html_sha256": "1bceaf584aa602a420c6e298cac9ed1191389ee758efa84f680b3e8b95df1a75",
+            "saved_observation_matches": true
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "graph wiring",
+          "evidence": [],
+          "status": "PASS"
+        },
+        {
+          "check": "projected family fact inventory matches current IR",
+          "evidence": [
+            "root.denoiser.cell_arithmetic",
+            "root.denoiser.cell_connections",
+            "root.denoiser.constructed_modules",
+            "root.denoiser.constructed_parameter_shapes",
+            "root.denoiser.constructed_stage_relations",
+            "root.denoiser.context_connections",
+            "root.denoiser.declared_constructor_defaults",
+            "root.denoiser.ffn_mechanisms",
+            "root.denoiser.primary_state_ports",
+            "root.denoiser.runtime_primitives",
+            "root.denoiser.spatial_mechanisms",
+            "root.denoiser.stage_join_connections"
+          ],
+          "status": "PASS"
+        },
+        {
+          "check": "every projected family semantic fact participates",
+          "evidence": {
+            "metadata_exclusions": {
+              "root.denoiser.declared_constructor_defaults": "Omission provenance changes in the sparse control; its exact key/value/default card chips are checked separately."
+            },
+            "uncovered": []
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "every projected family fact carries a proof",
+          "evidence": [],
+          "status": "PASS"
+        },
+        {
+          "check": "cited custom implementation bytes are archived with matching hashes",
+          "evidence": {},
+          "status": "PASS"
+        },
+        {
+          "check": "same frozen implementation as ordinary",
+          "evidence": "6a5ef52aed7986d1e3a52f601ae0cf95224f3178d652aca47c3b57d512819ff7",
+          "status": "PASS"
+        }
+      ],
+      "output_delta_count": 0,
+      "status": "PASS"
+    },
+    "rewrite": {
+      "checks": [
+        {
+          "check": "actual HTML generated",
+          "evidence": {
+            "actual_html_sha256": "f83d23f7361c7327d851cbaaad8b21fb1df853c0f9531f2d7a7792d7a0d60da8",
+            "page_exists": true,
+            "page_hash_matches": true,
+            "recorded_html_sha256": "f83d23f7361c7327d851cbaaad8b21fb1df853c0f9531f2d7a7792d7a0d60da8",
+            "saved_observation_matches": true
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "saved observations match actual HTML, IR and facts",
+          "evidence": {
+            "actual_html_sha256": "f83d23f7361c7327d851cbaaad8b21fb1df853c0f9531f2d7a7792d7a0d60da8",
+            "page_exists": true,
+            "page_hash_matches": true,
+            "recorded_html_sha256": "f83d23f7361c7327d851cbaaad8b21fb1df853c0f9531f2d7a7792d7a0d60da8",
+            "saved_observation_matches": true
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "ordinary reference HTML is intact",
+          "evidence": {
+            "actual_html_sha256": "1bceaf584aa602a420c6e298cac9ed1191389ee758efa84f680b3e8b95df1a75",
+            "page_exists": true,
+            "page_hash_matches": true,
+            "recorded_html_sha256": "1bceaf584aa602a420c6e298cac9ed1191389ee758efa84f680b3e8b95df1a75",
+            "saved_observation_matches": true
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "graph wiring",
+          "evidence": [],
+          "status": "PASS"
+        },
+        {
+          "check": "projected family fact inventory matches current IR",
+          "evidence": [
+            "root.denoiser.cell_arithmetic",
+            "root.denoiser.cell_connections",
+            "root.denoiser.constructed_modules",
+            "root.denoiser.constructed_parameter_shapes",
+            "root.denoiser.constructed_stage_relations",
+            "root.denoiser.context_connections",
+            "root.denoiser.declared_constructor_defaults",
+            "root.denoiser.ffn_mechanisms",
+            "root.denoiser.primary_state_ports",
+            "root.denoiser.runtime_primitives",
+            "root.denoiser.spatial_mechanisms",
+            "root.denoiser.stage_join_connections"
+          ],
+          "status": "PASS"
+        },
+        {
+          "check": "every projected family semantic fact participates",
+          "evidence": {
+            "metadata_exclusions": {
+              "root.denoiser.declared_constructor_defaults": "Omission provenance changes in the sparse control; its exact key/value/default card chips are checked separately."
+            },
+            "uncovered": []
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "every projected family fact carries a proof",
+          "evidence": [],
+          "status": "PASS"
+        },
+        {
+          "check": "cited custom implementation bytes are archived with matching hashes",
+          "evidence": {},
+          "status": "PASS"
+        },
+        {
+          "check": "same frozen implementation as ordinary",
+          "evidence": "6a5ef52aed7986d1e3a52f601ae0cf95224f3178d652aca47c3b57d512819ff7",
+          "status": "PASS"
+        },
+        {
+          "check": "mechanism, population and shape facts preserved",
+          "evidence": {
+            "condition": "3fbef8b36d99f956336c45ff1920656fdc5c0869cd49ca4bcc15596db23c78ba",
+            "ordinary": "3fbef8b36d99f956336c45ff1920656fdc5c0869cd49ca4bcc15596db23c78ba"
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "canonical block structure preserved",
+          "evidence": {
+            "condition": "26f74f0cd8904b84e598f8d081a09e32fd6ea3c2d88855e0b8827cf3461068fe",
+            "ordinary": "26f74f0cd8904b84e598f8d081a09e32fd6ea3c2d88855e0b8827cf3461068fe"
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "actual SVG diagrams preserved",
+          "evidence": {
+            "condition_count": 4522,
+            "ordinary_count": 4522
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "static reader and builder share exact scratch root bytes",
+          "evidence": {
+            "archived_scratch_sha256": "017493cd16b3a9b1695f15ddfb663922ee7edb9c55fba5c511603961650e8a36",
+            "runtime_source_sha256": "017493cd16b3a9b1695f15ddfb663922ee7edb9c55fba5c511603961650e8a36",
+            "scratch_source_sha256": "017493cd16b3a9b1695f15ddfb663922ee7edb9c55fba5c511603961650e8a36",
+            "source_control_scratch_sha256": "017493cd16b3a9b1695f15ddfb663922ee7edb9c55fba5c511603961650e8a36",
+            "static_source_sha256": "017493cd16b3a9b1695f15ddfb663922ee7edb9c55fba5c511603961650e8a36"
+          },
+          "status": "PASS"
+        }
+      ],
+      "output_delta_count": 5650,
+      "status": "PASS"
+    },
+    "sparse": {
+      "checks": [
+        {
+          "check": "actual HTML generated",
+          "evidence": {
+            "actual_html_sha256": "f98a1b9b53b2b60b40c9c69c3980da90620dda67fd77d1bd7dc15cdd1a4ac5f8",
+            "page_exists": true,
+            "page_hash_matches": true,
+            "recorded_html_sha256": "f98a1b9b53b2b60b40c9c69c3980da90620dda67fd77d1bd7dc15cdd1a4ac5f8",
+            "saved_observation_matches": true
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "saved observations match actual HTML, IR and facts",
+          "evidence": {
+            "actual_html_sha256": "f98a1b9b53b2b60b40c9c69c3980da90620dda67fd77d1bd7dc15cdd1a4ac5f8",
+            "page_exists": true,
+            "page_hash_matches": true,
+            "recorded_html_sha256": "f98a1b9b53b2b60b40c9c69c3980da90620dda67fd77d1bd7dc15cdd1a4ac5f8",
+            "saved_observation_matches": true
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "ordinary reference HTML is intact",
+          "evidence": {
+            "actual_html_sha256": "1bceaf584aa602a420c6e298cac9ed1191389ee758efa84f680b3e8b95df1a75",
+            "page_exists": true,
+            "page_hash_matches": true,
+            "recorded_html_sha256": "1bceaf584aa602a420c6e298cac9ed1191389ee758efa84f680b3e8b95df1a75",
+            "saved_observation_matches": true
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "graph wiring",
+          "evidence": [],
+          "status": "PASS"
+        },
+        {
+          "check": "projected family fact inventory matches current IR",
+          "evidence": [
+            "root.denoiser.cell_arithmetic",
+            "root.denoiser.cell_connections",
+            "root.denoiser.constructed_modules",
+            "root.denoiser.constructed_parameter_shapes",
+            "root.denoiser.constructed_stage_relations",
+            "root.denoiser.context_connections",
+            "root.denoiser.declared_constructor_defaults",
+            "root.denoiser.ffn_mechanisms",
+            "root.denoiser.primary_state_ports",
+            "root.denoiser.runtime_primitives",
+            "root.denoiser.spatial_mechanisms",
+            "root.denoiser.stage_join_connections"
+          ],
+          "status": "PASS"
+        },
+        {
+          "check": "every projected family semantic fact participates",
+          "evidence": {
+            "metadata_exclusions": {
+              "root.denoiser.declared_constructor_defaults": "Omission provenance changes in the sparse control; its exact key/value/default card chips are checked separately."
+            },
+            "uncovered": []
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "every projected family fact carries a proof",
+          "evidence": [],
+          "status": "PASS"
+        },
+        {
+          "check": "cited custom implementation bytes are archived with matching hashes",
+          "evidence": {},
+          "status": "PASS"
+        },
+        {
+          "check": "same frozen implementation as ordinary",
+          "evidence": "6a5ef52aed7986d1e3a52f601ae0cf95224f3178d652aca47c3b57d512819ff7",
+          "status": "PASS"
+        },
+        {
+          "check": "mechanism, population and shape facts preserved",
+          "evidence": {
+            "condition": "3fbef8b36d99f956336c45ff1920656fdc5c0869cd49ca4bcc15596db23c78ba",
+            "ordinary": "3fbef8b36d99f956336c45ff1920656fdc5c0869cd49ca4bcc15596db23c78ba"
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "canonical block structure preserved",
+          "evidence": {
+            "condition": "26f74f0cd8904b84e598f8d081a09e32fd6ea3c2d88855e0b8827cf3461068fe",
+            "ordinary": "26f74f0cd8904b84e598f8d081a09e32fd6ea3c2d88855e0b8827cf3461068fe"
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "actual SVG diagrams preserved",
+          "evidence": {
+            "condition_count": 4522,
+            "ordinary_count": 4522
+          },
+          "status": "PASS"
+        },
+        {
+          "check": "every omitted equal default labelled as a class default fact",
+          "evidence": [],
+          "status": "PASS"
+        },
+        {
+          "check": "each omitted key/value has class-default provenance on the actual denoiser card",
+          "evidence": {
+            "card": "denoiser",
+            "expected_chips": {
+              "act_fn": "Declared class default \u00b7 act_fn: \"silu\" (checkpoint omitted)",
+              "addition_embed_type_num_heads": "Declared class default \u00b7 addition_embed_type_num_heads: 64 (checkpoint omitted)",
+              "center_input_sample": "Declared class default \u00b7 center_input_sample: false (checkpoint omitted)",
+              "class_embed_type": "Declared class default \u00b7 class_embed_type: null (checkpoint omitted)",
+              "class_embeddings_concat": "Declared class default \u00b7 class_embeddings_concat: false (checkpoint omitted)",
+              "conv_in_kernel": "Declared class default \u00b7 conv_in_kernel: 3 (checkpoint omitted)",
+              "conv_out_kernel": "Declared class default \u00b7 conv_out_kernel: 3 (checkpoint omitted)",
+              "cross_attention_norm": "Declared class default \u00b7 cross_attention_norm: null (checkpoint omitted)",
+              "downsample_padding": "Declared class default \u00b7 downsample_padding: 1 (checkpoint omitted)",
+              "dual_cross_attention": "Declared class default \u00b7 dual_cross_attention: false (checkpoint omitted)",
+              "encoder_hid_dim": "Declared class default \u00b7 encoder_hid_dim: null (checkpoint omitted)",
+              "encoder_hid_dim_type": "Declared class default \u00b7 encoder_hid_dim_type: null (checkpoint omitted)",
+              "flip_sin_to_cos": "Declared class default \u00b7 flip_sin_to_cos: true (checkpoint omitted)",
+              "freq_shift": "Declared class default \u00b7 freq_shift: 0 (checkpoint omitted)",
+              "in_channels": "Declared class default \u00b7 in_channels: 4 (checkpoint omitted)",
+              "layers_per_block": "Declared class default \u00b7 layers_per_block: 2 (checkpoint omitted)",
+              "mid_block_only_cross_attention": "Declared class default \u00b7 mid_block_only_cross_attention: null (checkpoint omitted)",
+              "mid_block_scale_factor": "Declared class default \u00b7 mid_block_scale_factor: 1 (checkpoint omitted)",
+              "mid_block_type": "Declared class default \u00b7 mid_block_type: \"UNetMidBlock2DCrossAttn\" (checkpoint omitted)",
+              "norm_eps": "Declared class default \u00b7 norm_eps: 1e-05 (checkpoint omitted)",
+              "norm_num_groups": "Declared class default \u00b7 norm_num_groups: 32 (checkpoint omitted)",
+              "num_attention_heads": "Declared class default \u00b7 num_attention_heads: null (checkpoint omitted)",
+              "num_class_embeds": "Declared class default \u00b7 num_class_embeds: null (checkpoint omitted)",
+              "only_cross_attention": "Declared class default \u00b7 only_cross_attention: false (checkpoint omitted)",
+              "out_channels": "Declared class default \u00b7 out_channels: 4 (checkpoint omitted)",
+              "resnet_out_scale_factor": "Declared class default \u00b7 resnet_out_scale_factor: 1.0 (checkpoint omitted)",
+              "resnet_skip_time_act": "Declared class default \u00b7 resnet_skip_time_act: false (checkpoint omitted)",
+              "resnet_time_scale_shift": "Declared class default \u00b7 resnet_time_scale_shift: \"default\" (checkpoint omitted)",
+              "time_cond_proj_dim": "Declared class default \u00b7 time_cond_proj_dim: null (checkpoint omitted)",
+              "time_embedding_act_fn": "Declared class default \u00b7 time_embedding_act_fn: null (checkpoint omitted)",
+              "time_embedding_dim": "Declared class default \u00b7 time_embedding_dim: null (checkpoint omitted)",
+              "time_embedding_type": "Declared class default \u00b7 time_embedding_type: \"positional\" (checkpoint omitted)",
+              "timestep_post_act": "Declared class default \u00b7 timestep_post_act: null (checkpoint omitted)"
+            },
+            "missing": []
+          },
+          "status": "PASS"
+        }
+      ],
+      "output_delta_count": 542,
+      "status": "PASS"
+    },
+    "unchanged": {
+      "checks": [],
+      "status": "NOT_RUN"
+    }
+  },
+  "not_run": [
+    "unchanged",
+    "changed",
+    "missing"
+  ],
+  "status": "review_required"
+}
