@@ -1,0 +1,8 @@
+{
+  "input": "/private/tmp/unfold-s8-render-phase-c38-v2/generalization/sdxl-refiner/ordinary/ir.json",
+  "ir_sha256": "b6f8aede957eb1849c537cdde397e6a097e8b3965ac36c333eb213288cf492d2",
+  "renderer_sha256": "51773a01f75c24db0d6518dcdeb4023dd4b7c8eda33729d531d6ddea509b6182",
+  "exact_labels_fitted": 13,
+  "source_unchanged": true,
+  "scope": "saved actual IR renderer-only label fit; full page phase separate"
+}

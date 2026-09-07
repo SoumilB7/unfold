@@ -304,8 +304,23 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
         from .graph_engine import render_graph
         inputs = render.get("component_input_ids", ())
         visible = [blocks[key] for key in (*inputs, "denoiser") if key in blocks]
-        nodes = [Node(row["id"], row["kind"], row["label"],
-                      w=164 if row["id"] in inputs else 240, font=12)
+
+        def input_lines(label):
+            # Keep the exact declared name, including underscores, while
+            # fitting each line within the existing incoming-lane card.
+            result = []
+            for line in ([label] if isinstance(label, str) else label):
+                while len(line) > 15:
+                    end = line.rfind("_", 0, 15) + 1 or 15
+                    result.append(line[:end])
+                    line = line[end:]
+                result.append(line)
+            return result
+
+        nodes = [Node(row["id"], row["kind"],
+                      input_lines(row["label"]) if row["id"] in inputs else row["label"],
+                      w=164 if row["id"] in inputs else 240,
+                      font=11 if row["id"] in inputs else 12)
                  for row in visible]
         graph = Graph(nodes, ["denoiser"], parallels=[
             Parallel(None, "denoiser", [Lane([key]) for key in inputs])] if inputs else [])
