@@ -1,0 +1,12 @@
+{
+  "scope": "Tiny source-loader executable identity reproduction; no model construction/render",
+  "source_contains_future_annotations": false,
+  "loader_module_future_annotations": true,
+  "actual_flags": 16777219,
+  "source_compiled_flags": 3,
+  "xor": 16777216,
+  "future_annotations_flag": 16777216,
+  "codes_equal": false,
+  "instruction_bytes_equal": true,
+  "source_sha256": "db96e553e8f66be5e6cd8e5872234962d96425acff027649c382c679dace10b0"
+}

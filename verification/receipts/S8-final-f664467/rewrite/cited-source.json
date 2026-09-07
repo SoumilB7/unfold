@@ -1,0 +1,114 @@
+[
+  {
+    "artifact": "cited-source/017493cd16b3a9b1695f15ddfb663922ee7edb9c55fba5c511603961650e8a36.py.gz",
+    "content_sha256": "017493cd16b3a9b1695f15ddfb663922ee7edb9c55fba5c511603961650e8a36",
+    "path": "/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-oe73jpoe/0/diffusers/models/unets/unet_2d_condition.py",
+    "sha256": "017493cd16b3a9b1695f15ddfb663922ee7edb9c55fba5c511603961650e8a36",
+    "status": "archived_exact_bytes"
+  },
+  {
+    "artifact": "cited-source/0192998d3979533cdbc8eef9c8f783d0b4a4a547dec9e4388a17c9ae3b1c8ea8.py.gz",
+    "content_sha256": "0192998d3979533cdbc8eef9c8f783d0b4a4a547dec9e4388a17c9ae3b1c8ea8",
+    "path": "/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-oe73jpoe/0/diffusers/models/attention.py",
+    "sha256": "0192998d3979533cdbc8eef9c8f783d0b4a4a547dec9e4388a17c9ae3b1c8ea8",
+    "status": "archived_exact_bytes"
+  },
+  {
+    "artifact": "cited-source/051c6a2cb2d92ef614c10e90557a41c861c3f31d19a68f6527d72f8bab670bcd.py.gz",
+    "content_sha256": "051c6a2cb2d92ef614c10e90557a41c861c3f31d19a68f6527d72f8bab670bcd",
+    "path": "/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-oe73jpoe/0/diffusers/utils/hub_utils.py",
+    "sha256": "051c6a2cb2d92ef614c10e90557a41c861c3f31d19a68f6527d72f8bab670bcd",
+    "status": "archived_exact_bytes"
+  },
+  {
+    "artifact": "cited-source/2852f787a39f6f679578b9992c37b114c4b76cb9449b473267490429c22c396c.py.gz",
+    "content_sha256": "2852f787a39f6f679578b9992c37b114c4b76cb9449b473267490429c22c396c",
+    "path": "/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-oe73jpoe/0/diffusers/models/downsampling.py",
+    "sha256": "2852f787a39f6f679578b9992c37b114c4b76cb9449b473267490429c22c396c",
+    "status": "archived_exact_bytes"
+  },
+  {
+    "artifact": "cited-source/2a62d6786e9be75cc0afae5fcf64bb336632db5182543c0af0e6bc6c8c865756.py.gz",
+    "content_sha256": "2a62d6786e9be75cc0afae5fcf64bb336632db5182543c0af0e6bc6c8c865756",
+    "path": "/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-oe73jpoe/0/diffusers/loaders/single_file_model.py",
+    "sha256": "2a62d6786e9be75cc0afae5fcf64bb336632db5182543c0af0e6bc6c8c865756",
+    "status": "archived_exact_bytes"
+  },
+  {
+    "artifact": "cited-source/4a382975333be2e8bbd1f970cfa81e9442bfcc15485e30749654e267e8e5a0fc.py.gz",
+    "content_sha256": "4a382975333be2e8bbd1f970cfa81e9442bfcc15485e30749654e267e8e5a0fc",
+    "path": "/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-oe73jpoe/0/diffusers/models/attention_processor.py",
+    "sha256": "4a382975333be2e8bbd1f970cfa81e9442bfcc15485e30749654e267e8e5a0fc",
+    "status": "archived_exact_bytes"
+  },
+  {
+    "artifact": "cited-source/4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960.py.gz",
+    "content_sha256": "4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960",
+    "path": "/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-oe73jpoe/0/diffusers/configuration_utils.py",
+    "sha256": "4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960",
+    "status": "archived_exact_bytes"
+  },
+  {
+    "artifact": "cited-source/51e2d9d0a531c9c7cca2c999ade2d58f14c909eb543f91a6872b24c669becba3.py.gz",
+    "content_sha256": "51e2d9d0a531c9c7cca2c999ade2d58f14c909eb543f91a6872b24c669becba3",
+    "path": "/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-oe73jpoe/0/diffusers/loaders/peft.py",
+    "sha256": "51e2d9d0a531c9c7cca2c999ade2d58f14c909eb543f91a6872b24c669becba3",
+    "status": "archived_exact_bytes"
+  },
+  {
+    "artifact": "cited-source/55173237780f25219fe14498d5ddb1c82a85fb56dd6200133f02b85bdf05ecee.py.gz",
+    "content_sha256": "55173237780f25219fe14498d5ddb1c82a85fb56dd6200133f02b85bdf05ecee",
+    "path": "/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-oe73jpoe/0/diffusers/models/upsampling.py",
+    "sha256": "55173237780f25219fe14498d5ddb1c82a85fb56dd6200133f02b85bdf05ecee",
+    "status": "archived_exact_bytes"
+  },
+  {
+    "artifact": "cited-source/74282409d3da265bb999a5cf52746b3dcb3dd955b740fed48aa200e1da142c36.py.gz",
+    "content_sha256": "74282409d3da265bb999a5cf52746b3dcb3dd955b740fed48aa200e1da142c36",
+    "path": "/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-oe73jpoe/0/diffusers/models/transformers/transformer_2d.py",
+    "sha256": "74282409d3da265bb999a5cf52746b3dcb3dd955b740fed48aa200e1da142c36",
+    "status": "archived_exact_bytes"
+  },
+  {
+    "artifact": "cited-source/8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502.py.gz",
+    "content_sha256": "8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502",
+    "path": "/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-oe73jpoe/0/diffusers/models/unets/unet_2d_blocks.py",
+    "sha256": "8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502",
+    "status": "archived_exact_bytes"
+  },
+  {
+    "artifact": "cited-source/a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe.py.gz",
+    "content_sha256": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+    "path": "/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-oe73jpoe/0/diffusers/models/modeling_utils.py",
+    "sha256": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+    "status": "archived_exact_bytes"
+  },
+  {
+    "artifact": "cited-source/ab1767e8e44e7d4bf1cb18299ba33654329e2711fa983b1423fc4fe12de2c3ab.py.gz",
+    "content_sha256": "ab1767e8e44e7d4bf1cb18299ba33654329e2711fa983b1423fc4fe12de2c3ab",
+    "path": "/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-oe73jpoe/0/diffusers/models/activations.py",
+    "sha256": "ab1767e8e44e7d4bf1cb18299ba33654329e2711fa983b1423fc4fe12de2c3ab",
+    "status": "archived_exact_bytes"
+  },
+  {
+    "artifact": "cited-source/b601e45d78a640e66b05822d3d008e40a039b92bb126abd1a9bdef6124666d84.py.gz",
+    "content_sha256": "b601e45d78a640e66b05822d3d008e40a039b92bb126abd1a9bdef6124666d84",
+    "path": "/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-oe73jpoe/0/diffusers/models/resnet.py",
+    "sha256": "b601e45d78a640e66b05822d3d008e40a039b92bb126abd1a9bdef6124666d84",
+    "status": "archived_exact_bytes"
+  },
+  {
+    "artifact": "cited-source/d7a90ef799569e3f0fab41cadde1ecba023abd053af956c022bbfc097662a302.py.gz",
+    "content_sha256": "d7a90ef799569e3f0fab41cadde1ecba023abd053af956c022bbfc097662a302",
+    "path": "/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-oe73jpoe/0/diffusers/models/embeddings.py",
+    "sha256": "d7a90ef799569e3f0fab41cadde1ecba023abd053af956c022bbfc097662a302",
+    "status": "archived_exact_bytes"
+  },
+  {
+    "artifact": "cited-source/f7300cb8338b2f84b770b8577ac10cc6d9bd1f9aa77c038d83961337fccb7e7b.py.gz",
+    "content_sha256": "f7300cb8338b2f84b770b8577ac10cc6d9bd1f9aa77c038d83961337fccb7e7b",
+    "path": "/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-oe73jpoe/0/diffusers/loaders/unet.py",
+    "sha256": "f7300cb8338b2f84b770b8577ac10cc6d9bd1f9aa77c038d83961337fccb7e7b",
+    "status": "archived_exact_bytes"
+  }
+]

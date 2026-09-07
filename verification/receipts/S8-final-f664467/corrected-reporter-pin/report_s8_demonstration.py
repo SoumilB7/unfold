@@ -401,78 +401,6 @@ def differential(root):
     return result
 
 
-def _conditioning_trace(case, all_blocks, cards):
-    """The selected SDXL connection witness; never a production model hook."""
-    key = "root.denoiser.primary_state_ports"
-    pointer = "/regions/3/route/iteration_result/when_true/arguments/1/route/when_false/when_false/when_false"
-    cid = "unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false"
-    canonical_id, occurrence = "instance_time_embedding", "time_embedding"
-    by_id = {row["id"]: row for row in all_blocks}
-    fact = case["facts"].get(key, {})
-    try:
-        route = _at(fact.get("value", {}), pointer)
-    except (KeyError, IndexError, TypeError):
-        return {"claim": "Conditioning arguments enter the constructed time embedding", "status": "BLOCKING",
-                "chain_gaps": ["selected source connection absent"], "canonical_fact": {"key": key, "value_path": pointer}}
-    proof_row = case["qualified-facts"].get(key, {})
-    proof = proof_row.get("proof") or {}
-    archive = proof_row.get("source_archive", {})
-    expected_hashes = set(re.findall(r"sha256:([0-9a-f]{64}):", "\n".join(proof.get("evidence_refs", []))))
-    archived = archive.get("artifacts", {})
-    archive_ok = bool(expected_hashes) and all(
-        h in archived and (Path(case["path"]) / archived[h]).is_file()
-        and hashlib.sha256(gzip.decompress((Path(case["path"]) / archived[h]).read_bytes())).hexdigest() == h
-        for h in expected_hashes)
-    args = route.get("arguments", [])
-    source = case["result"].get("static_source_sha256")
-    refs = [f"sha256:{source}:1083:16:1083:69", f"sha256:{source}:1084:14:1084:55"]
-    connection_ok = (route.get("kind") == "call_result" and route.get("call_source") == refs[1]
-        and route.get("target_binding", {}).get("targets") == [occurrence]
-        and len(args) == 2 and args[0].get("port") == "0"
-        and args[0].get("route", {}).get("call_source") == refs[0]
-        and args[1] == {"port": "1", "route": {"kind": "formal", "formal": "timestep_cond"}}
-        and all(ref in proof.get("evidence_refs", []) for ref in refs))
-    block, boundary = by_id.get(cid, {}), by_id.get(cid + "__call", {})
-    canonical = by_id.get(canonical_id, {})
-    conditions = route.get("target_binding", {}).get("conditions", [])
-    nodes = set(cards.get(cid, {}).get("node_ids", []))
-    # Inspect the actual selected SVG, not merely its IR wiring report.
-    page = (Path(case["path"]) / "page.html").read_text()
-    start = page.find('data-card-id="' + cid + '"')
-    end = page.find('data-card-id="', start + 15) if start >= 0 else -1
-    segment = page[start:end] if end >= 0 else page[start:] if start >= 0 else ""
-    svgs = re.findall(r"<svg\b.*?</svg>", segment, re.S)
-    arrows = len(re.findall("marker-end=", svgs[0])) if svgs else 0
-    visible = set(cards.get("denoiser", {}).get("node_ids", []))
-    shape_key = "root.denoiser.constructed_parameter_shapes"
-    shape = case["facts"].get(shape_key, {}).get("value", {})
-    total = shape.get("by_module", {}).get(occurrence)
-    chip = f"{total:,} parameters in subtree" if isinstance(total, int) else ""
-    checks = [("actual HTML artifact integrity", _page_intact(case)),
-        ("qualified source connection", connection_ok and proof.get("claim_kind") == "connection"),
-        ("archived matching implementation bytes", archive_ok),
-        ("canonical fact cited by this block", all(key in row.get("source_fact_keys", []) for row in (block, boundary, canonical))),
-        ("stage overview", {"unet_primary_region_3", canonical_id} <= visible),
-        ("actual routed drill SVG", arrows == 3 and {cid + "__arg_0", cid + "__arg_1", cid + "__call"} <= nodes),
-        ("exact conditional target link", boundary.get("target") == canonical_id and bool(conditions)
-          and boundary.get("detail", {}).get("invocation_conditions") == conditions),
-        ("shape-backed numbers on exact cards", bool(chip) and chip in cards.get(canonical_id, {}).get("facts", [])
-          and shape_key in canonical.get("source_fact_keys", []) and bool(case["qualified-facts"].get(shape_key, {}).get("proof")))]
-    return {"claim": "get_time_embed result enters time_embedding argument 0; timestep_cond enters argument 1",
-        "status": "REVIEW_REQUIRED", "occurrence": occurrence,
-        "implementation_evidence": proof, "implementation_source_archive": archive,
-        "canonical_fact": {"key": key, "claim_kind": "connection", "value_path": pointer, "value": route},
-        "established_connection_or_function": {"source_refs": refs, "arguments": args, "conditions": conditions},
-        "overview_stage": {"id": canonical_id, "label": occurrence, "drawn_in_actual_denoiser_svg": canonical_id in visible},
-        "block": {name: block.get(name) for name in ("id", "kind", "view", "source_fact_keys")},
-        "actual_card": cards.get(cid, {}), "linked_quantity_card": canonical_id,
-        "numbers_on_actual_cards": [{"card_id": canonical_id, "fact": shape_key, "value_path": ["by_module", occurrence],
-                                    "value": total, "chip": chip, "present_on_its_actual_card": chip in cards.get(canonical_id, {}).get("facts", [])}],
-        "shape_evidence": case["qualified-facts"].get(shape_key, {}).get("proof"),
-        "actual_svg_arrows": arrows, "chain_gaps": [name for name, passed in checks if not passed],
-        "limitation": "The two arguments enter this conditionally selected call and its result leaves the boundary. Opaque internal computation, argument-to-result dependence, full conditioning lineage and observed execution are not asserted."}
-
-
 def claim_traces(root):
     """Index three witness claims into the actual baked cards, without blessing."""
     case = read_case(root / "ordinary")
@@ -567,8 +495,6 @@ def claim_traces(root):
                            ("actual card", bool(card)), ("actual drill SVG", bool(card.get("svg_count"))),
                            ("shape-backed numbers on exact cards", bool(expected_numbers) and all(row["present_on_its_actual_card"] for row in expected_numbers))) if not present],
                        "limitation": "An artifact linkage is not a semantic re-proof. Review the typed proof's exact claims and cited source before acceptance."})
-    dump(root / "supplemental-shape-traces.json", traces[2:])
-    traces = [*traces[:2], _conditioning_trace(case, all_blocks, cards)]
     dump(root / "claim-traces.json", traces)
     return traces
 

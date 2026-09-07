@@ -1,0 +1,463 @@
+[
+  {
+    "block": {
+      "id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff",
+      "kind": "ffn",
+      "source_fact_keys": [
+        "root.denoiser.constructed_modules",
+        "root.denoiser.constructed_parameter_shapes",
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "view": "runtime_ffn"
+    },
+    "card": {
+      "facts": [
+        "4,920,960 parameters in subtree",
+        "Execution: investigation_missing",
+        "no_recipe_attempted",
+        "Activation: gelu",
+        "Projection storage: fused_gate_up",
+        "input projection: 5120 \u00d7 640",
+        "output projection: 640 \u00d7 2560"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_gate_up_proj",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_gate_up_split",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_multiply",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_down_proj",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__net"
+      ],
+      "svg_count": 2,
+      "text": "Source-proven feed-forward computation\nConstructed occurrence: down_blocks.1.attentions.0.transformer_blocks.0.ff. The children below show containment. Their order does not establish execution order.\n4,920,960 parameters in subtree\nExecution: investigation_missing\nno_recipe_attempted\nActivation: gelu\nProjection storage: fused_gate_up\ninput projection: 5120 \u00d7 640\noutput projection: 640 \u00d7 2560\nin\nLinear (gate + up)\nSplit gate / up\nLinear (down)\nGELU\nnet"
+    },
+    "chain_gaps": [],
+    "claim": "Selected FFN computation and projection shapes",
+    "fact": {
+      "claim_kind": "applied_function",
+      "key": "root.denoiser.ffn_mechanisms",
+      "value": {
+        "activation": "gelu",
+        "gated": true,
+        "input_projection": "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.0.proj",
+        "output_projection": "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.2",
+        "projection_mode": "fused_gate_up"
+      }
+    },
+    "numbers": [
+      {
+        "card_id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff",
+        "chip": "4,920,960 parameters in subtree",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": 4920960,
+        "value_path": [
+          "by_module",
+          "down_blocks.1.attentions.0.transformer_blocks.0.ff"
+        ]
+      },
+      {
+        "card_id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff",
+        "chip": "input projection: 5120 \u00d7 640",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": [
+          5120,
+          640
+        ],
+        "value_path": [
+          "parameters",
+          "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.0.proj.weight",
+          "shape"
+        ]
+      },
+      {
+        "card_id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff",
+        "chip": "output projection: 640 \u00d7 2560",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": [
+          640,
+          2560
+        ],
+        "value_path": [
+          "parameters",
+          "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.2.weight",
+          "shape"
+        ]
+      },
+      {
+        "card_id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__net__0__proj",
+        "chip": "bias: 5120",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": [
+          5120
+        ],
+        "value_path": [
+          "parameters",
+          "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.0.proj.bias",
+          "shape"
+        ]
+      },
+      {
+        "card_id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__net__0__proj",
+        "chip": "weight: 5120 \u00d7 640",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": [
+          5120,
+          640
+        ],
+        "value_path": [
+          "parameters",
+          "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.0.proj.weight",
+          "shape"
+        ]
+      },
+      {
+        "card_id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__net__2",
+        "chip": "bias: 640",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": [
+          640
+        ],
+        "value_path": [
+          "parameters",
+          "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.2.bias",
+          "shape"
+        ]
+      },
+      {
+        "card_id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__net__2",
+        "chip": "weight: 640 \u00d7 2560",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": [
+          640,
+          2560
+        ],
+        "value_path": [
+          "parameters",
+          "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.2.weight",
+          "shape"
+        ]
+      }
+    ],
+    "occurrence": "down_blocks.1.attentions.0.transformer_blocks.0.ff",
+    "stage": {
+      "drawn_in_actual_denoiser_svg": true,
+      "id": "instance_down_blocks__1",
+      "label": "down_blocks.1"
+    }
+  },
+  {
+    "block": {
+      "id": "instance_down_blocks__0__resnets__0",
+      "kind": "opaque",
+      "source_fact_keys": [
+        "root.denoiser.constructed_modules",
+        "root.denoiser.constructed_parameter_shapes",
+        "root.denoiser.cell_connections",
+        "root.denoiser.runtime_primitives",
+        "root.denoiser.cell_arithmetic"
+      ],
+      "view": "runtime_cell_connections"
+    },
+    "card": {
+      "facts": [
+        "2,255,040 parameters in subtree",
+        "Execution: investigation_missing",
+        "no_recipe_attempted",
+        "Connections across optional branches and helpers remain under investigation.",
+        "Conditional additive arithmetic; operand call boundaries retained"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__resnets__0__norm1",
+        "instance_down_blocks__0__resnets__0__nonlinearity",
+        "instance_down_blocks__0__resnets__0__conv1",
+        "instance_down_blocks__0__resnets__0__norm2",
+        "instance_down_blocks__0__resnets__0__nonlinearity",
+        "instance_down_blocks__0__resnets__0__dropout",
+        "instance_down_blocks__0__resnets__0__conv2",
+        "instance_down_blocks__0__resnets__0__return_operand_0",
+        "instance_down_blocks__0__resnets__0__return_add",
+        "instance_down_blocks__0__resnets__0__return_scale",
+        "instance_down_blocks__0__resnets__0__return_operand_1",
+        "instance_down_blocks__0__resnets__0__conditioning_0_operand_0",
+        "instance_down_blocks__0__resnets__0__conditioning_0_add",
+        "instance_down_blocks__0__resnets__0__conditioning_0_operand_1",
+        "instance_down_blocks__0__resnets__0__norm1",
+        "instance_down_blocks__0__resnets__0__conv1",
+        "instance_down_blocks__0__resnets__0__time_emb_proj",
+        "instance_down_blocks__0__resnets__0__norm2",
+        "instance_down_blocks__0__resnets__0__dropout",
+        "instance_down_blocks__0__resnets__0__conv2",
+        "instance_down_blocks__0__resnets__0__nonlinearity"
+      ],
+      "svg_count": 5,
+      "text": "ResnetBlock2D\nConstructed occurrence: down_blocks.0.resnets.0. The children below show containment. Their order does not establish execution order.\n2,255,040 parameters in subtree\nExecution: investigation_missing\nno_recipe_attempted\nConnections across optional branches and helpers remain under investigation.\nConditional additive arithmetic; operand call boundaries retained\nGroupNorm\nSiLU\n2D convolution\nGroupNorm\nSiLU\nDropout\n2D convolution\nFirst add input\nDivide by scale\nvalue unresolved\nSecond add input\nCall result\nConditional route\nGroupNorm\n2D convolution\nLinear\nGroupNorm\nDropout\n2D convolution\nSiLU"
+    },
+    "chain_gaps": [],
+    "claim": "Exact cell-member call connections",
+    "fact": {
+      "claim_kind": "connection",
+      "key": "root.denoiser.cell_connections",
+      "value": {
+        "calls": {
+          "call_0": {
+            "guard": "unconditional",
+            "member": "down_blocks.0.resnets.0.norm1"
+          },
+          "call_1": {
+            "guard": "unconditional",
+            "member": "down_blocks.0.resnets.0.nonlinearity"
+          },
+          "call_12": {
+            "guard": "unconditional",
+            "member": "down_blocks.0.resnets.0.nonlinearity"
+          },
+          "call_13": {
+            "guard": "unconditional",
+            "member": "down_blocks.0.resnets.0.dropout"
+          },
+          "call_14": {
+            "guard": "unconditional",
+            "member": "down_blocks.0.resnets.0.conv2"
+          },
+          "call_6": {
+            "guard": "unconditional",
+            "member": "down_blocks.0.resnets.0.conv1"
+          },
+          "call_9": {
+            "guard": "unconditional",
+            "member": "down_blocks.0.resnets.0.norm2"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 0,
+            "source": "call_0",
+            "target": "call_1"
+          },
+          {
+            "argument_slot": 0,
+            "source": "call_1",
+            "target": "call_6"
+          },
+          {
+            "argument_slot": 0,
+            "source": "call_9",
+            "target": "call_12"
+          },
+          {
+            "argument_slot": 0,
+            "source": "call_12",
+            "target": "call_13"
+          },
+          {
+            "argument_slot": 0,
+            "source": "call_13",
+            "target": "call_14"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      }
+    },
+    "numbers": [
+      {
+        "card_id": "instance_down_blocks__0__resnets__0",
+        "chip": "2,255,040 parameters in subtree",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": 2255040,
+        "value_path": [
+          "by_module",
+          "down_blocks.0.resnets.0"
+        ]
+      },
+      {
+        "card_id": "instance_down_blocks__0__resnets__0__conv1",
+        "chip": "bias: 320",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": [
+          320
+        ],
+        "value_path": [
+          "parameters",
+          "down_blocks.0.resnets.0.conv1.bias",
+          "shape"
+        ]
+      },
+      {
+        "card_id": "instance_down_blocks__0__resnets__0__conv1",
+        "chip": "weight: 320 \u00d7 320 \u00d7 3 \u00d7 3",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": [
+          320,
+          320,
+          3,
+          3
+        ],
+        "value_path": [
+          "parameters",
+          "down_blocks.0.resnets.0.conv1.weight",
+          "shape"
+        ]
+      },
+      {
+        "card_id": "instance_down_blocks__0__resnets__0__conv2",
+        "chip": "bias: 320",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": [
+          320
+        ],
+        "value_path": [
+          "parameters",
+          "down_blocks.0.resnets.0.conv2.bias",
+          "shape"
+        ]
+      },
+      {
+        "card_id": "instance_down_blocks__0__resnets__0__conv2",
+        "chip": "weight: 320 \u00d7 320 \u00d7 3 \u00d7 3",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": [
+          320,
+          320,
+          3,
+          3
+        ],
+        "value_path": [
+          "parameters",
+          "down_blocks.0.resnets.0.conv2.weight",
+          "shape"
+        ]
+      },
+      {
+        "card_id": "instance_down_blocks__0__resnets__0__norm1",
+        "chip": "bias: 320",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": [
+          320
+        ],
+        "value_path": [
+          "parameters",
+          "down_blocks.0.resnets.0.norm1.bias",
+          "shape"
+        ]
+      },
+      {
+        "card_id": "instance_down_blocks__0__resnets__0__norm1",
+        "chip": "weight: 320",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": [
+          320
+        ],
+        "value_path": [
+          "parameters",
+          "down_blocks.0.resnets.0.norm1.weight",
+          "shape"
+        ]
+      },
+      {
+        "card_id": "instance_down_blocks__0__resnets__0__norm2",
+        "chip": "bias: 320",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": [
+          320
+        ],
+        "value_path": [
+          "parameters",
+          "down_blocks.0.resnets.0.norm2.bias",
+          "shape"
+        ]
+      },
+      {
+        "card_id": "instance_down_blocks__0__resnets__0__norm2",
+        "chip": "weight: 320",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": [
+          320
+        ],
+        "value_path": [
+          "parameters",
+          "down_blocks.0.resnets.0.norm2.weight",
+          "shape"
+        ]
+      }
+    ],
+    "occurrence": "down_blocks.0.resnets.0",
+    "stage": {
+      "drawn_in_actual_denoiser_svg": true,
+      "id": "instance_down_blocks__0",
+      "label": "down_blocks.0"
+    }
+  },
+  {
+    "block": {
+      "id": "instance_down_blocks__0__downsamplers__0",
+      "kind": "opaque",
+      "source_fact_keys": [
+        "root.denoiser.constructed_modules",
+        "root.denoiser.constructed_parameter_shapes",
+        "root.denoiser.spatial_mechanisms"
+      ],
+      "view": "constructed_children"
+    },
+    "card": {
+      "facts": [
+        "921,920 parameters in subtree",
+        "Execution: investigation_missing",
+        "no_recipe_attempted",
+        "Source-proven spatial primitive: torch.nn.Conv2d",
+        "Stride: 2"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__downsamplers__0__conv"
+      ],
+      "svg_count": 1,
+      "text": "Spatial reduction\nConstructed occurrence: down_blocks.0.downsamplers.0. The children below show containment. Their order does not establish execution order.\n921,920 parameters in subtree\nExecution: investigation_missing\nno_recipe_attempted\nSource-proven spatial primitive: torch.nn.Conv2d\nStride: 2\n2D convolution"
+    },
+    "chain_gaps": [],
+    "claim": "Selected spatial operation and constructed shapes",
+    "fact": {
+      "claim_kind": "applied_function",
+      "key": "root.denoiser.spatial_mechanisms",
+      "value": {
+        "effect": "reduce",
+        "operand": 2,
+        "primitive": "torch.nn.Conv2d"
+      }
+    },
+    "numbers": [
+      {
+        "card_id": "instance_down_blocks__0__downsamplers__0",
+        "chip": "921,920 parameters in subtree",
+        "fact": "root.denoiser.constructed_parameter_shapes",
+        "present_on_its_actual_card": true,
+        "value": 921920,
+        "value_path": [
+          "by_module",
+          "down_blocks.0.downsamplers.0"
+        ]
+      }
+    ],
+    "occurrence": "down_blocks.0.downsamplers.0",
+    "stage": {
+      "drawn_in_actual_denoiser_svg": true,
+      "id": "instance_down_blocks__0",
+      "label": "down_blocks.0"
+    }
+  }
+]
