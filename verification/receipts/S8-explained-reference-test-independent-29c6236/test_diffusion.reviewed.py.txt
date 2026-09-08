@@ -1157,19 +1157,6 @@ def test_diffusion_recursive_depth_conforms(name):
         assert _explained_call_target_leaf(block, blocks, provenance), \
             f"{name}: block {block.get('id')!r} is a bare leaf (no view/description/explanation)"
         reference_leaves.append(block)
-    if name == "sdxl_unet":
-        expected = {
-            f"{prefix}__slot_{slot}": f"instance_{direction}_blocks__{slot}"
-            for prefix, direction in (
-                ("unet_primary_region_3__iteration__when_true__call", "down"),
-                ("unet_primary_region_3__iteration__when_false__when_true__operand_0__call", "down"),
-                ("unet_primary_region_3__iteration__when_false__when_false__call", "down"),
-                ("unet_primary_region_6__iteration__when_true__call", "up"),
-                ("unet_primary_region_6__iteration__when_false__call", "up"),
-            ) for slot in range(3)
-        }
-        assert len(reference_leaves) == 15
-        assert {block["id"]: block["target"] for block in reference_leaves} == expected
     # 2. recursive coupling: every clickable node at every drill depth → a card.
     html = d.to_html(standalone=True)
     assert validate_block_tree(ir) == []

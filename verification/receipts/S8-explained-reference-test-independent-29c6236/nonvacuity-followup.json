@@ -1,0 +1,22 @@
+{
+  "status": "ACCEPT static nonvacuity addition; isolated execution pending",
+  "source_sha256": "ce19967ce38638473c9635b5e4c1584f3c9d2e520fb63fb691afb8311b78c57e",
+  "exact15map_equal_saved_actual_reference_population": true,
+  "expected": {
+    "unet_primary_region_3__iteration__when_true__call__slot_0": "instance_down_blocks__0",
+    "unet_primary_region_3__iteration__when_true__call__slot_1": "instance_down_blocks__1",
+    "unet_primary_region_3__iteration__when_true__call__slot_2": "instance_down_blocks__2",
+    "unet_primary_region_3__iteration__when_false__when_true__operand_0__call__slot_0": "instance_down_blocks__0",
+    "unet_primary_region_3__iteration__when_false__when_true__operand_0__call__slot_1": "instance_down_blocks__1",
+    "unet_primary_region_3__iteration__when_false__when_true__operand_0__call__slot_2": "instance_down_blocks__2",
+    "unet_primary_region_3__iteration__when_false__when_false__call__slot_0": "instance_down_blocks__0",
+    "unet_primary_region_3__iteration__when_false__when_false__call__slot_1": "instance_down_blocks__1",
+    "unet_primary_region_3__iteration__when_false__when_false__call__slot_2": "instance_down_blocks__2",
+    "unet_primary_region_6__iteration__when_true__call__slot_0": "instance_up_blocks__0",
+    "unet_primary_region_6__iteration__when_true__call__slot_1": "instance_up_blocks__1",
+    "unet_primary_region_6__iteration__when_true__call__slot_2": "instance_up_blocks__2",
+    "unet_primary_region_6__iteration__when_false__call__slot_0": "instance_up_blocks__0",
+    "unet_primary_region_6__iteration__when_false__call__slot_1": "instance_up_blocks__1",
+    "unet_primary_region_6__iteration__when_false__call__slot_2": "instance_up_blocks__2"
+  }
+}

@@ -1,0 +1,114 @@
+diff --git a/tests/test_diffusion.py b/tests/test_diffusion.py
+index 7b44077..6a5f421 100644
+--- a/tests/test_diffusion.py
++++ b/tests/test_diffusion.py
+@@ -1074,27 +1074,101 @@ def _walk_blocks(blocks):
+             yield from _walk_blocks(b.get("children"))
+ 
+ 
++def _explained_call_target_leaf(block, blocks, provenance):
++    """An own-card explanation is a leaf; this does not assert target navigation."""
++    from model_unfolder.renderers.html.block_views.registry import VIEW_REGISTRY
++
++    key = "root.denoiser.primary_state_ports"
++    target_id = block.get("target")
++    targets = [candidate for candidate in blocks if candidate.get("id") == target_id]
++    if not target_id or target_id == block.get("id") or len(targets) != 1:
++        return False
++    target = targets[0]
++    path = block.get("source_instance_path")
++    return bool(
++        path and target.get("source_instance_path") == path
++        and block.get("source_fact_keys") == [key]
++        and provenance.get(key, {}).get("status") == "code_proven"
++        and block.get("facts") == [
++            "Target of this call at the corresponding recorded loop slot"]
++        and (target.get("view") in VIEW_REGISTRY
++             or target.get("description") or target.get("children"))
++    )
++
++
++@pytest.mark.parametrize("poison", [
++    None, "missing_target", "wrong_path", "empty_fact", "plain_bare",
++    "self_target", "target_cycle", "unqualified", "foreign_fact", "duplicate_target",
++])
++def test_explained_call_target_leaf_keeps_reference_constraints(poison):
++    from copy import deepcopy
++
++    key = "root.denoiser.primary_state_ports"
++    block = {"id": "slot", "target": "instance", "source_instance_path": "down_blocks.0",
++             "source_fact_keys": [key],
++             "facts": ["Target of this call at the corresponding recorded loop slot"]}
++    target = {"id": "instance", "source_instance_path": "down_blocks.0",
++              "description": "Constructed occurrence with its own recorded shapes"}
++    provenance = {key: {"status": "code_proven"}}
++    blocks = [block, target]
++    if poison == "missing_target":
++        block["target"] = "absent"
++    elif poison == "wrong_path":
++        target["source_instance_path"] = "up_blocks.0"
++    elif poison == "empty_fact":
++        block["facts"] = []
++    elif poison == "plain_bare":
++        block.clear()
++        block["id"] = "slot"
++    elif poison == "self_target":
++        block["target"] = "slot"
++    elif poison == "target_cycle":
++        target.pop("description")
++        target["target"] = "slot"
++    elif poison == "unqualified":
++        provenance[key]["status"] = "investigation_missing"
++    elif poison == "foreign_fact":
++        block["source_fact_keys"] = ["root.other_denoiser.primary_state_ports"]
++    elif poison == "duplicate_target":
++        blocks.append(deepcopy(target))
++    assert _explained_call_target_leaf(block, blocks, provenance) is (poison is None)
++
++
+ @pytest.mark.parametrize("name", sorted(_DEPTH_FIXTURES))
+ def test_diffusion_recursive_depth_conforms(name):
+     cfg = _DEPTH_FIXTURES[name]
+     d = unfold(cfg)
+     ir = d.ir
+-    # 1. recursion bottoms out: every block carries a registered view OR a
+-    #    description (a leaf) — no bare, undrillable, undescribed block.
++    # 1. Recursion bottoms out in a view, description, children, or an exact
++    # source-qualified call-target explanation on the reference's own card.
++    # Such a leaf does not provide alias-to-canonical navigation today.
+     from model_unfolder.renderers.html.block_views.registry import VIEW_REGISTRY
+     render = (ir.extras or {}).get("render") or {}
+     trees = [getattr(L, "blocks", []) for L in ir.layers] + \
+             [render.get("model_blocks") or [], render.get("loop_blocks") or []]
+-    for blocks in trees:
+-        for b in _walk_blocks(blocks):
+-            if b.get("static"):
+-                continue
+-            assert b.get("view") in VIEW_REGISTRY or b.get("description") or b.get("children"), \
+-                f"{name}: block {b.get('id')!r} is a bare leaf (no view/description)"
++    blocks = [block for tree in trees for block in _walk_blocks(tree)]
++    provenance = (ir.extras or {}).get("fact_provenance", {})
++    reference_leaves = []
++    for block in blocks:
++        if block.get("static"):
++            continue
++        if block.get("view") in VIEW_REGISTRY or block.get("description") or block.get("children"):
++            continue
++        assert _explained_call_target_leaf(block, blocks, provenance), \
++            f"{name}: block {block.get('id')!r} is a bare leaf (no view/description/explanation)"
++        reference_leaves.append(block)
+     # 2. recursive coupling: every clickable node at every drill depth → a card.
+     html = d.to_html(standalone=True)
+     assert validate_block_tree(ir) == []
+     assert validate_click_coupling(html) == []
++    from html import escape
++    for block in reference_leaves:
++        node_id = escape(block["id"], quote=True)
++        assert f'<g class="uf-node" data-id="{node_id}">' in html
++        own_card = html.split(f'data-card-id="{node_id}"', 1)[1].split(
++            '<div class="uf-card-detail', 1)[0]
++        assert f'<div class="uf-card-title">{escape(block["label"])}</div>' in own_card
++        assert f'<span class="uf-fact">{escape(block["facts"][0])}</span>' in own_card
+ 
+ 
+ # Real FLUX.1-dev model_index.json wiring (the pipeline component map).
