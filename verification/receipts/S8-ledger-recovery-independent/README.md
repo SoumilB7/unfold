@@ -1,0 +1,9 @@
+# Preparation for exact preservation ledger recovery
+
+No model has been run by this preparation. Final44 coverage retained actual IR/HTML only for SDXL and SD14; it cannot supply the other preservation witnesses. The committed expected manifest was last changed in 688d641 and remains unchanged through accepted S7. Historical U0 baseline JSON is not assumed to reconstruct these later expected bytes.
+
+The source snapshot at /private/tmp/unfold-s8-ledger-source-83140f1 contains 333 byte-pinned files from accepted S7 commit 83140f1. source-snapshot.json records every file and the original git archive hash. capture_sidecar.py imports only that pinned source, checks exact executable input hashes, captures one actual production parse per selected witness, retains full IR and comparator sidecar bytes, and requires the old sidecar hash to recover the committed expected value. It stops on the first mismatch. This is a diagnostic capture, not a baseline writer or a gate replacement.
+
+First queued pilot: Bloom, after the executor releases the serial model/test lane. Reuse the helper's exact current Bloom capture for the other side of the comparison. If the accepted-source hash does not recover, investigate the actual difference before expanding to the other witnesses; no semantic explanation can be inferred from a hash mismatch alone. Host Python 3.12.10 and transformers 5.12.1 match the manifest version labels, but those labels alone do not prove identical source bytes or environment behavior.
+
+Current SDXL sidecars may be reused from the exact final716 public captures after input/source derivation checks. Bloom and exact-input example captures can cover further current witnesses. Any remaining current sidecars require retained actual output, not inferred equality from coverage counts. Baselines and blessed examples remain untouched.

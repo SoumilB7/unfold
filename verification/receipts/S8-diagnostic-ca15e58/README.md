@@ -1,0 +1,7 @@
+# Actual diagnostics at ca15e58 — SVD receipt return
+
+Three exact inputs ran serially from the immutable detached source. The original invalid SDXL input produced the expected typed ConstructionFailed/construct result and a visible limited page (10.191 s). The corrected shared SDXL input constructed 1,930 modules and passed all seven validators/audits (88.849 s). Its shape-backed summary is seven stages and 2,567,463,684 denoiser parameters.
+
+SVD constructed 1,542 modules and rendered actual HTML (30.342 s), but the strict projection audit returned one finding: proven root.denoiser.runtime_primitives has no rendered fact receipt. The six other checks pass. All 1,010 primitive fact paths appear as exact actual SVG nodes. The producer assigns their proven kind/label/key; build_constructed_children_view paints the child labels but emits no corresponding event. See svd-primitive-diagnosis.json for every path and pinned source locations. This establishes a receipt gap for containment presentation, not temporal execution order, AlphaBlender semantics, or an executed frame count.
+
+The campaign stopped at this concrete failure. Bridge, DeepFloyd, Bloom and examples were not launched as part of these first three runs. Each original file is preserved losslessly as gzip, including logs, actual HTML, IR, request, inventory, qualified facts and cited source archives. Historical source and exact inputs remain pinned. No outputs were blessed or baselines changed.

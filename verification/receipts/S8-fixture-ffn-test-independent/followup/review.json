@@ -1,0 +1,7 @@
+{
+  "verdict": "ACCEPT occurrence FFN semantic correction; actual executor PASS1 in120.16s",
+  "source_scope": "Final test uses existing lint._walk_blocks over full forest; own fact/path/value/five-operation-node assertions retained. Test and fixture snapshots only post-run pinned, not whole-tree execution receipt.",
+  "correction_to_initial_triage": "The first test had a real model_blocks traversal defect, but StopIteration alone did not establish its active cause. Subsequent actual diagnostic establishes resource-monitor denial and opaque fallback during both initial attempts. Their red logs remain red; final authorized resource-monitor run passes.",
+  "fixture": "Three additions match corpus; preserved incomplete fixture negative remains pending.",
+  "independent_execution": "No model/pytest"
+}

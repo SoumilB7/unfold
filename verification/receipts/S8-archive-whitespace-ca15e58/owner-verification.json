@@ -1,0 +1,9 @@
+{
+  "verdict": "ACCEPT exact archival data packaging",
+  "historical_commit": "ca15e588bc015c6479a44bca812ea79c0d450471",
+  "archive_count": 13,
+  "path_map_sha256": "bd19e05de70682ddac563c947e0ccc50545c8f96c681540669b8cda26e255eed",
+  "command": "python3 verification/receipts/S8-archive-whitespace-ca15e58/verify.py",
+  "result": "Verified 13 exact historical archives",
+  "scope": "Owner read verification script and independently executed its archive hash, decompressed hash and exact git-history byte checks. No product or gate acceptance follows."
+}
