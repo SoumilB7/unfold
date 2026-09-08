@@ -1,0 +1,117 @@
+{
+  "verdict": "ACCEPT_ACTUAL_ISOLATED_CONTROL_RESULTS",
+  "commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+  "reviewer_ran_models_or_tests": false,
+  "cases": [
+    {
+      "case": "noisy",
+      "request": {
+        "build_flags": {},
+        "config": {
+          "characters": 1048576
+        },
+        "config_method": null,
+        "config_module": null,
+        "config_qualname": null,
+        "factory_method": "__call__",
+        "factory_module": "test_support.s6_models",
+        "factory_qualname": "NoisyModel",
+        "framework": "custom",
+        "import_paths": [],
+        "label": "NoisyModel",
+        "memory_limit_bytes": 8589934592,
+        "timeout_seconds": 10
+      },
+      "result": {
+        "elapsed_seconds": 5.081138583831489,
+        "exit_code": 0,
+        "selected_external_pins_equal": true,
+        "source_input_pins_equal": true
+      },
+      "actual_status": "ok",
+      "actual_failure": null,
+      "sample_count": 96,
+      "maximum_observed_rss": 222822400,
+      "original_termination": null,
+      "final_returncode": 0,
+      "monitor_seconds": 3.114632667042315,
+      "stdout_tail_length": 65536,
+      "all_pins_equal": true,
+      "artifact_sha256": {
+        "result.json": "264a0e53648f60c87d767e43c6f2042da6c6aee99f8dcb6f1360f1f7f26ba295",
+        "observed-call-counts.json": "df52f6da6fd34e698ad6d938ab8333d696b0f75101eb199fe9309eb17f641c8d",
+        "source-input-after-finally.json": "483b15edf40b1c397a6de0b6b1aabcdcf9c49eceb08a005704a212bce3459edc",
+        "external-after-finally.json": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+        "external-before.json": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+        "command.json": "abdd945ada0a22c6a12d9732126fc978eed91c58af01b8c4fea6957c6bcc5242",
+        "observation-sites.json": "77be93e3ae9b55a3ac143356b95bc29c81323d6d33d12080711902a5d24bb3ad",
+        "source-input-before.json": "483b15edf40b1c397a6de0b6b1aabcdcf9c49eceb08a005704a212bce3459edc",
+        "inventory-request.json": "e3b05fdc953afd15e470fd35976ca75a427a7bb2c2b93d66b89f4a401ff5427c",
+        "inventory-result.json": "b780847ac8d5e6b1a92aaaf959d4987143c3d49fb2ae2c0bb262aff9eb2ac137",
+        "supervisor-observation.json": "12290aaf15d1606af8a8564fa83e50bbc7f72a1b60ccca2e2493a55fe3f313c0"
+      }
+    },
+    {
+      "case": "memory",
+      "request": {
+        "build_flags": {},
+        "config": {
+          "bytes": 3221225472,
+          "chunk_bytes": 67108864
+        },
+        "config_method": null,
+        "config_module": null,
+        "config_qualname": null,
+        "factory_method": "__call__",
+        "factory_module": "test_support.s6_models",
+        "factory_qualname": "MemoryModel",
+        "framework": "custom",
+        "import_paths": [],
+        "label": "MemoryModel",
+        "memory_limit_bytes": 1073741824,
+        "timeout_seconds": 30
+      },
+      "result": {
+        "elapsed_seconds": 3.72547800000757,
+        "exit_code": 0,
+        "selected_external_pins_equal": true,
+        "source_input_pins_equal": true
+      },
+      "actual_status": "failed",
+      "actual_failure": {
+        "detail": "process-tree RSS 1110507520 exceeded 1073741824 bytes",
+        "kind": "MemoryLimitExceeded",
+        "stage": "construct"
+      },
+      "sample_count": 57,
+      "maximum_observed_rss": 1110507520,
+      "original_termination": "memory:1110507520",
+      "final_returncode": -9,
+      "monitor_seconds": 1.9377340828068554,
+      "stdout_tail_length": 0,
+      "all_pins_equal": true,
+      "artifact_sha256": {
+        "result.json": "78167ba669fa99e5f21e89aa5b164d11ee013d0eed6f8408b3c23c0598216a50",
+        "observed-call-counts.json": "df52f6da6fd34e698ad6d938ab8333d696b0f75101eb199fe9309eb17f641c8d",
+        "source-input-after-finally.json": "483b15edf40b1c397a6de0b6b1aabcdcf9c49eceb08a005704a212bce3459edc",
+        "external-after-finally.json": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+        "external-before.json": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+        "command.json": "d635928e4c0564796cf893a58f0496428977e979a1d98ec09b7f69606563de26",
+        "observation-sites.json": "77be93e3ae9b55a3ac143356b95bc29c81323d6d33d12080711902a5d24bb3ad",
+        "source-input-before.json": "483b15edf40b1c397a6de0b6b1aabcdcf9c49eceb08a005704a212bce3459edc",
+        "inventory-request.json": "c3753a3b589f3a335d163458818836ba07dd37d5778dcfbd3da5755dc5f96100",
+        "inventory-result.json": "f5e45972221b56bdaa8833ae3cf5505f3c69b684799f87055095706f3ba245bc",
+        "supervisor-observation.json": "fd9d60ba915c9393a4297177805854446b9971ccef3aa06e410bcee8be5707a4"
+      }
+    }
+  ],
+  "contract_assessment": [
+    "Noisy original10s control completed with one print, successful worker exit and bounded65536-character stdout capture",
+    "Memory original30s/1GiB control terminated at the first observed sample above its cap, yielding the correct typed failure and child exit-9",
+    "These measurements establish the original sampled-RSS supervision behavior in the two diagnostic runs; they do not establish a kernel address-space or allocated-byte ceiling",
+    "The existing fixture touches highly repetitive pages; allocated bytes and sampled resident memory are distinct. No retained sample proves what happened during the earlier unexpectedok run",
+    "Tracing contributes overhead and may alter scheduling; its explicit diagnostic scope is retained",
+    "No threshold/assertion/baseline/registry/source fix is justified solely by these passing diagnostics",
+    "A next whole run with the existing lower worker setting can keep every target/assertion and per-childlimit unchanged; it must be reported as a changed scheduling condition and earn its own full result, not reinterpret priorRED asPASS"
+  ]
+}

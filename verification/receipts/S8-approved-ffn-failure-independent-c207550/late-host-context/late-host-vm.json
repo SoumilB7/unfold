@@ -1,0 +1,10 @@
+{
+  "command": [
+    "vm_stat"
+  ],
+  "observed_at": "2026-09-08T10:26:34.119691+00:00",
+  "returncode": 0,
+  "scope": "Late read-only host sample while final3 full batches run; not historical failure telemetry, not per-worker memory or peak, and not proof of a specific failure cause.",
+  "stderr": "",
+  "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                     4415.\nPages active:                                 178463.\nPages inactive:                               172602.\nPages speculative:                              5225.\nPages throttled:                                   0.\nPages wired down:                             197948.\nPages purgeable:                                   2.\n\"Translation faults\":                    80630752562.\nPages copy-on-write:                      1222390998.\nPages zero filled:                       25940119159.\nPages reactivated:                       30448733954.\nPages purged:                             1990334481.\nFile-backed pages:                            110356.\nAnonymous pages:                              245934.\nPages stored in compressor:                  3101555.\nPages occupied by compressor:                 450650.\nDecompressions:                          35497558483.\nCompressions:                            37489214722.\nPageins:                                  2989332947.\nPageouts:                                   16386718.\nSwapins:                                   666436597.\nSwapouts:                                  744298928.\n"
+}

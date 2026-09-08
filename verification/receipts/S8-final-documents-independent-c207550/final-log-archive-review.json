@@ -1,0 +1,9 @@
+{
+  "decision": "ACCEPT_LOSSLESS_FIVE_HISTORICAL_LOG_ARCHIVE",
+  "archive_map_sha256": "3ed96ff66013414b491643eb91d21333e8f889534c25c5ac138fdda309cafa74",
+  "streams": 5,
+  "decoded_bytes_equal_both_retained_originals_and_original_failed_full_bracket": true,
+  "original_logical_hashes_unchanged": true,
+  "no_log_content_or_verdict_change": true,
+  "reviewer_ran_models_tests_or_render": false
+}

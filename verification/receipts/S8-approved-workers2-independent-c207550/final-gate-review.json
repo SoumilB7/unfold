@@ -1,0 +1,54 @@
+{
+  "decision": "ACCEPT_COMPLETE_WORKERS2_GATE",
+  "commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+  "scope": "Independent read-only review of exact actual complete six-lane result; final sheet/document acceptance separate",
+  "counts": {
+    "focused_pass": 511,
+    "authority_pass": 44,
+    "collected": 4557,
+    "full_pass": 4445,
+    "full_fail": 0,
+    "full_skip": 14,
+    "full_xfail": 2,
+    "full_total": 4461,
+    "preservation_pass": 52
+  },
+  "all_original30_failures_actually_pass": true,
+  "full_schedule_byteidentical": true,
+  "all26_full_batches_complete": true,
+  "all_six_lanes_pass": true,
+  "missing_lanes": [],
+  "all_lane_and_global_fingerprints_equal": true,
+  "selected_external59_installed_plus1_cached_pins_equal": true,
+  "external_scope_exhaustive": false,
+  "command_delta_only": [
+    "--workers",
+    "2"
+  ],
+  "serial_lanes": true,
+  "worker_counts": {
+    "focused": 1,
+    "authority": 3,
+    "full": 2,
+    "preservation": 4
+  },
+  "outer_exit": 0,
+  "outer_elapsed_seconds": 5899.554675665684,
+  "inner_elapsed_seconds": 5899.203,
+  "preservation_pytest_seconds": 558.62,
+  "log_sha256": {
+    "collect": "a764dab40d370f006046fff9a796b56e03ab1774d0852adbfb85426b49d881d2",
+    "focused": "5709d137ded9b002b1c069066807e3548ba05788664946321a3c62681b206d54",
+    "full": "6ec3027d4e5713c18559a0fc371c54cf76dd5e18b3464164719b582b14be48a2",
+    "preservation": "c1bfdd9e8a03d200af97f894f785566e1bc5629914a6fb2c4407771577cca137",
+    "static": "3b366f72849c5a663a78e424c500c95c43f1463cbc4652be04e51f52480ed22b",
+    "u2-authority": "41461d3317dae69ac828717864508cca70b1eac2863beb5ef3fe33e37445ead9"
+  },
+  "reviewer_ran_models_tests_or_render": false,
+  "limits": [
+    "Original10worker fullRED remains actualhistory and its missingtypedcauses remain unresolved",
+    "No isolated result was substituted into this complete passing run",
+    "Perchildtimeouts/memorycaps/assertions/targets unchanged; concurrency is an explicit existing scheduling setting",
+    "This receipt doesnotclaim exhaustiveenvironment pins or completedS9/S12 limitations"
+  ]
+}

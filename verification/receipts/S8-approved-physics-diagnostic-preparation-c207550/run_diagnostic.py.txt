@@ -1,0 +1,179 @@
+"""Observe two unchanged physics controls; do not replace supervision or results."""
+import argparse
+import hashlib
+import inspect
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+
+
+COMMIT = "c2075501e4b0cf7e97cc004c3d913011e64e3632"
+NODES = (
+    "tests/test_s6_physics.py::test_constructor_output_is_drained_without_deadlock_and_capture_is_bounded",
+    "tests/test_s6_physics.py::test_constructor_memory_cap_is_typed",
+)
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--checkout", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--node", choices=NODES, required=True)
+    args = parser.parse_args()
+    root, out = args.checkout.resolve(), args.output.resolve()
+    assert subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip() == COMMIT
+    assert not subprocess.check_output([
+        "git", "diff", COMMIT, "--", "model_unfolder", "physics", "scripts", "tests", "test_support"], cwd=root)
+    out.mkdir(parents=True, exist_ok=False)
+    os.chdir(root)
+    sys.path.insert(0, str(root))
+    sys.dont_write_bytecode = True
+    os.environ.update(PYTHONDONTWRITEBYTECODE="1", HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1")
+
+    def write(name, value):
+        (out / name).write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+
+    paths = subprocess.check_output([
+        "git", "ls-files", "model_unfolder", "physics", "scripts", "tests", "test_support"],
+        cwd=root, text=True).splitlines()
+    before = {path: sha(root / path) for path in paths}
+    before[str(Path(__file__).resolve())] = sha(Path(__file__))
+    selected = json.loads((root / "verification/receipts/S8-final-lanes-fb1f871/selected-external-inputs.json").read_text())
+    external = selected["installed_source_sha256"] | selected["cached_task_config_sha256"]
+    assert {path: sha(Path(path)) for path in external} == external
+    write("source-input-before.json", before)
+    write("external-before.json", external)
+    write("command.json", {
+        "commit": COMMIT, "node": args.node, "cwd": str(root),
+        "scope": "Isolated original test with passive original-supervisor line observations; no replacement sampler, extra RSS query, process poll, retry, timeout/cap alteration, assertion change or model/render addition.",
+        "limitations": [
+            "Tracing and timestamp collection add observer overhead and can alter scheduling.",
+            "RSS entries are only the supervisor's actual completed samples, not a true process peak.",
+            "No child import/construction phase instrumentation is introduced.",
+            "This isolated run cannot recover the unmeasured historical broad-run cause.",
+        ],
+    })
+    import pytest
+
+    class Observer:
+        @pytest.hookimpl(hookwrapper=True)
+        def pytest_runtest_protocol(self, item, nextitem):
+            assert item.nodeid == args.node
+            from physics import instance_inventory as worker
+            assert Path(worker.__file__).resolve().is_relative_to(root)
+            original_inventory = worker.inventory_in_subprocess
+            original_monitor = worker._communicate_bounded
+            # The test imports this function during collection, before protocol.
+            assert item.module.inventory_in_subprocess is original_inventory
+            assert sys.gettrace() is None, "Do not replace an existing tracer"
+            monitor_lines, start_line = inspect.getsourcelines(original_monitor)
+            markers = {
+                "sample": "if rss > memory_limit:",
+                "timeout_check": "if time.monotonic() - started > timeout:",
+                "after_exit": "return finish(None)",
+            }
+            sites = {}
+            for label, marker in markers.items():
+                matches = [start_line + i for i, text in enumerate(monitor_lines) if text.strip() == marker]
+                assert len(matches) == 1, (label, matches)
+                sites[matches[0]] = label
+            write("observation-sites.json", {
+                "source": str(Path(worker.__file__).resolve()),
+                "source_sha256": sha(Path(worker.__file__)),
+                "sites": sites,
+                "sample_meaning": "Existing rss local immediately before its comparison; a NoSuchProcess branch can set this value to zero.",
+            })
+            requests = []
+
+            def observe_monitor(process, *, timeout, memory_limit):
+                events = []
+                entered = time.monotonic()
+
+                def trace(frame, event, arg):
+                    if frame.f_code is not original_monitor.__code__:
+                        return None
+                    if event == "line" and frame.f_lineno in sites:
+                        values = frame.f_locals
+                        row = {
+                            "event": sites[frame.f_lineno],
+                            "line": frame.f_lineno,
+                            "elapsed_since_monitor_entry": time.monotonic() - entered,
+                            "pid": process.pid,
+                            "returncode_last_observed_by_original": process.returncode,
+                        }
+                        if "started" in values:
+                            row["supervisor_started_monotonic"] = values["started"]
+                        if row["event"] == "sample":
+                            row["rss"] = values["rss"]
+                        tails = values.get("tails", {})
+                        row["captured_tail_lengths"] = {name: len(value) for name, value in tails.items()}
+                        events.append(row)
+                    return trace
+
+                assert sys.gettrace() is None
+                sys.settrace(trace)
+                returned = None
+                try:
+                    returned = original_monitor(process, timeout=timeout, memory_limit=memory_limit)
+                    return returned
+                finally:
+                    sys.settrace(None)
+                    write("supervisor-observation.json", {
+                        "timeout_seconds_unchanged": timeout,
+                        "memory_limit_bytes_unchanged": memory_limit,
+                        "pid": process.pid,
+                        "final_returncode_observed": process.returncode,
+                        "elapsed_seconds": time.monotonic() - entered,
+                        "original_termination": returned[2] if returned is not None else None,
+                        "original_returned": returned is not None,
+                        "stdout_tail_length": len(returned[0]) if returned is not None else None,
+                        "stderr_tail_length": len(returned[1]) if returned is not None else None,
+                        "events": events,
+                    })
+
+            def observe_inventory(request):
+                assert not requests, "These exact controls each construct once"
+                requests.append(request)
+                write("inventory-request.json", request.to_dict())
+                returned = original_inventory(request)
+                write("inventory-result.json", returned.to_dict())
+                return returned
+
+            worker._communicate_bounded = observe_monitor
+            worker.inventory_in_subprocess = observe_inventory
+            item.module.inventory_in_subprocess = observe_inventory
+            try:
+                yield
+            finally:
+                item.module.inventory_in_subprocess = original_inventory
+                worker.inventory_in_subprocess = original_inventory
+                worker._communicate_bounded = original_monitor
+                write("observed-call-counts.json", {"inventory": len(requests)})
+
+    started, code = time.monotonic(), None
+    try:
+        code = int(pytest.main([args.node, "-q", "-p", "no:cacheprovider"], plugins=[Observer()]))
+    finally:
+        after = {path: sha(root / path) for path in paths}
+        after[str(Path(__file__).resolve())] = sha(Path(__file__))
+        external_after = {path: sha(Path(path)) for path in external}
+        write("source-input-after-finally.json", after)
+        write("external-after-finally.json", external_after)
+        write("result.json", {
+            "exit_code": code, "elapsed_seconds": time.monotonic() - started,
+            "source_input_pins_equal": before == after,
+            "selected_external_pins_equal": external == external_after,
+        })
+        assert before == after and external == external_after
+    raise SystemExit(code)
+
+
+if __name__ == "__main__":
+    main()

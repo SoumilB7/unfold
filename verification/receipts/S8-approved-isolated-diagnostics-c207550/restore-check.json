@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "restored_streams": 40,
+  "every_restored_size_and_sha256_matches": true,
+  "destination": "/private/tmp/unfold-s8-isolated-diagnostics-restore-c207550",
+  "artifact_map_sha256": "198779934262889245b0c9196c7411ddd904ae9ef49aa98c155c32366732e0fc"
+}

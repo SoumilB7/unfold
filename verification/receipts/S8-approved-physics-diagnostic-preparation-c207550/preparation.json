@@ -1,0 +1,16 @@
+{
+  "status": "PREPARED_NOT_EXECUTED",
+  "author": "independent_review",
+  "sha256": "34bff8e88e51ef58e0b491a613befe547837b51c01ddffe3447b726c4797e6a2",
+  "script_path": "/private/tmp/unfold-s8-physics-diagnostic-preparation-c207550/run_diagnostic.py",
+  "static_check": "ast.parse passed",
+  "execution_requires": "Root independent pre-use review and executor single-lane release",
+  "source_mutations": false,
+  "extra_model_or_test_runs": false,
+  "scope": "Two exact original physics controls; observe existing supervisor samples/lifecycle; no replacement sampler or changed limits",
+  "limits": [
+    "Tracing adds overhead and can change timing",
+    "Sampled RSS is not a true peak",
+    "Historical broad failure causes remain unmeasured"
+  ]
+}

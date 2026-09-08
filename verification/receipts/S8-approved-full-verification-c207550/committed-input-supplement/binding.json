@@ -1,0 +1,9 @@
+{
+  "commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+  "runner_hash_equals_actual_command_record": true,
+  "committed_manifest_command_equals_actual_command": true,
+  "committed_selected_source_union_equals_actual_before_map": true,
+  "original_42_stream_map_sha256": "7c5a4c9df151d6d67fedfa8ab69c0ceb6283f04b3ca585fa97929186ffc1b7e0",
+  "original_42_stream_map_unchanged": true,
+  "limitation": "Supplement recovered from immutable committed objects. Original run records individually hash the runner; manifest and selected-file byte hashes were not individually persisted at runtime. Command and selected-value equality establish the explicit additional bindings; no new historical runtime pin is claimed."
+}

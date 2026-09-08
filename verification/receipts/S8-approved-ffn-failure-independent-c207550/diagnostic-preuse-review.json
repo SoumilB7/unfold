@@ -1,0 +1,20 @@
+{
+  "decision": "ACCEPT",
+  "scope": "Read-only pre-use review of isolated original FFN or registry diagnostic, not acceptance of either failed broad target",
+  "script_sha256": "43ae5d3ee7e2663617da0396bb4a9bd424650aa981d5f4dbcb3a986c14e2e86a",
+  "reviewed_commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+  "reviewer_ran_models_or_tests": false,
+  "checks": [
+    "pytest_runtest_protocol encloses setup, call and teardown; session corpus fixture imports unfold inside setup so the wrapper observes it",
+    "Exact two original target choices; source checkout and source/input/external before-finally pins",
+    "Original inventory and investigator called once and original objects returned; no retry, changed timeout, invented fact or added render",
+    "Direct ModelIR.to_dict is a nonmutating structural projection; Diagram display caches are not populated by observer",
+    "Registry fixture enumerates actual corpus facts; all twelve missing UNet keys cannot be repaired by a registry exemption"
+  ],
+  "limits": [
+    "Isolated rerun does not reproduce the full preceding test sequence or concurrent worker resource pressure",
+    "No historical failed-run inventory/IR exists, so a later successful isolated replay does not establish the original cause",
+    "The observer records calls that reach its boundaries; request construction can fail before inventory_in_subprocess and then must be interpreted with the actual limited IR",
+    "Additional observation I/O changes timing and must be disclosed as diagnostic execution"
+  ]
+}

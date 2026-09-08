@@ -1,0 +1,30 @@
+{
+  "status": "ACTUAL_SIX_UNET_VIEWS_UNEXERCISED",
+  "nodeid": "tests/test_coverage.py::test_every_registered_view_is_exercised_and_couples",
+  "summary": {
+    "passed": 162,
+    "failed": 1,
+    "seconds": 1530.64
+  },
+  "source_sha256": "cd743d5b8d5cfedf30c56c8b1a31cb0a00c463e0173d95c99fe4611894139594",
+  "missing_views": [
+    "unet_constructed",
+    "runtime_ffn",
+    "runtime_stage_connections",
+    "runtime_port_route",
+    "runtime_cell_connections",
+    "runtime_context_connection"
+  ],
+  "established": [
+    "Ordinary corpus loop completed all per-page click-coupling assertions",
+    "No ordinary differential-only view was observed",
+    "None of the six required UNet dispatcher keys was observed"
+  ],
+  "not_established": [
+    "No failed IR, inventory result or reader metadata was retained; exact typed cause is unknown",
+    "The later explicit legacy-view witness and final all-registry census were not reached in this failed test",
+    "Per-page click coupling can pass on a limited shell and does not establish architecture completeness"
+  ],
+  "disposition": "Required production-view population absent; no registry exemption, dispatcher stamping or timeout attribution justified",
+  "reviewer_ran_models_or_tests": false
+}

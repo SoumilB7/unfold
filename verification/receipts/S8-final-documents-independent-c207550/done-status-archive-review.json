@@ -1,0 +1,13 @@
+{
+  "decision": "ACCEPT_DONE_STATUS_AND_FINAL44STREAM_ARCHIVE",
+  "sheet_sha256": "34790aa5cc4a76ee770b683c6e36b3db1ecaea435ba20f13ab5a0944812ab4e3",
+  "sheet_delta": "Only heading and two closingstatus sentences changed from reviewed528256c9; counts/evidence/limits unchanged",
+  "archive_map_sha256": "3900d7e3c34760ae0d3752c5752223ebb3938312078408559217cd61fe968019",
+  "streams": 44,
+  "all_decoded_bytes_match_exact_released_sources": true,
+  "all_raw_stored_sizes_and_hashes_match": true,
+  "map_injective_and_complete": true,
+  "lineage": "Finaltwo-workerPASS remains separate from original10workerRED and threeisolateddiagnostics; archivalJSONpins notclaimedhistoricalruntimepins",
+  "reviewer_ran_models_tests_or_render": false,
+  "pending": "Otherthree canonicalowner/decisiondocuments and finalfour-document snapshot comparison"
+}

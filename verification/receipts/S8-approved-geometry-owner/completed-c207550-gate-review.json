@@ -1,0 +1,27 @@
+{
+  "all_six_lanes_completed": true,
+  "commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+  "coordinator_and_global_artifact_fingerprints_equal": true,
+  "every_lane_source_and_artifact_fingerprint_equal": true,
+  "full_counts_scope": "Counts independently reconstructed from all26 batch logs in separate independent inventory.",
+  "full_result": {
+    "failed": 30,
+    "passed": 4415,
+    "skipped": 14,
+    "total": 4461,
+    "xfailed": 2
+  },
+  "isolated_followups_do_not_relabel_this_run": true,
+  "pins": {
+    "/private/tmp/model-unfolder-verification/c206060272/preservation.log": "56b5836f718c14b46896c072159c6ebbe2d30073ebc7fc66ab045e3e32ec5a68",
+    "/private/tmp/model-unfolder-verification/c206060272/receipt.json": "5d70ea31e95d7bc055c53d8804b999a3e3b7cf75df39550379886759678e95e1",
+    "/private/tmp/unfold-s8-approved-broad-c207550/receipt.json": "b5bad559101eae942326fe8784836c14f70f3eb09a40813ff954e88bf7753a5b",
+    "/private/tmp/unfold-s8-approved-broad-c207550/selected-external-after.json": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+    "/private/tmp/unfold-s8-approved-broad-c207550/selected-external-before.json": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b"
+  },
+  "preservation_passed": 52,
+  "reviewer": "root",
+  "selected_external_before_after_and_current_equal": 60,
+  "selected_external_scope": "59 installed source files and1 cached task config; not exhaustive imports or cache census.",
+  "verdict": "Completed run is RED; preservation and receipt integrity accepted."
+}

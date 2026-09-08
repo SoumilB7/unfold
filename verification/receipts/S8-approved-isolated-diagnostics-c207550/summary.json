@@ -1,0 +1,90 @@
+{
+  "status": "THREE_ISOLATED_DIAGNOSTICS_PASS",
+  "cases": [
+    {
+      "case": "ffn",
+      "actual_command": {
+        "commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+        "cwd": "/private/tmp/unfold-s8-approved-final-preflight",
+        "node": "tests/test_code_evidence.py::test_unet_ffn_activation_anchored_to_declared_blocks",
+        "scope": "Exact isolated test with observation-only wrappers; no retry, timeout change, rendering addition, or replacement result. Reader metadata only; full successful values remain in actual ModelIR facts. ModelIR.to_dict() is observed directly without populating Diagram display caches."
+      },
+      "actual_result": {
+        "elapsed_seconds": 276.00774179119617,
+        "exit_code": 0,
+        "selected_external_pins_equal": true,
+        "source_input_pins_equal": true
+      },
+      "actual_pytest_summary": "1 passed in 270.72s (0:04:30)",
+      "source_input_before_after_equal": true,
+      "selected_external_before_after_equal": true,
+      "observed_call_counts": {
+        "inventory": 1,
+        "investigation": 1,
+        "unfold": 1
+      }
+    },
+    {
+      "case": "noisy",
+      "actual_command": {
+        "commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+        "cwd": "/private/tmp/unfold-s8-approved-final-preflight",
+        "limitations": [
+          "Tracing and timestamp collection add observer overhead and can alter scheduling.",
+          "RSS entries are only the supervisor's actual completed samples, not a true process peak.",
+          "No child import/construction phase instrumentation is introduced.",
+          "This isolated run cannot recover the unmeasured historical broad-run cause."
+        ],
+        "node": "tests/test_s6_physics.py::test_constructor_output_is_drained_without_deadlock_and_capture_is_bounded",
+        "scope": "Isolated original test with passive original-supervisor line observations; no replacement sampler, extra RSS query, process poll, retry, timeout/cap alteration, assertion change or model/render addition."
+      },
+      "actual_result": {
+        "elapsed_seconds": 5.081138583831489,
+        "exit_code": 0,
+        "selected_external_pins_equal": true,
+        "source_input_pins_equal": true
+      },
+      "actual_pytest_summary": "1 passed in 3.34s",
+      "source_input_before_after_equal": true,
+      "selected_external_before_after_equal": true,
+      "observed_call_counts": {
+        "inventory": 1
+      }
+    },
+    {
+      "case": "memory",
+      "actual_command": {
+        "commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+        "cwd": "/private/tmp/unfold-s8-approved-final-preflight",
+        "limitations": [
+          "Tracing and timestamp collection add observer overhead and can alter scheduling.",
+          "RSS entries are only the supervisor's actual completed samples, not a true process peak.",
+          "No child import/construction phase instrumentation is introduced.",
+          "This isolated run cannot recover the unmeasured historical broad-run cause."
+        ],
+        "node": "tests/test_s6_physics.py::test_constructor_memory_cap_is_typed",
+        "scope": "Isolated original test with passive original-supervisor line observations; no replacement sampler, extra RSS query, process poll, retry, timeout/cap alteration, assertion change or model/render addition."
+      },
+      "actual_result": {
+        "elapsed_seconds": 3.72547800000757,
+        "exit_code": 0,
+        "selected_external_pins_equal": true,
+        "source_input_pins_equal": true
+      },
+      "actual_pytest_summary": "1 passed in 2.09s",
+      "source_input_before_after_equal": true,
+      "selected_external_before_after_equal": true,
+      "observed_call_counts": {
+        "inventory": 1
+      }
+    }
+  ],
+  "original_broad_result": "COMPLETED_RED; unchanged",
+  "limitations": [
+    "Isolated PASS does not recover the original broad failure cause.",
+    "Passive observation adds overhead and may alter scheduling.",
+    "Supervisor RSS samples are actual completed observations, not true process peak measurements.",
+    "No child import/construction phase instrumentation or historical resource measurement is inferred."
+  ],
+  "archive_source_files_unchanged": true
+}

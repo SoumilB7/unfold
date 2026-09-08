@@ -1,0 +1,42 @@
+{
+  "decision": "ACCEPT_FINAL_CANONICAL_SNAPSHOT_PACKET",
+  "verified_commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+  "snapshot_manifest_sha256": "638ad40d28397b12863b9129e0de684b4b427dcfbd2c29e1f55bd8ef055c34da",
+  "snapshots": [
+    {
+      "canonical_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S8.md",
+      "canonical_sha256": "34790aa5cc4a76ee770b683c6e36b3db1ecaea435ba20f13ab5a0944812ab4e3",
+      "stored": "S8.md.gz",
+      "stored_sha256": "85964826f4cff704fb8118193109e9f6c1d246710a316103ef0b60886638a575",
+      "original_bytes": 44129
+    },
+    {
+      "canonical_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S8-review.md",
+      "canonical_sha256": "a4d0f1d9ce178667928fe51f5ae0fbaf7e0f1dbfcc35c7dd5c8c56180175fad9",
+      "stored": "S8-review.md.gz",
+      "stored_sha256": "d7e19a12321651ab21db1704ffdc52a69f8f666e33f98174acd86eae018324b0",
+      "original_bytes": 105672
+    },
+    {
+      "canonical_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/index.html",
+      "canonical_sha256": "96a172e0e0232a3200fd13d846475e1753cf758140c413dba129ee8556ff5f24",
+      "stored": "decision-index.html.gz",
+      "stored_sha256": "e2d36827c506c44e96409e41548c6a7f154146c69a2809b9081e5d58682db923",
+      "original_bytes": 15364
+    },
+    {
+      "canonical_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/output-deltas/index.html",
+      "canonical_sha256": "df6cad3535035f9320e8a3e750695057bbc8807f96ed53930d7e7fb843d46f36",
+      "stored": "output-deltas-index.html.gz",
+      "stored_sha256": "f5e9597b87afb570d0cd2f24aefc8c968b904615cdaa1a93f78a7c7d339fd9da",
+      "original_bytes": 23780
+    }
+  ],
+  "all4_decompressed_bytes_equal_current_reviewed_canonical": true,
+  "all_supplement_bytes_match_manifest": true,
+  "final_status": "S8 DONE within approved bounded scope",
+  "independent_gate_receipt": "S8-approved-workers2-independent-c207550/final-gate-review.json",
+  "final_archive_review": "S8-final-documents-independent-c207550/done-status-archive-review.json",
+  "reviewer_ran_models_tests_or_render": false,
+  "remaining_action_scope": "Executor artifact-only commit and exactstatic; no repeat whole gate or additional modelcampaign required for documentation/receipt-only bytes"
+}

@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "streams": 42,
+  "unique_logical_and_stored_paths": true,
+  "every_decompressed_stream_compared_byte_for_byte": true,
+  "artifact_map_sha256": "7c5a4c9df151d6d67fedfa8ab69c0ceb6283f04b3ca585fa97929186ffc1b7e0"
+}

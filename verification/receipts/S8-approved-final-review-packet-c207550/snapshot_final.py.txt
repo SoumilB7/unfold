@@ -1,0 +1,34 @@
+from pathlib import Path
+import gzip, hashlib, json, shutil
+ROOT = Path('/Users/soumil/Code/Projects/Understand/llmvisualizer')
+OUT = ROOT / 'unfold-pkg/verification/receipts/S8-approved-final-review-packet-c207550'
+PREP = Path('/private/tmp/unfold-s8-approved-final-document-preparation')
+items = [
+ ('z-docs/11-execution/S8.md','S8.md.gz','34790aa5cc4a76ee770b683c6e36b3db1ecaea435ba20f13ab5a0944812ab4e3'),
+ ('z-docs/11-execution/S8-review.md','S8-review.md.gz','a4d0f1d9ce178667928fe51f5ae0fbaf7e0f1dbfcc35c7dd5c8c56180175fad9'),
+ ('z-docs/12-design/S8/index.html','decision-index.html.gz','96a172e0e0232a3200fd13d846475e1753cf758140c413dba129ee8556ff5f24'),
+ ('z-docs/12-design/S8/output-deltas/index.html','output-deltas-index.html.gz','df6cad3535035f9320e8a3e750695057bbc8807f96ed53930d7e7fb843d46f36'),
+]
+def sha(b):
+ return hashlib.sha256(b).hexdigest()
+OUT.mkdir(exist_ok=False)
+rows=[]
+for logical,stored,expected in items:
+ path=ROOT/logical
+ raw=path.read_bytes()
+ assert sha(raw)==expected, logical
+ packed=gzip.compress(raw,mtime=0)
+ (OUT/stored).write_bytes(packed)
+ assert gzip.decompress((OUT/stored).read_bytes())==raw
+ assert path.read_bytes()==raw
+ rows.append({'canonical_path':str(path),'canonical_sha256':expected,'stored':stored,'stored_sha256':sha(packed),'original_bytes':len(raw)})
+supplements=[]
+for name in ['growth-current-c207550.json','final-receipt-python-preflight.json','final-receipt-python-preflight.log']:
+ raw=(PREP/name).read_bytes(); (OUT/name).write_bytes(raw)
+ supplements.append({'file':name,'sha256':sha(raw),'bytes':len(raw)})
+script=Path(__file__).read_bytes();(OUT/'snapshot_final.py.txt').write_bytes(script)
+supplements.append({'file':'snapshot_final.py.txt','sha256':sha(script),'bytes':len(script),'kind':'exact executed snapshot tool; archived text'})
+manifest={'verified_commit':'c2075501e4b0cf7e97cc004c3d913011e64e3632','status':'S8 DONE: explicit approval, scoped guarded updates, complete actual whole PASS and final independent/owner review','whole_receipt':'S8-approved-workers2-full-verification-c207550','original_red_receipt':'S8-approved-full-verification-c207550','snapshots':rows,'supplements':supplements,'scope':'Exact current canonical documents; historical snapshots remain immutable. Final artifact-only commit is separate from actual c207550 verification.'}
+(OUT/'canonical-snapshot-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+(OUT/'README.md').write_text('# Final S8 review packet\n\nS8 is DONE after explicit output approval, nineteen guarded reproofs, scoped baseline updates and the complete actual c207550 two-worker whole verification. All six lanes pass; full 4,445 passed, zero failed, fourteen skipped and two expected failures; preservation 52 passed. Final independent and owner reviews accept the result and named limits. No push or release.\n\nThe four gzip files restore the exact final canonical sheet, owner review and decision pages. Their current paths, original hashes, stored hashes and byte counts are in `canonical-snapshot-manifest.json`; all restored bytes and current sources were checked. The exact executed snapshot tool is archived as text. The supplementary growth proof excludes baseline/gallery/receipt/doc artifacts; the five-file Python preflight is preparation evidence, with exact committed static checks performed after the artifact commit.\n\nThe actual run remains attributed to c207550. Earlier red gates, the interrupted f536 attempt and three isolated diagnostic passes remain separate immutable receipts. The complete final run is `../S8-approved-workers2-full-verification-c207550/`; its independent review is `../S8-approved-workers2-independent-c207550/`. The sampled-RSS contract, unretained historical failure causes, selected 59 installed-source plus one cached-config scope, and remaining S7/S9/S12 limits are explicit in the final sheet.\n')
+print(json.dumps({'output':str(OUT),'manifest_sha256':sha((OUT/'canonical-snapshot-manifest.json').read_bytes()),'snapshot_count':len(rows)}))

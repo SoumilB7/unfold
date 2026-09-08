@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "restored_streams": 3,
+  "every_restored_size_and_sha256_matches": true,
+  "destination": "/private/tmp/unfold-s8-c207-committed-input-restore",
+  "artifact_map_sha256": "f15af127951532ba90e858265146b44dafc3f1213e85e3605e90c524f1048f60"
+}

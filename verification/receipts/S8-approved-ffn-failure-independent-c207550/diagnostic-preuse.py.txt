@@ -1,0 +1,131 @@
+"""Observe the unchanged failing FFN test; never replace its result or evidence."""
+import argparse
+import dataclasses
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+
+
+NODES = (
+    'tests/test_code_evidence.py::test_unet_ffn_activation_anchored_to_declared_blocks',
+    'tests/test_fact_registry.py::test_every_registered_fact_is_observed_in_an_evidence_population',
+)
+COMMIT = 'c2075501e4b0cf7e97cc004c3d913011e64e3632'
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--checkout', type=Path, required=True)
+    parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--node', choices=NODES, required=True)
+    args = parser.parse_args()
+    root, out = args.checkout.resolve(), args.output.resolve()
+    assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip() == COMMIT
+    assert not subprocess.check_output(['git', 'diff', COMMIT, '--', 'model_unfolder', 'physics', 'scripts', 'tests', 'test_support'], cwd=root)
+    out.mkdir(parents=True, exist_ok=False)
+    os.chdir(root)
+    sys.path.insert(0, str(root))
+    os.environ.update(PYTHONDONTWRITEBYTECODE='1', HF_HUB_OFFLINE='1', TRANSFORMERS_OFFLINE='1')
+    sys.dont_write_bytecode = True
+
+    def write(name, value):
+        (out / name).write_text(json.dumps(value, indent=2, sort_keys=True) + '\n')
+
+    paths = subprocess.check_output(['git', 'ls-files', 'model_unfolder', 'physics', 'scripts', 'tests', 'test_support'], cwd=root, text=True).splitlines()
+    before = {path: sha(root / path) for path in paths}
+    before[str(Path(__file__).resolve())] = sha(Path(__file__))
+    selected = json.loads((root / 'verification/receipts/S8-final-lanes-fb1f871/selected-external-inputs.json').read_text())
+    external = selected['installed_source_sha256'] | selected['cached_task_config_sha256']
+    assert {path: sha(Path(path)) for path in external} == external
+    write('source-input-before.json', before)
+    write('external-before.json', external)
+    write('command.json', {'commit': COMMIT, 'node': args.node, 'cwd': str(root),
+          'scope': 'Exact isolated test with observation-only wrappers; no retry, timeout change, rendering addition, or replacement result. Reader metadata only; full successful values remain in actual ModelIR facts. ModelIR.to_dict() is observed directly without populating Diagram display caches.'})
+    import pytest
+
+    class Observer:
+        @pytest.hookimpl(hookwrapper=True)
+        def pytest_runtest_protocol(self, item, nextitem):
+            assert item.nodeid == args.node
+            import model_unfolder
+            from physics import instance_inventory
+            from model_unfolder.adapters.diffusor import unet_cutover
+            assert Path(model_unfolder.__file__).resolve().is_relative_to(root)
+            assert Path(instance_inventory.__file__).resolve().is_relative_to(root)
+            original_inventory = instance_inventory.inventory_in_subprocess
+            original_investigation = unet_cutover.investigate_unet_runtime
+            original_unfold = model_unfolder.unfold
+            counts = {'inventory': 0, 'investigation': 0, 'unfold': 0}
+
+            def observe_inventory(request):
+                number = counts['inventory']
+                counts['inventory'] += 1
+                write(f'inventory-request-{number}.json', request.to_dict())
+                result = original_inventory(request)
+                write(f'inventory-result-{number}.json', result.to_dict())
+                return result
+
+            def metadata(result):
+                return {'status': result.status, 'completeness': result.completeness,
+                        'has_value': result.has_value,
+                        'owner': dataclasses.asdict(result.owner) if result.owner else None,
+                        'failures': [dataclasses.asdict(value) for value in result.failures],
+                        'provenance': [dataclasses.asdict(value) for value in result.provenance],
+                        'ambiguity': dataclasses.asdict(result.ambiguity) if result.ambiguity else None}
+
+            def observe_investigation(**kwargs):
+                number = counts['investigation']
+                counts['investigation'] += 1
+                result = original_investigation(**kwargs)
+                write(f'reader-metadata-{number}.json', {name: metadata(row) for name, row in result.reader_results})
+                nested = result.value('nested_ffns')
+                if nested is not None:
+                    write(f'nested-ffn-metadata-{number}.json', [
+                        {'instance_paths': list(attempt.instance_paths), 'result': metadata(attempt.result)}
+                        for attempt in nested])
+                return result
+
+            def observe_unfold(*call_args, **kwargs):
+                number = counts['unfold']
+                counts['unfold'] += 1
+                write(f'unfold-input-{number}.json', {'args': call_args, 'kwargs': kwargs})
+                result = original_unfold(*call_args, **kwargs)
+                write(f'actual-model-ir-{number}.json', result.ir.to_dict())
+                return result
+
+            instance_inventory.inventory_in_subprocess = observe_inventory
+            unet_cutover.investigate_unet_runtime = observe_investigation
+            model_unfolder.unfold = observe_unfold
+            try:
+                yield
+            finally:
+                instance_inventory.inventory_in_subprocess = original_inventory
+                unet_cutover.investigate_unet_runtime = original_investigation
+                model_unfolder.unfold = original_unfold
+                write('observed-call-counts.json', counts)
+
+    start, code = time.monotonic(), None
+    try:
+        code = int(pytest.main([args.node, '-q', '-p', 'no:cacheprovider'], plugins=[Observer()]))
+    finally:
+        after = {path: sha(root / path) for path in paths}
+        after[str(Path(__file__).resolve())] = sha(Path(__file__))
+        external_after = {path: sha(Path(path)) for path in external}
+        write('source-input-after-finally.json', after)
+        write('external-after-finally.json', external_after)
+        write('result.json', {'exit_code': code, 'elapsed_seconds': time.monotonic() - start,
+              'source_input_pins_equal': before == after, 'selected_external_pins_equal': external == external_after})
+        assert before == after and external == external_after
+    raise SystemExit(code)
+
+
+if __name__ == '__main__':
+    main()

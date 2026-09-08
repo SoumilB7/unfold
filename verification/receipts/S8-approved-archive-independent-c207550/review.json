@@ -1,0 +1,36 @@
+{
+  "decision": "ACCEPT_LOSSLESS_ARCHIVE_AND_EXPLICIT_LINEAGE",
+  "scope": "Read-only decoded-byte/source comparisons; no model/test/render or archive program execution",
+  "archives": [
+    {
+      "receipt": "S8-approved-full-verification-c207550",
+      "streams": 42,
+      "map_sha256": "7c5a4c9df151d6d67fedfa8ab69c0ceb6283f04b3ca585fa97929186ffc1b7e0",
+      "every_decoded_byte_equals_exact_source": true,
+      "injective_and_complete_map": true
+    },
+    {
+      "receipt": "S8-approved-full-verification-c207550/committed-input-supplement",
+      "streams": 3,
+      "map_sha256": "f15af127951532ba90e858265146b44dafc3f1213e85e3605e90c524f1048f60",
+      "every_decoded_byte_equals_exact_source": true,
+      "injective_and_complete_map": true
+    },
+    {
+      "receipt": "S8-approved-isolated-diagnostics-c207550",
+      "streams": 40,
+      "map_sha256": "198779934262889245b0c9196c7411ddd904ae9ef49aa98c155c32366732e0fc",
+      "every_decoded_byte_equals_exact_source": true,
+      "injective_and_complete_map": true
+    }
+  ],
+  "total_streams": 85,
+  "lineage": [
+    "Original whole coordinator remains COMPLETED_RED; later three isolated diagnostic PASS results have separate namespaces",
+    "Committed supplement exactly matches immutable Git objects and original runner hash/expanded command/selected input values",
+    "Manifest and selected-input file bytes were not separately runtime-hashed in original run; immutable recovery is not presented as invented historical runtime pins",
+    "Stale statuses inside immutable committed manifest are preserved history; actual run status is taken from original completed receipts",
+    "Late host sample is context only, not failure-time telemetry"
+  ],
+  "reviewer_ran_models_or_tests": false
+}

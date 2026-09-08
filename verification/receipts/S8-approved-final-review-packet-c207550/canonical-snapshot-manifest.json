@@ -1,0 +1,60 @@
+{
+  "verified_commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+  "status": "S8 DONE: explicit approval, scoped guarded updates, complete actual whole PASS and final independent/owner review",
+  "whole_receipt": "S8-approved-workers2-full-verification-c207550",
+  "original_red_receipt": "S8-approved-full-verification-c207550",
+  "snapshots": [
+    {
+      "canonical_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S8.md",
+      "canonical_sha256": "34790aa5cc4a76ee770b683c6e36b3db1ecaea435ba20f13ab5a0944812ab4e3",
+      "stored": "S8.md.gz",
+      "stored_sha256": "85964826f4cff704fb8118193109e9f6c1d246710a316103ef0b60886638a575",
+      "original_bytes": 44129
+    },
+    {
+      "canonical_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S8-review.md",
+      "canonical_sha256": "a4d0f1d9ce178667928fe51f5ae0fbaf7e0f1dbfcc35c7dd5c8c56180175fad9",
+      "stored": "S8-review.md.gz",
+      "stored_sha256": "d7e19a12321651ab21db1704ffdc52a69f8f666e33f98174acd86eae018324b0",
+      "original_bytes": 105672
+    },
+    {
+      "canonical_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/index.html",
+      "canonical_sha256": "96a172e0e0232a3200fd13d846475e1753cf758140c413dba129ee8556ff5f24",
+      "stored": "decision-index.html.gz",
+      "stored_sha256": "e2d36827c506c44e96409e41548c6a7f154146c69a2809b9081e5d58682db923",
+      "original_bytes": 15364
+    },
+    {
+      "canonical_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/output-deltas/index.html",
+      "canonical_sha256": "df6cad3535035f9320e8a3e750695057bbc8807f96ed53930d7e7fb843d46f36",
+      "stored": "output-deltas-index.html.gz",
+      "stored_sha256": "f5e9597b87afb570d0cd2f24aefc8c968b904615cdaa1a93f78a7c7d339fd9da",
+      "original_bytes": 23780
+    }
+  ],
+  "supplements": [
+    {
+      "file": "growth-current-c207550.json",
+      "sha256": "1f8179dcc8ef229991b7f644fdfc50dab0fb1e3090d1f354bbe4a59985abbaf6",
+      "bytes": 41962
+    },
+    {
+      "file": "final-receipt-python-preflight.json",
+      "sha256": "39aa46b5a838c0d80c3eb02ec36215cedb71a681259fa76fb17d972defe9d190",
+      "bytes": 852
+    },
+    {
+      "file": "final-receipt-python-preflight.log",
+      "sha256": "737998b760bc6efb6b2978318fd7750768868e69c0cf3da849927a711e0b1948",
+      "bytes": 41
+    },
+    {
+      "file": "snapshot_final.py.txt",
+      "sha256": "300c5f5f0136ddd329d10f2e8c71a5d6c9ecf1182299d66c8baaadc0e7542f31",
+      "bytes": 4027,
+      "kind": "exact executed snapshot tool; archived text"
+    }
+  ],
+  "scope": "Exact current canonical documents; historical snapshots remain immutable. Final artifact-only commit is separate from actual c207550 verification."
+}

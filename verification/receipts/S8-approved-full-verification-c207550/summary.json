@@ -1,0 +1,240 @@
+{
+  "status": "COMPLETED_RED",
+  "commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+  "outer_exit_code": 1,
+  "outer_wall_seconds": 5302.565252625383,
+  "inner_wall_seconds": 5302.097,
+  "failed_lanes": [
+    "full"
+  ],
+  "missing_lanes": [],
+  "full": {
+    "batches": 26,
+    "counts": {
+      "passed": 4415,
+      "failed": 30,
+      "skipped": 14,
+      "xfailed": 2
+    },
+    "total": 4461,
+    "per_batch": [
+      {
+        "batch": "batch-000",
+        "actual_summary": "344 passed in 39.78s",
+        "counts": {
+          "passed": 344
+        }
+      },
+      {
+        "batch": "batch-001",
+        "actual_summary": "23 failed, 147 passed in 2569.38s (0:42:49)",
+        "counts": {
+          "failed": 23,
+          "passed": 147
+        }
+      },
+      {
+        "batch": "batch-002",
+        "actual_summary": "1 failed, 156 passed, 14 skipped in 1608.42s (0:26:48)",
+        "counts": {
+          "failed": 1,
+          "passed": 156,
+          "skipped": 14
+        }
+      },
+      {
+        "batch": "batch-003",
+        "actual_summary": "170 passed in 321.48s (0:05:21)",
+        "counts": {
+          "passed": 170
+        }
+      },
+      {
+        "batch": "batch-004",
+        "actual_summary": "1 failed, 166 passed in 622.35s (0:10:22)",
+        "counts": {
+          "failed": 1,
+          "passed": 166
+        }
+      },
+      {
+        "batch": "batch-005",
+        "actual_summary": "167 passed in 1000.93s (0:16:40)",
+        "counts": {
+          "passed": 167
+        }
+      },
+      {
+        "batch": "batch-006",
+        "actual_summary": "167 passed in 219.89s (0:03:39)",
+        "counts": {
+          "passed": 167
+        }
+      },
+      {
+        "batch": "batch-007",
+        "actual_summary": "163 passed in 1230.77s (0:20:30)",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-008",
+        "actual_summary": "164 passed in 292.68s (0:04:52)",
+        "counts": {
+          "passed": 164
+        }
+      },
+      {
+        "batch": "batch-009",
+        "actual_summary": "164 passed in 686.95s (0:11:26)",
+        "counts": {
+          "passed": 164
+        }
+      },
+      {
+        "batch": "batch-010",
+        "actual_summary": "164 passed in 456.16s (0:07:36)",
+        "counts": {
+          "passed": 164
+        }
+      },
+      {
+        "batch": "batch-011",
+        "actual_summary": "163 passed in 300.90s (0:05:00)",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-012",
+        "actual_summary": "1 failed, 162 passed in 494.58s (0:08:14)",
+        "counts": {
+          "failed": 1,
+          "passed": 162
+        }
+      },
+      {
+        "batch": "batch-013",
+        "actual_summary": "164 passed in 589.78s (0:09:49)",
+        "counts": {
+          "passed": 164
+        }
+      },
+      {
+        "batch": "batch-014",
+        "actual_summary": "164 passed in 385.23s (0:06:25)",
+        "counts": {
+          "passed": 164
+        }
+      },
+      {
+        "batch": "batch-015",
+        "actual_summary": "1 failed, 161 passed, 2 xfailed in 970.18s (0:16:10)",
+        "counts": {
+          "failed": 1,
+          "passed": 161,
+          "xfailed": 2
+        }
+      },
+      {
+        "batch": "batch-016",
+        "actual_summary": "2 failed, 162 passed in 786.99s (0:13:06)",
+        "counts": {
+          "failed": 2,
+          "passed": 162
+        }
+      },
+      {
+        "batch": "batch-017",
+        "actual_summary": "164 passed in 583.84s (0:09:43)",
+        "counts": {
+          "passed": 164
+        }
+      },
+      {
+        "batch": "batch-018",
+        "actual_summary": "163 passed in 551.75s (0:09:11)",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-019",
+        "actual_summary": "163 passed in 2064.04s (0:34:24)",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-020",
+        "actual_summary": "163 passed in 104.64s (0:01:44)",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-021",
+        "actual_summary": "163 passed in 125.12s (0:02:05)",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-022",
+        "actual_summary": "163 passed in 104.80s (0:01:44)",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-023",
+        "actual_summary": "1 failed, 162 passed in 1530.64s (0:25:30)",
+        "counts": {
+          "failed": 1,
+          "passed": 162
+        }
+      },
+      {
+        "batch": "batch-024",
+        "actual_summary": "163 passed in 182.34s (0:03:02)",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-025",
+        "actual_summary": "163 passed in 545.79s (0:09:05)",
+        "counts": {
+          "passed": 163
+        }
+      }
+    ]
+  },
+  "actual_lane_summary_lines": {
+    "focused": [
+      "511 passed in 104.28s (0:01:44)"
+    ],
+    "u2-authority": [
+      "44 passed in 832.73s (0:13:52)"
+    ],
+    "collect": [
+      "4557 tests collected in 10.53s"
+    ],
+    "preservation": [
+      "52 passed in 927.54s (0:15:27)"
+    ],
+    "static": []
+  },
+  "selected_external_scope": {
+    "installed_sources": 59,
+    "cached_task_configs": 1,
+    "before_after_equal": true
+  },
+  "coordinator_fingerprints_equal": true,
+  "source_artifacts_equal": true,
+  "all_lane_before_after_fingerprints_and_artifact_hashes_equal": true,
+  "resource_context": "Late host vm_stat samples only. Not original failure telemetry, not a per-worker or peak measure, and not proof of any specific failure cause.",
+  "later_diagnostics_included": false,
+  "archive_source_files_unchanged": true
+}

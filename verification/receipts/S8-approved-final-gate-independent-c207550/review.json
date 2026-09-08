@@ -1,0 +1,48 @@
+{
+  "verdict": "ACCEPT_RECEIPT_INTEGRITY__S8_GATE_REMAINS_RED",
+  "commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+  "scope": "Read-only inspection of completed exact coordinator logs and receipts; no test/model rerun",
+  "counts": {
+    "focused_pass": 511,
+    "authority_pass": 44,
+    "collected": 4557,
+    "full_pass": 4415,
+    "full_fail": 30,
+    "full_skip": 14,
+    "full_xfail": 2,
+    "full_total": 4461,
+    "preservation_pass": 52
+  },
+  "all_six_lanes_present": true,
+  "all_lane_and_global_fingerprints_equal": true,
+  "selected_external_before_after_equal": true,
+  "selected_external_scope": {
+    "installed_source_paths": 59,
+    "cached_task_configs": 1,
+    "exhaustive_environment_pin": false
+  },
+  "serial_lanes": true,
+  "concurrency": {
+    "focused": 1,
+    "authority": 3,
+    "full": 10,
+    "preservation": 4
+  },
+  "outer_exit_code": 1,
+  "elapsed_seconds": 5302.565252625383,
+  "preservation_pytest_seconds": 927.54,
+  "sdxl_preservation_call_seconds": 829.62,
+  "log_sha256": {
+    "collect": "4037e2e6c4025d65fda1ff99facbbdf468018b757cabc877f7d0dd67d0f68d99",
+    "focused": "65fd1036be7f48957403442d51f5f7494196cb59a226eb12e815a88b6a125d81",
+    "full": "775fc7be8364fbd1bcf67aa61e388d420b29afe4e55cd9862e1dc5d3249e8222",
+    "preservation": "56b5836f718c14b46896c072159c6ebbe2d30073ebc7fc66ab045e3e32ec5a68",
+    "static": "3b366f72849c5a663a78e424c500c95c43f1463cbc4652be04e51f52480ed22b",
+    "u2-authority": "db381cf19373040b1d74f01020fdd950db1226f43a183419bc908e088edcc612"
+  },
+  "limits": [
+    "52 preservation passes verify approved baseline surfaces in that lane; they do not repair the30 full-suite failures",
+    "The later successful SDXL preservation call does not establish the typed reason for earlier failed parses",
+    "Host telemetry and forthcoming isolated diagnostics remain separately attributed evidence"
+  ]
+}

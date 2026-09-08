@@ -1,0 +1,248 @@
+{
+  "status": "COMPLETED_PASS",
+  "commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 5899.554675665684,
+  "inner_wall_seconds": 5899.203,
+  "lane_workers": {
+    "authority_workers": 3,
+    "focused_workers": 1,
+    "full_workers": 2,
+    "preservation_workers": 4
+  },
+  "all_six_lanes_pass": true,
+  "missing_lanes": [],
+  "failed_lanes": [],
+  "full": {
+    "batches": 26,
+    "counts": {
+      "passed": 4445,
+      "failed": 0,
+      "skipped": 14,
+      "xfailed": 2
+    },
+    "total": 4461,
+    "per_batch": [
+      {
+        "batch": "batch-000",
+        "actual_summary": "344 passed in 7.91s",
+        "counts": {
+          "passed": 344
+        }
+      },
+      {
+        "batch": "batch-001",
+        "actual_summary": "170 passed in 1659.06s (0:27:39)",
+        "counts": {
+          "passed": 170
+        }
+      },
+      {
+        "batch": "batch-002",
+        "actual_summary": "157 passed, 14 skipped in 1066.74s (0:17:46)",
+        "counts": {
+          "passed": 157,
+          "skipped": 14
+        }
+      },
+      {
+        "batch": "batch-003",
+        "actual_summary": "170 passed in 37.32s",
+        "counts": {
+          "passed": 170
+        }
+      },
+      {
+        "batch": "batch-004",
+        "actual_summary": "167 passed in 295.89s (0:04:55)",
+        "counts": {
+          "passed": 167
+        }
+      },
+      {
+        "batch": "batch-005",
+        "actual_summary": "167 passed in 435.91s (0:07:15)",
+        "counts": {
+          "passed": 167
+        }
+      },
+      {
+        "batch": "batch-006",
+        "actual_summary": "167 passed in 24.32s",
+        "counts": {
+          "passed": 167
+        }
+      },
+      {
+        "batch": "batch-007",
+        "actual_summary": "163 passed in 195.58s (0:03:15)",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-008",
+        "actual_summary": "164 passed in 33.93s",
+        "counts": {
+          "passed": 164
+        }
+      },
+      {
+        "batch": "batch-009",
+        "actual_summary": "164 passed in 105.17s (0:01:45)",
+        "counts": {
+          "passed": 164
+        }
+      },
+      {
+        "batch": "batch-010",
+        "actual_summary": "164 passed in 70.40s (0:01:10)",
+        "counts": {
+          "passed": 164
+        }
+      },
+      {
+        "batch": "batch-011",
+        "actual_summary": "163 passed in 59.11s",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-012",
+        "actual_summary": "163 passed in 267.16s (0:04:27)",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-013",
+        "actual_summary": "164 passed in 104.52s (0:01:44)",
+        "counts": {
+          "passed": 164
+        }
+      },
+      {
+        "batch": "batch-014",
+        "actual_summary": "164 passed in 63.36s (0:01:03)",
+        "counts": {
+          "passed": 164
+        }
+      },
+      {
+        "batch": "batch-015",
+        "actual_summary": "162 passed, 2 xfailed in 185.28s (0:03:05)",
+        "counts": {
+          "passed": 162,
+          "xfailed": 2
+        }
+      },
+      {
+        "batch": "batch-016",
+        "actual_summary": "164 passed in 334.24s (0:05:34)",
+        "counts": {
+          "passed": 164
+        }
+      },
+      {
+        "batch": "batch-017",
+        "actual_summary": "164 passed in 99.54s (0:01:39)",
+        "counts": {
+          "passed": 164
+        }
+      },
+      {
+        "batch": "batch-018",
+        "actual_summary": "163 passed in 99.31s (0:01:39)",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-019",
+        "actual_summary": "163 passed in 1553.18s (0:25:53)",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-020",
+        "actual_summary": "163 passed in 54.48s",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-021",
+        "actual_summary": "163 passed in 57.84s",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-022",
+        "actual_summary": "163 passed in 38.93s",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-023",
+        "actual_summary": "163 passed in 1197.32s (0:19:57)",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-024",
+        "actual_summary": "163 passed in 40.67s",
+        "counts": {
+          "passed": 163
+        }
+      },
+      {
+        "batch": "batch-025",
+        "actual_summary": "163 passed in 229.57s (0:03:49)",
+        "counts": {
+          "passed": 163
+        }
+      }
+    ]
+  },
+  "actual_lane_summary_lines": {
+    "focused": [
+      "511 passed in 96.50s (0:01:36)"
+    ],
+    "u2-authority": [
+      "44 passed in 764.03s (0:12:44)"
+    ],
+    "collect": [
+      "4557 tests collected in 9.82s"
+    ],
+    "preservation": [
+      "52 passed in 558.62s (0:09:18)"
+    ],
+    "static": []
+  },
+  "selected_external_scope": {
+    "installed_sources": 59,
+    "cached_task_configs": 1,
+    "before_after_equal": true,
+    "exhaustive_global_external_census": false
+  },
+  "fingerprints": {
+    "coordinator_equal": true,
+    "source_artifacts_equal": true,
+    "all_lane_fingerprint_and_artifact_pairs_equal": true
+  },
+  "executed_input_binding": {
+    "runner_sha256": "fc8d48d363b4b3e5392751235c3acaa16f4b1ef368ebc32b3eaa496d893074b7",
+    "runner_bytes_match_actual_command_hash": true,
+    "manifest_plus_wrapper_workers2_equals_actual_command": true,
+    "selected_source_union_equals_actual_before_after": true,
+    "limitation": "Input JSON byte hashes are archival pins, not separately persisted runtime hashes; exact command and selected-value correspondence is checked. Preparation notes remain explanatory provenance."
+  },
+  "original_red_run_replaced": false,
+  "original_broad_failure_cause_inferred": false,
+  "archive_source_files_unchanged": true
+}

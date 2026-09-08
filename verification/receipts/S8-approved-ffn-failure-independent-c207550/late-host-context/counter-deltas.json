@@ -1,0 +1,11 @@
+{
+  "after": "2026-09-08T10:28:14.802211+00:00",
+  "before": "2026-09-08T10:26:34.119691+00:00",
+  "deltas_pages": {
+    "Compressions": 3503348,
+    "Decompressions": 3461520,
+    "Swapins": 38600,
+    "Swapouts": 63328
+  },
+  "scope": "Host activity in this measured late interval only; no attribution to individual worker or original failure."
+}

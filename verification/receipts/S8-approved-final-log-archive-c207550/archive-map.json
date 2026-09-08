@@ -1,0 +1,46 @@
+{
+  "reason": "Exact staged static check rejected trailing whitespace in historical actual pytest logs. Lossless data archival only; no log bytes stripped or acceptance changed. Original logical-path hashes in prior review receipts retain their interpretation through this mapping.",
+  "original_static_returncode": 2,
+  "files": [
+    {
+      "original_logical_path": "verification/receipts/S8-approved-ffn-failure-independent-c207550/batch-001.log",
+      "original_sha256": "b0c5d70a9db7e162b909e0f599f2b2781e0cf7e58cf5b96f6cf07e61a91e8e81",
+      "original_bytes": 34657,
+      "stored_path": "verification/receipts/S8-approved-ffn-failure-independent-c207550/batch-001.log.gz",
+      "stored_sha256": "a3ba75940e870694efdf69433dfcff98ad6626b9f457cc5e6e357e25aa9d0dfb",
+      "retained_original_path": "/private/tmp/unfold-s8-approved-final-raw-log-sources/batch-001.log"
+    },
+    {
+      "original_logical_path": "verification/receipts/S8-approved-ffn-failure-independent-c207550/batch-004.log",
+      "original_sha256": "7babfc7e31085f54560d5e2e9d7ce24c413756cd246c83020fca8c9af58835ba",
+      "original_bytes": 2316,
+      "stored_path": "verification/receipts/S8-approved-ffn-failure-independent-c207550/batch-004.log.gz",
+      "stored_sha256": "4d4f34e64f968f09fbec430f6843578b52ecd044d03df2bed96d936e3bf8f0b0",
+      "retained_original_path": "/private/tmp/unfold-s8-approved-final-raw-log-sources/batch-004.log"
+    },
+    {
+      "original_logical_path": "verification/receipts/S8-approved-ffn-failure-independent-c207550/batch-012.log",
+      "original_sha256": "f91e22d82d4c60fb4cb83d3884ebb71b28cd68b082905c0ee8e9fcb4eba84fbf",
+      "original_bytes": 2082,
+      "stored_path": "verification/receipts/S8-approved-ffn-failure-independent-c207550/batch-012.log.gz",
+      "stored_sha256": "2a428693ba2d436a091802f514566c8c81bf1ecaa86ad7460211261c2662fd99",
+      "retained_original_path": "/private/tmp/unfold-s8-approved-final-raw-log-sources/batch-012.log"
+    },
+    {
+      "original_logical_path": "verification/receipts/S8-approved-ffn-failure-independent-c207550/batch-016.log",
+      "original_sha256": "77f5a3c0c89de6691dfe1e08a513ca289dc8be7ba67054e3a4940829a0c84725",
+      "original_bytes": 1716,
+      "stored_path": "verification/receipts/S8-approved-ffn-failure-independent-c207550/batch-016.log.gz",
+      "stored_sha256": "fe0e5f55fd133a6f656099f373ec3445e9a2fa4846200c180123bfcd9ffb0b82",
+      "retained_original_path": "/private/tmp/unfold-s8-approved-final-raw-log-sources/batch-016.log"
+    },
+    {
+      "original_logical_path": "verification/receipts/S8-approved-ffn-failure-independent-c207550/batch-023.log",
+      "original_sha256": "a548930cc7716a174583e185c8171e7d6c950bce9911a7e0696e73c9a2c6cccc",
+      "original_bytes": 3030,
+      "stored_path": "verification/receipts/S8-approved-ffn-failure-independent-c207550/batch-023.log.gz",
+      "stored_sha256": "f71828d55566e78a24a6d79125d92206d28043ecf50f9ef9f88df581f0f81fc4",
+      "retained_original_path": "/private/tmp/unfold-s8-approved-final-raw-log-sources/batch-023.log"
+    }
+  ]
+}
