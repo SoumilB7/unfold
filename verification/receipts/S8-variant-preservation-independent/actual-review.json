@@ -1,0 +1,2422 @@
+{
+  "sdxl-corrected-shared": {
+    "input_path": "/private/tmp/unfold-s8-diagnostic-captures-ca15e58/sdxl-corrected-shared",
+    "artifact_pins": {
+      "input.json": "a31b37f5f171046310f4166a9e455bde59df688e334637bd4e1ce1ff7be40531",
+      "ir.json": "2ec3c4b2906b0e69d42aec0ad3e82559250eb7dd783e46250e621e2c2ce77703",
+      "page.html": "234e146240c117d0495a6436a0b552f8a75cf247ab330452b0eb36e98086eabf",
+      "facts.json": "ca994fe9ea4215094f97e9d09a1b839e2db992b1b04256c75511036e3277a85b",
+      "qualified-facts.json": "4496167ce15462f6fa9a2c871da03fd9229ba05037b9e1d5eeb1674a7bc4e0ce",
+      "render-events.json.gz": "b25cfc3dbf7c4e02b1309876d2cd4acd9b1b680eda866c904275abbc6120cedc",
+      "checks.json": "321623d0d32803762e0770b76f2df4330871f62f7db145b6ee93f0412e33bbb1",
+      "source-before.json": "ae598ba49d7c2063fb2eb5bce4697baa14d99aabef4da732141408a2856de7ab",
+      "source-after.json": "ae598ba49d7c2063fb2eb5bce4697baa14d99aabef4da732141408a2856de7ab"
+    },
+    "source_before_after_equal": true,
+    "verified_archived_fact_source_entries": 76,
+    "checks": {
+      "label_lint": [],
+      "projection_audit": [],
+      "validate_block_tree": [],
+      "validate_click_coupling": [],
+      "validate_no_dotted_arrows": [],
+      "validate_no_dotted_boundaries": [],
+      "validate_unique_ref_ids": []
+    },
+    "summary": {
+      "parameter_count": 2567463684,
+      "parameterized_module_count": 1050,
+      "population_fact_key": "root.denoiser.constructed_modules",
+      "scope": "denoiser",
+      "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+      "stage_count": 7,
+      "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+    },
+    "representative_cards": [
+      {
+        "path": "down_blocks.0.resnets.0",
+        "card_node_id": "instance_down_blocks__0__resnets__0",
+        "facts": [
+          "2,255,040 parameters in subtree",
+          "Execution: investigation_missing",
+          "no_recipe_attempted",
+          "Connections across optional branches and helpers remain under investigation.",
+          "Conditional additive arithmetic; operand call boundaries retained"
+        ],
+        "source_fact_keys": [
+          "root.denoiser.constructed_modules",
+          "root.denoiser.constructed_parameter_shapes",
+          "root.denoiser.cell_connections",
+          "root.denoiser.runtime_primitives",
+          "root.denoiser.cell_arithmetic"
+        ],
+        "direct_children": [
+          "down_blocks.0.resnets.0.norm1",
+          "down_blocks.0.resnets.0.conv1",
+          "down_blocks.0.resnets.0.time_emb_proj",
+          "down_blocks.0.resnets.0.norm2",
+          "down_blocks.0.resnets.0.dropout",
+          "down_blocks.0.resnets.0.conv2",
+          "down_blocks.0.resnets.0.nonlinearity"
+        ],
+        "own_child_parameter_shapes": {
+          "conv1.weight": [
+            320,
+            320,
+            3,
+            3
+          ],
+          "conv2.weight": [
+            320,
+            320,
+            3,
+            3
+          ],
+          "time_emb_proj.weight": [
+            320,
+            1280
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.1.resnets.0",
+        "card_node_id": "instance_down_blocks__1__resnets__0",
+        "facts": [
+          "6,558,080 parameters in subtree",
+          "Execution: investigation_missing",
+          "no_recipe_attempted",
+          "Connections across optional branches and helpers remain under investigation.",
+          "Conditional additive arithmetic; operand call boundaries retained"
+        ],
+        "source_fact_keys": [
+          "root.denoiser.constructed_modules",
+          "root.denoiser.constructed_parameter_shapes",
+          "root.denoiser.cell_connections",
+          "root.denoiser.runtime_primitives",
+          "root.denoiser.cell_arithmetic"
+        ],
+        "direct_children": [
+          "down_blocks.1.resnets.0.norm1",
+          "down_blocks.1.resnets.0.conv1",
+          "down_blocks.1.resnets.0.time_emb_proj",
+          "down_blocks.1.resnets.0.norm2",
+          "down_blocks.1.resnets.0.dropout",
+          "down_blocks.1.resnets.0.conv2",
+          "down_blocks.1.resnets.0.nonlinearity",
+          "down_blocks.1.resnets.0.conv_shortcut"
+        ],
+        "own_child_parameter_shapes": {
+          "conv1.weight": [
+            640,
+            320,
+            3,
+            3
+          ],
+          "conv2.weight": [
+            640,
+            640,
+            3,
+            3
+          ],
+          "time_emb_proj.weight": [
+            640,
+            1280
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.2.resnets.0",
+        "card_node_id": "instance_down_blocks__2__resnets__0",
+        "facts": [
+          "24,584,960 parameters in subtree",
+          "Execution: investigation_missing",
+          "no_recipe_attempted",
+          "Connections across optional branches and helpers remain under investigation.",
+          "Conditional additive arithmetic; operand call boundaries retained"
+        ],
+        "source_fact_keys": [
+          "root.denoiser.constructed_modules",
+          "root.denoiser.constructed_parameter_shapes",
+          "root.denoiser.cell_connections",
+          "root.denoiser.runtime_primitives",
+          "root.denoiser.cell_arithmetic"
+        ],
+        "direct_children": [
+          "down_blocks.2.resnets.0.norm1",
+          "down_blocks.2.resnets.0.conv1",
+          "down_blocks.2.resnets.0.time_emb_proj",
+          "down_blocks.2.resnets.0.norm2",
+          "down_blocks.2.resnets.0.dropout",
+          "down_blocks.2.resnets.0.conv2",
+          "down_blocks.2.resnets.0.nonlinearity",
+          "down_blocks.2.resnets.0.conv_shortcut"
+        ],
+        "own_child_parameter_shapes": {
+          "conv1.weight": [
+            1280,
+            640,
+            3,
+            3
+          ],
+          "conv2.weight": [
+            1280,
+            1280,
+            3,
+            3
+          ],
+          "time_emb_proj.weight": [
+            1280,
+            1280
+          ]
+        }
+      },
+      {
+        "path": "mid_block.resnets.0",
+        "card_node_id": "instance_mid_block__resnets__0",
+        "facts": [
+          "31,138,560 parameters in subtree",
+          "Execution: investigation_missing",
+          "no_recipe_attempted",
+          "Connections across optional branches and helpers remain under investigation.",
+          "Conditional additive arithmetic; operand call boundaries retained",
+          "Conditional scale_shift arithmetic; operand call boundaries retained"
+        ],
+        "source_fact_keys": [
+          "root.denoiser.constructed_modules",
+          "root.denoiser.constructed_parameter_shapes",
+          "root.denoiser.cell_connections",
+          "root.denoiser.runtime_primitives",
+          "root.denoiser.cell_arithmetic"
+        ],
+        "direct_children": [
+          "mid_block.resnets.0.norm1",
+          "mid_block.resnets.0.conv1",
+          "mid_block.resnets.0.time_emb_proj",
+          "mid_block.resnets.0.norm2",
+          "mid_block.resnets.0.dropout",
+          "mid_block.resnets.0.conv2",
+          "mid_block.resnets.0.nonlinearity"
+        ],
+        "own_child_parameter_shapes": {
+          "conv1.weight": [
+            1280,
+            1280,
+            3,
+            3
+          ],
+          "conv2.weight": [
+            1280,
+            1280,
+            3,
+            3
+          ],
+          "time_emb_proj.weight": [
+            1280,
+            1280
+          ]
+        }
+      },
+      {
+        "path": "mid_block.resnets.1",
+        "card_node_id": "instance_mid_block__resnets__1",
+        "facts": [
+          "31,138,560 parameters in subtree",
+          "Execution: investigation_missing",
+          "no_recipe_attempted",
+          "Connections across optional branches and helpers remain under investigation.",
+          "Conditional additive arithmetic; operand call boundaries retained",
+          "Conditional scale_shift arithmetic; operand call boundaries retained"
+        ],
+        "source_fact_keys": [
+          "root.denoiser.constructed_modules",
+          "root.denoiser.constructed_parameter_shapes",
+          "root.denoiser.cell_connections",
+          "root.denoiser.runtime_primitives",
+          "root.denoiser.cell_arithmetic"
+        ],
+        "direct_children": [
+          "mid_block.resnets.1.norm1",
+          "mid_block.resnets.1.conv1",
+          "mid_block.resnets.1.time_emb_proj",
+          "mid_block.resnets.1.norm2",
+          "mid_block.resnets.1.dropout",
+          "mid_block.resnets.1.conv2",
+          "mid_block.resnets.1.nonlinearity"
+        ],
+        "own_child_parameter_shapes": {
+          "conv1.weight": [
+            1280,
+            1280,
+            3,
+            3
+          ],
+          "conv2.weight": [
+            1280,
+            1280,
+            3,
+            3
+          ],
+          "time_emb_proj.weight": [
+            1280,
+            1280
+          ]
+        }
+      },
+      {
+        "path": "mid_block.attentions.0",
+        "card_node_id": "instance_mid_block__attentions__0",
+        "facts": [
+          "350,840,320 parameters in subtree",
+          "Execution: investigation_missing",
+          "no_recipe_attempted"
+        ],
+        "source_fact_keys": [
+          "root.denoiser.constructed_modules",
+          "root.denoiser.constructed_parameter_shapes"
+        ],
+        "direct_children": [
+          "mid_block.attentions.0.norm",
+          "mid_block.attentions.0.proj_in",
+          "mid_block.attentions.0.transformer_blocks",
+          "mid_block.attentions.0.proj_out"
+        ],
+        "own_child_parameter_shapes": {}
+      }
+    ],
+    "context_claim": {
+      "cross_attention": "investigation_missing",
+      "reason": "External context input is proven; distinct query lineage remains open.",
+      "role": "context_input",
+      "source_formal": "encoder_hidden_states",
+      "stage": "down_blocks.1",
+      "target_formal": "encoder_hidden_states"
+    },
+    "context_card": "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2",
+    "context_render_events": [
+      {
+        "block_path": [
+          "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2"
+        ],
+        "component": "root",
+        "drawn_ops": [
+          "port",
+          "source"
+        ],
+        "facts_projected": [
+          "root.denoiser.constructed_modules",
+          "root.denoiser.constructed_parameter_shapes",
+          "root.denoiser.context_connections"
+        ],
+        "node_ids": [
+          "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2__context_argument",
+          "unet_context_0"
+        ],
+        "receipts": [],
+        "source_file": "",
+        "source_line": null,
+        "source_owner": "Attention",
+        "variant": "",
+        "view": "runtime_context_connection"
+      }
+    ],
+    "mid_internal_sequence_fact": false,
+    "mid_sequence_limit": "Current facts preserve distinct mid ResNet0/1 and attention0, but only containment, not the old full pre\u2192attention\u2192post routed sandwich. stage_join proves up joins only; root relations explicitly direct_stage_order_open. No test may equate those.",
+    "verdict": "Own population/shapes/context call argument and honest query unknown accepted; mid sequence claim remains a separate owner disposition."
+  },
+  "svd-exact": {
+    "input_path": "/private/tmp/unfold-s8-diagnostic-captures-ca15e58/svd-exact",
+    "artifact_pins": {
+      "input.json": "94fb7fc5ef8274e4f17cba9513ed011dd9d618ee9f3b20436dae9791f2b1b509",
+      "ir.json": "02013d1bd8daac6f56d0d6a09fe13a35dbae254b40b1910622ebf3b932636de5",
+      "page.html": "bc78852a117bfb2943fa6dbb22ccecd1942fcfdb6683262c4fa605b308968782",
+      "facts.json": "1333ddb0cd46952d86367a4c5a6d80ee848b0bd675a8017456be60d0ecc60525",
+      "qualified-facts.json": "756ad79bc28d8e81e8659d84ae4b76748f5cd6287b5c4a073c24ed1fcf9b12e9",
+      "render-events.json.gz": "6181d84df4cacc2b2af20f159c6e50bc8c0d477d3ebcfabd4c5ba237507df709",
+      "checks.json": "360abab319ebdcfe1c6b66f14116f346a791dbd6d4bbe70977ccc96db6cc7482",
+      "source-before.json": "ae598ba49d7c2063fb2eb5bce4697baa14d99aabef4da732141408a2856de7ab",
+      "source-after.json": "ae598ba49d7c2063fb2eb5bce4697baa14d99aabef4da732141408a2856de7ab"
+    },
+    "source_before_after_equal": true,
+    "verified_archived_fact_source_entries": 54,
+    "checks": {
+      "label_lint": [],
+      "projection_audit": [
+        "ledger fact 'root.denoiser.runtime_primitives' (code_proven) is proven from evidence but no render surface projects it \u2014 add its leaf to the surface's facts_projected (a proven fact the diagram silently drops)"
+      ],
+      "validate_block_tree": [],
+      "validate_click_coupling": [],
+      "validate_no_dotted_arrows": [],
+      "validate_no_dotted_boundaries": [],
+      "validate_unique_ref_ids": []
+    },
+    "summary": {
+      "parameter_count": 1524623082,
+      "parameterized_module_count": 829,
+      "population_fact_key": "root.denoiser.constructed_modules",
+      "scope": "denoiser",
+      "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+      "stage_count": 9,
+      "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+    },
+    "temporal_counts": {
+      "TransformerSpatioTemporalModel": 16,
+      "TemporalBasicTransformerBlock": 16,
+      "AlphaBlender": 38,
+      "SpatioTemporalResBlock": 22,
+      "TemporalResnetBlock": 22,
+      "Conv3d": 44
+    },
+    "all_temporal_occurrences_have_actual_node_and_card": true,
+    "temporal_occurrences": [
+      {
+        "path": "down_blocks.0.attentions.0",
+        "class": "TransformerSpatioTemporalModel",
+        "card_node_id": "instance_down_blocks__0__attentions__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.0.attentions.0.temporal_transformer_blocks.0",
+        "class": "TemporalBasicTransformerBlock",
+        "card_node_id": "instance_down_blocks__0__attentions__0__temporal_transformer_blocks__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.0.attentions.0.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_down_blocks__0__attentions__0__time_mixer",
+        "shape_parameters": {
+          "down_blocks.0.attentions.0.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.0.attentions.1",
+        "class": "TransformerSpatioTemporalModel",
+        "card_node_id": "instance_down_blocks__0__attentions__1",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.0.attentions.1.temporal_transformer_blocks.0",
+        "class": "TemporalBasicTransformerBlock",
+        "card_node_id": "instance_down_blocks__0__attentions__1__temporal_transformer_blocks__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.0.attentions.1.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_down_blocks__0__attentions__1__time_mixer",
+        "shape_parameters": {
+          "down_blocks.0.attentions.1.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.0.resnets.0",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_down_blocks__0__resnets__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.0.resnets.0.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_down_blocks__0__resnets__0__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.0.resnets.0.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_down_blocks__0__resnets__0__temporal_res_block__conv1",
+        "shape_parameters": {
+          "down_blocks.0.resnets.0.temporal_res_block.conv1.bias": [
+            320
+          ],
+          "down_blocks.0.resnets.0.temporal_res_block.conv1.weight": [
+            320,
+            320,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.0.resnets.0.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_down_blocks__0__resnets__0__temporal_res_block__conv2",
+        "shape_parameters": {
+          "down_blocks.0.resnets.0.temporal_res_block.conv2.bias": [
+            320
+          ],
+          "down_blocks.0.resnets.0.temporal_res_block.conv2.weight": [
+            320,
+            320,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.0.resnets.0.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_down_blocks__0__resnets__0__time_mixer",
+        "shape_parameters": {
+          "down_blocks.0.resnets.0.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.0.resnets.1",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_down_blocks__0__resnets__1",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.0.resnets.1.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_down_blocks__0__resnets__1__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.0.resnets.1.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_down_blocks__0__resnets__1__temporal_res_block__conv1",
+        "shape_parameters": {
+          "down_blocks.0.resnets.1.temporal_res_block.conv1.bias": [
+            320
+          ],
+          "down_blocks.0.resnets.1.temporal_res_block.conv1.weight": [
+            320,
+            320,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.0.resnets.1.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_down_blocks__0__resnets__1__temporal_res_block__conv2",
+        "shape_parameters": {
+          "down_blocks.0.resnets.1.temporal_res_block.conv2.bias": [
+            320
+          ],
+          "down_blocks.0.resnets.1.temporal_res_block.conv2.weight": [
+            320,
+            320,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.0.resnets.1.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_down_blocks__0__resnets__1__time_mixer",
+        "shape_parameters": {
+          "down_blocks.0.resnets.1.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.1.attentions.0",
+        "class": "TransformerSpatioTemporalModel",
+        "card_node_id": "instance_down_blocks__1__attentions__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.1.attentions.0.temporal_transformer_blocks.0",
+        "class": "TemporalBasicTransformerBlock",
+        "card_node_id": "instance_down_blocks__1__attentions__0__temporal_transformer_blocks__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.1.attentions.0.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_down_blocks__1__attentions__0__time_mixer",
+        "shape_parameters": {
+          "down_blocks.1.attentions.0.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.1.attentions.1",
+        "class": "TransformerSpatioTemporalModel",
+        "card_node_id": "instance_down_blocks__1__attentions__1",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.1.attentions.1.temporal_transformer_blocks.0",
+        "class": "TemporalBasicTransformerBlock",
+        "card_node_id": "instance_down_blocks__1__attentions__1__temporal_transformer_blocks__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.1.attentions.1.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_down_blocks__1__attentions__1__time_mixer",
+        "shape_parameters": {
+          "down_blocks.1.attentions.1.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.1.resnets.0",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_down_blocks__1__resnets__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.1.resnets.0.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_down_blocks__1__resnets__0__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.1.resnets.0.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_down_blocks__1__resnets__0__temporal_res_block__conv1",
+        "shape_parameters": {
+          "down_blocks.1.resnets.0.temporal_res_block.conv1.bias": [
+            640
+          ],
+          "down_blocks.1.resnets.0.temporal_res_block.conv1.weight": [
+            640,
+            640,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.1.resnets.0.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_down_blocks__1__resnets__0__temporal_res_block__conv2",
+        "shape_parameters": {
+          "down_blocks.1.resnets.0.temporal_res_block.conv2.bias": [
+            640
+          ],
+          "down_blocks.1.resnets.0.temporal_res_block.conv2.weight": [
+            640,
+            640,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.1.resnets.0.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_down_blocks__1__resnets__0__time_mixer",
+        "shape_parameters": {
+          "down_blocks.1.resnets.0.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.1.resnets.1",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_down_blocks__1__resnets__1",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.1.resnets.1.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_down_blocks__1__resnets__1__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.1.resnets.1.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_down_blocks__1__resnets__1__temporal_res_block__conv1",
+        "shape_parameters": {
+          "down_blocks.1.resnets.1.temporal_res_block.conv1.bias": [
+            640
+          ],
+          "down_blocks.1.resnets.1.temporal_res_block.conv1.weight": [
+            640,
+            640,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.1.resnets.1.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_down_blocks__1__resnets__1__temporal_res_block__conv2",
+        "shape_parameters": {
+          "down_blocks.1.resnets.1.temporal_res_block.conv2.bias": [
+            640
+          ],
+          "down_blocks.1.resnets.1.temporal_res_block.conv2.weight": [
+            640,
+            640,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.1.resnets.1.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_down_blocks__1__resnets__1__time_mixer",
+        "shape_parameters": {
+          "down_blocks.1.resnets.1.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.2.attentions.0",
+        "class": "TransformerSpatioTemporalModel",
+        "card_node_id": "instance_down_blocks__2__attentions__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.2.attentions.0.temporal_transformer_blocks.0",
+        "class": "TemporalBasicTransformerBlock",
+        "card_node_id": "instance_down_blocks__2__attentions__0__temporal_transformer_blocks__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.2.attentions.0.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_down_blocks__2__attentions__0__time_mixer",
+        "shape_parameters": {
+          "down_blocks.2.attentions.0.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.2.attentions.1",
+        "class": "TransformerSpatioTemporalModel",
+        "card_node_id": "instance_down_blocks__2__attentions__1",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.2.attentions.1.temporal_transformer_blocks.0",
+        "class": "TemporalBasicTransformerBlock",
+        "card_node_id": "instance_down_blocks__2__attentions__1__temporal_transformer_blocks__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.2.attentions.1.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_down_blocks__2__attentions__1__time_mixer",
+        "shape_parameters": {
+          "down_blocks.2.attentions.1.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.2.resnets.0",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_down_blocks__2__resnets__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.2.resnets.0.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_down_blocks__2__resnets__0__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.2.resnets.0.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_down_blocks__2__resnets__0__temporal_res_block__conv1",
+        "shape_parameters": {
+          "down_blocks.2.resnets.0.temporal_res_block.conv1.bias": [
+            1280
+          ],
+          "down_blocks.2.resnets.0.temporal_res_block.conv1.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.2.resnets.0.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_down_blocks__2__resnets__0__temporal_res_block__conv2",
+        "shape_parameters": {
+          "down_blocks.2.resnets.0.temporal_res_block.conv2.bias": [
+            1280
+          ],
+          "down_blocks.2.resnets.0.temporal_res_block.conv2.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.2.resnets.0.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_down_blocks__2__resnets__0__time_mixer",
+        "shape_parameters": {
+          "down_blocks.2.resnets.0.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.2.resnets.1",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_down_blocks__2__resnets__1",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.2.resnets.1.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_down_blocks__2__resnets__1__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.2.resnets.1.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_down_blocks__2__resnets__1__temporal_res_block__conv1",
+        "shape_parameters": {
+          "down_blocks.2.resnets.1.temporal_res_block.conv1.bias": [
+            1280
+          ],
+          "down_blocks.2.resnets.1.temporal_res_block.conv1.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.2.resnets.1.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_down_blocks__2__resnets__1__temporal_res_block__conv2",
+        "shape_parameters": {
+          "down_blocks.2.resnets.1.temporal_res_block.conv2.bias": [
+            1280
+          ],
+          "down_blocks.2.resnets.1.temporal_res_block.conv2.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.2.resnets.1.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_down_blocks__2__resnets__1__time_mixer",
+        "shape_parameters": {
+          "down_blocks.2.resnets.1.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.3.resnets.0",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_down_blocks__3__resnets__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.3.resnets.0.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_down_blocks__3__resnets__0__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.3.resnets.0.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_down_blocks__3__resnets__0__temporal_res_block__conv1",
+        "shape_parameters": {
+          "down_blocks.3.resnets.0.temporal_res_block.conv1.bias": [
+            1280
+          ],
+          "down_blocks.3.resnets.0.temporal_res_block.conv1.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.3.resnets.0.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_down_blocks__3__resnets__0__temporal_res_block__conv2",
+        "shape_parameters": {
+          "down_blocks.3.resnets.0.temporal_res_block.conv2.bias": [
+            1280
+          ],
+          "down_blocks.3.resnets.0.temporal_res_block.conv2.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.3.resnets.0.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_down_blocks__3__resnets__0__time_mixer",
+        "shape_parameters": {
+          "down_blocks.3.resnets.0.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.3.resnets.1",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_down_blocks__3__resnets__1",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.3.resnets.1.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_down_blocks__3__resnets__1__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "down_blocks.3.resnets.1.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_down_blocks__3__resnets__1__temporal_res_block__conv1",
+        "shape_parameters": {
+          "down_blocks.3.resnets.1.temporal_res_block.conv1.bias": [
+            1280
+          ],
+          "down_blocks.3.resnets.1.temporal_res_block.conv1.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.3.resnets.1.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_down_blocks__3__resnets__1__temporal_res_block__conv2",
+        "shape_parameters": {
+          "down_blocks.3.resnets.1.temporal_res_block.conv2.bias": [
+            1280
+          ],
+          "down_blocks.3.resnets.1.temporal_res_block.conv2.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "down_blocks.3.resnets.1.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_down_blocks__3__resnets__1__time_mixer",
+        "shape_parameters": {
+          "down_blocks.3.resnets.1.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "mid_block.attentions.0",
+        "class": "TransformerSpatioTemporalModel",
+        "card_node_id": "instance_mid_block__attentions__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "mid_block.attentions.0.temporal_transformer_blocks.0",
+        "class": "TemporalBasicTransformerBlock",
+        "card_node_id": "instance_mid_block__attentions__0__temporal_transformer_blocks__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "mid_block.attentions.0.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_mid_block__attentions__0__time_mixer",
+        "shape_parameters": {
+          "mid_block.attentions.0.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "mid_block.resnets.0",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_mid_block__resnets__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "mid_block.resnets.0.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_mid_block__resnets__0__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "mid_block.resnets.0.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_mid_block__resnets__0__temporal_res_block__conv1",
+        "shape_parameters": {
+          "mid_block.resnets.0.temporal_res_block.conv1.bias": [
+            1280
+          ],
+          "mid_block.resnets.0.temporal_res_block.conv1.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "mid_block.resnets.0.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_mid_block__resnets__0__temporal_res_block__conv2",
+        "shape_parameters": {
+          "mid_block.resnets.0.temporal_res_block.conv2.bias": [
+            1280
+          ],
+          "mid_block.resnets.0.temporal_res_block.conv2.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "mid_block.resnets.0.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_mid_block__resnets__0__time_mixer",
+        "shape_parameters": {
+          "mid_block.resnets.0.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "mid_block.resnets.1",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_mid_block__resnets__1",
+        "shape_parameters": {}
+      },
+      {
+        "path": "mid_block.resnets.1.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_mid_block__resnets__1__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "mid_block.resnets.1.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_mid_block__resnets__1__temporal_res_block__conv1",
+        "shape_parameters": {
+          "mid_block.resnets.1.temporal_res_block.conv1.bias": [
+            1280
+          ],
+          "mid_block.resnets.1.temporal_res_block.conv1.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "mid_block.resnets.1.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_mid_block__resnets__1__temporal_res_block__conv2",
+        "shape_parameters": {
+          "mid_block.resnets.1.temporal_res_block.conv2.bias": [
+            1280
+          ],
+          "mid_block.resnets.1.temporal_res_block.conv2.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "mid_block.resnets.1.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_mid_block__resnets__1__time_mixer",
+        "shape_parameters": {
+          "mid_block.resnets.1.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.0.resnets.0",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_up_blocks__0__resnets__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.0.resnets.0.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_up_blocks__0__resnets__0__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.0.resnets.0.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__0__resnets__0__temporal_res_block__conv1",
+        "shape_parameters": {
+          "up_blocks.0.resnets.0.temporal_res_block.conv1.bias": [
+            1280
+          ],
+          "up_blocks.0.resnets.0.temporal_res_block.conv1.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.0.resnets.0.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__0__resnets__0__temporal_res_block__conv2",
+        "shape_parameters": {
+          "up_blocks.0.resnets.0.temporal_res_block.conv2.bias": [
+            1280
+          ],
+          "up_blocks.0.resnets.0.temporal_res_block.conv2.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.0.resnets.0.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__0__resnets__0__time_mixer",
+        "shape_parameters": {
+          "up_blocks.0.resnets.0.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.0.resnets.1",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_up_blocks__0__resnets__1",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.0.resnets.1.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_up_blocks__0__resnets__1__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.0.resnets.1.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__0__resnets__1__temporal_res_block__conv1",
+        "shape_parameters": {
+          "up_blocks.0.resnets.1.temporal_res_block.conv1.bias": [
+            1280
+          ],
+          "up_blocks.0.resnets.1.temporal_res_block.conv1.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.0.resnets.1.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__0__resnets__1__temporal_res_block__conv2",
+        "shape_parameters": {
+          "up_blocks.0.resnets.1.temporal_res_block.conv2.bias": [
+            1280
+          ],
+          "up_blocks.0.resnets.1.temporal_res_block.conv2.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.0.resnets.1.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__0__resnets__1__time_mixer",
+        "shape_parameters": {
+          "up_blocks.0.resnets.1.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.0.resnets.2",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_up_blocks__0__resnets__2",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.0.resnets.2.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_up_blocks__0__resnets__2__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.0.resnets.2.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__0__resnets__2__temporal_res_block__conv1",
+        "shape_parameters": {
+          "up_blocks.0.resnets.2.temporal_res_block.conv1.bias": [
+            1280
+          ],
+          "up_blocks.0.resnets.2.temporal_res_block.conv1.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.0.resnets.2.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__0__resnets__2__temporal_res_block__conv2",
+        "shape_parameters": {
+          "up_blocks.0.resnets.2.temporal_res_block.conv2.bias": [
+            1280
+          ],
+          "up_blocks.0.resnets.2.temporal_res_block.conv2.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.0.resnets.2.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__0__resnets__2__time_mixer",
+        "shape_parameters": {
+          "up_blocks.0.resnets.2.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.1.attentions.0",
+        "class": "TransformerSpatioTemporalModel",
+        "card_node_id": "instance_up_blocks__1__attentions__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.1.attentions.0.temporal_transformer_blocks.0",
+        "class": "TemporalBasicTransformerBlock",
+        "card_node_id": "instance_up_blocks__1__attentions__0__temporal_transformer_blocks__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.1.attentions.0.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__1__attentions__0__time_mixer",
+        "shape_parameters": {
+          "up_blocks.1.attentions.0.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.1.attentions.1",
+        "class": "TransformerSpatioTemporalModel",
+        "card_node_id": "instance_up_blocks__1__attentions__1",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.1.attentions.1.temporal_transformer_blocks.0",
+        "class": "TemporalBasicTransformerBlock",
+        "card_node_id": "instance_up_blocks__1__attentions__1__temporal_transformer_blocks__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.1.attentions.1.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__1__attentions__1__time_mixer",
+        "shape_parameters": {
+          "up_blocks.1.attentions.1.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.1.attentions.2",
+        "class": "TransformerSpatioTemporalModel",
+        "card_node_id": "instance_up_blocks__1__attentions__2",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.1.attentions.2.temporal_transformer_blocks.0",
+        "class": "TemporalBasicTransformerBlock",
+        "card_node_id": "instance_up_blocks__1__attentions__2__temporal_transformer_blocks__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.1.attentions.2.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__1__attentions__2__time_mixer",
+        "shape_parameters": {
+          "up_blocks.1.attentions.2.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.1.resnets.0",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_up_blocks__1__resnets__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.1.resnets.0.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_up_blocks__1__resnets__0__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.1.resnets.0.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__1__resnets__0__temporal_res_block__conv1",
+        "shape_parameters": {
+          "up_blocks.1.resnets.0.temporal_res_block.conv1.bias": [
+            1280
+          ],
+          "up_blocks.1.resnets.0.temporal_res_block.conv1.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.1.resnets.0.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__1__resnets__0__temporal_res_block__conv2",
+        "shape_parameters": {
+          "up_blocks.1.resnets.0.temporal_res_block.conv2.bias": [
+            1280
+          ],
+          "up_blocks.1.resnets.0.temporal_res_block.conv2.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.1.resnets.0.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__1__resnets__0__time_mixer",
+        "shape_parameters": {
+          "up_blocks.1.resnets.0.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.1.resnets.1",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_up_blocks__1__resnets__1",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.1.resnets.1.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_up_blocks__1__resnets__1__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.1.resnets.1.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__1__resnets__1__temporal_res_block__conv1",
+        "shape_parameters": {
+          "up_blocks.1.resnets.1.temporal_res_block.conv1.bias": [
+            1280
+          ],
+          "up_blocks.1.resnets.1.temporal_res_block.conv1.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.1.resnets.1.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__1__resnets__1__temporal_res_block__conv2",
+        "shape_parameters": {
+          "up_blocks.1.resnets.1.temporal_res_block.conv2.bias": [
+            1280
+          ],
+          "up_blocks.1.resnets.1.temporal_res_block.conv2.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.1.resnets.1.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__1__resnets__1__time_mixer",
+        "shape_parameters": {
+          "up_blocks.1.resnets.1.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.1.resnets.2",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_up_blocks__1__resnets__2",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.1.resnets.2.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_up_blocks__1__resnets__2__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.1.resnets.2.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__1__resnets__2__temporal_res_block__conv1",
+        "shape_parameters": {
+          "up_blocks.1.resnets.2.temporal_res_block.conv1.bias": [
+            1280
+          ],
+          "up_blocks.1.resnets.2.temporal_res_block.conv1.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.1.resnets.2.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__1__resnets__2__temporal_res_block__conv2",
+        "shape_parameters": {
+          "up_blocks.1.resnets.2.temporal_res_block.conv2.bias": [
+            1280
+          ],
+          "up_blocks.1.resnets.2.temporal_res_block.conv2.weight": [
+            1280,
+            1280,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.1.resnets.2.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__1__resnets__2__time_mixer",
+        "shape_parameters": {
+          "up_blocks.1.resnets.2.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.2.attentions.0",
+        "class": "TransformerSpatioTemporalModel",
+        "card_node_id": "instance_up_blocks__2__attentions__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.2.attentions.0.temporal_transformer_blocks.0",
+        "class": "TemporalBasicTransformerBlock",
+        "card_node_id": "instance_up_blocks__2__attentions__0__temporal_transformer_blocks__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.2.attentions.0.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__2__attentions__0__time_mixer",
+        "shape_parameters": {
+          "up_blocks.2.attentions.0.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.2.attentions.1",
+        "class": "TransformerSpatioTemporalModel",
+        "card_node_id": "instance_up_blocks__2__attentions__1",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.2.attentions.1.temporal_transformer_blocks.0",
+        "class": "TemporalBasicTransformerBlock",
+        "card_node_id": "instance_up_blocks__2__attentions__1__temporal_transformer_blocks__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.2.attentions.1.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__2__attentions__1__time_mixer",
+        "shape_parameters": {
+          "up_blocks.2.attentions.1.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.2.attentions.2",
+        "class": "TransformerSpatioTemporalModel",
+        "card_node_id": "instance_up_blocks__2__attentions__2",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.2.attentions.2.temporal_transformer_blocks.0",
+        "class": "TemporalBasicTransformerBlock",
+        "card_node_id": "instance_up_blocks__2__attentions__2__temporal_transformer_blocks__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.2.attentions.2.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__2__attentions__2__time_mixer",
+        "shape_parameters": {
+          "up_blocks.2.attentions.2.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.2.resnets.0",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_up_blocks__2__resnets__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.2.resnets.0.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_up_blocks__2__resnets__0__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.2.resnets.0.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__2__resnets__0__temporal_res_block__conv1",
+        "shape_parameters": {
+          "up_blocks.2.resnets.0.temporal_res_block.conv1.bias": [
+            640
+          ],
+          "up_blocks.2.resnets.0.temporal_res_block.conv1.weight": [
+            640,
+            640,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.2.resnets.0.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__2__resnets__0__temporal_res_block__conv2",
+        "shape_parameters": {
+          "up_blocks.2.resnets.0.temporal_res_block.conv2.bias": [
+            640
+          ],
+          "up_blocks.2.resnets.0.temporal_res_block.conv2.weight": [
+            640,
+            640,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.2.resnets.0.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__2__resnets__0__time_mixer",
+        "shape_parameters": {
+          "up_blocks.2.resnets.0.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.2.resnets.1",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_up_blocks__2__resnets__1",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.2.resnets.1.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_up_blocks__2__resnets__1__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.2.resnets.1.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__2__resnets__1__temporal_res_block__conv1",
+        "shape_parameters": {
+          "up_blocks.2.resnets.1.temporal_res_block.conv1.bias": [
+            640
+          ],
+          "up_blocks.2.resnets.1.temporal_res_block.conv1.weight": [
+            640,
+            640,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.2.resnets.1.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__2__resnets__1__temporal_res_block__conv2",
+        "shape_parameters": {
+          "up_blocks.2.resnets.1.temporal_res_block.conv2.bias": [
+            640
+          ],
+          "up_blocks.2.resnets.1.temporal_res_block.conv2.weight": [
+            640,
+            640,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.2.resnets.1.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__2__resnets__1__time_mixer",
+        "shape_parameters": {
+          "up_blocks.2.resnets.1.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.2.resnets.2",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_up_blocks__2__resnets__2",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.2.resnets.2.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_up_blocks__2__resnets__2__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.2.resnets.2.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__2__resnets__2__temporal_res_block__conv1",
+        "shape_parameters": {
+          "up_blocks.2.resnets.2.temporal_res_block.conv1.bias": [
+            640
+          ],
+          "up_blocks.2.resnets.2.temporal_res_block.conv1.weight": [
+            640,
+            640,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.2.resnets.2.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__2__resnets__2__temporal_res_block__conv2",
+        "shape_parameters": {
+          "up_blocks.2.resnets.2.temporal_res_block.conv2.bias": [
+            640
+          ],
+          "up_blocks.2.resnets.2.temporal_res_block.conv2.weight": [
+            640,
+            640,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.2.resnets.2.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__2__resnets__2__time_mixer",
+        "shape_parameters": {
+          "up_blocks.2.resnets.2.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.3.attentions.0",
+        "class": "TransformerSpatioTemporalModel",
+        "card_node_id": "instance_up_blocks__3__attentions__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.3.attentions.0.temporal_transformer_blocks.0",
+        "class": "TemporalBasicTransformerBlock",
+        "card_node_id": "instance_up_blocks__3__attentions__0__temporal_transformer_blocks__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.3.attentions.0.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__3__attentions__0__time_mixer",
+        "shape_parameters": {
+          "up_blocks.3.attentions.0.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.3.attentions.1",
+        "class": "TransformerSpatioTemporalModel",
+        "card_node_id": "instance_up_blocks__3__attentions__1",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.3.attentions.1.temporal_transformer_blocks.0",
+        "class": "TemporalBasicTransformerBlock",
+        "card_node_id": "instance_up_blocks__3__attentions__1__temporal_transformer_blocks__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.3.attentions.1.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__3__attentions__1__time_mixer",
+        "shape_parameters": {
+          "up_blocks.3.attentions.1.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.3.attentions.2",
+        "class": "TransformerSpatioTemporalModel",
+        "card_node_id": "instance_up_blocks__3__attentions__2",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.3.attentions.2.temporal_transformer_blocks.0",
+        "class": "TemporalBasicTransformerBlock",
+        "card_node_id": "instance_up_blocks__3__attentions__2__temporal_transformer_blocks__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.3.attentions.2.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__3__attentions__2__time_mixer",
+        "shape_parameters": {
+          "up_blocks.3.attentions.2.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.3.resnets.0",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_up_blocks__3__resnets__0",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.3.resnets.0.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_up_blocks__3__resnets__0__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.3.resnets.0.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__3__resnets__0__temporal_res_block__conv1",
+        "shape_parameters": {
+          "up_blocks.3.resnets.0.temporal_res_block.conv1.bias": [
+            320
+          ],
+          "up_blocks.3.resnets.0.temporal_res_block.conv1.weight": [
+            320,
+            320,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.3.resnets.0.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__3__resnets__0__temporal_res_block__conv2",
+        "shape_parameters": {
+          "up_blocks.3.resnets.0.temporal_res_block.conv2.bias": [
+            320
+          ],
+          "up_blocks.3.resnets.0.temporal_res_block.conv2.weight": [
+            320,
+            320,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.3.resnets.0.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__3__resnets__0__time_mixer",
+        "shape_parameters": {
+          "up_blocks.3.resnets.0.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.3.resnets.1",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_up_blocks__3__resnets__1",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.3.resnets.1.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_up_blocks__3__resnets__1__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.3.resnets.1.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__3__resnets__1__temporal_res_block__conv1",
+        "shape_parameters": {
+          "up_blocks.3.resnets.1.temporal_res_block.conv1.bias": [
+            320
+          ],
+          "up_blocks.3.resnets.1.temporal_res_block.conv1.weight": [
+            320,
+            320,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.3.resnets.1.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__3__resnets__1__temporal_res_block__conv2",
+        "shape_parameters": {
+          "up_blocks.3.resnets.1.temporal_res_block.conv2.bias": [
+            320
+          ],
+          "up_blocks.3.resnets.1.temporal_res_block.conv2.weight": [
+            320,
+            320,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.3.resnets.1.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__3__resnets__1__time_mixer",
+        "shape_parameters": {
+          "up_blocks.3.resnets.1.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.3.resnets.2",
+        "class": "SpatioTemporalResBlock",
+        "card_node_id": "instance_up_blocks__3__resnets__2",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.3.resnets.2.temporal_res_block",
+        "class": "TemporalResnetBlock",
+        "card_node_id": "instance_up_blocks__3__resnets__2__temporal_res_block",
+        "shape_parameters": {}
+      },
+      {
+        "path": "up_blocks.3.resnets.2.temporal_res_block.conv1",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__3__resnets__2__temporal_res_block__conv1",
+        "shape_parameters": {
+          "up_blocks.3.resnets.2.temporal_res_block.conv1.bias": [
+            320
+          ],
+          "up_blocks.3.resnets.2.temporal_res_block.conv1.weight": [
+            320,
+            320,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.3.resnets.2.temporal_res_block.conv2",
+        "class": "Conv3d",
+        "card_node_id": "instance_up_blocks__3__resnets__2__temporal_res_block__conv2",
+        "shape_parameters": {
+          "up_blocks.3.resnets.2.temporal_res_block.conv2.bias": [
+            320
+          ],
+          "up_blocks.3.resnets.2.temporal_res_block.conv2.weight": [
+            320,
+            320,
+            3,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "path": "up_blocks.3.resnets.2.time_mixer",
+        "class": "AlphaBlender",
+        "card_node_id": "instance_up_blocks__3__resnets__2__time_mixer",
+        "shape_parameters": {
+          "up_blocks.3.resnets.2.time_mixer.mix_factor": [
+            1
+          ]
+        }
+      }
+    ],
+    "proved_connections": {
+      "down_blocks.0.resnets.0": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "down_blocks.0.resnets.0.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "down_blocks.0.resnets.0.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "down_blocks.0.resnets.1": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "down_blocks.0.resnets.1.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "down_blocks.0.resnets.1.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "down_blocks.1.resnets.0": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "down_blocks.1.resnets.0.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "down_blocks.1.resnets.0.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "down_blocks.1.resnets.1": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "down_blocks.1.resnets.1.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "down_blocks.1.resnets.1.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "down_blocks.2.resnets.0": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "down_blocks.2.resnets.0.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "down_blocks.2.resnets.0.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "down_blocks.2.resnets.1": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "down_blocks.2.resnets.1.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "down_blocks.2.resnets.1.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "down_blocks.3.resnets.0": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "down_blocks.3.resnets.0.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "down_blocks.3.resnets.0.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "down_blocks.3.resnets.1": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "down_blocks.3.resnets.1.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "down_blocks.3.resnets.1.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "mid_block.resnets.0": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "mid_block.resnets.0.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "mid_block.resnets.0.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "mid_block.resnets.1": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "mid_block.resnets.1.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "mid_block.resnets.1.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "up_blocks.0.resnets.0": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "up_blocks.0.resnets.0.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "up_blocks.0.resnets.0.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "up_blocks.0.resnets.1": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "up_blocks.0.resnets.1.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "up_blocks.0.resnets.1.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "up_blocks.0.resnets.2": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "up_blocks.0.resnets.2.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "up_blocks.0.resnets.2.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "up_blocks.1.resnets.0": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "up_blocks.1.resnets.0.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "up_blocks.1.resnets.0.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "up_blocks.1.resnets.1": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "up_blocks.1.resnets.1.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "up_blocks.1.resnets.1.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "up_blocks.1.resnets.2": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "up_blocks.1.resnets.2.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "up_blocks.1.resnets.2.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "up_blocks.2.resnets.0": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "up_blocks.2.resnets.0.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "up_blocks.2.resnets.0.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "up_blocks.2.resnets.1": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "up_blocks.2.resnets.1.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "up_blocks.2.resnets.1.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "up_blocks.2.resnets.2": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "up_blocks.2.resnets.2.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "up_blocks.2.resnets.2.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "up_blocks.3.resnets.0": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "up_blocks.3.resnets.0.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "up_blocks.3.resnets.0.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "up_blocks.3.resnets.1": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "up_blocks.3.resnets.1.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "up_blocks.3.resnets.1.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      },
+      "up_blocks.3.resnets.2": {
+        "calls": {
+          "call_1": {
+            "guard": "unconditional",
+            "member": "up_blocks.3.resnets.2.temporal_res_block"
+          },
+          "call_2": {
+            "guard": "unconditional",
+            "member": "up_blocks.3.resnets.2.time_mixer"
+          }
+        },
+        "connections": [
+          {
+            "argument_slot": 1,
+            "source": "call_1",
+            "target": "call_2"
+          }
+        ],
+        "coverage": "positive_only",
+        "unresolved": "Connections across optional branches and helpers remain under investigation."
+      }
+    },
+    "verdict": "Temporal construction/shape and bounded temporal-child\u2192mixer call route preserved; runtime_primitives actual receipt still RETURN (helper owns correction). No fixed alpha computation or runtime25 frame claim accepted."
+  }
+}

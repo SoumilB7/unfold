@@ -1,0 +1,13 @@
+{
+  "tests/test_diffusion.py": "27a72e4bec6343e51eae4a47d6ed8cebce28f850a214906655f8ac240c217dc5",
+  "tests/test_coverage.py": "cd743d5b8d5cfedf30c56c8b1a31cb0a00c463e0173d95c99fe4611894139594",
+  "test_support/__init__.py": "0cd8423f4a9ef92b480ca5165655040979cfa9aacd8fb1233a62466959f64254",
+  "model_unfolder/renderers/html/block_views/registry.py": "02f5726b5e6a0e39fca6369824b8c7ee4975efa68d288dad99b6a003b659731e",
+  "verification/receipts/S8-diffusion-assertion-migration/obligation-map.json": "019b83ca9abb431cb8b0860b5fcaf8893eda6f62fc3ca171bed2a441ef79068c",
+  "test_support/unet_regression_inputs/kandinsky-original-invalid.json": "400112179f4e03ba35c3aabb3b8d3393ce82418651ef10725f4be66d01fefc5b",
+  "test_support/unet_regression_inputs/provenance.json": "10d284ceda4031f1d1497165d3c79f6390499829bed6a11f1dca963d0bf13a7c",
+  "test_support/unet_regression_inputs/if-first-original-invalid.json": "9286ff18d1e853fcb0416d503298005d3594967e1b73ea0e89b3504576260c74",
+  "test_support/unet_regression_inputs/README.md": "c25f8334dc9f411fec2780846acb070b7db576b25e9680e52b149c90d87b831e",
+  "test_support/unet_regression_inputs/if-first-synthetic-default-head.json": "b9541fed442f6c56600a01ac33865287de599a06ef8ff3bf078ac1490eb53eaa",
+  "test_support/unet_regression_inputs/kandinsky-published.json": "4f30206052776397195b5f1c9df9d7f7e34f50b1cb1ad9a027856021a94b62d6"
+}

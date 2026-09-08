@@ -1,0 +1,134 @@
+{
+  "source": "S8-final-broad-a83d704/coordinator/preservation.log.gz",
+  "scope": "actual prior failed gate; not final candidate acceptance",
+  "witnesses": {
+    "auraflow-v0-3": {
+      "ledgers": "hash mismatch"
+    },
+    "sana-1600m-1024px-diffusers": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 12, actual 12)"
+    },
+    "hunyuanvideo": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 20, actual 20)"
+    },
+    "bloom": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+    },
+    "llama-7b": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+    },
+    "stable-diffusion-3-5-large": {
+      "ledgers": "hash mismatch"
+    },
+    "pixart-sigma-xl-2-1024-ms": {
+      "ledgers": "hash mismatch"
+    },
+    "cogvideox-5b": {
+      "ledgers": "hash mismatch"
+    },
+    "ltx-video": {
+      "ledgers": "hash mismatch"
+    },
+    "prxpixel-t2i": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 9, actual 9)"
+    },
+    "dbrx-base": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 6, actual 6)"
+    },
+    "lumina-image-2-0": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 16, actual 16)"
+    },
+    "deepseek-v3": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 11, actual 11)"
+    },
+    "qwen-image": {
+      "ledgers": "hash mismatch"
+    },
+    "mochi-1-preview": {
+      "ledgers": "hash mismatch"
+    },
+    "qwen2-vl-7b-instruct": {
+      "ledgers": "hash mismatch"
+    },
+    "musicgen-small": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 8, actual 8)"
+    },
+    "flux-2-dev": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 16, actual 16)"
+    },
+    "olmo-2-1124-7b": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+    },
+    "qwen3-5-27b-text": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 6, actual 6)"
+    },
+    "fluxtransformer2dmodel": {
+      "ledgers": "hash mismatch"
+    },
+    "qwen3-8b": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+    },
+    "gemma-2-2b-it": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 6, actual 6)"
+    },
+    "glm-4-5": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 9, actual 9)"
+    },
+    "gpt-oss-20b": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 8, actual 8)"
+    },
+    "granite-3-0-8b-instruct": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+    },
+    "wan2-2-t2v-a14b-diffusers": {
+      "ledgers": "hash mismatch"
+    },
+    "stable-diffusion-xl-base-1-0": {
+      "expanded": "hash mismatch",
+      "html_meta": "hash mismatch",
+      "ir": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "params": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 29, actual 143)"
+    },
+    "stablelm-2-1-6b": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "command": "PYTHONPATH=. python3 verification/receipts/S8-empty-lane-geometry/reproduce.py",
+  "model_runs": 0,
+  "baselines_written": false,
+  "before_source_sha256": "b7a206c3677cecd013afef9b0835d1aaa428898b67fc393e8277177c231ad0cc",
+  "after_source_sha256": "7fd1f1d0894d8215ca5cfd9b01ef080ba0f9eee114458c93571b740afa412439",
+  "capture_sha256": "2748dec3262380a136aa077d889c40dab6e819ecc1bacffda302daf197b7c03b",
+  "results": [
+    {
+      "graph": "bloom-attention",
+      "before_sha256": "329f9628f61a09fae4888b5fe5b8818f99ff6c03a2483b0b775fc0b8cee41c83",
+      "after_sha256": "2b77fe8c94dd7af7113aa838e02d2efae634b6bb7ecf5bce88a7d83320c59b06",
+      "byte_identical": false
+    },
+    {
+      "graph": "bloom-ffn",
+      "before_sha256": "4e3efe865421f79bd7e299e5699b1cbf3f2997a5a879366646fa00d3681101ff",
+      "after_sha256": "4e3efe865421f79bd7e299e5699b1cbf3f2997a5a879366646fa00d3681101ff",
+      "byte_identical": true
+    },
+    {
+      "graph": "fused-gated-ffn",
+      "before_sha256": "bb454e42339b7488a317aeee0b000cb174d2cebd225a9cf6bacc33b686a17cfa",
+      "after_sha256": "bb454e42339b7488a317aeee0b000cb174d2cebd225a9cf6bacc33b686a17cfa",
+      "byte_identical": true
+    }
+  ],
+  "actual_geometry": {
+    "before": {
+      "rail_x": 78.0,
+      "stem_count": 0,
+      "obstacles": [
+        {
+          "node_id": "scaled_scores",
+          "left": -140.0,
+          "right": 140.0,
+          "intersects_rail": true
+        },
+        {
+          "node_id": "attn_softmax",
+          "left": -100.0,
+          "right": 100.0,
+          "intersects_rail": true
+        }
+      ],
+      "arrow_paths": 9,
+      "viewBox": "0 0 1050 1066"
+    },
+    "after": {
+      "rail_x": 176.0,
+      "stem_count": 1,
+      "obstacles": [
+        {
+          "node_id": "scaled_scores",
+          "left": -140.0,
+          "right": 140.0,
+          "intersects_rail": false
+        },
+        {
+          "node_id": "attn_softmax",
+          "left": -100.0,
+          "right": 100.0,
+          "intersects_rail": false
+        }
+      ],
+      "arrow_paths": 9,
+      "viewBox": "0 0 1050 1066"
+    }
+  }
+}

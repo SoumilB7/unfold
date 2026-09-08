@@ -1,0 +1,24 @@
+{
+  "added_primitive_events": 917,
+  "blessed": false,
+  "case": "sdxl-refiner",
+  "checks": {
+    "label_lint": [],
+    "projection_audit": [],
+    "validate_block_tree": [],
+    "validate_click_coupling": [],
+    "validate_no_dotted_arrows": [],
+    "validate_no_dotted_boundaries": [],
+    "validate_unique_ref_ids": []
+  },
+  "elapsed_seconds": 3.792,
+  "exact_ir_warning_parameter_input": true,
+  "html_sha256": "f34f5e5f253cda344ac7e39ee33f35ab3b102cb5dab63b790fdfe0487834ac7a",
+  "no_model_or_pytest": true,
+  "old_event_sequence_unchanged": true,
+  "prior_html_sha256": "f34f5e5f253cda344ac7e39ee33f35ab3b102cb5dab63b790fdfe0487834ac7a",
+  "production_commit": "736fdab",
+  "raw_html_equal": true,
+  "source_case": "/private/tmp/unfold-s8-typed-phase-7168440/sdxl-refiner",
+  "status": "PASS"
+}

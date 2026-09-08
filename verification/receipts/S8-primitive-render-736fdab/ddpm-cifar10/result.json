@@ -1,0 +1,24 @@
+{
+  "added_primitive_events": 212,
+  "blessed": false,
+  "case": "ddpm-cifar10",
+  "checks": {
+    "label_lint": [],
+    "projection_audit": [],
+    "validate_block_tree": [],
+    "validate_click_coupling": [],
+    "validate_no_dotted_arrows": [],
+    "validate_no_dotted_boundaries": [],
+    "validate_unique_ref_ids": []
+  },
+  "elapsed_seconds": 0.944,
+  "exact_ir_warning_parameter_input": true,
+  "html_sha256": "c333ad65c974debb9a1153d64227db64f721d55fab587fb7a8afe89e1a269b99",
+  "no_model_or_pytest": true,
+  "old_event_sequence_unchanged": true,
+  "prior_html_sha256": "c333ad65c974debb9a1153d64227db64f721d55fab587fb7a8afe89e1a269b99",
+  "production_commit": "736fdab",
+  "raw_html_equal": true,
+  "source_case": "/private/tmp/unfold-s8-typed-phase-7168440/ddpm-cifar10",
+  "status": "PASS"
+}

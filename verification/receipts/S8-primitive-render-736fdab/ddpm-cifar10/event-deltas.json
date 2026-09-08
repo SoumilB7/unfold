@@ -1,0 +1,4247 @@
+{
+  "added": [
+    {
+      "block_path": [
+        "instance_time_embedding",
+        "instance_time_embedding__linear_1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_time_embedding__linear_1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_time_embedding",
+        "instance_time_embedding__act"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_time_embedding__act"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_time_embedding",
+        "instance_time_embedding__linear_2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_time_embedding__linear_2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__0__resnets__0",
+        "instance_down_blocks__0__resnets__0__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__resnets__0__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__0__resnets__0",
+        "instance_down_blocks__0__resnets__0__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__resnets__0__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__0__resnets__0",
+        "instance_down_blocks__0__resnets__0__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__resnets__0__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__0__resnets__0",
+        "instance_down_blocks__0__resnets__0__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__resnets__0__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__0__resnets__0",
+        "instance_down_blocks__0__resnets__0__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__resnets__0__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__0__resnets__0",
+        "instance_down_blocks__0__resnets__0__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__resnets__0__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__0__resnets__0",
+        "instance_down_blocks__0__resnets__0__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__resnets__0__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__0__resnets__1",
+        "instance_down_blocks__0__resnets__1__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__resnets__1__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__0__resnets__1",
+        "instance_down_blocks__0__resnets__1__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__resnets__1__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__0__resnets__1",
+        "instance_down_blocks__0__resnets__1__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__resnets__1__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__0__resnets__1",
+        "instance_down_blocks__0__resnets__1__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__resnets__1__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__0__resnets__1",
+        "instance_down_blocks__0__resnets__1__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__resnets__1__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__0__resnets__1",
+        "instance_down_blocks__0__resnets__1__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__resnets__1__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__0__resnets__1",
+        "instance_down_blocks__0__resnets__1__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__resnets__1__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__0__downsamplers__0",
+        "instance_down_blocks__0__downsamplers__0__conv"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__downsamplers__0__conv"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__0",
+        "instance_down_blocks__1__attentions__0__group_norm"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__0__group_norm"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__0",
+        "instance_down_blocks__1__attentions__0__to_q"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__0__to_q"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__0",
+        "instance_down_blocks__1__attentions__0__to_k"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__0__to_k"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__0",
+        "instance_down_blocks__1__attentions__0__to_v"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__0__to_v"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__1",
+        "instance_down_blocks__1__attentions__1__group_norm"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__1__group_norm"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__1",
+        "instance_down_blocks__1__attentions__1__to_q"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__1__to_q"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__1",
+        "instance_down_blocks__1__attentions__1__to_k"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__1__to_k"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__1",
+        "instance_down_blocks__1__attentions__1__to_v"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__1__to_v"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__resnets__0",
+        "instance_down_blocks__1__resnets__0__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__resnets__0__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__resnets__0",
+        "instance_down_blocks__1__resnets__0__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__resnets__0__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__resnets__0",
+        "instance_down_blocks__1__resnets__0__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__resnets__0__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__resnets__0",
+        "instance_down_blocks__1__resnets__0__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__resnets__0__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__resnets__0",
+        "instance_down_blocks__1__resnets__0__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__resnets__0__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__resnets__0",
+        "instance_down_blocks__1__resnets__0__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__resnets__0__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__resnets__0",
+        "instance_down_blocks__1__resnets__0__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__resnets__0__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__resnets__0",
+        "instance_down_blocks__1__resnets__0__conv_shortcut"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__resnets__0__conv_shortcut"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__resnets__1",
+        "instance_down_blocks__1__resnets__1__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__resnets__1__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__resnets__1",
+        "instance_down_blocks__1__resnets__1__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__resnets__1__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__resnets__1",
+        "instance_down_blocks__1__resnets__1__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__resnets__1__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__resnets__1",
+        "instance_down_blocks__1__resnets__1__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__resnets__1__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__resnets__1",
+        "instance_down_blocks__1__resnets__1__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__resnets__1__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__resnets__1",
+        "instance_down_blocks__1__resnets__1__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__resnets__1__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__resnets__1",
+        "instance_down_blocks__1__resnets__1__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__resnets__1__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__downsamplers__0",
+        "instance_down_blocks__1__downsamplers__0__conv"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__downsamplers__0__conv"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__resnets__0",
+        "instance_down_blocks__2__resnets__0__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__resnets__0__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__resnets__0",
+        "instance_down_blocks__2__resnets__0__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__resnets__0__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__resnets__0",
+        "instance_down_blocks__2__resnets__0__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__resnets__0__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__resnets__0",
+        "instance_down_blocks__2__resnets__0__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__resnets__0__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__resnets__0",
+        "instance_down_blocks__2__resnets__0__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__resnets__0__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__resnets__0",
+        "instance_down_blocks__2__resnets__0__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__resnets__0__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__resnets__0",
+        "instance_down_blocks__2__resnets__0__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__resnets__0__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__resnets__1",
+        "instance_down_blocks__2__resnets__1__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__resnets__1__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__resnets__1",
+        "instance_down_blocks__2__resnets__1__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__resnets__1__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__resnets__1",
+        "instance_down_blocks__2__resnets__1__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__resnets__1__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__resnets__1",
+        "instance_down_blocks__2__resnets__1__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__resnets__1__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__resnets__1",
+        "instance_down_blocks__2__resnets__1__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__resnets__1__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__resnets__1",
+        "instance_down_blocks__2__resnets__1__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__resnets__1__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__resnets__1",
+        "instance_down_blocks__2__resnets__1__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__resnets__1__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__downsamplers__0",
+        "instance_down_blocks__2__downsamplers__0__conv"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__downsamplers__0__conv"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__3__resnets__0",
+        "instance_down_blocks__3__resnets__0__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__3__resnets__0__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__3__resnets__0",
+        "instance_down_blocks__3__resnets__0__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__3__resnets__0__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__3__resnets__0",
+        "instance_down_blocks__3__resnets__0__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__3__resnets__0__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__3__resnets__0",
+        "instance_down_blocks__3__resnets__0__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__3__resnets__0__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__3__resnets__0",
+        "instance_down_blocks__3__resnets__0__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__3__resnets__0__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__3__resnets__0",
+        "instance_down_blocks__3__resnets__0__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__3__resnets__0__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__3__resnets__0",
+        "instance_down_blocks__3__resnets__0__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__3__resnets__0__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__3__resnets__1",
+        "instance_down_blocks__3__resnets__1__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__3__resnets__1__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__3__resnets__1",
+        "instance_down_blocks__3__resnets__1__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__3__resnets__1__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__3__resnets__1",
+        "instance_down_blocks__3__resnets__1__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__3__resnets__1__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__3__resnets__1",
+        "instance_down_blocks__3__resnets__1__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__3__resnets__1__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__3__resnets__1",
+        "instance_down_blocks__3__resnets__1__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__3__resnets__1__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__3__resnets__1",
+        "instance_down_blocks__3__resnets__1__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__3__resnets__1__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__3__resnets__1",
+        "instance_down_blocks__3__resnets__1__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__3__resnets__1__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__attentions__0",
+        "instance_mid_block__attentions__0__group_norm"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__attentions__0__group_norm"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__attentions__0",
+        "instance_mid_block__attentions__0__to_q"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__attentions__0__to_q"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__attentions__0",
+        "instance_mid_block__attentions__0__to_k"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__attentions__0__to_k"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__attentions__0",
+        "instance_mid_block__attentions__0__to_v"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__attentions__0__to_v"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__resnets__0",
+        "instance_mid_block__resnets__0__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__resnets__0__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__resnets__0",
+        "instance_mid_block__resnets__0__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__resnets__0__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__resnets__0",
+        "instance_mid_block__resnets__0__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__resnets__0__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__resnets__0",
+        "instance_mid_block__resnets__0__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__resnets__0__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__resnets__0",
+        "instance_mid_block__resnets__0__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__resnets__0__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__resnets__0",
+        "instance_mid_block__resnets__0__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__resnets__0__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__resnets__0",
+        "instance_mid_block__resnets__0__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__resnets__0__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__resnets__1",
+        "instance_mid_block__resnets__1__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__resnets__1__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__resnets__1",
+        "instance_mid_block__resnets__1__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__resnets__1__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__resnets__1",
+        "instance_mid_block__resnets__1__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__resnets__1__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__resnets__1",
+        "instance_mid_block__resnets__1__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__resnets__1__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__resnets__1",
+        "instance_mid_block__resnets__1__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__resnets__1__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__resnets__1",
+        "instance_mid_block__resnets__1__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__resnets__1__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__resnets__1",
+        "instance_mid_block__resnets__1__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__resnets__1__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__0",
+        "instance_up_blocks__0__resnets__0__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__0__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__0",
+        "instance_up_blocks__0__resnets__0__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__0__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__0",
+        "instance_up_blocks__0__resnets__0__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__0__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__0",
+        "instance_up_blocks__0__resnets__0__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__0__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__0",
+        "instance_up_blocks__0__resnets__0__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__0__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__0",
+        "instance_up_blocks__0__resnets__0__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__0__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__0",
+        "instance_up_blocks__0__resnets__0__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__0__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__0",
+        "instance_up_blocks__0__resnets__0__conv_shortcut"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__0__conv_shortcut"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__1",
+        "instance_up_blocks__0__resnets__1__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__1__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__1",
+        "instance_up_blocks__0__resnets__1__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__1__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__1",
+        "instance_up_blocks__0__resnets__1__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__1__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__1",
+        "instance_up_blocks__0__resnets__1__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__1__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__1",
+        "instance_up_blocks__0__resnets__1__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__1__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__1",
+        "instance_up_blocks__0__resnets__1__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__1__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__1",
+        "instance_up_blocks__0__resnets__1__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__1__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__1",
+        "instance_up_blocks__0__resnets__1__conv_shortcut"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__1__conv_shortcut"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__2",
+        "instance_up_blocks__0__resnets__2__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__2__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__2",
+        "instance_up_blocks__0__resnets__2__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__2__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__2",
+        "instance_up_blocks__0__resnets__2__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__2__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__2",
+        "instance_up_blocks__0__resnets__2__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__2__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__2",
+        "instance_up_blocks__0__resnets__2__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__2__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__2",
+        "instance_up_blocks__0__resnets__2__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__2__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__2",
+        "instance_up_blocks__0__resnets__2__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__2__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__resnets__2",
+        "instance_up_blocks__0__resnets__2__conv_shortcut"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__resnets__2__conv_shortcut"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__upsamplers__0",
+        "instance_up_blocks__0__upsamplers__0__conv"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__upsamplers__0__conv"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__0",
+        "instance_up_blocks__1__resnets__0__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__0__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__0",
+        "instance_up_blocks__1__resnets__0__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__0__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__0",
+        "instance_up_blocks__1__resnets__0__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__0__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__0",
+        "instance_up_blocks__1__resnets__0__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__0__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__0",
+        "instance_up_blocks__1__resnets__0__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__0__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__0",
+        "instance_up_blocks__1__resnets__0__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__0__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__0",
+        "instance_up_blocks__1__resnets__0__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__0__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__0",
+        "instance_up_blocks__1__resnets__0__conv_shortcut"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__0__conv_shortcut"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__1",
+        "instance_up_blocks__1__resnets__1__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__1__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__1",
+        "instance_up_blocks__1__resnets__1__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__1__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__1",
+        "instance_up_blocks__1__resnets__1__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__1__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__1",
+        "instance_up_blocks__1__resnets__1__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__1__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__1",
+        "instance_up_blocks__1__resnets__1__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__1__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__1",
+        "instance_up_blocks__1__resnets__1__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__1__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__1",
+        "instance_up_blocks__1__resnets__1__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__1__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__1",
+        "instance_up_blocks__1__resnets__1__conv_shortcut"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__1__conv_shortcut"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__2",
+        "instance_up_blocks__1__resnets__2__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__2__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__2",
+        "instance_up_blocks__1__resnets__2__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__2__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__2",
+        "instance_up_blocks__1__resnets__2__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__2__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__2",
+        "instance_up_blocks__1__resnets__2__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__2__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__2",
+        "instance_up_blocks__1__resnets__2__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__2__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__2",
+        "instance_up_blocks__1__resnets__2__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__2__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__2",
+        "instance_up_blocks__1__resnets__2__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__2__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__resnets__2",
+        "instance_up_blocks__1__resnets__2__conv_shortcut"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__resnets__2__conv_shortcut"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__upsamplers__0",
+        "instance_up_blocks__1__upsamplers__0__conv"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__upsamplers__0__conv"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__0",
+        "instance_up_blocks__2__attentions__0__group_norm"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__0__group_norm"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__0",
+        "instance_up_blocks__2__attentions__0__to_q"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__0__to_q"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__0",
+        "instance_up_blocks__2__attentions__0__to_k"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__0__to_k"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__0",
+        "instance_up_blocks__2__attentions__0__to_v"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__0__to_v"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__1",
+        "instance_up_blocks__2__attentions__1__group_norm"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__1__group_norm"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__1",
+        "instance_up_blocks__2__attentions__1__to_q"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__1__to_q"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__1",
+        "instance_up_blocks__2__attentions__1__to_k"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__1__to_k"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__1",
+        "instance_up_blocks__2__attentions__1__to_v"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__1__to_v"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__2",
+        "instance_up_blocks__2__attentions__2__group_norm"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__2__group_norm"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__2",
+        "instance_up_blocks__2__attentions__2__to_q"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__2__to_q"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__2",
+        "instance_up_blocks__2__attentions__2__to_k"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__2__to_k"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__2",
+        "instance_up_blocks__2__attentions__2__to_v"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__2__to_v"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__0",
+        "instance_up_blocks__2__resnets__0__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__0__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__0",
+        "instance_up_blocks__2__resnets__0__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__0__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__0",
+        "instance_up_blocks__2__resnets__0__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__0__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__0",
+        "instance_up_blocks__2__resnets__0__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__0__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__0",
+        "instance_up_blocks__2__resnets__0__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__0__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__0",
+        "instance_up_blocks__2__resnets__0__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__0__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__0",
+        "instance_up_blocks__2__resnets__0__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__0__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__0",
+        "instance_up_blocks__2__resnets__0__conv_shortcut"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__0__conv_shortcut"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__1",
+        "instance_up_blocks__2__resnets__1__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__1__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__1",
+        "instance_up_blocks__2__resnets__1__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__1__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__1",
+        "instance_up_blocks__2__resnets__1__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__1__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__1",
+        "instance_up_blocks__2__resnets__1__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__1__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__1",
+        "instance_up_blocks__2__resnets__1__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__1__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__1",
+        "instance_up_blocks__2__resnets__1__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__1__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__1",
+        "instance_up_blocks__2__resnets__1__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__1__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__1",
+        "instance_up_blocks__2__resnets__1__conv_shortcut"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__1__conv_shortcut"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__2",
+        "instance_up_blocks__2__resnets__2__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__2__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__2",
+        "instance_up_blocks__2__resnets__2__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__2__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__2",
+        "instance_up_blocks__2__resnets__2__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__2__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__2",
+        "instance_up_blocks__2__resnets__2__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__2__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__2",
+        "instance_up_blocks__2__resnets__2__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__2__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__2",
+        "instance_up_blocks__2__resnets__2__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__2__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__2",
+        "instance_up_blocks__2__resnets__2__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__2__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__resnets__2",
+        "instance_up_blocks__2__resnets__2__conv_shortcut"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__resnets__2__conv_shortcut"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__upsamplers__0",
+        "instance_up_blocks__2__upsamplers__0__conv"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__upsamplers__0__conv"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__0",
+        "instance_up_blocks__3__resnets__0__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__0__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__0",
+        "instance_up_blocks__3__resnets__0__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__0__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__0",
+        "instance_up_blocks__3__resnets__0__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__0__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__0",
+        "instance_up_blocks__3__resnets__0__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__0__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__0",
+        "instance_up_blocks__3__resnets__0__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__0__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__0",
+        "instance_up_blocks__3__resnets__0__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__0__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__0",
+        "instance_up_blocks__3__resnets__0__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__0__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__0",
+        "instance_up_blocks__3__resnets__0__conv_shortcut"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__0__conv_shortcut"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__1",
+        "instance_up_blocks__3__resnets__1__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__1__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__1",
+        "instance_up_blocks__3__resnets__1__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__1__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__1",
+        "instance_up_blocks__3__resnets__1__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__1__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__1",
+        "instance_up_blocks__3__resnets__1__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__1__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__1",
+        "instance_up_blocks__3__resnets__1__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__1__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__1",
+        "instance_up_blocks__3__resnets__1__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__1__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__1",
+        "instance_up_blocks__3__resnets__1__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__1__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__1",
+        "instance_up_blocks__3__resnets__1__conv_shortcut"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__1__conv_shortcut"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__2",
+        "instance_up_blocks__3__resnets__2__norm1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__2__norm1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__2",
+        "instance_up_blocks__3__resnets__2__conv1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__2__conv1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__2",
+        "instance_up_blocks__3__resnets__2__time_emb_proj"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__2__time_emb_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__2",
+        "instance_up_blocks__3__resnets__2__norm2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__2__norm2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "GroupNorm",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__2",
+        "instance_up_blocks__3__resnets__2__dropout"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__2__dropout"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__2",
+        "instance_up_blocks__3__resnets__2__conv2"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__2__conv2"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__2",
+        "instance_up_blocks__3__resnets__2__nonlinearity"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__2__nonlinearity"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "SiLU",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__3__resnets__2",
+        "instance_up_blocks__3__resnets__2__conv_shortcut"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__3__resnets__2__conv_shortcut"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Conv2d",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__0__to_out",
+        "instance_down_blocks__1__attentions__0__to_out__0"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__0__to_out__0"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__0__to_out",
+        "instance_down_blocks__1__attentions__0__to_out__1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__0__to_out__1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__1__to_out",
+        "instance_down_blocks__1__attentions__1__to_out__0"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__1__to_out__0"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__1__to_out",
+        "instance_down_blocks__1__attentions__1__to_out__1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__1__to_out__1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__attentions__0__to_out",
+        "instance_mid_block__attentions__0__to_out__0"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__attentions__0__to_out__0"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__attentions__0__to_out",
+        "instance_mid_block__attentions__0__to_out__1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_mid_block__attentions__0__to_out__1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__0__to_out",
+        "instance_up_blocks__2__attentions__0__to_out__0"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__0__to_out__0"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__0__to_out",
+        "instance_up_blocks__2__attentions__0__to_out__1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__0__to_out__1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__1__to_out",
+        "instance_up_blocks__2__attentions__1__to_out__0"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__1__to_out__0"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__1__to_out",
+        "instance_up_blocks__2__attentions__1__to_out__1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__1__to_out__1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__2__to_out",
+        "instance_up_blocks__2__attentions__2__to_out__0"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__2__to_out__0"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Linear",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__2__to_out",
+        "instance_up_blocks__2__attentions__2__to_out__1"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.runtime_primitives"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__2__to_out__1"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Dropout",
+      "variant": "",
+      "view": "constructed_primitive_label"
+    }
+  ],
+  "new_count": 1006,
+  "prior_count": 794,
+  "prior_events_exact_order": true
+}

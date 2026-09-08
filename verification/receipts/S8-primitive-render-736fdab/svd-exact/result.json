@@ -1,0 +1,24 @@
+{
+  "added_primitive_events": 1006,
+  "blessed": false,
+  "case": "svd-exact",
+  "checks": {
+    "label_lint": [],
+    "projection_audit": [],
+    "validate_block_tree": [],
+    "validate_click_coupling": [],
+    "validate_no_dotted_arrows": [],
+    "validate_no_dotted_boundaries": [],
+    "validate_unique_ref_ids": []
+  },
+  "elapsed_seconds": 0.844,
+  "exact_ir_warning_parameter_input": true,
+  "html_sha256": "bc78852a117bfb2943fa6dbb22ccecd1942fcfdb6683262c4fa605b308968782",
+  "no_model_or_pytest": true,
+  "old_event_sequence_unchanged": true,
+  "prior_html_sha256": "bc78852a117bfb2943fa6dbb22ccecd1942fcfdb6683262c4fa605b308968782",
+  "production_commit": "736fdab",
+  "raw_html_equal": true,
+  "source_case": "/private/tmp/unfold-s8-diagnostic-captures-ca15e58/svd-exact",
+  "status": "PASS"
+}

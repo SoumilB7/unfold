@@ -1,0 +1,222 @@
+[
+  {
+    "actual_attention_init_values": [
+      {
+        "heads": 12,
+        "inner_dim": 768,
+        "path": "down_blocks.1.attentions.0"
+      },
+      {
+        "heads": 18,
+        "inner_dim": 1152,
+        "path": "down_blocks.2.attentions.0"
+      },
+      {
+        "heads": 24,
+        "inner_dim": 1536,
+        "path": "down_blocks.3.attentions.0"
+      }
+    ],
+    "actual_default_card_lines": [],
+    "case": "kandinsky-published",
+    "checks": {
+      "label_lint": [],
+      "projection_audit": [],
+      "validate_block_tree": [],
+      "validate_click_coupling": [],
+      "validate_no_dotted_arrows": [],
+      "validate_no_dotted_boundaries": [],
+      "validate_unique_ref_ids": []
+    },
+    "construction_summary": {
+      "parameter_count": 1253057288,
+      "parameterized_module_count": 362,
+      "population_fact_key": "root.denoiser.constructed_modules",
+      "scope": "denoiser",
+      "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+      "stage_count": 9,
+      "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+    },
+    "constructor_statuses": [
+      "ok"
+    ],
+    "failure": null,
+    "head_default_record": null,
+    "html_sha256": "7d344c7e3ffa01178c510ca3bc7053aa0640e119143da2a89a657822a77b0a4a",
+    "label": "Complete published Kandinsky input \u2014 PASS",
+    "modules": 585,
+    "process": {
+      "argv": [
+        "python3",
+        "/private/tmp/unfold-s8-diagnostic-736fdab/verification/receipts/S8-queued-capture-preparation/scripts/capture_diffusion.py",
+        "--checkout",
+        "/private/tmp/unfold-s8-diagnostic-736fdab",
+        "--source-manifest",
+        "/private/tmp/unfold-s8-head-input-captures-736fdab/source-manifest.json",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-head-input-capture-preparation/inputs/kandinsky-published.json",
+        "--output",
+        "/private/tmp/unfold-s8-head-input-captures-736fdab/kandinsky-published",
+        "--expect-construction",
+        "ok"
+      ],
+      "elapsed_seconds": 73.824,
+      "exit_code": 0
+    }
+  },
+  {
+    "case": "kandinsky-original-invalid",
+    "checks": {
+      "label_lint": [],
+      "projection_audit": [],
+      "validate_block_tree": [],
+      "validate_click_coupling": [],
+      "validate_no_dotted_arrows": [],
+      "validate_no_dotted_boundaries": [],
+      "validate_unique_ref_ids": []
+    },
+    "constructor_statuses": [
+      "failed"
+    ],
+    "failure": {
+      "detail": "ValueError: At the moment it is not possible to define the number of attention heads via `num_attention_heads` because of a naming issue as described in https://github.com/huggingface/diffusers/issues/2011#issuecomment-1547958131. Passing `num_attention_heads` will only be supported in diffusers v0.19.",
+      "kind": "ConstructionFailed",
+      "stage": "construct"
+    },
+    "html_sha256": "6eaf00cf3ea33bba39c31ef16c8593791a534c789eb878caae682e1b9ea100af",
+    "label": "Original invalid Kandinsky fixture \u2014 expected typed failure PASS",
+    "process": {
+      "argv": [
+        "python3",
+        "/private/tmp/unfold-s8-diagnostic-736fdab/verification/receipts/S8-queued-capture-preparation/scripts/capture_diffusion.py",
+        "--checkout",
+        "/private/tmp/unfold-s8-diagnostic-736fdab",
+        "--source-manifest",
+        "/private/tmp/unfold-s8-head-input-captures-736fdab/source-manifest.json",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-head-input-capture-preparation/inputs/kandinsky-original-invalid.json",
+        "--output",
+        "/private/tmp/unfold-s8-head-input-captures-736fdab/kandinsky-original-invalid",
+        "--expect-construction",
+        "failed"
+      ],
+      "elapsed_seconds": 8.658,
+      "exit_code": 0
+    }
+  },
+  {
+    "case": "if-first-original-invalid",
+    "checks": {
+      "label_lint": [],
+      "projection_audit": [],
+      "validate_block_tree": [],
+      "validate_click_coupling": [],
+      "validate_no_dotted_arrows": [],
+      "validate_no_dotted_boundaries": [],
+      "validate_unique_ref_ids": []
+    },
+    "constructor_statuses": [
+      "failed"
+    ],
+    "failure": {
+      "detail": "ValueError: At the moment it is not possible to define the number of attention heads via `num_attention_heads` because of a naming issue as described in https://github.com/huggingface/diffusers/issues/2011#issuecomment-1547958131. Passing `num_attention_heads` will only be supported in diffusers v0.19.",
+      "kind": "ConstructionFailed",
+      "stage": "construct"
+    },
+    "html_sha256": "b9b57e8f291ebeeb94100a8b00ab6cea6319b04dd9aba623c00581905b33c5ca",
+    "label": "Original invalid first IF-like fixture \u2014 expected typed failure PASS",
+    "process": {
+      "argv": [
+        "python3",
+        "/private/tmp/unfold-s8-diagnostic-736fdab/verification/receipts/S8-queued-capture-preparation/scripts/capture_diffusion.py",
+        "--checkout",
+        "/private/tmp/unfold-s8-diagnostic-736fdab",
+        "--source-manifest",
+        "/private/tmp/unfold-s8-head-input-captures-736fdab/source-manifest.json",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-head-input-capture-preparation/inputs/if-first-original-invalid.json",
+        "--output",
+        "/private/tmp/unfold-s8-head-input-captures-736fdab/if-first-original-invalid",
+        "--expect-construction",
+        "failed"
+      ],
+      "elapsed_seconds": 7.996,
+      "exit_code": 0
+    }
+  },
+  {
+    "actual_attention_init_values": [
+      {
+        "heads": 80,
+        "inner_dim": 640,
+        "path": "down_blocks.1.attentions.0"
+      },
+      {
+        "heads": 160,
+        "inner_dim": 1280,
+        "path": "down_blocks.2.attentions.0"
+      },
+      {
+        "heads": 160,
+        "inner_dim": 1280,
+        "path": "down_blocks.3.attentions.0"
+      }
+    ],
+    "actual_default_card_lines": [
+      {
+        "block": "denoiser",
+        "line": "Declared class default \u00b7 attention_head_dim: 8 (checkpoint omitted)",
+        "visible_in_actual_html": true
+      }
+    ],
+    "case": "if-first-synthetic-default-head",
+    "checks": {
+      "label_lint": [],
+      "projection_audit": [],
+      "validate_block_tree": [],
+      "validate_click_coupling": [],
+      "validate_no_dotted_arrows": [],
+      "validate_no_dotted_boundaries": [],
+      "validate_unique_ref_ids": []
+    },
+    "construction_summary": {
+      "parameter_count": 1159686278,
+      "parameterized_module_count": 358,
+      "population_fact_key": "root.denoiser.constructed_modules",
+      "scope": "denoiser",
+      "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+      "stage_count": 9,
+      "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+    },
+    "constructor_statuses": [
+      "ok"
+    ],
+    "failure": null,
+    "head_default_record": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": 8
+    },
+    "html_sha256": "5ed997cb2e72111c4a339da3c8108e005bcc98d81e1b9367d34009d770b3f1c9",
+    "label": "Explicit synthetic first IF counterpart \u2014 PASS",
+    "modules": 579,
+    "process": {
+      "argv": [
+        "python3",
+        "/private/tmp/unfold-s8-diagnostic-736fdab/verification/receipts/S8-queued-capture-preparation/scripts/capture_diffusion.py",
+        "--checkout",
+        "/private/tmp/unfold-s8-diagnostic-736fdab",
+        "--source-manifest",
+        "/private/tmp/unfold-s8-head-input-captures-736fdab/source-manifest.json",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-head-input-capture-preparation/inputs/if-first-synthetic-default-head.json",
+        "--output",
+        "/private/tmp/unfold-s8-head-input-captures-736fdab/if-first-synthetic-default-head",
+        "--expect-construction",
+        "ok"
+      ],
+      "elapsed_seconds": 71.482,
+      "exit_code": 0
+    }
+  }
+]

@@ -1,0 +1,185 @@
+{
+  "verdict": "ACCEPT bounded original encoder bridge preservation",
+  "exact_original_a83_fixture_reconstructed_from_AST_matches_capture": true,
+  "source_before_after_equal": true,
+  "all_cited_archive_bytes_verified": true,
+  "checks": {
+    "label_lint": [],
+    "projection_audit": [],
+    "validate_block_tree": [],
+    "validate_click_coupling": [],
+    "validate_no_dotted_arrows": [],
+    "validate_no_dotted_boundaries": [],
+    "validate_unique_ref_ids": []
+  },
+  "shape_parameters": {
+    "encoder_hid_proj.bias": {
+      "dtype": "torch.float32",
+      "identity": "encoder_hid_proj.bias",
+      "shape": [
+        2048
+      ]
+    },
+    "encoder_hid_proj.weight": {
+      "dtype": "torch.float32",
+      "identity": "encoder_hid_proj.weight",
+      "shape": [
+        2048,
+        4096
+      ]
+    }
+  },
+  "primitive": {
+    "function": "",
+    "kind": "linear",
+    "label": "Linear",
+    "method_source_sha256": "c0ab8f42cc3bf9489809b19c321cc85f0b1d4eafebacb96bd8e132cb9e95ef76"
+  },
+  "canonical_card_id": "instance_encoder_hid_proj",
+  "canonical_route_id": "unet_primary_region_3__iteration__when_true__arg_2__helper_output__when_true",
+  "source_call_route": {
+    "arguments": [
+      {
+        "port": "0",
+        "route": {
+          "formal": "encoder_hidden_states",
+          "kind": "formal"
+        }
+      }
+    ],
+    "call_source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:948:36:948:80",
+    "kind": "call_result",
+    "mechanism": "unresolved",
+    "reason": "call argument and result wiring proven; internal computation not established",
+    "receiver": {
+      "kind": "lookup_receiver",
+      "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+      "route": {
+        "kind": "unresolved",
+        "reason": "local has no reaching assignment or formal"
+      }
+    },
+    "result_slot": [],
+    "target_binding": {
+      "conditions": [
+        {
+          "branch": false,
+          "predicate": "USE_PEFT_BACKEND",
+          "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+          "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+        },
+        {
+          "branch": false,
+          "predicate": "USE_PEFT_BACKEND",
+          "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+          "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+        },
+        {
+          "excluded_guard_path": [
+            {
+              "kind": "if",
+              "predicate": "is_in_config and not is_attribute",
+              "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+            }
+          ],
+          "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+        },
+        {
+          "branch": false,
+          "predicate": "self.config.addition_embed_type == \"text\"",
+          "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+          "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:896:11:896:52"
+        },
+        {
+          "branch": false,
+          "predicate": "self.config.addition_embed_type == \"text_image\"",
+          "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+          "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:898:13:898:60"
+        },
+        {
+          "branch": false,
+          "predicate": "self.config.addition_embed_type == \"text_time\"",
+          "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+          "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:908:13:908:59"
+        },
+        {
+          "branch": false,
+          "predicate": "self.config.addition_embed_type == \"image\"",
+          "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+          "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:925:13:925:55"
+        },
+        {
+          "branch": false,
+          "predicate": "self.config.addition_embed_type == \"image_hint\"",
+          "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+          "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:933:13:933:60"
+        },
+        {
+          "branch": false,
+          "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+          "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+          "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+        },
+        {
+          "branch": false,
+          "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+          "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+          "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+        },
+        {
+          "branch": false,
+          "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+          "reason": "Optional root call has no closed target/effects; its source body is excluded",
+          "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+        },
+        {
+          "branch": false,
+          "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+          "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+          "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+        },
+        {
+          "excluded_guard_path": [
+            {
+              "kind": "if",
+              "predicate": "is_in_config and not is_attribute",
+              "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+            }
+          ],
+          "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+        },
+        {
+          "branch": false,
+          "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+          "reason": "Optional root call has no closed target/effects; its source body is excluded",
+          "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+        },
+        {
+          "excluded_guard_path": [
+            {
+              "kind": "if",
+              "predicate": "is_in_config and not is_attribute",
+              "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+            }
+          ],
+          "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+        }
+      ],
+      "kind": "constructed_target",
+      "targets": [
+        "encoder_hid_proj"
+      ]
+    }
+  },
+  "actual_argument_call_svg_arrows": 2,
+  "limits": "Source ports and conditional target binding are established. Linear computation is established by exact primitive witness separately. No unconditional helper execution or external ChatGLM-to-KV role/connection inferred. Original old text_proj_op ID is replaced; original input has no newly added SDXL defaults.",
+  "artifact_pins": {
+    "input.json": "289bb879dc56e92df32f0f0978fe81a186c24b9dd18dd786bd3d658c52c2708c",
+    "ir.json": "a0ab02675a6639ad85228906acdc2ae52d7497d0c6e9d574dc98065e9aa1d95c",
+    "page.html": "813284b55906bb48bf08ed4291c3406cfbde3d8016415808f81f355815473d1f",
+    "qualified-facts.json": "c3a854707fb6bcfa74d33e4db4df2bacb058061323573c583c3377a68a8f4c03",
+    "render-events.json.gz": "f2b83f8b8a73586885531aa4d2c96492a0e20ee1ae48167b5b5e9cf2264955f3",
+    "checks.json": "321623d0d32803762e0770b76f2df4330871f62f7db145b6ee93f0412e33bbb1"
+  },
+  "independent_execution": "Read-only source/bytes/artifact checks; no pytest/model/rerender"
+}
