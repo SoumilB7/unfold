@@ -1,0 +1,35 @@
+{
+  "source_and_test_commit": "a6adae4",
+  "whole_broad_commit": "29c6236",
+  "status": "S8 NOT DONE: ready for explicit output approval; original broad remains RED",
+  "snapshots": [
+    {
+      "canonical_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S8.md",
+      "canonical_sha256": "3cfe0aa149632bc6053f2104f940ad1614a552bab92a995888451820f6e27238",
+      "stored": "S8.md.gz",
+      "stored_sha256": "70517957cfb96c50b0526bcbde21b31941f4a89a199b96343452dd08d28d3595",
+      "original_bytes": 37595
+    },
+    {
+      "canonical_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S8-review.md",
+      "canonical_sha256": "328c8c5e13ac6368d2dbb1e28dabffa39b7eee7ce605a2b7129b14baa9e1309b",
+      "stored": "S8-review.md.gz",
+      "stored_sha256": "6e80df4a7d9d4fc1997213032f79931cc53fc3bccbf79b24f2188e3da94b1158",
+      "original_bytes": 97996
+    },
+    {
+      "canonical_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/index.html",
+      "canonical_sha256": "ea68cb6b8025e2ba429a717f599c824675e90205930396e22d5f2a0d87cd7b26",
+      "stored": "decision-index.html.gz",
+      "stored_sha256": "d48afc67d903b56fdcd9487ad82aff0f96e392ee45fdb1a98bbd821e7abc2139",
+      "original_bytes": 14629
+    },
+    {
+      "canonical_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/output-deltas/index.html",
+      "canonical_sha256": "599405450afd6ebd3edeba6c8cfefd757d0dbde9ed19fc4ab389faf0577933d9",
+      "stored": "output-deltas-index.html.gz",
+      "stored_sha256": "63c027f9fe44f61836e306cba59b9681335a94bdeb46207f335364cf99f52dad",
+      "original_bytes": 22999
+    }
+  ]
+}

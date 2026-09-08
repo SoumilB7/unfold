@@ -1,0 +1,694 @@
+{
+  "base": "83140f1",
+  "current": "a6adae4",
+  "groups": {
+    "production_python": {
+      "files": 51,
+      "added": 6981,
+      "removed": 103,
+      "rows": [
+        {
+          "path": "model_unfolder/adapters/diffusor/blocks.py",
+          "added": 31,
+          "removed": 1
+        },
+        {
+          "path": "model_unfolder/adapters/diffusor/parser.py",
+          "added": 50,
+          "removed": 12
+        },
+        {
+          "path": "model_unfolder/adapters/diffusor/unet_cutover.py",
+          "added": 91,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/adapters/diffusor/unet_differential.py",
+          "added": 20,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/adapters/diffusor/unet_projection.py",
+          "added": 513,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/block_schema.py",
+          "added": 2,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/diagram.py",
+          "added": 2,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/claim_evidence.py",
+          "added": 17,
+          "removed": 1
+        },
+        {
+          "path": "model_unfolder/evidence/construction_summary.py",
+          "added": 74,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/context.py",
+          "added": 45,
+          "removed": 9
+        },
+        {
+          "path": "model_unfolder/evidence/execution_recipe.py",
+          "added": 783,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/import_source.py",
+          "added": 14,
+          "removed": 1
+        },
+        {
+          "path": "model_unfolder/evidence/instance_population_claim.py",
+          "added": 117,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/instance_shape_claim.py",
+          "added": 87,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/local_port_routes.py",
+          "added": 334,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/primitive_semantics.py",
+          "added": 36,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/program_index.py",
+          "added": 108,
+          "removed": 1
+        },
+        {
+          "path": "model_unfolder/evidence/reconciliation.py",
+          "added": 62,
+          "removed": 5
+        },
+        {
+          "path": "model_unfolder/evidence/registry.py",
+          "added": 146,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/runtime_inventory.py",
+          "added": 60,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/runtime_source.py",
+          "added": 193,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/structural_writes.py",
+          "added": 10,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/unet_call_binding.py",
+          "added": 250,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/unet_cell_connections.py",
+          "added": 330,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/unet_cell_mechanism.py",
+          "added": 118,
+          "removed": 1
+        },
+        {
+          "path": "model_unfolder/evidence/unet_claims.py",
+          "added": 541,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/unet_iteration_binding.py",
+          "added": 199,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/unet_lookup_closure.py",
+          "added": 466,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/unet_nested_mechanism.py",
+          "added": 133,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/unet_primary_ports.py",
+          "added": 194,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/unet_runtime.py",
+          "added": 100,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/evidence/unet_selected_constructor.py",
+          "added": 45,
+          "removed": 9
+        },
+        {
+          "path": "model_unfolder/evidence/unet_stage_cells.py",
+          "added": 16,
+          "removed": 3
+        },
+        {
+          "path": "model_unfolder/evidence/unet_wrapper_binding.py",
+          "added": 133,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/expanded/__init__.py",
+          "added": 1,
+          "removed": 1
+        },
+        {
+          "path": "model_unfolder/expanded/loop.py",
+          "added": 3,
+          "removed": 1
+        },
+        {
+          "path": "model_unfolder/ir.py",
+          "added": 70,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/params.py",
+          "added": 7,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/parser.py",
+          "added": 12,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/renderers/html/block_views/registry.py",
+          "added": 22,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/renderers/html/block_views/unet.py",
+          "added": 458,
+          "removed": 13
+        },
+        {
+          "path": "model_unfolder/renderers/html/cards.py",
+          "added": 46,
+          "removed": 19
+        },
+        {
+          "path": "model_unfolder/renderers/html/fact_projection.py",
+          "added": 73,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/renderers/html/graph.py",
+          "added": 12,
+          "removed": 1
+        },
+        {
+          "path": "model_unfolder/renderers/html/graph_engine.py",
+          "added": 69,
+          "removed": 7
+        },
+        {
+          "path": "model_unfolder/renderers/html/sections.py",
+          "added": 7,
+          "removed": 0
+        },
+        {
+          "path": "model_unfolder/renderers/html/views_diffusion.py",
+          "added": 59,
+          "removed": 14
+        },
+        {
+          "path": "physics/attribute_bindings.py",
+          "added": 596,
+          "removed": 0
+        },
+        {
+          "path": "physics/framework_primitives.py",
+          "added": 42,
+          "removed": 0
+        },
+        {
+          "path": "physics/instance_inventory.py",
+          "added": 95,
+          "removed": 4
+        },
+        {
+          "path": "physics/source_override.py",
+          "added": 89,
+          "removed": 0
+        }
+      ]
+    },
+    "scripts_python": {
+      "files": 5,
+      "added": 1204,
+      "removed": 622,
+      "rows": [
+        {
+          "path": "scripts/demonstrate_s8_unet.py",
+          "added": 387,
+          "removed": 0
+        },
+        {
+          "path": "scripts/generate_s7_shadow.py",
+          "added": 10,
+          "removed": 622
+        },
+        {
+          "path": "scripts/report_s8_demonstration.py",
+          "added": 591,
+          "removed": 0
+        },
+        {
+          "path": "scripts/rerender_s8_demonstration.py",
+          "added": 127,
+          "removed": 0
+        },
+        {
+          "path": "scripts/verify_s8_unet_family.py",
+          "added": 89,
+          "removed": 0
+        }
+      ]
+    },
+    "test_support_python": {
+      "files": 35,
+      "added": 4164,
+      "removed": 572,
+      "rows": [
+        {
+          "path": "test_support/__init__.py",
+          "added": 32,
+          "removed": 1
+        },
+        {
+          "path": "test_support/unet_stage_fixture.py",
+          "added": 77,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_code_evidence.py",
+          "added": 27,
+          "removed": 10
+        },
+        {
+          "path": "tests/test_conditional_projection_contracts.py",
+          "added": 174,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_construction_summary.py",
+          "added": 143,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_coverage.py",
+          "added": 17,
+          "removed": 1
+        },
+        {
+          "path": "tests/test_diffusion.py",
+          "added": 644,
+          "removed": 475
+        },
+        {
+          "path": "tests/test_empty_lane_geometry.py",
+          "added": 76,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_opgraph.py",
+          "added": 27,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_projection_obligations.py",
+          "added": 30,
+          "removed": 5
+        },
+        {
+          "path": "tests/test_s5_release.py",
+          "added": 2,
+          "removed": 2
+        },
+        {
+          "path": "tests/test_s6_physics.py",
+          "added": 47,
+          "removed": 4
+        },
+        {
+          "path": "tests/test_s7_artifacts.py",
+          "added": 8,
+          "removed": 4
+        },
+        {
+          "path": "tests/test_s7_reconciliation.py",
+          "added": 34,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_attribute_bindings.py",
+          "added": 504,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_call_port_layout.py",
+          "added": 133,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_card_projection_receipts.py",
+          "added": 141,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_cell_connections.py",
+          "added": 73,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_component_scope.py",
+          "added": 90,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_constructed_primitive_receipts.py",
+          "added": 109,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_constructor_bindings.py",
+          "added": 32,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_framework_primitives.py",
+          "added": 37,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_iteration_binding.py",
+          "added": 134,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_lookup_closure.py",
+          "added": 283,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_port_routes.py",
+          "added": 230,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_primary_ports.py",
+          "added": 241,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_retained_source_index.py",
+          "added": 115,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_runtime_source.py",
+          "added": 206,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_source_override.py",
+          "added": 114,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_try_observation.py",
+          "added": 196,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_unet_routing.py",
+          "added": 43,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_wrapper_binding.py",
+          "added": 77,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_unet_nested_mechanism.py",
+          "added": 13,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_unet_stage_cells.py",
+          "added": 54,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_unet_stage_execution.py",
+          "added": 1,
+          "removed": 70
+        }
+      ]
+    },
+    "test_support_all": {
+      "files": 41,
+      "added": 4355,
+      "removed": 572,
+      "rows": [
+        {
+          "path": "test_support/__init__.py",
+          "added": 32,
+          "removed": 1
+        },
+        {
+          "path": "test_support/unet_regression_inputs/README.md",
+          "added": 5,
+          "removed": 0
+        },
+        {
+          "path": "test_support/unet_regression_inputs/if-first-original-invalid.json",
+          "added": 33,
+          "removed": 0
+        },
+        {
+          "path": "test_support/unet_regression_inputs/if-first-synthetic-default-head.json",
+          "added": 32,
+          "removed": 0
+        },
+        {
+          "path": "test_support/unet_regression_inputs/kandinsky-original-invalid.json",
+          "added": 35,
+          "removed": 0
+        },
+        {
+          "path": "test_support/unet_regression_inputs/kandinsky-published.json",
+          "added": 61,
+          "removed": 0
+        },
+        {
+          "path": "test_support/unet_regression_inputs/provenance.json",
+          "added": 25,
+          "removed": 0
+        },
+        {
+          "path": "test_support/unet_stage_fixture.py",
+          "added": 77,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_code_evidence.py",
+          "added": 27,
+          "removed": 10
+        },
+        {
+          "path": "tests/test_conditional_projection_contracts.py",
+          "added": 174,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_construction_summary.py",
+          "added": 143,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_coverage.py",
+          "added": 17,
+          "removed": 1
+        },
+        {
+          "path": "tests/test_diffusion.py",
+          "added": 644,
+          "removed": 475
+        },
+        {
+          "path": "tests/test_empty_lane_geometry.py",
+          "added": 76,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_opgraph.py",
+          "added": 27,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_projection_obligations.py",
+          "added": 30,
+          "removed": 5
+        },
+        {
+          "path": "tests/test_s5_release.py",
+          "added": 2,
+          "removed": 2
+        },
+        {
+          "path": "tests/test_s6_physics.py",
+          "added": 47,
+          "removed": 4
+        },
+        {
+          "path": "tests/test_s7_artifacts.py",
+          "added": 8,
+          "removed": 4
+        },
+        {
+          "path": "tests/test_s7_reconciliation.py",
+          "added": 34,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_attribute_bindings.py",
+          "added": 504,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_call_port_layout.py",
+          "added": 133,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_card_projection_receipts.py",
+          "added": 141,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_cell_connections.py",
+          "added": 73,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_component_scope.py",
+          "added": 90,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_constructed_primitive_receipts.py",
+          "added": 109,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_constructor_bindings.py",
+          "added": 32,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_framework_primitives.py",
+          "added": 37,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_iteration_binding.py",
+          "added": 134,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_lookup_closure.py",
+          "added": 283,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_port_routes.py",
+          "added": 230,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_primary_ports.py",
+          "added": 241,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_retained_source_index.py",
+          "added": 115,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_runtime_source.py",
+          "added": 206,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_source_override.py",
+          "added": 114,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_try_observation.py",
+          "added": 196,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_unet_routing.py",
+          "added": 43,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_s8_wrapper_binding.py",
+          "added": 77,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_unet_nested_mechanism.py",
+          "added": 13,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_unet_stage_cells.py",
+          "added": 54,
+          "removed": 0
+        },
+        {
+          "path": "tests/test_unet_stage_execution.py",
+          "added": 1,
+          "removed": 70
+        }
+      ]
+    }
+  }
+}

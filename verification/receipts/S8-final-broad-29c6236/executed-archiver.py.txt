@@ -1,0 +1,60 @@
+"""Losslessly archive the completed final gate; never change its outcome."""
+import gzip
+import hashlib
+import json
+import re
+from pathlib import Path
+
+ROOT = Path('/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg')
+OUTER = Path('/private/tmp/unfold-s8-final-broad-fb1f871')
+LANE = Path('/private/tmp/model-unfolder-verification/cfe9fb0a72')
+OUT = ROOT / 'verification/receipts/S8-final-broad-29c6236'
+assert (OUTER / 'receipt.json').is_file() and (LANE / 'receipt.json').is_file()
+outer = json.loads((OUTER / 'receipt.json').read_text())
+inner = json.loads((LANE / 'receipt.json').read_text())
+assert outer['commit'] == inner['commit']
+assert inner['commit'].startswith('29c6236')
+assert outer['selected_external_pins_equal']
+assert inner['coordinator_fingerprint_before'] == inner['coordinator_fingerprint_after']
+assert inner['source_artifacts_before'] == inner['source_artifacts_after']
+for row in inner['lanes'].values():
+    assert row['fingerprint_before'] == row['fingerprint_after']
+    assert row['artifacts_before'] == row['artifacts_after']
+match = re.search(r'^batch logs: (.+)$', (LANE / 'full.log').read_text(), re.M)
+assert match
+sources = [('outer', OUTER), ('coordinator', LANE),
+           ('committed-static', Path('/private/tmp/unfold-s8-final-static-29c6236')),
+           ('file-bracket', Path(match.group(1)))]
+OUT.mkdir(exist_ok=False)
+rows = []
+for prefix, base in sources:
+    for source in sorted(base.rglob('*')):
+        if not source.is_file():
+            continue
+        data = source.read_bytes()
+        relative = Path(prefix) / source.relative_to(base)
+        stored = OUT / (str(relative) + '.gzip')
+        packed = gzip.compress(data, mtime=0)
+        stored.parent.mkdir(parents=True, exist_ok=True)
+        stored.write_bytes(packed)
+        assert gzip.decompress(stored.read_bytes()) == data
+        rows.append({'original_path': str(source), 'logical_path': str(relative),
+                     'stored': str(stored.relative_to(OUT)), 'original_bytes': len(data),
+                     'original_sha256': hashlib.sha256(data).hexdigest(),
+                     'stored_sha256': hashlib.sha256(packed).hexdigest()})
+assert len({r['stored'] for r in rows}) == len(rows)
+(OUT / 'artifact-map.json').write_text(json.dumps(rows, indent=2) + '\n')
+(OUT / 'executed-archiver.py.txt').write_bytes(Path(__file__).read_bytes())
+(OUT / 'summary.json').write_text(json.dumps({
+    'commit': inner['commit'], 'coordinator_exit_code': outer['exit_code'],
+    'missing_lanes': inner['missing_lanes'], 'failed_lanes': inner['failed_lanes'],
+    'all_lane_source_and_artifact_pins_equal': True,
+    'coordinator_and_ignored_source_artifact_pins_equal': True,
+    'selected_external_before_finally_equal': True,
+    'selected_external_scope': '59 selected installed source files plus one cached task config; not exhaustive',
+    'wall_seconds': inner['wall_seconds'], 'archive_entries': len(rows),
+    'baseline_changed': False, 'output_blessing': False,
+    'lanes': {name: {key: row[key] for key in ('returncode', 'duration_seconds', 'passed')}
+              for name, row in inner['lanes'].items()},
+}, indent=2) + '\n')
+print(OUT)

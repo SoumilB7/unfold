@@ -1,0 +1,334 @@
+{
+  "status": "CAPTURE_ORDER_DIAGNOSIS",
+  "actual_cases": [
+    {
+      "slug": "flux-2-dev",
+      "actual_capture": "/private/tmp/unfold-s8-current-captures-fb1f871/flux-2-dev/actual/ir.json",
+      "sha256": "b24f59b7bccd7ba754f539a04a590e7e738151b133939df41a0bed1dd0c55074",
+      "vae_blocks": [
+        {
+          "path": "/extras/render/loop_blocks/7/children/3",
+          "block": {
+            "children": [
+              {
+                "description": "First residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op0",
+                "title": "ResNet"
+              },
+              {
+                "description": "Spatial self-attention in the decoder bottleneck.",
+                "facts": [
+                  "spatial attention"
+                ],
+                "id": "vae_mid_block_op1",
+                "title": "Attention"
+              },
+              {
+                "description": "Second residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op2",
+                "title": "ResNet"
+              }
+            ],
+            "description": "The bottleneck between the decoder input convolution and resolution up stages: ResNet -> spatial attention -> ResNet.",
+            "detail": {
+              "ops": [
+                {
+                  "in": 512,
+                  "kind": "opaque",
+                  "label": "ResNet",
+                  "meta": {
+                    "class_name": "ResNet",
+                    "desc": "First residual cell in the VAE decoder mid block."
+                  }
+                },
+                {
+                  "fn": "spatial attention",
+                  "kind": "attention_core",
+                  "label": "Attention",
+                  "meta": {
+                    "desc": "Spatial self-attention in the decoder bottleneck."
+                  }
+                },
+                {
+                  "kind": "opaque",
+                  "label": "ResNet",
+                  "meta": {
+                    "class_name": "ResNet",
+                    "desc": "Second residual cell in the VAE decoder mid block."
+                  }
+                }
+              ]
+            },
+            "facts": [
+              "512 ch",
+              "spatial attention"
+            ],
+            "id": "vae_mid_block",
+            "title": "Decoder mid block",
+            "view": "ops"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "hunyuanvideo",
+      "actual_capture": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/hunyuanvideo/ir.json",
+      "sha256": "8c76522d498133a4089b1daa8830d17cbe67d94e696f477f8c1773eccc1b4482",
+      "vae_blocks": [
+        {
+          "path": "/extras/render/loop_blocks/8/children/2",
+          "block": {
+            "children": [
+              {
+                "description": "First residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op0",
+                "title": "ResNet"
+              },
+              {
+                "description": "Spatial self-attention in the decoder bottleneck.",
+                "facts": [
+                  "spatial attention"
+                ],
+                "id": "vae_mid_block_op1",
+                "title": "Attention"
+              },
+              {
+                "description": "Second residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op2",
+                "title": "ResNet"
+              }
+            ],
+            "description": "The bottleneck between the decoder input convolution and resolution up stages: ResNet -> spatial attention -> ResNet.",
+            "detail": {
+              "ops": [
+                {
+                  "in": 512,
+                  "kind": "opaque",
+                  "label": "ResNet",
+                  "meta": {
+                    "class_name": "ResNet",
+                    "desc": "First residual cell in the VAE decoder mid block."
+                  }
+                },
+                {
+                  "fn": "spatial attention",
+                  "kind": "attention_core",
+                  "label": "Attention",
+                  "meta": {
+                    "desc": "Spatial self-attention in the decoder bottleneck."
+                  }
+                },
+                {
+                  "kind": "opaque",
+                  "label": "ResNet",
+                  "meta": {
+                    "class_name": "ResNet",
+                    "desc": "Second residual cell in the VAE decoder mid block."
+                  }
+                }
+              ]
+            },
+            "facts": [
+              "512 ch",
+              "spatial attention"
+            ],
+            "id": "vae_mid_block",
+            "title": "Decoder mid block",
+            "view": "ops"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "lumina-image-2-0",
+      "actual_capture": "/private/tmp/unfold-s8-current-captures-fb1f871/lumina-image-2-0/actual/ir.json",
+      "sha256": "58ac4265e44b78c5bbd2863b577a22013ba7e28b8760fc5d3008f4fc233de699",
+      "vae_blocks": [
+        {
+          "path": "/extras/render/loop_blocks/7/children/2",
+          "block": {
+            "children": [
+              {
+                "description": "First residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op0",
+                "title": "ResNet"
+              },
+              {
+                "description": "Spatial self-attention in the decoder bottleneck.",
+                "facts": [
+                  "spatial attention"
+                ],
+                "id": "vae_mid_block_op1",
+                "title": "Attention"
+              },
+              {
+                "description": "Second residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op2",
+                "title": "ResNet"
+              }
+            ],
+            "description": "The bottleneck between the decoder input convolution and resolution up stages: ResNet -> spatial attention -> ResNet.",
+            "detail": {
+              "ops": [
+                {
+                  "in": 512,
+                  "kind": "opaque",
+                  "label": "ResNet",
+                  "meta": {
+                    "class_name": "ResNet",
+                    "desc": "First residual cell in the VAE decoder mid block."
+                  }
+                },
+                {
+                  "fn": "spatial attention",
+                  "kind": "attention_core",
+                  "label": "Attention",
+                  "meta": {
+                    "desc": "Spatial self-attention in the decoder bottleneck."
+                  }
+                },
+                {
+                  "kind": "opaque",
+                  "label": "ResNet",
+                  "meta": {
+                    "class_name": "ResNet",
+                    "desc": "Second residual cell in the VAE decoder mid block."
+                  }
+                }
+              ]
+            },
+            "facts": [
+              "512 ch",
+              "spatial attention"
+            ],
+            "id": "vae_mid_block",
+            "title": "Decoder mid block",
+            "view": "ops"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "stable-diffusion-3-5-large",
+      "actual_capture": "/private/tmp/unfold-s8-current-captures-fb1f871/stable-diffusion-3-5-large/actual/ir.json",
+      "sha256": "449516038e096d55ffac301b0a155e0d13bd8e6ce1165a4ec93a98914bf66ec0",
+      "vae_blocks": [
+        {
+          "path": "/extras/render/loop_blocks/9/children/2",
+          "block": {
+            "children": [
+              {
+                "description": "First residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op0",
+                "title": "ResNet"
+              },
+              {
+                "description": "Spatial self-attention in the decoder bottleneck.",
+                "facts": [
+                  "spatial attention"
+                ],
+                "id": "vae_mid_block_op1",
+                "title": "Attention"
+              },
+              {
+                "description": "Second residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op2",
+                "title": "ResNet"
+              }
+            ],
+            "description": "The bottleneck between the decoder input convolution and resolution up stages: ResNet -> spatial attention -> ResNet.",
+            "detail": {
+              "ops": [
+                {
+                  "in": 512,
+                  "kind": "opaque",
+                  "label": "ResNet",
+                  "meta": {
+                    "class_name": "ResNet",
+                    "desc": "First residual cell in the VAE decoder mid block."
+                  }
+                },
+                {
+                  "fn": "spatial attention",
+                  "kind": "attention_core",
+                  "label": "Attention",
+                  "meta": {
+                    "desc": "Spatial self-attention in the decoder bottleneck."
+                  }
+                },
+                {
+                  "kind": "opaque",
+                  "label": "ResNet",
+                  "meta": {
+                    "class_name": "ResNet",
+                    "desc": "Second residual cell in the VAE decoder mid block."
+                  }
+                }
+              ]
+            },
+            "facts": [
+              "512 ch",
+              "spatial attention"
+            ],
+            "id": "vae_mid_block",
+            "title": "Decoder mid block",
+            "view": "ops"
+          }
+        }
+      ]
+    }
+  ],
+  "preexisting_helper_proof": [
+    {
+      "file": "model_unfolder/renderers/html/metadata.py",
+      "function": "_ensure_declared_op_cards",
+      "current_line": 108,
+      "accepted_line": 108,
+      "ast_sha256": "7907e074273145eb42d73ab4e4e406fd48ef326fa281da24af82c0b39ae64551",
+      "exact_ast_equal": true
+    },
+    {
+      "file": "model_unfolder/renderers/html/metadata.py",
+      "function": "_block_lookup",
+      "current_line": 126,
+      "accepted_line": 126,
+      "ast_sha256": "ef194b194aa763b1a856f2b04fc894ccc4aec4e5ae26540221f570ad2f0acb6b",
+      "exact_ast_equal": true
+    },
+    {
+      "file": "model_unfolder/adapters/diffusor/blocks.py",
+      "function": "_vae_decoder_children",
+      "current_line": 879,
+      "accepted_line": 849,
+      "ast_sha256": "127e2eab30947d7d65a74097ae4d60d9b3dc1eab86378409aa3f0b58fc563276",
+      "exact_ast_equal": true
+    },
+    {
+      "file": "model_unfolder/labels.py",
+      "function": "cards_from_region",
+      "current_line": 980,
+      "accepted_line": 980,
+      "ast_sha256": "22a53e452ab8ae9ba7584011e3e63ee89e1000f8f41608bd31132baf72d2c3fe",
+      "exact_ast_equal": true
+    },
+    {
+      "file": "model_unfolder/opgraph.py",
+      "function": "ops_region",
+      "current_line": 1188,
+      "accepted_line": 1188,
+      "ast_sha256": "ad3f7798fee8a13714716107d908041a5dbf529fde88526c8b3c853f89f78c15",
+      "exact_ast_equal": true
+    }
+  ],
+  "actual_prerender_full_ir_captured": false,
+  "no_model_render_or_production_change": true,
+  "expected_hash_recovery": "Owner verifies separately; not asserted here"
+}

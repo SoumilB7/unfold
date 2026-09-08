@@ -196,7 +196,7 @@
     "lossless_gzip": true
   },
   "examples/granite-3-0-8b-instruct/ir.json": {
-    "stored": "examples/granite-3-0-8b-instruct/ir.full.json.gz",
+    "stored": "examples/granite-3-0-8b-instruct/ir.json.gz",
     "original_sha256": "acce8ebed6e17484b2ee5331ccac7d146aec0f5862252d72829cd1b4dc680e33",
     "original_bytes": 546774,
     "storage_sha256": "59c61cea62e6ef6e0fd2ae5be7f92de69166fbc3188c28e0fbe3683b7e0f0464",
@@ -301,7 +301,7 @@
     "lossless_gzip": true
   },
   "examples/pixart-sigma-xl-2-1024-ms/ir.json": {
-    "stored": "examples/pixart-sigma-xl-2-1024-ms/ir.full.json.gz",
+    "stored": "examples/pixart-sigma-xl-2-1024-ms/ir.json.gz",
     "original_sha256": "558ab57dbb3b0aab49b1f2c5115165fb3891d41627ee11ff28fe93f6ace86ad0",
     "original_bytes": 83080,
     "storage_sha256": "26d76c4ec55a79fc403f40801fd9c72ab65add588f5c6f248bd419aab4915684",
@@ -406,7 +406,7 @@
     "lossless_gzip": true
   },
   "examples/hunyuanvideo/ir.json": {
-    "stored": "examples/hunyuanvideo/ir.full.json.gz",
+    "stored": "examples/hunyuanvideo/ir.json.gz",
     "original_sha256": "8c76522d498133a4089b1daa8830d17cbe67d94e696f477f8c1773eccc1b4482",
     "original_bytes": 585650,
     "storage_sha256": "0a842a937ecca8d3e55efea5a491cfab89e150007fc1ac451b79bea3e069cdd5",
@@ -511,7 +511,7 @@
     "lossless_gzip": true
   },
   "examples/qwen2-vl-7b-instruct/ir.json": {
-    "stored": "examples/qwen2-vl-7b-instruct/ir.full.json.gz",
+    "stored": "examples/qwen2-vl-7b-instruct/ir.json.gz",
     "original_sha256": "83fbca1d74afe8dd519ddee10ba3437d670e855e3f2a017c09c9720a177cd14c",
     "original_bytes": 322205,
     "storage_sha256": "bc67ef3943183ddf12356ba1cefd09053f1603eb3fd4252641c83a6cd00d7a69",
@@ -616,7 +616,7 @@
     "lossless_gzip": true
   },
   "examples/deepseek-v3/ir.json": {
-    "stored": "examples/deepseek-v3/ir.full.json.gz",
+    "stored": "examples/deepseek-v3/ir.json.gz",
     "original_sha256": "2997dcd3002a3b04eb70c215bf3cd56feb7ab65723fbc1db9097033cb6eea302",
     "original_bytes": 1726117,
     "storage_sha256": "ea0f677d73c32622d3a6eb3142ebd2f44b76391285d472e586e3b69b942ee9e9",
@@ -721,7 +721,7 @@
     "lossless_gzip": true
   },
   "examples/musicgen-small/ir.json": {
-    "stored": "examples/musicgen-small/ir.full.json.gz",
+    "stored": "examples/musicgen-small/ir.json.gz",
     "original_sha256": "40e411b4bade1c93b429a1592183b825f60faec7c3fe1cd9954683a5868cd838",
     "original_bytes": 441869,
     "storage_sha256": "ff48a36c9851217c8c96fcb3d054561ed8964b670e21cb7ae4810f3feeca0739",
@@ -889,7 +889,7 @@
     "lossless_gzip": true
   },
   "examples/llama-7b/ir.json": {
-    "stored": "examples/llama-7b/ir.full.json.gz",
+    "stored": "examples/llama-7b/ir.json.gz",
     "original_sha256": "03e253fd9bed99de14f999cea7db556c3f33a754746245024fd6bee32e781273",
     "original_bytes": 412538,
     "storage_sha256": "2e063043dbf66069781dc5d6379091b11cb6628b1729dfaeb94d206cbeb7cc8c",
@@ -994,7 +994,7 @@
     "lossless_gzip": true
   },
   "examples/stable-diffusion-xl-base-1-0/ir.json": {
-    "stored": "examples/stable-diffusion-xl-base-1-0/ir.full.json.gz",
+    "stored": "examples/stable-diffusion-xl-base-1-0/ir.json.gz",
     "original_sha256": "f650fc5ae65ba530f1de64b0b2fa8fbed979e2b5c6dfd632e8c2d26439d35b47",
     "original_bytes": 38146206,
     "storage_sha256": "97abef2b950bbcadc5881e7f2baf1f2ed800bc274385a151374c10de66134985",

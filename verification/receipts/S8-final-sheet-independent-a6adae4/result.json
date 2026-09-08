@@ -1,0 +1,16 @@
+{
+  "status": "ACCEPT bounded final-sheet claims for preapproval stop; S8 NOT DONE",
+  "sheet_sha256": "3cfe0aa149632bc6053f2104f940ad1614a552bab92a995888451820f6e27238",
+  "local_links_exist": 9,
+  "actual_red29c_counts_preserved": true,
+  "isolated_a6_correction_separate": true,
+  "coverage29_actual_1Bloom_14historical_explicit": true,
+  "matrix_derivation_not_fresh39_runtime_explicit": true,
+  "flagged_config_and_unknown_mechanisms_not_declared_closed": true,
+  "15reference_owncards_no_canonical_navigation_explicit": true,
+  "Qwen_existing_geometry_defect_explicit": true,
+  "four_capture_order_IR_diagnostics_not_productchanges": true,
+  "per29_surface_disposition_authority": "root independent owner receipt; not duplicated by this review",
+  "baseline_approval_pending_and_subsequent_green_gate_required": true,
+  "reviewer_model_test_render_runs": 0
+}

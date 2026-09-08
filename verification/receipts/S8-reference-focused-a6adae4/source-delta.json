@@ -1,0 +1,14 @@
+{
+  "changed_existing_test_functions": [
+    "test_diffusion_recursive_depth_conforms"
+  ],
+  "added_test_helpers_controls": [
+    "_explained_call_target_leaf",
+    "test_explained_call_target_leaf_keeps_reference_constraints"
+  ],
+  "all_other_existing_functions_AST_equal": true,
+  "unchanged_existing_functions": 99,
+  "all_production_physics_scripts_test_support_bytes_equal_29c6236": true,
+  "test_sha256": "ce19967ce38638473c9635b5e4c1584f3c9d2e520fb63fb691afb8311b78c57e",
+  "qualification_limit": "Helper checks exported code_proven status, canonical occurrence and own explained card; claim-kind qualification remains established by separate S8 authority/family evidence. No navigation claim."
+}

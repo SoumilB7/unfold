@@ -1,0 +1,8 @@
+{
+  "original_path": "verification/receipts/S8-explained-reference-test-independent-29c6236/reviewed.diff.txt",
+  "original_sha256": "d314b5f047fd35775b4abec65db3ad407c355816cc764ac16d94cfb2cd82baea",
+  "stored_path": "verification/receipts/S8-explained-reference-test-independent-29c6236/reviewed.diff.txt.gz",
+  "stored_sha256": "10dc7245c6b6759f1ea0b79001d73fb3573f1593ef4101142797b5c48453bb79",
+  "lossless": true,
+  "reason": "Four historical diff context lines contain trailing spaces; preserve exact evidence bytes as compressed data, no stripping."
+}

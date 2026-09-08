@@ -1,0 +1,49 @@
+{
+  "commit": "29c6236e7cc2455bfa9262f306a072f6249eb246",
+  "coordinator_exit_code": 1,
+  "missing_lanes": [],
+  "failed_lanes": [
+    "full",
+    "preservation"
+  ],
+  "all_lane_source_and_artifact_pins_equal": true,
+  "coordinator_and_ignored_source_artifact_pins_equal": true,
+  "selected_external_before_finally_equal": true,
+  "selected_external_scope": "59 selected installed source files plus one cached task config; not exhaustive",
+  "wall_seconds": 2965.604,
+  "archive_entries": 43,
+  "baseline_changed": false,
+  "output_blessing": false,
+  "lanes": {
+    "collect": {
+      "returncode": 0,
+      "duration_seconds": 7.431,
+      "passed": true
+    },
+    "focused": {
+      "returncode": 0,
+      "duration_seconds": 54.574,
+      "passed": true
+    },
+    "full": {
+      "returncode": 1,
+      "duration_seconds": 1877.786,
+      "passed": false
+    },
+    "preservation": {
+      "returncode": 1,
+      "duration_seconds": 593.416,
+      "passed": false
+    },
+    "static": {
+      "returncode": 0,
+      "duration_seconds": 0.158,
+      "passed": true
+    },
+    "u2-authority": {
+      "returncode": 0,
+      "duration_seconds": 392.193,
+      "passed": true
+    }
+  }
+}

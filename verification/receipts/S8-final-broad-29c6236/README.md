@@ -1,0 +1,11 @@
+# Final unchanged broad verification at29c6236 — RED
+
+The complete six-lane coordinator exited1 after2965.604seconds (outer wrapper2965.899seconds). No lane is missing. Focused511 passed; authority44 passed;4547 tests collected; unchanged static check passed. The full partition covers4451 tests across207 files in26 fresh-process batches:4432 passed,3 failed,14 skipped,2 expected failures. Preservation:23 passed and29 failed.
+
+The three full failures are retained exactly: stale examples (`test_example_check_never_invokes_platform_rasterizer`), the Bloom corpus SVG lock, and the SDXL recursive-depth assertion rejecting explained call-target reference leaves. The first two remain output-approval failures; the third has a separately reviewed test-only correction and isolated verification receipt. This original full result stays RED; separate isolated passes never become a fictional full-suite pass. See `../S8-final-full-failure-independent-29c6236` and `../S8-reference-focused-a6adae4`.
+
+All29 preservation failures retain the exact previously reviewed witness/surface/messages; the actual canonical-order comparison shows no IR drift on the four models whose diagnostic post-render snapshots contained lazy VAE children. See `../S8-preservation-owner-29c6236`. Baselines and gates were not changed or blessed. Approval-held candidate artifacts and their source/geometry dispositions remain separate from the transient comparator outputs, which the comparator did not retain.
+
+All lane source and ignored-artifact fingerprints match before/after; coordinator and original ignored artifact pins match; the additional selected59 installed-source plus one cached task configuration match before/finally. This selected external scope is new for this run and does not certify every transitive installed dependency or retroactively extend earlier runs.
+
+`artifact-map.json` retains43 exact source files under injective `.gzip` storage paths, with original and stored hashes. Decompression was byte-verified. `executed-archiver.py.txt` is the exact archival program, not a claimed new model/test execution. The original coordinator and full-batch logs, all receipts, command and pin manifests remain available through that map.

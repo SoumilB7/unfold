@@ -1,0 +1,7 @@
+{
+  "logical_path": "batch-019.log",
+  "original_sha256": "5a1a8bc3d5ed57ea4080ed5d827d290917e6aa380de8fcdcf57177e4409ec7e7",
+  "stored": "batch-019.log.gz",
+  "stored_sha256": "5045ab6b1cbaf2a55802bf00ea19a2fa0ad4d01aff29876f5afbf76be8937654",
+  "reason": "Preserve exact pytest exception whitespace as lossless compressed historical data."
+}

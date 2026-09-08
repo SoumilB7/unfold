@@ -1,0 +1,66 @@
+"""Run only the reviewed reference-leaf correction on immutable committed inputs."""
+import hashlib
+import json
+import os
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+CHECKOUT = Path('/private/tmp/unfold-s8-reference-focused-a6adae4')
+OUT = Path('/private/tmp/unfold-s8-reference-focused-results-a6adae4')
+OUT.mkdir(exist_ok=False)
+paths = subprocess.check_output(['git', 'ls-files', 'model_unfolder', 'physics',
+                                 'test_support', 'tests'], cwd=CHECKOUT, text=True).splitlines()
+selected = json.loads((CHECKOUT / 'verification/receipts/S8-final-lanes-fb1f871/selected-external-inputs.json').read_text())
+external_expected = selected['installed_source_sha256'] | selected['cached_task_config_sha256']
+
+
+def write(name, value):
+    (OUT / name).write_text(json.dumps(value, indent=2, sort_keys=True) + '\n')
+
+
+def sources():
+    return {p: hashlib.sha256((CHECKOUT / p).read_bytes()).hexdigest() for p in paths}
+
+
+def external():
+    return {p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in external_expected}
+
+
+subprocess.run(['git', 'diff', '--exit-code', 'HEAD', '--', 'model_unfolder', 'physics',
+                'test_support', 'tests'], cwd=CHECKOUT, check=True)
+commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=CHECKOUT, text=True).strip()
+assert commit.startswith('a6adae4')
+before = sources()
+external_before = external()
+assert external_before == external_expected
+write('source-before.json', before)
+write('selected-external-before.json', external_before)
+command = [sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider',
+           'tests/test_diffusion.py::test_explained_call_target_leaf_keeps_reference_constraints',
+           'tests/test_diffusion.py::test_diffusion_recursive_depth_conforms[sdxl_unet]']
+write('command.json', {'command': command, 'cwd': str(CHECKOUT), 'commit': commit,
+                       'runner_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest()})
+start = time.monotonic()
+code = None
+try:
+    with (OUT / 'pytest.log').open('w') as log:
+        result = subprocess.run(command, cwd=CHECKOUT, stdout=log, stderr=subprocess.STDOUT,
+                                env=dict(os.environ, PYTHONDONTWRITEBYTECODE='1',
+                                         HF_HUB_OFFLINE='1', TRANSFORMERS_OFFLINE='1'))
+    code = result.returncode
+finally:
+    after = sources()
+    external_after = external()
+    write('source-after-finally.json', after)
+    write('selected-external-after-finally.json', external_after)
+    write('result.json', {'commit': commit, 'returncode': code,
+                          'elapsed_seconds': time.monotonic() - start,
+                          'source_physics_test_input_pins_equal': before == after,
+                          'selected_external_pins_equal': external_before == external_after,
+                          'source_path_count': len(before), 'selected_external_count': len(external_before)})
+    assert before == after
+    assert external_before == external_after
+print(json.dumps({'returncode': code, 'elapsed_seconds': time.monotonic() - start}), flush=True)
+raise SystemExit(code)

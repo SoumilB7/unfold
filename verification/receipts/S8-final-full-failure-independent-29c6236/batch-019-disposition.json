@@ -1,0 +1,22 @@
+{
+  "status": "APPROVAL_HELD_BLOOM_VIEW_BASELINE; actual test remains FAIL",
+  "test": "tests/test_sable.py::test_sable_regression_corpus",
+  "batch_sha256": "5a1a8bc3d5ed57ea4080ed5d827d290917e6aa380de8fcdcf57177e4409ec7e7",
+  "reported_findings": [
+    "view drift: 4 locked view(s) -> 4 now",
+    "labeled view drift"
+  ],
+  "four_is_population_count_not_changed_view_count": true,
+  "prior_actual_cause": "One attention SVG: restore existing canonical cache edges, connected source stem and obstacle-clearing empty-lane rail. Same-IR old helper recovered locked output; final fullpage geometric bytes match independently owner-reviewed SVG after explicit mount-only mapping.",
+  "cause_receipts": [
+    "S8-bloom-actual-736fdab",
+    "S8-empty-lane-geometry",
+    "S8-bloom-fullpage-geometry-independent-fb1f871"
+  ],
+  "no_new_shape_fact_or_mechanism_failure_reported": true,
+  "population_loop_stops_at_first_Bloom_failure": true,
+  "later_corpus_targets_not_certified_by_this_test": true,
+  "other_final_coverage_and_preservation_lanes_remain_separate": true,
+  "baseline_blessed": false,
+  "limitation": "Final broad traceback reports signature drift without retaining every actual SVG byte; attribution uses independently reviewed exact-input same-production saved evidence, not a fabricated final transient output archive."
+}

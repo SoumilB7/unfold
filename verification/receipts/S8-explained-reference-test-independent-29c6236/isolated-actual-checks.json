@@ -1,0 +1,15 @@
+{
+  "status": "ACCEPT bounded correction after actual isolated11PASS",
+  "commit": "a6adae4060eeea6475a590bdcb0c1bfe8886d40d",
+  "source_sha256": "ce19967ce38638473c9635b5e4c1584f3c9d2e520fb63fb691afb8311b78c57e",
+  "exact_reviewed_target_and10controls": true,
+  "pytest_summary": "11 passed in 194.83s (0:03:14)",
+  "log_sha256": "1ee1eec25cbc482a82ae94f46b5dff98d531f299673698753d4d6d012e9dceef",
+  "945source_physics_test_input_before_finally_current_equal": true,
+  "60selected_external_before_finally_equal": true,
+  "production_physics_equal_original_broad29c6236": true,
+  "outer_returncode": 0,
+  "outer_elapsed_seconds": 203.6386415832676,
+  "original_full_broad_remains_FAIL": true,
+  "no_whole_suite_rerun_claim": true
+}

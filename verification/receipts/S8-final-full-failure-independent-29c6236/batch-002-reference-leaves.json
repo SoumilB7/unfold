@@ -1,0 +1,158 @@
+{
+  "saved_input": "actual corrected shared SDXL capture, before final label/receipt-only changes",
+  "ir_path": "/private/tmp/unfold-s8-diagnostic-captures-ca15e58/sdxl-corrected-shared/ir.json",
+  "ir_sha256": "2ec3c4b2906b0e69d42aec0ad3e82559250eb7dd783e46250e621e2c2ce77703",
+  "leaves": [
+    {
+      "id": "unet_primary_region_3__iteration__when_true__call__slot_0",
+      "target": "instance_down_blocks__0",
+      "facts": [
+        "Target of this call at the corresponding recorded loop slot"
+      ],
+      "target_exists": true,
+      "path_equal": true,
+      "target_has_own_content": true
+    },
+    {
+      "id": "unet_primary_region_3__iteration__when_true__call__slot_1",
+      "target": "instance_down_blocks__1",
+      "facts": [
+        "Target of this call at the corresponding recorded loop slot"
+      ],
+      "target_exists": true,
+      "path_equal": true,
+      "target_has_own_content": true
+    },
+    {
+      "id": "unet_primary_region_3__iteration__when_true__call__slot_2",
+      "target": "instance_down_blocks__2",
+      "facts": [
+        "Target of this call at the corresponding recorded loop slot"
+      ],
+      "target_exists": true,
+      "path_equal": true,
+      "target_has_own_content": true
+    },
+    {
+      "id": "unet_primary_region_3__iteration__when_false__when_true__operand_0__call__slot_0",
+      "target": "instance_down_blocks__0",
+      "facts": [
+        "Target of this call at the corresponding recorded loop slot"
+      ],
+      "target_exists": true,
+      "path_equal": true,
+      "target_has_own_content": true
+    },
+    {
+      "id": "unet_primary_region_3__iteration__when_false__when_true__operand_0__call__slot_1",
+      "target": "instance_down_blocks__1",
+      "facts": [
+        "Target of this call at the corresponding recorded loop slot"
+      ],
+      "target_exists": true,
+      "path_equal": true,
+      "target_has_own_content": true
+    },
+    {
+      "id": "unet_primary_region_3__iteration__when_false__when_true__operand_0__call__slot_2",
+      "target": "instance_down_blocks__2",
+      "facts": [
+        "Target of this call at the corresponding recorded loop slot"
+      ],
+      "target_exists": true,
+      "path_equal": true,
+      "target_has_own_content": true
+    },
+    {
+      "id": "unet_primary_region_3__iteration__when_false__when_false__call__slot_0",
+      "target": "instance_down_blocks__0",
+      "facts": [
+        "Target of this call at the corresponding recorded loop slot"
+      ],
+      "target_exists": true,
+      "path_equal": true,
+      "target_has_own_content": true
+    },
+    {
+      "id": "unet_primary_region_3__iteration__when_false__when_false__call__slot_1",
+      "target": "instance_down_blocks__1",
+      "facts": [
+        "Target of this call at the corresponding recorded loop slot"
+      ],
+      "target_exists": true,
+      "path_equal": true,
+      "target_has_own_content": true
+    },
+    {
+      "id": "unet_primary_region_3__iteration__when_false__when_false__call__slot_2",
+      "target": "instance_down_blocks__2",
+      "facts": [
+        "Target of this call at the corresponding recorded loop slot"
+      ],
+      "target_exists": true,
+      "path_equal": true,
+      "target_has_own_content": true
+    },
+    {
+      "id": "unet_primary_region_6__iteration__when_true__call__slot_0",
+      "target": "instance_up_blocks__0",
+      "facts": [
+        "Target of this call at the corresponding recorded loop slot"
+      ],
+      "target_exists": true,
+      "path_equal": true,
+      "target_has_own_content": true
+    },
+    {
+      "id": "unet_primary_region_6__iteration__when_true__call__slot_1",
+      "target": "instance_up_blocks__1",
+      "facts": [
+        "Target of this call at the corresponding recorded loop slot"
+      ],
+      "target_exists": true,
+      "path_equal": true,
+      "target_has_own_content": true
+    },
+    {
+      "id": "unet_primary_region_6__iteration__when_true__call__slot_2",
+      "target": "instance_up_blocks__2",
+      "facts": [
+        "Target of this call at the corresponding recorded loop slot"
+      ],
+      "target_exists": true,
+      "path_equal": true,
+      "target_has_own_content": true
+    },
+    {
+      "id": "unet_primary_region_6__iteration__when_false__call__slot_0",
+      "target": "instance_up_blocks__0",
+      "facts": [
+        "Target of this call at the corresponding recorded loop slot"
+      ],
+      "target_exists": true,
+      "path_equal": true,
+      "target_has_own_content": true
+    },
+    {
+      "id": "unet_primary_region_6__iteration__when_false__call__slot_1",
+      "target": "instance_up_blocks__1",
+      "facts": [
+        "Target of this call at the corresponding recorded loop slot"
+      ],
+      "target_exists": true,
+      "path_equal": true,
+      "target_has_own_content": true
+    },
+    {
+      "id": "unet_primary_region_6__iteration__when_false__call__slot_2",
+      "target": "instance_up_blocks__2",
+      "facts": [
+        "Target of this call at the corresponding recorded loop slot"
+      ],
+      "target_exists": true,
+      "path_equal": true,
+      "target_has_own_content": true
+    }
+  ],
+  "actual_navigation_limit": "custom constructed_children renderer ignores target; own slot card is reachable and describes reference, canonical stage is separate. No target jump claimed."
+}
