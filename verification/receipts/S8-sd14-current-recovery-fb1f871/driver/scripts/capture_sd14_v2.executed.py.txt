@@ -2,7 +2,7 @@
 from pathlib import Path
 from unittest.mock import patch
 import argparse,hashlib,json,sys,time,traceback
-from graph_capture import GraphCapture,write,manifest,sha,old_parallel
+from graph_capture import GraphCapture,write,manifest,sha,surfaces,old_parallel
 p=argparse.ArgumentParser();p.add_argument('--checkout',required=True);p.add_argument('--source-manifest',required=True);p.add_argument('--slug',required=True);p.add_argument('--output',required=True);p.add_argument('--parallel-diagnostic',action='store_true');a=p.parse_args();root=Path(a.checkout).resolve();out=Path(a.output);out.mkdir(parents=True,exist_ok=False);before=manifest(root);write(out/'source-before.json',before);assert before==json.loads(Path(a.source_manifest).read_text());sys.path.insert(0,str(root));start=time.monotonic();pins={str(p):sha(p) for p in (Path(__file__),Path(__file__).with_name('graph_capture.py'),Path(__file__).with_name('capture_common.py'),root/'tests/unseen_model_configs'/f'{a.slug}.json',root/'test_support/preservation.py',root/'tests/preservation_expected_manifest.json')};write(out/'input-script-pins.json',pins)
 try:
  import capture_common
@@ -12,6 +12,10 @@ try:
  from model_unfolder.sable import sable
  from test_support import preservation
  helpers=load_module('preservation_capture_helpers',root/'scripts/demonstrate_s8_unet.py');fixture_path=root/'tests/unseen_model_configs'/f'{a.slug}.json';fixture=json.loads(fixture_path.read_text());assert a.slug=='sd-v1-4';expected=None;write(out/'fixture.json',fixture)
+ import physics.instance_inventory as inventory
+ original_inventory=inventory.inventory_in_subprocess
+ def capture_inventory(request):
+  write(out/'actual-build-request.json',request.to_dict());result=original_inventory(request);write(out/'actual-inventory-result.json',result.to_dict());return result
  captured=[];original=Diagram.to_html
  def capture_html(self,standalone=True):
   page=original(self,standalone=standalone)
@@ -19,7 +23,7 @@ try:
   return page
  with GraphCapture() as observer:
   observer.phase='actual:'+a.slug
-  with patch.object(Diagram,'to_html',capture_html):report=sable(fixture['config'],source=fixture.get('source','local'),render_images=False)
+  with patch.object(Diagram,'to_html',capture_html),patch.object(inventory,'inventory_in_subprocess',capture_inventory):report=sable(fixture['config'],source=fixture.get('source','local'),render_images=False)
   assert captured and len({id(d.ir) for d,_ in captured})==1,'Expected one actual parsed IR'
   diagram,page=captured[-1];actual=out/'actual';actual.mkdir();saved,checks=save_diagram(actual,diagram,helpers);assert saved==page;save_preservation_input(actual,diagram,root,fixture_path);write(out/'sable-report.json',report)
   docs=out/'surface-docs';docs.mkdir();surface_hashes={}

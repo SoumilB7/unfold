@@ -9,3 +9,5 @@ All 28 non-UNet actual ledgers independently recover their immutable expected wh
 Seventeen non-UNet models contain 22 changed views. For every model the exact same-IR old `_draw_parallel` counterpart recovers the complete old locked view sequence and old HTML metadata hash. Canonical Graph/Region edges and native pairs remain available for independent geometry review. This receipt does not approve those outputs.
 
 `artifact-map.json` binds every original byte stream to its lossless archived path. Raw completed artifacts remain under `/private/tmp/unfold-s8-current-captures-fb1f871`. Actual eight candidate pages are copied unchanged to the root S8 `examples-fb1f871/` decision page. Inputs, scripts, helpers, production before/after fingerprints, and failure-finally checks are retained.
+
+Archived execution scripts: `artifact-map.executed-original.json` preserves the original index verbatim. The current map resolves original script paths to exact `.executed.py.txt` bytes. Maintained `.py` copies remove only unused imports and have not been executed; see `../S8-archive-lint-e4168a2/path-map.json`.

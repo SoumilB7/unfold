@@ -18,7 +18,7 @@ try:
  from model_unfolder.ir import ModelIR,EvidenceWarning
  from model_unfolder.diagram import Diagram
  from model_unfolder.block_schema import validate_block_tree,validate_click_coupling,validate_no_dotted_arrows,validate_no_dotted_boundaries,validate_unique_ref_ids
- from model_unfolder.lint import lint_labels,_walk_blocks
+ from model_unfolder.lint import lint_labels
  from model_unfolder.sable import _projection_audit_findings
  import model_unfolder.diagram as dm
  assert Path(dm.__file__).resolve().is_relative_to(root)
@@ -28,7 +28,7 @@ try:
  old=read(base/'render-events.json.gz');assert events==old,'Canonical event sequence changed';added=[]
  write(out/'event-deltas.json',{'prior_count':len(old),'new_count':len(events),'added':[],'prior_events_exact_order':True})
  checks={f.__name__:canonical(f(page)) for f in (validate_click_coupling,validate_no_dotted_arrows,validate_no_dotted_boundaries,validate_unique_ref_ids)};checks.update(validate_block_tree=canonical(validate_block_tree(ir)),label_lint=lint_labels(d.to_ir()),projection_audit=_projection_audit_findings(d.to_ir(),d.render_events()));write(out/'checks.json',checks)
- import re,difflib
+ import re
  oldpage=(base/'page.html').read_text();svgre=re.compile(r'<svg\b[\s\S]*?</svg>');oldsvgs=svgre.findall(oldpage);newsvgs=svgre.findall(page);assert len(oldsvgs)==len(newsvgs)
  assert svgre.sub('<SVG-REPLAY-SLOT>',oldpage)==svgre.sub('<SVG-REPLAY-SLOT>',page),'Non-SVG page bytes changed'
  deltas=[]

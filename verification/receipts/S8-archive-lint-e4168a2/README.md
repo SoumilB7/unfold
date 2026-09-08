@@ -1,0 +1,3 @@
+# Archive-only lint correction
+
+The unchanged exact static command at e4168a2 failed on 13 unused import aliases in eight retained capture scripts. No broad lane was launched. The failure and exact executed bytes remain historical evidence. Only unused `difflib`, `model_unfolder.lint._walk_blocks`, and `graph_capture.surfaces` imports were removed from maintained runnable copies. AST equality after excluding exactly these aliases was verified. Cleaned copies are not claimed executed. Original artifact indexes remain byte-identical to e4168a2, and current indexes resolve historical logical paths through the explicit archive map. No product, test, gate, baseline or actual capture output changes.

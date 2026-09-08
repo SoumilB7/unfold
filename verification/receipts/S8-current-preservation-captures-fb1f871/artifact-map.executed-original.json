@@ -5145,12 +5145,11 @@
     "lossless_gzip": true
   },
   "driver/scripts/replay_final.py": {
-    "stored": "driver/scripts/replay_final.executed.py.txt",
+    "stored": "driver/scripts/replay_final.py",
     "original_sha256": "9dbf44b7d9010427e780c8ba0bd14c62c11828a48c440eae0abff89d73f4719a",
     "original_bytes": 5493,
     "storage_sha256": "9dbf44b7d9010427e780c8ba0bd14c62c11828a48c440eae0abff89d73f4719a",
-    "lossless_gzip": false,
-    "archive_status": "Exact executed original; maintained .py copy cleaned after execution, not rerun."
+    "lossless_gzip": false
   },
   "driver/scripts/derive_ledger.py": {
     "stored": "driver/scripts/derive_ledger.py",
@@ -5174,12 +5173,11 @@
     "lossless_gzip": false
   },
   "driver/scripts/capture_sd14.py": {
-    "stored": "driver/scripts/capture_sd14.executed.py.txt",
+    "stored": "driver/scripts/capture_sd14.py",
     "original_sha256": "3ff5a6128c0e0a0aa23d8100302113a73c4f6c4f290759291c136c02c04d0f03",
     "original_bytes": 4254,
     "storage_sha256": "3ff5a6128c0e0a0aa23d8100302113a73c4f6c4f290759291c136c02c04d0f03",
-    "lossless_gzip": false,
-    "archive_status": "Exact executed original; maintained .py copy cleaned after execution, not rerun."
+    "lossless_gzip": false
   },
   "driver/scripts/graph_capture.py": {
     "stored": "driver/scripts/graph_capture.py",

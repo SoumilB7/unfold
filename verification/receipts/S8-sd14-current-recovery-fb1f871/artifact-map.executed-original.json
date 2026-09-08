@@ -215,15 +215,13 @@
     "lossless_gzip": true
   },
   "driver/scripts/capture_sd14.py": {
-    "stored": "driver/scripts/capture_sd14.executed.py.txt",
+    "stored": "driver/scripts/capture_sd14.py",
     "original_sha256": "3ff5a6128c0e0a0aa23d8100302113a73c4f6c4f290759291c136c02c04d0f03",
-    "lossless_gzip": false,
-    "archive_status": "Exact executed original; maintained .py copy cleaned after execution, not rerun."
+    "lossless_gzip": false
   },
   "driver/scripts/capture_sd14_v2.py": {
-    "stored": "driver/scripts/capture_sd14_v2.executed.py.txt",
+    "stored": "driver/scripts/capture_sd14_v2.py",
     "original_sha256": "99a4d56768b9e6f906855878b7b34075abf9c24eff9b401d75e1c6210d8dc941",
-    "lossless_gzip": false,
-    "archive_status": "Exact executed original; maintained .py copy cleaned after execution, not rerun."
+    "lossless_gzip": false
   }
 }

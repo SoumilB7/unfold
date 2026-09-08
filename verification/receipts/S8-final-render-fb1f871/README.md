@@ -7,3 +7,5 @@ No model construction or historical source receipt was restamped. No architectur
 The first supplemental Bloom replay stopped before rendering because the UNet-only reconstruction helper left decoder layer dictionaries untyped. That red and exact traceback remain archived; the separately pinned typed reconstruction is a supplemental artifact-only recovery and must pass the same strict roundtrip and event checks.
 
 Source736→fb1 diff, full production before/after, original input byte pins and failure-finally checks are retained. `artifact-map.json` binds every original artifact to lossless storage.
+
+Archived execution scripts: `artifact-map.executed-original.json` preserves the original index verbatim. The current map resolves original script paths to exact `.executed.py.txt` bytes. Maintained `.py` copies remove only unused imports and have not been executed; see `../S8-archive-lint-e4168a2/path-map.json`.

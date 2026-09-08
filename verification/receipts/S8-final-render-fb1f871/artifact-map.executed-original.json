@@ -906,18 +906,16 @@
     "lossless_gzip": true
   },
   "driver/scripts/replay_final.py": {
-    "stored": "driver/scripts/replay_final.executed.py.txt",
+    "stored": "driver/scripts/replay_final.py",
     "original_sha256": "9dbf44b7d9010427e780c8ba0bd14c62c11828a48c440eae0abff89d73f4719a",
     "stored_sha256": "9dbf44b7d9010427e780c8ba0bd14c62c11828a48c440eae0abff89d73f4719a",
-    "lossless_gzip": false,
-    "archive_status": "Exact executed original; maintained .py copy cleaned after execution, not rerun."
+    "lossless_gzip": false
   },
   "driver/scripts/replay_bloom.py": {
-    "stored": "driver/scripts/replay_bloom.executed.py.txt",
+    "stored": "driver/scripts/replay_bloom.py",
     "original_sha256": "36d988ea03e38e163f5d640f9a98e7a7fe1f0d23f28d5e0e4632c767dc98fa9f",
     "stored_sha256": "36d988ea03e38e163f5d640f9a98e7a7fe1f0d23f28d5e0e4632c767dc98fa9f",
-    "lossless_gzip": false,
-    "archive_status": "Exact executed original; maintained .py copy cleaned after execution, not rerun."
+    "lossless_gzip": false
   },
   "736-to-fb1-production.diff": {
     "stored": "736-to-fb1-production.diff.gz",

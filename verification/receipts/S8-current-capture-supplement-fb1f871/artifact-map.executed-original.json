@@ -150,18 +150,16 @@
     "lossless_gzip": true
   },
   "driver/scripts/replay_bloom.py": {
-    "stored": "driver/scripts/replay_bloom.executed.py.txt",
+    "stored": "driver/scripts/replay_bloom.py",
     "original_sha256": "36d988ea03e38e163f5d640f9a98e7a7fe1f0d23f28d5e0e4632c767dc98fa9f",
     "stored_sha256": "36d988ea03e38e163f5d640f9a98e7a7fe1f0d23f28d5e0e4632c767dc98fa9f",
-    "lossless_gzip": false,
-    "archive_status": "Exact executed original; maintained .py copy cleaned after execution, not rerun."
+    "lossless_gzip": false
   },
   "driver/scripts/replay_bloom_v3.py": {
-    "stored": "driver/scripts/replay_bloom_v3.executed.py.txt",
+    "stored": "driver/scripts/replay_bloom_v3.py",
     "original_sha256": "7250e1b77ed9639aeaa322cbd5c730a1c71327392a7c8bf7b2dca78d7d820d5f",
     "stored_sha256": "7250e1b77ed9639aeaa322cbd5c730a1c71327392a7c8bf7b2dca78d7d820d5f",
-    "lossless_gzip": false,
-    "archive_status": "Exact executed original; maintained .py copy cleaned after execution, not rerun."
+    "lossless_gzip": false
   },
   "bloom-final-replay-v2.log": {
     "stored": "bloom-final-replay-v2.log.gz",

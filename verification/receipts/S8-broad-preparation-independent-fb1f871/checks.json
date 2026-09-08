@@ -1,0 +1,40 @@
+{
+  "reviewed_head": "fb1f871df1675f8f8388ef80a193b61dc9c052f7",
+  "source_pins": {
+    "scripts/verify_commit.py": "5c5af14bb0a74c3f6b0b993a40cebe8f4f048a10a03e21bed51067e93daba84f",
+    "scripts/pytest_file_bracket.py": "be6e93097a6aa95f17cf02a829bdf9ba30dafcfe6c3b2c7de58e7d4d99adb8ce",
+    "test_support/tree_state.py": "4a270ef2248eef33f55ea86b9c68d7fa65acd1e00cd7c951504e29139c55f3ba",
+    "verification/receipts/S8-final-lanes-fb1f871/manifest.json": "e787e45b10e0df1cfc1254c4ddb192ed2862419546799e6445fef8dc466119b5",
+    "tests/preservation_manifest.json": "e9ed0476d0e158fb46bb182a8fd314518d9951bdc231f200cb5278add160e283"
+  },
+  "original_focus_retained": [
+    "tests/test_s8_attribute_bindings.py",
+    "tests/test_s8_lookup_closure.py",
+    "tests/test_s8_wrapper_binding.py",
+    "tests/test_s8_iteration_binding.py",
+    "tests/test_s8_primary_ports.py",
+    "tests/test_s8_call_port_layout.py",
+    "tests/test_s8_component_scope.py",
+    "tests/test_s8_port_routes.py",
+    "tests/test_s8_cell_connections.py",
+    "tests/test_s8_runtime_source.py",
+    "tests/test_s7_artifacts.py",
+    "tests/test_s8_source_override.py",
+    "tests/test_s8_retained_source_index.py",
+    "tests/test_construction_summary.py",
+    "tests/test_s8_card_projection_receipts.py",
+    "tests/test_structural_writes.py"
+  ],
+  "new_focus": [
+    "tests/test_conditional_projection_contracts.py",
+    "tests/test_s8_constructed_primitive_receipts.py",
+    "tests/test_empty_lane_geometry.py",
+    "tests/test_projection_obligations.py",
+    "tests/test_s6_physics.py::test_production_can_request_isolated_inventory_but_cannot_construct_in_parent"
+  ],
+  "all_focus_sources_exist": true,
+  "coordinator_unchanged_a83_to_fb1": true,
+  "production_779_to_fb1_identical": true,
+  "review_scope": "preparation, not executed final gate",
+  "final_commit_resolved": false
+}

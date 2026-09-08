@@ -2,7 +2,7 @@
 from pathlib import Path
 from unittest.mock import patch
 import argparse,hashlib,json,sys,time,traceback
-from graph_capture import GraphCapture,write,manifest,sha,surfaces,old_parallel
+from graph_capture import GraphCapture,write,manifest,sha,old_parallel
 p=argparse.ArgumentParser();p.add_argument('--checkout',required=True);p.add_argument('--source-manifest',required=True);p.add_argument('--slug',required=True);p.add_argument('--output',required=True);p.add_argument('--parallel-diagnostic',action='store_true');a=p.parse_args();root=Path(a.checkout).resolve();out=Path(a.output);out.mkdir(parents=True,exist_ok=False);before=manifest(root);write(out/'source-before.json',before);assert before==json.loads(Path(a.source_manifest).read_text());sys.path.insert(0,str(root));start=time.monotonic();pins={str(p):sha(p) for p in (Path(__file__),Path(__file__).with_name('graph_capture.py'),Path(__file__).with_name('capture_common.py'),root/'tests/unseen_model_configs'/f'{a.slug}.json',root/'test_support/preservation.py',root/'tests/preservation_expected_manifest.json')};write(out/'input-script-pins.json',pins)
 try:
  import capture_common

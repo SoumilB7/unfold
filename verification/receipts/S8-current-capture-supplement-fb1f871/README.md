@@ -9,3 +9,7 @@ Supplemental Bloom final rendering reuses exact actual736 typed IR, warnings and
 Twenty-eight non-UNet derived-ledger expected whole hashes match. These are explicitly derived one-list attribution checks, not old executions or blanket preservation approval. Original actual payloads and hashes remain unchanged. No baseline/PNG seal/output blessing was performed. Root and independent reviewer own acceptance of named changes.
 
 The selected38 SourceBundle files plus44 frozen config input union is prepared for the next broad before/after boundary; it is not retroactively presented as an earlier before-run pin. Full production source fingerprints for each actual operation are retained.
+
+Archival lint correction: exact executed driver sources are retained as .executed.py.txt; their original logical paths resolve through the updated artifact-map.json. The original index is preserved verbatim as artifact-map.executed-original.json. Same-name runnable .py copies remove only the named unused imports and have not been executed; exact old/new hashes and AST check are in S8-archive-lint-e4168a2/path-map.json.
+
+Archived execution scripts: `artifact-map.executed-original.json` preserves the original index verbatim. The current map resolves original script paths to exact `.executed.py.txt` bytes. Maintained `.py` copies remove only unused imports and have not been executed; see `../S8-archive-lint-e4168a2/path-map.json`.
