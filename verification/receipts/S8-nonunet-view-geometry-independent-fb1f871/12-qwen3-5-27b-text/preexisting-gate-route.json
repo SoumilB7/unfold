@@ -1,0 +1,36 @@
+{
+  "old": {
+    "paths": [
+      "M 118 760 L 118 152 Q 118 142 108 142 L 20 142"
+    ],
+    "scores_rect": {
+      "x": "-140",
+      "y": "408",
+      "width": "280",
+      "height": "82",
+      "rx": "11",
+      "ry": "11",
+      "fill": "#0F6E56",
+      "stroke": "#0E5C48",
+      "stroke-width": "0.6",
+      "filter": "url(#uf-f76c6a8737-g1-gqa-attn-4-shadow)"
+    }
+  },
+  "current": {
+    "paths": [
+      "M 118 760 L 118 152 Q 118 142 108 142 L 20 142"
+    ],
+    "scores_rect": {
+      "x": "-140",
+      "y": "408",
+      "width": "280",
+      "height": "82",
+      "rx": "11",
+      "ry": "11",
+      "fill": "#0F6E56",
+      "stroke": "#0E5C48",
+      "stroke-width": "0.6",
+      "filter": "url(#uf-f76c6a8737-g1-gqa-attn-4-shadow)"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "verdict": "final39derived matrix ACCEPT within recorded lineage",
+  "verified_payloads": 117,
+  "all_payload_bytes_equal_committed_prior": true,
+  "all_matrix_fields_except_sources_equal": true,
+  "actual_sdxl_current_replay_files_verified": 7,
+  "actual_sdxl_table_rows": 3551,
+  "actual_sdxl_source_and_external_pins_identical": true,
+  "generator_check_exit": 0,
+  "bounded38guard_review": "S8-final-source-derivation-preparation-fb1f871/owner-review.json",
+  "no_new_model_execution": true,
+  "not_fresh39": true,
+  "blessed": false,
+  "limits": [
+    "HTML/output differences and final broad remain separate",
+    "39 construction/execution rows retain explicit original lineage; source-manifest derivation is not new model observation"
+  ]
+}

@@ -1,0 +1,873 @@
+{
+  "accepted_bloom_reuse": "/private/tmp/unfold-s8-bloom-pilot-736fdab/accepted-s7/bloom",
+  "accepted_remaining_command": [
+    "python3",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-preservation-ledger-recovery-preparation/capture_sidecar.py",
+    "--source",
+    "/private/tmp/unfold-s8-ledger-source-83140f1",
+    "--pins",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-preservation-ledger-recovery-preparation/source-snapshot.json",
+    "--output",
+    "{NEW_OLD28_OUTPUT}",
+    "auraflow-v0-3",
+    "cogvideox-5b",
+    "dbrx-base",
+    "deepseek-v3",
+    "flux-2-dev",
+    "fluxtransformer2dmodel",
+    "gemma-2-2b-it",
+    "glm-4-5",
+    "gpt-oss-20b",
+    "granite-3-0-8b-instruct",
+    "hunyuanvideo",
+    "llama-7b",
+    "ltx-video",
+    "lumina-image-2-0",
+    "mochi-1-preview",
+    "musicgen-small",
+    "olmo-2-1124-7b",
+    "pixart-sigma-xl-2-1024-ms",
+    "prxpixel-t2i",
+    "qwen-image",
+    "qwen2-vl-7b-instruct",
+    "qwen3-5-27b-text",
+    "qwen3-8b",
+    "sana-1600m-1024px-diffusers",
+    "stable-diffusion-3-5-large",
+    "stable-diffusion-xl-base-1-0",
+    "stablelm-2-1-6b",
+    "wan2-2-t2v-a14b-diffusers"
+  ],
+  "accepted_remaining_count": 28,
+  "accepted_script": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-preservation-ledger-recovery-preparation/capture_sidecar.py",
+  "accepted_script_sha256": "c927f0af793c7934aac03e4b326d34f31b2fb47533f14a11abba7077752c3743",
+  "accepted_snapshot": "/private/tmp/unfold-s8-ledger-source-83140f1",
+  "accepted_snapshot_pins": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-preservation-ledger-recovery-preparation/source-snapshot.json",
+  "accepted_snapshot_pins_sha256": "ce811085ea4af288f31b1ae7c7c1dc14ba7f8c9761a2bdc9ff66deff9bb61b94",
+  "current20": [
+    "auraflow-v0-3",
+    "cogvideox-5b",
+    "dbrx-base",
+    "flux-2-dev",
+    "fluxtransformer2dmodel",
+    "gemma-2-2b-it",
+    "glm-4-5",
+    "gpt-oss-20b",
+    "ltx-video",
+    "lumina-image-2-0",
+    "mochi-1-preview",
+    "olmo-2-1124-7b",
+    "prxpixel-t2i",
+    "qwen-image",
+    "qwen3-5-27b-text",
+    "qwen3-8b",
+    "sana-1600m-1024px-diffusers",
+    "stable-diffusion-3-5-large",
+    "stablelm-2-1-6b",
+    "wan2-2-t2v-a14b-diffusers"
+  ],
+  "current20_commands": [
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "auraflow-v0-3",
+        "--output",
+        "{CURRENT_ROOT}/auraflow-v0-3"
+      ],
+      "slug": "auraflow-v0-3"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "cogvideox-5b",
+        "--output",
+        "{CURRENT_ROOT}/cogvideox-5b"
+      ],
+      "slug": "cogvideox-5b"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "dbrx-base",
+        "--output",
+        "{CURRENT_ROOT}/dbrx-base",
+        "--parallel-diagnostic"
+      ],
+      "slug": "dbrx-base"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "flux-2-dev",
+        "--output",
+        "{CURRENT_ROOT}/flux-2-dev",
+        "--parallel-diagnostic"
+      ],
+      "slug": "flux-2-dev"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "fluxtransformer2dmodel",
+        "--output",
+        "{CURRENT_ROOT}/fluxtransformer2dmodel"
+      ],
+      "slug": "fluxtransformer2dmodel"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "gemma-2-2b-it",
+        "--output",
+        "{CURRENT_ROOT}/gemma-2-2b-it",
+        "--parallel-diagnostic"
+      ],
+      "slug": "gemma-2-2b-it"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "glm-4-5",
+        "--output",
+        "{CURRENT_ROOT}/glm-4-5",
+        "--parallel-diagnostic"
+      ],
+      "slug": "glm-4-5"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "gpt-oss-20b",
+        "--output",
+        "{CURRENT_ROOT}/gpt-oss-20b",
+        "--parallel-diagnostic"
+      ],
+      "slug": "gpt-oss-20b"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "ltx-video",
+        "--output",
+        "{CURRENT_ROOT}/ltx-video"
+      ],
+      "slug": "ltx-video"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "lumina-image-2-0",
+        "--output",
+        "{CURRENT_ROOT}/lumina-image-2-0",
+        "--parallel-diagnostic"
+      ],
+      "slug": "lumina-image-2-0"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "mochi-1-preview",
+        "--output",
+        "{CURRENT_ROOT}/mochi-1-preview"
+      ],
+      "slug": "mochi-1-preview"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "olmo-2-1124-7b",
+        "--output",
+        "{CURRENT_ROOT}/olmo-2-1124-7b",
+        "--parallel-diagnostic"
+      ],
+      "slug": "olmo-2-1124-7b"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "prxpixel-t2i",
+        "--output",
+        "{CURRENT_ROOT}/prxpixel-t2i",
+        "--parallel-diagnostic"
+      ],
+      "slug": "prxpixel-t2i"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "qwen-image",
+        "--output",
+        "{CURRENT_ROOT}/qwen-image"
+      ],
+      "slug": "qwen-image"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "qwen3-5-27b-text",
+        "--output",
+        "{CURRENT_ROOT}/qwen3-5-27b-text",
+        "--parallel-diagnostic"
+      ],
+      "slug": "qwen3-5-27b-text"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "qwen3-8b",
+        "--output",
+        "{CURRENT_ROOT}/qwen3-8b",
+        "--parallel-diagnostic"
+      ],
+      "slug": "qwen3-8b"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "sana-1600m-1024px-diffusers",
+        "--output",
+        "{CURRENT_ROOT}/sana-1600m-1024px-diffusers",
+        "--parallel-diagnostic"
+      ],
+      "slug": "sana-1600m-1024px-diffusers"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "stable-diffusion-3-5-large",
+        "--output",
+        "{CURRENT_ROOT}/stable-diffusion-3-5-large"
+      ],
+      "slug": "stable-diffusion-3-5-large"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "stablelm-2-1-6b",
+        "--output",
+        "{CURRENT_ROOT}/stablelm-2-1-6b",
+        "--parallel-diagnostic"
+      ],
+      "slug": "stablelm-2-1-6b"
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_current.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CURRENT_ROOT}/source-manifest.json",
+        "--slug",
+        "wan2-2-t2v-a14b-diffusers",
+        "--output",
+        "{CURRENT_ROOT}/wan2-2-t2v-a14b-diffusers"
+      ],
+      "slug": "wan2-2-t2v-a14b-diffusers"
+    }
+  ],
+  "current_additional_parse_count": 28,
+  "current_candidate_commit": "779739b (frozen executor source; launch waits for serial lane release)",
+  "example_diagnostic_slugs_sha256": "62d4d4d6cab575028297920bd3e749e5174b3bbfc906f63d0e839abf3a9bcbdd",
+  "examples8": {
+    "deepseek-v3": "deepseek-v3",
+    "granite-3-0-8b-instruct": "granite-3-0-8b-instruct",
+    "hunyuanvideo": "hunyuanvideo",
+    "llama-7b": "llama-7b",
+    "musicgen-small": "musicgen-small",
+    "pixart-sigma-xl-2-1024-ms": "pixart-sigma-xl-2-1024-ms",
+    "qwen2-vl-7b-instruct": "qwen2-vl-7b-instruct",
+    "stable-diffusion-xl-base-1-0": "stable-diffusion-xl-base-1-0"
+  },
+  "examples_command": [
+    "python3",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/scripts/capture_examples.py",
+    "--checkout",
+    "{FINAL_CHECKOUT}",
+    "--source-manifest",
+    "{CURRENT_ROOT}/source-manifest.json",
+    "--diagnostic-slugs",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-remaining-preservation-capture-preparation/example-diagnostic-slugs.json",
+    "--output",
+    "{CURRENT_ROOT}/examples"
+  ],
+  "execution_policy": "No execution during executor focused lane. Elevated outer command for actual models; strictly serial old28 then current8example generator then20individualcaptures after explicit lane release. Preserve stdout/stderr/process exit plus before/after source/input/script pins, including failures. Stop old28 on first expected-ledger mismatch; stop relevant counterpart attribution on first unrecovered oldlockedview sequence.",
+  "extra_sdxl_parse_outside_generator": 0,
+  "helper_ast_precheck_sha256": "72194641eda84c56900466709e4602ecbfa5d9d80c1008559a0494fd2c37bebf",
+  "inputs": [
+    {
+      "accepted_fixture_sha256": "105bbd65a8575c0f50e92f3090b7bf1089e7f3bd5c3802d76cd06844d4e5d73c",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "105bbd65a8575c0f50e92f3090b7bf1089e7f3bd5c3802d76cd06844d4e5d73c",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "9231f90739d481a2ea2cbbfb827e428729c5904929ec55f9adddbdcdda424323",
+      "input_sha256": "2fd52b165c9a4ac45ad0320de924685e1db03bd7b322802de94620cde37666db",
+      "parallel_counterpart_required": false,
+      "prior_failed_surfaces": {
+        "ledgers": "hash mismatch"
+      },
+      "slug": "auraflow-v0-3",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "ec3c45693cfa29ebab32657ca294ab592fce04aedbca0dc1d7aef13ea6371eaa",
+      "current_capture_source": "existingBloomWithFinalGeometryReplay",
+      "current_fixture_sha256": "ec3c45693cfa29ebab32657ca294ab592fce04aedbca0dc1d7aef13ea6371eaa",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "cb0f1c08fb94057f4400c55e893d680c3a6d428d45f1f9582942b2d7edd1a520",
+      "input_sha256": "eeececc1c43f2e91a513d3e970fdc7bc20e8dd984432464a94e6aef1dddabac0",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+      },
+      "slug": "bloom",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "8da9cccfafce3e9735601aea8fcc3783247a0ed7a68773d42650871e5437847e",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "8da9cccfafce3e9735601aea8fcc3783247a0ed7a68773d42650871e5437847e",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "b1333dd16f9e6050fce4747160f5740ac985bc900bb7157c34dfe5bd624c3f7f",
+      "input_sha256": "98c43e5a1e52ac08217bbf059792b259c50eee75872e488d890e6f34691acb1e",
+      "parallel_counterpart_required": false,
+      "prior_failed_surfaces": {
+        "ledgers": "hash mismatch"
+      },
+      "slug": "cogvideox-5b",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "de3977b959954db6244bccd18313843cb215a7a818957313247180e92c65d971",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "de3977b959954db6244bccd18313843cb215a7a818957313247180e92c65d971",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "caacc552abf231ac4f9d0cb50a2ba5052adc534dd849475aa1163690a12b4b72",
+      "input_sha256": "5af6ade4f3f084dfffb11ebe5f69e548476f774a0a2423b15581bf8e107cd44f",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 6, actual 6)"
+      },
+      "slug": "dbrx-base",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "6a9b6f9d6aa62732ac1647e98189f7608feb58bf4f2d3928ddd0f129fa39487c",
+      "current_capture_source": "finalEightExampleGenerator",
+      "current_fixture_sha256": "6a9b6f9d6aa62732ac1647e98189f7608feb58bf4f2d3928ddd0f129fa39487c",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "8bebf57b3911c1e41bd4dd0edf549ded1eba771b7681d850ee1dfb9af35986f5",
+      "input_sha256": "c537a3b8a2ac6d5bb55c71a44daf203ece0978aa1372dc24d9e88c7832f5dd0e",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 11, actual 11)"
+      },
+      "slug": "deepseek-v3",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "40e7bd462e7147b740c662eecaa462521d5248b5100d4bee85d192076d153098",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "40e7bd462e7147b740c662eecaa462521d5248b5100d4bee85d192076d153098",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "7686befee381fc6d561bd50dbc96831af55783d63f5b5b76151dd02103d695b4",
+      "input_sha256": "6b2db1a30cfc42253f142e759926b2b6ce92b27fe28429ff11bb691b7a7c3bd9",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 16, actual 16)"
+      },
+      "slug": "flux-2-dev",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "f2c817111b55fe7093e9e5b34307e606e6f3c3a4ae8d9eacfe65f9343fc12a30",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "f2c817111b55fe7093e9e5b34307e606e6f3c3a4ae8d9eacfe65f9343fc12a30",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "363c5d2079066100c0d8fdbb7b76f61644f891bfcc0ba4de7b366e54be9f8698",
+      "input_sha256": "fd25deced9c84d1981cc6dd371cb8610466e0ffb1b93e5dc6f172818ad9b4986",
+      "parallel_counterpart_required": false,
+      "prior_failed_surfaces": {
+        "ledgers": "hash mismatch"
+      },
+      "slug": "fluxtransformer2dmodel",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "4b8942e8ef17b03f0d583a4be0cd9edbc7ff43990396d68a7d585064a037c586",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "4b8942e8ef17b03f0d583a4be0cd9edbc7ff43990396d68a7d585064a037c586",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "785947e409197b09ff3f2d7c60803b30691db1befddef07eea83fc5e3a69cb04",
+      "input_sha256": "fac62bd74d4b40283b6a1ba24702067f8064278f3e25442e55a6a79dad3f2f14",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 6, actual 6)"
+      },
+      "slug": "gemma-2-2b-it",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "add9612a16d9906ed97915d79e14ccb6c69cb487a9dae15361cb223db3c3e412",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "add9612a16d9906ed97915d79e14ccb6c69cb487a9dae15361cb223db3c3e412",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "01c7fd61366372a4253bc392d7d79ecd7aeb5c982ab0778a2fd4ffe6d0291794",
+      "input_sha256": "5299d4506ac6d5ddebcb6bfc2f94d599f6890db50476722866d4a5285310ee37",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 9, actual 9)"
+      },
+      "slug": "glm-4-5",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "6ee34b8e21f8745ae873ec2379e9fcbfafd53c7e1ce4e45e4178758c3f5e78b0",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "6ee34b8e21f8745ae873ec2379e9fcbfafd53c7e1ce4e45e4178758c3f5e78b0",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "84f1aefbbb8f11468bd19672b072df0b76393ed81df1453609cf67040f775944",
+      "input_sha256": "f0674dd09395797f13e4cc920a3720aab014d5423a118d7158caef5133e88ece",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 8, actual 8)"
+      },
+      "slug": "gpt-oss-20b",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "bd9f2345a33dca2ad7b91c26de015d5c81e6e5cad1546a02f082600c3eee2d6c",
+      "current_capture_source": "finalEightExampleGenerator",
+      "current_fixture_sha256": "bd9f2345a33dca2ad7b91c26de015d5c81e6e5cad1546a02f082600c3eee2d6c",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "b8a6b22bd67da2340eef658cd45b2a44cca6b8aa2360920d91d135d4401e8b13",
+      "input_sha256": "efa95f28e1c85369e50ea060677d52fd71b2712b9c7fabd249b3d2985fbde6ee",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+      },
+      "slug": "granite-3-0-8b-instruct",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "78c2016104de932e4a147ca15d48407964804415c0c1b8f033d6c9d0262d3e23",
+      "current_capture_source": "finalEightExampleGenerator",
+      "current_fixture_sha256": "78c2016104de932e4a147ca15d48407964804415c0c1b8f033d6c9d0262d3e23",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "d59135c90e8cb86109cb9d9de1261d5757a826fcdee3a362b9515c66795ce0bf",
+      "input_sha256": "55c6fec69956e7fcb037a27666903eb9517f03df73d276770e2d23be1c4b64b7",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 20, actual 20)"
+      },
+      "slug": "hunyuanvideo",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "c33b6c8ca00034db5c1154d83feda8d7520c36da35d3c6cef8933296f88e60e8",
+      "current_capture_source": "finalEightExampleGenerator",
+      "current_fixture_sha256": "c33b6c8ca00034db5c1154d83feda8d7520c36da35d3c6cef8933296f88e60e8",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "94d395aa6c54e7938b3b734d761f906f367646157b1950095243c9368c7be7b8",
+      "input_sha256": "e5c5361c13175608d270859419a52e83e2d1c5f50bdaddb3984f897a91bd6ea0",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+      },
+      "slug": "llama-7b",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "aeff48dd3e3f44c282b39789d0cc789958ed029f0e49b1610ce5eb2dcc392123",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "aeff48dd3e3f44c282b39789d0cc789958ed029f0e49b1610ce5eb2dcc392123",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "68e5fc24582b02e41cf6f27f91c96334a986488a9b76e2fb01c3e70f9a261af3",
+      "input_sha256": "29d528c55dab8bd0b1f90ce88dce626a09b02cae9fdde7f1a7c13b3d54b03a12",
+      "parallel_counterpart_required": false,
+      "prior_failed_surfaces": {
+        "ledgers": "hash mismatch"
+      },
+      "slug": "ltx-video",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "d1ee2ad6baba0e8e7950a2f1e12fd33f09d069dd5b7b59fc96d7f85081f4c56d",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "d1ee2ad6baba0e8e7950a2f1e12fd33f09d069dd5b7b59fc96d7f85081f4c56d",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "ac1cf4061ecb384925cf0dab49c2507942500adb176d3715b37eeb6dd23833a4",
+      "input_sha256": "4724ec06ef7568b049d971a1aeaf89631a36eabcdaaff9ba7b0112f7f0d53c97",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 16, actual 16)"
+      },
+      "slug": "lumina-image-2-0",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "cd3de5b040745dc3bec9f5605b1c172b98451f45f340b7fb6932e7e9b35ce6b6",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "cd3de5b040745dc3bec9f5605b1c172b98451f45f340b7fb6932e7e9b35ce6b6",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "8aae61a9eeb16d386a24c143a4a38c40bae108cffb8ac124c37f76c37abd8621",
+      "input_sha256": "0f43260bb708c7ca1ad6e3a0bead10a4f16278955f5625c14bfb9febada5d786",
+      "parallel_counterpart_required": false,
+      "prior_failed_surfaces": {
+        "ledgers": "hash mismatch"
+      },
+      "slug": "mochi-1-preview",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "200a4dec968d42ca29ae7b2ee066bcec69f66b16657db46335086965e7785f86",
+      "current_capture_source": "finalEightExampleGenerator",
+      "current_fixture_sha256": "200a4dec968d42ca29ae7b2ee066bcec69f66b16657db46335086965e7785f86",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "b1d59ca63d4160c976fd966436a8ffad6be9fac47833221caa03129dd6b56e3d",
+      "input_sha256": "59bd0ebe679a0f02a04f579c58b5c0dcd42e3ae0e1967468ebfbe8d91bbb31f8",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 8, actual 8)"
+      },
+      "slug": "musicgen-small",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "26ccdfd1f1e12885cc36d60cbc555336bfd17e0e0bdfc61b94ee3efbfa418c0a",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "26ccdfd1f1e12885cc36d60cbc555336bfd17e0e0bdfc61b94ee3efbfa418c0a",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "af3ef89d180c62300d67ac160998ff2b050118dcc844181a2743437727957d28",
+      "input_sha256": "4c01e79069f3f323a7371ec479efd297d2094c617125738c0e26b9dc71d9115c",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+      },
+      "slug": "olmo-2-1124-7b",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "796a016d13551709f35a50c4a59b4eff2c6527b99e58388feb589d64c8125d53",
+      "current_capture_source": "finalEightExampleGenerator",
+      "current_fixture_sha256": "796a016d13551709f35a50c4a59b4eff2c6527b99e58388feb589d64c8125d53",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "ee6aa73ccaed6d5f8921e09f30f40437ce122411b8ccbf31ca65d71df2b6ab04",
+      "input_sha256": "40d5671a5a0f359256d75c826cc879a15dc42707ff759d91a6f0a0a277d6d714",
+      "parallel_counterpart_required": false,
+      "prior_failed_surfaces": {
+        "ledgers": "hash mismatch"
+      },
+      "slug": "pixart-sigma-xl-2-1024-ms",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "0f832626277f138f2fe3c4ac7594192ca76d661f850db1a4634a8210ea5c8088",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "0f832626277f138f2fe3c4ac7594192ca76d661f850db1a4634a8210ea5c8088",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "9e85cf25ae4e294e589cffaedac1a768f0b4ace4f4270880b744d3299fcf1161",
+      "input_sha256": "9db1f3ac576f2f363e02c8cdcbfa9f550a2225f0049210a0f810275f06e5435a",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 9, actual 9)"
+      },
+      "slug": "prxpixel-t2i",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "b0c6d7771090f955f86b264f4b4eaadab69bb0c1c81909648ac4dc21883f926b",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "b0c6d7771090f955f86b264f4b4eaadab69bb0c1c81909648ac4dc21883f926b",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "c290278543416826edba84f5155316e5a07bf7f7ee27dc84ec5c0d0cf5aafbcb",
+      "input_sha256": "1a1daa1f89f87b911e912fc0e6b9cf01d43cf61948679ede2e94134ceda11036",
+      "parallel_counterpart_required": false,
+      "prior_failed_surfaces": {
+        "ledgers": "hash mismatch"
+      },
+      "slug": "qwen-image",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "de4d44b320e32207da76709ec94495d8e384bea258be8ae266a679ba2abbf8f9",
+      "current_capture_source": "finalEightExampleGenerator",
+      "current_fixture_sha256": "de4d44b320e32207da76709ec94495d8e384bea258be8ae266a679ba2abbf8f9",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "065b61cc52330134983e38a67fecab8551f6c04c4fe4fcfac3bffb9161e3acef",
+      "input_sha256": "8920a8d0e2cf72f5d95859a23505e5d0df6ec62d06e5a31098eb93d7d120a30b",
+      "parallel_counterpart_required": false,
+      "prior_failed_surfaces": {
+        "ledgers": "hash mismatch"
+      },
+      "slug": "qwen2-vl-7b-instruct",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "e0a6c2efb9c7fc156befc4e90090aabc83826715feae992271dbf405e5017863",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "e0a6c2efb9c7fc156befc4e90090aabc83826715feae992271dbf405e5017863",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "3df914b5e2ce03df62aaa185fc7a349f5e298df9a5e468118d98d5540d7a6ec9",
+      "input_sha256": "c3532d5a53e8a0a3e630904abbb8d42d545d19a991082ee4e82e826dd46b3f97",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 6, actual 6)"
+      },
+      "slug": "qwen3-5-27b-text",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "03c84d3d82e7d7cdada3a196dba402f7849452c4731d76582b55c57441c425cf",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "03c84d3d82e7d7cdada3a196dba402f7849452c4731d76582b55c57441c425cf",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "c9647c89ef727bc8e96929642adbf1ec3796a2a6345aa914c3e90f772720b283",
+      "input_sha256": "64e30e9f25fb34dc75f0ea24ded9dfec7503f36945d00f0290655ed6a31dff82",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+      },
+      "slug": "qwen3-8b",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "7ce2a9f648f00ef9bc8bf2d402eeb2ab59d4fcc9fbcee9bf5961eddb13946a5b",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "7ce2a9f648f00ef9bc8bf2d402eeb2ab59d4fcc9fbcee9bf5961eddb13946a5b",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "79f67a2dd7006cb46cc55f4d4ed835a38e77adadee310d685c9861925432b9f9",
+      "input_sha256": "d923ab60e0cec42e253fa8d373c786163d5254ac53cb576586a17d30f9edd440",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 12, actual 12)"
+      },
+      "slug": "sana-1600m-1024px-diffusers",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "20cf7706597ae23435393f22e20db7847bc31720c9f5a405cdb6370b15abe2d7",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "20cf7706597ae23435393f22e20db7847bc31720c9f5a405cdb6370b15abe2d7",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "adc05ae4347293aa4b5beb3c82390a10ff7df4df1f58587c1a970dd417e4ccca",
+      "input_sha256": "1a3cdaafa2c2aabe41cad52320163463c1fbb57b2fd82829dac43c678d7cd2ee",
+      "parallel_counterpart_required": false,
+      "prior_failed_surfaces": {
+        "ledgers": "hash mismatch"
+      },
+      "slug": "stable-diffusion-3-5-large",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "05de128f956d5140df7cbadf8d9bbc2e6751da9614ce957235b645a45b470751",
+      "current_capture_source": "finalEightExampleGenerator",
+      "current_fixture_sha256": "05de128f956d5140df7cbadf8d9bbc2e6751da9614ce957235b645a45b470751",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "600cc865a7e22fb370caed120e7d20f629d45955f4d9d73c84aff60f66111961",
+      "input_sha256": "52be2be1c491ad6bc1ec707f3a63893b18adfbca8b95b29f35ca5d803fb6db74",
+      "parallel_counterpart_required": false,
+      "prior_failed_surfaces": {
+        "expanded": "hash mismatch",
+        "html_meta": "hash mismatch",
+        "ir": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "params": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 29, actual 143)"
+      },
+      "slug": "stable-diffusion-xl-base-1-0",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "78d6d3a7528069cd18efa3fabd0b0f7b8e3c905ccc56fa203df52b9e6dfc0443",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "78d6d3a7528069cd18efa3fabd0b0f7b8e3c905ccc56fa203df52b9e6dfc0443",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "fd11462d08da6959bc5dc274ce7bae14347c1bf37f5e745e2f6d0701f4cc9717",
+      "input_sha256": "fac78593024b21c2407123b03897e713759220be6c9880257da92e98caa19927",
+      "parallel_counterpart_required": true,
+      "prior_failed_surfaces": {
+        "html_meta": "hash mismatch",
+        "ledgers": "hash mismatch",
+        "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+      },
+      "slug": "stablelm-2-1-6b",
+      "source": "local"
+    },
+    {
+      "accepted_fixture_sha256": "74d0deee82411a493a20e050ed3697a55e4c9230a44112e208f90b7ddc5ce417",
+      "current_capture_source": "oneActualSableInvocation",
+      "current_fixture_sha256": "74d0deee82411a493a20e050ed3697a55e4c9230a44112e208f90b7ddc5ce417",
+      "executable_input_exact": true,
+      "expected_ledger_sha256": "42db9740109112ad99086e4bc16d6ac96d6100020043c901c1ab7ca4fb504209",
+      "input_sha256": "0dec40e4d5a7aa598132bab0d057ca203144220851235672417dbbb68f2bca52",
+      "parallel_counterpart_required": false,
+      "prior_failed_surfaces": {
+        "ledgers": "hash mismatch"
+      },
+      "slug": "wan2-2-t2v-a14b-diffusers",
+      "source": "local"
+    }
+  ],
+  "no_baseline_writes": true,
+  "parallel_diagnostic_current20_count": 12,
+  "parallel_diagnostic_examples_count": 5,
+  "script_sha256": {
+    "scripts/capture_common.py": "e6c19b155ae05f503eb1623ad7cbcbb51f70fb25e5ad4c8ba54bc891920d80cd",
+    "scripts/capture_current.py": "d396bb87bcb2fca67ec074dc0bd4dcc91548a30593bb8eacf54c7c9fdfbb92ca",
+    "scripts/capture_examples.py": "dfb84d0b5df34507109c652ee6bc5461ee23aea40707c0b7bd709288cb61b449",
+    "scripts/graph_capture.py": "7b38c86e2181a9cd67a4998c58dff2b9cb0821bc793362525c21caabd39d297e"
+  },
+  "source_expected_manifest_sha256": "a1fe7d578c16bbed0d44b77ad9c60f77a210ded565473b25777c2b61716743a9",
+  "source_reuse_gate": "Final candidate not yet frozen. Reuse736Bloom only after exact source/input/comparator diff attribution and final savedIR geometry replay; no historical parse restamped as final. Other existingSDXL captures can support comparisons but the8examplegenerator already covers this input once.",
+  "status": "PREPARED_NOT_RUN",
+  "surface_scope": "Accepted old28 recovers ledger and retains actual displayIR, without obsolete triple-unfold harness. Current20 Sable once retains actualIR/page/report, then existing comparator surfaces from sameDiagram; examples actualgenerator once per8input retains canonical counterpart render and5comparable surfaces, no secondSableparse. Original Sable comparator is unchanged and refreshes normally in final verification. PNG gallery locks are never regenerated/blessed by this queue."
+}

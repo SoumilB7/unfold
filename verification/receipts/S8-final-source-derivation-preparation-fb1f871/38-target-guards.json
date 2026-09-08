@@ -1,0 +1,942 @@
+{
+  "status": "prepared bounded guards; owner disposition and SDXL actual reconciliation remain separate",
+  "count": 38,
+  "source_dispatch_projector_reconciliation_generator_checks": [
+    {
+      "path": "model_unfolder/adapters/diffusor/parser.py",
+      "sha256": "0b46066f535105f673268beae2798ec5e97576c74cae74a284e5ed28d94c460b",
+      "716_to_fb1_bytes_equal": true
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/unet_cutover.py",
+      "sha256": "2f01b67d5152a10b07424eba398225b65b37171e00ed609e1f4d6aa629e3514b",
+      "716_to_fb1_bytes_equal": true
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/unet_projection.py",
+      "sha256": "143b25fbf774aee62ffc1c004bbfb6db36895fc51609abc1ad6864acbd4c5be6",
+      "716_to_fb1_bytes_equal": true
+    },
+    {
+      "path": "model_unfolder/evidence/reconciliation.py",
+      "sha256": "e02796bb0121962a2b41d153a208977f900fb985b643d887622f6dbe48b5feb4",
+      "716_to_fb1_bytes_equal": true
+    },
+    {
+      "path": "scripts/generate_s7_shadow.py",
+      "sha256": "e415c5d0a4efac1ae655d4a992a08087daa015e6d2438dc8e4771fddbbead70c",
+      "716_to_fb1_bytes_equal": true
+    }
+  ],
+  "targets": [
+    {
+      "slug": "auraflow-v0-3",
+      "input": "tests/sable_test_corpus/auraflow-v0-3.json",
+      "input_sha256": "105bbd65a8575c0f50e92f3090b7bf1089e7f3bd5c3802d76cd06844d4e5d73c",
+      "model_sha256": "8167e09a2d06030e9f03420abe39103b0688a8c097a01b3b62f6dddd07a90b19",
+      "resolved_class": {
+        "module": "diffusers.models.transformers.auraflow_transformer_2d",
+        "qualname": "AuraFlowTransformer2DModel"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "root.denoiser.diffusion_bookend_operations",
+        "root.denoiser.diffusion_root_topology",
+        "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+        "root.denoiser.stacks[0].diffusion_stack_depth",
+        "root.denoiser.stacks[1].cell.diffusion_conditioning_applications",
+        "root.denoiser.stacks[1].diffusion_stack_depth"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "bloom",
+      "input": "tests/sable_test_corpus/bloom.json",
+      "input_sha256": "ec3c45693cfa29ebab32657ca294ab592fce04aedbca0dc1d7aef13ea6371eaa",
+      "model_sha256": "2084053b6452acd007ca98145c5a87e8e97260a9b8485aa5ce8288714ae6c11e",
+      "resolved_class": {
+        "module": "transformers.models.bloom.modeling_bloom",
+        "qualname": "BloomForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.position_schedule",
+        "decoder.ffn.ffn_schedule",
+        "decoder.layer.norm_placement",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "cogvideox-5b",
+      "input": "tests/sable_test_corpus/cogvideox-5b.json",
+      "input_sha256": "8da9cccfafce3e9735601aea8fcc3783247a0ed7a68773d42650871e5437847e",
+      "model_sha256": "5cf8c2f80c884c625298898dce5115e25ea1feaa38744fdcb76ee61df0feb1c2",
+      "resolved_class": {
+        "module": "diffusers.models.transformers.cogvideox_transformer_3d",
+        "qualname": "CogVideoXTransformer3DModel"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "root.denoiser.diffusion_bookend_operations",
+        "root.denoiser.diffusion_root_topology",
+        "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+        "root.denoiser.stacks[0].diffusion_stack_depth"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "command-a-03-2025",
+      "input": "tests/unseen_model_configs/command-a-03-2025.json",
+      "input_sha256": "6a56c1d2c171197959088403e1fe4113aae079b70eca57a43ed1e2ae3b0af300",
+      "model_sha256": "8ab56ea4f4f256e8fd022d75ef715aed5ebca6913933270ef9464f45ed9c518d",
+      "resolved_class": {
+        "module": "transformers.models.cohere2.modeling_cohere2",
+        "qualname": "Cohere2ForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.bias",
+        "decoder.attention.head_geometry",
+        "decoder.attention.mask",
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mechanism",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.output_projection",
+        "decoder.ffn.ffn_schedule",
+        "decoder.ffn.intermediate_size",
+        "decoder.layer.norm_placement",
+        "decoder.layer.parallel_norm_count",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "dbrx-base",
+      "input": "tests/sable_test_corpus/dbrx-base.json",
+      "input_sha256": "de3977b959954db6244bccd18313843cb215a7a818957313247180e92c65d971",
+      "model_sha256": "3f66c0d48aa93566dac93ac90edad53a11bbf06e4d3047e0311fcaebd0cc8e64",
+      "resolved_class": {
+        "module": "transformers.models.dbrx.modeling_dbrx",
+        "qualname": "DbrxForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.position_schedule",
+        "decoder.ffn.ffn_schedule",
+        "decoder.layer.norm_placement",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "deepseek-coder-v2-lite",
+      "input": "tests/unseen_model_configs/deepseek-coder-v2-lite.json",
+      "input_sha256": "a966dc1455a8328c32ada699174cf2d472cb414f811c62fc61f863f0b109c9d8",
+      "model_sha256": "b6e7386ea4adcd37e81b2365b69effdaca8265e5ce74d0143c7ca329aa570080",
+      "resolved_class": {
+        "module": "transformers.models.deepseek_v2.modeling_deepseek_v2",
+        "qualname": "DeepseekV2ForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mixer_schedule",
+        "decoder.ffn.ffn_schedule",
+        "decoder.layer.norm_placement",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "deepseek-v3",
+      "input": "tests/sable_test_corpus/deepseek-v3.json",
+      "input_sha256": "6a9b6f9d6aa62732ac1647e98189f7608feb58bf4f2d3928ddd0f129fa39487c",
+      "model_sha256": "919e7fde0ba86a904020f9b063d52a60783c1d056454107badf73750f0856650",
+      "resolved_class": {
+        "module": "transformers.models.deepseek_v3.modeling_deepseek_v3",
+        "qualname": "DeepseekV3ForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.bias",
+        "decoder.attention.head_geometry",
+        "decoder.attention.mask",
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mechanism",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.output_projection",
+        "decoder.attention.position_schedule",
+        "decoder.attention.rope_initialization",
+        "decoder.attention.rope_theta",
+        "decoder.ffn.ffn_schedule",
+        "decoder.layer.norm_placement",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "deepseek-v4-flash",
+      "input": "verification/s7/inputs/deepseek-v4-flash.json",
+      "input_sha256": "9e160a195b4ca3ca2a077516a0fe47b11144379e29457d3ec70efc34b1aa4302",
+      "model_sha256": "a37b47b71c6560ee89a4bb798a1bd45586c4b2b3af7ef8049a93270e1f199c8d",
+      "resolved_class": {
+        "module": "transformers.models.deepseek_v4.modeling_deepseek_v4",
+        "qualname": "DeepseekV4ForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.mixer_schedule"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "flux-2-dev",
+      "input": "tests/sable_test_corpus/flux-2-dev.json",
+      "input_sha256": "40e7bd462e7147b740c662eecaa462521d5248b5100d4bee85d192076d153098",
+      "model_sha256": "f177bc038678622fda7bdc0a1388e241ca667e487fb7b0dbc8aac35805724c93",
+      "resolved_class": {
+        "module": "diffusers.models.transformers.transformer_flux2",
+        "qualname": "Flux2Transformer2DModel"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "root.denoiser.diffusion_bookend_geometry",
+        "root.denoiser.diffusion_bookend_operations",
+        "root.denoiser.diffusion_root_topology",
+        "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+        "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
+        "root.denoiser.stacks[0].diffusion_stack_depth",
+        "root.denoiser.stacks[1].cell.diffusion_conditioning_applications",
+        "root.denoiser.stacks[1].cell.diffusion_norm_mechanism",
+        "root.denoiser.stacks[1].diffusion_stack_depth"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "fluxtransformer2dmodel",
+      "input": "tests/sable_test_corpus/fluxtransformer2dmodel.json",
+      "input_sha256": "f2c817111b55fe7093e9e5b34307e606e6f3c3a4ae8d9eacfe65f9343fc12a30",
+      "model_sha256": "ed2cddcd8786c0b6ff7f67934f566b836e6de3cd9d25600d358599381b65a1d6",
+      "resolved_class": {
+        "module": "diffusers.models.transformers.transformer_flux",
+        "qualname": "FluxTransformer2DModel"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "root.denoiser.diffusion_bookend_geometry",
+        "root.denoiser.diffusion_bookend_operations",
+        "root.denoiser.diffusion_root_topology",
+        "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
+        "root.denoiser.stacks[0].diffusion_stack_depth",
+        "root.denoiser.stacks[1].diffusion_stack_depth"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "input": "tests/sable_test_corpus/gemma-2-2b-it.json",
+      "input_sha256": "4b8942e8ef17b03f0d583a4be0cd9edbc7ff43990396d68a7d585064a037c586",
+      "model_sha256": "5b18a901ec6f8e8b11da08c7e576b0b93945511b8300ac8ae815ba6746e400e5",
+      "resolved_class": {
+        "module": "transformers.models.gemma2.modeling_gemma2",
+        "qualname": "Gemma2ForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.bias",
+        "decoder.attention.cached",
+        "decoder.attention.head_geometry",
+        "decoder.attention.logit_softcap",
+        "decoder.attention.mask",
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mechanism",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.output_projection",
+        "decoder.attention.position_schedule",
+        "decoder.attention.rope_initialization",
+        "decoder.attention.rope_theta",
+        "decoder.ffn.ffn_schedule",
+        "decoder.ffn.intermediate_size",
+        "decoder.layer.norm_placement",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "input": "verification/s7/inputs/gemma-3n-e2b.json",
+      "input_sha256": "53dbc746ab2a4d1496dca0fd4449be6880e3783bedca2d8be7e50f0a1fa9b21a",
+      "model_sha256": "a6c5d11fcc4635053514fe5689c2a8ab8a25a9fa025a6a3b55c96befdb83c39d",
+      "resolved_class": {
+        "module": "transformers.models.gemma3n.modeling_gemma3n",
+        "qualname": "Gemma3nForConditionalGeneration"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.kv_sharing_schedule",
+        "decoder.attention.mixer_schedule",
+        "decoder.ffn.ffn_schedule",
+        "decoder.per_layer_embedding_pathway"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "glm-4-5",
+      "input": "tests/sable_test_corpus/glm-4-5.json",
+      "input_sha256": "add9612a16d9906ed97915d79e14ccb6c69cb487a9dae15361cb223db3c3e412",
+      "model_sha256": "bc9977ce587541649f0a6ee57637cb3e5b65313797ba2dc059b8d840d7fc2fe2",
+      "resolved_class": {
+        "module": "transformers.models.glm4_moe.modeling_glm4_moe",
+        "qualname": "Glm4MoeForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.bias",
+        "decoder.attention.cached",
+        "decoder.attention.head_geometry",
+        "decoder.attention.mask",
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mechanism",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.output_projection",
+        "decoder.attention.position_schedule",
+        "decoder.attention.qk_norm",
+        "decoder.attention.qk_norm_schedule",
+        "decoder.attention.rope_initialization",
+        "decoder.attention.rope_theta",
+        "decoder.ffn.ffn_schedule",
+        "decoder.layer.norm_placement",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "input": "tests/sable_test_corpus/gpt-oss-20b.json",
+      "input_sha256": "6ee34b8e21f8745ae873ec2379e9fcbfafd53c7e1ce4e45e4178758c3f5e78b0",
+      "model_sha256": "e0a436dc338a43b9b5cab21100d2689494acb5b5684f0aa2a8ddd0b25c1ad843",
+      "resolved_class": {
+        "module": "transformers.models.gpt_oss.modeling_gpt_oss",
+        "qualname": "GptOssForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.bias",
+        "decoder.attention.cached",
+        "decoder.attention.head_geometry",
+        "decoder.attention.mask",
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mechanism",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.output_projection",
+        "decoder.attention.position_schedule",
+        "decoder.attention.rope_initialization",
+        "decoder.attention.rope_theta",
+        "decoder.ffn.ffn_schedule",
+        "decoder.layer.norm_placement",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "input": "tests/sable_test_corpus/granite-3-0-8b-instruct.json",
+      "input_sha256": "bd9f2345a33dca2ad7b91c26de015d5c81e6e5cad1546a02f082600c3eee2d6c",
+      "model_sha256": "5b49c1c0067d8943724d814c4cf354145a5f5ddcc56bc6cd20aa34024aea886a",
+      "resolved_class": {
+        "module": "transformers.models.granite.modeling_granite",
+        "qualname": "GraniteForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.bias",
+        "decoder.attention.cached",
+        "decoder.attention.head_geometry",
+        "decoder.attention.mask",
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mechanism",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.output_projection",
+        "decoder.attention.position_schedule",
+        "decoder.attention.rope_initialization",
+        "decoder.attention.rope_theta",
+        "decoder.ffn.ffn_schedule",
+        "decoder.ffn.intermediate_size",
+        "decoder.layer.norm_placement",
+        "decoder.layer.residual_scale",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "hunyuanvideo",
+      "input": "tests/sable_test_corpus/hunyuanvideo.json",
+      "input_sha256": "78c2016104de932e4a147ca15d48407964804415c0c1b8f033d6c9d0262d3e23",
+      "model_sha256": "9e8f62cbb34bcef863ec6bd71a9849625787a2b9e655ff546fd0d4a9e4e273e1",
+      "resolved_class": {
+        "module": "diffusers.models.transformers.transformer_hunyuan_video",
+        "qualname": "HunyuanVideoTransformer3DModel"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "root.denoiser.diffusion_bookend_operations",
+        "root.denoiser.diffusion_root_topology",
+        "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+        "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
+        "root.denoiser.stacks[0].diffusion_stack_depth",
+        "root.denoiser.stacks[0].diffusion_stack_variant",
+        "root.denoiser.stacks[1].diffusion_stack_depth",
+        "root.denoiser.stacks[1].diffusion_stack_variant",
+        "root.denoiser.stacks[2].cell.diffusion_norm_mechanism",
+        "root.denoiser.stacks[2].diffusion_stack_depth"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "jamba-v0-1",
+      "input": "tests/unseen_model_configs/jamba-v0-1.json",
+      "input_sha256": "0dd8df0799c1849d6caf7dad2cf23023b67cdc2e156ca5015faebf1eb38c98aa",
+      "model_sha256": "64f748d3f0ff43eaf718addc5803b5be02dcc8d1d01ea872eacb9706388a0839",
+      "resolved_class": {
+        "module": "transformers.models.jamba.modeling_jamba",
+        "qualname": "JambaForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "lfm2-1-2b",
+      "input": "tests/unseen_model_configs/lfm2-1-2b.json",
+      "input_sha256": "aef76f29d8213deaaa121fd4ed5e06a7c498560e6ef28488d5bcd969c9043c08",
+      "model_sha256": "f9b42e45f9b185f0b21ccf53136df98a48ad631d0adca4b8106a1c745c628a57",
+      "resolved_class": {
+        "module": "transformers.models.lfm2.modeling_lfm2",
+        "qualname": "Lfm2ForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.cached",
+        "decoder.attention.head_geometry",
+        "decoder.attention.mask",
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mechanism",
+        "decoder.attention.output_projection",
+        "decoder.attention.position_schedule",
+        "decoder.attention.rope_initialization",
+        "decoder.attention.rope_theta",
+        "decoder.ffn.ffn_schedule",
+        "model.final_norm_kind"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "llama-7b",
+      "input": "tests/sable_test_corpus/llama-7b.json",
+      "input_sha256": "c33b6c8ca00034db5c1154d83feda8d7520c36da35d3c6cef8933296f88e60e8",
+      "model_sha256": "67ccd19edd95d4aa9db20e037150f2b07211e547bc43f3465ea646cb98d9fe15",
+      "resolved_class": {
+        "module": "transformers.models.llama.modeling_llama",
+        "qualname": "LlamaForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.bias",
+        "decoder.attention.cached",
+        "decoder.attention.head_geometry",
+        "decoder.attention.mask",
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mechanism",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.output_projection",
+        "decoder.attention.position_schedule",
+        "decoder.attention.rope_initialization",
+        "decoder.attention.rope_theta",
+        "decoder.ffn.ffn_schedule",
+        "decoder.ffn.intermediate_size",
+        "decoder.layer.norm_placement",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "ltx-video",
+      "input": "tests/sable_test_corpus/ltx-video.json",
+      "input_sha256": "aeff48dd3e3f44c282b39789d0cc789958ed029f0e49b1610ce5eb2dcc392123",
+      "model_sha256": "7ec5531d5f46ef7e8899350204cc38b098ab6cb04b8d0872216f08bf39f54077",
+      "resolved_class": {
+        "module": "diffusers.models.transformers.transformer_ltx",
+        "qualname": "LTXVideoTransformer3DModel"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "root.denoiser.diffusion_bookend_geometry",
+        "root.denoiser.diffusion_bookend_operations",
+        "root.denoiser.diffusion_root_topology",
+        "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+        "root.denoiser.stacks[0].diffusion_stack_depth"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "lumina-image-2-0",
+      "input": "tests/sable_test_corpus/lumina-image-2-0.json",
+      "input_sha256": "d1ee2ad6baba0e8e7950a2f1e12fd33f09d069dd5b7b59fc96d7f85081f4c56d",
+      "model_sha256": "4a2c2a89265fa0901c85bdabdd746009197d9908765ea4bbebcca92bb542d60b",
+      "resolved_class": {
+        "module": "diffusers.models.transformers.transformer_lumina2",
+        "qualname": "Lumina2Transformer2DModel"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "root.denoiser.diffusion_bookend_geometry",
+        "root.denoiser.diffusion_bookend_operations",
+        "root.denoiser.diffusion_root_topology",
+        "root.denoiser.stacks[0].diffusion_stack_depth",
+        "root.denoiser.stacks[1].diffusion_stack_depth",
+        "root.denoiser.stacks[2].diffusion_stack_depth"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "mochi-1-preview",
+      "input": "tests/sable_test_corpus/mochi-1-preview.json",
+      "input_sha256": "cd3de5b040745dc3bec9f5605b1c172b98451f45f340b7fb6932e7e9b35ce6b6",
+      "model_sha256": "4cbafebf87810a3b34f41804bb52e68e1130b048f3973b5d9ecbae27494ac752",
+      "resolved_class": {
+        "module": "diffusers.models.transformers.transformer_mochi",
+        "qualname": "MochiTransformer3DModel"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "root.denoiser.diffusion_bookend_operations",
+        "root.denoiser.diffusion_root_topology",
+        "root.denoiser.stacks[0].diffusion_stack_depth"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "musicgen-small",
+      "input": "tests/sable_test_corpus/musicgen-small.json",
+      "input_sha256": "200a4dec968d42ca29ae7b2ee066bcec69f66b16657db46335086965e7785f86",
+      "model_sha256": "25d06db6a19173e12e613727ffbad8338919aacdf30941abf6ec22cabc9b200c",
+      "resolved_class": {
+        "module": "transformers.models.musicgen.modeling_musicgen",
+        "qualname": "MusicgenForConditionalGeneration"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.cross_attention_schedule",
+        "decoder.attention.mixer_schedule",
+        "decoder.codebook_streams"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "nemotron-h-8b",
+      "input": "verification/s7/inputs/nemotron-h-8b.json",
+      "input_sha256": "81e822f85d6471312bcc0ccd34cc62789075376ecedca7fde0e451584943368b",
+      "model_sha256": "34fe03766a7cde6f03456b2f863afaea667787aa883fbf2cf48c7af936b91ef6",
+      "resolved_class": {
+        "module": "transformers.models.nemotron_h.modeling_nemotron_h",
+        "qualname": "NemotronHForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "model.final_norm_kind"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "input": "tests/sable_test_corpus/olmo-2-1124-7b.json",
+      "input_sha256": "26ccdfd1f1e12885cc36d60cbc555336bfd17e0e0bdfc61b94ee3efbfa418c0a",
+      "model_sha256": "0a156df173ae38a9edd3216071bbd7ece6142c64f0f2d25492d88e82570a9547",
+      "resolved_class": {
+        "module": "transformers.models.olmo2.modeling_olmo2",
+        "qualname": "Olmo2ForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.bias",
+        "decoder.attention.cached",
+        "decoder.attention.head_geometry",
+        "decoder.attention.mask",
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mechanism",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.output_projection",
+        "decoder.attention.position_schedule",
+        "decoder.attention.qk_norm",
+        "decoder.attention.qk_norm_schedule",
+        "decoder.attention.rope_initialization",
+        "decoder.attention.rope_theta",
+        "decoder.ffn.ffn_schedule",
+        "decoder.ffn.intermediate_size",
+        "decoder.layer.norm_placement",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "pixart-sigma-xl-2-1024-ms",
+      "input": "tests/sable_test_corpus/pixart-sigma-xl-2-1024-ms.json",
+      "input_sha256": "796a016d13551709f35a50c4a59b4eff2c6527b99e58388feb589d64c8125d53",
+      "model_sha256": "588dfc1c39435dda33c25f935aef1482290aa9624ee95845c4af2b41c0b9ab7b",
+      "resolved_class": {
+        "module": "diffusers.models.transformers.pixart_transformer_2d",
+        "qualname": "PixArtTransformer2DModel"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "prxpixel-t2i",
+      "input": "tests/sable_test_corpus/prxpixel-t2i.json",
+      "input_sha256": "0f832626277f138f2fe3c4ac7594192ca76d661f850db1a4634a8210ea5c8088",
+      "model_sha256": "971083b330e246d0a833572310daefcdc146d1d682a8a8ee54edd093fafc192c",
+      "resolved_class": {
+        "module": "diffusers.models.transformers.transformer_prx",
+        "qualname": "PRXTransformer2DModel"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "root.denoiser.diffusion_bookend_geometry",
+        "root.denoiser.diffusion_bookend_operations",
+        "root.denoiser.diffusion_root_topology",
+        "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+        "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
+        "root.denoiser.stacks[0].diffusion_stack_depth"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "qwen-image",
+      "input": "tests/sable_test_corpus/qwen-image.json",
+      "input_sha256": "b0c6d7771090f955f86b264f4b4eaadab69bb0c1c81909648ac4dc21883f926b",
+      "model_sha256": "ecde4b82c11487a5b6a59c5c842bbc10f57ec64bc622771910392315b977739a",
+      "resolved_class": {
+        "module": "diffusers.models.transformers.transformer_qwenimage",
+        "qualname": "QwenImageTransformer2DModel"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "root.denoiser.diffusion_bookend_geometry",
+        "root.denoiser.diffusion_bookend_operations",
+        "root.denoiser.diffusion_root_topology",
+        "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
+        "root.denoiser.stacks[0].diffusion_stack_depth"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "input": "tests/sable_test_corpus/qwen2-vl-7b-instruct.json",
+      "input_sha256": "de4d44b320e32207da76709ec94495d8e384bea258be8ae266a679ba2abbf8f9",
+      "model_sha256": "28eac3822fe1fb37b376ad0c6918f4382800e475390e4058d25c1355790b5fca",
+      "resolved_class": {
+        "module": "transformers.models.qwen2_vl.modeling_qwen2_vl",
+        "qualname": "Qwen2VLForConditionalGeneration"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.bias",
+        "decoder.attention.head_geometry",
+        "decoder.attention.mask",
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mechanism",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.output_projection",
+        "decoder.layer.norm_placement",
+        "decoder.layer.residual_topology"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "input": "tests/sable_test_corpus/qwen3-5-27b-text.json",
+      "input_sha256": "e0a6c2efb9c7fc156befc4e90090aabc83826715feae992271dbf405e5017863",
+      "model_sha256": "9c7f1b9fe1e05467e653bf4e4cc4b560e109eb22eeb7a1f8ef09ef29e1e52d2b",
+      "resolved_class": {
+        "module": "transformers.models.qwen3_5.modeling_qwen3_5",
+        "qualname": "Qwen3_5ForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.bias",
+        "decoder.attention.cached",
+        "decoder.attention.head_geometry",
+        "decoder.attention.mechanism",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.output_gate",
+        "decoder.attention.output_projection",
+        "decoder.attention.qk_norm",
+        "decoder.attention.qk_norm_schedule",
+        "decoder.ffn.ffn_schedule",
+        "decoder.ffn.intermediate_size",
+        "decoder.layer.norm_placement",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "input": "tests/unseen_model_configs/qwen3-5-27b-full.json",
+      "input_sha256": "3613cacae919e52e25d64ac34f63227357bda2cfde1ebda0bd35a47c1c237082",
+      "model_sha256": "87e8ca83858be43474be729fd3aaf4ec315695466bbf8e3679460de40a84fc5b",
+      "resolved_class": {
+        "module": "transformers.models.qwen3_5.modeling_qwen3_5",
+        "qualname": "Qwen3_5ForConditionalGeneration"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.qk_norm_schedule",
+        "decoder.ffn.ffn_schedule",
+        "decoder.layer.norm_placement",
+        "decoder.layer.residual_topology"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "qwen3-8b",
+      "input": "tests/sable_test_corpus/qwen3-8b.json",
+      "input_sha256": "03c84d3d82e7d7cdada3a196dba402f7849452c4731d76582b55c57441c425cf",
+      "model_sha256": "cb5adee17843cabaf024ce42ee042c723164d9ae5ce888bd8f7850d849d239f2",
+      "resolved_class": {
+        "module": "transformers.models.qwen3.modeling_qwen3",
+        "qualname": "Qwen3ForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.bias",
+        "decoder.attention.cached",
+        "decoder.attention.head_geometry",
+        "decoder.attention.mask",
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mechanism",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.output_projection",
+        "decoder.attention.position_schedule",
+        "decoder.attention.qk_norm",
+        "decoder.attention.qk_norm_schedule",
+        "decoder.attention.rope_initialization",
+        "decoder.attention.rope_theta",
+        "decoder.ffn.ffn_schedule",
+        "decoder.ffn.intermediate_size",
+        "decoder.layer.norm_placement",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "qwen3-omni-30b",
+      "input": "tests/unseen_model_configs/qwen3-omni-30b.json",
+      "input_sha256": "5b1dc2c869c5fecabc90722393633bd789598b28a830bafba92f366a52d85973",
+      "model_sha256": "c9e06559d6c43013f2a8f87a28d9c8bb1f423f1dc8f3c64d68373eb41e6cf8ff",
+      "resolved_class": {
+        "module": "transformers.models.qwen3_omni_moe.modeling_qwen3_omni_moe",
+        "qualname": "Qwen3OmniMoeForConditionalGeneration"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "input": "tests/unseen_model_configs/qwen3-vl-235b.json",
+      "input_sha256": "3fb6ef34f671f4f98d7d6c828d78be6e8a54f771bb09ebaffdc059088af13530",
+      "model_sha256": "50f7bf923aa9812921984ac26027942943a7465d38aee8b2427bbffe4d03ad3b",
+      "resolved_class": {
+        "module": "transformers.models.qwen3_vl_moe.modeling_qwen3_vl_moe",
+        "qualname": "Qwen3VLMoeForConditionalGeneration"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.qk_norm_schedule",
+        "decoder.ffn.ffn_schedule"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "sana-1600m-1024px-diffusers",
+      "input": "tests/sable_test_corpus/sana-1600m-1024px-diffusers.json",
+      "input_sha256": "7ce2a9f648f00ef9bc8bf2d402eeb2ab59d4fcc9fbcee9bf5961eddb13946a5b",
+      "model_sha256": "2f52fe21d1e6fcb3c2d5c28ad90fc361c30cafd11df4060d050cd46d025d83de",
+      "resolved_class": {
+        "module": "diffusers.models.transformers.sana_transformer",
+        "qualname": "SanaTransformer2DModel"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "root.denoiser.diffusion_bookend_operations",
+        "root.denoiser.diffusion_root_topology",
+        "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+        "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
+        "root.denoiser.stacks[0].diffusion_stack_depth"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "stable-diffusion-3-5-large",
+      "input": "tests/sable_test_corpus/stable-diffusion-3-5-large.json",
+      "input_sha256": "20cf7706597ae23435393f22e20db7847bc31720c9f5a405cdb6370b15abe2d7",
+      "model_sha256": "49072e18c66da422b7fdf44c3fb1e1b41c541157fd204e4260de262817e32776",
+      "resolved_class": {
+        "module": "diffusers.models.transformers.transformer_sd3",
+        "qualname": "SD3Transformer2DModel"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "root.denoiser.diffusion_root_topology"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "input": "tests/sable_test_corpus/stablelm-2-1-6b.json",
+      "input_sha256": "78d6d3a7528069cd18efa3fabd0b0f7b8e3c905ccc56fa203df52b9e6dfc0443",
+      "model_sha256": "b4e7a3363a538c6b909ed84ee29b250c8e758fbb794f13c140d3bf99e1d82788",
+      "resolved_class": {
+        "module": "transformers.models.stablelm.modeling_stablelm",
+        "qualname": "StableLmForCausalLM"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "decoder.attention.bias",
+        "decoder.attention.cached",
+        "decoder.attention.head_geometry",
+        "decoder.attention.mask",
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mechanism",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.output_projection",
+        "decoder.attention.position_schedule",
+        "decoder.attention.qk_norm",
+        "decoder.attention.qk_norm_schedule",
+        "decoder.attention.rope_initialization",
+        "decoder.attention.rope_theta",
+        "decoder.ffn.ffn_schedule",
+        "decoder.ffn.intermediate_size",
+        "decoder.layer.norm_placement",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    },
+    {
+      "slug": "wan2-2-t2v-a14b-diffusers",
+      "input": "tests/sable_test_corpus/wan2-2-t2v-a14b-diffusers.json",
+      "input_sha256": "74d0deee82411a493a20e050ed3697a55e4c9230a44112e208f90b7ddc5ce417",
+      "model_sha256": "7cec883955f7e6619e41b75a9cbe515e191f53e8dc7abf437cbc41711837286a",
+      "resolved_class": {
+        "module": "diffusers.models.transformers.transformer_wan",
+        "qualname": "WanTransformer3DModel"
+      },
+      "exact_prior_owner_class_and_bytes": true,
+      "all_projection_fact_keys": [
+        "root.denoiser.diffusion_bookend_geometry",
+        "root.denoiser.diffusion_bookend_operations",
+        "root.denoiser.diffusion_root_topology",
+        "root.denoiser.stacks[0].diffusion_stack_depth"
+      ],
+      "new_primitive_receipt_key_present": false,
+      "unet_summary_required_keys_present": false,
+      "basis": "same exact retained target/input/class and source dispatch as prior owner scope, unique UNet projector unchanged; no full IR/HTML identity claim"
+    }
+  ]
+}

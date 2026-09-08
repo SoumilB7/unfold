@@ -1,0 +1,7 @@
+{
+  "global_source_before_after_current_equal_count": 316,
+  "global_findings": [],
+  "historical14_complete_guard_rows_equal": true,
+  "reviewed_sheet_sha256": "c0992dd7ee143661ef7809319df8b69cfac353360e3fa5d0b74a991d8a908fec",
+  "sheet_claim_review": "Interim sheet labels current44 derivation pending, historical716 actual counts separately. Update pending status with precise29+1+14 lineage; no current44generate/check claim supported."
+}

@@ -1,0 +1,18 @@
+{
+  "actual736_plus_current_geometry_rows": 1,
+  "actual_current_sable_rows": 29,
+  "all44_complete_rows_equal716": true,
+  "baseline_sha256": "98d8c6777daa939584a564af302d8ad784d88405f0e2214850b296eaa6a0a675",
+  "bloom_raw_event_bytes_equal": false,
+  "bloom_semantic_events_equal_except_six_fresh_context_nonces": true,
+  "denominator": 44,
+  "existing_coverage_problems_empty": true,
+  "existing_serializer_bytes_equal": true,
+  "flagged": 294,
+  "fresh44_generator_or_check_execution": false,
+  "historical716_current_applicability_guard_rows": 14,
+  "no_new_parse_in_this_derivation": true,
+  "proven": 645,
+  "silent": 0,
+  "status": "PASS_derived44_existing_document_validation"
+}

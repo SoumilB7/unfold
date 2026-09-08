@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+    "-c",
+    "\nimport ast, pathlib, subprocess, sys\ncommit, *forbidden = sys.argv[1:]\nchanged = subprocess.run(\n    [\"git\", \"diff-tree\", \"--no-commit-id\", \"--name-only\", \"-r\", commit + \"^\", commit],\n    text=True, capture_output=True, check=True).stdout.splitlines()\npython_files = [p for p in changed if p.endswith(\".py\") and pathlib.Path(p).exists()]\nif python_files:\n    subprocess.run([sys.executable, \"-m\", \"pyflakes\", *python_files], check=True)\nsubprocess.run([\"git\", \"diff\", commit + \"^\", commit, \"--check\"], check=True)\nroots = [pathlib.Path(\"model_unfolder\"), pathlib.Path(\"test_support\")]\nfor needle in forbidden:\n    hits = []\n    for root in roots:\n        for path in root.rglob(\"*.py\"):\n            tree = ast.parse(path.read_text(encoding=\"utf-8\"), filename=str(path))\n            identifiers = set()\n            for node in ast.walk(tree):\n                if isinstance(node, ast.Name):\n                    identifiers.add(node.id)\n                elif isinstance(node, ast.Attribute):\n                    identifiers.add(node.attr)\n                elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):\n                    identifiers.add(node.name)\n                elif isinstance(node, ast.alias):\n                    identifiers.add(node.asname or node.name.rsplit(\".\", 1)[-1])\n            if needle in identifiers:\n                hits.append(str(path))\n    if hits:\n        raise SystemExit(\"forbidden symbol %r remains in: %s\" % (needle, \", \".join(hits)))\nprint(\"static checks clean; changed python files:\", len(python_files))\n",
+    "779739b"
+  ],
+  "exit_code": 0,
+  "commit": "779739b"
+}

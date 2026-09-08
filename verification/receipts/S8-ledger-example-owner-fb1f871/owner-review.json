@@ -1,0 +1,357 @@
+{
+  "SDXL_review": "separate family differential and final renderer replay; not inferred here",
+  "actual_model_runs_performed_by_this_script": 0,
+  "examples": [
+    {
+      "blessed": false,
+      "candidate_bytes": 140072,
+      "candidate_sha256": "f8435adcfc79a794dfaf54a7ca7b07cec4ec96019be6a74bc0c1bcd1c3161a41",
+      "disposition": "canonical-backed restored SVG routes; every non-SVG byte identical",
+      "file": "deepseek-v3.html",
+      "reviewed_sha256": "41bc1d436787830559d654f03af323b4c4f7dbeb597d05881a00cd990b11150f"
+    },
+    {
+      "blessed": false,
+      "candidate_bytes": 66554,
+      "candidate_sha256": "efde2279a0e7866fef15a920a7f9c0502cf7245152d9df933fe9820e6c0c0626",
+      "disposition": "canonical-backed restored SVG routes; every non-SVG byte identical",
+      "file": "granite-3-0-8b-instruct.html",
+      "reviewed_sha256": "4f62803603a73449725dd0c93d31b690d7b5c815ea85af45e994cfabcc6bf373"
+    },
+    {
+      "blessed": false,
+      "candidate_bytes": 180511,
+      "candidate_sha256": "f6826af644f0bc5498c29d299a3f401b66ef1310d3e250acda0e34cf28e351bf",
+      "disposition": "canonical-backed restored SVG routes; every non-SVG byte identical",
+      "file": "hunyuanvideo.html",
+      "reviewed_sha256": "ffffb01c4b16146c717fe924c5b615bb39d55b13dbe5e2aeb37fd3c2db4ba53d"
+    },
+    {
+      "blessed": false,
+      "candidate_bytes": 57319,
+      "candidate_sha256": "12e62abaa4d42c8139103fce15c7aeb98f1b1b48675c75b3b0351876a618091e",
+      "disposition": "canonical-backed restored SVG routes; every non-SVG byte identical",
+      "file": "llama-7b.html",
+      "reviewed_sha256": "499f0f4dd20328c0a3d030049fdbeed4a1afa2013b7bc1158f82d8d1e7a01bea"
+    },
+    {
+      "blessed": false,
+      "candidate_bytes": 76142,
+      "candidate_sha256": "36fc58700e3a596dc408eab328b12af845d8162094046cd28ff15ae75926e05c",
+      "disposition": "canonical-backed restored SVG routes; cross_attn fit width 850 to 886 follows SVG envelope; all remaining non-SVG bytes identical",
+      "file": "musicgen-small.html",
+      "reviewed_sha256": "386b3ae6078a0e4511daaeeef3e21cb4212a60f29471de8b48d438c825b73856"
+    },
+    {
+      "blessed": false,
+      "candidate_bytes": 127718,
+      "candidate_sha256": "2ab8e728897fcfb57d3755fc0a7a7a44943ec56817a85163c5a10e0e114c23ea",
+      "disposition": "whole HTML byte-identical",
+      "file": "pixart-sigma-xl-2-1024-ms.html",
+      "reviewed_sha256": "2ab8e728897fcfb57d3755fc0a7a7a44943ec56817a85163c5a10e0e114c23ea"
+    },
+    {
+      "blessed": false,
+      "candidate_bytes": 110825,
+      "candidate_sha256": "3daecd4c607d5f9bb62c167c84e74cf2aff0b221b809840222626f0433ff1f8d",
+      "disposition": "whole HTML byte-identical",
+      "file": "qwen2-vl-7b-instruct.html",
+      "reviewed_sha256": "3daecd4c607d5f9bb62c167c84e74cf2aff0b221b809840222626f0433ff1f8d"
+    },
+    {
+      "blessed": false,
+      "candidate_bytes": 24310552,
+      "candidate_sha256": "047ded43206adce009b820bda58aa16b8cba67c629f4e4160fd04a58f96dfc22",
+      "disposition": "UNet cutover: separate SDXL fact/output disposition and final-source replay required; not covered by non-UNet route proof",
+      "file": "stable-diffusion-xl-base-1-0.html",
+      "reviewed_sha256": "09e92b1d8c02e3a519617bc7bbc4b8cd64cb73c8e71f8487e9d7e6c7e2ef6a4b"
+    }
+  ],
+  "geometry_review": "../S8-nonunet-view-geometry-independent-fb1f871/",
+  "ledgers": [
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "af6e5cc10e2bfa82ba2a8d516df48b5ab1db9751a5246e35e676a2aee0f98aff",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "9231f90739d481a2ea2cbbfb827e428729c5904929ec55f9adddbdcdda424323",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "auraflow-v0-3"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "51795351432a269f64405cf393a323aba9f9ab30822692f2e21ae6bd6b0fa25c",
+      "actual_old_run": false,
+      "actual_source": "736fdab with separate final-source applicability",
+      "derived_expected_sha256": "cb0f1c08fb94057f4400c55e893d680c3a6d428d45f1f9582942b2d7edd1a520",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "bloom"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "2e8cea3578e272cd7743a3935d8cea48ee2a5f5186f31abf9c253f44e7a9fb6a",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "b1333dd16f9e6050fce4747160f5740ac985bc900bb7157c34dfe5bd624c3f7f",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "cogvideox-5b"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "54264dae76c0df72211b12101c2f8f22811baa3903c5a559fe1b7b44b9d57911",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "caacc552abf231ac4f9d0cb50a2ba5052adc534dd849475aa1163690a12b4b72",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "dbrx-base"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "bb02080d35789fc258d1de5ca075b65790743d825b2cf93651ec3c9b6433f80c",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "8bebf57b3911c1e41bd4dd0edf549ded1eba771b7681d850ee1dfb9af35986f5",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "deepseek-v3"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "baf6960bb8152a1aca8c3b94f471a132a82c401929b92065462891ff480881bc",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "7686befee381fc6d561bd50dbc96831af55783d63f5b5b76151dd02103d695b4",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "flux-2-dev"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "f78ad9d15e87764dcc8c4d8e4329d873f3e0729d7033638d5e1dbd56b2e4fd34",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "363c5d2079066100c0d8fdbb7b76f61644f891bfcc0ba4de7b366e54be9f8698",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "fluxtransformer2dmodel"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "46304faec4491c4bafbd66f4088a426765e4287accf5e74aa46f8dc4014cc24a",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "785947e409197b09ff3f2d7c60803b30691db1befddef07eea83fc5e3a69cb04",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "gemma-2-2b-it"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "03ccf8a5c1728e011b61ead63a0c8c2db2fcd20e97f5663eb7cd752f6e0f65d8",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "01c7fd61366372a4253bc392d7d79ecd7aeb5c982ab0778a2fd4ffe6d0291794",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "glm-4-5"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "af03a0a011c2755d763b83e99fedd4d5334aba7ede8a1eaf8fd08fe0239be00a",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "84f1aefbbb8f11468bd19672b072df0b76393ed81df1453609cf67040f775944",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "gpt-oss-20b"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "4bbc347bc094d6b1399bc4d704bf815ce2929b114f4e4a4c92f3630538f2e25c",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "b8a6b22bd67da2340eef658cd45b2a44cca6b8aa2360920d91d135d4401e8b13",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "granite-3-0-8b-instruct"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "fbed7d21502064c2d348bd90746398936c2309c96f5254d3c02ddfe389ee4284",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "d59135c90e8cb86109cb9d9de1261d5757a826fcdee3a362b9515c66795ce0bf",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "hunyuanvideo"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "41302a8f8ce64884582c35c43a67aa967375b9f3f8fb764a7d51aa51df3a0b92",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "94d395aa6c54e7938b3b734d761f906f367646157b1950095243c9368c7be7b8",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "llama-7b"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "e16b0b4626bd0553933551cdee0a193ed41f4ebcedd1608409e50ffe6abf0ed6",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "68e5fc24582b02e41cf6f27f91c96334a986488a9b76e2fb01c3e70f9a261af3",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "ltx-video"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "0ad1673b6f23d981c91a6ea434658c8881b6d7b03af9247a67355bb517cb95ac",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "ac1cf4061ecb384925cf0dab49c2507942500adb176d3715b37eeb6dd23833a4",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "lumina-image-2-0"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "e9b0fbeb93478b45ac785a62f18b82c8e1b1ffde78be974738c8380f3b7396a0",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "8aae61a9eeb16d386a24c143a4a38c40bae108cffb8ac124c37f76c37abd8621",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "mochi-1-preview"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "98ddc66423890a0d890e76a4446af95b9494e62f0a405fe547722e8f3fa2f63c",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "b1d59ca63d4160c976fd966436a8ffad6be9fac47833221caa03129dd6b56e3d",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "musicgen-small"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "49140086ed88d29551e8eb3b76cc1fd1f951b84338652a2d8ea459efd8af10ed",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "af3ef89d180c62300d67ac160998ff2b050118dcc844181a2743437727957d28",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "olmo-2-1124-7b"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "ac3b0a2c33101bd036b452d792278e4a62b7b68eec28e439d66578f36652a34b",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "ee6aa73ccaed6d5f8921e09f30f40437ce122411b8ccbf31ca65d71df2b6ab04",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "pixart-sigma-xl-2-1024-ms"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "251880618dde15ebb5ed83782ec4da3178ab71b0805e97c8cc6986270d47d600",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "9e85cf25ae4e294e589cffaedac1a768f0b4ace4f4270880b744d3299fcf1161",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "prxpixel-t2i"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "929fdb2bb1a71bcfe2296c22e4c8fd0984c22ebb4f9b29803df040e705db4d57",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "c290278543416826edba84f5155316e5a07bf7f7ee27dc84ec5c0d0cf5aafbcb",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "qwen-image"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "e4a46a222f617081faa58329ec370bca87b0cba29ebf2854a0bbaaa03fd0d6af",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "065b61cc52330134983e38a67fecab8551f6c04c4fe4fcfac3bffb9161e3acef",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "qwen2-vl-7b-instruct"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "a4f89ab4847137dd634124f5e3de37f250511cd8b0ec44d85a38f62943d5e7a1",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "3df914b5e2ce03df62aaa185fc7a349f5e298df9a5e468118d98d5540d7a6ec9",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "qwen3-5-27b-text"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "1b9c05c2f77bbb9a7cba955c8794bc50b52036f568a415a0c84e89e954deab82",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "c9647c89ef727bc8e96929642adbf1ec3796a2a6345aa914c3e90f772720b283",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "qwen3-8b"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "cd2842e2918903312555209aff0c91b3f9b74b86d5aa210333aecc48e4b6250a",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "79f67a2dd7006cb46cc55f4d4ed835a38e77adadee310d685c9861925432b9f9",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "sana-1600m-1024px-diffusers"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "3ddc7080e6a9cb0e20f596e2ce83359cd2df1f3b79af8f248f3871a1e963c744",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "adc05ae4347293aa4b5beb3c82390a10ff7df4df1f58587c1a970dd417e4ccca",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "stable-diffusion-3-5-large"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "9c1f6055aa5b80d6c3746f3ab3b57ad5c92f77f23f739b40fb5c2a2db2a8ffd2",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "fd11462d08da6959bc5dc274ce7bae14347c1bf37f5e745e2f6d0701f4cc9717",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "stablelm-2-1-6b"
+    },
+    {
+      "actual_bytes_unchanged": true,
+      "actual_ledger_sha256": "38898ec6d0b672da873a6ef71eb66b5906025f04ef042c758414b4201a674eaa",
+      "actual_old_run": false,
+      "actual_source": "fb1f871",
+      "derived_expected_sha256": "42db9740109112ad99086e4bc16d6ac96d6100020043c901c1ab7ca4fb504209",
+      "immutable_expected_hash_matched": true,
+      "only_delta": "12 global projection declarations at config_access.projection_coverage.receipted_scopes",
+      "slug": "wan2-2-t2v-a14b-diffusers"
+    }
+  ],
+  "output_approval": false,
+  "preservation_gate_green": false,
+  "script_sha256": "7bdcb5c22c245fce5e9f0ae58632046ae3567fccbb16f12dcfe05d5e7c58a4d1",
+  "verdict": "ACCEPT bounded ledger derivation and seven non-UNet HTML delta accounting"
+}

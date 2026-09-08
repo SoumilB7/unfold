@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+    "-m",
+    "pytest",
+    "-v",
+    "--tb=short",
+    "tests/test_diffusion.py::test_valid_synthetic_simple_cross_text_variant_retains_bounded_cells"
+  ],
+  "cwd": "/private/tmp/unfold-s8-focused-fb1f871",
+  "targets": 1,
+  "commit": "fb1f871df1675f8f8388ef80a193b61dc9c052f7"
+}

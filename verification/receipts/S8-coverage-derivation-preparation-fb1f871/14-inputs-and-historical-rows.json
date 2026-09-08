@@ -1,0 +1,605 @@
+{
+  "count": 14,
+  "scope": "guards prepared; not14freshcurrentSable runs",
+  "actual716_coverage_artifact": "verification/receipts/S8-final-coverage-7168440/current-coverage.json",
+  "actual716_coverage_sha256": "98d8c6777daa939584a564af302d8ad784d88405f0e2214850b296eaa6a0a675",
+  "producer_source_checks": [
+    {
+      "path": "model_unfolder/sable.py",
+      "sha256": "2d243b5d371cbb3d0c986d89ae2ad47b7958ff53f7c1947e638c7f828580f7c2",
+      "exact716_to_fb1_bytes": true
+    },
+    {
+      "path": "scripts/coverage.py",
+      "sha256": "93f8abdf31f12162dbbe39996d9f88eb6b418adb0376fd8813d6e88cf04310ee",
+      "exact716_to_fb1_bytes": true
+    },
+    {
+      "path": "model_unfolder/evidence/coverage.py",
+      "sha256": "255fa4ccf1ac1ebeb9d3926fab4e7c875dc321dad6678f949b4b5fc01bb55854",
+      "exact716_to_fb1_bytes": true
+    },
+    {
+      "path": "model_unfolder/parser.py",
+      "sha256": "84348825d63709d912e591679fff6e3ce0f92e31914089d429a5d3e53c25c75f",
+      "exact716_to_fb1_bytes": true
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/parser.py",
+      "sha256": "0b46066f535105f673268beae2798ec5e97576c74cae74a284e5ed28d94c460b",
+      "exact716_to_fb1_bytes": true
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/unet_projection.py",
+      "sha256": "143b25fbf774aee62ffc1c004bbfb6db36895fc51609abc1ad6864acbd4c5be6",
+      "exact716_to_fb1_bytes": true
+    }
+  ],
+  "targets": [
+    {
+      "model": "CohereLabs/c4ai-command-a-03-2025",
+      "input": "tests/unseen_model_configs/command-a-03-2025.json",
+      "input_sha256": "6a56c1d2c171197959088403e1fe4113aae079b70eca57a43ed1e2ae3b0af300",
+      "input_equal716": true,
+      "coverage_row": {
+        "cohort": "unseen",
+        "flagged": 9,
+        "flagged_findings": [
+          "config_field_audit: unread config field 'order_of_interleaved_layers' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'position_embedding_type' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'rotary_pct' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'use_embedding_sharing' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'use_gated_activation' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'use_parallel_block' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'use_parallel_embedding' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_accessed_unprojected: config occurrence root:'logit_scale' (spelled 'logit_scale') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_standing_unconsumed: root:logit_scale (as logit_scale) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt"
+        ],
+        "input": "tests/unseen_model_configs/command-a-03-2025.json",
+        "model": "CohereLabs/c4ai-command-a-03-2025",
+        "proven": 20,
+        "rendered_name": "c4ai-command-a-03-2025",
+        "silent": 0,
+        "silent_findings": []
+      },
+      "declared_lookup_addresses": {
+        "model_type": "cohere2",
+        "architectures": [
+          "Cohere2ForCausalLM"
+        ]
+      },
+      "status": "historical716 actual row, current source applicability pending independent review; config names are lookup addresses, not mechanism proofs"
+    },
+    {
+      "model": "deepseek-ai/DeepSeek-Coder-V2-Lite-Base",
+      "input": "tests/unseen_model_configs/deepseek-coder-v2-lite.json",
+      "input_sha256": "a966dc1455a8328c32ada699174cf2d472cb414f811c62fc61f863f0b109c9d8",
+      "input_equal716": true,
+      "coverage_row": {
+        "cohort": "unseen",
+        "flagged": 17,
+        "flagged_findings": [
+          "config_field_audit: unread config field 'attention_bias' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'head_dim' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'kv_lora_rank' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'n_group' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'norm_topk_prob' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'num_attention_heads' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'num_key_value_heads' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'q_lora_rank' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'qk_nope_head_dim' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'qk_rope_head_dim' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'rope_parameters.factor' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'rope_parameters.original_max_position_embeddings' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'rope_parameters.type' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'topk_group' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'v_head_dim' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "fact_conformance: deepseek_v2/attention_kind: diagram draws linear attention but uses mla attention \u2014 match the attention algorithm (set the self-attention kind).",
+          "qualified_projection_values: decoder.attention.mixer_schedule is ledgered as ('ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention') but every authoritative structural surface withholds it"
+        ],
+        "input": "tests/unseen_model_configs/deepseek-coder-v2-lite.json",
+        "model": "deepseek-ai/DeepSeek-Coder-V2-Lite-Base",
+        "proven": 17,
+        "rendered_name": "DeepSeek-Coder-V2-Lite-Base",
+        "silent": 0,
+        "silent_findings": []
+      },
+      "declared_lookup_addresses": {
+        "model_type": "deepseek_v2",
+        "architectures": [
+          "DeepseekV2ForCausalLM"
+        ]
+      },
+      "status": "historical716 actual row, current source applicability pending independent review; config names are lookup addresses, not mechanism proofs"
+    },
+    {
+      "model": "THUDM/glm-4-9b",
+      "input": "tests/unseen_model_configs/glm-4-9b.json",
+      "input_sha256": "35299f6398b48ce3718eea706e0875b53db7ce14e4df6c5e9bee62637eaac271",
+      "input_equal716": true,
+      "coverage_row": {
+        "cohort": "unseen",
+        "flagged": 8,
+        "flagged_findings": [
+          "config_field_audit: unread config field '_repo_id' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'add_qkv_bias' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'kv_channels' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'multi_query_attention' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'multi_query_group_num' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'num_attention_heads' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_accessed_unprojected: config occurrence root:'rmsnorm' (spelled 'rmsnorm') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_standing_unconsumed: root:rmsnorm (as rmsnorm) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt"
+        ],
+        "input": "tests/unseen_model_configs/glm-4-9b.json",
+        "model": "THUDM/glm-4-9b",
+        "proven": 1,
+        "rendered_name": "glm-4-9b",
+        "silent": 0,
+        "silent_findings": []
+      },
+      "declared_lookup_addresses": {
+        "model_type": "chatglm",
+        "architectures": [
+          "ChatGLMModel"
+        ]
+      },
+      "status": "historical716 actual row, current source applicability pending independent review; config names are lookup addresses, not mechanism proofs"
+    },
+    {
+      "model": "EleutherAI/gpt-neox-20b",
+      "input": "tests/unseen_model_configs/gpt-neox-20b.json",
+      "input_sha256": "401ca7866b9c709423746bdd94c215da44fed5aec3831810339091262403043b",
+      "input_equal716": true,
+      "coverage_row": {
+        "cohort": "unseen",
+        "flagged": 7,
+        "flagged_findings": [
+          "config_field_audit: unread config field 'attention_probs_dropout_prob' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'hidden_dropout_prob' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'num_attention_heads' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "qualified_projection_values: decoder.attention.mixer_schedule is ledgered as ('ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention', 'ordinary_attention') but every authoritative structural surface withholds it",
+          "config_consumed_unreceipted: root:rope_parameters.partial_rotary_factor -> decoder.attention.rope_initialization is in receipted scope decoder.attention/position_frequency_initialization but no projector emitted a matching receipt (a consumed, ledgered fact the diagram does not draw)",
+          "config_consumed_unreceipted: root:rope_parameters.rope_theta -> decoder.attention.rope_theta is in receipted scope decoder.attention/position_frequency_initialization but no projector emitted a matching receipt (a consumed, ledgered fact the diagram does not draw)",
+          "config_consumed_unreceipted: root:rope_parameters.rope_type -> decoder.attention.rope_initialization is in receipted scope decoder.attention/position_frequency_initialization but no projector emitted a matching receipt (a consumed, ledgered fact the diagram does not draw)"
+        ],
+        "input": "tests/unseen_model_configs/gpt-neox-20b.json",
+        "model": "EleutherAI/gpt-neox-20b",
+        "proven": 22,
+        "rendered_name": "gpt-neox-20b",
+        "silent": 0,
+        "silent_findings": []
+      },
+      "declared_lookup_addresses": {
+        "model_type": "gpt_neox",
+        "architectures": [
+          "GPTNeoXForCausalLM"
+        ]
+      },
+      "status": "historical716 actual row, current source applicability pending independent review; config names are lookup addresses, not mechanism proofs"
+    },
+    {
+      "model": "Tencent-Hunyuan/HunyuanDiT-v1.2-Diffusers",
+      "input": "tests/unseen_model_configs/hunyuandit-v1-2.json",
+      "input_sha256": "5cd3fc08b8f1902444419e304595f47e8f7214a65f8d467a7175b7526181b169",
+      "input_equal716": true,
+      "coverage_row": {
+        "cohort": "unseen",
+        "flagged": 8,
+        "flagged_findings": [
+          "config_field_audit: unread config field 'cross_attention_dim_t5' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'feature_extractor' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'learn_sigma' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'requires_safety_checker' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'safety_checker' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_len' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_len_t5' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'use_style_cond_and_image_meta_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason"
+        ],
+        "input": "tests/unseen_model_configs/hunyuandit-v1-2.json",
+        "model": "Tencent-Hunyuan/HunyuanDiT-v1.2-Diffusers",
+        "proven": 3,
+        "rendered_name": "HunyuanDiT-v1.2-Diffusers",
+        "silent": 0,
+        "silent_findings": []
+      },
+      "declared_lookup_addresses": {
+        "_class_name": "HunyuanDiT2DModel"
+      },
+      "status": "historical716 actual row, current source applicability pending independent review; config names are lookup addresses, not mechanism proofs"
+    },
+    {
+      "model": "ai21labs/Jamba-v0.1",
+      "input": "tests/unseen_model_configs/jamba-v0-1.json",
+      "input_sha256": "0dd8df0799c1849d6caf7dad2cf23023b67cdc2e156ca5015faebf1eb38c98aa",
+      "input_equal716": true,
+      "coverage_row": {
+        "cohort": "unseen",
+        "flagged": 15,
+        "flagged_findings": [
+          "config_field_audit: unread config field 'attn_layer_offset' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'attn_layer_period' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'expert_layer_offset' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'expert_layer_period' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'mamba_conv_bias' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'mamba_d_conv' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'mamba_d_state' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'mamba_dt_rank' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'mamba_expand' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'mamba_proj_bias' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'num_attention_heads' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'num_key_value_heads' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'num_logits_to_keep' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'use_mamba_kernels' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "op_conformance: jamba/block: diagram draws 'attention' but JambaMambaDecoderLayer's forward() never does it \u2014 remove it or declare it as draw_extra. [root/modeling_jamba.py:618]"
+        ],
+        "input": "tests/unseen_model_configs/jamba-v0-1.json",
+        "model": "ai21labs/Jamba-v0.1",
+        "proven": 1,
+        "rendered_name": "Jamba-v0.1",
+        "silent": 0,
+        "silent_findings": []
+      },
+      "declared_lookup_addresses": {
+        "model_type": "jamba",
+        "architectures": [
+          "JambaForCausalLM"
+        ]
+      },
+      "status": "historical716 actual row, current source applicability pending independent review; config names are lookup addresses, not mechanism proofs"
+    },
+    {
+      "model": "LiquidAI/LFM2-1.2B",
+      "input": "tests/unseen_model_configs/lfm2-1-2b.json",
+      "input_sha256": "aef76f29d8213deaaa121fd4ed5e06a7c498560e6ef28488d5bcd969c9043c08",
+      "input_equal716": true,
+      "coverage_row": {
+        "cohort": "unseen",
+        "flagged": 20,
+        "flagged_findings": [
+          "config_field_audit: unread config field 'block_auto_adjust_ff_dim' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'block_dim' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'block_ffn_dim_multiplier' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'block_mlp_init_scale' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'block_multiple_of' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'block_norm_eps' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'block_out_init_scale' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'block_use_swiglu' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'block_use_xavier_init' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'conv_L_cache' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'conv_dim_out' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'conv_use_xavier_init' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'full_attn_idxs' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'layer_types' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'use_pos_enc' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_accessed_unprojected: config occurrence root:'conv_bias' (spelled 'conv_bias') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root:'conv_dim' (spelled 'conv_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_standing_unconsumed: root:conv_bias (as conv_bias) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+          "config_standing_unconsumed: root:conv_dim (as conv_dim) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+          "qualified_projection_values: decoder.attention.mixer_schedule projects a 16-layer schedule without an owner-qualified instance fact (required consumers: ['card', 'json', 'opgraph', 'params', 'spec'])"
+        ],
+        "input": "tests/unseen_model_configs/lfm2-1-2b.json",
+        "model": "LiquidAI/LFM2-1.2B",
+        "proven": 20,
+        "rendered_name": "LFM2-1.2B",
+        "silent": 0,
+        "silent_findings": []
+      },
+      "declared_lookup_addresses": {
+        "model_type": "lfm2",
+        "architectures": [
+          "Lfm2ForCausalLM"
+        ]
+      },
+      "status": "historical716 actual row, current source applicability pending independent review; config names are lookup addresses, not mechanism proofs"
+    },
+    {
+      "model": "MiniMaxAI/MiniMax-M2",
+      "input": "tests/unseen_model_configs/minimax-m2.json",
+      "input_sha256": "0a2f4a45d014bac242912017576169d6c8337a095bd9d7d9fe715bfc2a7c6568",
+      "input_equal716": true,
+      "coverage_row": {
+        "cohort": "unseen",
+        "flagged": 14,
+        "flagged_findings": [
+          "config_field_audit: unread config field 'attn_type_list' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'layernorm_full_attention_beta' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'layernorm_linear_attention_beta' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'layernorm_mlp_beta' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'mlp_intermediate_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'mtp_transformer_layers' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'num_mtp_modules' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'qk_norm_type' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'rotary_dim' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'shared_intermediate_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'shared_moe_mode' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'use_mtp' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'use_qk_norm' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'use_routing_bias' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason"
+        ],
+        "input": "tests/unseen_model_configs/minimax-m2.json",
+        "model": "MiniMaxAI/MiniMax-M2",
+        "proven": 25,
+        "rendered_name": "MiniMax-M2",
+        "silent": 0,
+        "silent_findings": []
+      },
+      "declared_lookup_addresses": {
+        "model_type": "minimax_m2",
+        "architectures": [
+          "MiniMaxM2ForCausalLM"
+        ]
+      },
+      "status": "historical716 actual row, current source applicability pending independent review; config names are lookup addresses, not mechanism proofs"
+    },
+    {
+      "model": "Qwen/Qwen3.5-27B",
+      "input": "tests/unseen_model_configs/qwen3-5-27b-full.json",
+      "input_sha256": "3613cacae919e52e25d64ac34f63227357bda2cfde1ebda0bd35a47c1c237082",
+      "input_equal716": true,
+      "coverage_row": {
+        "cohort": "unseen",
+        "flagged": 16,
+        "flagged_findings": [
+          "config_field_audit: unread config field 'text_config.full_attention_interval' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_config.mamba_ssm_dtype' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_config.mlp_only_layers' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_config.mtp_num_hidden_layers' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_config.mtp_use_dedicated_embeddings' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_config.partial_rotary_factor' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_config.rope_parameters.mrope_interleaved' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_config.rope_parameters.partial_rotary_factor' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'tie_word_embeddings' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'vision_config.deepstack_visual_indexes' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'vision_config.intermediate_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'vision_config.num_position_embeddings' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'vision_config.out_hidden_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "document_boundary_completeness: unlocated read: {'component': 'root', 'leaf': 'attn_output_gate'}",
+          "document_boundary_completeness: unestablished origin: {'component': 'root', 'path': 'attn_output_gate'}",
+          "Unresolved evidence \u2014 projector evidence unresolved: projector caller occurrence is not addressable in the exact component-root owner graph"
+        ],
+        "input": "tests/unseen_model_configs/qwen3-5-27b-full.json",
+        "model": "Qwen/Qwen3.5-27B",
+        "proven": 21,
+        "rendered_name": "Qwen3.5-27B",
+        "silent": 0,
+        "silent_findings": []
+      },
+      "declared_lookup_addresses": {
+        "model_type": "qwen3_5",
+        "architectures": [
+          "Qwen3_5ForConditionalGeneration"
+        ]
+      },
+      "status": "historical716 actual row, current source applicability pending independent review; config names are lookup addresses, not mechanism proofs"
+    },
+    {
+      "model": "Qwen/Qwen3.6-35B-A3B",
+      "input": "tests/unseen_model_configs/qwen3-6-35b-a3b.json",
+      "input_sha256": "3b3e697dc808ab22dbe6247427a2e63fa8ff959b19e9ef708f94cca022054de0",
+      "input_equal716": true,
+      "coverage_row": {
+        "cohort": "unseen",
+        "flagged": 19,
+        "flagged_findings": [
+          "config_field_audit: unread config field 'text_config.full_attention_interval' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_config.mamba_ssm_dtype' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_config.mtp_num_hidden_layers' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_config.mtp_use_dedicated_embeddings' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_config.partial_rotary_factor' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_config.rope_parameters.mrope_interleaved' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_config.rope_parameters.partial_rotary_factor' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_config.shared_expert_intermediate_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'tie_word_embeddings' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'vision_config.deepstack_visual_indexes' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'vision_config.intermediate_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'vision_config.num_position_embeddings' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'vision_config.out_hidden_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "evidence_ambiguity: layer0/ffn/router: router evidence is ambiguous (source-bound selection count is unresolved) while the modeling source is installed \u2014 the drill renders an honest stub; extend the shared extractor or everchanging/ vocabulary",
+          "qualified_projection_values: decoder.ffn.routing_policy is ledgered as None but every authoritative structural surface withholds it",
+          "document_boundary_completeness: unlocated read: {'component': 'root', 'leaf': 'attn_output_gate'}",
+          "document_boundary_completeness: unestablished origin: {'component': 'root', 'path': 'attn_output_gate'}",
+          "nested_conformance: qwen3_5_moe/gated-delta: diagram draws 'conv' but Qwen3_5MoeAttention's forward() never does it \u2014 remove it or declare it as draw_extra. [text_config/modeling_qwen3_5_moe.py:672]",
+          "Unresolved evidence \u2014 projector evidence unresolved: projector caller occurrence is not addressable in the exact component-root owner graph"
+        ],
+        "input": "tests/unseen_model_configs/qwen3-6-35b-a3b.json",
+        "model": "Qwen/Qwen3.6-35B-A3B",
+        "proven": 19,
+        "rendered_name": "Qwen3.6-35B-A3B",
+        "silent": 0,
+        "silent_findings": []
+      },
+      "declared_lookup_addresses": {
+        "model_type": "qwen3_5_moe",
+        "architectures": [
+          "Qwen3_5MoeForConditionalGeneration"
+        ]
+      },
+      "status": "historical716 actual row, current source applicability pending independent review; config names are lookup addresses, not mechanism proofs"
+    },
+    {
+      "model": "Qwen/Qwen3-Omni-30B-A3B-Instruct",
+      "input": "tests/unseen_model_configs/qwen3-omni-30b.json",
+      "input_sha256": "5b1dc2c869c5fecabc90722393633bd789598b28a830bafba92f366a52d85973",
+      "input_equal716": true,
+      "coverage_row": {
+        "cohort": "unseen",
+        "flagged": 78,
+        "flagged_findings": [
+          "config_field_audit: unread config field 'thinker_config.audio_config' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.audio_config.activation_function' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.audio_config.conv_chunksize' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.audio_config.d_model' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.audio_config.downsample_hidden_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.audio_config.encoder_attention_heads' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.audio_config.encoder_ffn_dim' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.audio_config.encoder_layers' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.audio_config.is_encoder_decoder' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.audio_config.max_source_positions' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.audio_config.n_window' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.audio_config.n_window_infer' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.audio_config.num_mel_bins' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.audio_config.output_dim' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.audio_config.scale_embedding' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.audio_config.tie_word_embeddings' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.is_encoder_decoder' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.seconds_per_chunk' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.attention_bias' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.decoder_sparse_step' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.head_dim' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.hidden_act' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.hidden_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.intermediate_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.is_encoder_decoder' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.max_position_embeddings' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.mlp_only_layers' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.moe_intermediate_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.norm_topk_prob' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.num_attention_heads' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.num_experts' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.num_experts_per_tok' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.num_hidden_layers' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.num_key_value_heads' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.rms_norm_eps' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.rope_parameters' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.rope_parameters.interleaved' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.rope_parameters.mrope_interleaved' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.rope_parameters.mrope_section' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.rope_parameters.rope_theta' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.rope_parameters.rope_type' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.rope_parameters.type' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.shared_expert_intermediate_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.sliding_window' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.tie_word_embeddings' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.use_qk_norm' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.use_sliding_window' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.text_config.vocab_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.tie_word_embeddings' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.apply_vit_abs_pos_embed' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.deepstack_visual_indexes' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.depth' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.hidden_act' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.hidden_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.image_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.in_channels' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.in_chans' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.intermediate_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.is_encoder_decoder' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.num_heads' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.num_position_embeddings' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.out_hidden_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.patch_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.spatial_merge_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.temporal_patch_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'thinker_config.vision_config.tie_word_embeddings' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "fact_conformance: root/fusion: no code unit resolved to diff against \u2014 add a conformance_map override. Qwen3OmniMoeForConditionalGeneration",
+          "config_accessed_unprojected: config occurrence root:'talker_config' (spelled 'talker_config') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_accessed_unprojected: config occurrence root:'thinker_config' (spelled 'thinker_config') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+          "config_standing_unconsumed: root:talker_config (as talker_config) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+          "config_standing_unconsumed: root:thinker_config (as thinker_config) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+          "config_audit_incomplete: root.vision",
+          "document_boundary_completeness: unlocated read: {'component': 'root', 'leaf': 'audio_config'}",
+          "document_boundary_completeness: unlocated read: {'component': 'root', 'leaf': 'audio_token_id'}",
+          "document_boundary_completeness: unestablished origin: {'component': 'root', 'path': 'audio_config'}",
+          "document_boundary_completeness: unestablished origin: {'component': 'root', 'path': 'audio_token_id'}"
+        ],
+        "input": "tests/unseen_model_configs/qwen3-omni-30b.json",
+        "model": "Qwen/Qwen3-Omni-30B-A3B-Instruct",
+        "proven": 1,
+        "rendered_name": "Qwen3-Omni-30B-A3B-Instruct",
+        "silent": 0,
+        "silent_findings": []
+      },
+      "declared_lookup_addresses": {
+        "model_type": "qwen3_omni_moe",
+        "architectures": [
+          "Qwen3OmniMoeForConditionalGeneration"
+        ]
+      },
+      "status": "historical716 actual row, current source applicability pending independent review; config names are lookup addresses, not mechanism proofs"
+    },
+    {
+      "model": "Qwen/Qwen3-VL-235B-A22B-Instruct",
+      "input": "tests/unseen_model_configs/qwen3-vl-235b.json",
+      "input_sha256": "3fb6ef34f671f4f98d7d6c828d78be6e8a54f771bb09ebaffdc059088af13530",
+      "input_equal716": true,
+      "coverage_row": {
+        "cohort": "unseen",
+        "flagged": 10,
+        "flagged_findings": [
+          "config_field_audit: unread config field 'text_config.norm_topk_prob' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'text_config.rope_parameters.mrope_interleaved' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'tie_word_embeddings' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'vision_config.deepstack_visual_indexes' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'vision_config.intermediate_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'vision_config.num_position_embeddings' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "config_field_audit: unread config field 'vision_config.out_hidden_size' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+          "evidence_ambiguity: layer0/ffn/router: router evidence is ambiguous (source-bound selection count is unresolved) while the modeling source is installed \u2014 the drill renders an honest stub; extend the shared extractor or everchanging/ vocabulary",
+          "qualified_projection_values: decoder.ffn.routing_policy is ledgered as None but every authoritative structural surface withholds it",
+          "Unresolved evidence \u2014 projector evidence unresolved: projector caller occurrence is not addressable in the exact component-root owner graph"
+        ],
+        "input": "tests/unseen_model_configs/qwen3-vl-235b.json",
+        "model": "Qwen/Qwen3-VL-235B-A22B-Instruct",
+        "proven": 17,
+        "rendered_name": "Qwen3-VL-235B-A22B-Instruct",
+        "silent": 0,
+        "silent_findings": []
+      },
+      "declared_lookup_addresses": {
+        "model_type": "qwen3_vl_moe",
+        "architectures": [
+          "Qwen3VLMoeForConditionalGeneration"
+        ]
+      },
+      "status": "historical716 actual row, current source applicability pending independent review; config names are lookup addresses, not mechanism proofs"
+    },
+    {
+      "model": "Efficient-Large-Model/SANA1.5_4.8B_1024px_diffusers",
+      "input": "tests/unseen_model_configs/sana-1-5-4-8b.json",
+      "input_sha256": "7d80f13016ca48fe3383a5e8d7b030cd59cb08829273d2abffa45e9777ce0ea3",
+      "input_equal716": true,
+      "coverage_row": {
+        "cohort": "unseen",
+        "flagged": 0,
+        "flagged_findings": [],
+        "input": "tests/unseen_model_configs/sana-1-5-4-8b.json",
+        "model": "Efficient-Large-Model/SANA1.5_4.8B_1024px_diffusers",
+        "proven": 7,
+        "rendered_name": "SANA1.5_4.8B_1024px_diffusers",
+        "silent": 0,
+        "silent_findings": []
+      },
+      "declared_lookup_addresses": {
+        "_class_name": "SanaTransformer2DModel"
+      },
+      "status": "historical716 actual row, current source applicability pending independent review; config names are lookup addresses, not mechanism proofs"
+    },
+    {
+      "model": "ByteDance-Seed/Seed-OSS-36B-Instruct",
+      "input": "tests/unseen_model_configs/seed-oss-36b.json",
+      "input_sha256": "09a13cb45e64f899e8d0e6e012dc2d3e8b01e52f6000370ef88bda1a46f737b8",
+      "input_equal716": true,
+      "coverage_row": {
+        "cohort": "unseen",
+        "flagged": 1,
+        "flagged_findings": [
+          "config_field_audit: unread config field 'residual_dropout' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason"
+        ],
+        "input": "tests/unseen_model_configs/seed-oss-36b.json",
+        "model": "ByteDance-Seed/Seed-OSS-36B-Instruct",
+        "proven": 23,
+        "rendered_name": "Seed-OSS-36B-Instruct",
+        "silent": 0,
+        "silent_findings": []
+      },
+      "declared_lookup_addresses": {
+        "model_type": "seed_oss",
+        "architectures": [
+          "SeedOssForCausalLM"
+        ]
+      },
+      "status": "historical716 actual row, current source applicability pending independent review; config names are lookup addresses, not mechanism proofs"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "README.md": "d38ada02334fc04456adf74cde762fb847205c31dbd1335347e3c8deec81f420",
+  "invocation.json": "45e7cc24fe2d61ca5445e792c31ff83ac489d93ceb39132b4e787440013be605",
+  "physics-after.json": "4b00ccab4998014a4fc449563636f4b26413e675405554234ff8edffed047795",
+  "physics-during-run-committed-equality.json": "2a1b93744c9f96563efc22df7c1aedd56f4cf077776887556c21c05f2abd075c",
+  "pytest.log.gz": "8d7169680ef7b0eb60660c24f27e0b34def15e0546db38d13bec8e9df0c65701",
+  "result.json": "4889b69db2d61e24475a5c50086f82b6fb648aac97c11528aa94f9432f27b9bb",
+  "runner.executed.py.txt": "b31f37e5ebe3f40ed255d12fcbfc76474afc84bcd168f52d0b96747d9f037a0d",
+  "source-after.json": "6529297b697a5cca92ac153e45d65041ac0c7873cdca93f1f9b6f33ca4710c21",
+  "source-before.json": "6529297b697a5cca92ac153e45d65041ac0c7873cdca93f1f9b6f33ca4710c21"
+}

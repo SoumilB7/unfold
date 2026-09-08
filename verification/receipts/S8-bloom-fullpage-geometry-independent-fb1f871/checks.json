@@ -1,0 +1,24 @@
+{
+  "status": "ACCEPT same geometry as independently owner-reviewed Bloom SVG",
+  "comparisons": [
+    {
+      "prior_review_svg": "verification/receipts/S8-empty-lane-geometry/bloom-attention.before.svg",
+      "actual_fullpage_svg": "/private/tmp/unfold-s8-current-captures-fb1f871/bloom-final-replay-v3/old-001.svg",
+      "prior_sha256": "329f9628f61a09fae4888b5fe5b8818f99ff6c03a2483b0b775fc0b8cee41c83",
+      "actual_sha256": "380f712230bc2db4524c0244fed77eefdc19c243bb9217f9f11e8c4593740df9",
+      "exact_after_two_explicit_mount_substitutions": true
+    },
+    {
+      "prior_review_svg": "verification/receipts/S8-empty-lane-geometry/bloom-attention.after.svg",
+      "actual_fullpage_svg": "/private/tmp/unfold-s8-current-captures-fb1f871/bloom-final-replay-v3/current-001.svg",
+      "prior_sha256": "2b77fe8c94dd7af7113aa838e02d2efae634b6bb7ecf5bce88a7d83320c59b06",
+      "actual_sha256": "67cadb519bb66d55d1bb8d3fc98a527807142ddd4db0e05606a30204cbc094e6",
+      "exact_after_two_explicit_mount_substitutions": true
+    }
+  ],
+  "mount_substitutions": {
+    "geometry-review-bloom-attention-0": "uf-dfe67de04e-g0-attn-1",
+    "aria-label bloom-attention": "aria-label bloom attention"
+  },
+  "raw_artifacts_untouched": true
+}

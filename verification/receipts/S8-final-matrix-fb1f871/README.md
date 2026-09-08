@@ -1,0 +1,7 @@
+# Derived39 matrix atfb1f871 — PASS
+
+The actual saved SDXL current source/projection/reconciliation replay matches the716 reviewed model, observations, relations, IR and facts exactly. The other38 exact retained input/payload/class guards and unchanged dispatch/projector/reconciliation/generator source are independently accepted in `S8-final-source-derivation-preparation-fb1f871/owner-review.json`. That owner check uses the broader projection plus provenance-meaning fact-key census, not merely strings in fact_keys_consumed. New primitive receipt applicability is absent for those38.
+
+The real generator refreshed only its complete source manifest after these premises were checked. All117 compressed payload files, all39 model summaries and every other matrix field remain exact. Runtime model/construction/execution entry points were forbidden; the unchanged --check passes. Complete before/after implementation pins match. The executed derivative script is retained as a runnable tool; its printed S7 target progress denotes restored saved values, not live model runs.
+
+Historical generation lineage remains25 original96 targets + one separately replay-validated PixArt + one saved SDXL reconciliation +12 actual5227 targets, followed by the explicit716 and current fb1 derived phases. This is not a fresh39-model campaign, new execution claim, output preservation pass or baseline acceptance.

@@ -1,0 +1,313 @@
+{
+  "graph": {
+    "aside": null,
+    "edges": [],
+    "flow": [
+      "hidden",
+      "qkv_projection_unresolved",
+      "scaled_scores",
+      "attn_softmax",
+      "attn_apply_v",
+      "concat_heads",
+      "attention_output_unresolved",
+      "region_out"
+    ],
+    "groups": [],
+    "nodes": [
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "hidden",
+        "kind": "port",
+        "label": "in (1,024)",
+        "meta": {},
+        "resolved": true,
+        "static": true,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "qkv_projection_unresolved",
+        "kind": "opaque",
+        "label": "Q/K/V projections (storage unresolved)",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": 46,
+        "id": "cross_attention_states",
+        "kind": "embedding",
+        "label": [
+          "Encoded text"
+        ],
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": 250
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "scaled_scores",
+        "kind": "attention",
+        "label": "Attention scores (scaling unresolved)",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "attn_softmax",
+        "kind": "activation",
+        "label": "Softmax",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "attn_apply_v",
+        "kind": "dot_product",
+        "label": null,
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "concat_heads",
+        "kind": "reshape",
+        "label": "Concat heads",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "attention_output_unresolved",
+        "kind": "opaque",
+        "label": "Attention output path unresolved",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "region_out",
+        "kind": "port",
+        "label": null,
+        "meta": {},
+        "resolved": true,
+        "static": true,
+        "sub": null,
+        "target": null,
+        "w": null
+      }
+    ],
+    "note": null,
+    "parallels": [
+      {
+        "dst": "scaled_scores",
+        "lanes": [
+          {
+            "dst": [
+              "attn_apply_v"
+            ],
+            "ids": [],
+            "out_label": null,
+            "src": "qkv_projection_unresolved"
+          },
+          {
+            "dst": null,
+            "ids": [],
+            "out_label": null,
+            "src": "qkv_projection_unresolved"
+          },
+          {
+            "dst": null,
+            "ids": [],
+            "out_label": null,
+            "src": "qkv_projection_unresolved"
+          }
+        ],
+        "src": "qkv_projection_unresolved"
+      }
+    ],
+    "side_inputs": [
+      {
+        "node": "cross_attention_states",
+        "side": "right",
+        "target": "qkv_projection_unresolved"
+      }
+    ]
+  },
+  "region": {
+    "edges": [
+      {
+        "dst": "qkv_projection_unresolved",
+        "src": "hidden"
+      },
+      {
+        "dst": "attn_apply_v",
+        "src": "qkv_projection_unresolved"
+      },
+      {
+        "dst": "qkv_projection_unresolved",
+        "src": "cross_attention_states"
+      },
+      {
+        "dst": "attn_softmax",
+        "src": "scaled_scores"
+      },
+      {
+        "dst": "attn_apply_v",
+        "src": "attn_softmax"
+      },
+      {
+        "dst": "concat_heads",
+        "src": "attn_apply_v"
+      },
+      {
+        "dst": "attention_output_unresolved",
+        "src": "concat_heads"
+      },
+      {
+        "dst": "scaled_scores",
+        "src": "qkv_projection_unresolved"
+      },
+      {
+        "dst": "scaled_scores",
+        "src": "qkv_projection_unresolved"
+      }
+    ],
+    "id": "attention",
+    "label": "mha",
+    "ops": [
+      {
+        "fn": null,
+        "id": "hidden",
+        "in_features": null,
+        "kind": "input",
+        "label": null,
+        "meta": {},
+        "out_features": 1024
+      },
+      {
+        "fn": null,
+        "id": "qkv_projection_unresolved",
+        "in_features": 1024,
+        "kind": "opaque",
+        "label": "Q/K/V projections (storage unresolved)",
+        "meta": {
+          "status": "unresolved"
+        },
+        "out_features": null
+      },
+      {
+        "fn": null,
+        "id": "cross_attention_states",
+        "in_features": null,
+        "kind": "input",
+        "label": [
+          "Encoded text"
+        ],
+        "meta": {},
+        "out_features": null
+      },
+      {
+        "fn": "dot_product",
+        "id": "scaled_scores",
+        "in_features": null,
+        "kind": "attention_core",
+        "label": "Attention scores (scaling unresolved)",
+        "meta": {
+          "desc": "Computes QK^T attention scores. Whether the forward applies an explicit scale is unresolved, so no denominator or scaling formula is asserted.",
+          "numerator": "Q K^T",
+          "status": "unresolved"
+        },
+        "out_features": null
+      },
+      {
+        "fn": "softmax",
+        "id": "attn_softmax",
+        "in_features": null,
+        "kind": "activation",
+        "label": "Softmax",
+        "meta": {},
+        "out_features": null
+      },
+      {
+        "fn": "matmul",
+        "id": "attn_apply_v",
+        "in_features": null,
+        "kind": "elementwise",
+        "label": null,
+        "meta": {},
+        "out_features": null
+      },
+      {
+        "fn": null,
+        "id": "concat_heads",
+        "in_features": null,
+        "kind": "reshape",
+        "label": "Concat heads",
+        "meta": {},
+        "out_features": 1024
+      },
+      {
+        "fn": null,
+        "id": "attention_output_unresolved",
+        "in_features": 1024,
+        "kind": "opaque",
+        "label": "Attention output path unresolved",
+        "meta": {
+          "status": "unresolved"
+        },
+        "out_features": 1024
+      }
+    ],
+    "resolved": true,
+    "role": "attention",
+    "source": "config",
+    "template": "mha"
+  }
+}

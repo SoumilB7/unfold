@@ -1,0 +1,13 @@
+{
+  "README.md": "d2c33f3e8b578f0bfb01c53d7ec5b5833cf930d0ffba0449260278b269bd4f19",
+  "archive-map.json": "36f3aaf51e082c3b540393e93e0699cee7f883d68c1d7089fe0c949f4d90e017",
+  "artifact-index-before-packaging.json": "01cebfc773a6e8c05ef1f20a248edd4b6f9c103ae7b32f05ff14ec3e90552879",
+  "invocation.json": "bcae1b7d63350a0c9fa878e584fff57fe1064d91c932ce0187b2e49c6f020548",
+  "per-obligation-results.json": "1cf7bda4389215131de541e254f88ecdc23b6480d1bdbe13e7f4dce7ec34b70e",
+  "pytest.log.gz": "7876a745dac4411673dd9ccd94afb746e90c938479d8082648c5aa462005bc20",
+  "result.json": "b10f4f77fbbc21dfff5523f10b0ca4613609071bf364df02f955b5302cde86b2",
+  "runner.executed.py.txt": "bf692e5bd9d0ae311abe0d2b27321d2a5de3a166e49302e0e87049bcda562c3b",
+  "source-after.json": "3fd97e8313596afc377c12247a35fd74ccc9d84f4abe4cd238236c38623d47be",
+  "source-before.json": "3fd97e8313596afc377c12247a35fd74ccc9d84f4abe4cd238236c38623d47be",
+  "test-delta.diff.gz": "f00fb855a95491992897df655382a11b6d90293a74d833d0ddf8a94b7da24e4c"
+}

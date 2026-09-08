@@ -1,0 +1,44 @@
+[
+  {
+    "file": "model.json.gz",
+    "logical_equal": true,
+    "old_sha256": "f5a35dc2e3177578d3af8f5eb65828f4430bafeddb8044c562a01f157e0415b5",
+    "new_sha256": "f5a35dc2e3177578d3af8f5eb65828f4430bafeddb8044c562a01f157e0415b5"
+  },
+  {
+    "file": "observation.json.gz",
+    "logical_equal": true,
+    "old_sha256": "718b3a49aa1f21a5ce540db24631ce7730fc8aea23c58d69ba9b073c5bb371cf",
+    "new_sha256": "718b3a49aa1f21a5ce540db24631ce7730fc8aea23c58d69ba9b073c5bb371cf"
+  },
+  {
+    "file": "relations.json.gz",
+    "logical_equal": true,
+    "old_sha256": "d74b8d629d02b6199cb97eec2efab08ec2277ea408ecab89a84e98a7eaa9b77f",
+    "new_sha256": "d74b8d629d02b6199cb97eec2efab08ec2277ea408ecab89a84e98a7eaa9b77f"
+  },
+  {
+    "file": "ir.json.gz",
+    "logical_equal": true,
+    "old_sha256": "97abef2b950bbcadc5881e7f2baf1f2ed800bc274385a151374c10de66134985",
+    "new_sha256": "97abef2b950bbcadc5881e7f2baf1f2ed800bc274385a151374c10de66134985"
+  },
+  {
+    "file": "facts.json.gz",
+    "logical_equal": true,
+    "old_sha256": "c19227119da4e39855660ad6ba860eb9f14351797d53e18f5b49e45e9cb9e111",
+    "new_sha256": "c19227119da4e39855660ad6ba860eb9f14351797d53e18f5b49e45e9cb9e111"
+  },
+  {
+    "file": "parsed-ir.json.gz",
+    "logical_equal": true,
+    "old_sha256": "97abef2b950bbcadc5881e7f2baf1f2ed800bc274385a151374c10de66134985",
+    "new_sha256": "97abef2b950bbcadc5881e7f2baf1f2ed800bc274385a151374c10de66134985"
+  },
+  {
+    "file": "parsed-facts.json.gz",
+    "logical_equal": true,
+    "old_sha256": "c19227119da4e39855660ad6ba860eb9f14351797d53e18f5b49e45e9cb9e111",
+    "new_sha256": "c19227119da4e39855660ad6ba860eb9f14351797d53e18f5b49e45e9cb9e111"
+  }
+]

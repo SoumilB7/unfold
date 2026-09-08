@@ -1,0 +1,5 @@
+# Final caller, growth and debt accounting refresh
+
+The retained AST reference census was adapted only to the immutablefb1 checkpoint and its measured growth document, then executed. All14 original reader modules still have actual production entry references;17 added support modules remain live, with the shared recipe extraction counted separately. The legacy comparison enabling call remains confined to the explicitly flagged demonstration path; actual current/differential view coverage is separately tested. No old author files or comparison bridge were deleted.
+
+The entire original structural-debt register remains byte-identical to accepted83140f1. The three restored consumer fingerprints are retained obligations, not three eliminated debts. All five extracted fixture AST nodes match their originals. Exact current source hashes, caller locations, git growth rows and the executed runnable census are retained. This is a static liveness/accounting check, not new model or runtime evidence.

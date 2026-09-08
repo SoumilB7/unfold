@@ -1,0 +1,15 @@
+{
+  "review": "ACCEPT bounded static pre-use",
+  "pins": {
+    "verification/receipts/S8-remaining-preservation-capture-preparation/scripts/derive_ledger.py": "1bfcd6ac720d144db0ac619da0930e9d0581831ba2fae64bbee312e0b731e6e0",
+    "verification/receipts/S8-remaining-preservation-capture-preparation/declaration-contract.json": "bdd1fbf02418b265f7a0512120d35d595529b783f175dd3dd8543df55942485c"
+  },
+  "model_runs": 0,
+  "tool_executions": 0,
+  "independent_read_checks": {
+    "old_list_equals_actual_Bloom_41": true,
+    "current_list_equals_actual_Bloom_53": true,
+    "expected_manifest_hash_matches": true,
+    "unchanged_canonicalizer_hash_matches": true
+  }
+}

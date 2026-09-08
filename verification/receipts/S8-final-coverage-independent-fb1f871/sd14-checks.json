@@ -1,0 +1,17 @@
+{
+  "status": "ACCEPT actual corrected SD14 Sable row",
+  "source_case": "/private/tmp/unfold-s8-current-captures-fb1f871/sd-v1-4-cwd-corrected",
+  "one_actual_parsed_ir": true,
+  "complete_source_pins": 335,
+  "before_finally_current_all_equal": true,
+  "input_sha256": "c5dd075d93072828c01293b3c7ad32cce983a1a0007d94764089464256fa7ee1",
+  "report_sha256": "58059193b9a9ce4ef013baea91e2bf5d7abea9c18ecd47c88c7fb49bf7677ed6",
+  "all25_mechanical_checks_empty": true,
+  "current_global_structural_debt_check": {
+    "blocking": true,
+    "findings": [],
+    "name": "structural_debt_register",
+    "note": ""
+  },
+  "full44_review": "pending executor release"
+}

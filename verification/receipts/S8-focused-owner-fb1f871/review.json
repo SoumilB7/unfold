@@ -1,0 +1,29 @@
+{
+  "verdict": "29 selected obligations covered by retained28passes plus corrected1pass; final broad pending",
+  "blessed": false,
+  "runs": [
+    {
+      "commit": "779739b",
+      "exit_code": 1,
+      "log_sha256": "3bdeb5b7fa078f61cf079232e89ee25fb7796f121c45e9e0c12ebf3c71887665",
+      "source_pin_count": 581,
+      "physics_pre_post_pin_count": 0,
+      "source_pins_equal": true
+    },
+    {
+      "commit": "fb1f871",
+      "exit_code": 0,
+      "log_sha256": "6afe065a407e511218cb9a85f93bef32632674818538b2d57acce1e45176ff3e",
+      "source_pin_count": 588,
+      "physics_pre_post_pin_count": 7,
+      "source_pins_equal": true
+    }
+  ],
+  "only_changed_function": "test_valid_synthetic_simple_cross_text_variant_retains_bounded_cells",
+  "original_red_preserved": true,
+  "limits": [
+    "Not represented as one29-pass run on fb1",
+    "Original779 physics check was during/post-run, separately labelled; singlefb1 includes physics before/after",
+    "No output baseline or final broad acceptance"
+  ]
+}

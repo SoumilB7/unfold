@@ -1,0 +1,10 @@
+{
+  "117_payload_bytes_equal": true,
+  "all_matrix_fields_except_sources_equal": true,
+  "denominator": 39,
+  "elapsed_seconds": 5.46724299993366,
+  "lineage": "25original96 +1separatePixArt +1savedSDXL +12actual5227;716 derived38guards+SDXL;fb1 derived38exactguard checks+actual savedSDXL currentreconciliation",
+  "matrix_sha256": "6a8f9af7a5c6ab9d9efad5c1e6551fe9e3bb8e601bc74b936e5c8f41f64e416b",
+  "model_summary_equality": true,
+  "new_model_execution": false
+}

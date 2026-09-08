@@ -1,0 +1,9 @@
+{
+  "actual_versions": {
+    "diffusers": "0.38.0",
+    "huggingface_hub": "1.10.1",
+    "transformers": "5.12.1"
+  },
+  "exact_historical_coverage_environment_equal": true,
+  "limitation": "Version equality, not an invented historical full installed-source manifest; exact source/input guards and retained witness-specific source hashes are separate."
+}

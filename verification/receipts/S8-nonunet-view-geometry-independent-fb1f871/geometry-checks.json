@@ -1,0 +1,941 @@
+[
+  {
+    "index": 0,
+    "slug": "dbrx-base",
+    "view": "attn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "kv_cache",
+        "target": "scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "kv_cache",
+        "target": "attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "33f5cf495390f6a1c7d293dde8ceb90f8ba5decb9765dd3f7972e8793603d046",
+    "current_svg_sha256": "ae53eb4c259a2960115226db8b7301712ae4c088e1dba2d8905c4e37935c768d",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/00-dbrx-base/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/00-dbrx-base/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 1,
+    "slug": "flux-2-dev",
+    "view": "encoder_0_op_selfattn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "encoder_0_attn_kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "encoder_0_attn_kv_cache",
+        "target": "encoder_0_attn_scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "encoder_0_attn_kv_cache",
+        "target": "encoder_0_attn_attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "04c9989cb5d100e4c7dd985ed2e87a7bbde6333a763f8eae2fcce25344f001f9",
+    "current_svg_sha256": "c720b76d0b3c1e4e46dd463d2ff32aa913efe10d27bd57d093e1834d756b63b5",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/01-flux-2-dev/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/01-flux-2-dev/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 2,
+    "slug": "gemma-2-2b-it",
+    "view": "attn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "kv_cache",
+        "target": "scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "kv_cache",
+        "target": "attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "c486fa3ac0721ea3b4b95deca010afa5617be346e85ff4f901ae1879b8461d19",
+    "current_svg_sha256": "f6403cf18d475420f13fc0f47c493e563d7666635fb4e51183ec71fda9006a44",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/02-gemma-2-2b-it/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/02-gemma-2-2b-it/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 3,
+    "slug": "gemma-2-2b-it",
+    "view": "attn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "kv_cache",
+        "target": "scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "kv_cache",
+        "target": "attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "a4f01b107bd280b96dc8ad1eeabf7b23b25a52cec2bb859cb147e0b382627ced",
+    "current_svg_sha256": "f8ce9b6c504a2ae9a23f2acaf5646b38a756414b9d91a026489df1c863bbaf68",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/03-gemma-2-2b-it/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/03-gemma-2-2b-it/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 4,
+    "slug": "glm-4-5",
+    "view": "attn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "kv_cache",
+        "target": "scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "kv_cache",
+        "target": "attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "a3ab0520e52edc1305626e2dac0cc0b0e44e17f01d47da8264549cd0e288e719",
+    "current_svg_sha256": "c12602b493bd07e4e59986c3b34728336f8f6eb79440e8e4613021777c944dd9",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/04-glm-4-5/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/04-glm-4-5/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 5,
+    "slug": "glm-4-5",
+    "view": "expert_1",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "expert_gate_up_split": 1
+    },
+    "restored_edges": [
+      {
+        "source": "expert_gate_up_split",
+        "target": "expert_mul",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -118.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "d4b1767a9a5cb9239409676f55115713038b220edc14ac7653f01920ec4c3360",
+    "current_svg_sha256": "43de2f1e400eb4bab4df7ea166c6a82a1ce76928fc147de9805072e16e33476f",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/05-glm-4-5/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/05-glm-4-5/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical split-value bypass now reaches multiply."
+  },
+  {
+    "index": 6,
+    "slug": "gpt-oss-20b",
+    "view": "attn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "kv_cache",
+        "target": "scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "kv_cache",
+        "target": "attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "52cfda192ff60392667db470b846b6c500355ecb64194a9916fdc39efd655ad7",
+    "current_svg_sha256": "c95b4bd43edc6f5ad5544e9e5524e20ef33281f1e98e3ba483acefc1fea71583",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/06-gpt-oss-20b/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/06-gpt-oss-20b/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 7,
+    "slug": "gpt-oss-20b",
+    "view": "attn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "kv_cache",
+        "target": "scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "kv_cache",
+        "target": "attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "db5553da300d2d9fc1e13830843976c67123572dcfe088de1a734b05623fa06c",
+    "current_svg_sha256": "4ef46934377f4f2d64526447c11c10f13c61fcdcc65ef2859b72cd62fcbe06d8",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/07-gpt-oss-20b/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/07-gpt-oss-20b/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 8,
+    "slug": "lumina-image-2-0",
+    "view": "encoder_0_g0_op_selfattn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "encoder_0_g0_attn_kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "encoder_0_g0_attn_kv_cache",
+        "target": "encoder_0_g0_attn_scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "encoder_0_g0_attn_kv_cache",
+        "target": "encoder_0_g0_attn_attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "47c33a764574779554459ae073b197aaf1954445806e2d854d78583db6fe1931",
+    "current_svg_sha256": "b792b7289e77f6f3419c40f3b52770f5c13f21c29338dcc7d21878406d6af61e",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/08-lumina-image-2-0/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/08-lumina-image-2-0/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 9,
+    "slug": "lumina-image-2-0",
+    "view": "encoder_0_g1_op_selfattn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "encoder_0_g1_attn_kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "encoder_0_g1_attn_kv_cache",
+        "target": "encoder_0_g1_attn_scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "encoder_0_g1_attn_kv_cache",
+        "target": "encoder_0_g1_attn_attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "d9123ea52ce637729a51eb0601acf3de13ee3b7a82cee4148533976d457ed4d7",
+    "current_svg_sha256": "d1d61a8dbc4e61c81b1dd55dda7545005ae9ed68cff679a68b19de7b98175d9b",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/09-lumina-image-2-0/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/09-lumina-image-2-0/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 10,
+    "slug": "olmo-2-1124-7b",
+    "view": "attn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "kv_cache",
+        "target": "scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "kv_cache",
+        "target": "attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "7c73db358bb31fe1b7d136fed3a841ac5d7d0da753aaa2b51f04bb2df5d75927",
+    "current_svg_sha256": "a0435e2d9409ed0e72c0b638e3fa9c37baf2de0b63e5990fb2c38378516ef7fc",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/10-olmo-2-1124-7b/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/10-olmo-2-1124-7b/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 11,
+    "slug": "prxpixel-t2i",
+    "view": "encoder_0_op_selfattn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "encoder_0_attn_kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "encoder_0_attn_kv_cache",
+        "target": "encoder_0_attn_scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "encoder_0_attn_kv_cache",
+        "target": "encoder_0_attn_attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "ef90916a809afa4fe21c1205a6d01395b1d58e814519eeee3969022a1194a7de",
+    "current_svg_sha256": "da3a3da95cad871efcaf9ae0f8c59bf97145c723031e64438297527fa7db08c7",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/11-prxpixel-t2i/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/11-prxpixel-t2i/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 12,
+    "slug": "qwen3-5-27b-text",
+    "view": "attn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "kv_cache",
+        "target": "scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "kv_cache",
+        "target": "attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "50d85fda64bf4ac5f366203bc85bb443539ec7bb72ca9e86cc5f196cd415f76b",
+    "current_svg_sha256": "e765f81d68c489fe847e893741f1a4d35c8feb8553ac8b3b69f939499a4cff4a",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/12-qwen3-5-27b-text/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/12-qwen3-5-27b-text/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": "Sigmoid gate\u2192output multiply rail x118 intersects scaled_scores at x[-140,140],y[408,490]; old and current path bytes identical; outside UNet S8.",
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 13,
+    "slug": "qwen3-8b",
+    "view": "attn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "kv_cache",
+        "target": "scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "kv_cache",
+        "target": "attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "56efb5cf0b8334df85e2bf7f1e0319a709fe73d1cfba5ad98f7f5eb00c8af05d",
+    "current_svg_sha256": "aed619bea2c077e514319e573d572d322acb9673f6307d9cc68b147a85016288",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/13-qwen3-8b/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/13-qwen3-8b/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 14,
+    "slug": "sana-1600m-1024px-diffusers",
+    "view": "encoder_0_g0_op_selfattn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "encoder_0_g0_attn_kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "encoder_0_g0_attn_kv_cache",
+        "target": "encoder_0_g0_attn_scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "encoder_0_g0_attn_kv_cache",
+        "target": "encoder_0_g0_attn_attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "270e051066cf220ca7050e82e654930ef159315556a211141dcc3dd6517d8503",
+    "current_svg_sha256": "b1867ea1420bf76e0b5cc6969c8107596682012895a730c3d058b618f658e533",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/14-sana-1600m-1024px-diffusers/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/14-sana-1600m-1024px-diffusers/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 15,
+    "slug": "sana-1600m-1024px-diffusers",
+    "view": "encoder_0_g1_op_selfattn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "encoder_0_g1_attn_kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "encoder_0_g1_attn_kv_cache",
+        "target": "encoder_0_g1_attn_scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "encoder_0_g1_attn_kv_cache",
+        "target": "encoder_0_g1_attn_attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "c4361b36ed9aeb13dab8cb84be4087ab0801406a5b53a12a466a6e8698ac226a",
+    "current_svg_sha256": "0c9d1b8a3969e37df6a6c8a145f976fb15f3a0747707781ffd08b3320dbd8d50",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/15-sana-1600m-1024px-diffusers/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/15-sana-1600m-1024px-diffusers/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 16,
+    "slug": "stablelm-2-1-6b",
+    "view": "attn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "kv_cache",
+        "target": "scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "kv_cache",
+        "target": "attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "8938826df014d66a7c3ad86c84a858668df4ae195612553182c986f460b97f61",
+    "current_svg_sha256": "de95902b4bb7df4262635702808d135c5f78326aff3a027ab024924db0cef4ee",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/16-stablelm-2-1-6b/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/16-stablelm-2-1-6b/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 17,
+    "slug": "deepseek-v3",
+    "view": "expert_1",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "expert_gate_up_split": 1
+    },
+    "restored_edges": [
+      {
+        "source": "expert_gate_up_split",
+        "target": "expert_mul",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -118.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "12ae7feb5166e57e8fb300662896072ac05af9ff08c5d345388ea9b1efaae525",
+    "current_svg_sha256": "b7f942e5cc1f6dd579c685b5e52328d1ef9d9fbb2eeb95ae409aeec667e27ac1",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/17-deepseek-v3/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/17-deepseek-v3/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical split-value bypass now reaches multiply."
+  },
+  {
+    "index": 18,
+    "slug": "granite-3-0-8b-instruct",
+    "view": "attn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "kv_cache",
+        "target": "scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "kv_cache",
+        "target": "attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "c87819b84fd24c1e3190c009aa51392e267ed9b34aac315297404d52e46fcdeb",
+    "current_svg_sha256": "2e2b0c9ee28af8a1092e9bdcd15a382160fb3ee868bb59e35a8fe6ca2feef2b5",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/18-granite-3-0-8b-instruct/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/18-granite-3-0-8b-instruct/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 19,
+    "slug": "hunyuanvideo",
+    "view": "encoder_0_op_selfattn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "encoder_0_attn_kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "encoder_0_attn_kv_cache",
+        "target": "encoder_0_attn_scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "encoder_0_attn_kv_cache",
+        "target": "encoder_0_attn_attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "0908453f1a31764e3dfd54ce5d3a37645409f652c3c44615310394075b6a366f",
+    "current_svg_sha256": "e7c0e4c469ab10b57188c53fac813d728c9af4b51c288181cfdd3a9fbf0c55ed",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/19-hunyuanvideo/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/19-hunyuanvideo/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 20,
+    "slug": "llama-7b",
+    "view": "attn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "kv_cache": 1
+    },
+    "restored_edges": [
+      {
+        "source": "kv_cache",
+        "target": "scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -78.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "kv_cache",
+        "target": "attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          176.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "376e7488841baff899eaf22c476fdfdbcf6ab766dc772ef39a4fce401274e9a9",
+    "current_svg_sha256": "85d14e5b46dc1a02c8cedfb6dd9f9872358b17c828d013baf4460b3d1a8c992a",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/20-llama-7b/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/20-llama-7b/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical cache-read routes now reach scores and apply-values."
+  },
+  {
+    "index": 21,
+    "slug": "musicgen-small",
+    "view": "cross_attn",
+    "old_locked_views_recovered": true,
+    "old_html_meta_recovered": true,
+    "canonical_graph_region_identical": true,
+    "node_ids_and_labels_unchanged": true,
+    "source_stems": {
+      "qkv_projection_unresolved": 1
+    },
+    "restored_edges": [
+      {
+        "source": "qkv_projection_unresolved",
+        "target": "attn_apply_v",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          261.9
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "qkv_projection_unresolved",
+        "target": "scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -156.0,
+          0.0
+        ],
+        "intersected_rectangles": []
+      },
+      {
+        "source": "qkv_projection_unresolved",
+        "target": "scaled_scores",
+        "canonical_edge": true,
+        "matching_actual_arrow_rails": [
+          -156.0,
+          0.0
+        ],
+        "intersected_rectangles": []
+      }
+    ],
+    "old_svg_sha256": "eec216510be83043ca946f1bcf52428365c4402c9078f34e0fca2aa6f603e1f1",
+    "current_svg_sha256": "174ae1f71bdef07e941df0a63f39e48f23b7fb44053828e12fbc41a6a2cd106a",
+    "native_paths": [
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/21-musicgen-small/old.png",
+      "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/21-musicgen-small/current.png"
+    ],
+    "empty_edge_arrow_multiplicity_preserved": true,
+    "native_current_visually_inspected": true,
+    "verdict": "ACCEPT restored-edge output delta only",
+    "known_preexisting_geometry_defect": null,
+    "cause": "Previously omitted canonical unresolved-projection result routes now reach score/apply-values; unknowns remain."
+  }
+]
