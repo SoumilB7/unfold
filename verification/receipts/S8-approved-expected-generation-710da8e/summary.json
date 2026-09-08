@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "actual_result": {
+    "elapsed_seconds": 1275.505,
+    "historical_baseline_regenerated": false,
+    "live_baseline_mutated": false,
+    "path": "/private/tmp/unfold-s8-approved-stage-710da8e/expected-generation/preservation_expected_manifest.json",
+    "sha256": "84f0df7ade2f311adefbbb14f8ac0732b941f98d6110723f6554530a1d14b390",
+    "status": "ACTUAL_CANONICAL_EXPECTED_MANIFEST_GENERATED",
+    "witnesses": 29
+  },
+  "actual_pin_checks": {
+    "corpus_gallery_equal": true,
+    "external_equal": true,
+    "source_equal": true,
+    "tool_inputs_equal": true
+  },
+  "actual_expected_sha256": "84f0df7ade2f311adefbbb14f8ac0732b941f98d6110723f6554530a1d14b390",
+  "executed_tool_pins": {
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-baseline-preparation-710da8e/approval-overlay.json": "773bf421a0df9c8541b9e44b5255ab177a5f93f826bac6d483f28ab13f7146fb",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-baseline-preparation-710da8e/build_expected.py": "831118b409a68fe66711659afcdee9b2a905cab870b6f265b70864b8a889d52f",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-final-lanes-fb1f871/selected-external-inputs.json": "4e1152bc601fedf22bf75c5948f4a9559c15a86033804063bee293b2195f5fbe"
+  },
+  "all_log_warning_bytes_preserved": true,
+  "source_files_unchanged_during_packaging": true
+}

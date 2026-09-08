@@ -70,7 +70,7 @@
   "hash_signature": [
     "5448b42b14f8bdfa7b1a94772980d791",
     "9690073a99b038727d8ddfc9d75359d6",
-    "bf0b533e1c953f2a11117824d0343219",
+    "e2e095e621ec7be281944b7039d42b70",
     "f10a4ff3b20dfd43c8b41e303c5535ca"
   ],
   "model": "bloom",
@@ -98,12 +98,51 @@
     "model.final_norm_kind",
     "model.tie_word_embeddings"
   ],
+  "review_verdict": {
+    "decision": "ACCEPT",
+    "gallery_manifest_sha256": "32cea6f5c598d376533d4ab68e90d8a61b5c3baaf76898e31ac8fed1739c1943",
+    "her_eyes_review_sha256": "1f8b8047d946fe8ca9491cece49b006ffb094c7e11e62c70e0871fabc3908729",
+    "implementer": "executor",
+    "independent_review_evidence": [
+      "verification/receipts/S8-approved-geometry-owner/review.json",
+      "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+    ],
+    "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved.",
+    "model": "bloom",
+    "pixel_review_sha256": "2df7e939d06c2e005fa3d9f22015963a595d6077409927697f1d9bfd336d61b7",
+    "proven_facts_equal_prior_lock": true,
+    "report_phase": "actual736-report-plus-approved-final-render",
+    "report_sha256": "0c48ee20247222cafb581a2c4a2a5985dd7dfd7d8a1cf39c615a5be457a9d71c",
+    "retained_visual_suggestions": [],
+    "reviewed_at": "2026-09-08T08:14:19.339228+00:00",
+    "reviewer": "root",
+    "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+    "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+    "view_signature": [
+      {
+        "hash": "5448b42b14f8bdfa7b1a94772980d791",
+        "label": "architecture"
+      },
+      {
+        "hash": "f10a4ff3b20dfd43c8b41e303c5535ca",
+        "label": "architecture"
+      },
+      {
+        "hash": "e2e095e621ec7be281944b7039d42b70",
+        "label": "attn"
+      },
+      {
+        "hash": "9690073a99b038727d8ddfc9d75359d6",
+        "label": "ffn"
+      }
+    ]
+  },
   "source": "local",
   "superseded_hash_signature": [
+    "5448b42b14f8bdfa7b1a94772980d791",
     "9690073a99b038727d8ddfc9d75359d6",
     "bf0b533e1c953f2a11117824d0343219",
-    "f10a4ff3b20dfd43c8b41e303c5535ca",
-    "f1b6082bc3d9008ecd1add6cf8000497"
+    "f10a4ff3b20dfd43c8b41e303c5535ca"
   ],
   "view_signature": [
     {
@@ -115,7 +154,7 @@
       "label": "architecture"
     },
     {
-      "hash": "bf0b533e1c953f2a11117824d0343219",
+      "hash": "e2e095e621ec7be281944b7039d42b70",
       "label": "attn"
     },
     {

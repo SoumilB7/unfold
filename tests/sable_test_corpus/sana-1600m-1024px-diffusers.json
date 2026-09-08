@@ -274,7 +274,7 @@
     ]
   },
   "hash_signature": [
-    "0f077fbbb987b06ff9dd52f8c0190d38",
+    "080b3f8ea0fb470cff8b81073f2827e3",
     "1c1bb3f942a941091573a63d28df04aa",
     "2e7f2f09ae70365c0149d48dac399f3f",
     "44214a47b62afb95cf44b9c9a99c6eae",
@@ -282,10 +282,10 @@
     "6f3ff3d93134f0e32a666f32805babb4",
     "88c41725caee80b8095553dd7841b6fd",
     "8a360c4f1e446063bd592a6f7c329e78",
-    "8a4def6a3fe0f334e2b21a1a7bc1dc7d",
     "a2dd49449d9b57dd41f5f488d286a55a",
     "b74fdbf963bc0fe63f5964d2018e6e8e",
-    "d052e6ffcbec38cae3c36dd0b0dd66ec"
+    "d052e6ffcbec38cae3c36dd0b0dd66ec",
+    "dbe671a0d554ddd944ede7da6e1e92ba"
   ],
   "model": "Sana_1600M_1024px_diffusers",
   "proven_facts": [
@@ -297,13 +297,118 @@
     "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
     "root.denoiser.stacks[0].diffusion_stack_depth"
   ],
+  "review_verdict": {
+    "decision": "ACCEPT",
+    "gallery_manifest_sha256": "af9e3a5345e3e2b9e480e7a87827c932924c0552115a85772dd642ef294da52b",
+    "her_eyes_review_sha256": "14500edc3fdb4b11030092f4619cca1a1a0536051886e131c9fe0cf4acf4d08d",
+    "implementer": "executor",
+    "independent_review_evidence": [
+      "verification/receipts/S8-approved-geometry-owner/review.json",
+      "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+    ],
+    "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved.",
+    "model": "Sana_1600M_1024px_diffusers",
+    "pixel_review_sha256": "9e74397a9ef151b6f3a4d219277dab194611c0f07c75a4b027eb42ebfcecb7b0",
+    "proven_facts_equal_prior_lock": true,
+    "report_phase": "actual-fb1-Sable-capture",
+    "report_sha256": "6ab4b88d4606845994137cb820ce5f2e472b66e6798476f12fc5516e310325a1",
+    "retained_visual_suggestions": [
+      {
+        "delight": "FINE",
+        "file": "01__encoder_0.png",
+        "inspected": true,
+        "label": "encoder_0",
+        "png_sha256": "0af5ed01848d614a50ca12ce7910ac574a9f9152aed8506c68f783f7790fb49f",
+        "sentence": "The two encoder variants remain readable but make a very tall stack; compact their repeated subregions while preserving both drills.",
+        "source_svg_sha256": "c133140b45c994fb5eb8fee0dab9b962da7d7e6e44b1892e4b97e9a4af392a16",
+        "verdict": "SUGGEST",
+        "visual_hash": "a2dd49449d9b57dd41f5f488d286a55a"
+      },
+      {
+        "delight": "DISLIKE",
+        "file": "02__denoiser.png",
+        "inspected": true,
+        "label": "denoiser",
+        "png_sha256": "444e70c5dbba336617311fb59f21a61ddf066f3a5b568c06a3298edd954d71df",
+        "sentence": "The external context box reaches beyond the right edge; give the complete box room without dropping its connection.",
+        "source_svg_sha256": "206fd6e4bffcca5ad4376f1267a66eebec5999f88b5622219d1a4cccd8a146a7",
+        "verdict": "SUGGEST",
+        "visual_hash": "1c1bb3f942a941091573a63d28df04aa"
+      },
+      {
+        "delight": "DISLIKE",
+        "file": "11__architecture__1.png",
+        "inspected": true,
+        "label": "architecture",
+        "png_sha256": "70f0fb7bc258223e7b8b85662f5c2cd62b139b12d52a8dcf019c6460a9f05b10",
+        "sentence": "The layer description is clipped at the right edge; wrap the complete limitation-rich legend.",
+        "source_svg_sha256": "ee8f116b88c7b4ca89c3d8502bb39ee943958f57c7d3cb8a7badeaca333727ce",
+        "verdict": "SUGGEST",
+        "visual_hash": "b74fdbf963bc0fe63f5964d2018e6e8e"
+      }
+    ],
+    "reviewed_at": "2026-09-08T08:29:22.216640+00:00",
+    "reviewer": "root",
+    "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+    "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+    "view_signature": [
+      {
+        "hash": "2e7f2f09ae70365c0149d48dac399f3f",
+        "label": "architecture"
+      },
+      {
+        "hash": "b74fdbf963bc0fe63f5964d2018e6e8e",
+        "label": "architecture"
+      },
+      {
+        "hash": "4b28977d7e010f52eeee1f027e6c7d0e",
+        "label": "attn"
+      },
+      {
+        "hash": "d052e6ffcbec38cae3c36dd0b0dd66ec",
+        "label": "cross_attn"
+      },
+      {
+        "hash": "1c1bb3f942a941091573a63d28df04aa",
+        "label": "denoiser"
+      },
+      {
+        "hash": "a2dd49449d9b57dd41f5f488d286a55a",
+        "label": "encoder_0"
+      },
+      {
+        "hash": "44214a47b62afb95cf44b9c9a99c6eae",
+        "label": "encoder_0_g0_op_ffn"
+      },
+      {
+        "hash": "dbe671a0d554ddd944ede7da6e1e92ba",
+        "label": "encoder_0_g0_op_selfattn"
+      },
+      {
+        "hash": "080b3f8ea0fb470cff8b81073f2827e3",
+        "label": "encoder_0_g1_op_selfattn"
+      },
+      {
+        "hash": "88c41725caee80b8095553dd7841b6fd",
+        "label": "ffn"
+      },
+      {
+        "hash": "6f3ff3d93134f0e32a666f32805babb4",
+        "label": "scheduler"
+      },
+      {
+        "hash": "8a360c4f1e446063bd592a6f7c329e78",
+        "label": "vae_decode"
+      }
+    ]
+  },
   "source": "local",
   "superseded_hash_signature": [
+    "0f077fbbb987b06ff9dd52f8c0190d38",
     "1c1bb3f942a941091573a63d28df04aa",
     "2e7f2f09ae70365c0149d48dac399f3f",
     "44214a47b62afb95cf44b9c9a99c6eae",
     "4b28977d7e010f52eeee1f027e6c7d0e",
-    "6b3eea43201fd9ed8bf6789264e853e1",
     "6f3ff3d93134f0e32a666f32805babb4",
     "88c41725caee80b8095553dd7841b6fd",
     "8a360c4f1e446063bd592a6f7c329e78",
@@ -342,11 +447,11 @@
       "label": "encoder_0_g0_op_ffn"
     },
     {
-      "hash": "0f077fbbb987b06ff9dd52f8c0190d38",
+      "hash": "dbe671a0d554ddd944ede7da6e1e92ba",
       "label": "encoder_0_g0_op_selfattn"
     },
     {
-      "hash": "8a4def6a3fe0f334e2b21a1a7bc1dc7d",
+      "hash": "080b3f8ea0fb470cff8b81073f2827e3",
       "label": "encoder_0_g1_op_selfattn"
     },
     {

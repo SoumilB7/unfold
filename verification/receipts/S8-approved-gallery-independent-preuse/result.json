@@ -1,0 +1,15 @@
+{
+  "status": "ACCEPT pre-use bounded actualHTML gallery preparation",
+  "script_sha256": "436eeb77ce9b0f2a4bb458c150d6974dfbbf95401a2008b64b4cd0ce231f0130",
+  "manifest_sha256": "4d827363a5b06b83ef03057b236a3a13e64d233c525d39954bf5258653d4ebf5",
+  "exact19approved_changed_view_witnesses": true,
+  "distinct_views": 294,
+  "all_pinned_input_bytes_verified": true,
+  "original_report_model_checks_oracle_preserved": true,
+  "code_enforces_field_exact_rehydration_and_only_gallery_change": true,
+  "Bloom_exception": "Only declared one attn index1 visualhash update from actual736report to reviewed finalv3HTML; explicitderivedlineage",
+  "no_newSable_model_claim": true,
+  "source_input_script_rsvg_pins_finally": true,
+  "generated_images_pending_individual_review_notblessed": true,
+  "no_model_test_render_byreviewer": true
+}

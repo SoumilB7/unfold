@@ -1,6 +1,6 @@
-# 29 DISTINCT diagram views (architecture + every drill, to the leaves)
-# 50 baked svgs total — 21 identical per-layer-group copies collapsed
-# 56 description-only leaf cards skipped (no diagram)
+# 143 DISTINCT diagram views (architecture + every drill, to the leaves)
+# 4522 baked svgs total — 4379 identical per-layer-group copies collapsed
+# 7195 description-only leaf cards skipped (no diagram)
 # amber border = clickable block (opens a card); no border = static port/glyph
 
 00__architecture.png
@@ -11,24 +11,138 @@
 05__vae_decode.png
 06__encoder_0_op_selfattn.png
 07__encoder_0_op_ffn.png
-08__encoder_1_op_selfattn.png   (+5 identical copies collapsed)
+08__encoder_1_op_selfattn.png
 09__encoder_1_op_ffn.png
-10__unet_down_0.png
-11__unet_down_1.png
-12__unet_down_2.png
-13__unet_mid.png
-14__unet_up_0.png
-15__unet_up_1.png
-16__unet_up_2.png
-17__unet_text_cond.png
-18__vae_decoder_block_4.png
-19__vae_decoder_block_3.png
-20__vae_decoder_block_2.png
-21__vae_decoder_block_1.png
-22__unet_down_0__resnet.png   (+1 identical copies collapsed)
-23__unet_down_1__resnet.png   (+1 identical copies collapsed)
-24__unet_down_1__transformer.png   (+1 identical copies collapsed)
-25__unet_down_2__resnet.png   (+3 identical copies collapsed)
-26__unet_down_2__transformer.png   (+2 identical copies collapsed)
-27__unet_down_1__crossattn.png   (+4 identical copies collapsed)
-28__unet_down_1__ff.png   (+4 identical copies collapsed)
+10__instance_down_blocks__0.png
+11__instance_down_blocks__1.png
+12__instance_down_blocks__2.png   (+1 identical copies collapsed)
+13__instance_up_blocks__0.png   (+2 identical copies collapsed)
+14__instance_up_blocks__0__1.png   (+1 identical copies collapsed)
+15__instance_time_embedding.png   (+1 identical copies collapsed)
+16__unet_primary_region_0.png   (+1 identical copies collapsed)
+17__unet_primary_region_1.png   (+1 identical copies collapsed)
+18__unet_primary_region_2.png
+19__unet_primary_region_3.png   (+1 identical copies collapsed)
+20__unet_primary_region_4.png
+21__unet_primary_region_8.png
+22__vae_decoder_block_4.png
+23__vae_decoder_block_3.png
+24__vae_decoder_block_2.png
+25__vae_decoder_block_1.png
+26__instance_down_blocks__0__resnets.png   (+10 identical copies collapsed)
+27__instance_down_blocks__0__downsamplers.png   (+1 identical copies collapsed)
+28__instance_mid_block__attentions.png
+29__instance_up_blocks__0__attentions.png   (+4 identical copies collapsed)
+30__instance_up_blocks__0__upsamplers.png   (+1 identical copies collapsed)
+31__instance_up_blocks__0__join_0_operand_0.png   (+2 identical copies collapsed)
+32__instance_up_blocks__0__join_0_operand_1.png   (+2 identical copies collapsed)
+33__unet_primary_region_0__when_true.png
+34__unet_primary_region_1__when_true.png
+35__unet_primary_region_3__iteration.png   (+217 identical copies collapsed)
+36__unet_primary_region_4__when_true.png
+37__unet_primary_region_5__when_true.png
+38__unet_primary_region_6__iteration.png   (+95 identical copies collapsed)
+39__unet_primary_region_7__when_true.png
+40__instance_down_blocks__0__resnets__0.png   (+14 identical copies collapsed)
+41__instance_down_blocks__0__resnets__0__1.png   (+14 identical copies collapsed)
+42__instance_down_blocks__0__resnets__0__2.png   (+16 identical copies collapsed)
+43__instance_down_blocks__0__resnets__0__3.png   (+16 identical copies collapsed)
+44__instance_down_blocks__0__resnets__0__4.png   (+5 identical copies collapsed)
+45__instance_down_blocks__0__downsamplers__0.png   (+3 identical copies collapsed)
+46__instance_down_blocks__1__attentions__0.png   (+10 identical copies collapsed)
+47__instance_down_blocks__1__resnets__0.png   (+10 identical copies collapsed)
+48__instance_mid_block__resnets__0.png   (+1 identical copies collapsed)
+49__instance_mid_block__resnets__0__1.png   (+3 identical copies collapsed)
+50__instance_mid_block__resnets__0__2.png   (+1 identical copies collapsed)
+51__instance_mid_block__resnets__0__3.png   (+1 identical copies collapsed)
+52__instance_up_blocks__0__join_0_operand_0__when_true.png   (+2 identical copies collapsed)
+53__instance_up_blocks__0__join_0_operand_0__when_false.png   (+8 identical copies collapsed)
+54__instance_up_blocks__0__join_0_operand_1__when_true.png   (+2 identical copies collapsed)
+55__instance_up_blocks__0__join_0_operand_1__when_false.png   (+8 identical copies collapsed)
+56__unet_primary_region_0__when_true__operand_0.png
+57__unet_primary_region_1__when_true__arg_0.png
+58__unet_primary_region_3__iteration__when_true.png
+59__unet_primary_region_3__iteration__when_false.png
+60__unet_primary_region_4__when_true__when_true.png
+61__unet_primary_region_6__iteration__when_true.png
+62__unet_primary_region_6__iteration__when_false.png
+63__unet_primary_region_7__when_true__arg_0.png
+64__instance_down_blocks__0__resnets__0__conditioning_0_operand_0.png   (+149 identical copies collapsed)
+65__instance_down_blocks__0__resnets__0__conditioning_0_operand_1.png   (+20 identical copies collapsed)
+66__instance_down_blocks__2__attentions__0__transformer_blocks.png   (+5 identical copies collapsed)
+67__instance_mid_block__resnets__0__conditioning_1_operand_0.png   (+1 identical copies collapsed)
+68__instance_mid_block__resnets__0__conditioning_1_operand_1.png   (+1 identical copies collapsed)
+69__instance_up_blocks__0__join_0_operand_1__when_false__source.png   (+8 identical copies collapsed)
+70__unet_primary_region_3__iteration__when_true__arg_0.png   (+4 identical copies collapsed)
+71__unet_primary_region_3__iteration__when_true__arg_2.png   (+2 identical copies collapsed)
+72__unet_primary_region_3__iteration__when_true__arg_3.png   (+2 identical copies collapsed)
+73__unet_primary_region_3__iteration__when_true__arg_4.png   (+2 identical copies collapsed)
+74__unet_primary_region_3__iteration__when_true__arg_5.png   (+2 identical copies collapsed)
+75__unet_primary_region_3__iteration__when_true__call.png   (+2 identical copies collapsed)
+76__unet_primary_region_3__iteration__when_false__when_true.png
+77__unet_primary_region_3__iteration__when_false__when_false.png   (+1 identical copies collapsed)
+78__unet_primary_region_4__when_true__when_true__operand_1.png   (+1 identical copies collapsed)
+79__unet_primary_region_4__when_true__when_false__when_true.png
+80__unet_primary_region_4__when_true__when_false__when_false.png
+81__unet_primary_region_6__iteration__when_true__arg_2.png   (+141 identical copies collapsed)
+82__unet_primary_region_6__iteration__when_true__call.png   (+1 identical copies collapsed)
+83__instance_down_blocks__0__resnets__0__conditioning_0_operand_1__when_true.png   (+20 identical copies collapsed)
+84__instance_down_blocks__1__attentions__0__transformer_blocks__0.png   (+69 identical copies collapsed)
+85__instance_mid_block__resnets__0__conditioning_1_operand_0__operand_0.png   (+102 identical copies collapsed)
+86__instance_mid_block__resnets__0__conditioning_1_operand_0__operand_1.png   (+1 identical copies collapsed)
+87__unet_primary_region_3__iteration__when_true__arg_1__when_false.png   (+13 identical copies collapsed)
+88__unet_primary_region_3__iteration__when_true__arg_3__when_true.png   (+5 identical copies collapsed)
+89__unet_primary_region_3__iteration__when_true__arg_4__when_true.png   (+2 identical copies collapsed)
+90__unet_primary_region_4__when_true__when_true__operand_1__arg_1.png   (+1 identical copies collapsed)
+91__instance_down_blocks__1__attentions__0__transformer_blocks__0__attn1.png   (+139 identical copies collapsed)
+92__instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2.png   (+59 identical copies collapsed)
+93__instance_down_blocks__1__attentions__0__transformer_blocks__0__ff.png   (+69 identical copies collapsed)
+94__instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__1.png   (+69 identical copies collapsed)
+95__instance_mid_block__resnets__0__conditioning_1_operand_0__operand_1__operand_1.png   (+1 identical copies collapsed)
+96__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_true.png   (+13 identical copies collapsed)
+97__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false.png   (+44 identical copies collapsed)
+98__unet_primary_region_3__iteration__when_true__arg_2__helper_output__when_true.png   (+5 identical copies collapsed)
+99__unet_primary_region_3__iteration__when_true__arg_3__when_true__arg_1.png   (+5 identical copies collapsed)
+100__instance_down_blocks__0__resnets__0__conditioning_0_operand_1__when_true__source__arg_0.png   (+20 identical copies collapsed)
+101__instance_down_blocks__1__attentions__0__transformer_blocks__0__attn1__to_out.png   (+139 identical copies collapsed)
+102__instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__net.png   (+69 identical copies collapsed)
+103__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_true__operand_1.png   (+13 identical copies collapsed)
+104__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_true.png   (+41 identical copies collapsed)
+105__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false.png   (+125 identical copies collapsed)
+106__unet_primary_region_3__iteration__when_true__arg_2__helper_output__when_false__when_true.png   (+2 identical copies collapsed)
+107__unet_primary_region_3__iteration__when_true__arg_3__when_true__arg_1__operand_0.png   (+5 identical copies collapsed)
+108__instance_down_blocks__0__resnets__0__conditioning_0_operand_0__arg_0__when_true__arg_0__when_true.png   (+32 identical copies collapsed)
+109__instance_down_blocks__0__resnets__0__conditioning_0_operand_0__arg_0__when_false__when_false__arg_0.png   (+75 identical copies collapsed)
+110__instance_down_blocks__0__resnets__0__conditioning_0_operand_1__when_true__source__arg_0__when_true.png   (+20 identical copies collapsed)
+111__instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__net__0.png   (+69 identical copies collapsed)
+112__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_true__operand_1__when_false.png   (+13 identical copies collapsed)
+113__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_true__when_true.png   (+55 identical copies collapsed)
+114__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_true__when_false.png   (+41 identical copies collapsed)
+115__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false__arg_0.png   (+125 identical copies collapsed)
+116__unet_primary_region_3__iteration__when_true__arg_2__helper_output__when_false__when_true__arg_1.png   (+92 identical copies collapsed)
+117__unet_primary_region_3__iteration__when_true__arg_2__helper_output__when_false__when_false__when_false.png   (+2 identical copies collapsed)
+118__unet_primary_region_3__iteration__when_true__arg_3__when_true__arg_1__operand_0__operand_1.png   (+2 identical copies collapsed)
+119__unet_primary_region_3__iteration__when_true__arg_5__when_true__arg_1__operand_0__operand_1.png   (+2 identical copies collapsed)
+120__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_true__when_false__operand_1.png   (+83 identical copies collapsed)
+121__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false__arg_0__helper_output.png   (+293 identical copies collapsed)
+122__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_true__operand_1__when_false__helper_output__when_true.png   (+13 identical copies collapsed)
+123__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_true__when_false__operand_1__helper_output.png   (+97 identical copies collapsed)
+124__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false__arg_0__helper_output__arg_1.png   (+125 identical copies collapsed)
+125__unet_primary_region_3__iteration__when_true__arg_2__helper_output__when_false__when_false__when_false__when_true__item_0.png   (+2 identical copies collapsed)
+126__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_true__operand_1__when_false__helper_output__when_false__when_true.png   (+27 identical copies collapsed)
+127__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false__arg_0__helper_output__arg_1__arg_0.png   (+125 identical copies collapsed)
+128__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_true__operand_1__when_false__helper_output__when_false__when_true__arg_0.png   (+13 identical copies collapsed)
+129__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_true__operand_1__when_false__helper_output__when_false__when_false__when_true.png   (+27 identical copies collapsed)
+130__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_true__operand_1__when_false__helper_output__when_false__when_false__when_true__arg_0.png   (+13 identical copies collapsed)
+131__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_true__when_false__operand_1__helper_output__when_true__arg_1__arg_0.png   (+83 identical copies collapsed)
+132__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false__arg_0__helper_output__arg_1__arg_0__arg_1__when_true.png   (+125 identical copies collapsed)
+133__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false__arg_0__helper_output__arg_1__arg_0__arg_1__when_false.png   (+125 identical copies collapsed)
+134__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false__arg_0__helper_output__arg_1__arg_0__arg_1__when_true__arg_0.png   (+125 identical copies collapsed)
+135__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false__arg_0__helper_output__arg_1__arg_0__arg_1__when_true__arg_1.png   (+125 identical copies collapsed)
+136__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false__arg_0__helper_output__arg_1__arg_0__arg_1__when_false__when_true.png   (+125 identical copies collapsed)
+137__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_true__when_false__operand_1__helper_output__when_true__arg_1__arg_0__when_true__arg_1.png   (+83 identical copies collapsed)
+138__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false__arg_0__helper_output__arg_1__arg_0__arg_1__when_true__arg_1__when_true.png   (+251 identical copies collapsed)
+139__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false__arg_0__helper_output__arg_1__arg_0__arg_1__when_false__when_true__arg_1.png   (+125 identical copies collapsed)
+140__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_true__operand_1__when_false__helper_output__when_false__when_false__when_true__arg_0__arg_1__arg_0__item_1.png   (+13 identical copies collapsed)
+141__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_true__operand_1__when_false__helper_output__when_false__when_false__when_true__arg_0__arg_1__arg_0__item_1__arg_0.png   (+13 identical copies collapsed)
+142__unet_primary_region_3__iteration__when_true__arg_1__when_false__when_true__operand_1__when_false__helper_output__when_false__when_false__when_true__arg_0__arg_1__arg_0__item_1__arg_1.png   (+13 identical copies collapsed)

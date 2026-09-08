@@ -120,12 +120,12 @@
     "vocab_size": 201088
   },
   "hash_signature": [
-    "0ff52a453ed4cd94123b0a276ee074d8",
     "19f54d71ceafc7386057dea86cbd0031",
-    "335dc4a5c8ffd40fc2e4b5cb87d8d71d",
+    "1df4a3b83d10b550972b52f5e1eedb76",
     "5649037dd75f6c481afb2ae7124aaf39",
     "5b1391184ca2e87a94708a850e6a8ad9",
     "617ce03749b7fbeb4ed3b7ef445ab849",
+    "851eaadd3f4bd3719ab304dee3f5d18d",
     "9c61b6c1799a8a0e41ca220558ade62f",
     "f3df89820579dc3b4bf7ee5b51fc79e9"
   ],
@@ -156,13 +156,80 @@
     "model.final_norm_kind",
     "model.tie_word_embeddings"
   ],
+  "review_verdict": {
+    "decision": "ACCEPT",
+    "gallery_manifest_sha256": "cfd8f20054db44dcfadc4c59b4c9c034ffcddc89376135aeda026748e9ea6ac8",
+    "her_eyes_review_sha256": "98f47a71ed770372ff1197f1508ba94e0c5f27e0d134c75d53911c18db42f403",
+    "implementer": "executor",
+    "independent_review_evidence": [
+      "verification/receipts/S8-approved-geometry-owner/review.json",
+      "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+    ],
+    "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved.",
+    "model": "gpt-oss-20b",
+    "pixel_review_sha256": "db7dc5c4f31c758f8e3a040c16d1b53d99aaa69b3fc084a26fa20ae233050b11",
+    "proven_facts_equal_prior_lock": true,
+    "report_phase": "actual-fb1-Sable-capture",
+    "report_sha256": "4429464c9d27bebc418c448f1f7b41711e6caae7191be90cba65b400e8b07497",
+    "retained_visual_suggestions": [
+      {
+        "delight": "FINE",
+        "file": "03__ffn.png",
+        "inspected": true,
+        "label": "ffn",
+        "png_sha256": "779bd7c4db2c8c4ecb04dd87adc326717dc9b25e1caeab2f7dd292e9fce4509a",
+        "sentence": "The router card is much wider than the rest of the MoE spine; narrowing it would give this simple view better balance.",
+        "source_svg_sha256": "bf60d6a4e3b0a20c6b610fb46f6ddad4e23d0e75c340d5f6dc14d036afa5164b",
+        "verdict": "SUGGEST",
+        "visual_hash": "5b1391184ca2e87a94708a850e6a8ad9"
+      }
+    ],
+    "reviewed_at": "2026-09-08T08:20:09.974202+00:00",
+    "reviewer": "root",
+    "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+    "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+    "view_signature": [
+      {
+        "hash": "9c61b6c1799a8a0e41ca220558ade62f",
+        "label": "architecture"
+      },
+      {
+        "hash": "f3df89820579dc3b4bf7ee5b51fc79e9",
+        "label": "architecture"
+      },
+      {
+        "hash": "19f54d71ceafc7386057dea86cbd0031",
+        "label": "architecture_v1"
+      },
+      {
+        "hash": "1df4a3b83d10b550972b52f5e1eedb76",
+        "label": "attn"
+      },
+      {
+        "hash": "851eaadd3f4bd3719ab304dee3f5d18d",
+        "label": "attn"
+      },
+      {
+        "hash": "5649037dd75f6c481afb2ae7124aaf39",
+        "label": "expert_1"
+      },
+      {
+        "hash": "5b1391184ca2e87a94708a850e6a8ad9",
+        "label": "ffn"
+      },
+      {
+        "hash": "617ce03749b7fbeb4ed3b7ef445ab849",
+        "label": "router"
+      }
+    ]
+  },
   "source": "local",
   "superseded_hash_signature": [
+    "0ff52a453ed4cd94123b0a276ee074d8",
     "19f54d71ceafc7386057dea86cbd0031",
-    "1ecde1de24e3672114dc67e2d1478bd2",
     "335dc4a5c8ffd40fc2e4b5cb87d8d71d",
-    "50db28fc1d577733f8359144c130243f",
     "5649037dd75f6c481afb2ae7124aaf39",
+    "5b1391184ca2e87a94708a850e6a8ad9",
     "617ce03749b7fbeb4ed3b7ef445ab849",
     "9c61b6c1799a8a0e41ca220558ade62f",
     "f3df89820579dc3b4bf7ee5b51fc79e9"
@@ -181,11 +248,11 @@
       "label": "architecture_v1"
     },
     {
-      "hash": "0ff52a453ed4cd94123b0a276ee074d8",
+      "hash": "1df4a3b83d10b550972b52f5e1eedb76",
       "label": "attn"
     },
     {
-      "hash": "335dc4a5c8ffd40fc2e4b5cb87d8d71d",
+      "hash": "851eaadd3f4bd3719ab304dee3f5d18d",
       "label": "attn"
     },
     {

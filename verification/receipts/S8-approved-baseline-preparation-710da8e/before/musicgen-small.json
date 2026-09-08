@@ -1,0 +1,157 @@
+{
+  "checks": {
+    "asserted_facts": true,
+    "click_coupling": true,
+    "config_accessed_unprojected": true,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
+    "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
+    "dangling_connectors": true,
+    "document_boundary_completeness": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "projection_audit": true,
+    "qualified_projection_values": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true,
+    "zero_asserted_census": true
+  },
+  "config": {
+    "architectures": [
+      "MusicgenForConditionalGeneration"
+    ],
+    "audio_encoder": {
+      "audio_channels": 1,
+      "codebook_dim": 128,
+      "codebook_size": 2048,
+      "hidden_size": 128,
+      "model_type": "encodec",
+      "num_filters": 64,
+      "num_lstm_layers": 2,
+      "num_residual_layers": 1,
+      "sampling_rate": 32000,
+      "upsampling_ratios": [
+        8,
+        5,
+        4,
+        4
+      ]
+    },
+    "decoder": {
+      "activation_function": "gelu",
+      "audio_channels": 1,
+      "ffn_dim": 4096,
+      "hidden_size": 1024,
+      "max_position_embeddings": 2048,
+      "model_type": "musicgen_decoder",
+      "num_attention_heads": 16,
+      "num_codebooks": 4,
+      "num_hidden_layers": 24,
+      "scale_embedding": false,
+      "tie_word_embeddings": false,
+      "vocab_size": 2048
+    },
+    "is_encoder_decoder": true,
+    "model_type": "musicgen",
+    "text_encoder": {
+      "d_ff": 3072,
+      "d_kv": 64,
+      "d_model": 768,
+      "dense_act_fn": "relu",
+      "feed_forward_proj": "relu",
+      "is_gated_act": false,
+      "model_type": "t5",
+      "num_heads": 12,
+      "num_layers": 12,
+      "relative_attention_num_buckets": 32,
+      "vocab_size": 32128
+    }
+  },
+  "hash_signature": [
+    "0efd6d6afe49f19717fb93e3758924f3",
+    "56200b84718c960c32e37b49bdcf07a4",
+    "9631ca8d3bfe9cd7525a5e455280cbe9",
+    "b82eac9542114e7e147947656c4f91d3",
+    "d5e7795323e0127f4d6570fe7b656e9a",
+    "f50b4ae7af4f499ef3b2f943e9782f24",
+    "fc529c428f15e8c39db863da704bfe69",
+    "fcc6e95151f97801459b8743d87b635d"
+  ],
+  "model": "musicgen-small",
+  "proven_facts": [
+    "decoder.attention.cross_attention_schedule",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.projection_mode",
+    "decoder.attention.scores_scale",
+    "decoder.codebook_streams",
+    "decoder.ffn.activation",
+    "decoder.ffn.gated",
+    "decoder.ffn.intermediate_size",
+    "decoder.ffn.projection_mode",
+    "decoder.input.position_addition",
+    "decoder.layer.norm_kind",
+    "model.tie_word_embeddings"
+  ],
+  "source": "local",
+  "superseded_hash_signature": [
+    "0efd6d6afe49f19717fb93e3758924f3",
+    "56200b84718c960c32e37b49bdcf07a4",
+    "9631ca8d3bfe9cd7525a5e455280cbe9",
+    "b82eac9542114e7e147947656c4f91d3",
+    "b911b3aa6caf4ed114a9d9f6141ceda8",
+    "d5e7795323e0127f4d6570fe7b656e9a",
+    "f50b4ae7af4f499ef3b2f943e9782f24",
+    "fcc6e95151f97801459b8743d87b635d"
+  ],
+  "view_signature": [
+    {
+      "hash": "d5e7795323e0127f4d6570fe7b656e9a",
+      "label": "architecture"
+    },
+    {
+      "hash": "fc529c428f15e8c39db863da704bfe69",
+      "label": "architecture"
+    },
+    {
+      "hash": "b82eac9542114e7e147947656c4f91d3",
+      "label": "attn"
+    },
+    {
+      "hash": "f50b4ae7af4f499ef3b2f943e9782f24",
+      "label": "conditioning_path"
+    },
+    {
+      "hash": "0efd6d6afe49f19717fb93e3758924f3",
+      "label": "conditioning_projector"
+    },
+    {
+      "hash": "fcc6e95151f97801459b8743d87b635d",
+      "label": "cross_attn"
+    },
+    {
+      "hash": "56200b84718c960c32e37b49bdcf07a4",
+      "label": "ffn"
+    },
+    {
+      "hash": "9631ca8d3bfe9cd7525a5e455280cbe9",
+      "label": "fusion"
+    }
+  ],
+  "visual_evidence": {
+    "gallery_dir": "galleries/musicgen-small",
+    "manifest": true,
+    "png_count": 8
+  }
+}

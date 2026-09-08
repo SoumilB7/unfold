@@ -1,0 +1,78 @@
+{
+  "decision": "ACCEPT",
+  "reviewer": "root",
+  "implementer": "executor",
+  "reviewed_at": "2026-09-08T08:23:48.383201+00:00",
+  "model": "MusicgenForConditionalGeneration",
+  "view_signature": [
+    {
+      "label": "architecture",
+      "hash": "d5e7795323e0127f4d6570fe7b656e9a"
+    },
+    {
+      "label": "architecture",
+      "hash": "fc529c428f15e8c39db863da704bfe69"
+    },
+    {
+      "label": "attn",
+      "hash": "b82eac9542114e7e147947656c4f91d3"
+    },
+    {
+      "label": "conditioning_path",
+      "hash": "f50b4ae7af4f499ef3b2f943e9782f24"
+    },
+    {
+      "label": "conditioning_projector",
+      "hash": "0efd6d6afe49f19717fb93e3758924f3"
+    },
+    {
+      "label": "cross_attn",
+      "hash": "b2e5e49c0efbc17254c0b2c406251824"
+    },
+    {
+      "label": "ffn",
+      "hash": "56200b84718c960c32e37b49bdcf07a4"
+    },
+    {
+      "label": "fusion",
+      "hash": "9631ca8d3bfe9cd7525a5e455280cbe9"
+    }
+  ],
+  "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+  "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+  "report_sha256": "b1c1c9128dadcf6a79c736a50dec38b5a83d6e0d8e2e4c3ccf168bc04881058b",
+  "gallery_manifest_sha256": "5906d44a7e6d517d3074b8e19cdacb67a11717fb0b524e8fbbc8e74436bbeca8",
+  "pixel_review_sha256": "b721824481d3ae51b2e8a7a795e56436087c3c809bd57ba1dcfc99903a696e89",
+  "her_eyes_review_sha256": "59dc539118bfe627fc97bfb838438170c318e5c1b11da4274658d90620bcb4c2",
+  "independent_review_evidence": [
+    "verification/receipts/S8-approved-geometry-owner/review.json",
+    "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+  ],
+  "report_phase": "actual-fb1-Sable-capture",
+  "proven_facts_equal_prior_lock": true,
+  "retained_visual_suggestions": [
+    {
+      "file": "00__architecture.png",
+      "inspected": true,
+      "label": "architecture",
+      "png_sha256": "3263fc91b60e2e3ca6601ff854415892a2cc2966339aa9825f5ae316ae2c5581",
+      "source_svg_sha256": "e6dc0adffd2abd4746764489fa619238d3a7848fcc52c0dd472c5eb5830eb278",
+      "visual_hash": "fc529c428f15e8c39db863da704bfe69",
+      "delight": "DISLIKE",
+      "verdict": "SUGGEST",
+      "sentence": "The encoded-prompt card overlaps cross-attention and the bottom token-stream label crowds its border; separate the cards and give the two-line label more height."
+    },
+    {
+      "file": "04__cross_attn.png",
+      "inspected": true,
+      "label": "cross_attn",
+      "png_sha256": "e5c508564bdc97b63a29ce5e6d679c75e43636413bbe84bfc2913ffb8511d0a9",
+      "source_svg_sha256": "d9b798a74bcbaef47fc92099b10ec97c1368fe0bb986e587eb75fee7c1c17bfc",
+      "visual_hash": "b2e5e49c0efbc17254c0b2c406251824",
+      "delight": "FINE",
+      "verdict": "SUGGEST",
+      "sentence": "Two arrowheads nearly coincide under the scores card; give Q and K distinct entry positions while retaining both dependencies."
+    }
+  ],
+  "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved."
+}

@@ -1,0 +1,2094 @@
+{
+  "format": "lossless-appended-gzip-v1",
+  "operation": "Append .gzip to the complete original logical path; preserve exact files and never replace original extensions.",
+  "entries": [
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-baseline-preparation-710da8e/approval-overlay.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-baseline-preparation-710da8e/approval-overlay.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-baseline-preparation-710da8e/approval-overlay.json.gzip",
+      "bytes": 2905,
+      "sha256": "773bf421a0df9c8541b9e44b5255ab177a5f93f826bac6d483f28ab13f7146fb",
+      "stored_bytes": 1271,
+      "stored_sha256": "0bff2ad7e5c06d01c1a31665f0e3d6d3b4057ad050c84692f2584e6e9e634403"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-baseline-preparation-710da8e/bless_one.py",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-baseline-preparation-710da8e/bless_one.py",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-baseline-preparation-710da8e/bless_one.py.gzip",
+      "bytes": 5524,
+      "sha256": "ac7cd7b4117203bfaf02b176c00eadb8a551e7f028a918414b67139ae645d211",
+      "stored_bytes": 1951,
+      "stored_sha256": "5c2942772ec8f8025a786eb80648539c170f43ab9e20839981aa87781ed1cb73"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-gallery-preparation-710da8e/input-manifest.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-gallery-preparation-710da8e/input-manifest.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-gallery-preparation-710da8e/input-manifest.json.gzip",
+      "bytes": 72682,
+      "sha256": "4d827363a5b06b83ef03057b236a3a13e64d233c525d39954bf5258653d4ebf5",
+      "stored_bytes": 24700,
+      "stored_sha256": "f410b7ec5997d8b6efa3411b8553d86bc9c8e1b0b18c4a427cc4dec8e2cc04aa"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/bloom.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/bloom.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/bloom.json.gzip",
+      "bytes": 1632,
+      "sha256": "cadbca93101f5c18b4fe8cc00624d37b449a6a6af371314b8271dae72c9928e6",
+      "stored_bytes": 878,
+      "stored_sha256": "b6ba6cba120f67c4d7e1faf9c8e5860ce1a15dc1f60566d2f90ac871c286be84"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/dbrx-base.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/dbrx-base.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/dbrx-base.json.gzip",
+      "bytes": 2305,
+      "sha256": "77c7cbeb42f250bcaa2a24dabc588c4c5cfac093c14ad0d4367c14235e875a87",
+      "stored_bytes": 1168,
+      "stored_sha256": "84e3b1c16966bb609c3782800e9f79c7b255e1b5e49f08d134829eaac52984e6"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/deepseek-v3.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/deepseek-v3.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/deepseek-v3.json.gzip",
+      "bytes": 3288,
+      "sha256": "4f918f6735ab4a0f5eaf19eb0748398409836861bace098065b949563ccd799f",
+      "stored_bytes": 1509,
+      "stored_sha256": "b57f64862922f958404b250b0f86117c9bca5bc88b0195365a48d87316cdb5d5"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/flux-2-dev.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/flux-2-dev.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/flux-2-dev.json.gzip",
+      "bytes": 4365,
+      "sha256": "9a723b885ef856ebaa313b130c9cb889944b5e21036e5bfa684c2d38ae7e4b17",
+      "stored_bytes": 1831,
+      "stored_sha256": "e8189fb64ae8e04f34d80ca74f1c5424fcd2df969535e3f58dbf80e7fbdf57bb"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/gemma-2-2b-it.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/gemma-2-2b-it.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/gemma-2-2b-it.json.gzip",
+      "bytes": 1802,
+      "sha256": "87f9097c39cfa7ca064ad5cd972b734e1c1543446c0423b8e62dc75d724f2801",
+      "stored_bytes": 929,
+      "stored_sha256": "e3afb5861b75694b6f99bce12c3698e6b9492cd84b803b0717b5b35dce120d62"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/glm-4-5.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/glm-4-5.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/glm-4-5.json.gzip",
+      "bytes": 2591,
+      "sha256": "538106b6fa07717cc682223dc1689ca1ba73453a4e739483d9ce8466fcaf31d1",
+      "stored_bytes": 1263,
+      "stored_sha256": "6266b887ef1fbe735115ee6d1ba172fa51525f4389ad32b35166cabdac578148"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/gpt-oss-20b.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/gpt-oss-20b.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/gpt-oss-20b.json.gzip",
+      "bytes": 2499,
+      "sha256": "f6b199d7055c20c4e8a7c18e9b8433d439c18213e4283166e717c70c38778f54",
+      "stored_bytes": 1229,
+      "stored_sha256": "82852ccdbdd61f40ce775f7e11ce888d537672bbe30f3e5e9c712b30785567ea"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/granite-3-0-8b-instruct.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/granite-3-0-8b-instruct.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/granite-3-0-8b-instruct.json.gzip",
+      "bytes": 1631,
+      "sha256": "fb95e9b300b6df0833e54dade0617402bb6771f2d216d86d4112f3bb3b5375be",
+      "stored_bytes": 881,
+      "stored_sha256": "0897dfb072efb607544ff4d00dde8fd217d7e07451e0f772d93e31df39c64c18"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/hunyuanvideo.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/hunyuanvideo.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/hunyuanvideo.json.gzip",
+      "bytes": 4783,
+      "sha256": "2c24005d6e79852bffa0bcb08267691bbf90db76c94a869f9b8669214171d43a",
+      "stored_bytes": 1949,
+      "stored_sha256": "5b5e854410dffca387f4fb3b58fe88aaf670970fe2c508bddab1445de4c3e4cb"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/llama-7b.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/llama-7b.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/llama-7b.json.gzip",
+      "bytes": 1616,
+      "sha256": "8f8703f4607cd534a942864894d9903aa6dadedf8f6929c1f561c4177a44ca9b",
+      "stored_bytes": 872,
+      "stored_sha256": "a31ed256074592e7a0f08c07e556af537bd07e9b06173eb6d74d93ff08107eb0"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/lumina-image-2-0.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/lumina-image-2-0.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/lumina-image-2-0.json.gzip",
+      "bytes": 4388,
+      "sha256": "8069028e73d61ae28bea4bef90fa33d20f0d4707b3d599237f0a7e0d003a30b4",
+      "stored_bytes": 1828,
+      "stored_sha256": "392ca38979200137bd6916d00162f1b22671b6884b8eeebe0f6334dbad60975f"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/musicgen-small.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/musicgen-small.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/musicgen-small.json.gzip",
+      "bytes": 3149,
+      "sha256": "769f73bef574535bedd3f48a365f15354361492cff5a68bff337d7c64ca16f5d",
+      "stored_bytes": 1472,
+      "stored_sha256": "fae22f27419fa6b5be7b904eb435bd15e10f1c715e600e44fcf243a196249ad8"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/olmo-2-1124-7b.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/olmo-2-1124-7b.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/olmo-2-1124-7b.json.gzip",
+      "bytes": 1622,
+      "sha256": "826478b629b59af7021933964ba7b825d9a9b0e96a879bb03bb157c4460d11ec",
+      "stored_bytes": 880,
+      "stored_sha256": "20676317ca8f8bb42ff0e68603a6565100dd167725309bc1f3b295e24124eb86"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/prxpixel-t2i.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/prxpixel-t2i.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/prxpixel-t2i.json.gzip",
+      "bytes": 3159,
+      "sha256": "cdaac1dc0e3eea8c269c057888d770c58563f994c81a67a558b171dfdd71ad4d",
+      "stored_bytes": 1458,
+      "stored_sha256": "310cb16200f11569c895b1b233df70cac9f3361b270d9d39a374255bab1ebbcb"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/qwen3-5-27b-text.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/qwen3-5-27b-text.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/qwen3-5-27b-text.json.gzip",
+      "bytes": 2869,
+      "sha256": "8d82411245e5f70b221d1bfb18df3cf824a60517a794bb3891db780fded510c9",
+      "stored_bytes": 1355,
+      "stored_sha256": "c350c4c746559b9c8e8f751e938f4bd8a250431fc4e53856e05940d3b1c43dcf"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/qwen3-8b.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/qwen3-8b.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/qwen3-8b.json.gzip",
+      "bytes": 1616,
+      "sha256": "5ff927a894c93957ae63d43e7a256dd4c4afff739eeb02afa2338fbf04dc35e9",
+      "stored_bytes": 876,
+      "stored_sha256": "157a20456a4fa63a615e6c710475ee644df237cbffdbb06399e642ed180cc797"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/sana-1600m-1024px-diffusers.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/sana-1600m-1024px-diffusers.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/sana-1600m-1024px-diffusers.json.gzip",
+      "bytes": 3996,
+      "sha256": "89080212ec7ba997948356a3df3d03c745b7d273086efe201ce06d1d33965384",
+      "stored_bytes": 1719,
+      "stored_sha256": "d811ca10f051f12b258aca02b2d8fc9c0160e02f7b1462a2229efb368e498375"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/stablelm-2-1-6b.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-geometry-owner/verdicts/stablelm-2-1-6b.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/stablelm-2-1-6b.json.gzip",
+      "bytes": 1623,
+      "sha256": "499fd6174afb6b15845ae3b9ac60d2d81e346c5b8d0702dae03e134dbe8e5554",
+      "stored_bytes": 874,
+      "stored_sha256": "267f5842615150076ef39c7af30f36cdc2cabaa11147ebe38ac3f2a0528c46f3"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-approved-sdxl-independent-710da8e/verdict.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-sdxl-independent-710da8e/verdict.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-approved-sdxl-independent-710da8e/verdict.json.gzip",
+      "bytes": 22147,
+      "sha256": "f526f8756ccc99de1a0f6c11eab11ab49211b3c8d15ec7d3d643abc674a2db66",
+      "stored_bytes": 4750,
+      "stored_sha256": "b4452c2cac62ad5713426d06d64c4ba2d8c5939cb770ca9b6fd42e884b77aed8"
+    },
+    {
+      "logical_path": "execution-inputs/verification/receipts/S8-final-lanes-fb1f871/selected-external-inputs.json",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-final-lanes-fb1f871/selected-external-inputs.json",
+      "stored_path": "streams/execution-inputs/verification/receipts/S8-final-lanes-fb1f871/selected-external-inputs.json.gzip",
+      "bytes": 12555,
+      "sha256": "4e1152bc601fedf22bf75c5948f4a9559c15a86033804063bee293b2195f5fbe",
+      "stored_bytes": 3657,
+      "stored_sha256": "ea6e287abfe24d35db1eccd0835aadead0c344a5e53d4e7ec81ba015d2f76aa2"
+    },
+    {
+      "logical_path": "logs/bloom-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bloom-bless.log",
+      "stored_path": "streams/logs/bloom-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/dbrx-base-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/dbrx-base-bless.log",
+      "stored_path": "streams/logs/dbrx-base-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/deepseek-v3-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/deepseek-v3-bless.log",
+      "stored_path": "streams/logs/deepseek-v3-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/flux-2-dev-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/flux-2-dev-bless.log",
+      "stored_path": "streams/logs/flux-2-dev-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/gemma-2-2b-it-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/gemma-2-2b-it-bless.log",
+      "stored_path": "streams/logs/gemma-2-2b-it-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/glm-4-5-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/glm-4-5-bless.log",
+      "stored_path": "streams/logs/glm-4-5-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/gpt-oss-20b-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/gpt-oss-20b-bless.log",
+      "stored_path": "streams/logs/gpt-oss-20b-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/granite-3-0-8b-instruct-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/granite-3-0-8b-instruct-bless.log",
+      "stored_path": "streams/logs/granite-3-0-8b-instruct-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/hunyuanvideo-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/hunyuanvideo-bless.log",
+      "stored_path": "streams/logs/hunyuanvideo-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/llama-7b-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/llama-7b-bless.log",
+      "stored_path": "streams/logs/llama-7b-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/lumina-image-2-0-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/lumina-image-2-0-bless.log",
+      "stored_path": "streams/logs/lumina-image-2-0-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/musicgen-small-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/musicgen-small-bless.log",
+      "stored_path": "streams/logs/musicgen-small-bless.log.gzip",
+      "bytes": 330,
+      "sha256": "b11fdf54306527106b2e3a47c624afb57ba33a2cb45f7c0680dc3036f571e885",
+      "stored_bytes": 168,
+      "stored_sha256": "2df29d8ed23ca5a8982926b44edb3c33b7b023c49d81178525b55f50816c6add"
+    },
+    {
+      "logical_path": "logs/olmo-2-1124-7b-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/olmo-2-1124-7b-bless.log",
+      "stored_path": "streams/logs/olmo-2-1124-7b-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/prxpixel-t2i-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/prxpixel-t2i-bless.log",
+      "stored_path": "streams/logs/prxpixel-t2i-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/qwen3-5-27b-text-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/qwen3-5-27b-text-bless.log",
+      "stored_path": "streams/logs/qwen3-5-27b-text-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/qwen3-8b-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/qwen3-8b-bless.log",
+      "stored_path": "streams/logs/qwen3-8b-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/sana-1600m-1024px-diffusers-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/sana-1600m-1024px-diffusers-bless.log",
+      "stored_path": "streams/logs/sana-1600m-1024px-diffusers-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/stable-diffusion-xl-base-1-0-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/stable-diffusion-xl-base-1-0-bless.log",
+      "stored_path": "streams/logs/stable-diffusion-xl-base-1-0-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "logs/stablelm-2-1-6b-bless.log",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/stablelm-2-1-6b-bless.log",
+      "stored_path": "streams/logs/stablelm-2-1-6b-bless.log.gzip",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+    },
+    {
+      "logical_path": "results/bloom/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/bloom/actual-offline-report-1.json",
+      "stored_path": "streams/results/bloom/actual-offline-report-1.json.gzip",
+      "bytes": 4906,
+      "sha256": "67d41e393aa02063b4b96d46051b6119aad6c26417527b08d9e219cc953758ee",
+      "stored_bytes": 1239,
+      "stored_sha256": "548d2fbd847b134b5a740154a395a735d7efbe628871a4367070fc6e1f720862"
+    },
+    {
+      "logical_path": "results/bloom/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/bloom/external-after-finally.json",
+      "stored_path": "streams/results/bloom/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/bloom/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/bloom/external-before.json",
+      "stored_path": "streams/results/bloom/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/bloom/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/bloom/fixture-after.json",
+      "stored_path": "streams/results/bloom/fixture-after.json.gzip",
+      "bytes": 5327,
+      "sha256": "faa60c4d2ec03b3594cfcc892dcdc8b032365db3372881f3f00c2bd004f3698b",
+      "stored_bytes": 1909,
+      "stored_sha256": "019477cfc5abf3597ba3e2f21d9b8faccfb3b5ca128f64c8090b1f7eb01ca55d"
+    },
+    {
+      "logical_path": "results/bloom/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/bloom/fixture-before.json",
+      "stored_path": "streams/results/bloom/fixture-before.json.gzip",
+      "bytes": 3598,
+      "sha256": "ec3c45693cfa29ebab32657ca294ab592fce04aedbca0dc1d7aef13ea6371eaa",
+      "stored_bytes": 1212,
+      "stored_sha256": "71aabb8df7ebf4396a70cfbf875eb6164b4767f05b2fc3efbfa41495863808e6"
+    },
+    {
+      "logical_path": "results/bloom/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/bloom/input-pins.json",
+      "stored_path": "streams/results/bloom/input-pins.json.gzip",
+      "bytes": 2092,
+      "sha256": "38ff2138b3014333bace08247960d70c4c4e695a608d2e3e885d72a7efb42faa",
+      "stored_bytes": 848,
+      "stored_sha256": "5f25fb62ea223660e91818344fd6e9c686966a8093bfff1f7ed1bbdabcf7788f"
+    },
+    {
+      "logical_path": "results/bloom/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/bloom/pin-check-finally.json",
+      "stored_path": "streams/results/bloom/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/bloom/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/bloom/result.json",
+      "stored_path": "streams/results/bloom/result.json.gzip",
+      "bytes": 499,
+      "sha256": "6c61e9f02ef6027909778977c13a643fe4409500dc9f25c4f55e5c869bfa20ed",
+      "stored_bytes": 365,
+      "stored_sha256": "e3ee584d44bf7c0e438f6218bba4f68006ed04adeae6957cf07963e05f83dec3"
+    },
+    {
+      "logical_path": "results/bloom/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/bloom/source-after-finally.json",
+      "stored_path": "streams/results/bloom/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/bloom/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/bloom/source-before.json",
+      "stored_path": "streams/results/bloom/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/dbrx-base/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/dbrx-base/actual-offline-report-1.json",
+      "stored_path": "streams/results/dbrx-base/actual-offline-report-1.json.gzip",
+      "bytes": 5111,
+      "sha256": "7d8773b0d2c7b2d3c56fe615ada44e503454a9f721194ea06852b756005b3f7a",
+      "stored_bytes": 1328,
+      "stored_sha256": "edbb41c8b50425dcf1c1bdc6df2fc19f7d79640c11381f35a70940775cfa28eb"
+    },
+    {
+      "logical_path": "results/dbrx-base/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/dbrx-base/external-after-finally.json",
+      "stored_path": "streams/results/dbrx-base/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/dbrx-base/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/dbrx-base/external-before.json",
+      "stored_path": "streams/results/dbrx-base/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/dbrx-base/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/dbrx-base/fixture-after.json",
+      "stored_path": "streams/results/dbrx-base/fixture-after.json.gzip",
+      "bytes": 5993,
+      "sha256": "c5bd5d6b7581793dd649b0fb719a3b11adb5a6181a1362e1dedc680adcb9a47c",
+      "stored_bytes": 2107,
+      "stored_sha256": "f45dc95bebdf1030e470af5243a6c8899a7ab93a7bae2f44cdb605d689b48ea3"
+    },
+    {
+      "logical_path": "results/dbrx-base/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/dbrx-base/fixture-before.json",
+      "stored_path": "streams/results/dbrx-base/fixture-before.json.gzip",
+      "bytes": 3551,
+      "sha256": "de3977b959954db6244bccd18313843cb215a7a818957313247180e92c65d971",
+      "stored_bytes": 1153,
+      "stored_sha256": "085902754bc1ee7ecd78dc036fc490a9dc0af96b1cac16481d9f673c90b00f08"
+    },
+    {
+      "logical_path": "results/dbrx-base/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/dbrx-base/input-pins.json",
+      "stored_path": "streams/results/dbrx-base/input-pins.json.gzip",
+      "bytes": 2422,
+      "sha256": "4bb7cb8c7143b5feed05cad2a03a2ffc477b01de95492f349c5fc03b016ee19b",
+      "stored_bytes": 952,
+      "stored_sha256": "a983c9732a7b24b9b7d2b93bcc1549af1b712e949b627a160bc6e0e530ac71e7"
+    },
+    {
+      "logical_path": "results/dbrx-base/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/dbrx-base/pin-check-finally.json",
+      "stored_path": "streams/results/dbrx-base/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/dbrx-base/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/dbrx-base/result.json",
+      "stored_path": "streams/results/dbrx-base/result.json.gzip",
+      "bytes": 507,
+      "sha256": "431b5de7e2324cfbae037490b1f6aea2f49c8d5fa8024dc96e7ae620ecea6198",
+      "stored_bytes": 368,
+      "stored_sha256": "0fd3eaf8d3cf69f37c85147f6a7ec473332c5abc4623cfff0110bf2677f44f93"
+    },
+    {
+      "logical_path": "results/dbrx-base/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/dbrx-base/source-after-finally.json",
+      "stored_path": "streams/results/dbrx-base/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/dbrx-base/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/dbrx-base/source-before.json",
+      "stored_path": "streams/results/dbrx-base/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/deepseek-v3/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/deepseek-v3/actual-offline-report-1.json",
+      "stored_path": "streams/results/deepseek-v3/actual-offline-report-1.json.gzip",
+      "bytes": 5593,
+      "sha256": "1d649ba38304fa4e88f4548b267f3623704da38494aa45dfc3e593954c5b0106",
+      "stored_bytes": 1502,
+      "stored_sha256": "0cdcd153bda9378139512045207aba1722f3de493586b9c8d9ba9d278b573514"
+    },
+    {
+      "logical_path": "results/deepseek-v3/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/deepseek-v3/external-after-finally.json",
+      "stored_path": "streams/results/deepseek-v3/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/deepseek-v3/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/deepseek-v3/external-before.json",
+      "stored_path": "streams/results/deepseek-v3/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/deepseek-v3/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/deepseek-v3/fixture-after.json",
+      "stored_path": "streams/results/deepseek-v3/fixture-after.json.gzip",
+      "bytes": 9744,
+      "sha256": "025e7c5215b2294b054e5961f9e908706e0e2e7cbcbfbdcdee154d66a97304e1",
+      "stored_bytes": 3116,
+      "stored_sha256": "9b3e69e9a54ab9dc66dbe60435c0a47ae8fdb92f6b28acb8ad9dc55155483098"
+    },
+    {
+      "logical_path": "results/deepseek-v3/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/deepseek-v3/fixture-before.json",
+      "stored_path": "streams/results/deepseek-v3/fixture-before.json.gzip",
+      "bytes": 6257,
+      "sha256": "6a9b6f9d6aa62732ac1647e98189f7608feb58bf4f2d3928ddd0f129fa39487c",
+      "stored_bytes": 1921,
+      "stored_sha256": "aaeef88cc9e14701ffe41ac1cef2d3f8399a79fc5794fb811366e71122c283ef"
+    },
+    {
+      "logical_path": "results/deepseek-v3/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/deepseek-v3/input-pins.json",
+      "stored_path": "streams/results/deepseek-v3/input-pins.json.gzip",
+      "bytes": 3214,
+      "sha256": "679efe6acb2a803dca690bd235134b2c87d06c8ceee0a56b60259e8722eed702",
+      "stored_bytes": 1202,
+      "stored_sha256": "913d9b57c60830307b70811b7c6845c0419c18ab026a071a227a2e3c84dccab7"
+    },
+    {
+      "logical_path": "results/deepseek-v3/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/deepseek-v3/pin-check-finally.json",
+      "stored_path": "streams/results/deepseek-v3/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/deepseek-v3/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/deepseek-v3/result.json",
+      "stored_path": "streams/results/deepseek-v3/result.json.gzip",
+      "bytes": 512,
+      "sha256": "4b7a3198ced614bce864bf66b5fe20391c675fa42789b4b87803fc4ec932938a",
+      "stored_bytes": 368,
+      "stored_sha256": "ee421603d5dddac8f0cbd8d223c7f49d16d7a78df420536988274d9421f3ca20"
+    },
+    {
+      "logical_path": "results/deepseek-v3/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/deepseek-v3/source-after-finally.json",
+      "stored_path": "streams/results/deepseek-v3/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/deepseek-v3/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/deepseek-v3/source-before.json",
+      "stored_path": "streams/results/deepseek-v3/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/flux-2-dev/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/flux-2-dev/actual-offline-report-1.json",
+      "stored_path": "streams/results/flux-2-dev/actual-offline-report-1.json.gzip",
+      "bytes": 5664,
+      "sha256": "0feeec232630a162cfdd5b0dd9e0178eab0d74d0483d82e75c825ebc5a2d4a43",
+      "stored_bytes": 1531,
+      "stored_sha256": "4f40a9d31f21424d48316a1e05869a32ce0ff77ebe954e5af16acd00f0de1d4f"
+    },
+    {
+      "logical_path": "results/flux-2-dev/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/flux-2-dev/external-after-finally.json",
+      "stored_path": "streams/results/flux-2-dev/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/flux-2-dev/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/flux-2-dev/external-before.json",
+      "stored_path": "streams/results/flux-2-dev/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/flux-2-dev/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/flux-2-dev/fixture-after.json",
+      "stored_path": "streams/results/flux-2-dev/fixture-after.json.gzip",
+      "bytes": 14895,
+      "sha256": "3c4d9ef2e6a346fe207b7762dc16543b444e94e0a94d6bb4c2a55b5061411eee",
+      "stored_bytes": 3952,
+      "stored_sha256": "67ce0aed9db541a247341ce6b0af4dc577cf46c6ed12f4b26598dad18a741880"
+    },
+    {
+      "logical_path": "results/flux-2-dev/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/flux-2-dev/fixture-before.json",
+      "stored_path": "streams/results/flux-2-dev/fixture-before.json.gzip",
+      "bytes": 10269,
+      "sha256": "40e7bd462e7147b740c662eecaa462521d5248b5100d4bee85d192076d153098",
+      "stored_bytes": 2638,
+      "stored_sha256": "688f858c94d4534acc5b751cd44e4f463869a41b5d8b54e04ec7a0bd0cfefb77"
+    },
+    {
+      "logical_path": "results/flux-2-dev/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/flux-2-dev/input-pins.json",
+      "stored_path": "streams/results/flux-2-dev/input-pins.json.gzip",
+      "bytes": 4021,
+      "sha256": "26c64f35821856c91462cd8ba7e714fbc20ad5dd9dc562365a120d8b35723625",
+      "stored_bytes": 1414,
+      "stored_sha256": "0322b13be5b6d8fe282a67d4ecec1d52fc7f7907584ea3a8d967245574855601"
+    },
+    {
+      "logical_path": "results/flux-2-dev/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/flux-2-dev/pin-check-finally.json",
+      "stored_path": "streams/results/flux-2-dev/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/flux-2-dev/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/flux-2-dev/result.json",
+      "stored_path": "streams/results/flux-2-dev/result.json.gzip",
+      "bytes": 510,
+      "sha256": "2e9e8c1b0d770b1f116b700583a3ca02bc2f1c5555902c65452e5d2e3639eee1",
+      "stored_bytes": 369,
+      "stored_sha256": "ba5968791f338159f5cc5307db0cdae037c15eafa913abc41ceed1aefa9a02b9"
+    },
+    {
+      "logical_path": "results/flux-2-dev/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/flux-2-dev/source-after-finally.json",
+      "stored_path": "streams/results/flux-2-dev/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/flux-2-dev/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/flux-2-dev/source-before.json",
+      "stored_path": "streams/results/flux-2-dev/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/gemma-2-2b-it/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gemma-2-2b-it/actual-offline-report-1.json",
+      "stored_path": "streams/results/gemma-2-2b-it/actual-offline-report-1.json.gzip",
+      "bytes": 5148,
+      "sha256": "bbe14d23d713f9b18f5a24f62d26778a9283a8b8142dce76911997adbfa5df91",
+      "stored_bytes": 1327,
+      "stored_sha256": "d1ebf917bb0ac83079c7648cff5214e858f8961cff286408c1bc70899a95491a"
+    },
+    {
+      "logical_path": "results/gemma-2-2b-it/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gemma-2-2b-it/external-after-finally.json",
+      "stored_path": "streams/results/gemma-2-2b-it/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/gemma-2-2b-it/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gemma-2-2b-it/external-before.json",
+      "stored_path": "streams/results/gemma-2-2b-it/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/gemma-2-2b-it/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gemma-2-2b-it/fixture-after.json",
+      "stored_path": "streams/results/gemma-2-2b-it/fixture-after.json.gzip",
+      "bytes": 7025,
+      "sha256": "64e1f19300baad56cd45901dfb3309612d6e19c730af285f57c307707e840a06",
+      "stored_bytes": 2193,
+      "stored_sha256": "bd13a8b525e31276e5f28cd3ef19194fd8d037e7fb857e599cd7d8738cda4393"
+    },
+    {
+      "logical_path": "results/gemma-2-2b-it/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gemma-2-2b-it/fixture-before.json",
+      "stored_path": "streams/results/gemma-2-2b-it/fixture-before.json.gzip",
+      "bytes": 5110,
+      "sha256": "4b8942e8ef17b03f0d583a4be0cd9edbc7ff43990396d68a7d585064a037c586",
+      "stored_bytes": 1463,
+      "stored_sha256": "2e9aec25313bf92bb95ce9bfb2b180cf43adb175e444d92a5152b44089c5c078"
+    },
+    {
+      "logical_path": "results/gemma-2-2b-it/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gemma-2-2b-it/input-pins.json",
+      "stored_path": "streams/results/gemma-2-2b-it/input-pins.json.gzip",
+      "bytes": 2470,
+      "sha256": "be57f1cdfd4e1a86033f14339e90dbff393063897d70c1fd32fff21bc37389f5",
+      "stored_bytes": 950,
+      "stored_sha256": "7c71dcc472ced3c5406b81c1bcc376772cf695321543b4d96da95730fb0786a9"
+    },
+    {
+      "logical_path": "results/gemma-2-2b-it/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gemma-2-2b-it/pin-check-finally.json",
+      "stored_path": "streams/results/gemma-2-2b-it/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/gemma-2-2b-it/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gemma-2-2b-it/result.json",
+      "stored_path": "streams/results/gemma-2-2b-it/result.json.gzip",
+      "bytes": 515,
+      "sha256": "2d58811274c013c4bc3a55b90e90ca28d82c4c597fd3c638c6c9f068b30bbe17",
+      "stored_bytes": 371,
+      "stored_sha256": "026ad5f8bcb8270897d4475a81bf136d6f669afa030c58781a6614aa33a230b8"
+    },
+    {
+      "logical_path": "results/gemma-2-2b-it/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gemma-2-2b-it/source-after-finally.json",
+      "stored_path": "streams/results/gemma-2-2b-it/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/gemma-2-2b-it/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gemma-2-2b-it/source-before.json",
+      "stored_path": "streams/results/gemma-2-2b-it/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/glm-4-5/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/glm-4-5/actual-offline-report-1.json",
+      "stored_path": "streams/results/glm-4-5/actual-offline-report-1.json.gzip",
+      "bytes": 5584,
+      "sha256": "a883b55110d737dbab49e13aff7cb3a0021778be0eade29f5327e09878754adb",
+      "stored_bytes": 1460,
+      "stored_sha256": "16c027ac65ffa3bb24fa793543115294d3f914b783dc6269f15581a1fa5dcd24"
+    },
+    {
+      "logical_path": "results/glm-4-5/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/glm-4-5/external-after-finally.json",
+      "stored_path": "streams/results/glm-4-5/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/glm-4-5/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/glm-4-5/external-before.json",
+      "stored_path": "streams/results/glm-4-5/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/glm-4-5/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/glm-4-5/fixture-after.json",
+      "stored_path": "streams/results/glm-4-5/fixture-after.json.gzip",
+      "bytes": 8036,
+      "sha256": "cbd79a8af79b5d738a29f220f2eda6e3aa97266c279d0833145d03bb6841a0e3",
+      "stored_bytes": 2634,
+      "stored_sha256": "e2d38b827411619f6a6d9a5d88b653c8b1085e056e8d621ec5ab2d575d0c6261"
+    },
+    {
+      "logical_path": "results/glm-4-5/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/glm-4-5/fixture-before.json",
+      "stored_path": "streams/results/glm-4-5/fixture-before.json.gzip",
+      "bytes": 5284,
+      "sha256": "add9612a16d9906ed97915d79e14ccb6c69cb487a9dae15361cb223db3c3e412",
+      "stored_bytes": 1621,
+      "stored_sha256": "71761e3dac96a594848fd9b35754b60d5b359d5287a0868f182bb20eea39dbdf"
+    },
+    {
+      "logical_path": "results/glm-4-5/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/glm-4-5/input-pins.json",
+      "stored_path": "streams/results/glm-4-5/input-pins.json.gzip",
+      "bytes": 2849,
+      "sha256": "7e380d9837ad64c8481fa5099ca37214448521adc125e31be1ec2064f227b944",
+      "stored_bytes": 1099,
+      "stored_sha256": "7d637b3024206a4bbd116b5d3dd7fe72fe1cdcf519f47feb35c5aaf230fb8091"
+    },
+    {
+      "logical_path": "results/glm-4-5/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/glm-4-5/pin-check-finally.json",
+      "stored_path": "streams/results/glm-4-5/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/glm-4-5/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/glm-4-5/result.json",
+      "stored_path": "streams/results/glm-4-5/result.json.gzip",
+      "bytes": 503,
+      "sha256": "6970cafc9df862f5e02d5561613c1584c33e9a4930b6ef63693e21dafece02ae",
+      "stored_bytes": 367,
+      "stored_sha256": "c7c44dfecbdc640ae4cf0edfa1bc27b28a37286d2007aaa6c29f586b29584672"
+    },
+    {
+      "logical_path": "results/glm-4-5/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/glm-4-5/source-after-finally.json",
+      "stored_path": "streams/results/glm-4-5/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/glm-4-5/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/glm-4-5/source-before.json",
+      "stored_path": "streams/results/glm-4-5/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/gpt-oss-20b/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gpt-oss-20b/actual-offline-report-1.json",
+      "stored_path": "streams/results/gpt-oss-20b/actual-offline-report-1.json.gzip",
+      "bytes": 5339,
+      "sha256": "96506d6d8a8a4c563092829806b3d51c3c43aab4e8d6a52d1f48991b878e5360",
+      "stored_bytes": 1397,
+      "stored_sha256": "506a6f2944207af962b3e82d42c7bd24770e93bd956ebac71edca38b604d08e1"
+    },
+    {
+      "logical_path": "results/gpt-oss-20b/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gpt-oss-20b/external-after-finally.json",
+      "stored_path": "streams/results/gpt-oss-20b/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/gpt-oss-20b/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gpt-oss-20b/external-before.json",
+      "stored_path": "streams/results/gpt-oss-20b/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/gpt-oss-20b/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gpt-oss-20b/fixture-after.json",
+      "stored_path": "streams/results/gpt-oss-20b/fixture-after.json.gzip",
+      "bytes": 8417,
+      "sha256": "ca4327329db9ec37242e61481fbd61c3cbbade4dd4043ad6d11cb09b64bcff9f",
+      "stored_bytes": 2652,
+      "stored_sha256": "fedcddbaa61181c525c9bc6f5254f65a2eda4a74c789e741c500f890d9a704e1"
+    },
+    {
+      "logical_path": "results/gpt-oss-20b/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gpt-oss-20b/fixture-before.json",
+      "stored_path": "streams/results/gpt-oss-20b/fixture-before.json.gzip",
+      "bytes": 5765,
+      "sha256": "6ee34b8e21f8745ae873ec2379e9fcbfafd53c7e1ce4e45e4178758c3f5e78b0",
+      "stored_bytes": 1683,
+      "stored_sha256": "b996bb5175c2233a830dd7820e8f513212e5658affb754e3d3d4eab01323310c"
+    },
+    {
+      "logical_path": "results/gpt-oss-20b/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gpt-oss-20b/input-pins.json",
+      "stored_path": "streams/results/gpt-oss-20b/input-pins.json.gzip",
+      "bytes": 2752,
+      "sha256": "9c20e3038091a8b1c42ccb6f6696adaa76457a0b3c3f1847d05eac306882959a",
+      "stored_bytes": 1048,
+      "stored_sha256": "11a4379608a3f605a3c2e684369a8ac0d6b737621afd804b4bc3a1ab3f2fc972"
+    },
+    {
+      "logical_path": "results/gpt-oss-20b/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gpt-oss-20b/pin-check-finally.json",
+      "stored_path": "streams/results/gpt-oss-20b/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/gpt-oss-20b/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gpt-oss-20b/result.json",
+      "stored_path": "streams/results/gpt-oss-20b/result.json.gzip",
+      "bytes": 511,
+      "sha256": "d9bb7c661cdbbaedc95570c6ca6a3839bcad0116cf61f306ad4225544b48051b",
+      "stored_bytes": 369,
+      "stored_sha256": "8d718377e651966ca6767a54b0187e094c6b338f93f114e42735a86c5fb1521b"
+    },
+    {
+      "logical_path": "results/gpt-oss-20b/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gpt-oss-20b/source-after-finally.json",
+      "stored_path": "streams/results/gpt-oss-20b/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/gpt-oss-20b/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/gpt-oss-20b/source-before.json",
+      "stored_path": "streams/results/gpt-oss-20b/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/granite-3-0-8b-instruct/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/granite-3-0-8b-instruct/actual-offline-report-1.json",
+      "stored_path": "streams/results/granite-3-0-8b-instruct/actual-offline-report-1.json.gzip",
+      "bytes": 5572,
+      "sha256": "3b8188954a39b33171aeb8a637e1d4c1f2b4c062b4a79addb574e8f7272b729f",
+      "stored_bytes": 1429,
+      "stored_sha256": "1538215dee45066b825afe6642150ed9f4423101495fb0bd5ea9783f285603a6"
+    },
+    {
+      "logical_path": "results/granite-3-0-8b-instruct/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/granite-3-0-8b-instruct/external-after-finally.json",
+      "stored_path": "streams/results/granite-3-0-8b-instruct/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/granite-3-0-8b-instruct/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/granite-3-0-8b-instruct/external-before.json",
+      "stored_path": "streams/results/granite-3-0-8b-instruct/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/granite-3-0-8b-instruct/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/granite-3-0-8b-instruct/fixture-after.json",
+      "stored_path": "streams/results/granite-3-0-8b-instruct/fixture-after.json.gzip",
+      "bytes": 5335,
+      "sha256": "28cac27f8788870022fac71b9c0419d75c646041c26f0c4b55bfac2d9d8d0566",
+      "stored_bytes": 1869,
+      "stored_sha256": "05fccf54a781ee1b5f4746ce595190c0b852cc9d75bc16d7bdb03b2b783ae722"
+    },
+    {
+      "logical_path": "results/granite-3-0-8b-instruct/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/granite-3-0-8b-instruct/fixture-before.json",
+      "stored_path": "streams/results/granite-3-0-8b-instruct/fixture-before.json.gzip",
+      "bytes": 3608,
+      "sha256": "bd9f2345a33dca2ad7b91c26de015d5c81e6e5cad1546a02f082600c3eee2d6c",
+      "stored_bytes": 1175,
+      "stored_sha256": "4bf22781f715e53a6449a7f7073bcab1bb4444a071e9922332ea9b56b0ad76e8"
+    },
+    {
+      "logical_path": "results/granite-3-0-8b-instruct/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/granite-3-0-8b-instruct/input-pins.json",
+      "stored_path": "streams/results/granite-3-0-8b-instruct/input-pins.json.gzip",
+      "bytes": 2236,
+      "sha256": "b41b2c307d9906f642f5405efa2b4c14e952a9e53d902c61a79cbef707e9a1b5",
+      "stored_bytes": 862,
+      "stored_sha256": "559261c6c5c770495056dab76b8bbfc65001bd68f0824ca2a6924817744ce5c7"
+    },
+    {
+      "logical_path": "results/granite-3-0-8b-instruct/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/granite-3-0-8b-instruct/pin-check-finally.json",
+      "stored_path": "streams/results/granite-3-0-8b-instruct/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/granite-3-0-8b-instruct/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/granite-3-0-8b-instruct/result.json",
+      "stored_path": "streams/results/granite-3-0-8b-instruct/result.json.gzip",
+      "bytes": 535,
+      "sha256": "8bb0932ed17ef75a74d3de47524f0dbcc958662afbf326035b64876e6e6e7cc2",
+      "stored_bytes": 378,
+      "stored_sha256": "e509255b810b576077b8a2176c1d4805c2319301906fe93fc3e4c5dea9fbd81f"
+    },
+    {
+      "logical_path": "results/granite-3-0-8b-instruct/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/granite-3-0-8b-instruct/source-after-finally.json",
+      "stored_path": "streams/results/granite-3-0-8b-instruct/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/granite-3-0-8b-instruct/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/granite-3-0-8b-instruct/source-before.json",
+      "stored_path": "streams/results/granite-3-0-8b-instruct/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/hunyuanvideo/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/hunyuanvideo/actual-offline-report-1.json",
+      "stored_path": "streams/results/hunyuanvideo/actual-offline-report-1.json.gzip",
+      "bytes": 6666,
+      "sha256": "7eaeb0bf00c0baf08a384052267af2df1e16bf4d6c6c6113903d7271799bd89f",
+      "stored_bytes": 1692,
+      "stored_sha256": "a3b837e527e902e44c2f48a57491e1a365c6d1e112f0c3784fda50f9b494a829"
+    },
+    {
+      "logical_path": "results/hunyuanvideo/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/hunyuanvideo/external-after-finally.json",
+      "stored_path": "streams/results/hunyuanvideo/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/hunyuanvideo/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/hunyuanvideo/external-before.json",
+      "stored_path": "streams/results/hunyuanvideo/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/hunyuanvideo/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/hunyuanvideo/fixture-after.json",
+      "stored_path": "streams/results/hunyuanvideo/fixture-after.json.gzip",
+      "bytes": 16213,
+      "sha256": "953701e3e747f81116bdd829bd9589daea6647b2603d06c3a1ab47930c49af18",
+      "stored_bytes": 4088,
+      "stored_sha256": "8a7e5aeec695f57824baff3ebeb6769333af43967dc6c06caf51f27c79166fb3"
+    },
+    {
+      "logical_path": "results/hunyuanvideo/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/hunyuanvideo/fixture-before.json",
+      "stored_path": "streams/results/hunyuanvideo/fixture-before.json.gzip",
+      "bytes": 11177,
+      "sha256": "78c2016104de932e4a147ca15d48407964804415c0c1b8f033d6c9d0262d3e23",
+      "stored_bytes": 2791,
+      "stored_sha256": "5041582c1ee9125de8004a9223271bdd2b3739e2e157d549694f91d345000299"
+    },
+    {
+      "logical_path": "results/hunyuanvideo/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/hunyuanvideo/input-pins.json",
+      "stored_path": "streams/results/hunyuanvideo/input-pins.json.gzip",
+      "bytes": 4693,
+      "sha256": "18564acbbc5a5bf483ac77dd9fff4854fcdcb72b62361d6d2798ee913442a3ea",
+      "stored_bytes": 1605,
+      "stored_sha256": "f2fdf0d12716949e7921a83f5730c4ad5340ac184b4c2e7eeb274aeff254ae84"
+    },
+    {
+      "logical_path": "results/hunyuanvideo/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/hunyuanvideo/pin-check-finally.json",
+      "stored_path": "streams/results/hunyuanvideo/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/hunyuanvideo/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/hunyuanvideo/result.json",
+      "stored_path": "streams/results/hunyuanvideo/result.json.gzip",
+      "bytes": 514,
+      "sha256": "5d25d67278ca5aee96ce737a40cdf714a10edd680aba1641868d0dabd1f2493b",
+      "stored_bytes": 371,
+      "stored_sha256": "2c10091394aab8adf072ef9806a746e3f1116f929559667f8785f4e3f7644f56"
+    },
+    {
+      "logical_path": "results/hunyuanvideo/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/hunyuanvideo/source-after-finally.json",
+      "stored_path": "streams/results/hunyuanvideo/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/hunyuanvideo/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/hunyuanvideo/source-before.json",
+      "stored_path": "streams/results/hunyuanvideo/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/llama-7b/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/llama-7b/actual-offline-report-1.json",
+      "stored_path": "streams/results/llama-7b/actual-offline-report-1.json.gzip",
+      "bytes": 4957,
+      "sha256": "83c126bea9c3aa458c3de7aa820dc96c08ac989c34c3f1df14ae532ffe2f0185",
+      "stored_bytes": 1255,
+      "stored_sha256": "47e449854e0be08bb645ef2b0e5531ab5f8b7e69b04d5b8687dd1b50a2d0e9c7"
+    },
+    {
+      "logical_path": "results/llama-7b/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/llama-7b/external-after-finally.json",
+      "stored_path": "streams/results/llama-7b/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/llama-7b/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/llama-7b/external-before.json",
+      "stored_path": "streams/results/llama-7b/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/llama-7b/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/llama-7b/fixture-after.json",
+      "stored_path": "streams/results/llama-7b/fixture-after.json.gzip",
+      "bytes": 5525,
+      "sha256": "7ad054efef9fd17bfbe6089496c5133bcb82d95a718ea0b513d50f0cf9b5d90c",
+      "stored_bytes": 1960,
+      "stored_sha256": "e412d957243b4938f2a66e86a6b91d04ca62dbbe090b2da4a7913b6db95cddd3"
+    },
+    {
+      "logical_path": "results/llama-7b/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/llama-7b/fixture-before.json",
+      "stored_path": "streams/results/llama-7b/fixture-before.json.gzip",
+      "bytes": 3812,
+      "sha256": "c33b6c8ca00034db5c1154d83feda8d7520c36da35d3c6cef8933296f88e60e8",
+      "stored_bytes": 1268,
+      "stored_sha256": "2962f8796fae1c002a5250a0ee81035646d0eb8759d7d2efca35fcb8ef26ed20"
+    },
+    {
+      "logical_path": "results/llama-7b/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/llama-7b/input-pins.json",
+      "stored_path": "streams/results/llama-7b/input-pins.json.gzip",
+      "bytes": 2116,
+      "sha256": "49b952fec3414ed43d1b26dc0126e54ac619f053b67e2023ff25c646197d316c",
+      "stored_bytes": 849,
+      "stored_sha256": "3a719ec9791f2fdc07bfaceef9ece5e5ccbd8cc9fea65cbfaac7d80fb78de243"
+    },
+    {
+      "logical_path": "results/llama-7b/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/llama-7b/pin-check-finally.json",
+      "stored_path": "streams/results/llama-7b/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/llama-7b/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/llama-7b/result.json",
+      "stored_path": "streams/results/llama-7b/result.json.gzip",
+      "bytes": 505,
+      "sha256": "cb7a5ed6b1a16b8294fee81ad3cecba5ce95eac32762449b6e98b16b636cd05b",
+      "stored_bytes": 367,
+      "stored_sha256": "b29ae480213a5eeaf98b093225bcc2c120bcff2565f45101bb6592ecfabb34e4"
+    },
+    {
+      "logical_path": "results/llama-7b/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/llama-7b/source-after-finally.json",
+      "stored_path": "streams/results/llama-7b/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/llama-7b/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/llama-7b/source-before.json",
+      "stored_path": "streams/results/llama-7b/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/lumina-image-2-0/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/lumina-image-2-0/actual-offline-report-1.json",
+      "stored_path": "streams/results/lumina-image-2-0/actual-offline-report-1.json.gzip",
+      "bytes": 5618,
+      "sha256": "aebdb88deb49eae95f775b4d40e660277c033088ec0e30dda8b50b09b82ed802",
+      "stored_bytes": 1510,
+      "stored_sha256": "7f69c1adcc0ea55a7b1bc542cf09d3748dd1ceaf98d47bc7de387b55a5d882b3"
+    },
+    {
+      "logical_path": "results/lumina-image-2-0/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/lumina-image-2-0/external-after-finally.json",
+      "stored_path": "streams/results/lumina-image-2-0/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/lumina-image-2-0/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/lumina-image-2-0/external-before.json",
+      "stored_path": "streams/results/lumina-image-2-0/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/lumina-image-2-0/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/lumina-image-2-0/fixture-after.json",
+      "stored_path": "streams/results/lumina-image-2-0/fixture-after.json.gzip",
+      "bytes": 14129,
+      "sha256": "4f5e727a1b48c3210d64b5b650c237d1b38d2e8aacb43576a0f47f13469106ed",
+      "stored_bytes": 3884,
+      "stored_sha256": "ea6d4fca7212478032e9835c883cba6337728aefa00db1588d395b22a6d33151"
+    },
+    {
+      "logical_path": "results/lumina-image-2-0/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/lumina-image-2-0/fixture-before.json",
+      "stored_path": "streams/results/lumina-image-2-0/fixture-before.json.gzip",
+      "bytes": 9480,
+      "sha256": "d1ee2ad6baba0e8e7950a2f1e12fd33f09d069dd5b7b59fc96d7f85081f4c56d",
+      "stored_bytes": 2459,
+      "stored_sha256": "8a382abdbbd6fd84836eb7f93fda8e1cd9ef14fe3708352ae1b8b209db0669d5"
+    },
+    {
+      "logical_path": "results/lumina-image-2-0/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/lumina-image-2-0/input-pins.json",
+      "stored_path": "streams/results/lumina-image-2-0/input-pins.json.gzip",
+      "bytes": 4160,
+      "sha256": "727a08489c1985bd9cfcf3689eebbd5228ab0ca159b49d9f24ac966a33ebe88d",
+      "stored_bytes": 1426,
+      "stored_sha256": "8df2f713a10b689560db606dd2423e8ba6bec0f199c0622f68de464e3210e43c"
+    },
+    {
+      "logical_path": "results/lumina-image-2-0/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/lumina-image-2-0/pin-check-finally.json",
+      "stored_path": "streams/results/lumina-image-2-0/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/lumina-image-2-0/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/lumina-image-2-0/result.json",
+      "stored_path": "streams/results/lumina-image-2-0/result.json.gzip",
+      "bytes": 522,
+      "sha256": "b1fbe046c8de7d18a87ae11644eb46de868fc9e0b0c3f0684a852b79b9f85913",
+      "stored_bytes": 372,
+      "stored_sha256": "c2bc662b55be789adad3f7c85fd01cfd673dbb4a2ed922dc2cfa868fc3ed097e"
+    },
+    {
+      "logical_path": "results/lumina-image-2-0/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/lumina-image-2-0/source-after-finally.json",
+      "stored_path": "streams/results/lumina-image-2-0/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/lumina-image-2-0/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/lumina-image-2-0/source-before.json",
+      "stored_path": "streams/results/lumina-image-2-0/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/musicgen-small/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/musicgen-small/actual-offline-report-1.json",
+      "stored_path": "streams/results/musicgen-small/actual-offline-report-1.json.gzip",
+      "bytes": 4979,
+      "sha256": "b74d152d4eccf8bf6cb85ed3fbe313e9240f1a81a7ad3b8f45585ed45e95fea2",
+      "stored_bytes": 1341,
+      "stored_sha256": "8c7b06f0f57cc8f4d13682eae798c67e513d8d508acc58d77754b985e34216c7"
+    },
+    {
+      "logical_path": "results/musicgen-small/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/musicgen-small/external-after-finally.json",
+      "stored_path": "streams/results/musicgen-small/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/musicgen-small/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/musicgen-small/external-before.json",
+      "stored_path": "streams/results/musicgen-small/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/musicgen-small/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/musicgen-small/fixture-after.json",
+      "stored_path": "streams/results/musicgen-small/fixture-after.json.gzip",
+      "bytes": 7582,
+      "sha256": "9acf4ede0e6448b2d58b9a0a57b6948c05caf9cd35b72ae8b069156000508a88",
+      "stored_bytes": 2505,
+      "stored_sha256": "2d957748f9ae9db5934d5b16936d554bfeba0e0d9850e78fee01996023afdd1e"
+    },
+    {
+      "logical_path": "results/musicgen-small/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/musicgen-small/fixture-before.json",
+      "stored_path": "streams/results/musicgen-small/fixture-before.json.gzip",
+      "bytes": 4258,
+      "sha256": "200a4dec968d42ca29ae7b2ee066bcec69f66b16657db46335086965e7785f86",
+      "stored_bytes": 1312,
+      "stored_sha256": "6bd71eacadbd125d1fecfb03b4a5323ed0c765d52606c5bf15b91d2fe57292f6"
+    },
+    {
+      "logical_path": "results/musicgen-small/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/musicgen-small/input-pins.json",
+      "stored_path": "streams/results/musicgen-small/input-pins.json.gzip",
+      "bytes": 2807,
+      "sha256": "167d9d1eda967b1e0e8095e3a87715790d5e66446eda2d7e7ca273378e5434ea",
+      "stored_bytes": 1062,
+      "stored_sha256": "0b8b24c4b855b145972aca6794617f4891e992ba1943255b169ed81968b43f28"
+    },
+    {
+      "logical_path": "results/musicgen-small/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/musicgen-small/pin-check-finally.json",
+      "stored_path": "streams/results/musicgen-small/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/musicgen-small/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/musicgen-small/result.json",
+      "stored_path": "streams/results/musicgen-small/result.json.gzip",
+      "bytes": 516,
+      "sha256": "4696ddfebd65307df87acf601bfca6d5547c03b7e7ccda95c6d7142e55c3073c",
+      "stored_bytes": 372,
+      "stored_sha256": "e846f81df83a066fe39c92ad73094749255fe52e825705d10a6a93dec59f5f53"
+    },
+    {
+      "logical_path": "results/musicgen-small/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/musicgen-small/source-after-finally.json",
+      "stored_path": "streams/results/musicgen-small/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/musicgen-small/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/musicgen-small/source-before.json",
+      "stored_path": "streams/results/musicgen-small/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/olmo-2-1124-7b/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/olmo-2-1124-7b/actual-offline-report-1.json",
+      "stored_path": "streams/results/olmo-2-1124-7b/actual-offline-report-1.json.gzip",
+      "bytes": 5038,
+      "sha256": "7f2cf87c5b148ecda153642e19b01a242fd8bd0f0dc76a0f27f987c159c985e8",
+      "stored_bytes": 1272,
+      "stored_sha256": "ec8bf6ec2a8400372e9b68f9a61654d67ec103d5b4514ed7b89d6a5d76cf8334"
+    },
+    {
+      "logical_path": "results/olmo-2-1124-7b/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/olmo-2-1124-7b/external-after-finally.json",
+      "stored_path": "streams/results/olmo-2-1124-7b/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/olmo-2-1124-7b/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/olmo-2-1124-7b/external-before.json",
+      "stored_path": "streams/results/olmo-2-1124-7b/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/olmo-2-1124-7b/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/olmo-2-1124-7b/fixture-after.json",
+      "stored_path": "streams/results/olmo-2-1124-7b/fixture-after.json.gzip",
+      "bytes": 5532,
+      "sha256": "089dc240ce9b1a5a176b237750bfc03a74c752337c05d784a2094c7b552c7714",
+      "stored_bytes": 1951,
+      "stored_sha256": "68a2b7f53380016bc02c697075a632871757188b4facc4355bad8efcd5fb1d7b"
+    },
+    {
+      "logical_path": "results/olmo-2-1124-7b/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/olmo-2-1124-7b/fixture-before.json",
+      "stored_path": "streams/results/olmo-2-1124-7b/fixture-before.json.gzip",
+      "bytes": 3813,
+      "sha256": "26ccdfd1f1e12885cc36d60cbc555336bfd17e0e0bdfc61b94ee3efbfa418c0a",
+      "stored_bytes": 1253,
+      "stored_sha256": "0b0ee8bd5c85341bbe10acb8ccb0eb1e757be905d5fb88f012a61bbf8fe579df"
+    },
+    {
+      "logical_path": "results/olmo-2-1124-7b/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/olmo-2-1124-7b/input-pins.json",
+      "stored_path": "streams/results/olmo-2-1124-7b/input-pins.json.gzip",
+      "bytes": 2164,
+      "sha256": "ce03d9d4f66cc9d83b98e5883d7498d6bae850b0769a6afa998b67e919166158",
+      "stored_bytes": 854,
+      "stored_sha256": "916b113099a9cd36b092c484107d08fd87f9d4214d9edd3c363c97f9b1c2270d"
+    },
+    {
+      "logical_path": "results/olmo-2-1124-7b/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/olmo-2-1124-7b/pin-check-finally.json",
+      "stored_path": "streams/results/olmo-2-1124-7b/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/olmo-2-1124-7b/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/olmo-2-1124-7b/result.json",
+      "stored_path": "streams/results/olmo-2-1124-7b/result.json.gzip",
+      "bytes": 517,
+      "sha256": "fb9d220f8cfe977decf4197e1c0ec53926088441a9c7ea67a2116106b2724480",
+      "stored_bytes": 371,
+      "stored_sha256": "8fcb70333ee27b143eb35929cb4eb875192da655043c1fc70213d83b54ca0685"
+    },
+    {
+      "logical_path": "results/olmo-2-1124-7b/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/olmo-2-1124-7b/source-after-finally.json",
+      "stored_path": "streams/results/olmo-2-1124-7b/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/olmo-2-1124-7b/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/olmo-2-1124-7b/source-before.json",
+      "stored_path": "streams/results/olmo-2-1124-7b/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/prxpixel-t2i/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/prxpixel-t2i/actual-offline-report-1.json",
+      "stored_path": "streams/results/prxpixel-t2i/actual-offline-report-1.json.gzip",
+      "bytes": 4924,
+      "sha256": "1c185daaec5164a379b88418a9acff300ebc415542fb22651c877da51337f424",
+      "stored_bytes": 1321,
+      "stored_sha256": "a7298cf120a5acca6b0932e0c519ae965b84c99b82b620b7368005de3a58cd3a"
+    },
+    {
+      "logical_path": "results/prxpixel-t2i/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/prxpixel-t2i/external-after-finally.json",
+      "stored_path": "streams/results/prxpixel-t2i/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/prxpixel-t2i/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/prxpixel-t2i/external-before.json",
+      "stored_path": "streams/results/prxpixel-t2i/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/prxpixel-t2i/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/prxpixel-t2i/fixture-after.json",
+      "stored_path": "streams/results/prxpixel-t2i/fixture-after.json.gzip",
+      "bytes": 8571,
+      "sha256": "b5ba3a63a3bc3170a5ac6d9549b9ab8d3b72793d65598ccefc2c4e72aedd454e",
+      "stored_bytes": 2810,
+      "stored_sha256": "50620216fb19fb90e8f95f895f487f487a31509f4528fb691f452f6aa31cdfc0"
+    },
+    {
+      "logical_path": "results/prxpixel-t2i/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/prxpixel-t2i/fixture-before.json",
+      "stored_path": "streams/results/prxpixel-t2i/fixture-before.json.gzip",
+      "bytes": 5229,
+      "sha256": "0f832626277f138f2fe3c4ac7594192ca76d661f850db1a4634a8210ea5c8088",
+      "stored_bytes": 1770,
+      "stored_sha256": "42cf0865159b5c879819ef18c531dc0c9c51caad84d1a702dd30eb3911b8d65c"
+    },
+    {
+      "logical_path": "results/prxpixel-t2i/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/prxpixel-t2i/input-pins.json",
+      "stored_path": "streams/results/prxpixel-t2i/input-pins.json.gzip",
+      "bytes": 2936,
+      "sha256": "5b4797ba50582871c6014e729a7dafffbdd4ee2d8f5bcf9a65fc725652ddbb0a",
+      "stored_bytes": 1103,
+      "stored_sha256": "a98ede85c5bf93f9848e553b3fd6b7172b03c16693a31d5afa9a4fdf68128e95"
+    },
+    {
+      "logical_path": "results/prxpixel-t2i/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/prxpixel-t2i/pin-check-finally.json",
+      "stored_path": "streams/results/prxpixel-t2i/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/prxpixel-t2i/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/prxpixel-t2i/result.json",
+      "stored_path": "streams/results/prxpixel-t2i/result.json.gzip",
+      "bytes": 513,
+      "sha256": "d62a430347fe66fedb75f2a4e1acf8f7fd01cd066a2b444815f449d5dcb0c33f",
+      "stored_bytes": 367,
+      "stored_sha256": "71c38b3e34e6f0a3b4801043e458a5d9ce5a4bc22bde9f0fc20f56c24b20e18b"
+    },
+    {
+      "logical_path": "results/prxpixel-t2i/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/prxpixel-t2i/source-after-finally.json",
+      "stored_path": "streams/results/prxpixel-t2i/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/prxpixel-t2i/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/prxpixel-t2i/source-before.json",
+      "stored_path": "streams/results/prxpixel-t2i/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/qwen3-5-27b-text/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-5-27b-text/actual-offline-report-1.json",
+      "stored_path": "streams/results/qwen3-5-27b-text/actual-offline-report-1.json.gzip",
+      "bytes": 5077,
+      "sha256": "439bee3569e58cc23812ee81d1d6d8a5c043e1da627babf15ebd86f376acfa1a",
+      "stored_bytes": 1306,
+      "stored_sha256": "d1276d2976834911a1606f09a207ef53f0ed00cce117b9b6e37ec786bcf375b6"
+    },
+    {
+      "logical_path": "results/qwen3-5-27b-text/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-5-27b-text/external-after-finally.json",
+      "stored_path": "streams/results/qwen3-5-27b-text/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/qwen3-5-27b-text/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-5-27b-text/external-before.json",
+      "stored_path": "streams/results/qwen3-5-27b-text/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/qwen3-5-27b-text/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-5-27b-text/fixture-after.json",
+      "stored_path": "streams/results/qwen3-5-27b-text/fixture-after.json.gzip",
+      "bytes": 9109,
+      "sha256": "c30622ec6a67bb3029251b45b325bbc1d79ef837b3e2f5ac037709844009994d",
+      "stored_bytes": 2611,
+      "stored_sha256": "a36bd25143d98f755dcfd4390d7fcd601575da552447cad2bb6941384e0b7139"
+    },
+    {
+      "logical_path": "results/qwen3-5-27b-text/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-5-27b-text/fixture-before.json",
+      "stored_path": "streams/results/qwen3-5-27b-text/fixture-before.json.gzip",
+      "bytes": 6081,
+      "sha256": "e0a6c2efb9c7fc156befc4e90090aabc83826715feae992271dbf405e5017863",
+      "stored_bytes": 1501,
+      "stored_sha256": "4f84e1fabf059674dfc71f621f6f3874a64863fdea60445ca4432fdee97e6e03"
+    },
+    {
+      "logical_path": "results/qwen3-5-27b-text/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-5-27b-text/input-pins.json",
+      "stored_path": "streams/results/qwen3-5-27b-text/input-pins.json.gzip",
+      "bytes": 2500,
+      "sha256": "4cab5b9567c3fda5fe6b5a8b5e15aff9d84c2a9f452a6f6b54e812f813ed28b0",
+      "stored_bytes": 953,
+      "stored_sha256": "b99538043711f229aaacb113ec343890131528edc3d7b818ca7779c7a31ec200"
+    },
+    {
+      "logical_path": "results/qwen3-5-27b-text/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-5-27b-text/pin-check-finally.json",
+      "stored_path": "streams/results/qwen3-5-27b-text/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/qwen3-5-27b-text/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-5-27b-text/result.json",
+      "stored_path": "streams/results/qwen3-5-27b-text/result.json.gzip",
+      "bytes": 521,
+      "sha256": "409704e8e4546a1795c23b1f3e8ba784d7b38a28be0bd518127d8b27c3d90d71",
+      "stored_bytes": 375,
+      "stored_sha256": "58e43bc25bcd99f4daeee1bab7c443b303532c223f8bfd3aba661f24c0f297fe"
+    },
+    {
+      "logical_path": "results/qwen3-5-27b-text/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-5-27b-text/source-after-finally.json",
+      "stored_path": "streams/results/qwen3-5-27b-text/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/qwen3-5-27b-text/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-5-27b-text/source-before.json",
+      "stored_path": "streams/results/qwen3-5-27b-text/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/qwen3-8b/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-8b/actual-offline-report-1.json",
+      "stored_path": "streams/results/qwen3-8b/actual-offline-report-1.json.gzip",
+      "bytes": 5032,
+      "sha256": "052bcad98f7dff524afec8b9df4495101cb67580417c61680a63b2370d20efc9",
+      "stored_bytes": 1267,
+      "stored_sha256": "feabf08be7bbf68fcf05dfb6b069d9e61ab60f7a878eb5ac393aa00dba3d189e"
+    },
+    {
+      "logical_path": "results/qwen3-8b/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-8b/external-after-finally.json",
+      "stored_path": "streams/results/qwen3-8b/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/qwen3-8b/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-8b/external-before.json",
+      "stored_path": "streams/results/qwen3-8b/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/qwen3-8b/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-8b/fixture-after.json",
+      "stored_path": "streams/results/qwen3-8b/fixture-after.json.gzip",
+      "bytes": 6509,
+      "sha256": "9caa9c736d0bd8374330667405d78715e2c3e78e8c9ed81309a83c5dc35229b7",
+      "stored_bytes": 2014,
+      "stored_sha256": "f129669009e05c199a2d6aa6f224685dd701a22a33c5c33ecc605ec0d55ff687"
+    },
+    {
+      "logical_path": "results/qwen3-8b/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-8b/fixture-before.json",
+      "stored_path": "streams/results/qwen3-8b/fixture-before.json.gzip",
+      "bytes": 4796,
+      "sha256": "03c84d3d82e7d7cdada3a196dba402f7849452c4731d76582b55c57441c425cf",
+      "stored_bytes": 1317,
+      "stored_sha256": "971fc79345b6bb7310fd6f0528508645e9e8ebc090a09d49ae3b73aed692527f"
+    },
+    {
+      "logical_path": "results/qwen3-8b/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-8b/input-pins.json",
+      "stored_path": "streams/results/qwen3-8b/input-pins.json.gzip",
+      "bytes": 2116,
+      "sha256": "8602ab729dfe25b4294121afa3ee7688f23d07c2a26ce77ebbc3207317dc0e22",
+      "stored_bytes": 852,
+      "stored_sha256": "0641742a03e413b9c927a2db71e16d7578a224e690065912a4002e33cf1007b4"
+    },
+    {
+      "logical_path": "results/qwen3-8b/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-8b/pin-check-finally.json",
+      "stored_path": "streams/results/qwen3-8b/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/qwen3-8b/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-8b/result.json",
+      "stored_path": "streams/results/qwen3-8b/result.json.gzip",
+      "bytes": 505,
+      "sha256": "a33cf28c53d2c8047490fbf4351849d2b1fcf75e05f3a23537a2f2dc09a6b770",
+      "stored_bytes": 369,
+      "stored_sha256": "3ecd734c49692d95fc07f1d9eb6d760339da21c8c6023a5b3e49e8a31221f15b"
+    },
+    {
+      "logical_path": "results/qwen3-8b/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-8b/source-after-finally.json",
+      "stored_path": "streams/results/qwen3-8b/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/qwen3-8b/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/qwen3-8b/source-before.json",
+      "stored_path": "streams/results/qwen3-8b/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/sana-1600m-1024px-diffusers/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/sana-1600m-1024px-diffusers/actual-offline-report-1.json",
+      "stored_path": "streams/results/sana-1600m-1024px-diffusers/actual-offline-report-1.json.gzip",
+      "bytes": 5203,
+      "sha256": "df7e649a51c87307a194e0e7684aa8d1dfe54df0ba698b1773a56c4d9e0f7516",
+      "stored_bytes": 1414,
+      "stored_sha256": "b0b326dc8720db22d86b20472d3a10448211e0c00c5267aa11d99b0374eca8c2"
+    },
+    {
+      "logical_path": "results/sana-1600m-1024px-diffusers/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/sana-1600m-1024px-diffusers/external-after-finally.json",
+      "stored_path": "streams/results/sana-1600m-1024px-diffusers/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/sana-1600m-1024px-diffusers/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/sana-1600m-1024px-diffusers/external-before.json",
+      "stored_path": "streams/results/sana-1600m-1024px-diffusers/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/sana-1600m-1024px-diffusers/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/sana-1600m-1024px-diffusers/fixture-after.json",
+      "stored_path": "streams/results/sana-1600m-1024px-diffusers/fixture-after.json.gzip",
+      "bytes": 14091,
+      "sha256": "c1d3fd7fe0dba746815488d693511a03cc7f980d9144d04a4dd37fb952f43a5a",
+      "stored_bytes": 3926,
+      "stored_sha256": "d4975a073c7cddf6a9283dc1bcc929c50e3394ee7ac2a2d0b913301b77ca32e6"
+    },
+    {
+      "logical_path": "results/sana-1600m-1024px-diffusers/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/sana-1600m-1024px-diffusers/fixture-before.json",
+      "stored_path": "streams/results/sana-1600m-1024px-diffusers/fixture-before.json.gzip",
+      "bytes": 9866,
+      "sha256": "7ce2a9f648f00ef9bc8bf2d402eeb2ab59d4fcc9fbcee9bf5961eddb13946a5b",
+      "stored_bytes": 2541,
+      "stored_sha256": "5883e1b595bdcdc9e35d67d774a7f4bbcfbe0fe36b75696d36d09e95d3d1ce0e"
+    },
+    {
+      "logical_path": "results/sana-1600m-1024px-diffusers/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/sana-1600m-1024px-diffusers/input-pins.json",
+      "stored_path": "streams/results/sana-1600m-1024px-diffusers/input-pins.json.gzip",
+      "bytes": 3661,
+      "sha256": "4e68f12676ccae81d50bcf5bdf9f31b4777ef4040a4685ee904c00bc2ac1dc16",
+      "stored_bytes": 1275,
+      "stored_sha256": "8ef44bea02a339b066e7dbf6589dc26e187202e0ee2e9b1aa6907af643c5e9bf"
+    },
+    {
+      "logical_path": "results/sana-1600m-1024px-diffusers/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/sana-1600m-1024px-diffusers/pin-check-finally.json",
+      "stored_path": "streams/results/sana-1600m-1024px-diffusers/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/sana-1600m-1024px-diffusers/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/sana-1600m-1024px-diffusers/result.json",
+      "stored_path": "streams/results/sana-1600m-1024px-diffusers/result.json.gzip",
+      "bytes": 544,
+      "sha256": "587cfebd0d016d2ed8c7a169ba813bf73da6cc9d5e802d39f496286f77f55856",
+      "stored_bytes": 380,
+      "stored_sha256": "07eecba26b19c2a94386e65387f63e5dec2bd620ac38dcd3f7d6b2f981ffc395"
+    },
+    {
+      "logical_path": "results/sana-1600m-1024px-diffusers/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/sana-1600m-1024px-diffusers/source-after-finally.json",
+      "stored_path": "streams/results/sana-1600m-1024px-diffusers/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/sana-1600m-1024px-diffusers/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/sana-1600m-1024px-diffusers/source-before.json",
+      "stored_path": "streams/results/sana-1600m-1024px-diffusers/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/stable-diffusion-xl-base-1-0/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stable-diffusion-xl-base-1-0/actual-offline-report-1.json",
+      "stored_path": "streams/results/stable-diffusion-xl-base-1-0/actual-offline-report-1.json.gzip",
+      "bytes": 36125,
+      "sha256": "0ecaf0ae5d33f4b0541ba5d25249ddd527980b5e3e5fb5be9da35f9b25478033",
+      "stored_bytes": 5790,
+      "stored_sha256": "17fcc3eac15cb77a135b98eced6f6389f6e3e105cc87e83ab2f30fce85b9c83b"
+    },
+    {
+      "logical_path": "results/stable-diffusion-xl-base-1-0/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stable-diffusion-xl-base-1-0/external-after-finally.json",
+      "stored_path": "streams/results/stable-diffusion-xl-base-1-0/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/stable-diffusion-xl-base-1-0/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stable-diffusion-xl-base-1-0/external-before.json",
+      "stored_path": "streams/results/stable-diffusion-xl-base-1-0/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/stable-diffusion-xl-base-1-0/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stable-diffusion-xl-base-1-0/fixture-after.json",
+      "stored_path": "streams/results/stable-diffusion-xl-base-1-0/fixture-after.json.gzip",
+      "bytes": 58869,
+      "sha256": "7387ed2f4ddc566d6562be46b4939c525e0888b6ac18a225d0551aa53c5267c3",
+      "stored_bytes": 9210,
+      "stored_sha256": "27866e8b53258bfd9a9e80741470e059c5e59421a6cc1633275bac4c39eb17e7"
+    },
+    {
+      "logical_path": "results/stable-diffusion-xl-base-1-0/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stable-diffusion-xl-base-1-0/fixture-before.json",
+      "stored_path": "streams/results/stable-diffusion-xl-base-1-0/fixture-before.json.gzip",
+      "bytes": 12499,
+      "sha256": "05de128f956d5140df7cbadf8d9bbc2e6751da9614ce957235b645a45b470751",
+      "stored_bytes": 2968,
+      "stored_sha256": "1c560230ee5d43772a1987d4fa97d04d0eae0743bd53b48aa44be85b886b5604"
+    },
+    {
+      "logical_path": "results/stable-diffusion-xl-base-1-0/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stable-diffusion-xl-base-1-0/input-pins.json",
+      "stored_path": "streams/results/stable-diffusion-xl-base-1-0/input-pins.json.gzip",
+      "bytes": 33794,
+      "sha256": "79a3ebf228ac0c88f73b7b9ea139dcd0417f5271e068f1ef52a34fe2b153de89",
+      "stored_bytes": 7779,
+      "stored_sha256": "73e5b326425e5022a57cfe20585d0cf5bbf783a71642cc34347a6ae5da05c239"
+    },
+    {
+      "logical_path": "results/stable-diffusion-xl-base-1-0/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stable-diffusion-xl-base-1-0/pin-check-finally.json",
+      "stored_path": "streams/results/stable-diffusion-xl-base-1-0/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/stable-diffusion-xl-base-1-0/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stable-diffusion-xl-base-1-0/result.json",
+      "stored_path": "streams/results/stable-diffusion-xl-base-1-0/result.json.gzip",
+      "bytes": 548,
+      "sha256": "fe91306c2c4ba30c4dd553091ee145b9a2bd4ab89102e8636a8d9cf7731a47d9",
+      "stored_bytes": 382,
+      "stored_sha256": "576b8eb583ead6c31822539e75ee727cc95f9d71db45fe39570555465895f444"
+    },
+    {
+      "logical_path": "results/stable-diffusion-xl-base-1-0/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stable-diffusion-xl-base-1-0/source-after-finally.json",
+      "stored_path": "streams/results/stable-diffusion-xl-base-1-0/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/stable-diffusion-xl-base-1-0/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stable-diffusion-xl-base-1-0/source-before.json",
+      "stored_path": "streams/results/stable-diffusion-xl-base-1-0/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/stablelm-2-1-6b/actual-offline-report-1.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stablelm-2-1-6b/actual-offline-report-1.json",
+      "stored_path": "streams/results/stablelm-2-1-6b/actual-offline-report-1.json.gzip",
+      "bytes": 5039,
+      "sha256": "d373c8f3faddc69b3311194ada4a6885ea814a8ccd6bc3b72ca17c7796a5130c",
+      "stored_bytes": 1267,
+      "stored_sha256": "93a3bd0a50a4a121ef624577c0318afd1e9e20e10e5f2233fb1eb402f4517f56"
+    },
+    {
+      "logical_path": "results/stablelm-2-1-6b/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stablelm-2-1-6b/external-after-finally.json",
+      "stored_path": "streams/results/stablelm-2-1-6b/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/stablelm-2-1-6b/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stablelm-2-1-6b/external-before.json",
+      "stored_path": "streams/results/stablelm-2-1-6b/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "results/stablelm-2-1-6b/fixture-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stablelm-2-1-6b/fixture-after.json",
+      "stored_path": "streams/results/stablelm-2-1-6b/fixture-after.json.gzip",
+      "bytes": 5705,
+      "sha256": "9e84f0996c9f5c7eb2a804168d7da19885df5e9f5305cecabbb14a2f25acf577",
+      "stored_bytes": 1990,
+      "stored_sha256": "5fddffbc3143334b33e0e2842299c37b1cfb6ae18aa0bd90552b36b23ccb383e"
+    },
+    {
+      "logical_path": "results/stablelm-2-1-6b/fixture-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stablelm-2-1-6b/fixture-before.json",
+      "stored_path": "streams/results/stablelm-2-1-6b/fixture-before.json.gzip",
+      "bytes": 3985,
+      "sha256": "78d6d3a7528069cd18efa3fabd0b0f7b8e3c905ccc56fa203df52b9e6dfc0443",
+      "stored_bytes": 1299,
+      "stored_sha256": "1e932b9bb2093c20ef8987c265449f62418b051305044545e150c15ca82bda66"
+    },
+    {
+      "logical_path": "results/stablelm-2-1-6b/input-pins.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stablelm-2-1-6b/input-pins.json",
+      "stored_path": "streams/results/stablelm-2-1-6b/input-pins.json.gzip",
+      "bytes": 2172,
+      "sha256": "3acfa166301f9374008571c60347f4dc0af1af3fd83f1617dc1969cab7719bf8",
+      "stored_bytes": 855,
+      "stored_sha256": "2208b30c64f6fbfe58de008cda7d31b69c11fee92d8ffb116861fa008388d841"
+    },
+    {
+      "logical_path": "results/stablelm-2-1-6b/pin-check-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stablelm-2-1-6b/pin-check-finally.json",
+      "stored_path": "streams/results/stablelm-2-1-6b/pin-check-finally.json.gzip",
+      "bytes": 77,
+      "sha256": "f473b646659d7d8b2681f5c80b8e83cd718d3cff8c610e74347c597e9d631215",
+      "stored_bytes": 68,
+      "stored_sha256": "4f195d33883f4d5913f5b856504180138e00b5ca40f1e9005487742057360ad8"
+    },
+    {
+      "logical_path": "results/stablelm-2-1-6b/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stablelm-2-1-6b/result.json",
+      "stored_path": "streams/results/stablelm-2-1-6b/result.json.gzip",
+      "bytes": 519,
+      "sha256": "947348808fe36ffa55186d2c66a69e8c4aef771200c45019d302b39ae5394346",
+      "stored_bytes": 372,
+      "stored_sha256": "2ab17c89e74f7e1a03377b4455f9d7b1df0f3c321cc942ea2504e74838a00f9a"
+    },
+    {
+      "logical_path": "results/stablelm-2-1-6b/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stablelm-2-1-6b/source-after-finally.json",
+      "stored_path": "streams/results/stablelm-2-1-6b/source-after-finally.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    },
+    {
+      "logical_path": "results/stablelm-2-1-6b/source-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-stage-710da8e/bless-results/stablelm-2-1-6b/source-before.json",
+      "stored_path": "streams/results/stablelm-2-1-6b/source-before.json.gzip",
+      "bytes": 40412,
+      "sha256": "76bb0268d725f9f44938a51c93e1fb5606094adacc67712bb745f2a3252cfa35",
+      "stored_bytes": 16712,
+      "stored_sha256": "a699b8bdd14ee41c3729b17e4f849204e2ff73c1bbb134f7c4257ead10bd2894"
+    }
+  ]
+}

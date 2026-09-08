@@ -1,0 +1,8 @@
+{
+  "archive_path": "verification/receipts/S8-approved-sdxl-independent-710da8e/her_eyes_review.md.gzip",
+  "archive_sha256": "1df92e428f4ce75471aed1a99bb2413626b2e9781d9307397a0f0f55c03cfc2c",
+  "original_bytes": 29678,
+  "original_logical_path": "verification/receipts/S8-approved-sdxl-independent-710da8e/her_eyes_review.md",
+  "original_sha256": "b7d4d8f2936effd323c91f232bdf35c56069c9cc37b5fb3025e65acb77ae54db",
+  "reason": "Lossless archival of reviewed Markdown retaining its original EOF blank line; current gallery review and all original reviewed hashes unchanged."
+}

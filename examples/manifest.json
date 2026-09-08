@@ -4,19 +4,19 @@
       "file": "deepseek-v3.html",
       "fixture": "tests/sable_test_corpus/deepseek-v3.json",
       "rendered_name": "DeepSeek-V3",
-      "sha256": "41bc1d436787830559d654f03af323b4c4f7dbeb597d05881a00cd990b11150f"
+      "sha256": "f8435adcfc79a794dfaf54a7ca7b07cec4ec96019be6a74bc0c1bcd1c3161a41"
     },
     {
       "file": "granite-3-0-8b-instruct.html",
       "fixture": "tests/sable_test_corpus/granite-3-0-8b-instruct.json",
       "rendered_name": "granite-3.0-8b-instruct",
-      "sha256": "4f62803603a73449725dd0c93d31b690d7b5c815ea85af45e994cfabcc6bf373"
+      "sha256": "efde2279a0e7866fef15a920a7f9c0502cf7245152d9df933fe9820e6c0c0626"
     },
     {
       "file": "hunyuanvideo.html",
       "fixture": "tests/sable_test_corpus/hunyuanvideo.json",
       "rendered_name": "HunyuanVideo",
-      "sha256": "ffffb01c4b16146c717fe924c5b615bb39d55b13dbe5e2aeb37fd3c2db4ba53d"
+      "sha256": "f6826af644f0bc5498c29d299a3f401b66ef1310d3e250acda0e34cf28e351bf"
     },
     {
       "file": "llama-7b.html",
@@ -28,17 +28,17 @@
           "highlight_clickable": true,
           "scale": 2.0
         },
-        "source_svg_sha256": "4458f17bf38a350fb1c3c7e4a4494ccbe9069154cb80a83a2bf7c7e7de2a9d56",
-        "sha256": "a6774a6f0ab46ec0f77d6624d87aab950ea04815e087c99d3759feff1ba82d69"
+        "sha256": "a6774a6f0ab46ec0f77d6624d87aab950ea04815e087c99d3759feff1ba82d69",
+        "source_svg_sha256": "4458f17bf38a350fb1c3c7e4a4494ccbe9069154cb80a83a2bf7c7e7de2a9d56"
       },
       "rendered_name": "llama-7b",
-      "sha256": "499f0f4dd20328c0a3d030049fdbeed4a1afa2013b7bc1158f82d8d1e7a01bea"
+      "sha256": "12e62abaa4d42c8139103fce15c7aeb98f1b1b48675c75b3b0351876a618091e"
     },
     {
       "file": "musicgen-small.html",
       "fixture": "tests/sable_test_corpus/musicgen-small.json",
       "rendered_name": "MusicgenForConditionalGeneration",
-      "sha256": "386b3ae6078a0e4511daaeeef3e21cb4212a60f29471de8b48d438c825b73856"
+      "sha256": "36fc58700e3a596dc408eab328b12af845d8162094046cd28ff15ae75926e05c"
     },
     {
       "file": "pixart-sigma-xl-2-1024-ms.html",
@@ -56,7 +56,7 @@
       "file": "stable-diffusion-xl-base-1-0.html",
       "fixture": "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json",
       "rendered_name": "stable-diffusion-xl-base-1.0",
-      "sha256": "09e92b1d8c02e3a519617bc7bbc4b8cd64cb73c8e71f8487e9d7e6c7e2ef6a4b"
+      "sha256": "047ded43206adce009b820bda58aa16b8cba67c629f4e4160fd04a58f96dfc22"
     }
   ],
   "schema": 2

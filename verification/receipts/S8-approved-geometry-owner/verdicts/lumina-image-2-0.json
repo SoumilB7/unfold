@@ -1,0 +1,121 @@
+{
+  "decision": "ACCEPT",
+  "reviewer": "root",
+  "implementer": "executor",
+  "reviewed_at": "2026-09-08T08:23:48.379365+00:00",
+  "model": "Lumina-Image-2.0",
+  "view_signature": [
+    {
+      "label": "architecture",
+      "hash": "e847adc67aedfd6922a3ded3a8fe39b7"
+    },
+    {
+      "label": "architecture",
+      "hash": "e8483db9c1ba9cfd194089017b390919"
+    },
+    {
+      "label": "attn",
+      "hash": "7cf4921225fcca4d43711514541a2142"
+    },
+    {
+      "label": "denoiser",
+      "hash": "b4e96f1814df3fe5ef6d6e0fce3ec841"
+    },
+    {
+      "label": "encoder_0",
+      "hash": "a2dd49449d9b57dd41f5f488d286a55a"
+    },
+    {
+      "label": "encoder_0_g0_op_ffn",
+      "hash": "7d3443fd29ef5465e5722d3dea2ff019"
+    },
+    {
+      "label": "encoder_0_g0_op_selfattn",
+      "hash": "76cfd01aec05ed837e012a41f141698a"
+    },
+    {
+      "label": "encoder_0_g1_op_selfattn",
+      "hash": "55f1f434a622b978337ce9a38dc4541f"
+    },
+    {
+      "label": "ffn",
+      "hash": "e26eed19307ea820a6ca8e23b99e5ecc"
+    },
+    {
+      "label": "scheduler",
+      "hash": "72c72e56496f2ecf5c83d5192468a0e7"
+    },
+    {
+      "label": "vae_decode",
+      "hash": "a4bd9d4acf64c641ef5d7bbe32e79a7b"
+    },
+    {
+      "label": "vae_decoder_block_1",
+      "hash": "c9548637d7d0e759e38443e69f62a120"
+    },
+    {
+      "label": "vae_decoder_block_2",
+      "hash": "c445b387e72b69a1bcb1cf0bc02975cc"
+    },
+    {
+      "label": "vae_decoder_block_3",
+      "hash": "b26496903a90d935f59b32446b1d93be"
+    },
+    {
+      "label": "vae_decoder_block_4",
+      "hash": "c09631c90c0265de4279c56e8f8a8d57"
+    },
+    {
+      "label": "vae_mid_block",
+      "hash": "cb0c2c4d1a5455f44683943e4feedaf9"
+    }
+  ],
+  "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+  "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+  "report_sha256": "2baa4887d42c98914acccf3b684b625c89147ba3f8de91855f6652f50fed3451",
+  "gallery_manifest_sha256": "c8d31370a79700302934d8d2a03997b33d40bede814bbbf6b7825e9a89459a4d",
+  "pixel_review_sha256": "ecc88f3bb5d7dfc5ae318b9f3535a78ce8b34b446f30f2e72853c8326402367d",
+  "her_eyes_review_sha256": "965e063b34a2bab8db987e85edb1df00b9e8c0e80511fb41d26c7990531494dc",
+  "independent_review_evidence": [
+    "verification/receipts/S8-approved-geometry-owner/review.json",
+    "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+  ],
+  "report_phase": "actual-fb1-Sable-capture",
+  "proven_facts_equal_prior_lock": true,
+  "retained_visual_suggestions": [
+    {
+      "file": "00__architecture.png",
+      "inspected": true,
+      "label": "architecture",
+      "png_sha256": "20f5b54dcedce7365a484a4fa6caade8b5f94bf78dc43f429c1507595198478f",
+      "source_svg_sha256": "376de6fe6e7fea323aa6f0ca6887e5ffa0381cc825891f420b29e6173df5839d",
+      "visual_hash": "e8483db9c1ba9cfd194089017b390919",
+      "delight": "FINE",
+      "verdict": "SUGGEST",
+      "sentence": "The loop reads well, but Gemma's output is visually detached; show the limitation explicitly without inventing a connection."
+    },
+    {
+      "file": "01__encoder_0.png",
+      "inspected": true,
+      "label": "encoder_0",
+      "png_sha256": "0af5ed01848d614a50ca12ce7910ac574a9f9152aed8506c68f783f7790fb49f",
+      "source_svg_sha256": "c77351706053cd608f9e275582ac19fa21a5150f930a2332698da3a2162cc934",
+      "visual_hash": "a2dd49449d9b57dd41f5f488d286a55a",
+      "delight": "FINE",
+      "verdict": "SUGGEST",
+      "sentence": "The paired encoder body is very tall; two compact labeled subregions would ease comparison while keeping every drill."
+    },
+    {
+      "file": "15__architecture__1.png",
+      "inspected": true,
+      "label": "architecture",
+      "png_sha256": "63302c302dc7eef7677072b20ea21979314bd1861dabe590af7ebb270b9b6f8b",
+      "source_svg_sha256": "b7f3973b7e094eb1c417440f6c68ab314b0231c1cd62ebb168846bf261cc2f6e",
+      "visual_hash": "e847adc67aedfd6922a3ded3a8fe39b7",
+      "delight": "DISLIKE",
+      "verdict": "SUGGEST",
+      "sentence": "The long one-type legend runs past the right frame; wrap its complete wording inside the card."
+    }
+  ],
+  "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved."
+}

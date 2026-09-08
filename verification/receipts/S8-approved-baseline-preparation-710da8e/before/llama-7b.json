@@ -1,0 +1,139 @@
+{
+  "checks": {
+    "asserted_facts": true,
+    "click_coupling": true,
+    "config_accessed_unprojected": true,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
+    "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
+    "dangling_connectors": true,
+    "document_boundary_completeness": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "projection_audit": true,
+    "qualified_projection_values": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true,
+    "zero_asserted_census": true
+  },
+  "config": {
+    "_name_or_path": "huggyllama/llama-7b",
+    "architectures": [
+      "LlamaForCausalLM"
+    ],
+    "attention_bias": false,
+    "attention_dropout": 0.0,
+    "bos_token_id": 1,
+    "chunk_size_feed_forward": 0,
+    "dtype": "float16",
+    "eos_token_id": 2,
+    "head_dim": 128,
+    "hidden_act": "silu",
+    "hidden_size": 4096,
+    "id2label": {
+      "0": "LABEL_0",
+      "1": "LABEL_1"
+    },
+    "initializer_range": 0.02,
+    "intermediate_size": 11008,
+    "is_encoder_decoder": false,
+    "label2id": {
+      "LABEL_0": 0,
+      "LABEL_1": 1
+    },
+    "max_position_embeddings": 2048,
+    "max_sequence_length": 2048,
+    "mlp_bias": false,
+    "model_type": "llama",
+    "num_attention_heads": 32,
+    "num_hidden_layers": 32,
+    "num_key_value_heads": 32,
+    "output_attentions": false,
+    "output_hidden_states": false,
+    "pad_token_id": 0,
+    "pretraining_tp": 1,
+    "problem_type": null,
+    "return_dict": true,
+    "rms_norm_eps": 1e-06,
+    "rope_parameters": {
+      "rope_theta": 10000.0,
+      "rope_type": "default"
+    },
+    "tie_word_embeddings": false,
+    "transformers_version": "5.12.1",
+    "use_cache": true,
+    "vocab_size": 32000
+  },
+  "hash_signature": [
+    "4015be3286774c4c736600061e47ed51",
+    "41a47e30c51924971a62bf1ce94346ba",
+    "d3314cccdb744f3767be47b560187b9c",
+    "e52c423d42c8caa434948f640344f933"
+  ],
+  "model": "llama-7b",
+  "proven_facts": [
+    "decoder.attention.bias",
+    "decoder.attention.cached",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mask",
+    "decoder.attention.mask_schedule",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.output_projection",
+    "decoder.attention.position_schedule",
+    "decoder.attention.projection_mode",
+    "decoder.attention.rope_initialization",
+    "decoder.attention.rope_theta",
+    "decoder.attention.scores_scale",
+    "decoder.ffn.activation",
+    "decoder.ffn.ffn_schedule",
+    "decoder.ffn.gated",
+    "decoder.ffn.intermediate_size",
+    "decoder.ffn.projection_mode",
+    "decoder.layer.norm_kind",
+    "decoder.layer.norm_placement",
+    "decoder.layer.residual_topology",
+    "model.final_norm_kind",
+    "model.tie_word_embeddings"
+  ],
+  "source": "local",
+  "superseded_hash_signature": [
+    "0906417b9411abb79f795df485b1719c",
+    "41a47e30c51924971a62bf1ce94346ba",
+    "d3314cccdb744f3767be47b560187b9c",
+    "e52c423d42c8caa434948f640344f933"
+  ],
+  "view_signature": [
+    {
+      "hash": "4015be3286774c4c736600061e47ed51",
+      "label": "architecture"
+    },
+    {
+      "hash": "e52c423d42c8caa434948f640344f933",
+      "label": "architecture"
+    },
+    {
+      "hash": "41a47e30c51924971a62bf1ce94346ba",
+      "label": "attn"
+    },
+    {
+      "hash": "d3314cccdb744f3767be47b560187b9c",
+      "label": "ffn"
+    }
+  ],
+  "visual_evidence": {
+    "gallery_dir": "galleries/llama-7b",
+    "manifest": true,
+    "png_count": 4
+  }
+}

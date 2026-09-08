@@ -1,0 +1,59 @@
+{
+  "decision": "ACCEPT",
+  "reviewer": "root",
+  "implementer": "executor",
+  "reviewed_at": "2026-09-08T08:14:19.342759+00:00",
+  "model": "dbrx-base",
+  "view_signature": [
+    {
+      "label": "architecture",
+      "hash": "9bdbcf5d2def935a5841d12f719e4acd"
+    },
+    {
+      "label": "architecture",
+      "hash": "ff13ffe154dd7f96056aadbbcdf40c13"
+    },
+    {
+      "label": "attn",
+      "hash": "bc9d0edec6f3689d7d3fe8e1a514eaf5"
+    },
+    {
+      "label": "expert_1",
+      "hash": "7c73b6aeef876249dabbc347060d78fb"
+    },
+    {
+      "label": "ffn",
+      "hash": "2c3e3357139af0916fcf15e9b15d8bb2"
+    },
+    {
+      "label": "router",
+      "hash": "457c6853dedb78425e5c85c2cc171b63"
+    }
+  ],
+  "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+  "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+  "report_sha256": "9a193f96881261ec000a1bbe7ac2fc9553fb8bba7e7ec5ffc4284d7b3d848445",
+  "gallery_manifest_sha256": "14b26ae6defba667e120492c2ae8b7aa75709bdcbd2886409d6b205d65604c72",
+  "pixel_review_sha256": "dfb9c30927ef9baa0c7d1f1650f0dbca2e593ab88d8b406700c3f29baa650edc",
+  "her_eyes_review_sha256": "86633e59629082dc075bcc977e1023d96365d41dd35765eabd85681957002569",
+  "independent_review_evidence": [
+    "verification/receipts/S8-approved-geometry-owner/review.json",
+    "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+  ],
+  "report_phase": "actual-fb1-Sable-capture",
+  "proven_facts_equal_prior_lock": true,
+  "retained_visual_suggestions": [
+    {
+      "file": "02__ffn.png",
+      "inspected": true,
+      "label": "ffn",
+      "png_sha256": "c9f7ccc44d825b64356ffd1dfe87d9585a798a545b3654f2f5d6da6570cb81fb",
+      "source_svg_sha256": "bc451a2aef1c1a708b0b9231016eb112dd3b9fb66bba8c6b01cbce5199993491",
+      "visual_hash": "2c3e3357139af0916fcf15e9b15d8bb2",
+      "delight": "FINE",
+      "verdict": "SUGGEST",
+      "sentence": "The very wide router dominates the smaller selected-expert card; narrow the router while keeping its drill."
+    }
+  ],
+  "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved."
+}

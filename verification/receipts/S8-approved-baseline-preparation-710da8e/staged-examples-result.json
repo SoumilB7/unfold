@@ -1,0 +1,31 @@
+{
+  "actual_existing_validation_errors": [],
+  "candidate_pins": {
+    "deepseek-v3.html": "f8435adcfc79a794dfaf54a7ca7b07cec4ec96019be6a74bc0c1bcd1c3161a41",
+    "granite-3-0-8b-instruct.html": "efde2279a0e7866fef15a920a7f9c0502cf7245152d9df933fe9820e6c0c0626",
+    "hunyuanvideo.html": "f6826af644f0bc5498c29d299a3f401b66ef1310d3e250acda0e34cf28e351bf",
+    "llama-7b.html": "12e62abaa4d42c8139103fce15c7aeb98f1b1b48675c75b3b0351876a618091e",
+    "manifest.json": "ca798c5c447498505ea507e5b917a3afb5008c379227f449e9b7832bd73eb4ba",
+    "musicgen-small.html": "36fc58700e3a596dc408eab328b12af845d8162094046cd28ff15ae75926e05c",
+    "pixart-sigma-xl-2-1024-ms.html": "2ab8e728897fcfb57d3755fc0a7a7a44943ec56817a85163c5a10e0e114c23ea",
+    "qwen2-vl-7b-instruct.html": "3daecd4c607d5f9bb62c167c84e74cf2aff0b221b809840222626f0433ff1f8d",
+    "stable-diffusion-xl-base-1-0.html": "047ded43206adce009b820bda58aa16b8cba67c629f4e4160fd04a58f96dfc22"
+  },
+  "changed_html": [
+    "deepseek-v3.html",
+    "granite-3-0-8b-instruct.html",
+    "hunyuanvideo.html",
+    "llama-7b.html",
+    "musicgen-small.html",
+    "stable-diffusion-xl-base-1-0.html"
+  ],
+  "hero_png_unchanged": true,
+  "live_baseline_mutated": false,
+  "new_model_execution": false,
+  "rasterizer_invoked": false,
+  "status": "STAGED_EXACT_APPROVED_EXAMPLES",
+  "unchanged_html": [
+    "pixart-sigma-xl-2-1024-ms.html",
+    "qwen2-vl-7b-instruct.html"
+  ]
+}

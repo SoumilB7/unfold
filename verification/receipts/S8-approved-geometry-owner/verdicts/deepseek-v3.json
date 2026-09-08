@@ -1,0 +1,90 @@
+{
+  "decision": "ACCEPT",
+  "reviewer": "root",
+  "implementer": "executor",
+  "reviewed_at": "2026-09-08T08:14:19.346690+00:00",
+  "model": "DeepSeek-V3",
+  "view_signature": [
+    {
+      "label": "architecture",
+      "hash": "416d725caccdd424f1705abacf2d35ee"
+    },
+    {
+      "label": "architecture",
+      "hash": "ca026191feecce8406387cba4e5995c9"
+    },
+    {
+      "label": "architecture_v1",
+      "hash": "2d40684da4d9cf65c1e52ec90ef37e4d"
+    },
+    {
+      "label": "attn",
+      "hash": "f81f29a8d6da195b64df83582a7b82ee"
+    },
+    {
+      "label": "expert_1",
+      "hash": "b76b2685a593fe3ca207a48a0388086b"
+    },
+    {
+      "label": "ffn",
+      "hash": "de7213a6eaa4c7f502da0289d968a99e"
+    },
+    {
+      "label": "ffn",
+      "hash": "fe7dbad6aaa0ecd58090855148c95349"
+    },
+    {
+      "label": "g_topk",
+      "hash": "0d62405c9f25c10421e350c162c03419"
+    },
+    {
+      "label": "mla_kv_path",
+      "hash": "957109c7d03856fac96f612ceb3694e8"
+    },
+    {
+      "label": "mla_query_path",
+      "hash": "dabf1599258da7e9cac35423b6af665a"
+    },
+    {
+      "label": "router",
+      "hash": "987f778581b3af9ef0a802b9c788612f"
+    }
+  ],
+  "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+  "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+  "report_sha256": "9b13de015f83a4d1aa1a1b856dbc815bf1c9cd2fc0e2af38c0a5530d80f8cf75",
+  "gallery_manifest_sha256": "6eb4dbe4d2da270877f208c3c8e88c4feb7afbbde7e0cdd25af7d68c680c7fff",
+  "pixel_review_sha256": "b6dd124c45a34f96e09adc9123c8d6d17be38dbb49f415e4c16c66a9832a622b",
+  "her_eyes_review_sha256": "3ef83c696060b542f72ca8259639bc2425b1c4819a7ead4ec092292869cd4c4e",
+  "independent_review_evidence": [
+    "verification/receipts/S8-approved-geometry-owner/review.json",
+    "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+  ],
+  "report_phase": "actual-fb1-Sable-capture",
+  "proven_facts_equal_prior_lock": true,
+  "retained_visual_suggestions": [
+    {
+      "file": "02__attn.png",
+      "inspected": true,
+      "label": "attn",
+      "png_sha256": "1c9726352a16022de45190648ed324f60a40c902011a1acb3d8874a3e8c09565",
+      "source_svg_sha256": "7d3ca518c65a4939c685548052a2b4e28d5a875d2179ca532840c9cd31a98502",
+      "visual_hash": "f81f29a8d6da195b64df83582a7b82ee",
+      "delight": "FINE",
+      "verdict": "SUGGEST",
+      "sentence": "The compressed-value return hugs the score box; give that rail a little more breathing room."
+    },
+    {
+      "file": "04__ffn__1.png",
+      "inspected": true,
+      "label": "ffn",
+      "png_sha256": "6a23b1ea7f50924404945a640c5d5d48cae5eab0ae8ba7b966b2e1bb55cbafe6",
+      "source_svg_sha256": "4e05199d611ee85b8754179171ff94bb0f714839566bb82a7431c886d478ff78",
+      "visual_hash": "de7213a6eaa4c7f502da0289d968a99e",
+      "delight": "DISLIKE",
+      "verdict": "SUGGEST",
+      "sentence": "The shared-expert input runs behind the wide Router box; route it around the box or narrow that box without dropping either branch."
+    }
+  ],
+  "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved."
+}

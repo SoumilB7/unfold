@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "command": "python3 unfold-pkg/verification/receipts/S8-approved-guarded-reproof-710da8e/verify_restore.py --out /private/tmp/unfold-s8-guarded-reproof-archive-check-710da8e",
+  "restored_streams": 232,
+  "every_restored_size_and_sha256_matches": true,
+  "verify_restore_sha256": "a3ae32646c06f5480417cdc11c97ff2eafaa6806ff82cb7a2a2f980f26a7c361",
+  "artifact_map_sha256": "1253ee1347997b040940ebd7feca0483af787352f65510ad1a7cc9c9784cc9a9"
+}

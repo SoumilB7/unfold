@@ -232,12 +232,12 @@
     "7afb01b9d7ac072ddcf62251ed13ea45",
     "8df75c06f9f0a30aab0fb5cbcde3a971",
     "98cc1a1085bcbd1bf37bca2d7bc8f0b5",
-    "a6f55388487fd4dd7caa7b7c3fed498c",
     "b659f21587c423bd7f132f2db073db23",
     "bf38a076baa29fc5858612bbd71d0fe5",
     "d1c84104e399fd2b01a9463008f05c8b",
     "e0e26ad22437675e48e0c9bf06d3d56c",
-    "e61a83137bf7f8efd7fa6bc30ad12024"
+    "e61a83137bf7f8efd7fa6bc30ad12024",
+    "f6c365994068765fcb8ed31a8e927c88"
   ],
   "model": "HunyuanVideo",
   "proven_facts": [
@@ -262,28 +262,164 @@
     "root.denoiser.stacks[2].cell.diffusion_norm_mechanism",
     "root.denoiser.stacks[2].diffusion_stack_depth"
   ],
+  "review_verdict": {
+    "decision": "ACCEPT",
+    "gallery_manifest_sha256": "dbe323e4b12250bf81fbf44576cfcb9555f8abc58a0cf596dd3361cad16f94eb",
+    "her_eyes_review_sha256": "7bcb73f3c5b76f2fdd56170c4558cacd8572813ff5a1da3cd445f216bc70f73b",
+    "implementer": "executor",
+    "independent_review_evidence": [
+      "verification/receipts/S8-approved-geometry-owner/review.json",
+      "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+    ],
+    "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved.",
+    "model": "HunyuanVideo",
+    "pixel_review_sha256": "0e7988cf209e44ad4ea9444e70ec27fcc727f05af59212124654a904e588f5ad",
+    "proven_facts_equal_prior_lock": true,
+    "report_phase": "actual-fb1-Sable-capture",
+    "report_sha256": "ecaa04d6329e60b6444fcde1c3288fda15ea5d5b0b888efa7710697cf0b91bd0",
+    "retained_visual_suggestions": [
+      {
+        "delight": "FINE",
+        "file": "00__architecture.png",
+        "inspected": true,
+        "label": "architecture",
+        "png_sha256": "0f5fd6563d3808f2f0020b27fafceffeaf66972f39c8fa10f46e6ad2ffb6aefc",
+        "sentence": "The diffusion loop is clear, but the two text encoders appear visually detached from the denoiser; an explicit limitation caption would help without inventing a link.",
+        "source_svg_sha256": "99d01ce725e01363708c177724edf895167feafd3d86c446f2c85aee520e39e4",
+        "verdict": "SUGGEST",
+        "visual_hash": "34745baa907ad91bd27af32239c6d5ac"
+      },
+      {
+        "delight": "FINE",
+        "file": "03__denoiser.png",
+        "inspected": true,
+        "label": "denoiser",
+        "png_sha256": "e30edf243cab438888d2eda91c0af79b9b7dcddb23ee0ec6441a4bd8a86c28c8",
+        "sentence": "Two unlabeled multipliers punctuate a tall unresolved spine; compact grouping and clearer drill cues would help.",
+        "source_svg_sha256": "6c50d3b77e33c61d209c60ab76d55d5235fe41e553aae553a885ea131f9f3bd4",
+        "verdict": "SUGGEST",
+        "visual_hash": "133c5ed972f7e0529d0c866eee5821b0"
+      },
+      {
+        "delight": "DISLIKE",
+        "file": "19__architecture__1.png",
+        "inspected": true,
+        "label": "architecture",
+        "png_sha256": "918add73d726bc3bc5690b8879ebbceee85351174edd6adcc69c96f3ee0686d7",
+        "sentence": "The long type descriptions spill past the right edge of the layer legend; wrap both lines inside the frame.",
+        "source_svg_sha256": "e3251e9a6855bd76e1baf526905d496622b7d965d8c001e22847a836a2e85c24",
+        "verdict": "SUGGEST",
+        "visual_hash": "2c9c2c0065847964ec88ebbe372cd5bd"
+      }
+    ],
+    "reviewed_at": "2026-09-08T08:21:45.756338+00:00",
+    "reviewer": "root",
+    "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+    "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+    "view_signature": [
+      {
+        "hash": "2c9c2c0065847964ec88ebbe372cd5bd",
+        "label": "architecture"
+      },
+      {
+        "hash": "34745baa907ad91bd27af32239c6d5ac",
+        "label": "architecture"
+      },
+      {
+        "hash": "d1c84104e399fd2b01a9463008f05c8b",
+        "label": "attn"
+      },
+      {
+        "hash": "133c5ed972f7e0529d0c866eee5821b0",
+        "label": "denoiser"
+      },
+      {
+        "hash": "e0e26ad22437675e48e0c9bf06d3d56c",
+        "label": "denoiser"
+      },
+      {
+        "hash": "b659f21587c423bd7f132f2db073db23",
+        "label": "encoder_0"
+      },
+      {
+        "hash": "98cc1a1085bcbd1bf37bca2d7bc8f0b5",
+        "label": "encoder_0_op_ffn"
+      },
+      {
+        "hash": "f6c365994068765fcb8ed31a8e927c88",
+        "label": "encoder_0_op_selfattn"
+      },
+      {
+        "hash": "395f5467388ed1bdadb8c91c7e5e96c7",
+        "label": "encoder_1"
+      },
+      {
+        "hash": "5629211bc9efbd086f2f26426877c1af",
+        "label": "encoder_1_op_ffn"
+      },
+      {
+        "hash": "e61a83137bf7f8efd7fa6bc30ad12024",
+        "label": "encoder_1_op_selfattn"
+      },
+      {
+        "hash": "2d4deb7e5d271b6c70408c4d31d43018",
+        "label": "ffn"
+      },
+      {
+        "hash": "7afb01b9d7ac072ddcf62251ed13ea45",
+        "label": "ffn"
+      },
+      {
+        "hash": "bf38a076baa29fc5858612bbd71d0fe5",
+        "label": "scheduler"
+      },
+      {
+        "hash": "502c3ffeb9a9ffadf61a8ec993944433",
+        "label": "vae_decode"
+      },
+      {
+        "hash": "30b5201d259e95a942012b0a27fe6d7f",
+        "label": "vae_decoder_block_1"
+      },
+      {
+        "hash": "511bc69086c757f55d1a4e9922fd78ed",
+        "label": "vae_decoder_block_2"
+      },
+      {
+        "hash": "34829e302343eaa19667bcba8a150848",
+        "label": "vae_decoder_block_3"
+      },
+      {
+        "hash": "30514691da513ec4ac4962bb1d572db9",
+        "label": "vae_decoder_block_4"
+      },
+      {
+        "hash": "8df75c06f9f0a30aab0fb5cbcde3a971",
+        "label": "vae_mid_block"
+      }
+    ]
+  },
   "source": "local",
   "superseded_hash_signature": [
+    "133c5ed972f7e0529d0c866eee5821b0",
+    "2c9c2c0065847964ec88ebbe372cd5bd",
+    "2d4deb7e5d271b6c70408c4d31d43018",
     "30514691da513ec4ac4962bb1d572db9",
     "30b5201d259e95a942012b0a27fe6d7f",
+    "34745baa907ad91bd27af32239c6d5ac",
     "34829e302343eaa19667bcba8a150848",
-    "446dbdf34699f8ac07a5717439470221",
+    "395f5467388ed1bdadb8c91c7e5e96c7",
     "502c3ffeb9a9ffadf61a8ec993944433",
     "511bc69086c757f55d1a4e9922fd78ed",
-    "527e19607168c134f29e1496792dafa9",
     "5629211bc9efbd086f2f26426877c1af",
     "7afb01b9d7ac072ddcf62251ed13ea45",
     "8df75c06f9f0a30aab0fb5cbcde3a971",
-    "962812afb72cf79183812517aaf62933",
     "98cc1a1085bcbd1bf37bca2d7bc8f0b5",
     "a6f55388487fd4dd7caa7b7c3fed498c",
-    "b04ca2a6ee9a0546595d8564f6841bb3",
-    "b7957d583e2efdfb0c96d0d7ef209983",
-    "bf1a49ca1544f7363b05aa64d64ea45d",
+    "b659f21587c423bd7f132f2db073db23",
     "bf38a076baa29fc5858612bbd71d0fe5",
-    "c554a7b119091b80e1b2306025d6c1ab",
     "d1c84104e399fd2b01a9463008f05c8b",
-    "d58c90381048f30d394f66ce4ef66814",
+    "e0e26ad22437675e48e0c9bf06d3d56c",
     "e61a83137bf7f8efd7fa6bc30ad12024"
   ],
   "view_signature": [
@@ -316,7 +452,7 @@
       "label": "encoder_0_op_ffn"
     },
     {
-      "hash": "a6f55388487fd4dd7caa7b7c3fed498c",
+      "hash": "f6c365994068765fcb8ed31a8e927c88",
       "label": "encoder_0_op_selfattn"
     },
     {

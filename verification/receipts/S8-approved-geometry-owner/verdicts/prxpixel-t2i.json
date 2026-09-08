@@ -1,0 +1,82 @@
+{
+  "decision": "ACCEPT",
+  "reviewer": "root",
+  "implementer": "executor",
+  "reviewed_at": "2026-09-08T08:26:44.310261+00:00",
+  "model": "prxpixel-t2i",
+  "view_signature": [
+    {
+      "label": "architecture",
+      "hash": "560f734b61ef710d22939cbd933fd5ff"
+    },
+    {
+      "label": "architecture",
+      "hash": "56df7ae152bd3d291debd2406e747e83"
+    },
+    {
+      "label": "attn",
+      "hash": "cf678126205587f1b0df309e76864f36"
+    },
+    {
+      "label": "denoiser",
+      "hash": "745b88f160585a465ed286f71d584db0"
+    },
+    {
+      "label": "encoder_0",
+      "hash": "732c3da7a1ffcb0005f203266c1e092b"
+    },
+    {
+      "label": "encoder_0_op_ffn",
+      "hash": "38433759c72140f5833413de64e0bf5c"
+    },
+    {
+      "label": "encoder_0_op_selfattn",
+      "hash": "148f8a37e2ee24bc142edb77f06bcf79"
+    },
+    {
+      "label": "ffn",
+      "hash": "0c7d3c3ee6cbb10bcbe0bf91a4c3174b"
+    },
+    {
+      "label": "scheduler",
+      "hash": "455fcad6f15a7a8642673b21b0f8fcd7"
+    }
+  ],
+  "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+  "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+  "report_sha256": "32ed6c90ba209ad4591bfbf2ff97d2da4f6f42944c152abb55b79337149c5ca8",
+  "gallery_manifest_sha256": "df433d39080d630a645f6d0e42d80351251cd43852e336cd28f46bfc81626de9",
+  "pixel_review_sha256": "d7c8c9c90f1aca4385a1cbb7f76820cefe5491bd79137669b39d5ed1ad9fba5e",
+  "her_eyes_review_sha256": "b1da3f57f6ef0371d0b3b1a95afad8386938aed7461015b7514f43ce14858839",
+  "independent_review_evidence": [
+    "verification/receipts/S8-approved-geometry-owner/review.json",
+    "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+  ],
+  "report_phase": "actual-fb1-Sable-capture",
+  "proven_facts_equal_prior_lock": true,
+  "retained_visual_suggestions": [
+    {
+      "file": "02__denoiser.png",
+      "inspected": true,
+      "label": "denoiser",
+      "png_sha256": "b726b4541aa2dbc6678f5183fa59cdb12dae522554aeb35bbbdcc9599ad7b2f6",
+      "source_svg_sha256": "6aa9dd9c4b9a494d5b6d2c391e1fdedbcccd1fb4d3f1e622c30a0e886684ed73",
+      "visual_hash": "745b88f160585a465ed286f71d584db0",
+      "delight": "DISLIKE",
+      "verdict": "SUGGEST",
+      "sentence": "The external-context card runs into the right canvas edge; widen the view or move that side card inward while preserving its route."
+    },
+    {
+      "file": "08__architecture__1.png",
+      "inspected": true,
+      "label": "architecture",
+      "png_sha256": "f4ce15b73cc9c14b7e881f6d7fb89f7ab80503a97178a055ef97916089dc029c",
+      "source_svg_sha256": "2148bff6a8c785f301dea578db0899821cefd85cf78335a0268f23f986d3999b",
+      "visual_hash": "56df7ae152bd3d291debd2406e747e83",
+      "delight": "DISLIKE",
+      "verdict": "SUGGEST",
+      "sentence": "The long layer legend spills beyond the right boundary; wrap its full wording inside the frame."
+    }
+  ],
+  "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved."
+}

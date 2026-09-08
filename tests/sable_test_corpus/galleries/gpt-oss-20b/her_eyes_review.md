@@ -1,23 +1,36 @@
-# Her Eyes â gpt-oss-20b
-8 images reviewed Â· LOVE 2 Â· FINE 6 Â· DISLIKE 0 Â· APPROVE 7 / SUGGEST 1
+# Her Eyes — gpt-oss-20b
+
+```
+   _______
+  /  -O-  \
+  \       /
+   ¯¯¯¯¯¯¯
+```
+
+8 images reviewed · LOVE 2 · FINE 6 · DISLIKE 0 · APPROVE 7 / SUGGEST 1
+
+Judgments below come from individually opened current PNGs. Suggestions are visual review notes, not architecture changes or a fresh Sable run.
 
 ## Every view
+
 | image | delight | verdict | her sentence |
 |---|---|---|---|
-| 00__architecture.png | LOVE | APPROVE | A textbook pre-norm spine â the Ã12 frame, twin residual elbows, and the "SW Â·" prefix tell the whole layer story without one wasted pixel. |
-| 01__architecture_v1.png | FINE | APPROVE | Honest and clean, but it is 00's near-twin whose only difference is a missing two-letter prefix, so on its own it feels like dÃ©jÃ  vu rather than new information. |
-| 02__attn.png | LOVE | APPROVE | The format at its peak â the sink column sits naturally on the spine, the KV-sharing card earns its corner, and the little token strip with "local window 128" explains SWA better than a paragraph could. |
-| 03__ffn.png | FINE | APPROVE | The fan-out/fan-in symmetry reads instantly; only the jump from "Expert 1" to "Expert k" asks the reader to supply the ellipsis themselves. |
-| 04__attn__1.png | FINE | APPROVE | Identical to 02 minus the window strip, which is exactly the right way to say "full attention" â correct, if unavoidably repetitive as a standalone page. |
-| 05__router.png | FINE | APPROVE | Two boxes and two grey port labels is all a router is, and the drill has the confidence not to decorate that fact. |
-| 06__expert_1.png | FINE | SUGGEST | The fused "Linear (gate + up) â Split" story is lovely, but the Ã's up-operand edge ducks behind the SiLU box â route that vertical clear of SiLU's left edge (or chip it "up") so both operands are traceable at a glance. |
-| 07__architecture__1.png | FINE | APPROVE | The alternating stripe makes the SWA/full interleave visible in one sweep, though the twin legend lines are dense enough that "alternating" has to be decoded rather than seen. |
+| 00__architecture.png | FINE | APPROVE | The sliding-window MoE tower is readable with both residual returns kept outside its cards. |
+| 01__architecture_v1.png | FINE | APPROVE | The alternate full-attention tower preserves the same clear hierarchy. |
+| 02__attn.png | FINE | APPROVE | The sink step and window label fit while the long RoPE captions remain contained. |
+| 03__ffn.png | FINE | SUGGEST | The router card is much wider than the rest of the MoE spine; narrowing it would give this simple view better balance. |
+| 04__attn__1.png | FINE | APPROVE | The full-attention variant keeps cache and query routes distinct despite the wide positional captions. |
+| 05__router.png | FINE | APPROVE | The three router operations have a calm, readable vertical rhythm. |
+| 06__expert_1.png | LOVE | APPROVE | The two different clamp paths and added one are easy to distinguish before they meet. |
+| 07__architecture__1.png | LOVE | APPROVE | The alternating strip and paired legends make the two layer types immediately comparable. |
 
-## What she suggests (she cannot edit â only point)
-1. **06__expert_1.png** â pull the up-operand vertical left of the SiLU box (or add a small "up" chip on it) so the Ã visibly receives two distinct operands instead of one arrow emerging from behind SiLU.
+## What she suggests (she cannot edit — only point)
+
+1. Narrow the MoE summary router card while keeping its drill and selected-expert card.
 
 ## Her answers
-- Prettiest this format can look? Very nearly â 02__attn is this format's best self (mechanism, cache economics, and window semantics in a single glance); what keeps the folder from perfection is not any one view but the two pairs of near-twins (00/01, 02/04) diluting the reveal.
-- Bundle into one (drills preserved): merge 00 and 01 into one architecture view with the layer-strip (07) acting as the SWA/full selector, and let 02/04 share one attention canvas where a variant chip toggles the window strip on and off â every op stays drawn, nothing is hidden, half the pages disappear.
-- Would a newcomer get it? Yes for the spine, the MoE fan-out, and the router; the single spot needing a hint is "Append sink column," where a newcomer won't guess the column is learned â a three-word annotation ("learned sink logits") would seal it without breaking the one-box honesty.
-- Where the journey should end: at 06__expert_1 â token â layer â MoE â router â one expert's fused gate+up arithmetic is the natural floor of the model; 07's stripe is a map for orientation, not a destination.
+
+- **Prettiest this format can look?** The expert drill shows the strongest use of this format: distinct operations in balanced lanes.
+- **Bundle into one (drills preserved):** Keep both attention types, one MoE summary, and the current router/expert drills.
+- **Would a newcomer get it?** Yes, especially with the alternating strip as the entry point.
+- **Where the journey should end:** Stop at the expert's two clamp paths and the router selection sequence.

@@ -78,8 +78,8 @@
   "hash_signature": [
     "4ac6c4d56043a2763ee966ecac18fe2d",
     "67152259fc4579dcbfe74cf141b1b812",
-    "9c7ebe398faecd2478255d16c20831a3",
-    "e10d818532be75772152b7c89a6bcbf6"
+    "7f85c056c3df0ce8eb64681078ea557a",
+    "9c7ebe398faecd2478255d16c20831a3"
   ],
   "model": "stablelm-2-1_6b",
   "proven_facts": [
@@ -109,12 +109,51 @@
     "model.final_norm_kind",
     "model.tie_word_embeddings"
   ],
+  "review_verdict": {
+    "decision": "ACCEPT",
+    "gallery_manifest_sha256": "d271e4ea6f747f0edfdf4685d5917882d856a3b7f207262e1e6fcdb6f20bbac2",
+    "her_eyes_review_sha256": "ca83eeda075a0d8c95282b89bb814cc382d5c762578fc84040c773d1bcde0443",
+    "implementer": "executor",
+    "independent_review_evidence": [
+      "verification/receipts/S8-approved-geometry-owner/review.json",
+      "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+    ],
+    "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved.",
+    "model": "stablelm-2-1_6b",
+    "pixel_review_sha256": "db3aa26e61e55fd8ba5e67760719bfcd1b5e7ab0955404c749e949cefb09ff33",
+    "proven_facts_equal_prior_lock": true,
+    "report_phase": "actual-fb1-Sable-capture",
+    "report_sha256": "265412b52516131de47517e14c8c51e910435a146317cbfed36c2af672e6f138",
+    "retained_visual_suggestions": [],
+    "reviewed_at": "2026-09-08T08:30:05.815426+00:00",
+    "reviewer": "root",
+    "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+    "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+    "view_signature": [
+      {
+        "hash": "4ac6c4d56043a2763ee966ecac18fe2d",
+        "label": "architecture"
+      },
+      {
+        "hash": "67152259fc4579dcbfe74cf141b1b812",
+        "label": "architecture"
+      },
+      {
+        "hash": "7f85c056c3df0ce8eb64681078ea557a",
+        "label": "attn"
+      },
+      {
+        "hash": "9c7ebe398faecd2478255d16c20831a3",
+        "label": "ffn"
+      }
+    ]
+  },
   "source": "local",
   "superseded_hash_signature": [
     "4ac6c4d56043a2763ee966ecac18fe2d",
+    "67152259fc4579dcbfe74cf141b1b812",
     "9c7ebe398faecd2478255d16c20831a3",
-    "e10d818532be75772152b7c89a6bcbf6",
-    "f361cb06be666d23a04fe01454d6f95e"
+    "e10d818532be75772152b7c89a6bcbf6"
   ],
   "view_signature": [
     {
@@ -126,7 +165,7 @@
       "label": "architecture"
     },
     {
-      "hash": "e10d818532be75772152b7c89a6bcbf6",
+      "hash": "7f85c056c3df0ce8eb64681078ea557a",
       "label": "attn"
     },
     {

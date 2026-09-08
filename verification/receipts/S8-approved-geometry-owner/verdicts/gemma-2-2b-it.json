@@ -1,0 +1,47 @@
+{
+  "decision": "ACCEPT",
+  "reviewer": "root",
+  "implementer": "executor",
+  "reviewed_at": "2026-09-08T08:18:44.586232+00:00",
+  "model": "gemma-2-2b-it",
+  "view_signature": [
+    {
+      "label": "architecture",
+      "hash": "68570bcb6435c2ea2b437552619c855b"
+    },
+    {
+      "label": "architecture",
+      "hash": "c04b54df771bbdda0357c0ef633b605f"
+    },
+    {
+      "label": "architecture_v1",
+      "hash": "c7c4603b4cac6cce53cac6c02d226a49"
+    },
+    {
+      "label": "attn",
+      "hash": "95d96b9664bef14933b5e69bd26b59b6"
+    },
+    {
+      "label": "attn",
+      "hash": "a9d491d62b3614aebf1c972525f01990"
+    },
+    {
+      "label": "ffn",
+      "hash": "52a8b14de9f77cc647e93c81572bd05a"
+    }
+  ],
+  "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+  "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+  "report_sha256": "16ec3ee2c322bef7f3119977fa2e16bada40ecf221aa8de9ddc3d08d6822c719",
+  "gallery_manifest_sha256": "3e00fe3354d98591e56985d601ec8a78256233918ef950283a7ba4cfbc3d250e",
+  "pixel_review_sha256": "ef7192754e0a03d2d3d857afff4997b8d87f534c4eb53776f8a3073389c9ad5b",
+  "her_eyes_review_sha256": "f1224559b7e18bb03df0a119503d20ef969a4e87a0dbc7501ea149bcf016a0cd",
+  "independent_review_evidence": [
+    "verification/receipts/S8-approved-geometry-owner/review.json",
+    "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+  ],
+  "report_phase": "actual-fb1-Sable-capture",
+  "proven_facts_equal_prior_lock": true,
+  "retained_visual_suggestions": [],
+  "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved."
+}
