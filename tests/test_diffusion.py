@@ -789,7 +789,9 @@ def test_valid_synthetic_simple_cross_text_variant_retains_bounded_cells():
     assert "num_attention_heads" not in cfg and "attention_head_dim" not in cfg
     diagram = unfold(cfg)
     ir, html = diagram.to_ir(), diagram.to_html(standalone=True)
-    defaults = _unet_fact(ir, "declared_constructor_defaults")
+    default_fact = ir["extras"]["fact_provenance"]["root.denoiser.declared_constructor_defaults"]
+    assert default_fact["status"] == "class_default"
+    defaults = default_fact["value"]
     assert defaults["attention_head_dim"] == {
         "checkpoint": "omitted", "provenance": "class_default", "value": 8}
     line = "Declared class default · attention_head_dim: 8 (checkpoint omitted)"
