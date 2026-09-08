@@ -1,0 +1,31 @@
+{
+  "status": "ISOLATED_FAILED_TARGET_RETRY_PASS",
+  "actual_command": {
+    "base_commit": "5b132cd75052196fcba9ba0902e424b46283c90e",
+    "command": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+      "-m",
+      "pytest",
+      "tests/test_s7_artifacts.py::test_shadow_denominator_and_artifact_hashes_are_current",
+      "-q"
+    ],
+    "cwd": "/private/tmp/unfold-s8-approved-source-check-5b132cd",
+    "isolated_delta": "Only corrected verification/s7/matrix.json source metadata"
+  },
+  "actual_result": {
+    "elapsed_seconds": 14.186,
+    "exit_code": 0,
+    "external_pins_equal": true,
+    "source_input_pins_equal": true
+  },
+  "pytest_passed": 1,
+  "pytest_seconds": 11.34,
+  "wrapper_seconds": 14.186,
+  "source_input_before_after_equal": true,
+  "selected_external_before_after_equal": true,
+  "selected_external_entries": 60,
+  "matrix_sha256": "4b5696bcef94f08da5c95fce8b8d0f0091b50eb285e219a8673c89d72b36accd",
+  "script_sha256": "5542e514900b25b76eff762c74c4129512d7bd5f918912a601e886e5b0307851",
+  "full_verification_claimed": false,
+  "source_files_unchanged_during_packaging": true
+}

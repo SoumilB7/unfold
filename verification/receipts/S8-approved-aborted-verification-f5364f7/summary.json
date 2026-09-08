@@ -1,0 +1,27 @@
+{
+  "status": "ABORTED_AFTER_KNOWN_FOCUSED_FAILURE",
+  "commit": "f5364f7cad0cae640175f4c610b5aa8830ab2294",
+  "focused": {
+    "passed": 510,
+    "failed": 1,
+    "failure": "tests/test_s7_artifacts.py::test_shadow_denominator_and_artifact_hashes_are_current",
+    "reason": "S7 matrix dependency surface is stale; exact 19 changed corpus review-metadata fixture hashes recorded in diagnosis"
+  },
+  "authority": "PARTIAL_INTERRUPTED; no completed verdict inferred",
+  "full": "NOT_RUN",
+  "preservation": "NOT_RUN",
+  "inner_complete_receipt_present": false,
+  "outer_elapsed_seconds": 451.399162332993,
+  "outer_receipt_exit_code": null,
+  "outer_receipt_error": "KeyboardInterrupt()",
+  "launcher_exit_code_reported_by_executor": 130,
+  "static_exit_code": 0,
+  "selected_external_scope": {
+    "installed_sources": 59,
+    "cached_task_configs": 1,
+    "before_finally_equal": true
+  },
+  "global_fingerprint_verdict": "NOT_AVAILABLE; no completed inner receipt",
+  "all_six_owned_pids_gone": true,
+  "archive_source_files_unchanged": true
+}

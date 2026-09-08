@@ -1,0 +1,86 @@
+{
+  "format": "lossless-appended-gzip-v1",
+  "entries": [
+    {
+      "logical_path": "executed/run_single.py",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-approved-s7-source-refresh-f5364f7/run_single.py",
+      "stored_path": "streams/executed/run_single.py.gzip",
+      "bytes": 2663,
+      "sha256": "5542e514900b25b76eff762c74c4129512d7bd5f918912a601e886e5b0307851",
+      "stored_bytes": 1214,
+      "stored_sha256": "a1d2bacd1cd5e8e0c98a1a2b22547861b66a4203056e386bdfb90f6e7974dfbb"
+    },
+    {
+      "logical_path": "input/verification/s7/matrix.json",
+      "source_path": "/private/tmp/unfold-s8-approved-source-check-5b132cd/verification/s7/matrix.json",
+      "stored_path": "streams/input/verification/s7/matrix.json.gzip",
+      "bytes": 200657,
+      "sha256": "4b5696bcef94f08da5c95fce8b8d0f0091b50eb285e219a8673c89d72b36accd",
+      "stored_bytes": 36088,
+      "stored_sha256": "17880040f105ce9be8fda45b563f524452465640e8eea1ca72cf1e362be03bae"
+    },
+    {
+      "logical_path": "run/command.json",
+      "source_path": "/private/tmp/unfold-s8-approved-source-single-5b132cd/command.json",
+      "stored_path": "streams/run/command.json.gzip",
+      "bytes": 425,
+      "sha256": "0ddaf348be45fd9064ba22532ecb8721e94988e9e13da362d2e233c572091489",
+      "stored_bytes": 305,
+      "stored_sha256": "6c9531aa1746a30b71ff116ada56777824b07d9cbf5089181bf8694994e179b9"
+    },
+    {
+      "logical_path": "run/external-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-source-single-5b132cd/external-after.json",
+      "stored_path": "streams/run/external-after.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "run/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-source-single-5b132cd/external-before.json",
+      "stored_path": "streams/run/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "run/pytest.log",
+      "source_path": "/private/tmp/unfold-s8-approved-source-single-5b132cd/pytest.log",
+      "stored_path": "streams/run/pytest.log.gzip",
+      "bytes": 99,
+      "sha256": "ef5fc1682e9490eca7922691367cdf5df54d9d501d1f954564765245881af378",
+      "stored_bytes": 50,
+      "stored_sha256": "89b113b48a1eb19199bfd9bd6e8057b311b2bada654b135a2ec0161ed5275006"
+    },
+    {
+      "logical_path": "run/result.json",
+      "source_path": "/private/tmp/unfold-s8-approved-source-single-5b132cd/result.json",
+      "stored_path": "streams/run/result.json.gzip",
+      "bytes": 116,
+      "sha256": "f5c931ed61ac6f607523019e7fe8ce8df929191e00ab0cadf4e2226f732f2b87",
+      "stored_bytes": 106,
+      "stored_sha256": "7da2516ef596d4bf82553a0e6fd6ca86166913d0b4d8940e13012cc89aac0d4a"
+    },
+    {
+      "logical_path": "run/source-input-after.json",
+      "source_path": "/private/tmp/unfold-s8-approved-source-single-5b132cd/source-input-after.json",
+      "stored_path": "streams/run/source-input-after.json.gzip",
+      "bytes": 138636,
+      "sha256": "3d35016db6386802f7d8f78b756dff0fa79e846d0ceefe7281fb5be367f38099",
+      "stored_bytes": 42326,
+      "stored_sha256": "d748e424e8fe992284877d0b0d63ddb01b2f325e8ab53a3cbcbcafe33bd9e250"
+    },
+    {
+      "logical_path": "run/source-input-before.json",
+      "source_path": "/private/tmp/unfold-s8-approved-source-single-5b132cd/source-input-before.json",
+      "stored_path": "streams/run/source-input-before.json.gzip",
+      "bytes": 138636,
+      "sha256": "3d35016db6386802f7d8f78b756dff0fa79e846d0ceefe7281fb5be367f38099",
+      "stored_bytes": 42326,
+      "stored_sha256": "d748e424e8fe992284877d0b0d63ddb01b2f325e8ab53a3cbcbcafe33bd9e250"
+    }
+  ]
+}

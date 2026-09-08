@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "streams": 9,
+  "original_run_files": 7,
+  "executed_script_files": 1,
+  "exact_matrix_input_files": 1,
+  "unique_paths": true,
+  "every_decompressed_stream_compared_byte_for_byte": true,
+  "artifact_map_sha256": "b701ca2570007e8fa246739d22b25d74bb3c2e46f7da9be48d3fe31da2a81d13"
+}

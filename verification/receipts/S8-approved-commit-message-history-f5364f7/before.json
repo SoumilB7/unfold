@@ -1,0 +1,5 @@
+{
+  "actual_aborted_verification_commit": "f5364f7cad0cae640175f4c610b5aa8830ab2294",
+  "tree": "527ebd34cd5db442d21655d4e19bce1ea7e16463",
+  "reason": "Add required explicit in-repo receipt citations to own unpublished commit message only; no tree change authorized."
+}
