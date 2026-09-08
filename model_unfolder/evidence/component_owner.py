@@ -17,6 +17,7 @@ an architectural owner.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import cached_property
 from typing import Mapping
 
 from .program_index import (
@@ -232,18 +233,27 @@ class OwnerGraph:
             yield node
             stack.extend(reversed(node.children))
 
+    @cached_property
+    def _address_index(self):
+        """Derived call-local lookups; not fields, evidence or fingerprints."""
+        occurrences = {}
+        symbols = {}
+        for node in self.walk():
+            occurrences.setdefault(node.occurrence, node)
+            symbols.setdefault(node.symbol, []).append(node)
+        return occurrences, {key: tuple(value) for key, value in symbols.items()}
+
     def node_for(self, occurrence: OwnerOccurrenceId) -> OwnerNode | None:
         """Lookup by occurrence identity only; class-symbol lookup is unsafe."""
         if not isinstance(occurrence, OwnerOccurrenceId):
             raise TypeError("node_for requires OwnerOccurrenceId; use nodes_for_symbol")
-        return next((node for node in self.walk()
-                     if node.occurrence == occurrence), None)
+        return self._address_index[0].get(occurrence)
 
     def nodes_for_symbol(self, symbol: SymbolId) -> tuple[OwnerNode, ...]:
         """Return every occurrence of a class symbol without choosing one."""
         if not isinstance(symbol, SymbolId):
             raise TypeError("nodes_for_symbol requires SymbolId")
-        return tuple(node for node in self.walk() if node.symbol == symbol)
+        return self._address_index[1].get(symbol, ())
 
 
 @dataclass(frozen=True)
@@ -371,6 +381,22 @@ def resolve_owner_graph(
         raise ValueError("root_symbol must name a class in this ProgramIndex")
     if max_depth < 1:
         raise ValueError("max_depth must be positive")
+    # Only canonical immutable arguments enter this index-owned memo. Preserve
+    # supplied prefix order: it is also the order of returned root bindings.
+    # Other Mapping/value shapes retain their original validation behavior.
+    memo = index._call_memo.setdefault("owner_graph", {})
+    key = None
+    if type(max_depth) is int and (
+            root_param_prefixes is None or
+            (type(root_param_prefixes) is dict and all(
+                isinstance(name, str) and isinstance(prefix, tuple)
+                and all(isinstance(part, str) for part in prefix)
+                for name, prefix in root_param_prefixes.items()))):
+        prefixes = (None if root_param_prefixes is None
+                    else tuple(root_param_prefixes.items()))
+        key = (root_symbol, prefixes, max_depth)
+        if key in memo:
+            return memo[key]
     resolver = _Resolver(index, max_depth)
     bindings, unresolved = resolver.root_bindings(root_symbol, root_param_prefixes)
     occurrence = OwnerOccurrenceId(root_symbol)
@@ -386,7 +412,10 @@ def resolve_owner_graph(
         ancestor_symbols=(),
         inherited_unresolved=unresolved,
     )
-    return OwnerGraph(root=root, conflicts=tuple(resolver.conflicts))
+    graph = OwnerGraph(root=root, conflicts=tuple(resolver.conflicts))
+    if key is not None:
+        memo[key] = graph
+    return graph
 
 
 def resolve_construction_candidate_symbols(
@@ -552,11 +581,10 @@ class _Resolver:
         unique = {site.site_id: site
                   for site in self.program_index.construction_sites_of(owner_symbol)
                   if site.target_kind in {"field", "element"}}
-        for container in self.program_index.containers:
-            if container.owner == owner_symbol:
-                for site in container.elements:
-                    if site.target_kind in {"field", "element"}:
-                        unique.setdefault(site.site_id, site)
+        for container in self.program_index.containers_of(owner_symbol):
+            for site in container.elements:
+                if site.target_kind in {"field", "element"}:
+                    unique.setdefault(site.site_id, site)
         return tuple(sorted(unique.values(), key=_site_sort_key))
 
     def _rival_field_sites(self, sites, parent_occurrence, unresolved) -> set[str]:
@@ -809,8 +837,7 @@ class _Resolver:
         if not chain:
             return ()
         alias, *attributes = chain
-        imports = tuple(record for record in self.program_index.imports
-                        if record.source == source and record.alias == alias)
+        imports = self.program_index.imports_aliased(source, alias)
         matches: list[SymbolId] = []
         for record in imports:
             parts = tuple(part for part in record.target.lstrip(".").split(".") if part)
@@ -819,7 +846,7 @@ class _Resolver:
                 continue
             class_name = parts[-1]
             module_name = parts[-2] if len(parts) >= 2 else ""
-            for class_record in self.program_index.classes:
+            for class_record in self.program_index.classes_at_qualified_name(class_name):
                 path_stem = _module_stem(class_record.symbol.source.canonical_path)
                 if class_record.symbol.qualified_name == class_name and \
                         (not module_name or path_stem == module_name):

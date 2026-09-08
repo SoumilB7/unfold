@@ -217,20 +217,16 @@ class ConstructorEnvironments:
                            for item in self.callables)
         if len(identities) != len(set(identities)):
             raise ValueError("each exact neutral helper route is unique")
-        indexed_calls = {
-            call for item in self.index.callables
-            for call in self.index.calls_in(item.symbol)
-        }
         reachable = {item.callable_symbol for item in self.callables}
         candidate = self.seed.candidate_symbol
         if len(self.unresolved_calls) != len(set(self.unresolved_calls)) \
-                or any(item not in indexed_calls
+                or any(not self.index.contains_callable_call(item)
                        or item.enclosing_callable not in reachable
                        or _self_helper_symbol(candidate, item) is None
                        for item in self.unresolved_calls):
             raise ValueError("unresolved neutral calls belong to the carried index")
         if any(self.index.callable_by_symbol(item.callable_symbol) is None
-               or any(call not in indexed_calls for call in item.helper_route)
+               or any(not self.index.contains_callable_call(call) for call in item.helper_route)
                for item in self.callables):
             raise ValueError("neutral environments are closed by the carried index")
 
@@ -324,20 +320,16 @@ class SelectedConstructorEnvironments:
                            for item in self.callables)
         if len(identities) != len(set(identities)):
             raise ValueError("each exact helper route has one environment")
-        indexed_calls = {
-            call for item in self.index.callables
-            for call in self.index.calls_in(item.symbol)
-        }
         candidate = self.operands[0].candidate_symbol
         reachable_symbols = {item.callable_symbol for item in self.callables}
         if len(self.unresolved_calls) != len(set(self.unresolved_calls)) \
-                or any(item not in indexed_calls
+                or any(not self.index.contains_callable_call(item)
                        or item.enclosing_callable not in reachable_symbols
                        or _self_helper_symbol(candidate, item) is None
                        for item in self.unresolved_calls):
             raise ValueError("unresolved helper calls belong to the carried index")
         if any(self.index.callable_by_symbol(item.callable_symbol) is None
-               or any(call not in indexed_calls for call in item.helper_route)
+               or any(not self.index.contains_callable_call(call) for call in item.helper_route)
                for item in self.callables):
             raise ValueError("callable environments are closed by the carried index")
 

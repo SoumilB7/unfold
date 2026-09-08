@@ -451,7 +451,9 @@ def _construct(request: BuildRequest) -> tuple[Any, str]:
 
 
 def _construct_from_import(request: BuildRequest) -> tuple[Any, str]:
-    import torch
+    from physics.cache_dependencies import runtime_bootstrap
+    with runtime_bootstrap():
+        import torch
 
     factory = _resolve(request.factory_module, request.factory_qualname)
     config = _config_object(request)
@@ -470,11 +472,13 @@ def _class_ref(cls: type) -> ResolvedClass:
     return ResolvedClass(cls.__module__, cls.__qualname__)
 
 
-def _package_for(module_name: str) -> PackageVersion:
+def _package_for(module_name: str, *, distributions=None) -> PackageVersion:
     top = module_name.split(".", 1)[0]
     if top == "builtins":
         return PackageVersion("python", platform.python_version())
-    names = sorted(importlib.metadata.packages_distributions().get(top, ()))
+    if distributions is None:
+        distributions = importlib.metadata.packages_distributions()
+    names = sorted(distributions.get(top, ()))
     for name in names:
         try:
             return PackageVersion(name, importlib.metadata.version(name))
@@ -645,7 +649,14 @@ def inventory_model(model: Any, request: BuildRequest, constructor_used: str,
         aliases.setdefault(id(parameter), []).append(name)
     alias_rows = tuple(ParameterAliasGroup(tuple(sorted(names)))
                        for names in aliases.values() if len(set(names)) > 1)
-    packages = tuple(sorted({_package_for(c.__module__) for c in classes},
+    # Distribution discovery walks installed metadata. Its mapping is shared
+    # only within this completed construction snapshot; version/fallback
+    # resolution remains the same for every class module.
+    distributions = (importlib.metadata.packages_distributions()
+                     if any(c.__module__.split(".", 1)[0] != "builtins" for c in classes)
+                     else {})
+    packages = tuple(sorted({_package_for(c.__module__, distributions=distributions)
+                             for c in classes},
                             key=lambda row: (row.package, row.version)))
     sources = tuple(sorted({row for c in classes if (row := _source_for_class(c))},
                            key=lambda row: (row.module, row.path, row.sha256)))
@@ -677,8 +688,12 @@ def _failure(kind: str, stage: str, exc: BaseException) -> InventoryResult:
 
 
 def _worker(request_path: Path, result_path: Path) -> int:
+    from physics.worker_timing import begin_worker_timing, finish_worker_timing
+    worker_clock = begin_worker_timing()
     _write_network_attestation()
     _install_network_guard()
+    from physics.cache_dependencies import begin_capture, finish_capture
+    cache_capture = begin_capture((request_path, result_path))
     try:
         request = BuildRequest.from_dict(json.loads(request_path.read_text()))
     except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError) as exc:
@@ -689,8 +704,10 @@ def _worker(request_path: Path, result_path: Path) -> int:
         try:
             from physics.framework_primitives import capture_framework_types
             from physics.attribute_bindings import capture_attribute_lookup_types
-            captured = capture_framework_types() if request.capture_framework_primitives else None
-            lookups = capture_attribute_lookup_types() if request.attribute_lookups else None
+            from physics.cache_dependencies import runtime_bootstrap
+            with runtime_bootstrap():
+                captured = capture_framework_types() if request.capture_framework_primitives else None
+                lookups = capture_attribute_lookup_types() if request.attribute_lookups else None
             model, used = _construct(request)
             result = InventoryResult("ok", inventory=inventory_model(
                 model, request, used, framework_types=captured, attribute_lookup_types=lookups))
@@ -714,6 +731,9 @@ def _worker(request_path: Path, result_path: Path) -> int:
         except OSError:
             pass
         return 2
+    finally:
+        finish_capture(cache_capture)
+        finish_worker_timing(worker_clock)
 
 
 def _kill_group(process: subprocess.Popen) -> None:
@@ -756,6 +776,7 @@ def _network_isolated_command(command: list[str], env: dict[str, str]) -> list[s
                     "TOKENIZERS_PARALLELISM", "UNFOLD_NETWORK_SANDBOX",
                     _ATTEST_PATH, _ATTEST_NONCE, _ATTEST_PARENT,
                     _ATTEST_UID, _ATTEST_GID, _ATTEST_ACK,
+                    "UNFOLD_EVIDENCE_DEPENDENCIES_PATH", "UNFOLD_WORKER_TIMING_PATH",
                 ) if key in env
             }
             return [
@@ -846,6 +867,7 @@ def _write_network_attestation() -> None:
 
 def _require_network_attestation(
     expected: tuple[Path, Path, str, str, int, int] | None,
+    *, before_release=None,
 ) -> None:
     """Refuse to launder wrapper failure as a typed model failure."""
     if expected is None:
@@ -871,6 +893,11 @@ def _require_network_attestation(
             or row.get("euid") != uid or row.get("egid") != gid
             or row.get("euid") == 0 or row.get("egid") == 0):
         raise RuntimeError("Linux network namespace attestation is invalid")
+    if before_release is not None:
+        try:
+            before_release(row)
+        except Exception:
+            pass  # Optional timing identity cannot change network authorization.
     path.unlink()
     ack.write_text("accepted", encoding="utf-8")
 
@@ -878,6 +905,7 @@ def _require_network_attestation(
 def _authorize_network_worker(
     process: subprocess.Popen,
     expected: tuple[Path, Path, str, str, int, int] | None,
+    *, before_release=None,
 ) -> None:
     """Validate and release the isolated worker before model code can run.
 
@@ -889,7 +917,10 @@ def _authorize_network_worker(
     failure.
     """
     try:
-        _require_network_attestation(expected)
+        if before_release is None:
+            _require_network_attestation(expected)
+        else:
+            _require_network_attestation(expected, before_release=before_release)
     except (OSError, RuntimeError, ValueError):
         _kill_group(process)
         try:
@@ -906,7 +937,10 @@ def _communicate_bounded(process: subprocess.Popen, *, timeout: float,
 
     Reading concurrently is part of the isolation contract: an imported
     constructor that writes more than an OS pipe buffer must not deadlock the
-    worker and masquerade as a timeout.
+    worker and masquerade as a timeout. RSS censuses have at most a 100ms
+    wait between them (previously 20ms), plus census overhead; this is not a
+    kernel address-space limit or a true peak measurement. Waiting shortens to the remaining
+    wall deadline; timed wait returns when process exit is observed.
     """
     tails = {"stdout": "", "stderr": ""}
 
@@ -935,10 +969,16 @@ def _communicate_bounded(process: subprocess.Popen, *, timeout: float,
     except ImportError as exc:
         _kill_group(process)
         return finish(f"monitor_unavailable:{exc}")
-    started = time.monotonic()
-    root = psutil.Process(process.pid)
+    deadline = time.monotonic() + timeout
+    try:
+        root = psutil.Process(process.pid)
+    except psutil.NoSuchProcess:
+        return finish(None)
+    except (psutil.AccessDenied, PermissionError) as exc:
+        _kill_group(process)
+        return finish(f"monitor_unavailable:{exc}")
     while process.poll() is None:
-        if time.monotonic() - started > timeout:
+        if time.monotonic() >= deadline:
             _kill_group(process)
             return finish("timeout")
         try:
@@ -953,12 +993,25 @@ def _communicate_bounded(process: subprocess.Popen, *, timeout: float,
         if rss > memory_limit:
             _kill_group(process)
             return finish(f"memory:{rss}")
-        time.sleep(0.02)
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            _kill_group(process)
+            return finish("timeout")
+        try:
+            process.wait(timeout=min(0.1, remaining))
+        except subprocess.TimeoutExpired:
+            pass
     return finish(None)
 
 
 def inventory_in_subprocess(request: BuildRequest) -> InventoryResult:
-    """Run one inventory with a wall timeout, address-space cap, and no network."""
+    """Run one inventory with a wall timeout, sampled process-tree RSS cap, and no network."""
+    from physics.result_cache import ResultCache, _notice
+    from physics.worker_timing import TIMING_ENV, bind_live_worker, read_bound_worker_timing
+    cache = ResultCache("inventory", request)
+    cached = cache.lookup(InventoryResult.from_dict)
+    if cached is not None:
+        return cached
     with tempfile.TemporaryDirectory(prefix="unfold-s6-") as tmp:
         root = Path(tmp)
         request_path, result_path = root / "request.json", root / "result.json"
@@ -967,18 +1020,38 @@ def inventory_in_subprocess(request: BuildRequest) -> InventoryResult:
         env.update({"PYTHONHASHSEED": "0", "HF_HUB_OFFLINE": "1",
                     "TRANSFORMERS_OFFLINE": "1", "DIFFUSERS_OFFLINE": "1",
                     "TOKENIZERS_PARALLELISM": "false"})
+        timing_path = root / "worker-timing.json"
+        env[TIMING_ENV] = str(timing_path)
+        cache.prepare_child(root, env)
         attestation = _prepare_network_attestation(root, env)
         cmd = [sys.executable, "-m", "physics.instance_inventory", "--worker",
                str(request_path), str(result_path)]
+        worker_command = tuple(cmd)
         cmd = _network_isolated_command(cmd, env)
+        supervised_start, parent_cpu_start = time.monotonic(), time.process_time()
         process = subprocess.Popen(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
             encoding="utf-8", errors="replace",
             env=env, start_new_session=True)
-        _authorize_network_worker(process, attestation)
+        binding = {'status': 'bound', 'worker_pid': process.pid, 'wrapper_pid': process.pid,
+                   'assurance': 'direct owned Popen identity; no persistent wrapper selected'}
+        if attestation is not None:
+            binding = {'status': 'unavailable', 'reason': 'live wrapper worker not yet bound'}
+            def bind_before_release(row):
+                nonlocal binding
+                binding = bind_live_worker(process, worker_command, row)
+            _authorize_network_worker(process, attestation, before_release=bind_before_release)
+        else:
+            _authorize_network_worker(process, attestation)
         stdout, stderr, termination = _communicate_bounded(
             process, timeout=request.timeout_seconds,
             memory_limit=request.memory_limit_bytes)
+        supervised_wall = time.monotonic() - supervised_start
+        parent_cpu = time.process_time() - parent_cpu_start
+        timing = read_bound_worker_timing(timing_path, binding)
+        _notice('inventory', 'worker', 'fresh_supervised_execution', process_pid=process.pid,
+                supervised_wall_seconds=supervised_wall, parent_cpu_seconds=parent_cpu,
+                child_timing=timing)
         if termination == "timeout":
             return InventoryResult("failed", failure=Failure(
                 "TimeoutExpired", "construct",
@@ -1005,8 +1078,10 @@ def inventory_in_subprocess(request: BuildRequest) -> InventoryResult:
             result = InventoryResult("failed", failure=Failure(
                 "MemoryLimitExceeded" if memory_hint else "WorkerFailed", "worker_exit",
                 f"worker exited {process.returncode} without a typed result"))
-        return dataclasses.replace(result, stdout=stdout[-_CAPTURE_LIMIT:],
-                                   stderr=stderr[-_CAPTURE_LIMIT:])
+        result = dataclasses.replace(result, stdout=stdout[-_CAPTURE_LIMIT:],
+                                     stderr=stderr[-_CAPTURE_LIMIT:])
+        cache.store(result)
+        return result
 
 
 def main(argv: list[str] | None = None) -> int:

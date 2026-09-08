@@ -1,0 +1,33 @@
+{
+  "decision": "ACCEPT_ACTUAL_FRESH_PROCESS_INVENTORY_HIT",
+  "maps": {
+    "source": {
+      "count": 625,
+      "equal": true
+    },
+    "external": {
+      "count": 60,
+      "equal": true
+    },
+    "inputs": {
+      "count": 5,
+      "equal": true
+    }
+  },
+  "same_source_as_accepted_capture": true,
+  "cache_files": 2,
+  "cache_before_after_and_retained_bytes_equal": true,
+  "entry_sha256": "89a14db7eea96c4e11a36d303b5c12f9de06c9a5e4c61df6fbb5b10a0d11c64b",
+  "request_key": "9b17d8ed6e3e479b62446787615b77c628eb1c5b5ccfafba0dfe362e94a8cbc1",
+  "full_result_equal_to_capture": true,
+  "original_inventory_equal": true,
+  "inventory_workers": 0,
+  "finite_metadata_probe_workers": 1,
+  "observed_seconds": 9.005158917047083,
+  "limits": [
+    "Inventory-only exact historical result reuse, not new model execution",
+    "9.005158917s single diagnostic already exceeds9s; full public unfold has additional work",
+    "No cold/warm median or end-to-end budget acceptance",
+    "Historical worker evidence retained; finite metadata output reobserved under OS boundary"
+  ]
+}

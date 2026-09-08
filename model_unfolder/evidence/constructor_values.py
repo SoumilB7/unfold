@@ -232,11 +232,8 @@ def canonical_construction_target(
             or not isinstance(site, ConstructionSite) \
             or not isinstance(symbol, SymbolId):
         raise TypeError("canonical target requires index/site/symbol")
-    sites = tuple(dict.fromkeys((
-        *index.construction_sites,
-        *(element for record in index.containers for element in record.elements),
-    )))
-    if site not in sites or index.class_by_symbol(symbol) is None:
+    if not index.contains_construction_site(site) \
+            or index.class_by_symbol(symbol) is None:
         return None
     try:
         return CanonicalConstructionTarget(site, symbol, canonical_import)
@@ -468,16 +465,13 @@ def _call_shape_failure(frame):
 
 
 def _frame_route_belongs_to_index(index, frame):
-    sites = set(index.construction_sites)
-    sites.update(element for record in index.containers
-                 for element in record.elements)
     seen = set()
     current = frame
     while current is not None:
         if id(current) in seen:
             return False
         seen.add(id(current))
-        if current.target.site not in sites \
+        if not index.contains_construction_site(current.target.site) \
                 or index.class_by_symbol(current.target.symbol) is None \
                 or index.callable_by_symbol(current.constructor.symbol) \
                 != current.constructor:

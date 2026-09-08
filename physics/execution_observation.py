@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import time
 import tempfile
 from typing import Any, Mapping
 
@@ -391,8 +392,12 @@ def _is_data_dependent(exc: BaseException) -> bool:
 
 
 def _worker(request_path: Path, recipe_path: Path, result_path: Path) -> int:
+    from physics.worker_timing import begin_worker_timing, finish_worker_timing
+    worker_clock = begin_worker_timing()
     _write_network_attestation()
     _install_network_guard()
+    from physics.cache_dependencies import begin_capture, finish_capture
+    cache_capture = begin_capture((request_path, recipe_path, result_path))
     try:
         request = BuildRequest.from_dict(json.loads(request_path.read_text()))
         recipe = ExecutionRecipe.from_dict(json.loads(recipe_path.read_text()))
@@ -447,11 +452,20 @@ def _worker(request_path: Path, recipe_path: Path, result_path: Path) -> int:
         except OSError:
             pass
         return 2
+    finally:
+        finish_capture(cache_capture)
+        finish_worker_timing(worker_clock)
 
 
 def observe_in_subprocess(request: BuildRequest,
                           recipe: ExecutionRecipe) -> ObservationResult:
     """Execute one named recipe within the same bounded isolation as inventory."""
+    from physics.result_cache import ResultCache, _notice
+    from physics.worker_timing import TIMING_ENV, bind_live_worker, read_bound_worker_timing
+    cache = ResultCache("observation", request, recipe)
+    cached = cache.lookup(ObservationResult.from_dict)
+    if cached is not None:
+        return cached
     with tempfile.TemporaryDirectory(prefix="unfold-s6-exec-") as tmp:
         root = Path(tmp)
         request_path = root / "request.json"
@@ -463,18 +477,38 @@ def observe_in_subprocess(request: BuildRequest,
         env.update({"PYTHONHASHSEED": "0", "HF_HUB_OFFLINE": "1",
                     "TRANSFORMERS_OFFLINE": "1", "DIFFUSERS_OFFLINE": "1",
                     "TOKENIZERS_PARALLELISM": "false"})
+        timing_path = root / "worker-timing.json"
+        env[TIMING_ENV] = str(timing_path)
+        cache.prepare_child(root, env)
         attestation = _prepare_network_attestation(root, env)
         command = [sys.executable, "-m", "physics.execution_observation", "--worker",
                    str(request_path), str(recipe_path), str(result_path)]
+        worker_command = tuple(command)
         command = _network_isolated_command(command, env)
+        supervised_start, parent_cpu_start = time.monotonic(), time.process_time()
         process = subprocess.Popen(
             command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
             encoding="utf-8", errors="replace",
             env=env, start_new_session=True)
-        _authorize_network_worker(process, attestation)
+        binding = {'status': 'bound', 'worker_pid': process.pid, 'wrapper_pid': process.pid,
+                   'assurance': 'direct owned Popen identity; no persistent wrapper selected'}
+        if attestation is not None:
+            binding = {'status': 'unavailable', 'reason': 'live wrapper worker not yet bound'}
+            def bind_before_release(row):
+                nonlocal binding
+                binding = bind_live_worker(process, worker_command, row)
+            _authorize_network_worker(process, attestation, before_release=bind_before_release)
+        else:
+            _authorize_network_worker(process, attestation)
         stdout, stderr, termination = _communicate_bounded(
             process, timeout=request.timeout_seconds,
             memory_limit=request.memory_limit_bytes)
+        supervised_wall = time.monotonic() - supervised_start
+        parent_cpu = time.process_time() - parent_cpu_start
+        timing = read_bound_worker_timing(timing_path, binding)
+        _notice('observation', 'worker', 'fresh_supervised_execution', process_pid=process.pid,
+                supervised_wall_seconds=supervised_wall, parent_cpu_seconds=parent_cpu,
+                child_timing=timing)
         if termination == "timeout":
             return ObservationResult("failed", failure=Failure(
                 "TimeoutExpired", "execute",
@@ -505,8 +539,10 @@ def observe_in_subprocess(request: BuildRequest,
                                        failure=_worker_exit_failure(detail))
         if result.recipe is None:
             result = dataclasses.replace(result, recipe=recipe)
-        return dataclasses.replace(result, stdout=stdout[-_CAPTURE_LIMIT:],
-                                   stderr=stderr[-_CAPTURE_LIMIT:])
+        result = dataclasses.replace(result, stdout=stdout[-_CAPTURE_LIMIT:],
+                                     stderr=stderr[-_CAPTURE_LIMIT:])
+        cache.store(result)
+        return result
 
 
 def _worker_exit_failure(detail: str) -> Failure:

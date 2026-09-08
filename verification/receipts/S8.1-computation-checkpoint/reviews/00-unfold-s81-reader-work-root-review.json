@@ -1,0 +1,21 @@
+{
+  "verdict": "ACCEPT bounded source; runtime pending",
+  "reviewer": "root",
+  "author": "independent_review agent; not self-reviewed",
+  "files": {
+    "model_unfolder/evidence/unet_selected_spatial.py": "66448a545002365bc3a4bdca212ce70be902c8b07de54138eb5f503452d069bb",
+    "model_unfolder/evidence/unet_call_binding.py": "c46b3203008c17fdac2e2835a9325ed2938997dffd97ef4aca78f6859a97b243",
+    "model_unfolder/evidence/unet_lookup_closure.py": "465a09a10d0ed469a471a2d05705b8209210d0bae650c9a57b9b66897320acbd",
+    "tests/test_s81_reader_work.py": "55c9e35c85061729bd30d7a4bff986fedb8ff5c1aff5117181010ccb8628fad3"
+  },
+  "findings": [
+    "Four exact SymbolId/source-keyed ordered attribute bucket substitutions retain original predicates.",
+    "Existing spatial environment reused; guard and numeric evaluators copy it before local writes.",
+    "Controls preserve foreign-source separation, own-write/new-index refusal, and true/false/unknown/fresh guard behavior with unresolved route evidence."
+  ],
+  "limits": [
+    "No new tests or models run by root.",
+    "Old cumulative profile predates accepted hashes; no current savings claimed.",
+    "Executor must run focused controls and final full public IR comparison."
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "before_path": "/private/tmp/unfold-s81-static-candidate-788abbd/model_unfolder/evidence/program_index.py",
+  "before_sha256": "c2276435f63f2406a2bdd7be7733b91de0c83e96d7369ea56a1f995bdf6d61f3",
+  "after_sha256": "8bb4fe466996dd9b45d1daeb82e0f4490c8f66b1490b89dfc68ac5a7b7f79c44",
+  "all_AST_outside_three_classes_equal": true
+}

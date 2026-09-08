@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_s81_latency.py::test_host_telemetry_is_context_with_explicit_unavailability"
+  ],
+  "returncode": 0,
+  "wall_seconds": 0.6884535420686007,
+  "source_before": {
+    "scripts/profile_s81_latency.py": "4e2ca1c6afaa385a655a310e80e2c828a9ee54fe111e065d51ad9886f52429ac",
+    "tests/test_s81_latency.py": "ef277fce279620e06905fcc660d2211c42d69afdab527008e2209868a0409b88"
+  },
+  "source_after": {
+    "scripts/profile_s81_latency.py": "4e2ca1c6afaa385a655a310e80e2c828a9ee54fe111e065d51ad9886f52429ac",
+    "tests/test_s81_latency.py": "ef277fce279620e06905fcc660d2211c42d69afdab527008e2209868a0409b88"
+  },
+  "owned_sources_unchanged": true,
+  "pin_scope": "Only stable runner and test files; concurrent cache source edits excluded.",
+  "scope": "One pure telemetry unit; no model, timing campaign, or performance assertion."
+}

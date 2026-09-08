@@ -61,7 +61,7 @@ import ast
 import hashlib
 import os
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from functools import cached_property, lru_cache
 
 
@@ -93,6 +93,20 @@ class SourceId:
     external: bool = False
     external_provenance: str = ""
 
+    @cached_property
+    def _structural_hash(self) -> int:
+        """Exact process-local field-tuple hash; never a source fingerprint."""
+        return hash((self.canonical_path, self.content_fingerprint, self.component_key,
+                     self.external, self.external_provenance))
+
+    def __hash__(self) -> int:
+        return self._structural_hash
+
+    def __getstate__(self) -> dict:
+        # Recompute salted derived state after pickle/deepcopy/replace.
+        return {key: value for key, value in self.__dict__.items()
+                if key != "_structural_hash"}
+
 
 @dataclass(frozen=True)
 class SymbolId:
@@ -116,6 +130,19 @@ class SourceSpan:
     col: int = 0
     end_line: int = 0
     end_col: int = 0
+
+    @cached_property
+    def _structural_hash(self) -> int:
+        """Exact process-local field-tuple hash; never a source fingerprint."""
+        return hash((self.source, self.line, self.col, self.end_line, self.end_col))
+
+    def __hash__(self) -> int:
+        return self._structural_hash
+
+    def __getstate__(self) -> dict:
+        # Recompute salted derived state after pickle/deepcopy/replace.
+        return {key: value for key, value in self.__dict__.items()
+                if key != "_structural_hash"}
 
 
 @dataclass(frozen=True)
@@ -269,6 +296,20 @@ class ExprNode:
     keyword_children: tuple = ()  # tuple[(str, ExprNode)]
     span: SourceSpan | None = None
     source_segment: str = ""      # DIAGNOSTIC ONLY — never a query surface
+
+    @cached_property
+    def _structural_hash(self) -> int:
+        """Exact process-local field-tuple hash; never a source fingerprint."""
+        return hash((self.kind, self.name, self.const_value, self.operator, self.children,
+                     self.keyword_children, self.span, self.source_segment))
+
+    def __hash__(self) -> int:
+        return self._structural_hash
+
+    def __getstate__(self) -> dict:
+        # Recompute salted derived state after pickle/deepcopy/replace.
+        return {key: value for key, value in self.__dict__.items()
+                if key != "_structural_hash"}
 
 
 # --------------------------------------------------------------------------- #
@@ -2651,6 +2692,27 @@ class ProgramIndex:
     fingerprint: str = ""
 
     @cached_property
+    def _structural_hash(self) -> int:
+        """The exact dataclass field hash, computed once for this immutable index.
+
+        This is Python's process-local hash, never a provenance fingerprint.
+        Equality still compares the complete declared fields, including when
+        two indexes have the same fingerprint string or colliding hashes.
+        """
+        return hash(tuple(
+            getattr(self, item.name) for item in fields(ProgramIndex)
+            if (item.compare if item.hash is None else item.hash)))
+
+    def __hash__(self) -> int:
+        return self._structural_hash
+
+    def __getstate__(self) -> dict:
+        # Pickle/deepcopy must not transport salted hashes or call-local query
+        # results. Recompute all derived state from the receiving index fields.
+        return {key: value for key, value in self.__dict__.items()
+                if key not in {"_structural_hash", "_address_index", "_call_memo"}}
+
+    @cached_property
     def _call_memo(self) -> dict:
         """Call-local memo tables for pure address queries.
 
@@ -2695,6 +2757,14 @@ class ProgramIndex:
                 lambda item: item.source_id.component_key),
             "classes_in": grouped(
                 self.classes, lambda item: item.symbol.source),
+            "classes_at_qualified_name": grouped(
+                self.classes, lambda item: item.symbol.qualified_name),
+            "imports_aliased": grouped(
+                self.imports, lambda item: (item.source, item.alias)),
+            "containers_of": grouped(
+                self.containers, lambda item: item.owner),
+            "attribute_accesses_in": grouped(
+                self.attribute_accesses, lambda item: item.enclosing_callable),
             "module_bindings_in": grouped(
                 self.module_bindings, lambda item: item.source),
             "class_by_symbol": first(
@@ -2712,6 +2782,11 @@ class ProgramIndex:
             "construction_sites_in": grouped(
                 self.construction_sites,
                 lambda item: item.enclosing_callable),
+            "construction_site_records": grouped(
+                (*self.construction_sites,
+                 *(site for container in self.containers
+                   for site in container.elements)),
+                lambda item: item.site_id),
             "calls_in": {
                 address: tuple(sorted(
                     values, key=lambda item: item.lexical_order))
@@ -2749,6 +2824,37 @@ class ProgramIndex:
 
     def classes_in(self, source: SourceId) -> tuple:
         return self._address_index["classes_in"].get(source, ())
+
+    def classes_at_qualified_name(self, qualified_name: str) -> tuple:
+        """Exact lexical name candidates, retaining every source and rival."""
+        return self._address_index["classes_at_qualified_name"].get(qualified_name, ())
+
+    def imports_aliased(self, source: SourceId, alias: str) -> tuple:
+        return self._address_index["imports_aliased"].get((source, alias), ())
+
+    def containers_of(self, owner: SymbolId) -> tuple:
+        return self._address_index["containers_of"].get(owner, ())
+
+    def attribute_accesses_in(self, callable_symbol: SymbolId) -> tuple:
+        return self._address_index["attribute_accesses_in"].get(callable_symbol, ())
+
+    def contains_callable_call(self, call: CallObservation) -> bool:
+        """Full call-record membership in the indexed callable denominator."""
+        if not isinstance(call, CallObservation):
+            raise TypeError("call membership requires a CallObservation")
+        return self.callable_by_symbol(call.enclosing_callable) is not None and \
+            call in self.calls_in(call.enclosing_callable)
+
+    def contains_construction_site(self, site: ConstructionSite) -> bool:
+        """Membership in the complete census, including exact record content.
+
+        The address only narrows the candidates. Equal site IDs with different
+        arguments, targets or provenance never establish record membership.
+        """
+        if not isinstance(site, ConstructionSite):
+            raise TypeError("construction membership requires a ConstructionSite")
+        return site in self._address_index["construction_site_records"].get(
+            site.site_id, ())
 
     def module_bindings_in(self, source: SourceId) -> tuple:
         if not isinstance(source, SourceId):

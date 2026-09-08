@@ -49,16 +49,15 @@ def demanded_root_lookups(index, root_symbol):
         if method is None or not method.params:
             continue
         receiver_name = method.params[0].name
-        for access in index.attribute_accesses:
-            if access.enclosing_callable == symbol:
-                name = _self_attribute(access.target, receiver_name)
-                if name is not None:
-                    attributes.add(name)
-                elif access.target.kind == "attribute" and access.target.children:
-                    property_name = _self_attribute(access.target.children[0], receiver_name)
-                    if property_name is not None:
-                        attributes.add(property_name)
-                        nested.setdefault(property_name, set()).add(access.target.name)
+        for access in index.attribute_accesses_in(symbol):
+            name = _self_attribute(access.target, receiver_name)
+            if name is not None:
+                attributes.add(name)
+            elif access.target.kind == "attribute" and access.target.children:
+                property_name = _self_attribute(access.target.children[0], receiver_name)
+                if property_name is not None:
+                    attributes.add(property_name)
+                    nested.setdefault(property_name, set()).add(access.target.name)
         for call in index.calls_in(symbol):
             name = _self_attribute(call.callee, receiver_name)
             if name is not None:

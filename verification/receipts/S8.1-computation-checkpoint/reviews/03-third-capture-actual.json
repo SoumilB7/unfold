@@ -1,0 +1,94 @@
+{
+  "decision": "ACCEPT_ACTUAL_ELIGIBLE_CAPTURE",
+  "maps": {
+    "source": {
+      "count": 625,
+      "equal": true
+    },
+    "external": {
+      "count": 60,
+      "equal": true
+    },
+    "inputs": {
+      "count": 5,
+      "equal": true
+    }
+  },
+  "exact_request_and_inventory": true,
+  "reviewed_source_pins_match": true,
+  "diagnostic_statuses": [
+    "miss",
+    "worker",
+    "stored"
+  ],
+  "stored": {
+    "entry_sha256": "89a14db7eea96c4e11a36d303b5c12f9de06c9a5e4c61df6fbb5b10a0d11c64b",
+    "kind": "inventory",
+    "reason": "successful_historical_capture",
+    "request_key": "9b17d8ed6e3e479b62446787615b77c628eb1c5b5ccfafba0dfe362e94a8cbc1",
+    "status": "stored"
+  },
+  "observed_inventory_wall_seconds": 21.559062582906336,
+  "worker_timing": {
+    "child_timing": {
+      "binding": {
+        "assurance": "direct owned Popen identity; no persistent wrapper selected",
+        "status": "bound",
+        "worker_pid": 70528,
+        "wrapper_pid": 70528
+      },
+      "status": "available",
+      "timing": {
+        "cpu_end_ns": 11896994000,
+        "cpu_seconds": 11.839774,
+        "cpu_start_ns": 57220000,
+        "end_monotonic_ns": 3669005951074291,
+        "interval": "worker_entry_to_finally_before_timing_write",
+        "pid": 70528,
+        "schema_version": 1,
+        "seconds": 16.020154208,
+        "start_monotonic_ns": 3668989930920083
+      }
+    },
+    "kind": "inventory",
+    "parent_cpu_seconds": 0.638114,
+    "process_pid": 70528,
+    "reason": "fresh_supervised_execution",
+    "status": "worker",
+    "supervised_wall_seconds": 16.904034584295005
+  },
+  "dependency_counts": {
+    "files": 11531,
+    "code_roots": 408,
+    "virtual_modules": 265,
+    "package_probes": 1,
+    "generated_files": 1,
+    "bootstrap_loader_records": 0
+  },
+  "native_origin_file_links_checked": 8,
+  "probe_complete_observable": {
+    "args": "pip list | grep habana-torch-plugin",
+    "returncode": 1,
+    "stderr": "",
+    "stdout": ""
+  },
+  "limitations": [
+    "Actual successful store only, fresh-process lookup remains separate",
+    "Single diagnostic interval is not a cold/warm median",
+    "Mac capture; zero actual bootstrap maps records, no Linux runtime proof",
+    "Native records show installation during loader intervals, not source-level creator mechanism"
+  ],
+  "pins": {
+    "dependencies.json": "3f58f3c191e7f22426782a33dfb5f4e93d99cd197e127fdc4ea64e378db51fe2",
+    "result.json": "1a2748897b6e74a0063a1e93d6e883bea906fd2372077a462415a1a68bfcdf4a",
+    "diagnostics.json": "deae0e8223d46411b02400ded1fbc2f954173fd6438f94bcbac25b29298df90f",
+    "inventory-result.json": "bbef2fe125097f2abc1197ce9184fa67537c60aaf96e3826443c85fc7fe644b6"
+  },
+  "stored_entry_integrity": {
+    "bytes": 11528706,
+    "sha256": "89a14db7eea96c4e11a36d303b5c12f9de06c9a5e4c61df6fbb5b10a0d11c64b",
+    "request_key_recomputed": true,
+    "pointer_exact": true,
+    "complete_dependency_result_request_match": true
+  }
+}

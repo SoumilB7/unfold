@@ -1,0 +1,32 @@
+{
+  "actual_measurement_samples": null,
+  "cache_wiring": "executor-owned; no actual runner invocation authorized yet",
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_s81_latency.py",
+    "tests/test_verification_runner.py",
+    "tests/test_s2_latency.py"
+  ],
+  "cwd": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg",
+  "exit_code": 0,
+  "log_sha256": "6968fd39e2331cd67162e30d61ee5e72afef2403cef58582561a9e065713fa25",
+  "process_session": 69107,
+  "pytest_summary": "56 passed in 0.60s",
+  "review": "independent source review pending",
+  "source_pin_scope": "post-test snapshot of owned stable files; no pre-test hash bracket was captured for this cheap control run",
+  "source_sha256": {
+    "scripts/profile_s81_latency.py": "ffb0d8908b91cf90bbf96a3a8cb77297513079d4adf09c11ec40c618c207d4dd",
+    "scripts/verify_commit.py": "5b12dca3116efd454d878c7ad6bbe62859d90e0ad558df881406bb36bd318c5a",
+    "test_support/latency_contract.py": "3cfecd1a4d1b60569ac142ca9e71b755fdb1774c4912127aaa7ab594ed535c3b",
+    "tests/test_s81_latency.py": "8dc56534efa55a399100f33464442bd06a142275d472af1c089eb003683c4609",
+    "tests/test_verification_runner.py": "94be623c0f4594d5527a0be63bdb7e5a382e6475a99a0784580bbe13d88fb14f",
+    "verification/latency.md": "403ff790fe05f4215a8e761098842b88fedb4732ea57269daccf102021ec9612",
+    "verification/latency_budgets.json": "b8619defe03cd9a33fea15ce82685c9a1df725b95a41a8aeabd3f76149f566f7"
+  },
+  "status": "FOCUSED_PASS_ACTUAL_LATENCY_UNRUN"
+}

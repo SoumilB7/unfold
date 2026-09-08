@@ -1,0 +1,183 @@
+{
+  "production": {
+    "files": 15,
+    "added": 1667,
+    "removed": 140,
+    "rows": [
+      [
+        "39",
+        "12",
+        "model_unfolder/evidence/component_owner.py"
+      ],
+      [
+        "3",
+        "9",
+        "model_unfolder/evidence/constructor_values.py"
+      ],
+      [
+        "107",
+        "1",
+        "model_unfolder/evidence/program_index.py"
+      ],
+      [
+        "9",
+        "10",
+        "model_unfolder/evidence/unet_call_binding.py"
+      ],
+      [
+        "5",
+        "6",
+        "model_unfolder/evidence/unet_cell_connections.py"
+      ],
+      [
+        "4",
+        "7",
+        "model_unfolder/evidence/unet_lookup_closure.py"
+      ],
+      [
+        "4",
+        "12",
+        "model_unfolder/evidence/unet_selected_constructor.py"
+      ],
+      [
+        "1",
+        "1",
+        "model_unfolder/evidence/unet_selected_spatial.py"
+      ],
+      [
+        "75",
+        "63",
+        "model_unfolder/evidence/unet_stage_operands.py"
+      ],
+      [
+        "548",
+        "0",
+        "physics/cache_dependencies.py"
+      ],
+      [
+        "220",
+        "0",
+        "physics/cache_probes.py"
+      ],
+      [
+        "39",
+        "3",
+        "physics/execution_observation.py"
+      ],
+      [
+        "91",
+        "16",
+        "physics/instance_inventory.py"
+      ],
+      [
+        "391",
+        "0",
+        "physics/result_cache.py"
+      ],
+      [
+        "131",
+        "0",
+        "physics/worker_timing.py"
+      ]
+    ]
+  },
+  "controls": {
+    "files": 12,
+    "added": 2091,
+    "removed": 1,
+    "rows": [
+      [
+        "311",
+        "0",
+        "tests/test_s81_cache_probes.py"
+      ],
+      [
+        "242",
+        "0",
+        "tests/test_s81_dependency_capture.py"
+      ],
+      [
+        "85",
+        "0",
+        "tests/test_s81_inventory_metadata.py"
+      ],
+      [
+        "341",
+        "0",
+        "tests/test_s81_latency.py"
+      ],
+      [
+        "156",
+        "0",
+        "tests/test_s81_reader_work.py"
+      ],
+      [
+        "221",
+        "0",
+        "tests/test_s81_result_cache.py"
+      ],
+      [
+        "290",
+        "0",
+        "tests/test_s81_static_lookup.py"
+      ],
+      [
+        "183",
+        "0",
+        "tests/test_s81_supervisor.py"
+      ],
+      [
+        "119",
+        "0",
+        "tests/test_s81_value_hashes.py"
+      ],
+      [
+        "93",
+        "0",
+        "tests/test_s81_worker_identity.py"
+      ],
+      [
+        "27",
+        "0",
+        "tests/test_unet_stage_operands.py"
+      ],
+      [
+        "23",
+        "1",
+        "tests/test_verification_runner.py"
+      ]
+    ]
+  },
+  "workflow": {
+    "files": 5,
+    "added": 601,
+    "removed": 3,
+    "rows": [
+      [
+        "345",
+        "0",
+        "scripts/profile_s81_latency.py"
+      ],
+      [
+        "12",
+        "3",
+        "scripts/verify_commit.py"
+      ],
+      [
+        "202",
+        "0",
+        "test_support/latency_contract.py"
+      ],
+      [
+        "27",
+        "0",
+        "verification/latency.md"
+      ],
+      [
+        "15",
+        "0",
+        "verification/latency_budgets.json"
+      ]
+    ]
+  }
+}

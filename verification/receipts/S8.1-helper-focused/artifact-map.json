@@ -1,0 +1,263 @@
+[
+  {
+    "bytes": 3774,
+    "logical": "red/0.log",
+    "original": "/private/tmp/unfold-s81-final-helper-controls/0.log",
+    "sha256": "fcc524fa84a7cd17c1f214d6e38f386f16233cfe5eaa7987be52bfaf5c5282e3",
+    "stored": "artifacts/red/0.log.gzip",
+    "stored_bytes": 1205,
+    "stored_sha256": "ec5276b9d1166ae28df686112a461bfce1b85e2869c67d7d537cf49d6e24ca65"
+  },
+  {
+    "bytes": 75375,
+    "logical": "red/result.json",
+    "original": "/private/tmp/unfold-s81-final-helper-controls/result.json",
+    "sha256": "9beb264b4d2f51816a1e1d7eac755dfe2dd00aae1f1e23150c8a05d2872bf483",
+    "stored": "artifacts/red/result.json.gzip",
+    "stored_bytes": 30310,
+    "stored_sha256": "430dde220c9be221241386a904a666f20b19e04df84277ae99d3dc62b0f18ac8"
+  },
+  {
+    "bytes": 3004,
+    "logical": "red/run.py",
+    "original": "/private/tmp/unfold-s81-final-helper-controls/run.py",
+    "sha256": "b24476ca114ff6e619fc0259447970f92c6203f5a0a6e161faf6e8f49d19e12f",
+    "stored": "artifacts/red/run.py.gzip",
+    "stored_bytes": 1207,
+    "stored_sha256": "20983f0bbbff69ed54e3e7dcfabe5101e81bd6ddf9ca5262ea8a84ac7af47ef5"
+  },
+  {
+    "bytes": 16355,
+    "logical": "red/test_s81_latency.executed.py",
+    "original": "/private/tmp/unfold-s81-final-helper-controls/test_s81_latency.executed.py",
+    "sha256": "49f54f1fac09bd31a75b3b36616e183b24a1e70414e8c4606077fe8b1591fdb4",
+    "stored": "artifacts/red/test_s81_latency.executed.py.gzip",
+    "stored_bytes": 4333,
+    "stored_sha256": "08755a97ca084bdcc3770d899f149a38303a132677001151729545c845c4faef"
+  },
+  {
+    "bytes": 99,
+    "logical": "corrected/0.log",
+    "original": "/private/tmp/unfold-s81-final-helper-controls-v2/0.log",
+    "sha256": "2fc90ed77e802da84fdf226001fd8acdc7d6b65d5dd551ea873cf484ccd1e048",
+    "stored": "artifacts/corrected/0.log.gzip",
+    "stored_bytes": 52,
+    "stored_sha256": "0c9ab13c8638d99bd2ff3650656b8695e3a6a27abfd26a163488c5ffe292233f"
+  },
+  {
+    "bytes": 113,
+    "logical": "corrected/1.log",
+    "original": "/private/tmp/unfold-s81-final-helper-controls-v2/1.log",
+    "sha256": "58a6d924ccaf604dc6e40e4245f1c65712e9393326374a1a74311f27d869d224",
+    "stored": "artifacts/corrected/1.log.gzip",
+    "stored_bytes": 66,
+    "stored_sha256": "4b00d158c2ee4680a96694bc95ed84b1811dddda79fcea4a617cef1c677b63ee"
+  },
+  {
+    "bytes": 0,
+    "logical": "corrected/2.log",
+    "original": "/private/tmp/unfold-s81-final-helper-controls-v2/2.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stored": "artifacts/corrected/2.log.gzip",
+    "stored_bytes": 20,
+    "stored_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+  },
+  {
+    "bytes": 76547,
+    "logical": "corrected/result.json",
+    "original": "/private/tmp/unfold-s81-final-helper-controls-v2/result.json",
+    "sha256": "3040327cef1001360964e5b8613064e48ebe444fe3da0a9479c79059abced45c",
+    "stored": "artifacts/corrected/result.json.gzip",
+    "stored_bytes": 30500,
+    "stored_sha256": "2ad975c66a38e6afb84080b31407722af861be1cb615857a7ad46d8bbddb0000"
+  },
+  {
+    "bytes": 3004,
+    "logical": "corrected/run.py",
+    "original": "/private/tmp/unfold-s81-final-helper-controls-v2/run.py",
+    "sha256": "b24476ca114ff6e619fc0259447970f92c6203f5a0a6e161faf6e8f49d19e12f",
+    "stored": "artifacts/corrected/run.py.gzip",
+    "stored_bytes": 1207,
+    "stored_sha256": "20983f0bbbff69ed54e3e7dcfabe5101e81bd6ddf9ca5262ea8a84ac7af47ef5"
+  },
+  {
+    "bytes": 822,
+    "logical": "independent/cpu-supplement/review.json",
+    "original": "/private/tmp/unfold-s81-supervisor-independent-review/cpu-supplement/review.json",
+    "sha256": "9e591c9cdb73fb8b7a5c4faadb7f8a04b1cea4e83be8c23a113aa13bcc1469b2",
+    "stored": "artifacts/independent/cpu-supplement/review.json.gzip",
+    "stored_bytes": 521,
+    "stored_sha256": "4f4365c2e48692acbf40ab81d9668e04b9b79e7762ba2dea3b03177fe7c36567"
+  },
+  {
+    "bytes": 7795,
+    "logical": "independent/cpu-supplement/test_s81_supervisor.py",
+    "original": "/private/tmp/unfold-s81-supervisor-independent-review/cpu-supplement/test_s81_supervisor.py",
+    "sha256": "f40f5e104ffb34114852000c6322c87c63656d0dec530b72ee3b2b08a5600af9",
+    "stored": "artifacts/independent/cpu-supplement/test_s81_supervisor.py.gzip",
+    "stored_bytes": 2347,
+    "stored_sha256": "80f3770fc82007e92eb0795da52d10313d712d4d8818f76d150ff59a4e75ee4d"
+  },
+  {
+    "bytes": 3966,
+    "logical": "independent/cpu-supplement/worker_timing.py",
+    "original": "/private/tmp/unfold-s81-supervisor-independent-review/cpu-supplement/worker_timing.py",
+    "sha256": "278b1c5f7b7fd341bbc04e02665f91e7fd9e9121d0fb5e49993ac8325ba03cec",
+    "stored": "artifacts/independent/cpu-supplement/worker_timing.py.gzip",
+    "stored_bytes": 1446,
+    "stored_sha256": "f8577f39c51ab265cfea805a57e8e76af5b616cd503aeeec84a25910654ddf90"
+  },
+  {
+    "bytes": 2794,
+    "logical": "independent/source/_communicate_bounded.py.txt",
+    "original": "/private/tmp/unfold-s81-supervisor-independent-review/source/_communicate_bounded.py.txt",
+    "sha256": "568406fd73edc0d9a65612d0735f1f27ac5189113e81fff8e89de1797eea2b40",
+    "stored": "artifacts/independent/source/_communicate_bounded.py.txt.gzip",
+    "stored_bytes": 1049,
+    "stored_sha256": "cbfd0e1933d0b82693628b503f02a13542882093b96d4f9b57b74f6bb9315a6f"
+  },
+  {
+    "bytes": 11519,
+    "logical": "independent/source/latency_contract.py",
+    "original": "/private/tmp/unfold-s81-supervisor-independent-review/source/latency_contract.py",
+    "sha256": "0c6a4d581a7e1312589f274ec8337eb335c0ddc1047c8460175a1df91c7570ec",
+    "stored": "artifacts/independent/source/latency_contract.py.gzip",
+    "stored_bytes": 3475,
+    "stored_sha256": "6aa2944dee01ee85f7645e952481eb7435df261d537747876c357148d7434a63"
+  },
+  {
+    "bytes": 17586,
+    "logical": "independent/source/profile_s81_latency.py",
+    "original": "/private/tmp/unfold-s81-supervisor-independent-review/source/profile_s81_latency.py",
+    "sha256": "ffb1a5c3306bb53015a0a67580d7835307bb63ac2f593f1a934fb2c9304e3fd7",
+    "stored": "artifacts/independent/source/profile_s81_latency.py.gzip",
+    "stored_bytes": 5268,
+    "stored_sha256": "4ccee83e4be4ee057bdae0f78be00be4ccbb898dda6ceb0fcb536d2b7d3a65be"
+  },
+  {
+    "bytes": 1759,
+    "logical": "independent/source/review.json",
+    "original": "/private/tmp/unfold-s81-supervisor-independent-review/source/review.json",
+    "sha256": "89e9134e3f1addb54785ec187b6eca333bb6cc9355d3ce4df5c05b8d3ba52d87",
+    "stored": "artifacts/independent/source/review.json.gzip",
+    "stored_bytes": 1031,
+    "stored_sha256": "b608690217d37fb86f056d09f9a7ade27542273223c809912e76afa30a52d80f"
+  },
+  {
+    "bytes": 16355,
+    "logical": "independent/source/test_s81_latency.py",
+    "original": "/private/tmp/unfold-s81-supervisor-independent-review/source/test_s81_latency.py",
+    "sha256": "49f54f1fac09bd31a75b3b36616e183b24a1e70414e8c4606077fe8b1591fdb4",
+    "stored": "artifacts/independent/source/test_s81_latency.py.gzip",
+    "stored_bytes": 4333,
+    "stored_sha256": "08755a97ca084bdcc3770d899f149a38303a132677001151729545c845c4faef"
+  },
+  {
+    "bytes": 7093,
+    "logical": "independent/source/test_s81_supervisor.py",
+    "original": "/private/tmp/unfold-s81-supervisor-independent-review/source/test_s81_supervisor.py",
+    "sha256": "cde5cb19d508e229c02404b96e4b4f1c735ab5724bf277fd5a39e982fab9ddf3",
+    "stored": "artifacts/independent/source/test_s81_supervisor.py.gzip",
+    "stored_bytes": 2219,
+    "stored_sha256": "6620a5fee45fb056742fd198c9ffecc1451c2237af0050f43fc0f3c2d311b1a4"
+  },
+  {
+    "bytes": 3168,
+    "logical": "independent/source/worker_timing.py",
+    "original": "/private/tmp/unfold-s81-supervisor-independent-review/source/worker_timing.py",
+    "sha256": "40d21946c6c589eb7ff5d3b6dd42964bb9b26cdf55b2080c41c1940fcd5e5602",
+    "stored": "artifacts/independent/source/worker_timing.py.gzip",
+    "stored_bytes": 1312,
+    "stored_sha256": "125843a288a8c0d6f23addb30cdaae728454030946163d3766fac462894a41b4"
+  },
+  {
+    "bytes": 17586,
+    "logical": "source/scripts/profile_s81_latency.py",
+    "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/scripts/profile_s81_latency.py",
+    "sha256": "ffb1a5c3306bb53015a0a67580d7835307bb63ac2f593f1a934fb2c9304e3fd7",
+    "stored": "artifacts/source/scripts/profile_s81_latency.py.gzip",
+    "stored_bytes": 5268,
+    "stored_sha256": "4ccee83e4be4ee057bdae0f78be00be4ccbb898dda6ceb0fcb536d2b7d3a65be"
+  },
+  {
+    "bytes": 11519,
+    "logical": "source/test_support/latency_contract.py",
+    "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/test_support/latency_contract.py",
+    "sha256": "0c6a4d581a7e1312589f274ec8337eb335c0ddc1047c8460175a1df91c7570ec",
+    "stored": "artifacts/source/test_support/latency_contract.py.gzip",
+    "stored_bytes": 3475,
+    "stored_sha256": "6aa2944dee01ee85f7645e952481eb7435df261d537747876c357148d7434a63"
+  },
+  {
+    "bytes": 18688,
+    "logical": "source/scripts/verify_commit.py",
+    "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/scripts/verify_commit.py",
+    "sha256": "5b12dca3116efd454d878c7ad6bbe62859d90e0ad558df881406bb36bd318c5a",
+    "stored": "artifacts/source/scripts/verify_commit.py.gzip",
+    "stored_bytes": 6055,
+    "stored_sha256": "228ab3e0975865876c1e89856ebd3f4aa9554f6e1f019bdfbd831d00b9a2af7d"
+  },
+  {
+    "bytes": 2617,
+    "logical": "source/verification/latency_budgets.json",
+    "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/latency_budgets.json",
+    "sha256": "b8619defe03cd9a33fea15ce82685c9a1df725b95a41a8aeabd3f76149f566f7",
+    "stored": "artifacts/source/verification/latency_budgets.json.gzip",
+    "stored_bytes": 966,
+    "stored_sha256": "e69767a9420022bf59f71c7b5aa08b8f2e2789c1a1abc6b2fb5ca6e4ef2d7c3d"
+  },
+  {
+    "bytes": 4658,
+    "logical": "source/verification/latency.md",
+    "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/latency.md",
+    "sha256": "1c231a1cd0087949c1b379de9ba743a5c49f4fc3a19cfafafa82b81f6372b8e3",
+    "stored": "artifacts/source/verification/latency.md.gzip",
+    "stored_bytes": 2169,
+    "stored_sha256": "cc3f7105f79e33dec5bbb7f5f20eff8073b079a3cc205d279060c90317bfe2ae"
+  },
+  {
+    "bytes": 16436,
+    "logical": "source/tests/test_s81_latency.py",
+    "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/test_s81_latency.py",
+    "sha256": "70334f2a3e573a5b611ab438e8cb0c5cae17298b2fb776d193cd04fa1d5edb6f",
+    "stored": "artifacts/source/tests/test_s81_latency.py.gzip",
+    "stored_bytes": 4353,
+    "stored_sha256": "4869a99ca1a8fb6912ba6635e2e964a5b40ea127bd7c6f0aa19ca6cc0ad86846"
+  },
+  {
+    "bytes": 11758,
+    "logical": "source/tests/test_verification_runner.py",
+    "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/test_verification_runner.py",
+    "sha256": "94be623c0f4594d5527a0be63bdb7e5a382e6475a99a0784580bbe13d88fb14f",
+    "stored": "artifacts/source/tests/test_verification_runner.py.gzip",
+    "stored_bytes": 3069,
+    "stored_sha256": "887120dc57cbd300892659ef4160c08d4b27c97fbe20860b3db9d49fe145b50f"
+  },
+  {
+    "bytes": 3966,
+    "logical": "source/physics/worker_timing.py",
+    "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/physics/worker_timing.py",
+    "sha256": "278b1c5f7b7fd341bbc04e02665f91e7fd9e9121d0fb5e49993ac8325ba03cec",
+    "stored": "artifacts/source/physics/worker_timing.py.gzip",
+    "stored_bytes": 1446,
+    "stored_sha256": "f8577f39c51ab265cfea805a57e8e76af5b616cd503aeeec84a25910654ddf90"
+  },
+  {
+    "bytes": 47601,
+    "logical": "source/physics/instance_inventory.py",
+    "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/physics/instance_inventory.py",
+    "sha256": "cf1727db7567c10eef508e5d92f93d276014a6074ac9b1afbac4b494043a6602",
+    "stored": "artifacts/source/physics/instance_inventory.py.gzip",
+    "stored_bytes": 12555,
+    "stored_sha256": "1042aba20bd153a42e539a1a3cdd401f5634b3a234be932ff8822cc21c33be04"
+  },
+  {
+    "bytes": 7795,
+    "logical": "source/tests/test_s81_supervisor.py",
+    "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/test_s81_supervisor.py",
+    "sha256": "f40f5e104ffb34114852000c6322c87c63656d0dec530b72ee3b2b08a5600af9",
+    "stored": "artifacts/source/tests/test_s81_supervisor.py.gzip",
+    "stored_bytes": 2347,
+    "stored_sha256": "80f3770fc82007e92eb0795da52d10313d712d4d8818f76d150ff59a4e75ee4d"
+  }
+]

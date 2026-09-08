@@ -132,8 +132,8 @@ def read_lookup_closure(bindings, witness, *, index=None):
                 index.calls_in(method.symbol) or index.bindings_in(method.symbol) or \
                 index.unsupported_execution_in(method.symbol) or \
                 any(row.kind != "return" for row in index.control_transfers_in(method.symbol)) or \
-                any(row.enclosing_callable == method.symbol and row.mode != "read"
-                    for row in index.attribute_accesses):
+                any(row.mode != "read"
+                    for row in index.attribute_accesses_in(method.symbol)):
             return unknown("property_getter_is_not_direct_instance_storage_read")
         name = _member(returns[0].value, method.params[0].name)
         if name is None or name not in witness.instance_storage_names:
@@ -189,9 +189,7 @@ def read_lookup_closure(bindings, witness, *, index=None):
     # On the suffix path every earlier returning branch is excluded. Keep the
     # full indexed guard, not a guessed config value or a model-name exception.
     conditions = tuple(LookupCondition(row.guard, row.span) for row in earlier)
-    for access in index.attribute_accesses:
-        if access.enclosing_callable != method.symbol:
-            continue
+    for access in index.attribute_accesses_in(method.symbol):
         address = _member(access.target, receiver)
         if address is not None and address != "__dict__" and \
                 not any(_inside(access.span, row.span) for row in earlier):
@@ -361,8 +359,7 @@ def close_parent_helpers(bindings, method, lookup_results, *, index=None, functi
             return True
         def excluded(row):
             return any(guard in guards_for(row) and not _inside(row.span, guard.test.span) for guard in skipped)
-        accesses = tuple(access for access in index.attribute_accesses
-                         if access.enclosing_callable == body.symbol)
+        accesses = index.attribute_accesses_in(body.symbol)
         for access in accesses:
             name = _member(access.target, receiver)
             row = lookups.get(name) if name is not None else None

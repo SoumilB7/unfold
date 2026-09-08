@@ -42,17 +42,29 @@ def test_parallel_full_is_the_exact_remainder_not_duplicate_authority_work():
     assert command[-1] == "tests"
 
 
-def test_coordinator_fingerprint_covers_both_runner_files(monkeypatch, tmp_path):
+def test_coordinator_fingerprint_covers_all_runner_files(monkeypatch, tmp_path):
     coordinator = tmp_path / "verify_commit.py"
     scripts = tmp_path / "scripts"
     scripts.mkdir()
     bracket = scripts / "pytest_file_bracket.py"
     coordinator.write_text("coordinator-v1\n")
     bracket.write_text("bracket-v1\n")
+    latency = scripts / "profile_s81_latency.py"
+    latency.write_text("latency-v1\n")
+    support = tmp_path / "test_support"
+    support.mkdir()
+    contract = support / "latency_contract.py"
+    contract.write_text("contract-v1\n")
     monkeypatch.setattr(verify, "__file__", str(coordinator))
     monkeypatch.setattr(verify, "ROOT", tmp_path)
     before = verify._coordinator_fingerprint()
     bracket.write_text("bracket-v2\n")
+    assert verify._coordinator_fingerprint() != before
+    before = verify._coordinator_fingerprint()
+    latency.write_text("latency-v2\n")
+    assert verify._coordinator_fingerprint() != before
+    before = verify._coordinator_fingerprint()
+    contract.write_text("contract-v2\n")
     assert verify._coordinator_fingerprint() != before
 
 
@@ -275,3 +287,13 @@ def test_single_worker_omits_xdist_overhead():
     # one worker from becoming the long pole after the other files finish.
     assert verify._xdist_args(3, "load") == (
         "-n", "3", "--dist", "load")
+
+
+def test_actual_latency_command_is_serial_mandatory_and_outside_checkout(tmp_path):
+    command = verify._latency_command(tmp_path)
+    assert command == (verify.sys.executable,
+                       str(verify.ROOT / "scripts" / "profile_s81_latency.py"),
+                       "--repo", ".", "--output", str(tmp_path / "latency-unet"))
+    import inspect
+    assert 'Lane("latency-unet", _latency_command(log_dir))' in inspect.getsource(verify.main)
+    assert not any('latency' in action.dest for action in verify._parser()._actions)

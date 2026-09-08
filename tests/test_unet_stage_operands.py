@@ -287,3 +287,30 @@ def test_operand_reader_cannot_be_given_a_second_root_document(tmp_path):
     }, merge=False))
     with pytest.raises(TypeError):
         read_unet_selected_stage_operands(selection, foreign)
+
+
+def test_occurrence_lineage_setup_is_shared_but_validation_is_fresh(tmp_path, monkeypatch):
+    from model_unfolder.evidence import unet_stage_operands as reader
+    original = reader.local_lineage_at_callable
+    calls = []
+
+    def counted(*args, **kwargs):
+        calls.append(args[1].symbol)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(reader, 'local_lineage_at_callable', counted)
+    document = {'alpha_types': ['first', 'second'], 'omega_types': ['second', 'first'],
+                'widths': [32, 64], 'increment': 3}
+    first = _read(tmp_path, document).require_value()
+    occurrences = len(first.selection.occurrences)
+    assert occurrences == 4 and len(first.operands) > occurrences
+    assert len(calls) == 2 * occurrences  # producing call and independent DTO validation
+    assert replace(first) == first
+    assert len(calls) == 3 * occurrences
+    numeric = next(item for item in first.operands if item.formal.name == 'width')
+    forged = replace(numeric, value=numeric.value + 1)
+    with pytest.raises(ValueError, match='recompute'):
+        replace(first, operands=tuple(forged if item is numeric else item for item in first.operands))
+    second = _read(tmp_path, {**document, 'widths': [96, 128]}).require_value()
+    assert {item.value for item in first.operands if item.formal.name == 'width'} == {32, 64}
+    assert {item.value for item in second.operands if item.formal.name == 'width'} == {96, 128}

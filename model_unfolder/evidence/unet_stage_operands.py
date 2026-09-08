@@ -258,10 +258,13 @@ class UNetSelectedStageOperands:
                for item in self.operands
                for path, origin in item.premise_origins):
             raise ValueError("operand origins round-trip to the prepared document")
+        evaluators = {}
         for item in self.operands:
-            recomputed, kind, _detail = _evaluate(
-                self.index, item.selected, self.binding,
-                item.formal, item.actual)
+            key = id(item.selected)
+            if key not in evaluators:
+                evaluators[key] = (item.selected, _prepare_operand_evaluator(
+                    self.index, item.selected, self.binding))
+            recomputed, kind, _detail = evaluators[key][1](item.formal, item.actual)
             if kind is not None or recomputed is None \
                     or not _exact_value_equal(recomputed.value, item.value) \
                     or recomputed != item:
@@ -288,7 +291,8 @@ class UNetSelectedStageOperands:
             raise ValueError("operands and issues exactly partition factory actuals")
 
 
-def _evaluate(index, selected, document_binding, formal, actual):
+def _prepare_operand_evaluator(index, selected, document_binding):
+    """Share pure guard/lineage setup within one occurrence and one caller."""
     source = selected.source
     env, missing, defaults = _root_env(selected, document_binding)
     protocol_names = frozenset(
@@ -366,63 +370,71 @@ def _evaluate(index, selected, document_binding, formal, actual):
     lineage = local_lineage_at_callable(
         index, source.registration.constructor,
         binding_guard_state=guard_state)
-    trace = lineage.trace(
-        actual, source.template.producer_call.span,
-        source.template.producer_call.guard)
-    if trace.unresolved:
-        return None, "local_lineage_unresolved", "actual lineage is unresolved"
-    if _loop_carried_interference(index, selected, trace):
-        return None, "local_lineage_unresolved", (
-            "a loop-carried reaching definition is not recurrence-proven")
-    if any(root not in env for root in trace.roots):
-        absent = tuple(root for root in trace.roots if root not in env)
-        return None, "registered_value_unavailable", (
-            f"registered roots unavailable: {absent or missing!r}")
-    expression_evaluator = evaluator()
-    bindings = tuple(sorted((
-        item for item in index.bindings_in(source.loop.enclosing_callable)
-        if (item.span in trace.spans
-            or (item.value is not None and item.value.span in trace.spans))
-        and _simple_target(item) is not None
-    ), key=lambda item: _span_key(item.span)))
-    for row in bindings:
-        value = expression_evaluator.expression(row.value)
-        name = _simple_target(row)
-        if value is None:
-            expression_evaluator.env.pop(name, None)
-        else:
-            expression_evaluator.env[name] = value
-    evaluated = expression_evaluator.expression(actual)
-    if evaluated is None:
-        return None, "expression_unresolved", "exact actual is not evaluable"
-    decisions = tuple(guard_evidence[row] for row in bindings
-                      if row in guard_evidence)
-    premises = unique_premises((
-        *evaluated.premises,
-        *(premise for decision in decisions for premise in decision.premises),
-    ))
-    if premises is None:
-        return None, "expression_unresolved", (
-            "guard and value premises conflict")
-    spans = tuple(dict.fromkeys(span for span in (
-        source.template.producer_call.span, actual.span,
-        *selected.guard_spans, *trace.spans, *evaluated.spans,
-        *(item.span for item in bindings),
-        *(span for decision in decisions for span in decision.spans),
-    ) if isinstance(span, SourceSpan)))
-    origins = tuple((path, document_binding.provenance.get(".".join(path), ""))
-                    for path, _value in premises)
-    if any(origin not in {CHECKPOINT_DECLARED, CLASS_DEFAULT, LOADER_METADATA}
-           for _path, origin in origins):
-        return None, "registered_value_unavailable", (
-            "one evaluated config premise has unestablished provenance")
-    return SelectedFactoryOperand(
-        selected, formal, actual, evaluated.value,
-        tuple(sorted(trace.roots)),
-        tuple(sorted((item for item in defaults if item.name in trace.roots),
-                     key=lambda item: item.name)),
-        bindings, premises, origins,
-        spans), None, None
+    def evaluate(formal, actual):
+        trace = lineage.trace(
+            actual, source.template.producer_call.span,
+            source.template.producer_call.guard)
+        if trace.unresolved:
+            return None, "local_lineage_unresolved", "actual lineage is unresolved"
+        if _loop_carried_interference(index, selected, trace):
+            return None, "local_lineage_unresolved", (
+                "a loop-carried reaching definition is not recurrence-proven")
+        if any(root not in env for root in trace.roots):
+            absent = tuple(root for root in trace.roots if root not in env)
+            return None, "registered_value_unavailable", (
+                f"registered roots unavailable: {absent or missing!r}")
+        expression_evaluator = evaluator()
+        bindings = tuple(sorted((
+            item for item in index.bindings_in(source.loop.enclosing_callable)
+            if (item.span in trace.spans
+                or (item.value is not None and item.value.span in trace.spans))
+            and _simple_target(item) is not None
+        ), key=lambda item: _span_key(item.span)))
+        for row in bindings:
+            value = expression_evaluator.expression(row.value)
+            name = _simple_target(row)
+            if value is None:
+                expression_evaluator.env.pop(name, None)
+            else:
+                expression_evaluator.env[name] = value
+        evaluated = expression_evaluator.expression(actual)
+        if evaluated is None:
+            return None, "expression_unresolved", "exact actual is not evaluable"
+        decisions = tuple(guard_evidence[row] for row in bindings
+                          if row in guard_evidence)
+        premises = unique_premises((
+            *evaluated.premises,
+            *(premise for decision in decisions for premise in decision.premises),
+        ))
+        if premises is None:
+            return None, "expression_unresolved", (
+                "guard and value premises conflict")
+        spans = tuple(dict.fromkeys(span for span in (
+            source.template.producer_call.span, actual.span,
+            *selected.guard_spans, *trace.spans, *evaluated.spans,
+            *(item.span for item in bindings),
+            *(span for decision in decisions for span in decision.spans),
+        ) if isinstance(span, SourceSpan)))
+        origins = tuple((path, document_binding.provenance.get(".".join(path), ""))
+                        for path, _value in premises)
+        if any(origin not in {CHECKPOINT_DECLARED, CLASS_DEFAULT, LOADER_METADATA}
+               for _path, origin in origins):
+            return None, "registered_value_unavailable", (
+                "one evaluated config premise has unestablished provenance")
+        return SelectedFactoryOperand(
+            selected, formal, actual, evaluated.value,
+            tuple(sorted(trace.roots)),
+            tuple(sorted((item for item in defaults if item.name in trace.roots),
+                         key=lambda item: item.name)),
+            bindings, premises, origins,
+            spans), None, None
+
+    return evaluate
+
+
+def _evaluate(index, selected, document_binding, formal, actual):
+    # Direct callers retain a fresh validation/evaluation context.
+    return _prepare_operand_evaluator(index, selected, document_binding)(formal, actual)
 
 
 def read_unet_selected_stage_operands(
@@ -442,9 +454,9 @@ def read_unet_selected_stage_operands(
                 selected, None, "actual_binding_unresolved",
                 "factory Python argument binding is incomplete"))
             continue
+        evaluate = _prepare_operand_evaluator(index, selected, binding)
         for formal, actual in actuals:
-            value, kind, detail = _evaluate(
-                index, selected, binding, formal, actual)
+            value, kind, detail = evaluate(formal, actual)
             if value is None:
                 issues.append(SelectedFactoryOperandIssue(
                     selected, formal, kind, detail, actual.span))

@@ -380,7 +380,7 @@ def _selected_external_effect(index, mechanism, operands):
     for call in index.calls_in(forward):
         if _call_field(call) is None \
                 or not _local_operation_reaches_return(
-                    index, forward, call.span, _child_env(index, operands)):
+                    index, forward, call.span, env):
             continue
         route, problem = _invoked_field_constructor_route(
             index, mechanism, operands, call)

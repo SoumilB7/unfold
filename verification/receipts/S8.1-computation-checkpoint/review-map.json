@@ -1,0 +1,26 @@
+{
+  "reviews/00-unfold-s81-reader-work-root-review.json": {
+    "sha256": "6f84ea59e90c10a61c77d4461928bd97e1ffbd4de389647cd060f06dbdce1853",
+    "source": "/private/tmp/unfold-s81-reader-work-root-review/review.json"
+  },
+  "reviews/01-native-probe-v4.json": {
+    "sha256": "f16c9bc873db1b139e8ae5faaa8c37ea9d0dcd610cc4cea6cd103144bfb6850a",
+    "source": "/private/tmp/unfold-s81-cache-independent-review/native-probe-v4/review.json"
+  },
+  "reviews/02-unit-v4.json": {
+    "sha256": "089448417457a95eb24bc97ed2939ace59e17a8c21bb9c93eaa3052205f1cf9d",
+    "source": "/private/tmp/unfold-s81-cache-independent-review/unit-v4/review.json"
+  },
+  "reviews/03-third-capture-actual.json": {
+    "sha256": "41c6ee1d2fb66f54352d248b8955090e1d382ee82e326bea11b9d6470ebc8a7b",
+    "source": "/private/tmp/unfold-s81-cache-independent-review/third-capture-actual/review.json"
+  },
+  "reviews/04-fresh-hit-v3.json": {
+    "sha256": "bbe65874f0c0cc1acd347edb05f03553fd08fbf0b2acafb06b2ff31d05a85083",
+    "source": "/private/tmp/unfold-s81-cache-independent-review/fresh-hit-v3/review.json"
+  },
+  "reviews/05-observation-pair-v4.json": {
+    "sha256": "f689564f39eb033d75efa179cf3015878422b21d44dea32ae8c13c55242cf995",
+    "source": "/private/tmp/unfold-s81-cache-independent-review/observation-pair-v4/review.json"
+  }
+}

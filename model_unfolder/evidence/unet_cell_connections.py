@@ -112,8 +112,8 @@ def _member_stays_bound(index, forward, call, module_path, bindings, *,
                         aliases.update(names)
                         changed = True
 
-    for access in index.attribute_accesses:
-        if access.enclosing_callable == forward.symbol and access.mode == "write" \
+    for access in index.attribute_accesses_in(forward.symbol):
+        if access.mode == "write" \
                 and _member(access.target, receiver_name) == member:
             return False
     for binding in index.bindings_in(forward.symbol):
@@ -136,9 +136,8 @@ def _member_stays_bound(index, forward, call, module_path, bindings, *,
             attributes = bindings._modules[module_path].init_attributes
             scalar = attributes.get(address)
             non_callable = address in attributes and (scalar is None or type(scalar) in {bool, int, float, str})
-            replaced = any(access.enclosing_callable == forward.symbol
-                           and access.mode == "write" and _member(access.target, receiver_name) == address
-                           for access in index.attribute_accesses)
+            replaced = any(access.mode == "write" and _member(access.target, receiver_name) == address
+                           for access in index.attribute_accesses_in(forward.symbol))
             if not non_callable or replaced:
                 return False
         if prior not in closed_parent_reads and any(parent_escapes(arg)
@@ -225,7 +224,7 @@ def _connections(mechanisms, bindings, execution=None):
             # Guard evaluation must not reuse a constructor field after an
             # unaccounted method write. Stay conservative for such methods.
             if any(access.enclosing_callable == forward.symbol and access.mode == "write"
-                   for access in index.attribute_accesses):
+                   for access in index.attribute_accesses_in(forward.symbol)):
                 usable_environments = ()
 
             def guard_state(row):

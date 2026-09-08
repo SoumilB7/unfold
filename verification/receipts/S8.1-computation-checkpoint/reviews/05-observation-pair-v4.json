@@ -1,0 +1,59 @@
+{
+  "decision": "ACCEPT_BOUNDED_ACTUAL_OBSERVATION_STORE_AND_FRESH_HIT",
+  "checks": {
+    "cold_pins_equal": true,
+    "warm_pins_equal": true,
+    "full_dto_request_recipe_exact": true,
+    "entry_identity_content_hashes_exact": true,
+    "actual_cache_before_after_unchanged": true,
+    "capability2_child_search_retained": true,
+    "actual_positive_only": true
+  },
+  "pin_counts": {
+    "cold_source": 625,
+    "cold_external": 60,
+    "cold_input": 6,
+    "warm_source": 625,
+    "warm_external": 60,
+    "warm_input": 7
+  },
+  "entry_sha256": "cdfeeccaafb324505969a6d87c7a5073ada1a0459c26e882dc314f7e522b97cc",
+  "request_key": "d0f0d23a9f7a2c201603e0f67c51f5d3cdd9a7ca421aacb9a2f88298ebc5473d",
+  "cold_seconds": 24.531528666149825,
+  "warm_seconds": 5.7346877083182335,
+  "module_calls": 1725,
+  "functional_ops": 889,
+  "dependencies": {
+    "files": 11532,
+    "code_roots": 408,
+    "module_origins": 4690,
+    "virtual_modules": 265,
+    "search_directories": 1492,
+    "package_probes": 1
+  },
+  "worker_launch": "python-module-with-inherited-cwd-and-environment",
+  "input_pins": {
+    "/private/tmp/unfold-s81-cache-preparation-v4/observation.py": "7a48b736ed0d1a094df27305766bdb5677e1c01a54acbf7d3d74868e80a98078",
+    "/private/tmp/unfold-s81-cache-preparation-v4/source-manifest.json": "472ac9d3d56d18f2c2164f75624dfe93eb44e777a340019177c10f47b7a5f9b9",
+    "/private/tmp/unfold-s81-profile-baseline-788abbd/build-request.json": "c9fc1243361169b5fa6b4384e1d9cd5cc2787f1325c803f70c88dc95de78fcf6",
+    "/private/tmp/unfold-s81-profile-baseline-788abbd/selected-external-before.json": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+    "/private/tmp/unfold-s81-static-candidate-788abbd/verification/s6/pilots/stable-diffusion-xl-base-1-0/observation-unet-eval-conditioned.json": "02f28ecbaca794fb087ac71fe9ca936bdc37b6062cea8dc5ad89822148f8fe86",
+    "/private/tmp/unfold-s81-static-candidate-788abbd/verification/s6/pilots/stable-diffusion-xl-base-1-0/request.json": "7e72567b7c02cba7b31ad192fdffd2d2c16439daed8a36938390f67656a5f075"
+  },
+  "limits": [
+    "One actual positive meta eval conditioned recipe on exact current SDXL request; no historical pilot output substituted.",
+    "Fresh warm call reuses historical positive observation; no new live execution, negative proof, architecture proof or all-recipes claim.",
+    "Zero observation worker on warm; finite package-census validation replay may still launch its own bounded worker.",
+    "24.532/5.735 seconds are single observation API intervals, not public unfold cold/warm medians.",
+    "No Linux portability or intrinsic whole child wall claim; source/backend timing retains its stated interval.",
+    "Authored reader optimization is outside this independent review."
+  ],
+  "current_frozen_source_comparison": {
+    "checked": 625,
+    "changed": [
+      "model_unfolder/evidence/unet_call_binding.py",
+      "model_unfolder/evidence/unet_lookup_closure.py",
+      "model_unfolder/evidence/unet_selected_spatial.py"
+    ]
+  }
+}

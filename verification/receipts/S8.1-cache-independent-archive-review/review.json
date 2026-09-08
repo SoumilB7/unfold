@@ -1,0 +1,33 @@
+{
+  "decision": "ACCEPT_LOSSLESS_ARCHIVE_INTEGRITY",
+  "artifact_map_sha256": "9537f7e6c9117601ce22a1f48fb783bbd2fa234e89d178448577c4fb9bafbef9",
+  "stream_count": 2055,
+  "directory_count": 136,
+  "scope_count": 31,
+  "adjacent_log_count": 15,
+  "raw_bytes": 261327132,
+  "stored_bytes": 42482943,
+  "checks": {
+    "all_stored_hashes_sizes": true,
+    "all_decoded_hashes_sizes": true,
+    "all_decoded_bytes_equal_existing_original_files": true,
+    "safe_injective_full_logical_paths": true,
+    "all_declared_original_file_and_directory_membership_exact_before_after": true,
+    "no_symlinks_or_missing_sources": true,
+    "all_stored_files_accounted": true,
+    "mtime_zero_headers": true,
+    "map_unchanged": true,
+    "archiver_source_hash_equal_recorded": true
+  },
+  "explicit_empty_scopes": [
+    "public-entries-v5"
+  ],
+  "audit_seconds": 4.071776874829084,
+  "limits": [
+    "Read-only decode and byte comparison; no model/test/renderer/benchmark execution.",
+    "Archive integrity does not reclassify diagnostic misses, precondition failures, historical positive hits, or budget status.",
+    "No manifest-referenced external files added or claimed captured by this archive.",
+    "Authored three-reader unit remains root-reviewed, not self-approved here.",
+    "Decoded content checked in memory; this independent audit does not claim a second filesystem restoration."
+  ]
+}

@@ -128,7 +128,9 @@ def _coordinator_fingerprint() -> str:
     """Identify the verification law even when checking an older commit."""
     digest = hashlib.sha256()
     for path in (pathlib.Path(__file__).resolve(),
-                 ROOT / "scripts" / "pytest_file_bracket.py"):
+                 ROOT / "scripts" / "pytest_file_bracket.py",
+                 ROOT / "scripts" / "profile_s81_latency.py",
+                 ROOT / "test_support" / "latency_contract.py"):
         digest.update(path.name.encode() + b"\0")
         digest.update(hashlib.sha256(path.read_bytes()).digest())
     return digest.hexdigest()
@@ -277,6 +279,12 @@ def _partitioned_full_command(pytest_base, workers: int) -> tuple[str, ...]:
             *ignores, "tests")
 
 
+def _latency_command(log_dir: pathlib.Path) -> tuple[str, ...]:
+    """Mandatory actual cold/warm gate; its twelve children run serially."""
+    return (sys.executable, str(ROOT / "scripts" / "profile_s81_latency.py"),
+            "--repo", ".", "--output", str(log_dir / "latency-unet"))
+
+
 def _run_phase(lanes: tuple[Lane, ...], worktrees: dict[str, pathlib.Path],
                log_dir: pathlib.Path) -> list[LaneResult]:
     """Run lanes sequentially; a lane may parallelize its own exact partition."""
@@ -324,6 +332,8 @@ def main(argv: list[str] | None = None) -> int:
     # request one literal serial full invocation as an explicit control.
     full_command = ((*pytest_base, "tests") if args.serial_full else
                     _partitioned_full_command(pytest_base, full_workers))
+    run_id = uuid.uuid4().hex[:10]
+    log_dir = LOG_ROOT / run_id
     preflight_lanes = (
         Lane("focused", (*pytest_base, *focused,
                           *_xdist_args(focused_workers, "loadfile"))),
@@ -331,6 +341,7 @@ def main(argv: list[str] | None = None) -> int:
                               *_xdist_args(authority_workers, "load"))),
         Lane("collect", (*pytest_base, "--collect-only", "tests")),
         Lane("static", _static_command(commit, tuple(args.forbid))),
+        Lane("latency-unet", _latency_command(log_dir)),
     )
     heavy_lanes = (
         Lane("full", full_command),
@@ -339,8 +350,6 @@ def main(argv: list[str] | None = None) -> int:
     )
     lanes = (*preflight_lanes, *heavy_lanes)
 
-    run_id = uuid.uuid4().hex[:10]
-    log_dir = LOG_ROOT / run_id
     log_dir.mkdir(parents=True, exist_ok=False)
     WORKTREE_ROOT.mkdir(parents=True, exist_ok=True)
     worktrees: dict[str, pathlib.Path] = {}

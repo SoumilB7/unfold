@@ -52,5 +52,20 @@
       "qwen3-omni-30b": 6.919,
       "musicgen-small": 4.214
     }
+  },
+  "unet_instance": {
+    "schema_version": 1,
+    "samples_per_mode": 3,
+    "aggregation": "median",
+    "library_imports_in_budget": false,
+    "html_in_budget": false,
+    "targets": {
+      "stable-diffusion-xl-base-1-0": "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json",
+      "sd-v1-4": "tests/unseen_model_configs/sd-v1-4.json"
+    },
+    "cold_empty_cache": {"budget_seconds": 30.0},
+    "warm_populated_cache": {"budget_seconds": 9.0},
+    "budget_basis": "Explicit S8.1 owner thresholds; cold means empty enabled result cache, not cold OS pages",
+    "measurement_status": "pending_actual_gate"
   }
 }
