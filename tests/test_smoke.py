@@ -7,6 +7,7 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from model_unfolder.renderers.html.card_payload import expand_card_payloads
 from model_unfolder import unfold
 from model_unfolder.adapters.transformer.parser import parse
 from model_unfolder.evidence.context import ParseContext
@@ -547,7 +548,7 @@ def test_mtp_count_without_constructed_modules_is_not_rendered():
     assert all(block["id"] != "mtp"
                for block in ir["extras"]["render"]["model_blocks"])
     assert "multi_token_prediction" not in d.to_json()
-    html = d.to_html(standalone=True)
+    html = expand_card_payloads(d.to_html(standalone=True))
     assert "MTP head" not in html
     assert 'data-card-id="mtp"' not in html
     assert "eh_proj" not in html
@@ -628,7 +629,7 @@ def test_diffusion_gemma_block_diffusion():
     for block in render["loop_blocks"]:
         assert block.get("description"), f"block {block['id']!r} has no description"
 
-    html = d.to_html()
+    html = expand_card_payloads(d.to_html())
     # Loop view SVG must be present
     assert "<svg" in html
     # Key block ids must appear as data-id attributes (clickable in the diagram)
@@ -678,7 +679,7 @@ def test_diffusion_gemma_block_worthiness():
     assert "ffn_merge" not in blocks
     assert blocks["attn"]["kind"] == "attention"
 
-    html = d.to_html()
+    html = expand_card_payloads(d.to_html())
     assert 'data-id="wiring_unresolved"' in html
     assert 'data-card-id="wiring_unresolved"' in html
     assert 'data-id="ffn"' in html and 'data-card-id="ffn"' in html
@@ -974,7 +975,7 @@ def test_moe_gate_view_is_source_bound_and_shared_expert_drawn():
     assert "learned bias" not in pgate
 
     # The whole rendered model stays click-coupled with the new gate drill embedded.
-    assert validate_click_coupling(unfold(base).to_html(standalone=True)) == []
+    assert validate_click_coupling(expand_card_payloads(unfold(base).to_html(standalone=True))) == []
 
 
 def test_router_topk_drill_adapts_to_source_bound_policy_not_identity():
@@ -1241,7 +1242,7 @@ def test_gemma4_ple_shaped_config_cannot_create_an_unproved_pathway():
     assert not [block for block in blocks if block["id"] == "ple"]
     assert not ir["extras"].get("external_pathways")
 
-    html = d.to_html(standalone=True)
+    html = expand_card_payloads(d.to_html(standalone=True))
     assert "uf-card-ple" not in html
     assert 'data-card-id="ple_gate"' not in html
     assert 'data-card-id="per_layer_input"' not in html
@@ -1262,7 +1263,7 @@ def test_gemma4_multimodal_fusion_render():
     assert ir["extras"]["modalities"]["fusion"]["kind"] == "placeholder_replace"
     assert ir["extras"]["modalities"]["fusion"]["mechanism"]["kind"] == "scatter_many"
 
-    html = d.to_html(standalone=True)
+    html = expand_card_payloads(d.to_html(standalone=True))
     assert "Vision input" not in html
     assert "Soft visual tokens" in html
     assert "Soft audio tokens" in html
@@ -1325,7 +1326,7 @@ def test_cross_attention_fusion_side_block_does_not_overlap_the_spine():
         vision_config=dict(hidden_size=256, num_hidden_layers=4,
                            num_attention_heads=8, intermediate_size=512,
                            patch_size=14, image_size=224))
-    html = unfold(cfg).to_html(standalone=True)
+    html = expand_card_payloads(unfold(cfg).to_html(standalone=True))
     svg = next((s for _l, s in svg_views(html)
                 if "Cross-attention" in s and "Projected image" in s), None)
     assert svg, "no cross-attention fusion view was rendered"
@@ -1405,7 +1406,7 @@ def test_vision_position_evidence_never_fabricates_an_attention_mechanism():
     # source-proven position fact must not smuggle q_rope/k_rope leaves into
     # that graph before the exact attention mechanism is bound.
     from model_unfolder.block_schema import validate_click_coupling
-    qwen_html = qwen_diagram.to_html(standalone=True)
+    qwen_html = expand_card_payloads(qwen_diagram.to_html(standalone=True))
     for node_id in ("vision_enc_attn_q_rope", "vision_enc_attn_k_rope"):
         assert f'data-id="{node_id}"' not in qwen_html
         assert f'data-card-id="{node_id}"' not in qwen_html
@@ -1430,7 +1431,7 @@ def test_gemma4_video_token_activates_only_the_source_supported_soft_video_path(
         video["pipeline"][-1]["operation"],
     ))
 
-    html = d.to_html(standalone=True)
+    html = expand_card_payloads(d.to_html(standalone=True))
     assert "Video -&gt; grid" not in html
     assert 'data-card-id="video_path"' in html
 
@@ -1534,7 +1535,7 @@ def test_non_gated_dense_ffn_has_plain_mlp_view():
     assert "gate_proj" not in child_ids
     assert "multiply" not in child_ids
 
-    html = d.to_html(standalone=True)
+    html = expand_card_payloads(d.to_html(standalone=True))
     assert "Linear (in)" in html
     assert "Linear (gate)" not in html
     assert 'data-card-id="gate_proj"' not in html
@@ -1679,7 +1680,7 @@ def test_dbrx_nested_config_routes_to_gqa_moe():
         "decoder.attention.qkv_clip"]
     assert clip_fact["status"] == "code_and_config"
 
-    html = d.to_html(standalone=True)
+    html = expand_card_payloads(d.to_html(standalone=True))
     assert "GQA 48/8" in html
     assert "MoE" in html
     assert "16 experts" in html
@@ -1919,12 +1920,12 @@ def test_declared_residual_multiplier_does_not_manufacture_scale_connectors():
     """
     from model_unfolder.block_schema import validate_click_coupling
     cfg = dict(LLAMA3_8B_CONFIG, residual_multiplier=0.22)
-    html = unfold(cfg).to_html(standalone=True)
+    html = expand_card_payloads(unfold(cfg).to_html(standalone=True))
     assert 'data-id="res_scale1"' not in html
     assert 'data-id="res_scale2"' not in html
     assert "× 0.22" not in html
     assert validate_click_coupling(html) == []
-    plain = unfold(LLAMA3_8B_CONFIG).to_html(standalone=True)
+    plain = expand_card_payloads(unfold(LLAMA3_8B_CONFIG).to_html(standalone=True))
     assert "res_scale" not in plain
     assert unfold(cfg).ir.layers[0].signature() == unfold(
         LLAMA3_8B_CONFIG

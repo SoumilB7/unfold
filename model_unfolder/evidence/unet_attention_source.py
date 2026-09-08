@@ -15,7 +15,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .attention_container_interface import default_attention_container_interface
-from .attention_invocation_role import framework_attention_invocation_role
+from .attention_invocation_role import _framework_attention_role_from_interface
 from .attention_lane import FrameworkAttentionLaneEvidence
 from .component_owner import ComponentRootResolution
 from .constructor_condition import (
@@ -437,7 +437,8 @@ def _lane_edge(index, owner, block_frame, lane):
         return None, "failed", "unresolved", (
             "lane interface unresolved" + (f": {detail}" if detail else ""))
     interface = interface_result.require_value()
-    role = framework_attention_invocation_role(index, block_frame, lane)
+    role = _framework_attention_role_from_interface(
+        index, block_frame, lane, interface)
     role_kind = (role.value.kind if role.has_value else "unresolved")
     ordinary = tuple(item for item in interface.forward.params
                      if item.name != "self"

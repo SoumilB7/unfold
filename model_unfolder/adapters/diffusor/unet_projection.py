@@ -173,11 +173,14 @@ def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_f
     dispositions = ({row.provenance.instance_path: row for row in table.occurrences}
                     if table is not None else {})
 
+    parameters_by_module = {}
+    for key, row in shapes["parameters"].items():
+        parameters_by_module.setdefault(key.rpartition(".")[0], []).append((key, row))
+
     def card(path):
         module = modules[path]
         children = [card(f"{path}.{child}".lstrip(".")) for child in module["children"]]
-        parameters = [(key, row) for key, row in shapes["parameters"].items()
-                      if key.rpartition(".")[0] == path]
+        parameters = parameters_by_module.get(path, ())
         chips = [f"{shapes['by_module'][path]:,} parameters in subtree"]
         if path in (mechanism_findings or {}):
             chips.append(mechanism_findings[path])

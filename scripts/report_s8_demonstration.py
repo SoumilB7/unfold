@@ -35,11 +35,12 @@ class PageEvidence(HTMLParser):
     VOID = frozenset({"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"})
 
     def __init__(self, page):
+        from model_unfolder.renderers.html.card_payload import expand_card_payloads
         super().__init__(convert_charrefs=True)
         self.stack = []
         self.cards = {}
         self.text = []
-        self.feed(page)
+        self.feed(expand_card_payloads(page))
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
@@ -113,6 +114,8 @@ def semantic_value(value):
 
 def observation(ir, facts, page):
     from model_unfolder.preview import svg_views, _visual_hash
+    from model_unfolder.renderers.html.card_payload import expand_card_payloads
+    page = expand_card_payloads(page)
     selected = {key.removeprefix("root.denoiser."): semantic_value(row["value"])
                 for key, row in sorted(facts.items())
                 if key.startswith("root.denoiser.") and key not in SEMANTIC_METADATA_EXCLUSIONS}
@@ -437,7 +440,8 @@ def _conditioning_trace(case, all_blocks, cards):
     conditions = route.get("target_binding", {}).get("conditions", [])
     nodes = set(cards.get(cid, {}).get("node_ids", []))
     # Inspect the actual selected SVG, not merely its IR wiring report.
-    page = (Path(case["path"]) / "page.html").read_text()
+    from model_unfolder.renderers.html.card_payload import expand_card_payloads
+    page = expand_card_payloads((Path(case["path"]) / "page.html").read_text())
     start = page.find('data-card-id="' + cid + '"')
     end = page.find('data-card-id="', start + 15) if start >= 0 else -1
     segment = page[start:end] if end >= 0 else page[start:] if start >= 0 else ""

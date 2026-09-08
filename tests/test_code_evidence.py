@@ -4,6 +4,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from model_unfolder.renderers.html.card_payload import expand_card_payloads
 from model_unfolder import config_to_ir, inspect_model_code, unfold
 
 
@@ -2170,7 +2171,7 @@ def test_unet_ffn_activation_anchored_to_declared_blocks():
     namespace = card["detail"]["op_namespace"]
     assert operation_ids == {namespace + suffix for suffix in
                              ("gate_up_proj", "gate_up_split", "activation", "multiply", "down_proj")}
-    own_svgs = [svg for svg in re.findall(r"<svg\b.*?</svg>", diagram.to_html(), re.S)
+    own_svgs = [svg for svg in re.findall(r"<svg\b.*?</svg>", expand_card_payloads(diagram.to_html()), re.S)
                 if operation_ids <= set(re.findall(r'data-id="([^"]+)"', svg))]
     assert own_svgs, "the cited FFN's operation nodes must be drawn together"
     assert all("GELU" in svg and "gelu-approximate" not in svg for svg in own_svgs)

@@ -130,6 +130,7 @@ def collect_ship_findings(target, ir, context, *, source: str = "local") \
         -> tuple[ShipFinding, ...]:
     """Collect audits that must be visible from the ordinary ``unfold`` path."""
     from .conformance import (
+        _conformance_source_analysis,
         check_fact_conformance, check_model_conformance,
         check_wiring_conformance)
     from .qualification import qualification_findings
@@ -149,15 +150,19 @@ def collect_ship_findings(target, ir, context, *, source: str = "local") \
         for path in ((raw.get("extras") or {}).get("config_audit") or {}).get(
             "unread", ())))
     if bundle.files:
-        op = check_model_conformance(target, raw, source=source, bundle=bundle)
+        analysis = _conformance_source_analysis(bundle)
+        op = check_model_conformance(
+            target, raw, source=source, bundle=bundle, _source_analysis=analysis)
         add("op_conformance", (p.message for p in op
                                if p.kind in {"missing", "fabricated", "stale"}),
             "repeated_layer")
         add("wiring_conformance", (p.message for p in check_wiring_conformance(
-            target, raw, source=source, bundle=bundle)), "repeated_layer")
+            target, raw, source=source, bundle=bundle,
+            _source_analysis=analysis)), "repeated_layer")
         add("fact_conformance", (p.message for p in check_fact_conformance(
             target, raw, source=source, bundle=bundle,
-            program_index=context.program_index(), parse_context=context)),
+            program_index=context.program_index(), parse_context=context,
+            _source_analysis=analysis)),
             "repeated_layer")
     add("asserted_facts", asserted_fact_findings(raw), "repeated_layer")
     add("evidence_ambiguity", ambiguous_evidence_findings(raw),

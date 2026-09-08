@@ -562,9 +562,8 @@ def guard_path_evidence(index, callable_symbol, guard, evaluator, cutoff):
         expected = True
         if step.kind == "else":
             controls = tuple(
-                item for item in index.controls
-                if item.enclosing_callable == callable_symbol
-                and item.kind == "if" and item.span == step.span
+                item for item in index.controls_in(callable_symbol)
+                if item.kind == "if" and item.span == step.span
                 and item.controlling is not None)
             if len(controls) != 1:
                 return None

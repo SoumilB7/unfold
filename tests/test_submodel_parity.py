@@ -36,6 +36,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import test_support as td
 
+from model_unfolder.renderers.html.card_payload import expand_card_payloads
 from model_unfolder import unfold
 from model_unfolder.adapters.diffusor import parser as diffusor
 from model_unfolder.submodel import ALTITUDE_TRANSFORMS, qualify_component
@@ -206,7 +207,7 @@ def test_recursion_contract_nested_submodel_projects_and_couples():
     assert all(child["id"].startswith("encoder_0_s0_attn_")
                for child in inner_attn["children"])
 
-    html = diagram.to_html(standalone=True)
+    html = expand_card_payloads(diagram.to_html(standalone=True))
     assert 'data-id="encoder_0_s0"' in html            # nested tower node drawn
     assert 'data-card-id="encoder_0_s0_op_selfattn"' in html
     assert validate_click_coupling(html) == []

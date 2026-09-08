@@ -7,9 +7,10 @@ image. So seeing the output as an image is a built-in operation, not an ad-hoc
 ``rsvg-convert`` dance done by hand.
 
 Every diagram view — the top architecture diagram and every drill a click opens,
-at every depth — is baked as an ``<svg>`` in the standalone HTML up front (the
-project's ground-truth invariant: the JS only toggles visibility, it builds
-nothing). Two facts shape what we image:
+at every depth — is computed before HTML delivery. Large pages store exact card
+and SVG strings in a reversible transport and materialise cards on click. This
+module expands that transport for exhaustive inspection; it never derives a
+diagram from browser state. Two facts shape what we image:
 
 * **Description-only leaf cards carry no ``<svg>``** and so get no image (we don't
   want pictures of prose) — the natural, correct stopping point of each drill.
@@ -112,6 +113,9 @@ def svg_views(html: str) -> list[tuple[str, str]]:
     """Every baked diagram view as ``(label, svg)`` in document order — labelled
     by drill path / architecture variant. Includes the per-layer-group duplicate
     copies; :func:`render_images` is what dedups them. Leaf cards never appear."""
+    from .renderers.html.card_payload import expand_card_payloads
+
+    html = expand_card_payloads(html)
     ex = _ViewExtractor(html)
     ex.feed(html)
     return ex.views
@@ -208,7 +212,8 @@ def render_images(diagram, outdir: str, *, scale: float = 2.0, background: str =
         dup = f"   (+{len(entry['aliases'])} identical copies collapsed)" if entry["aliases"] else ""
         manifest.append(f"{fname}{dup}")
 
-    n_leaves = len(re.findall(r'data-card-id="', html)) - len(views)
+    from .renderers.html.card_payload import expand_card_payloads
+    n_leaves = len(re.findall(r'data-card-id="', expand_card_payloads(html))) - len(views)
     collapsed = len(views) - len(distinct)
     with open(os.path.join(outdir, "MANIFEST.txt"), "w", encoding="utf-8") as f:
         f.write(f"# {len(distinct)} DISTINCT diagram views (architecture + every drill, to the leaves)\n")

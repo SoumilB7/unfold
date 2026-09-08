@@ -271,6 +271,18 @@ def framework_attention_invocation_role(
         return _failed(
             owner, f"attention container interface is not exact: {detail}")
     interface = interface_result.require_value()
+    return _framework_attention_role_from_interface(
+        index, block_frame, lane, interface)
+
+
+def _framework_attention_role_from_interface(
+        index: ProgramIndex,
+        block_frame: ConstructorFrame,
+        lane: FrameworkAttentionLaneEvidence,
+        interface: DefaultAttentionContainerInterface,
+) -> ReaderResult[FrameworkAttentionInvocationRole]:
+    """Continue the role proof with this lane's already established interface."""
+    owner = block_frame.graph.root.occurrence
     call = lane.invocation.call
     bound, expanded = _bind_call(call, interface.forward)
     primary = bound.get(interface.primary_formal.name)

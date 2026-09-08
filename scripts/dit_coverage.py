@@ -100,6 +100,8 @@ def probe(repo: str) -> dict:
         return out
 
     coupling = validate_click_coupling(html)
+    from model_unfolder.renderers.html.card_payload import expand_card_payloads
+    inspected_html = expand_card_payloads(html)
     extras = ir.get("extras") or {}
     out.update({
         "status": "OK",
@@ -108,7 +110,7 @@ def probe(repo: str) -> dict:
                    else "dit" if extras.get("diffusion") else "?"),
         "warnings": list(ir.get("warnings") or []),
         "coupling": coupling or None,
-        "unknown_facts": html.count(">?<") + html.count("dim ?"),
+        "unknown_facts": inspected_html.count(">?<") + inspected_html.count("dim ?"),
         "encoders": [s.get("name") for s in
                      ((extras.get("diffusion") or {}).get("text_encoder_specs") or [])
                      ] or None,

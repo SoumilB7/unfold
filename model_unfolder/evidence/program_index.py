@@ -1455,6 +1455,7 @@ class _SourceWalker:
         # slicing semantics while paying for the line table once per file.
         self._source_lines = _split_source_lines(text)
         self.tree = tree
+        self._expr_memo = None
         self._config_roots = config_vocab["config_roots"]
         self._act_dispatch = config_vocab["activation_dispatch"]
         self._act_calls = config_vocab["activation_calls"]
@@ -1508,16 +1509,23 @@ class _SourceWalker:
     # -- passes ------------------------------------------------------------- #
 
     def run(self) -> "_SourceWalker":
-        self.module_bindings.extend(
-            _ModuleBindingCollector(self.sid).collect(self.tree))
-        self._collect_definitions(self.tree.body, scope="", guard=())
-        for node in self.tree.body:
-            if isinstance(node, ast.ClassDef):
-                self._class(node, scope="")
-            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                self._callable(node, owner=None, scope="")
-        self._fold_container_appends()
-        return self
+        # Both passes only read this parsed tree. Keep exact AST objects alive
+        # while sharing their immutable expression normalization within this run.
+        # Direct/private calls outside run retain their uncached behavior.
+        self._expr_memo = {}
+        try:
+            self.module_bindings.extend(
+                _ModuleBindingCollector(self.sid).collect(self.tree))
+            self._collect_definitions(self.tree.body, scope="", guard=())
+            for node in self.tree.body:
+                if isinstance(node, ast.ClassDef):
+                    self._class(node, scope="")
+                elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    self._callable(node, owner=None, scope="")
+            self._fold_container_appends()
+            return self
+        finally:
+            self._expr_memo = None
 
     def _collect_definitions(self, body, scope: str, guard: tuple) -> None:
         for node in body:
@@ -2521,6 +2529,17 @@ class _SourceWalker:
             return ""
 
     def _expr(self, node) -> ExprNode | None:
+        memo = self._expr_memo
+        if memo is None or node is None:
+            return self._build_expr(node)
+        previous = memo.get(id(node))
+        if previous is not None and previous[0] is node:
+            return previous[1]
+        expression = self._build_expr(node)
+        memo[id(node)] = (node, expression)
+        return expression
+
+    def _build_expr(self, node) -> ExprNode | None:
         if node is None:
             return None
         sp = self._span(node)
@@ -2800,6 +2819,8 @@ class ProgramIndex:
                 self.bindings, lambda item: item.enclosing_callable),
             "loops_in": grouped(
                 self.loops, lambda item: item.enclosing_callable),
+            "controls_in": grouped(
+                self.controls, lambda item: item.enclosing_callable),
             "try_observations_in": grouped(
                 self.try_observations, lambda item: item.enclosing_callable),
             "comprehensions_in": grouped(
@@ -2837,6 +2858,9 @@ class ProgramIndex:
 
     def attribute_accesses_in(self, callable_symbol: SymbolId) -> tuple:
         return self._address_index["attribute_accesses_in"].get(callable_symbol, ())
+
+    def controls_in(self, callable_symbol: SymbolId) -> tuple:
+        return self._address_index["controls_in"].get(callable_symbol, ())
 
     def contains_callable_call(self, call: CallObservation) -> bool:
         """Full call-record membership in the indexed callable denominator."""

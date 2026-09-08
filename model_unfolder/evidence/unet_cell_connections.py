@@ -22,13 +22,35 @@ def _member(expression, receiver_name="self"):
     return None
 
 
-def _direct_origin(index, forward, target, actual, sources, guard_state=None):
-    """One reaching call result, with no unexamined transform crossed."""
+@dataclass(frozen=True)
+class _TargetLineage:
+    index: object
+    forward: object
+    target: object
+    guard_state: object
+    lineage: object
+
+
+def _target_lineage(index, forward, target, guard_state):
+    """Prepare only this target's frozen exclusions and path guard decisions."""
     excluded = tuple(row for row in index.bindings_in(forward.symbol)
                      if _lexically_disjoint(row.guard, target.guard))
     lineage = local_lineage_at_callable(
         index, forward, binding_guard_state=lambda row:
         False if row in excluded else guard_state(row) if guard_state else None)
+    return _TargetLineage(index, forward, target, guard_state, lineage)
+
+
+def _direct_origin(index, forward, target, actual, sources, guard_state=None, *,
+                   prepared=None):
+    """One reaching call result, with no unexamined transform crossed."""
+    if prepared is None:
+        prepared = _target_lineage(index, forward, target, guard_state)
+    if (not isinstance(prepared, _TargetLineage)
+            or prepared.index is not index or prepared.forward is not forward
+            or prepared.target is not target or prepared.guard_state is not guard_state):
+        raise ValueError("direct-origin lineage belongs to another target or path")
+    lineage = prepared.lineage
     value, cutoff = actual, target.span
     guard = () if guard_state and guard_state(target) is True else target.guard
     route, seen = [], set()
@@ -227,7 +249,7 @@ def _connections(mechanisms, bindings, execution=None):
                    for access in index.attribute_accesses_in(forward.symbol)):
                 usable_environments = ()
 
-            def guard_state(row):
+            def evaluate_guard_state(row):
                 if not row.guard:
                     return True
                 from .unet_selected_constructor import selected_instance_guard_evidence
@@ -240,6 +262,18 @@ def _connections(mechanisms, bindings, execution=None):
                 spans.update(span for value in decisions for span in value.spans)
                 return decisions[0].value
 
+            guard_results = {}
+
+            def guard_state(row):
+                key = id(row)
+                cached = guard_results.get(key)
+                if cached is None:
+                    # Retain the exact row as well as None/False/True results.
+                    # This memo lives only under this path's fixed environments.
+                    cached = (row, evaluate_guard_state(row))
+                    guard_results[key] = cached
+                return cached[1]
+
             source_calls = {span: call for span, call in sources.items() if guard_state(call) is not False}
             for target in calls:
                 if guard_state(target) is False:
@@ -250,8 +284,10 @@ def _connections(mechanisms, bindings, execution=None):
                 if not _member_stays_bound(index, forward, target, path, bindings):
                     continue
                 actuals = (*target.args, *(value for key, value in target.kwargs if key != "**"))
+                prepared = _target_lineage(index, forward, target, guard_state) if actuals else None
                 for slot, actual in enumerate(actuals):
-                    origin = _direct_origin(index, forward, target, actual, source_calls, guard_state)
+                    origin = _direct_origin(index, forward, target, actual, source_calls, guard_state,
+                                            prepared=prepared)
                     if origin is None:
                         continue
                     source, route = origin

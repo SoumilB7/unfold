@@ -155,11 +155,17 @@ def directory_members(path):
         return {'exists': False, 'link_target': os.readlink(path) if path.is_symlink() else None}
     if not path.is_dir():
         return {'exists': True, 'file_sha256': file_digest(path), 'resolved': str(path.resolve())}
-    return {'exists': True, 'resolved': str(path.resolve()),
-            'entries': sorted([entry.name, 'link' if entry.is_symlink() else
-                              'dir' if entry.is_dir() else 'file',
-                              str(entry.resolve()) if entry.is_symlink() else '']
-                             for entry in path.iterdir() if entry.name != '__pycache__')}
+    resolved = str(path.resolve())
+    entries = []
+    with os.scandir(path) as scan:
+        for entry in scan:
+            if entry.name == '__pycache__':
+                continue
+            is_link = entry.is_symlink()
+            entries.append([entry.name, 'link' if is_link else
+                            'dir' if entry.is_dir() else 'file',
+                            str(Path(entry.path).resolve()) if is_link else ''])
+    return {'exists': True, 'resolved': resolved, 'entries': sorted(entries)}
 
 
 def seal_code_root(path, *, excludes=(), digest_file=None):
@@ -171,25 +177,58 @@ def seal_code_root(path, *, excludes=(), digest_file=None):
                 'entries': {'.': ['file', digest_file(path)]}, 'excludes': list(excludes)}
     excluded = {str(Path(item).resolve()) for item in excludes}
     entries = {}
+    metadata_root = '.dist-info' in path.name or '.egg-info' in path.name
     for directory, dirs, files in os.walk(path, followlinks=False):
         base = Path(directory)
+        relative = str(base.relative_to(path))
+        prefix = '' if relative == '.' else relative + os.sep
         dirs[:] = sorted(name for name in dirs if name != '__pycache__'
                          and (not excluded or str((base / name).resolve()) not in excluded))
         for name in dirs:
             child = base / name
             if child.is_symlink():
                 raise ValueError('directory symlinks require unsupported transitive sealing')
-            entries[str(child.relative_to(path))] = ['link', str(child.resolve())] if child.is_symlink() else ['dir']
+            entries[prefix + name] = ['dir']
         for name in sorted(files):
             child = base / name
-            if child.suffix in {'.pyc', '.pyo'}:
+            suffix = child.suffix
+            if suffix in {'.pyc', '.pyo'}:
                 continue
             value = ['link', str(child.resolve())] if child.is_symlink() else ['file']
-            if child.suffix in _CODE_SUFFIXES or '.dist-info' in path.name or '.egg-info' in path.name:
+            if suffix in _CODE_SUFFIXES or metadata_root:
                 value.append(digest_file(child))
-            entries[str(child.relative_to(path))] = value
+            entries[prefix + name] = value
     return {'root': str(path), 'resolved': str(path.resolve()), 'entries': entries,
             'excludes': sorted(excluded)}
+
+
+def _prefetch_file_hashes(paths):
+    """Hash declared input files with four readers and bounded pending work.
+
+    Results belong to one parent validation only. Namespace checks and complete
+    root enumeration still run freshly afterward; unlisted files are never
+    inferred unchanged from this prefetch. Read scheduling is concurrent, not
+    an atomic filesystem snapshot.
+    """
+    from collections import deque
+    from concurrent.futures import ThreadPoolExecutor
+
+    keys = iter(dict.fromkeys(str(Path(path)) for path in paths))
+    hashes = {}
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        pending = deque()
+        for _ in range(16):
+            key = next(keys, None)
+            if key is None:
+                break
+            pending.append((key, pool.submit(file_digest, key)))
+        while pending:
+            key, future = pending.popleft()
+            hashes[key] = future.result()
+            key = next(keys, None)
+            if key is not None:
+                pending.append((key, pool.submit(file_digest, key)))
+    return hashes
 
 
 def validate_dependencies(manifest, *, replay_probes=False):
@@ -222,7 +261,9 @@ def validate_dependencies(manifest, *, replay_probes=False):
         if not value['creator']['creator_stack'] or any(
                 row[0] not in manifest['files'] for row in value['creator']['creator_stack']):
             return False
-    hashes = {}
+    hashes = _prefetch_file_hashes(
+        path for path, value in manifest['files'].items()
+        if value['sha256'] is not None)
     def checked_digest(path):
         key = str(Path(path))
         if key not in hashes:

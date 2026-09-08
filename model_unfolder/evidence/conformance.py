@@ -121,8 +121,38 @@ class ConformanceProblem:
 # public API
 # ---------------------------------------------------------------------------
 
+@dataclass(frozen=True)
+class _ConformanceSourceAnalysis:
+    """One caller-owned source analysis, never persisted as evidence or IR."""
+
+    bundle: SourceBundle
+    component: str
+    files: tuple[str, ...]
+    forward_ops: dict[str, ForwardOps]
+    architecture: str | None
+
+
+def _conformance_source_analysis(
+    bundle: SourceBundle,
+    prepared: _ConformanceSourceAnalysis | None = None,
+) -> _ConformanceSourceAnalysis:
+    if prepared is not None:
+        if prepared.bundle is not bundle:
+            raise ValueError("conformance source analysis belongs to a different bundle")
+        return prepared
+    component, component_files = _component_source(bundle, "text")
+    files = _augment_diffusion_files(component_files)
+    if not files:
+        return _ConformanceSourceAnalysis(bundle, component, files, {}, None)
+    forward_ops = extract_forward_ops(files, component=component)
+    architecture = (getattr(bundle, "component_architectures", {}) or {}).get(component)
+    return _ConformanceSourceAnalysis(
+        bundle, component, files, forward_ops, architecture)
+
+
 def check_model_conformance(
     target, ir: dict, *, source: str = "local", bundle: SourceBundle | None = None,
+    _source_analysis: _ConformanceSourceAnalysis | None = None,
 ) -> list[ConformanceProblem]:
     """Diff every layer-group view of ``ir`` against the model's ``forward()`` code.
 
@@ -130,12 +160,10 @@ def check_model_conformance(
     Returns all problems (including ``unresolved`` for views with no code unit)."""
     family = _family(target)
     bundle = bundle or resolve_source_files(target, source=source)
-    component, component_files = _component_source(bundle, "text")
-    files = _augment_diffusion_files(component_files)
-    if not files:
+    analysis = _conformance_source_analysis(bundle, _source_analysis)
+    if not analysis.files:
         return [ConformanceProblem("unresolved", "", f"{family}/*")]
-    forward_ops = extract_forward_ops(files, component=component)
-    architecture = (getattr(bundle, "component_architectures", {}) or {}).get(component)
+    forward_ops, architecture = analysis.forward_ops, analysis.architecture
     cmap = load_conformance_map()
     abstractions = load_conformance_abstractions()
 
@@ -444,6 +472,7 @@ def _drawn_fusion_routes(fusion: dict) -> tuple[tuple[str, str], ...]:
 
 def check_wiring_conformance(
     target, ir: dict, *, source: str = "local", bundle: SourceBundle | None = None,
+    _source_analysis: _ConformanceSourceAnalysis | None = None,
 ) -> list[ConformanceProblem]:
     """Diff each layer-group's drawn conditioning SIDE-INPUTS against the backing
     ``forward()``'s parameters.
@@ -457,12 +486,10 @@ def check_wiring_conformance(
     this checks conditioning INPUTS — the complementary axis."""
     family = _family(target)
     bundle = bundle or resolve_source_files(target, source=source)
-    component, component_files = _component_source(bundle, "text")
-    files = _augment_diffusion_files(component_files)
-    if not files:
+    analysis = _conformance_source_analysis(bundle, _source_analysis)
+    if not analysis.files:
         return []                       # no oracle — op-conformance records 'unresolved'
-    forward_ops = extract_forward_ops(files, component=component)
-    architecture = (getattr(bundle, "component_architectures", {}) or {}).get(component)
+    forward_ops, architecture = analysis.forward_ops, analysis.architecture
     cmap = load_conformance_map()
     stage_role, role_params = load_conformance_wiring_roles()
 
@@ -510,6 +537,7 @@ def check_wiring_conformance(
 def check_fact_conformance(
     target, ir: dict, *, source: str = "local", bundle: SourceBundle | None = None,
     program_index=None, parse_context=None,
+    _source_analysis: _ConformanceSourceAnalysis | None = None,
 ) -> list[ConformanceProblem]:
     """Diff per-layer-group ARCHITECTURE FACTS that op-PRESENCE conformance is
     structurally blind to — the SAME op-kind with different SEMANTICS:
@@ -530,12 +558,11 @@ def check_fact_conformance(
     a constructed-class substring, never reconstructed wiring."""
     family = _family(target)
     bundle = bundle or resolve_source_files(target, source=source)
-    component, component_files = _component_source(bundle, "text")
-    files = _augment_diffusion_files(component_files)
-    if not files:
+    analysis = _conformance_source_analysis(bundle, _source_analysis)
+    if not analysis.files:
         return []                       # no oracle — op-conformance records 'unresolved'
-    forward_ops = extract_forward_ops(files, component=component)
-    architecture = (getattr(bundle, "component_architectures", {}) or {}).get(component)
+    component, files = analysis.component, analysis.files
+    forward_ops, architecture = analysis.forward_ops, analysis.architecture
     cmap = load_conformance_map()
     markers = load_conformance_fact_markers()
     rotary_subs = [s.lower() for s in markers.get("rotary", [])]

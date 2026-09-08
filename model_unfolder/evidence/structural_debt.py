@@ -891,7 +891,7 @@ _CONSUMER_DEBT_BASELINE = (
     ('model_unfolder/renderers/html/block_views/unet.py', '_stage_title', 'renderer', 'raw_extras', '7f1d4831e31adb5b'),
     ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_view', 'renderer', 'raw_extras', 'f337a110eca6bd73'),
     ('model_unfolder/renderers/html/document.py', '_render_fragment_body', 'renderer', 'raw_extras', '4e0f5a0ff4503742'),
-    ('model_unfolder/renderers/html/document.py', 'render_fragment', 'renderer', 'raw_extras', '4592b54801fb2c20'),
+    ('model_unfolder/renderers/html/document.py', '_render_canonical_fragment', 'renderer', 'raw_extras', '4592b54801fb2c20'),
     ('model_unfolder/renderers/html/evidence.py', '_code_evidence_section', 'renderer', 'raw_extras', 'ce0f5f767cc3d150'),
     ('model_unfolder/renderers/html/fact_projection.py', 'fact_provenance', 'renderer', 'raw_extras', 'a9089eb1467f73d3'),
     ('model_unfolder/renderers/html/metadata.py', '_arch_badges', 'renderer', 'raw_extras', '3b120c902b366719'),

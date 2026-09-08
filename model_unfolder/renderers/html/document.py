@@ -12,6 +12,14 @@ from .views import _build_architecture_view, _build_layer_map
 
 
 def render_fragment(ir: dict, mount_id: str, include_font_import: bool = True) -> str:
+    """Render canonical views, then losslessly pack substantial drill payloads."""
+    from .card_payload import pack_card_payloads
+
+    canonical = _render_canonical_fragment(ir, mount_id, include_font_import)
+    return pack_card_payloads(canonical, mount_id)
+
+
+def _render_canonical_fragment(ir: dict, mount_id: str, include_font_import: bool = True) -> str:
     """Render a complete HTML fragment.
 
     For heterogeneous models (multiple layer-type groups, e.g. DeepSeek-V3's

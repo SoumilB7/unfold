@@ -219,6 +219,9 @@ def validate_click_coupling(html: str) -> list[str]:
     different depth from masking a broken click.  Small snippets with no panel
     structure retain the original document-global behavior for compatibility.
     """
+    from .renderers.html.card_payload import expand_card_payloads
+
+    html = expand_card_payloads(html)
     scoped = _ClickScopeParser()
     scoped.feed(html)
     scoped.close()
@@ -315,6 +318,9 @@ def validate_unique_ref_ids(html: str) -> list[str]:
     silently vanish from the live render even though each svg looks correct in
     isolation (a rendered PNG, or rsvg). This is the document-level check the
     isolated-svg image pass cannot see."""
+    from .renderers.html.card_payload import expand_card_payloads
+
+    html = expand_card_payloads(html)
     import collections
     referenced = set(_URL_REF.findall(html))
     counts = collections.Counter(self_id for self_id in _DEF_ID.findall(html))
@@ -341,6 +347,9 @@ def validate_no_dotted_arrows(html: str) -> list[str]:
     elements (``marker-end``) so non-flow decorations cannot mask a real dataflow
     violation.
     """
+    from .renderers.html.card_payload import expand_card_payloads
+
+    html = expand_card_payloads(html)
     problems: list[str] = []
     for match in _STROKED_ELEMENT.finditer(html):
         attrs = match.group("attrs")
@@ -360,6 +369,9 @@ def validate_no_dotted_boundaries(html: str) -> list[str]:
     flow semantics or region/highlight styling regressed.  Attribute order and
     quote style are deliberately irrelevant.
     """
+    from .renderers.html.card_payload import expand_card_payloads
+
+    html = expand_card_payloads(html)
     problems: list[str] = []
     for match in _STROKED_ELEMENT.finditer(html):
         attrs = match.group("attrs")

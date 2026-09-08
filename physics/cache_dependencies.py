@@ -31,6 +31,16 @@ from physics.result_cache import (
 
 _ACTIVE_CAPTURE = None
 
+# Bind the actual interpreter implementation before constructor imports. A
+# filename/function-name resemblance is not evidence of a standard cache write.
+_BYTECODE_WRITE_CHAIN = (
+    importlib._bootstrap_external._write_atomic.__code__,
+    importlib.machinery.SourceFileLoader.set_data.__code__,
+    importlib.machinery.SourceFileLoader._cache_bytecode.__code__,
+    importlib.machinery.SourceFileLoader.get_code.__code__,
+) if (importlib._bootstrap_external.__spec__.origin == 'frozen'
+      and importlib._bootstrap_external.__spec__.loader is importlib.machinery.FrozenImporter) else ()
+
 
 @contextmanager
 def runtime_bootstrap():
@@ -234,24 +244,32 @@ class DependencyCapture:
 
     def _root_for(self, path):
         resolved = path.resolve()
-        if resolved.is_relative_to(self.worker_root):
+        parts = resolved.parts
+        normalized = tuple(os.path.normcase(part) for part in parts)
+
+        def within(root):
+            root_parts = root.parts
+            return bool(root_parts) and normalized[:len(root_parts)] == tuple(
+                os.path.normcase(part) for part in root_parts)
+
+        if within(self.worker_root):
             self._seal(self.worker_root)
             return True
         for root_name in self.site_roots:
             root = Path(root_name)
-            if resolved.is_relative_to(root):
-                relative = resolved.relative_to(root)
-                if not relative.parts:
+            if within(root):
+                relative = parts[len(root.parts):]
+                if not relative:
                     self.search[str(root)] = directory_members(root)
                 else:
-                    self._seal(root / relative.parts[0])
+                    self._seal(root / relative[0])
                 return True
-        if resolved.is_relative_to(self.stdlib):
+        if within(self.stdlib):
             self._seal(self.stdlib, excludes=self.site_roots)
             return True
         # Interpreter configuration/header reads are concrete runtime resources,
         # separate from recursively sealed stdlib and imported package code.
-        if resolved.is_relative_to(Path(sys.base_prefix).resolve()) or resolved in self.system_identity:
+        if within(Path(sys.base_prefix).resolve()) or resolved in self.system_identity:
             return True
         return False
 
@@ -436,6 +454,41 @@ class DependencyCapture:
             else:
                 self.unsupported.add(f'unresolved_import_origin:{name}')
 
+    def _generated_bytecode_write(self, fd, mode, flags, frame):
+        """Recognize only the standard loader's write of its derived cache.
+
+        Inspect only the original standard-library call arguments. No frame or
+        local value is retained, and consumed bytecode/source reads still pass
+        through the ordinary dependency collector.
+        """
+        if mode != 'wb' or flags & os.O_ACCMODE != os.O_WRONLY or not _BYTECODE_WRITE_CHAIN:
+            return False
+        frames = []
+        for code in _BYTECODE_WRITE_CHAIN:
+            if frame is None or frame.f_code is not code:
+                return False
+            frames.append(frame)
+            frame = frame.f_back
+        atomic, writer, caching, reading = (item.f_locals for item in frames)
+        loader = writer.get('self')
+        if (type(loader) is not importlib.machinery.SourceFileLoader
+                or caching.get('self') is not loader or reading.get('self') is not loader
+                or atomic.get('fd') != fd):
+            return False
+        source = Path(caching['source_path']).absolute()
+        destination = Path(atomic['path']).absolute()
+        if (source != Path(loader.path).absolute()
+                or destination != Path(importlib.util.cache_from_source(str(source))).absolute()
+                or '__pycache__' not in destination.parts or not source.is_file()
+                or destination.parent.resolve() != source.resolve().parent / '__pycache__'):
+            return False
+        if self._generated(source) is None and not self._root_for(source):
+            return False
+        # The source association is required even when the bytecode itself is
+        # generated. This is not an exemption for later reads of that bytecode.
+        self._read(source)
+        return True
+
     def _audit(self, event, args):
         if not self.active or getattr(self.local, 'busy', False):
             return
@@ -452,6 +505,9 @@ class DependencyCapture:
                 elif event == 'open':
                     path, mode, flags = args
                     if not isinstance(path, (str, bytes, os.PathLike)):
+                        if isinstance(path, int) and self._generated_bytecode_write(
+                                path, mode, flags, sys._getframe(1)):
+                            return
                         if isinstance(path, int) and getattr(self.local, 'probe_command', None) is not None:
                             frame = sys._getframe(1)
                             if frame.f_code.co_filename == subprocess.__file__ and frame.f_code.co_name == '__init__':

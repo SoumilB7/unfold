@@ -235,10 +235,9 @@ def resolve_called_import_source(
             "incomplete", call, component,
             failure_kind="dynamic_call_target",
             failure_detail="the call target has no exact lexical root")
-    bindings = tuple(item for item in index.imports
-                     if item.source == call.enclosing_callable.source
-                     and item.alias == alias
-                     and item.enclosing_callable in {
+    bindings = tuple(item for item in index.imports_aliased(
+                         call.enclosing_callable.source, alias)
+                     if item.enclosing_callable in {
                          None, call.enclosing_callable})
     if not bindings:
         return CalledImportSourceResolution(

@@ -6,6 +6,7 @@ investigation; they do not load weights or run model forward execution.
 """
 import pytest
 
+from model_unfolder.renderers.html.card_payload import expand_card_payloads
 from model_unfolder import unfold, config_to_ir
 from model_unfolder.adapters.diffusor import parser as diffusor
 from model_unfolder.adapters.transformer import parser as transformer
@@ -21,7 +22,7 @@ from test_support import FLUX, PIXART, LLAMA, SDXL_UNET, HYBRID_ENC, MOE_ENC
 def sdxl_render():
     """One real render of the unchanged shared input; consumers must not mutate it."""
     diagram = unfold(SDXL_UNET)
-    return diagram, diagram.to_ir(), diagram.to_html(standalone=True)
+    return diagram, diagram.to_ir(), expand_card_payloads(diagram.to_html(standalone=True))
 
 
 def _unet_fact(ir, leaf):
@@ -38,6 +39,7 @@ def _instance_card(ir, path):
 
 
 def _assert_instance_drawn(ir, html, path):
+    html = expand_card_payloads(html)
     from model_unfolder.lint import _walk_blocks
     # A source-bound call card can be the drawn occurrence while its canonical
     # containment card remains a separate drill. Both carry the same exact path.
@@ -263,7 +265,7 @@ def test_pixart_caption_projection_is_explicit_and_code_shaped():
     assert "text_projection" not in blocks
     edges = {(e["from"], e["to"]) for e in render["loop_edges"]}
     assert ("text_encoder", "denoiser") not in edges
-    html = d.to_html(standalone=True)
+    html = expand_card_payloads(d.to_html(standalone=True))
     assert 'data-id="text_projection"' not in html
     assert "PixArtAlphaTextProjection" not in html
 
@@ -294,7 +296,7 @@ def test_vae_decoder_surfaces_input_conv_and_attention_mid_block():
     assert [op["label"] for op in children["vae_mid_block"]["detail"]["ops"]] == [
         "ResNet", "Attention", "ResNet"
     ]
-    html = d.to_html(standalone=True)
+    html = expand_card_payloads(d.to_html(standalone=True))
     assert 'data-id="vae_conv_in"' in html and 'data-card-id="vae_conv_in"' in html
     assert 'data-id="vae_mid_block"' in html and 'data-card-id="vae_mid_block"' in html
 
@@ -334,7 +336,7 @@ def test_unknown_diffusion_blocks_render_unresolved():
 
 def test_main_view_is_the_sampling_loop():
     """The hero image is the recursive sampling loop, not the transformer stack."""
-    html = unfold(FLUX).to_html(standalone=True)
+    html = expand_card_payloads(unfold(FLUX).to_html(standalone=True))
     assert "SAMPLING LOOP" in html
     assert "sampling step" in html       # honest loop framing (no invented step count)
     assert "× T steps" not in html        # the old placeholder is gone
@@ -364,7 +366,7 @@ def test_denoiser_drills_into_the_dit_stack():
     """Clicking the denoiser opens the transformer architecture one panel deeper:
     its card must embed the DiT stack's clickable layer nodes (attention, etc.)."""
     import re
-    html = unfold(FLUX).to_html(standalone=True)
+    html = expand_card_payloads(unfold(FLUX).to_html(standalone=True))
     m = re.search(
         r'data-card-id="denoiser"(.*?)</div>\s*<div class="uf-card-detail', html, re.S
     )
@@ -384,7 +386,7 @@ def test_text_encoders_render_as_separate_blocks():
     loop_ids = [b["id"] for b in ir.extras["render"]["loop_blocks"]]
     assert "prompt" in loop_ids
     assert "encoder_0" in loop_ids and "encoder_1" in loop_ids
-    html = unfold(FLUX).to_html(standalone=True)
+    html = expand_card_payloads(unfold(FLUX).to_html(standalone=True))
     assert "CLIP" in html and "T5" in html
     # Each encoder is a clickable node with a backing card.
     for nid in ("prompt", "encoder_0", "encoder_1"):
@@ -398,7 +400,7 @@ def test_text_encoder_breaks_into_drillable_ops():
     owner remains unresolved, so its independently proven attention and FFN
     remain clickable without invented norm occurrences or residual adds.
     """
-    html = unfold(FLUX).to_html(standalone=True)
+    html = expand_card_payloads(unfold(FLUX).to_html(standalone=True))
     for op in ("embed", "selfattn", "ffn"):
         assert f'data-id="encoder_0_op_{op}"' in html
         assert f'data-card-id="encoder_0_op_{op}"' in html
@@ -510,7 +512,7 @@ def test_text_encoder_ffn_summary_drill_and_cards_share_one_region():
     assert not ({c["id"] for c in clip["children"]} & {c["id"] for c in t5["children"]})
 
     diagram = unfold(FLUX)
-    html = diagram.to_html(standalone=True)
+    html = expand_card_payloads(diagram.to_html(standalone=True))
     # The summary card itself contains the canonical SVG, and every drawn op is
     # coupled to its namespaced leaf card at the next interaction depth.
     for cid in ("encoder_0_op_ffn", "encoder_1_g0_op_ffn"):
@@ -831,7 +833,7 @@ def test_spatio_temporal_occurrences_and_proved_mixer_argument_are_drawn():
     """Temporal shapes and the proved temporal-result argument survive; no alpha/frame formula is inferred."""
     from model_unfolder.lint import _walk_blocks
     diagram = unfold(SVD_UNET)
-    ir, html = diagram.to_ir(), diagram.to_html(standalone=True)
+    ir, html = diagram.to_ir(), expand_card_payloads(diagram.to_html(standalone=True))
     modules = _unet_fact(ir, "constructed_modules")
     convs = [path for path, row in modules.items() if row["class_name"] == "Conv3d"]
     mixers = [path for path, row in modules.items() if row["class_name"] == "AlphaBlender"]
@@ -1171,7 +1173,7 @@ def test_diffusion_recursive_depth_conforms(name):
         assert len(reference_leaves) == 15
         assert {block["id"]: block["target"] for block in reference_leaves} == expected
     # 2. recursive coupling: every clickable node at every drill depth → a card.
-    html = d.to_html(standalone=True)
+    html = expand_card_payloads(d.to_html(standalone=True))
     assert validate_block_tree(ir) == []
     assert validate_click_coupling(html) == []
     from html import escape
@@ -1408,7 +1410,7 @@ def test_non_kl_vae_stays_honest():
         "decoder_block_out_channels": [128, 256, 512, 512, 1024, 1024],
         "latent_channels": 32,
     }
-    html = unfold(cfg).to_html(standalone=True)
+    html = expand_card_payloads(unfold(cfg).to_html(standalone=True))
     assert validate_click_coupling(html) is None or validate_click_coupling(html) == []
     i = html.find('data-card-id="vae_decoder_block_1"')
     assert i > 0
@@ -1430,7 +1432,7 @@ def test_vae_decoder_upsample_matches_diffusers_placement():
         "up_block_types": ["UpDecoderBlock2D"] * 4,
         "norm_num_groups": 32,
     }
-    html = unfold(cfg).to_html(standalone=True)
+    html = expand_card_payloads(unfold(cfg).to_html(standalone=True))
 
     def facts_of(cid: str) -> str:
         i = html.find(f'data-card-id="{cid}"')
@@ -1527,7 +1529,7 @@ def test_sampling_loop_json_matches_html_nodes():
     j = d.to_json()["sampling_loop"]
     json_nodes = {n["id"] for n in j["nodes"]}
 
-    html = d.to_html(standalone=True)
+    html = expand_card_payloads(d.to_html(standalone=True))
     seg = html[html.index("SAMPLING LOOP"):]
     loop_svg = re.search(r"<svg.*?</svg>", seg, re.S).group(0)
     html_nodes = set(re.findall(r'data-id="([^"]+)"', loop_svg))
@@ -1684,7 +1686,7 @@ def test_dual_encoder_internals_survive_without_an_inferred_concat():
     from test_support import SDXL_TEXT_ENCODER_CONFIGS
     cfg = dict(SDXL_UNET, _text_encoder_configs=SDXL_TEXT_ENCODER_CONFIGS)
     diagram = unfold(cfg)
-    ir, html = diagram.to_ir(), diagram.to_html(standalone=True)
+    ir, html = diagram.to_ir(), expand_card_payloads(diagram.to_html(standalone=True))
     encoders = {block["id"]: block for block in _walk_blocks(ir)
                 if block.get("view") == "text_encoder"}
     assert len(encoders) == 2
@@ -1712,7 +1714,7 @@ def test_encoder_bridge_own_linear_shape_and_conditional_call_ports():
                          "num_layers": 28, "num_attention_heads": 32,
                          "ffn_hidden_size": 13696, "vocab_size": 65024}}
     diagram = unfold(cfg)
-    ir, html = diagram.to_ir(), diagram.to_html(standalone=True)
+    ir, html = diagram.to_ir(), expand_card_payloads(diagram.to_html(standalone=True))
     assert _unet_fact(ir, "constructed_modules")["encoder_hid_proj"]["class_name"] == "Linear"
     shapes = _unet_fact(ir, "constructed_parameter_shapes")
     assert shapes["parameters"]["encoder_hid_proj.weight"]["shape"] == [2048, 4096]
@@ -1957,7 +1959,7 @@ def test_text_encoder_attention_drills_are_canonical_and_positionally_honest():
     add + code-proven unscaled QK^T.  A spec without a fetched sub-config
     keeps the description-only card (no fabricated Q/K/V)."""
     d = unfold(FLUX)
-    html = d.to_html()
+    html = expand_card_payloads(d.to_html())
     ir = d.to_ir()
 
     def find_block(blocks, bid):
@@ -2047,7 +2049,7 @@ def test_config_only_heterogeneous_encoder_schedule_cannot_split_the_tower():
     assert "encoder_0_op_selfattn" in child_ids
     assert not any(item.startswith("encoder_0_g") for item in child_ids)
 
-    html = d.to_html()
+    html = expand_card_payloads(d.to_html())
     seg = html.split('data-card-id="encoder_0"', 1)[1]
     svg = seg.split("</svg>", 1)[0]
     node_ids = set(re.findall(r'data-id="([^"]+)"', svg))
@@ -2089,7 +2091,7 @@ def test_moe_text_encoder_opens_the_canonical_moe_drill():
     width — and the tower cell is labelled MoE, not Feed-forward."""
     import re
     d = unfold(MOE_ENC)
-    html = d.to_html()
+    html = expand_card_payloads(d.to_html())
 
     seg = html.split('data-card-id="encoder_0_op_ffn"', 1)[1]
     svg = seg.split("</svg>", 1)[0]
@@ -2115,7 +2117,7 @@ def test_moe_text_encoder_opens_the_canonical_moe_drill():
     from model_unfolder.block_schema import validate_click_coupling
     assert validate_click_coupling(html) == []
     # A dense encoder never gains an expert subtree.
-    flat = unfold(FLUX).to_html()
+    flat = expand_card_payloads(unfold(FLUX).to_html())
     flat_seg = flat.split('data-card-id="encoder_0_op_ffn"', 1)[1].split("</svg>", 1)[0]
     assert "router" not in flat_seg
 
