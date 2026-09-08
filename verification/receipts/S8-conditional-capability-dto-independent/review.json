@@ -1,0 +1,23 @@
+{
+  "base_commit": "a83d704906850257fadd3904904635d218af7365",
+  "reviewed_tree": "uncommitted frozen supplied patch",
+  "source_pins": {
+    "model_unfolder/renderers/html/fact_projection.py": "b63c7c99ea72f7b5d9106ae61716fbf601c4210d37d60170ce2182f586cfb474",
+    "model_unfolder/evidence/registry.py": "478b14edfe83e7d74a25b5da8871db5da539550c02117eb3183e4e880593e7cf",
+    "model_unfolder/evidence/unet_call_binding.py": "552292e3c14b1f26730e44d780b57ff7e41158b2c7f31be35184363ae6b48d78",
+    "physics/instance_inventory.py": "7150ac1840c1acf826ba2ed67133b2ea6fe2f51f0e67c112584ab09ec3893254",
+    "tests/test_projection_obligations.py": "16a238a278ddb9ff7e91f51d863e9f734b45f833b5bd67d1f0440559973ba495",
+    "tests/test_conditional_projection_contracts.py": "15fabfc58f28ed35c17c04ebbd5a53428f3449e2290152028e0d472527c6924a",
+    "tests/test_s6_physics.py": "6bc82e803b918cdd771e5f397be9370ca23d6da8c684fbf593e3a5dbd8a78e53",
+    "model_unfolder/renderers/html/block_views/unet.py": "677e74f6cc2b5793fc5177cdb8593d641bd44e98b56b392ab123b2ab6ea449ce",
+    "model_unfolder/renderers/html/cards.py": "89608410534b74db158a7ea56677e38c1d2a00dd3200ce7c2d1ed787866bd8c2",
+    "physics/attribute_bindings.py": "58b8321ca39f9dbc3a34bd3c5e0dc1230072bca2ebce43e09ac5eaafaad8ab3e"
+  },
+  "static_checks": {
+    "all_existing_fact_projection_functions_AST_unchanged": true,
+    "all_existing_assignment_AST_unchanged": true,
+    "no_production_consumers_of_new_capability_census": true
+  },
+  "test_execution": "not run; parent owns active broad lane",
+  "verdict": "ACCEPT bounded static contract; focused runtime results pending"
+}

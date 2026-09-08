@@ -1,0 +1,461 @@
+.................................FF...FFFF.FFFFF........................ [ 43%]
+.....FFFFFFFFFFFFFF..................................................... [ 86%]
+.......................                                                  [100%]
+=================================== FAILURES ===================================
+____________________ test_sdxl_unet_conditioning_is_honest _____________________
+
+    def test_sdxl_unet_conditioning_is_honest():
+        """SDXL conformance pins:
+        * BOTH text encoders survive (CLIP-L + OpenCLIP-bigG), never folded into one;
+        * conditioning is described with the UNet mechanism (additive into ResNets,
+          cross-attention for text) — NEVER 'AdaLN modulation' (a DiT mechanism);
+        * the text_time micro-conditioning (pooled + size/crop/target) is surfaced;
+        * the mid block reports its real Transformer2D depth (transformer_layers_per_block[-1]).
+        """
+        ir = config_to_ir(SDXL_UNET)
+>       encoders = ir.extras["diffusion"]["text_encoders"]
+                   ^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'diffusion'
+
+tests/test_diffusion.py:608: KeyError
+_______________ test_image_conditioned_unet_draws_no_text_tower ________________
+
+    def test_image_conditioned_unet_draws_no_text_tower():
+        """F1: an image-conditioned decoder (encoder_hid_dim_type=image_proj, no text
+        encoder) must draw the declared IMAGE conditioning source and image-embed K/V
+        — never a fabricated text-encoder tower, never 'Encoded text'."""
+        ir = config_to_ir(KANDINSKY_2_2_DECODER)
+>       cond = ir.extras["diffusion"]["conditioning"]
+               ^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'diffusion'
+
+tests/test_diffusion.py:645: KeyError
+___ test_simple_cross_attn_blocks_stay_opaque_without_complete_cell_evidence ___
+
+    def test_simple_cross_attn_blocks_stay_opaque_without_complete_cell_evidence():
+        """A familiar type name cannot fill in an unproven internal cell."""
+        deepfloyd = {
+            "_class_name": "UNet2DConditionModel", "in_channels": 3, "out_channels": 6,
+            "block_out_channels": [320, 640, 1280, 1280], "layers_per_block": 3,
+            "cross_attention_dim": 4096, "num_attention_heads": 64,
+            "encoder_hid_dim": 4096, "encoder_hid_dim_type": "text_proj",
+            "down_block_types": ["ResnetDownsampleBlock2D", "SimpleCrossAttnDownBlock2D",
+                                 "SimpleCrossAttnDownBlock2D", "SimpleCrossAttnDownBlock2D"],
+            "up_block_types": ["SimpleCrossAttnUpBlock2D", "SimpleCrossAttnUpBlock2D",
+                               "SimpleCrossAttnUpBlock2D", "ResnetUpsampleBlock2D"],
+            "mid_block_type": "UNetMidBlock2DSimpleCrossAttn",
+            "scheduler": ["diffusers", "DDPMScheduler"],
+        }
+        html = unfold(deepfloyd).to_html(standalone=True)
+        assert "Transformer block" not in html          # no fabricated Transformer2D cell
+        assert "structure unresolved" in html
+        assert "geglu" not in html.lower()               # no fabricated GEGLU FFN
+        # The block IS text-conditioned here (text_proj), so K/V stays encoded text.
+>       assert "Encoded text" in html
+E       assert 'Encoded text' in '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,...e { showPanel(index, node.getAttribute(\'data-id\')); }\n  });\n})();\n</script>\n\n</div>\n</div>\n</body>\n</html>\n'
+
+tests/test_diffusion.py:732: AssertionError
+_______________ test_spatio_temporal_unet_draws_temporal_branch ________________
+
+    def test_spatio_temporal_unet_draws_temporal_branch():
+        """F3: a spatio-temporal (video) UNet must draw the temporal ResNet branch +
+        AlphaBlender time-mix and the frames axis — never a flat 2D UNet. Detected
+        from evidence (the class forward processes num_frames), never the class name."""
+        ir = config_to_ir(SVD_UNET)
+>       assert ir.extras["unet"].get("temporal") is True
+E       AssertionError: assert None is True
+E        +  where None = <built-in method get of dict object at 0x30b45ec40>('temporal')
+E        +    where <built-in method get of dict object at 0x30b45ec40> = {'bound_target_paths': [], 'context_routes': [], 'other_block_ids': ['instance_conv_in', 'instance_time_proj', 'instan...ch.float32', 'identity': 'add_embedding.linear_2.weight', 'shape': [1280, 1280]}, ...}, 'scope': 'denoiser', ...}, ...}.get
+
+tests/test_diffusion.py:755: AssertionError
+_______________________ test_image_unet_is_not_temporal ________________________
+
+    def test_image_unet_is_not_temporal():
+        """F3 negative control: SDXL (UNet2DConditionModel) has no frames axis — it must
+        stay a flat 2D UNet, no temporal ops fabricated."""
+        ir = config_to_ir(SDXL_UNET)
+>       assert ir.extras["unet"].get("temporal") is False
+               ^^^^^^^^^^^^^^^^^
+E       KeyError: 'unet'
+
+tests/test_diffusion.py:773: KeyError
+___________________ test_sdxl_still_draws_transformer2d_cell ___________________
+
+    def test_sdxl_still_draws_transformer2d_cell():
+        """F2 negative control: SDXL's CrossAttn*Block2D stages keep the Transformer2D
+        cell (self -> cross -> FFN), derived from the RESOLVED block class construction
+        (a Transformer2D wrapper) — the simple-cross/unknown paths must not disturb it."""
+        ir = config_to_ir(SDXL_UNET)
+>       kinds = [s.get("attn_kind") for s in ir.extras["unet"]["down"] if s.get("attn")]
+                                             ^^^^^^^^^^^^^^^^^
+E       KeyError: 'unet'
+
+tests/test_diffusion.py:785: KeyError
+______________ test_text_conditioned_unet_still_says_encoded_text ______________
+
+    def test_text_conditioned_unet_still_says_encoded_text():
+        """F1 negative control: a text-conditioned UNet (SDXL) is unchanged — the K/V
+        source stays 'Encoded text', never disturbed by the modality resolution."""
+        ir = config_to_ir(SDXL_UNET)
+>       cond = ir.extras["diffusion"]["conditioning"]
+               ^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'diffusion'
+
+tests/test_diffusion.py:817: KeyError
+__________ test_unet_stage_part_kinds_resolve_for_all_block_variants ___________
+
+    def test_unet_stage_part_kinds_resolve_for_all_block_variants():
+        """Every down/up stage of a real UNet is a recognised part_kind (solid), even
+        the Resnet*sample / Simple* block variants (DeepFloyd / Kandinsky) — they're
+        classified by position, so none render pale."""
+        from model_unfolder.block_schema import DIFFUSION_PART_KINDS
+        DEEPFLOYD = {
+            "_class_name": "UNet2DConditionModel", "in_channels": 3, "out_channels": 6,
+            "block_out_channels": [320, 640, 1280, 1280], "layers_per_block": 3,
+            "cross_attention_dim": 4096,
+            "down_block_types": ["ResnetDownsampleBlock2D", "SimpleCrossAttnDownBlock2D",
+                                 "SimpleCrossAttnDownBlock2D", "SimpleCrossAttnDownBlock2D"],
+            "up_block_types": ["SimpleCrossAttnUpBlock2D", "SimpleCrossAttnUpBlock2D",
+                               "SimpleCrossAttnUpBlock2D", "ResnetUpsampleBlock2D"],
+            "mid_block_type": "UNetMidBlock2DSimpleCrossAttn",
+        }
+        ir = config_to_ir(DEEPFLOYD)
+>       u = ir.extras["unet"]
+            ^^^^^^^^^^^^^^^^^
+E       KeyError: 'unet'
+
+tests/test_diffusion.py:840: KeyError
+__________________________ test_unet_structure_parsed __________________________
+
+    def test_unet_structure_parsed():
+        ir = config_to_ir(SDXL_UNET)
+>       u = ir.extras["unet"]
+            ^^^^^^^^^^^^^^^^^
+E       KeyError: 'unet'
+
+tests/test_diffusion.py:850: KeyError
+______________________ test_unet_renders_loop_and_ushape _______________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x3099ceab0>
+
+    def test_unet_renders_loop_and_ushape(monkeypatch):
+        ir = config_to_ir(SDXL_UNET)
+        assert validate_block_tree(ir) == []
+        html = unfold(SDXL_UNET).to_html(standalone=True)
+        assert validate_click_coupling(html) == []
+>       assert "SAMPLING LOOP" in html                    # hero loop reused
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert 'SAMPLING LOOP' in '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,...e { showPanel(index, node.getAttribute(\'data-id\')); }\n  });\n})();\n</script>\n\n</div>\n</div>\n</body>\n</html>\n'
+
+tests/test_diffusion.py:871: AssertionError
+_______________ test_unet_custom_stage_is_visible_but_unapproved _______________
+
+    def test_unet_custom_stage_is_visible_but_unapproved():
+        cfg = {
+            **SDXL_UNET,
+            "down_block_types": ["DownBlock2D", "CustomMagicDown", "CrossAttnDownBlock2D"],
+        }
+        ir = config_to_ir(cfg)
+>       custom = ir.extras["unet"]["down"][1]
+                 ^^^^^^^^^^^^^^^^^
+E       KeyError: 'unet'
+
+tests/test_diffusion.py:887: KeyError
+_________________ test_unet_view_shows_text_conditioning_rail __________________
+
+    def test_unet_view_shows_text_conditioning_rail():
+        """The U-net denoiser diagram must SHOW the encoded text entering the
+        cross-attention stages — a 'Encoded text' source broadcasting into the
+        CrossAttn stages — not just the latent U-path.  A clickable, carded node."""
+        import re
+        html = unfold(SDXL_UNET).to_html(standalone=True)
+>       den = re.search(r'<svg[^>]*aria-label="[^"]*U-net denoiser".*?</svg>', html, re.S).group(0)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'group'
+
+tests/test_diffusion.py:1459: AttributeError
+______________ test_encoded_text_box_drills_into_the_concat_view _______________
+
+    def test_encoded_text_box_drills_into_the_concat_view():
+        """Clicking the 'Encoded text' source opens a view showing HOW the encoders
+        make the cross-attention K/V: each CLIP's width feeding one concat (‖) into the
+        2,048-d K/V (768 + 1,280 = 2,048).  This needs the per-encoder configs, which
+        the by-ID loader fetches — exercised here with the SDXL fixture's configs."""
+        cfg = dict(SDXL_UNET, _text_encoder_configs={
+            "text_encoder": {"_class_name": "CLIPTextModel", "num_hidden_layers": 12,
+                             "hidden_size": 768, "num_attention_heads": 12,
+                             "intermediate_size": 3072, "hidden_act": "quick_gelu",
+                             "max_position_embeddings": 77, "vocab_size": 49408},
+            "text_encoder_2": {"_class_name": "CLIPTextModelWithProjection",
+                               "num_hidden_layers": 32, "hidden_size": 1280,
+                               "num_attention_heads": 20, "intermediate_size": 5120,
+                               "hidden_act": "gelu", "max_position_embeddings": 77,
+                               "vocab_size": 49408, "projection_dim": 1280},
+        })
+        d = unfold(cfg)
+        html = d.to_html(standalone=True)
+        i = html.find('data-card-id="unet_text_cond"')
+>       assert i >= 0
+E       assert -1 >= 0
+
+tests/test_diffusion.py:1485: AssertionError
+_______ test_encoder_hid_dim_draws_the_projection_in_the_text_cond_drill _______
+
+    def test_encoder_hid_dim_draws_the_projection_in_the_text_cond_drill():
+        """A declared encoder-width bridge (encoder_hid_dim) is a REAL nn.Linear the
+        U-net applies to the encoded prompt before any cross-attention stage reads
+        it (diffusers' encoder_hid_proj; a bare encoder_hid_dim defaults the type to
+        "text_proj" — the code's own rule).  The drill must draw it as a clickable
+        box between the encoder lane and the K/V: a width change is an op, never a
+        bare arrow (Kolors: ChatGLM 4,096-d -> Linear -> 2,048-d K/V).  GENERAL:
+        keyed off the config field, never the repo."""
+        cfg = {k: v for k, v in SDXL_UNET.items()
+               if k not in ("_repo_id", "text_encoder_2", "addition_embed_type")}
+        cfg["encoder_hid_dim"] = 4096
+        cfg["_text_encoder_configs"] = {
+            "text_encoder": {"_class_name": "ChatGLMModel", "hidden_size": 4096,
+                             "num_layers": 28, "num_attention_heads": 32,
+                             "ffn_hidden_size": 13696, "vocab_size": 65024},
+        }
+        html = unfold(cfg).to_html(standalone=True)
+        i = html.find('data-card-id="unet_text_cond"')
+>       assert i >= 0
+E       assert -1 >= 0
+
+tests/test_diffusion.py:1518: AssertionError
+__________________ test_unet_stage_drills_show_per_stage_dims __________________
+
+    def test_unet_stage_drills_show_per_stage_dims():
+        """Each stage's drill must show ITS OWN width/heads, not the first stage's.
+        Block ids are scoped per stage, so the panel's per-depth dedup can't collapse
+        every stage's ResNet/attention card into one (the '320 ch everywhere' bug)."""
+        import re
+        # SDXL's real per-stage head counts come from attention_head_dim = [5,10,20]
+        # (when num_attention_heads is unset, it IS the head count per stage).
+        cfg = dict(SDXL_UNET, attention_head_dim=[5, 10, 20])
+        html = unfold(cfg).to_html(standalone=True)
+    
+        def view_svg(cid: str) -> str:
+            i = html.find(f'data-card-id="{cid}"')
+            m = re.search(r'<svg.*?</svg>', html[i:i + 9000], re.S) if i >= 0 else None
+            return m.group(0) if m else ""
+    
+        # down 320 / 640 / 1,280; up 1,280 / 640 / 320 — each its own card
+        for sid, ch in [("unet_down_0", 320), ("unet_down_1", 640), ("unet_down_2", 1280),
+                        ("unet_up_0", 1280), ("unet_up_2", 320)]:
+>           assert f"in ({ch:,} ch)" in view_svg(f"{sid}__resnet"), (sid, ch)
+E           AssertionError: ('unet_down_0', 320)
+E           assert 'in (320 ch)' in ''
+E            +  where '' = <function test_unet_stage_drills_show_per_stage_dims.<locals>.view_svg at 0x319770720>('unet_down_0__resnet')
+
+tests/test_diffusion.py:1545: AssertionError
+__________________ test_unet_resnet_block_has_no_repeat_pill ___________________
+
+    def test_unet_resnet_block_has_no_repeat_pill():
+        """A ResNet block is ONE residual cell, not a repeated stack — its view must
+        NOT show a '× N' / '× 1' repeat pill (the per-stage layers_per_block repeat is
+        shown one level up, on the stage). The stage view still shows its real pill,
+        and an unknown-count stack still legitimately reads '× N'."""
+        import re
+        html = unfold(SDXL_UNET).to_html(standalone=True)
+    
+        def view_svg(cid: str) -> str:
+            i = html.find(f'data-card-id="{cid}"')
+            m = re.search(r'<svg.*?</svg>', html[i:i + 9000], re.S)
+            return m.group(0) if m else ""
+    
+        rn = view_svg("unet_down_1__resnet")                  # ids are scoped per stage
+>       assert "GroupNorm" in rn and "Conv 3" in rn          # ops still drawn
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert ('GroupNorm' in '')
+
+tests/test_diffusion.py:1570: AssertionError
+________ test_unet_attention_internals_do_not_gain_unproved_u4b_details ________
+
+    def test_unet_attention_internals_do_not_gain_unproved_u4b_details():
+        """A proven UNet cell/placement cannot manufacture inner MHA/SDPA."""
+        html = unfold(SDXL_UNET).to_html(standalone=True)
+        for op in ("q_proj", "k_proj", "v_proj", "qkv_proj"):
+            assert f'data-id="{op}"' not in html
+        assert 'data-id="qkv_projection_unresolved"' not in html
+>       assert "Cross-attention mechanism unresolved" in html
+E       assert 'Cross-attention mechanism unresolved' in '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,...e { showPanel(index, node.getAttribute(\'data-id\')); }\n  });\n})();\n</script>\n\n</div>\n</div>\n</body>\n</html>\n'
+
+tests/test_diffusion.py:1582: AssertionError
+_________ test_unet_text_conditioning_propagates_through_drill_levels __________
+
+    def test_unet_text_conditioning_propagates_through_drill_levels():
+        """The encoded text is shown entering at EVERY level it's relevant, not just
+        the deepest: the denoiser U (rail into cross-attn stages), the stage drill
+        (into the Transformer block), the Transformer-block drill (beside the
+        cross-attention sub-block), and the attention mechanism (the K/V node)."""
+        import re
+        html = unfold(SDXL_UNET).to_html(standalone=True)
+    
+        def card(cid: str) -> str:
+            i = html.find(f'data-card-id="{cid}"')
+            assert i >= 0, cid
+            nxt = html.find('data-card-id=', i + 10)
+            return html[i:(nxt if nxt > 0 else i + 9000)]
+    
+>       den = re.search(r'<svg[^>]*aria-label="[^"]*U-net denoiser".*?</svg>', html, re.S).group(0)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'group'
+
+tests/test_diffusion.py:1606: AttributeError
+_____________ test_unet_cross_attention_drill_shows_text_entering ______________
+
+    def test_unet_cross_attention_drill_shows_text_entering():
+        """Opening a UNet Transformer block's Cross-attention (text) must render
+        DIFFERENTLY from Self-attention: cross-attention pulls K/V from the encoded
+        text, so its drilled diagram shows an external 'Encoded text' node feeding
+        K/V — self-attention (K/V from the latent) does not.  Pins the bug where both
+        opened the identical self-attention view."""
+        html = unfold(SDXL_UNET).to_html(standalone=True)
+    
+        def card_seg(cid: str) -> str:
+            i = html.find(f'data-card-id="{cid}"')
+            assert i >= 0, cid
+            nxt = html.find('data-card-id=', i + 10)
+            return html[i:(nxt if nxt > 0 else i + 9000)]
+    
+>       self_seg = card_seg("unet_down_1__selfattn")      # ids scoped per stage
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_diffusion.py:1631: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cid = 'unet_down_1__selfattn'
+
+    def card_seg(cid: str) -> str:
+        i = html.find(f'data-card-id="{cid}"')
+>       assert i >= 0, cid
+E       AssertionError: unet_down_1__selfattn
+E       assert -1 >= 0
+
+tests/test_diffusion.py:1627: AssertionError
+_________________ test_unet_hero_denoiser_labeled_unet_not_dit _________________
+
+    def test_unet_hero_denoiser_labeled_unet_not_dit():
+        """The hero loop's denoiser label must come from the parsed loop block, not a
+        hardcoded 'DiT' — a UNet model (SDXL) must read 'U-Net Denoiser'. Pins the
+        SDXL-shows-DiT regression."""
+        import re
+        html = unfold(SDXL_UNET).to_html(standalone=True)
+>       seg = html[html.index("SAMPLING LOOP"):]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ValueError: substring not found
+
+tests/test_diffusion.py:1643: ValueError
+_______________ test_unet_view_stages_clickable_carded_and_clean _______________
+
+    def test_unet_view_stages_clickable_carded_and_clean():
+        """The UNet U-shape passes the block gates: every stage box is a clickable
+        node with a backing card (B.4/B.2), numbers live on card chips not the box
+        (house style), skips use a concat connector, and conv-in/out are solid (no
+        light bookend). Pins the SDXL UNet-view rework."""
+        import re
+        d = unfold(SDXL_UNET)
+        html = d.to_html(standalone=True)
+>       usvg = re.search(r'<svg[^>]*aria-label="[^"]*U-net[^"]*".*?</svg>', html, re.S).group(0)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'group'
+
+tests/test_diffusion.py:1663: AttributeError
+________________________ test_unet_hero_loop_has_arrows ________________________
+
+    def test_unet_hero_loop_has_arrows():
+        """Regression: the UNet render spec must carry the SAME declared loop_edges
+        as the DiT one, or the hero sampling loop draws no arrows."""
+        import re
+        d = unfold(SDXL_UNET)
+        render = (d.to_ir()["extras"] or {}).get("render") or {}
+>       assert render.get("loop_edges") and render.get("loop_region")
+E       AssertionError: assert ([])
+E        +  where [] = <built-in method get of dict object at 0x30c2ead40>('loop_edges')
+E        +    where <built-in method get of dict object at 0x30c2ead40> = {'family': 'diffusion', 'layout': 'dit_pipeline', 'loop_blocks': [{'children': [{'description': 'Maps each token id to...g step toward z_0.', 'step_label': 'z_t − σ_t·ε̂', ...}}, 'diffusion_stage': 'scheduler', ...}], 'loop_edges': [], ...}.get
+
+tests/test_diffusion.py:1699: AssertionError
+______ test_unet_stage_drills_into_resnet_and_transformer_reusing_openers ______
+
+    def test_unet_stage_drills_into_resnet_and_transformer_reusing_openers():
+        """A stage drills into a ResNet block and a Transformer block (B.1). The
+        ResNet block opens its residual cell; the Transformer block opens
+        self-attention / cross-attention / feed-forward — each REUSING the canonical
+        attention / FFN opener (not a bespoke leaf). Skips merge solid."""
+        import re
+        d = unfold(SDXL_UNET)
+        html = d.to_html(standalone=True)
+    
+        # ResNet block + Transformer block are real clickable, carded nodes.
+        nodes = set(re.findall(r'data-id="([^"]+)"', html))
+        cards = set(re.findall(r'data-card-id="([^"]+)"', html))
+        # stage-level blocks are scoped by stage id; the channel-agnostic resnet ops
+        # (GroupNorm/Conv/temb-inject/residual) stay shared (unscoped).
+        for nid in ("unet_down_1__resnet", "unet_down_1__transformer", "unet_down_1__selfattn",
+                    "unet_down_1__crossattn", "unet_down_1__ff",
+                    "unet_op_norm1", "unet_op_temb", "unet_op_residual"):
+>           assert nid in nodes and nid in cards, nid
+E           AssertionError: unet_down_1__resnet
+E           assert ('unet_down_1__resnet' in {'denoiser', 'encoder_0', 'encoder_0_op_embed', 'encoder_0_op_ffn', 'encoder_0_op_selfattn', 'encoder_1', ...})
+
+tests/test_diffusion.py:1722: AssertionError
+__________ test_unet_mid_block_is_resnet_transformer_resnet_sandwich ___________
+
+    def test_unet_mid_block_is_resnet_transformer_resnet_sandwich():
+        """UNetMidBlock2DCrossAttn.forward() is resnets[0] → attn[0] → resnets[1]:
+        a sandwich, not a paired loop.  The mid stage view must show two separate resnet
+        cards (pre/post) rather than a [ResNet, Transformer] × 2 repeat frame which would
+        imply a non-existent second Transformer."""
+        import re
+        html = unfold(SDXL_UNET).to_html(standalone=True)
+        nodes = set(re.findall(r'data-id="([^"]+)"', html))
+        cards = set(re.findall(r'data-card-id="([^"]+)"', html))
+        # Both pre and post resnets are present as separate carded nodes
+>       assert "unet_mid__resnet_pre" in nodes and "unet_mid__resnet_pre" in cards
+E       AssertionError: assert ('unet_mid__resnet_pre' in {'denoiser', 'encoder_0', 'encoder_0_op_embed', 'encoder_0_op_ffn', 'encoder_0_op_selfattn', 'encoder_1', ...})
+
+tests/test_diffusion.py:1749: AssertionError
+_____ test_unet_resnet_view_shows_timestep_injection_and_correct_residual ______
+
+    def test_unet_resnet_view_shows_timestep_injection_and_correct_residual():
+        """ResnetBlock2D.forward() injects temb between conv1 and norm2 (⊕ node), and
+        the residual bypass goes around the ENTIRE cell from the block's raw input.
+        Both must be present in the rendered ResNet drill view."""
+        import re
+        html = unfold(SDXL_UNET).to_html(standalone=True)
+        nodes = set(re.findall(r'data-id="([^"]+)"', html))
+        cards = set(re.findall(r'data-card-id="([^"]+)"', html))
+        # Temb injection node is drawn and carded
+>       assert "unet_op_temb" in nodes, "⊕ timestep node must be drawn in ResNet drill"
+E       AssertionError: ⊕ timestep node must be drawn in ResNet drill
+E       assert 'unet_op_temb' in {'denoiser', 'encoder_0', 'encoder_0_op_embed', 'encoder_0_op_ffn', 'encoder_0_op_selfattn', 'encoder_1', ...}
+
+tests/test_diffusion.py:1772: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_diffusion.py::test_sdxl_unet_conditioning_is_honest - KeyEr...
+FAILED tests/test_diffusion.py::test_image_conditioned_unet_draws_no_text_tower
+FAILED tests/test_diffusion.py::test_simple_cross_attn_blocks_stay_opaque_without_complete_cell_evidence
+FAILED tests/test_diffusion.py::test_spatio_temporal_unet_draws_temporal_branch
+FAILED tests/test_diffusion.py::test_image_unet_is_not_temporal - KeyError: '...
+FAILED tests/test_diffusion.py::test_sdxl_still_draws_transformer2d_cell - Ke...
+FAILED tests/test_diffusion.py::test_text_conditioned_unet_still_says_encoded_text
+FAILED tests/test_diffusion.py::test_unet_stage_part_kinds_resolve_for_all_block_variants
+FAILED tests/test_diffusion.py::test_unet_structure_parsed - KeyError: 'unet'
+FAILED tests/test_diffusion.py::test_unet_renders_loop_and_ushape - assert 'S...
+FAILED tests/test_diffusion.py::test_unet_custom_stage_is_visible_but_unapproved
+FAILED tests/test_diffusion.py::test_unet_view_shows_text_conditioning_rail
+FAILED tests/test_diffusion.py::test_encoded_text_box_drills_into_the_concat_view
+FAILED tests/test_diffusion.py::test_encoder_hid_dim_draws_the_projection_in_the_text_cond_drill
+FAILED tests/test_diffusion.py::test_unet_stage_drills_show_per_stage_dims - ...
+FAILED tests/test_diffusion.py::test_unet_resnet_block_has_no_repeat_pill - A...
+FAILED tests/test_diffusion.py::test_unet_attention_internals_do_not_gain_unproved_u4b_details
+FAILED tests/test_diffusion.py::test_unet_text_conditioning_propagates_through_drill_levels
+FAILED tests/test_diffusion.py::test_unet_cross_attention_drill_shows_text_entering
+FAILED tests/test_diffusion.py::test_unet_hero_denoiser_labeled_unet_not_dit
+FAILED tests/test_diffusion.py::test_unet_view_stages_clickable_carded_and_clean
+FAILED tests/test_diffusion.py::test_unet_hero_loop_has_arrows - AssertionErr...
+FAILED tests/test_diffusion.py::test_unet_stage_drills_into_resnet_and_transformer_reusing_openers
+FAILED tests/test_diffusion.py::test_unet_mid_block_is_resnet_transformer_resnet_sandwich
+FAILED tests/test_diffusion.py::test_unet_resnet_view_shows_timestep_injection_and_correct_residual
+25 failed, 142 passed in 1191.20s (0:19:51)

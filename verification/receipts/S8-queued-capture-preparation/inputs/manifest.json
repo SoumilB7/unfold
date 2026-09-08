@@ -1,0 +1,62 @@
+{
+  "bridge_derivation": "Exact original test transform applied to original a83 shared fixture: omit _repo_id,text_encoder_2,addition_embed_type; encoder_hid_dim4096 and literal _text_encoder_configs. No corrected constructor fields added; omitted head dimension remains the original class-default input.",
+  "bridge_encoder_configs_site": {
+    "line": 1511,
+    "source": "cfg[\"_text_encoder_configs\"] = {\n        \"text_encoder\": {\"_class_name\": \"ChatGLMModel\", \"hidden_size\": 4096,\n                         \"num_layers\": 28, \"num_attention_heads\": 32,\n                         \"ffn_hidden_size\": 13696, \"vocab_size\": 65024},\n    }"
+  },
+  "corrected_shared_added_values": {
+    "addition_time_embed_dim": 256,
+    "attention_head_dim": [
+      5,
+      10,
+      20
+    ],
+    "projection_class_embeddings_input_dim": 2816
+  },
+  "corrected_shared_site": {
+    "line": 304,
+    "source": "SDXL_UNET = {\n    \"_class_name\": \"UNet2DConditionModel\", \"_repo_id\": \"stabilityai/stable-diffusion-xl-base-1.0\",\n    \"in_channels\": 4, \"out_channels\": 4, \"block_out_channels\": [320, 640, 1280],\n    \"layers_per_block\": 2, \"cross_attention_dim\": 2048, \"transformer_layers_per_block\": [1, 2, 10],\n    \"down_block_types\": [\"DownBlock2D\", \"CrossAttnDownBlock2D\", \"CrossAttnDownBlock2D\"],\n    \"up_block_types\": [\"CrossAttnUpBlock2D\", \"CrossAttnUpBlock2D\", \"UpBlock2D\"],\n    \"mid_block_type\": \"UNetMidBlock2DCrossAttn\", \"addition_embed_type\": \"text_time\",\n    # Exact public SDXL constructor inputs, also pinned in the Sable corpus.\n    \"addition_time_embed_dim\": 256, \"projection_class_embeddings_input_dim\": 2816,\n    \"attention_head_dim\": [5, 10, 20],\n    \"scheduler\": [\"diffusers\", \"EulerDiscreteScheduler\"], \"_scheduler_config\": {\"num_train_timesteps\": 1000},\n    \"text_encoder\": [\"transformers\", \"CLIPTextModel\"], \"text_encoder_2\": [\"transformers\", \"CLIPTextModelWithProjection\"],\n}"
+  },
+  "current_support_sha256": "847334ee81050b072331e4192578d88ace63a525191c0ae4339269301749e480",
+  "deepfloyd_second_site": {
+    "line": 829,
+    "source": "DEEPFLOYD = {\n        \"_class_name\": \"UNet2DConditionModel\", \"in_channels\": 3, \"out_channels\": 6,\n        \"block_out_channels\": [320, 640, 1280, 1280], \"layers_per_block\": 3,\n        \"cross_attention_dim\": 4096,\n        \"down_block_types\": [\"ResnetDownsampleBlock2D\", \"SimpleCrossAttnDownBlock2D\",\n                             \"SimpleCrossAttnDownBlock2D\", \"SimpleCrossAttnDownBlock2D\"],\n        \"up_block_types\": [\"SimpleCrossAttnUpBlock2D\", \"SimpleCrossAttnUpBlock2D\",\n                           \"SimpleCrossAttnUpBlock2D\", \"ResnetUpsampleBlock2D\"],\n        \"mid_block_type\": \"UNetMidBlock2DSimpleCrossAttn\",\n    }"
+  },
+  "exact_corpus_config_file_sha256": "05de128f956d5140df7cbadf8d9bbc2e6751da9614ce957235b645a45b470751",
+  "inputs": {
+    "deepfloyd-second": {
+      "file": "deepfloyd-second.json",
+      "sha256": "d18fab14bf405165701be9fb0082178d7daec3a62684d2c61e123eb894c57742"
+    },
+    "encoder-bridge": {
+      "file": "encoder-bridge.json",
+      "sha256": "289bb879dc56e92df32f0f0978fe81a186c24b9dd18dd786bd3d658c52c2708c"
+    },
+    "sdxl-corrected-shared": {
+      "file": "sdxl-corrected-shared.json",
+      "sha256": "a31b37f5f171046310f4166a9e455bde59df688e334637bd4e1ce1ff7be40531"
+    },
+    "sdxl-invalid-original": {
+      "file": "sdxl-invalid-original.json",
+      "sha256": "eff4727d835c900fb2d3a8146298a76fba7ec0c8a82efdac84cddc622dddfcef"
+    },
+    "svd-exact": {
+      "file": "svd-exact.json",
+      "sha256": "94fb7fc5ef8274e4f17cba9513ed011dd9d618ee9f3b20436dae9791f2b1b509"
+    }
+  },
+  "limits": "SVD num_frames25 is merely declared input here, not an executed frame-count or temporal-formula assertion. No model/fixture imports executed.",
+  "original_commit": "a83d704906850257fadd3904904635d218af7365",
+  "original_shared_site": {
+    "line": 304,
+    "source": "SDXL_UNET = {\n    \"_class_name\": \"UNet2DConditionModel\", \"_repo_id\": \"stabilityai/stable-diffusion-xl-base-1.0\",\n    \"in_channels\": 4, \"out_channels\": 4, \"block_out_channels\": [320, 640, 1280],\n    \"layers_per_block\": 2, \"cross_attention_dim\": 2048, \"transformer_layers_per_block\": [1, 2, 10],\n    \"down_block_types\": [\"DownBlock2D\", \"CrossAttnDownBlock2D\", \"CrossAttnDownBlock2D\"],\n    \"up_block_types\": [\"CrossAttnUpBlock2D\", \"CrossAttnUpBlock2D\", \"UpBlock2D\"],\n    \"mid_block_type\": \"UNetMidBlock2DCrossAttn\", \"addition_embed_type\": \"text_time\",\n    \"scheduler\": [\"diffusers\", \"EulerDiscreteScheduler\"], \"_scheduler_config\": {\"num_train_timesteps\": 1000},\n    \"text_encoder\": [\"transformers\", \"CLIPTextModel\"], \"text_encoder_2\": [\"transformers\", \"CLIPTextModelWithProjection\"],\n}"
+  },
+  "original_source_hashes": {
+    "test_support/__init__.py": "ebba5b1e3841505aab082c885a0c63a4aa82654b36b5cc8e607d2b3291d2eae4",
+    "tests/test_diffusion.py": "23409140e9fe55098674abf9d72cf6c19cce3489af35058cc0f293b2d2f06559"
+  },
+  "svd_site": {
+    "line": 735,
+    "source": "SVD_UNET = {\n    \"_class_name\": \"UNetSpatioTemporalConditionModel\",\n    \"_repo_id\": \"stabilityai/stable-video-diffusion-img2vid-xt\",\n    \"block_out_channels\": [320, 640, 1280, 1280],\n    \"down_block_types\": [\"CrossAttnDownBlockSpatioTemporal\", \"CrossAttnDownBlockSpatioTemporal\",\n                         \"CrossAttnDownBlockSpatioTemporal\", \"DownBlockSpatioTemporal\"],\n    \"up_block_types\": [\"UpBlockSpatioTemporal\", \"CrossAttnUpBlockSpatioTemporal\",\n                       \"CrossAttnUpBlockSpatioTemporal\", \"CrossAttnUpBlockSpatioTemporal\"],\n    \"cross_attention_dim\": 1024, \"num_frames\": 25, \"addition_time_embed_dim\": 256,\n    \"projection_class_embeddings_input_dim\": 768, \"layers_per_block\": 2,\n    \"in_channels\": 8, \"out_channels\": 4, \"num_attention_heads\": [5, 10, 20, 20],\n    \"scheduler\": [\"diffusers\", \"EulerDiscreteScheduler\"], \"_scheduler_config\": {\"num_train_timesteps\": 1000},\n}"
+  }
+}

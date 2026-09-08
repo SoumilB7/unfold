@@ -1,0 +1,44 @@
+{
+  "commit": "a83d704",
+  "production": "7168440",
+  "test": "tests/test_projection_obligations.py::test_every_registry_drawable_fact_is_actually_drawn",
+  "status": "FAIL",
+  "count": 10,
+  "facts": [
+    "spatial_mechanisms",
+    "cell_arithmetic",
+    "context_connections",
+    "cell_connections",
+    "runtime_primitives",
+    "stage_join_connections",
+    "ffn_mechanisms",
+    "primary_state_ports",
+    "constructed_stage_relations",
+    "constructed_modules"
+  ],
+  "source_pins": [
+    {
+      "path": "tests/test_projection_obligations.py",
+      "sha256": "8557a546582565d871b4efa1a4857836b38a796fecfc08536469f16db34f28f7",
+      "snapshot": "source/tests/test_projection_obligations.py.txt"
+    },
+    {
+      "path": "model_unfolder/evidence/registry.py",
+      "sha256": "3069e45262ffdcf12daa81562979caf81213b349be8884307bbfa5f458f1ff7b",
+      "snapshot": "source/model_unfolder/evidence/registry.py.txt"
+    },
+    {
+      "path": "model_unfolder/renderers/html/fact_projection.py",
+      "sha256": "809ceb195532cb7e0eecea89ffb9d144dc152c0b8c9c64ed8badba50324f534c",
+      "snapshot": "source/model_unfolder/renderers/html/fact_projection.py.txt"
+    },
+    {
+      "path": "model_unfolder/sable.py",
+      "sha256": "2d243b5d371cbb3d0c986d89ae2ad47b7958ff53f7c1947e638c7f828580f7c2",
+      "snapshot": "source/model_unfolder/sable.py.txt"
+    }
+  ],
+  "batch_log_sha256": "7d90967c221f0259fef0b9491ea9ec61c531ff8b8506f2087f8a40ed32cd0a88",
+  "full_coordinator_still_running": true,
+  "baselines_changed": false
+}

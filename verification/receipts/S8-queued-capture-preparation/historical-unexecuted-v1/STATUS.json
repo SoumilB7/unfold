@@ -1,0 +1,4 @@
+{
+  "status": "NEVER_EXECUTED",
+  "returned": "Encoder bridge incorrectly inherited the three corrected SDXL constructor fields. Replaced by exact original valid test-derived input in current manifest."
+}

@@ -1,0 +1,26 @@
+[PASS] focused: 95.3s
+........................................................................ [ 98%]
+.......                                                                  [100%]
+439 passed in 92.46s (0:01:32)
+[PASS] u2-authority: 701.9s
+
+............................................                             [100%]
+44 passed in 700.13s (0:11:40)
+[PASS] collect: 13.1s
+tests/test_wrapper_features.py::test_real_mllama_internal_encoder_output_proves_multi_layer_concat
+
+4476 tests collected in 10.49s
+[PASS] static: 0.3s
+static checks clean; changed python files: 7
+[FAIL] full: 1315.0s
+1 failed, 160 passed in 388.27s (0:06:28)
+[PASS] batch-001 (8 files): 1301.8s
+BATCH BRACKET FAIL: missing=[] failed=['batch-002', 'batch-003', 'batch-004', 'batch-015', 'batch-019', 'batch-022', 'batch-024'] schedule_changed=False
+[FAIL] preservation: 480.6s
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[stable-diffusion-xl-base-1-0]
+FAILED tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[stablelm-2-1-6b]
+29 failed, 23 passed in 479.56s (0:07:59)
+commit: a83d704906850257fadd3904904635d218af7365
+logs: /private/tmp/model-unfolder-verification/659f1af5fa
+wall time: 2643.8s; full workers: 10; preservation workers: 4; authority workers: 3
+VERIFICATION FAIL: missing=[] failed=['full', 'preservation']

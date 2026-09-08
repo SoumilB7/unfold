@@ -1,0 +1,6 @@
+{
+  "model_unfolder/evidence/registry.py": "3069e45262ffdcf12daa81562979caf81213b349be8884307bbfa5f458f1ff7b",
+  "model_unfolder/renderers/html/block_views/unet.py": "677e74f6cc2b5793fc5177cdb8593d641bd44e98b56b392ab123b2ab6ea449ce",
+  "model_unfolder/renderers/html/fact_projection.py": "809ceb195532cb7e0eecea89ffb9d144dc152c0b8c9c64ed8badba50324f534c",
+  "tests/test_projection_obligations.py": "8557a546582565d871b4efa1a4857836b38a796fecfc08536469f16db34f28f7"
+}

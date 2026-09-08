@@ -1,0 +1,13 @@
+{
+  "verdict": "RETURN test traversal; fixture values statically accepted",
+  "source_pins": {
+    "test_support/__init__.py": "847334ee81050b072331e4192578d88ace63a525191c0ae4339269301749e480",
+    "tests/test_code_evidence.py": "a79232dc25157118998345edf511237d24c957033b0713a72efe01e26be5187a"
+  },
+  "first_actual_test_log_sha256": "f8ec67ca404b90a4b8c70c0ce8190410663b1a4ff0a9d58a591afbdcb1bec805",
+  "fixture_values": "256/2816/[5,10,20] exactly equal pinned Sable corpus input; no production default added",
+  "incomplete_control": "Original input retained as named definition; not yet exercised",
+  "finding": "Test searches only render.model_blocks, whereas actual SDXL full-pipeline canonical FFN cards live below render.loop_blocks/denoiser. Use canonical actual roots without legacy fallback.",
+  "semantic_review": "Retained all three legacy source-address controls and matched own occurrence fact/value, actual five operation IDs. Replacement does not invent serialized claim proof fields.",
+  "review_execution": "No pytest or model run; inspected executor actual red log and previously saved final IR"
+}

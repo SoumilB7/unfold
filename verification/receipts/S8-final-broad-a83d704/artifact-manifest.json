@@ -1,0 +1,236 @@
+[
+  {
+    "original": "/private/tmp/unfold-s8-final-broad-clean-7168440/command.json",
+    "artifact": "outer/command.json",
+    "original_sha256": "fed7eec8676d76839dca5164a93fe69286646573e887b15d6978ff245ccda41a",
+    "artifact_sha256": "fed7eec8676d76839dca5164a93fe69286646573e887b15d6978ff245ccda41a"
+  },
+  {
+    "original": "/private/tmp/unfold-s8-final-broad-clean-7168440/coordinator.log",
+    "artifact": "outer/coordinator.log",
+    "original_sha256": "5c71a5c222c92dbe908e83954da660e17bfd3527f3b40c74df9baee86d46d2d9",
+    "artifact_sha256": "5c71a5c222c92dbe908e83954da660e17bfd3527f3b40c74df9baee86d46d2d9"
+  },
+  {
+    "original": "/private/tmp/unfold-s8-final-broad-clean-7168440/receipt.json",
+    "artifact": "outer/receipt.json",
+    "original_sha256": "ac87252f21eddc934f84d60c230e8de1f8e5593c73726611459dd9758f17513c",
+    "artifact_sha256": "ac87252f21eddc934f84d60c230e8de1f8e5593c73726611459dd9758f17513c"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-verification/659f1af5fa/collect.log",
+    "artifact": "coordinator/collect.log",
+    "original_sha256": "23e5473a3aa72299949a4e7f9e26aee1230095277c10ff3790825b5892d0218b",
+    "artifact_sha256": "23e5473a3aa72299949a4e7f9e26aee1230095277c10ff3790825b5892d0218b"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-verification/659f1af5fa/focused.log",
+    "artifact": "coordinator/focused.log",
+    "original_sha256": "90c6ae1fe4f657b8f8ad8ab22fbf343fba4f4c14559ec1fccea88eae0a9dacee",
+    "artifact_sha256": "90c6ae1fe4f657b8f8ad8ab22fbf343fba4f4c14559ec1fccea88eae0a9dacee"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-verification/659f1af5fa/full.log",
+    "artifact": "coordinator/full.log",
+    "original_sha256": "bff19dc7b3a2e966d0a839409a87986e95703ebbc41d1d5d1c1355d1b377904d",
+    "artifact_sha256": "bff19dc7b3a2e966d0a839409a87986e95703ebbc41d1d5d1c1355d1b377904d"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-verification/659f1af5fa/preservation.log",
+    "artifact": "coordinator/preservation.log",
+    "original_sha256": "1134a98826eea929dcdc0c8b28c06b9dd11579b97157a7f59ce0fc9417c0b031",
+    "artifact_sha256": "1134a98826eea929dcdc0c8b28c06b9dd11579b97157a7f59ce0fc9417c0b031"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-verification/659f1af5fa/receipt.json",
+    "artifact": "coordinator/receipt.json",
+    "original_sha256": "1d30d8954d9d8186ee32255b1eb516ff95e23f66e6d9728b03e89436930981ea",
+    "artifact_sha256": "1d30d8954d9d8186ee32255b1eb516ff95e23f66e6d9728b03e89436930981ea"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-verification/659f1af5fa/static.log",
+    "artifact": "coordinator/static.log",
+    "original_sha256": "6ca7ccbd6d1c72019226849f8adb152e263fbf4463f1f2ce3eebdeae7d080ffa",
+    "artifact_sha256": "6ca7ccbd6d1c72019226849f8adb152e263fbf4463f1f2ce3eebdeae7d080ffa"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-verification/659f1af5fa/u2-authority.log",
+    "artifact": "coordinator/u2-authority.log",
+    "original_sha256": "12986e087532e3c267c33754e659ed3560cc9ecb05f0dc816e981174a7f60ca9",
+    "artifact_sha256": "12986e087532e3c267c33754e659ed3560cc9ecb05f0dc816e981174a7f60ca9"
+  },
+  {
+    "original": "/private/tmp/unfold-s8-static-a83d704/result.json",
+    "artifact": "committed-static/result.json",
+    "original_sha256": "4d59688c7f79fb57ac90998b9fcf53c1ad69987039ab149f196b97b8f69163af",
+    "artifact_sha256": "4d59688c7f79fb57ac90998b9fcf53c1ad69987039ab149f196b97b8f69163af"
+  },
+  {
+    "original": "/private/tmp/unfold-s8-static-a83d704/static.log",
+    "artifact": "committed-static/static.log",
+    "original_sha256": "6ca7ccbd6d1c72019226849f8adb152e263fbf4463f1f2ce3eebdeae7d080ffa",
+    "artifact_sha256": "6ca7ccbd6d1c72019226849f8adb152e263fbf4463f1f2ce3eebdeae7d080ffa"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-000.log",
+    "artifact": "file-bracket/batch-000.log",
+    "original_sha256": "1cd101a51ad6d00c892baaa96cdac4a0fc5388b5588cd657f91e04436434e965",
+    "artifact_sha256": "1cd101a51ad6d00c892baaa96cdac4a0fc5388b5588cd657f91e04436434e965"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-001.log",
+    "artifact": "file-bracket/batch-001.log",
+    "original_sha256": "a83854a5c7c8adb44d910fc589a891a964ecd6e846efdd6f66c593c10ce1ada0",
+    "artifact_sha256": "a83854a5c7c8adb44d910fc589a891a964ecd6e846efdd6f66c593c10ce1ada0"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-002.log",
+    "artifact": "file-bracket/batch-002.log",
+    "original_sha256": "99dbe3a1322a9687fcbcdaa062b8a04e85cea415329a88352f7707a4b55c96c4",
+    "artifact_sha256": "99dbe3a1322a9687fcbcdaa062b8a04e85cea415329a88352f7707a4b55c96c4"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-003.log",
+    "artifact": "file-bracket/batch-003.log",
+    "original_sha256": "1461f9eed19cba5e5f528b576b1a6d9e694f41c47c4d49c0457e52bb0cf14f91",
+    "artifact_sha256": "1461f9eed19cba5e5f528b576b1a6d9e694f41c47c4d49c0457e52bb0cf14f91"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-004.log",
+    "artifact": "file-bracket/batch-004.log",
+    "original_sha256": "0ddf3cb9e79a63ca7ebc67285b9374c7b3d0b6b9198cb8808f116831e70bbd73",
+    "artifact_sha256": "0ddf3cb9e79a63ca7ebc67285b9374c7b3d0b6b9198cb8808f116831e70bbd73"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-005.log",
+    "artifact": "file-bracket/batch-005.log",
+    "original_sha256": "518a45c41dc4a35be285c82bce984e140779eef188fa80f084ae44dc61e5d50d",
+    "artifact_sha256": "518a45c41dc4a35be285c82bce984e140779eef188fa80f084ae44dc61e5d50d"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-006.log",
+    "artifact": "file-bracket/batch-006.log",
+    "original_sha256": "b35afb8afdaced6b44a4a00053e3cfddc4119ccb5824fd3900bb5c5419437f99",
+    "artifact_sha256": "b35afb8afdaced6b44a4a00053e3cfddc4119ccb5824fd3900bb5c5419437f99"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-007.log",
+    "artifact": "file-bracket/batch-007.log",
+    "original_sha256": "a6fa1c0a868423b1bfdd4b6f0d0a817611726b5fefbb8f2ae5881c1044f80b69",
+    "artifact_sha256": "a6fa1c0a868423b1bfdd4b6f0d0a817611726b5fefbb8f2ae5881c1044f80b69"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-008.log",
+    "artifact": "file-bracket/batch-008.log",
+    "original_sha256": "6ef6e904248f3aead053637462e05a748689ee3346c7666bb87ef40546ca8564",
+    "artifact_sha256": "6ef6e904248f3aead053637462e05a748689ee3346c7666bb87ef40546ca8564"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-009.log",
+    "artifact": "file-bracket/batch-009.log",
+    "original_sha256": "b0ee6cc60a4ba9654594c381b7fe4097cc74e4354b80ba112a17e12f399d9ae7",
+    "artifact_sha256": "b0ee6cc60a4ba9654594c381b7fe4097cc74e4354b80ba112a17e12f399d9ae7"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-010.log",
+    "artifact": "file-bracket/batch-010.log",
+    "original_sha256": "e4afb9d934d8820409d66a0a7467fa4b8e1f32bba80ce948401d2ac1510e0ff6",
+    "artifact_sha256": "e4afb9d934d8820409d66a0a7467fa4b8e1f32bba80ce948401d2ac1510e0ff6"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-011.log",
+    "artifact": "file-bracket/batch-011.log",
+    "original_sha256": "61f8697abce181a6121b2c8c30bf4b5f465640fa68f63f244dc5cf54f33cba93",
+    "artifact_sha256": "61f8697abce181a6121b2c8c30bf4b5f465640fa68f63f244dc5cf54f33cba93"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-012.log",
+    "artifact": "file-bracket/batch-012.log",
+    "original_sha256": "ef323c8e39883c329cb79781e0b56c78fcd527abe4ffd3f269dca8594f2b5b18",
+    "artifact_sha256": "ef323c8e39883c329cb79781e0b56c78fcd527abe4ffd3f269dca8594f2b5b18"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-013.log",
+    "artifact": "file-bracket/batch-013.log",
+    "original_sha256": "2bf184cbafe3cf9b89a2dd463cfbcf7158440491ebece93c7402af53aa023eb0",
+    "artifact_sha256": "2bf184cbafe3cf9b89a2dd463cfbcf7158440491ebece93c7402af53aa023eb0"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-014.log",
+    "artifact": "file-bracket/batch-014.log",
+    "original_sha256": "7a72e3104f33b07e82e7d918e3320183efd503d2860c7c71d57e3805a5a5a520",
+    "artifact_sha256": "7a72e3104f33b07e82e7d918e3320183efd503d2860c7c71d57e3805a5a5a520"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-015.log",
+    "artifact": "file-bracket/batch-015.log",
+    "original_sha256": "7d90967c221f0259fef0b9491ea9ec61c531ff8b8506f2087f8a40ed32cd0a88",
+    "artifact_sha256": "7d90967c221f0259fef0b9491ea9ec61c531ff8b8506f2087f8a40ed32cd0a88"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-016.log",
+    "artifact": "file-bracket/batch-016.log",
+    "original_sha256": "83fbaf39e2de9863e867dfbf2106c6d1dfd55413fcfb412c785a54256b180c92",
+    "artifact_sha256": "83fbaf39e2de9863e867dfbf2106c6d1dfd55413fcfb412c785a54256b180c92"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-017.log",
+    "artifact": "file-bracket/batch-017.log",
+    "original_sha256": "f054957270a70f6dac99bf339b233bc80535a6d3eef6a976bc1ac90bc010a397",
+    "artifact_sha256": "f054957270a70f6dac99bf339b233bc80535a6d3eef6a976bc1ac90bc010a397"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-018.log",
+    "artifact": "file-bracket/batch-018.log",
+    "original_sha256": "808ab0b734dd920215d139790aba7ecfed17b336cd3c28a96b0bc68634df3528",
+    "artifact_sha256": "808ab0b734dd920215d139790aba7ecfed17b336cd3c28a96b0bc68634df3528"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-019.log",
+    "artifact": "file-bracket/batch-019.log",
+    "original_sha256": "c4ccc7e4c6a38ed3cffc37fe79f755cc839a8563daafcd0b93e3f6d4def8ca80",
+    "artifact_sha256": "c4ccc7e4c6a38ed3cffc37fe79f755cc839a8563daafcd0b93e3f6d4def8ca80"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-020.log",
+    "artifact": "file-bracket/batch-020.log",
+    "original_sha256": "c2f75d54a785771e49a9b0fdafcf19bc82cdb9c01fc3dcd07bc2d8f4dc69916f",
+    "artifact_sha256": "c2f75d54a785771e49a9b0fdafcf19bc82cdb9c01fc3dcd07bc2d8f4dc69916f"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-021.log",
+    "artifact": "file-bracket/batch-021.log",
+    "original_sha256": "6d7e1ff0e33db4cd95f413228e6248bf57a5cb6e047068ad4c6a993e306f5293",
+    "artifact_sha256": "6d7e1ff0e33db4cd95f413228e6248bf57a5cb6e047068ad4c6a993e306f5293"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-022.log",
+    "artifact": "file-bracket/batch-022.log",
+    "original_sha256": "aa29c71028df475cc4a178a054c22bd050de7baebbb76f701f700a9512b80007",
+    "artifact_sha256": "aa29c71028df475cc4a178a054c22bd050de7baebbb76f701f700a9512b80007"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-023.log",
+    "artifact": "file-bracket/batch-023.log",
+    "original_sha256": "f36be3dbe564decaa804759adfa3a344c98f135fc1064e1b3d278eae0ae56f8d",
+    "artifact_sha256": "f36be3dbe564decaa804759adfa3a344c98f135fc1064e1b3d278eae0ae56f8d"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-024.log",
+    "artifact": "file-bracket/batch-024.log",
+    "original_sha256": "cdfc5c6f443b4071733a011e9ea4a29a0a0dcf97bc952c2651646d45bc35c8db",
+    "artifact_sha256": "cdfc5c6f443b4071733a011e9ea4a29a0a0dcf97bc952c2651646d45bc35c8db"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/batch-025.log",
+    "artifact": "file-bracket/batch-025.log",
+    "original_sha256": "935433b9f2edd0299690f2dbfdd006653b7167a165d0e9c9ad3e14d80385f621",
+    "artifact_sha256": "935433b9f2edd0299690f2dbfdd006653b7167a165d0e9c9ad3e14d80385f621"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-file-bracket/4b075ceb3b/schedule.json",
+    "artifact": "file-bracket/schedule.json.gz",
+    "original_sha256": "c20246f1312102d0494e82ee235163aaca8498dc148094af5441abf2a1d93023",
+    "artifact_sha256": "aff71599c02d086ae0d49c00c88ec2f9d2d549ad564f00d37e7c559f4d96e4b8"
+  }
+]

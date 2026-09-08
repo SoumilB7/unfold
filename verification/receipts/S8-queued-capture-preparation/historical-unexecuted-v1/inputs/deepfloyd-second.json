@@ -1,0 +1,26 @@
+{
+  "_class_name": "UNet2DConditionModel",
+  "block_out_channels": [
+    320,
+    640,
+    1280,
+    1280
+  ],
+  "cross_attention_dim": 4096,
+  "down_block_types": [
+    "ResnetDownsampleBlock2D",
+    "SimpleCrossAttnDownBlock2D",
+    "SimpleCrossAttnDownBlock2D",
+    "SimpleCrossAttnDownBlock2D"
+  ],
+  "in_channels": 3,
+  "layers_per_block": 3,
+  "mid_block_type": "UNetMidBlock2DSimpleCrossAttn",
+  "out_channels": 6,
+  "up_block_types": [
+    "SimpleCrossAttnUpBlock2D",
+    "SimpleCrossAttnUpBlock2D",
+    "SimpleCrossAttnUpBlock2D",
+    "ResnetUpsampleBlock2D"
+  ]
+}

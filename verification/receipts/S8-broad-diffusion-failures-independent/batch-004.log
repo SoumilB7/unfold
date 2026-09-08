@@ -1,0 +1,40 @@
+........................................................................ [ 43%]
+......F................................................................. [ 87%]
+....................                                                     [100%]
+=================================== FAILURES ===================================
+_____________ test_unet_ffn_activation_anchored_to_declared_blocks _____________
+
+    def test_unet_ffn_activation_anchored_to_declared_blocks():
+        """U1: the UNet Transformer2D FFN activation is read from the block class
+        the config's block-type strings NAME (identity-as-address), never from an
+        import-closure vote (which proves the wrong family) — SDXL proves geglu;
+        no declared types or no source → None (honest-undeclared card stays)."""
+        import json, pathlib
+        from model_unfolder.sable import DEFAULT_CORPUS
+        from model_unfolder.evidence.context import ParseContext
+        from model_unfolder.evidence.conformance import _augment_diffusion_files
+        from model_unfolder.evidence.patterns import unet_transformer_ffn_activation_from_files
+    
+        fx = json.loads((pathlib.Path(DEFAULT_CORPUS)
+                         / "stable-diffusion-xl-base-1-0.json").read_text())
+        cfg = fx["config"]
+        ctx = ParseContext.build(cfg, source="local")
+        root = (ctx.source_bundle.component_files or {}).get("root") or ctx.source_bundle.files
+        files = _augment_diffusion_files(tuple(root))
+        types = list(cfg.get("down_block_types") or []) + list(cfg.get("up_block_types") or []) \
+            + [cfg.get("mid_block_type") or ""]
+        assert unet_transformer_ffn_activation_from_files(files, types) == "geglu"
+        assert unet_transformer_ffn_activation_from_files(files, []) is None
+        assert unet_transformer_ffn_activation_from_files((), types) is None
+    
+        # end-to-end: the drawn FFN is geglu-with-provenance, and the naive vote's
+        # wrong answer (flux's gelu-approximate) appears nowhere on the UNet card
+        from model_unfolder import unfold
+        html = unfold(cfg, inspect_code=True, code_source="local").to_html()
+>       assert "GEGLU" in html and "block types name" in html
+E       assert ('GEGLU' in '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,...e { showPanel(index, node.getAttribute(\'data-id\')); }\n  });\n})();\n</script>\n\n</div>\n</div>\n</body>\n</html>\n' and 'block types name' in '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,...e { showPanel(index, node.getAttribute(\'data-id\')); }\n  });\n})();\n</script>\n\n</div>\n</div>\n</body>\n</html>\n')
+
+tests/test_code_evidence.py:2158: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_code_evidence.py::test_unet_ffn_activation_anchored_to_declared_blocks
+1 failed, 163 passed in 866.58s (0:14:26)
