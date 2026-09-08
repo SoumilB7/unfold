@@ -1,0 +1,22 @@
+{
+  "archive_seconds": 0.009553459007292986,
+  "artifact_map": {
+    "bytes": 2307,
+    "sha256": "974dcbac97789c19eaa2191f51f824dfc2e514c7ced04b5de9ff03db1635b26d"
+  },
+  "compression_level": 3,
+  "directory_count": 3,
+  "executed_archiver": {
+    "bytes": 7320,
+    "sha256": "ab535bc9f8367a1ddbd5fde1734f72073910a88d6db2f857ee417ac441141453"
+  },
+  "full_file_and_directory_restoration": true,
+  "injective_paths": true,
+  "raw_bytes": 31237,
+  "restored_stream_count": 4,
+  "scope": "Artifact packaging only. Actual checkpoint and diagnostic failed/positive outcomes are preserved, not reclassified.",
+  "source_membership_and_bytes_unchanged": true,
+  "status": "PASS_ARCHIVE_INTEGRITY",
+  "stored_bytes": 6554,
+  "stream_count": 4
+}

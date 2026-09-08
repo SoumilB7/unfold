@@ -1,0 +1,173 @@
+{
+  "input": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/final-fb1f871/sdxl-ordinary.html",
+  "input_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06",
+  "input_bytes": 23748293,
+  "viewport": {
+    "width": 1440,
+    "height": 1000,
+    "deviceScaleFactor": 1
+  },
+  "harness_sha256": "ca0a13d375252bddc51bf25f5b8708b1770e6efb39e6ce4cd34371752e0f22b6",
+  "method": "Fresh task-local headless Chromium profile; file navigation; DOM click via CDP mouse events; click capture to second animation frame. No model run or user session.",
+  "timing_limit": "Headless fixed-engine timings; two animation frames include a paint opportunity, not a hardware presentation timestamp. Main HTML is local; all HTTP(S) page requests are explicitly blocked, including Google Fonts, so both versions use the same offline fallback-font policy. Online font/network performance is not measured.",
+  "clicks": [
+    {
+      "depth": 0,
+      "selector_scope": ".uf-section-arch",
+      "target": {
+        "id": "denoiser",
+        "text": "U-NetDenoiser",
+        "x": 670,
+        "y": 500.24951171875
+      },
+      "result": {
+        "milliseconds": 88.5,
+        "clicked_id": "denoiser",
+        "active_cards": [
+          {
+            "id": "denoiser",
+            "text": "Constructed U-Net denoiserExact constructed stages and parameter shapes. Open execution relations remain visible.Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)Conditional slot identity linksConditioning / argument call targetsNo loop execution impliedConditional call identity linksConditional slot identity linksConditional call identity linksConditional boundarySource ports \u00b7 drill for detailsConditional boundarySource ports \u00b7 drill for detailsconv_inConditional invocationRepeat boundarydown_blocksdown_blocks.0down_blocks.1down_blocks.2add_embeddingadd_time_projtime_embeddingtime_projconv_outConditional invocationConditional boundarySource ports \u00b7 drill for detailsSiLUGroupNormRepeat boundaryup_blocksup_blocks.2up_blocks.1up_blocks.0Conditional boundarymid_blockmid_blockConditional boundarySource ports \u00b7 drill for detailsSaved skip outputsExternal context input",
+            "panel_index": 0
+          }
+        ],
+        "dom_nodes": 192833,
+        "cards": 11717
+      }
+    }
+  ],
+  "command": [
+    "/Users/soumil/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell",
+    "--headless",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-background-networking",
+    "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding",
+    "--remote-debugging-port=0",
+    "--user-data-dir=/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s81-browser-9m_bcp2r",
+    "about:blank"
+  ],
+  "browser_version": {
+    "protocolVersion": "1.3",
+    "product": "HeadlessChrome/151.0.7922.34",
+    "revision": "@782af9cb30a53f54487e5d2e44738645a8ec457c",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36",
+    "jsVersion": "15.1.206.8"
+  },
+  "navigation_rpc_wall_seconds": 1.3239131248556077,
+  "readiness": {
+    "ready_ms": 1273.6000003814697,
+    "navigation": [
+      {
+        "name": "file:///Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/final-fb1f871/sdxl-ordinary.html",
+        "entryType": "navigation",
+        "startTime": 0,
+        "duration": 1262.9000000953674,
+        "navigationId": 196,
+        "initiatorType": "navigation",
+        "deliveryType": "",
+        "nextHopProtocol": "",
+        "renderBlockingStatus": "non-blocking",
+        "contentType": "text/html",
+        "contentEncoding": "",
+        "workerStart": 0,
+        "workerRouterEvaluationStart": 0,
+        "workerCacheLookupStart": 0,
+        "workerMatchedSourceType": "",
+        "workerFinalSourceType": "",
+        "redirectStart": 0,
+        "redirectEnd": 0,
+        "fetchStart": 0.3000001907348633,
+        "domainLookupStart": 0.3000001907348633,
+        "domainLookupEnd": 0.3000001907348633,
+        "connectStart": 0.3000001907348633,
+        "secureConnectionStart": 0,
+        "connectEnd": 0.3000001907348633,
+        "requestStart": 0.3000001907348633,
+        "responseStart": 0.3000001907348633,
+        "firstInterimResponseStart": 0,
+        "finalResponseHeadersStart": 0,
+        "responseEnd": 1103,
+        "transferSize": 23748593,
+        "encodedBodySize": 23748293,
+        "decodedBodySize": 23748293,
+        "responseStatus": 200,
+        "serverTiming": [],
+        "unloadEventStart": 0,
+        "unloadEventEnd": 0,
+        "domInteractive": 1244,
+        "domContentLoadedEventStart": 1244,
+        "domContentLoadedEventEnd": 1244,
+        "domComplete": 1244.4000000953674,
+        "loadEventStart": 1260.8000001907349,
+        "loadEventEnd": 1262.9000000953674,
+        "type": "navigate",
+        "redirectCount": 0,
+        "activationStart": 0,
+        "criticalCHRestart": 0,
+        "notRestoredReasons": null,
+        "confidence": {}
+      }
+    ],
+    "dom_nodes": 192833,
+    "architecture_nodes": [
+      {
+        "id": "image",
+        "text": "Output"
+      },
+      {
+        "id": "vae_decode",
+        "text": "VAE decode"
+      },
+      {
+        "id": "denoiser",
+        "text": "U-NetDenoiser"
+      },
+      {
+        "id": "scheduler",
+        "text": "Euler"
+      },
+      {
+        "id": "noise",
+        "text": "Noise"
+      },
+      {
+        "id": "latent",
+        "text": "latent"
+      },
+      {
+        "id": "timestep",
+        "text": "Timestep t"
+      },
+      {
+        "id": "encoder_0",
+        "text": "CLIP"
+      },
+      {
+        "id": "encoder_1",
+        "text": "CLIP"
+      },
+      {
+        "id": "prompt",
+        "text": "Text prompt"
+      }
+    ],
+    "cards": 11717
+  },
+  "exceptions": [],
+  "network_failures": [
+    {
+      "method": "Network.loadingFailed",
+      "params": {
+        "requestId": "83075.3",
+        "timestamp": 3659921.244386,
+        "type": "Stylesheet",
+        "errorText": "",
+        "canceled": false,
+        "blockedReason": "inspector"
+      }
+    }
+  ],
+  "status": "ok",
+  "input_after_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06"
+}

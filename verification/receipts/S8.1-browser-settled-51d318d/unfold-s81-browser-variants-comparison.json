@@ -1,0 +1,107 @@
+{
+  "architecture_equal": true,
+  "steps": [
+    {
+      "step": 0,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": true,
+      "screenshot_sha256": [
+        "9d6df0160d0306e364cf4e01715ac7016522fdcfd2693ab9b46bc6868763049a",
+        "9d6df0160d0306e364cf4e01715ac7016522fdcfd2693ab9b46bc6868763049a"
+      ],
+      "before_dom_elements": 164,
+      "after_dom_elements": 57
+    },
+    {
+      "step": 1,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": true,
+      "screenshot_sha256": [
+        "4a5668edbc0a59536746166b7c81c6b2e59e3d46b38ab7cee699944709b7a526",
+        "4a5668edbc0a59536746166b7c81c6b2e59e3d46b38ab7cee699944709b7a526"
+      ],
+      "before_dom_elements": 164,
+      "after_dom_elements": 63
+    },
+    {
+      "step": 2,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": true,
+      "screenshot_sha256": [
+        "921d2e515e65a9e4d0dc863c3406d84f571a49387a4d687d036bc674e917244e",
+        "921d2e515e65a9e4d0dc863c3406d84f571a49387a4d687d036bc674e917244e"
+      ],
+      "before_dom_elements": 164,
+      "after_dom_elements": 63
+    },
+    {
+      "step": 3,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": true,
+      "screenshot_sha256": [
+        "30d7e528f3fceaae15b8ec3262d4c92682121f0dea53157be189852a3cc21c9f",
+        "30d7e528f3fceaae15b8ec3262d4c92682121f0dea53157be189852a3cc21c9f"
+      ],
+      "before_dom_elements": 164,
+      "after_dom_elements": 57
+    },
+    {
+      "step": 4,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": true,
+      "screenshot_sha256": [
+        "bdb6a9ef2509e71d8cf90520e5b5eb9a81f5bb03d760967ac42ee9b7864e7a72",
+        "bdb6a9ef2509e71d8cf90520e5b5eb9a81f5bb03d760967ac42ee9b7864e7a72"
+      ],
+      "before_dom_elements": 164,
+      "after_dom_elements": 63
+    },
+    {
+      "step": 5,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": true,
+      "screenshot_sha256": [
+        "a68e2b05220721030ec1571ade3c466d251756ba4c1efdfece67687dc7e3bf71",
+        "a68e2b05220721030ec1571ade3c466d251756ba4c1efdfece67687dc7e3bf71"
+      ],
+      "before_dom_elements": 164,
+      "after_dom_elements": 63
+    },
+    {
+      "step": 6,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": true,
+      "screenshot_sha256": [
+        "7abcd205158831dcd1252ee41e288967de873f5266ae1f9dd631a0bfccb66050",
+        "7abcd205158831dcd1252ee41e288967de873f5266ae1f9dd631a0bfccb66050"
+      ],
+      "before_dom_elements": 164,
+      "after_dom_elements": 47
+    },
+    {
+      "step": 7,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": true,
+      "screenshot_sha256": [
+        "9d6df0160d0306e364cf4e01715ac7016522fdcfd2693ab9b46bc6868763049a",
+        "9d6df0160d0306e364cf4e01715ac7016522fdcfd2693ab9b46bc6868763049a"
+      ],
+      "before_dom_elements": 164,
+      "after_dom_elements": 57
+    }
+  ],
+  "status": "pass",
+  "scope": "Actual visible cards at each native-click step, exact browser-serialized markup/text/identity/placement. Screenshot differences require visual review. DOM counts intentionally differ; no claim of all latent card behavior from these routes.",
+  "inputs": [
+    "/private/tmp/unfold-s81-browser-variants-before",
+    "/private/tmp/unfold-s81-browser-variants-after"
+  ]
+}

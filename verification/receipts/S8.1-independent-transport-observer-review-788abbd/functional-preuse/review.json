@@ -1,0 +1,8 @@
+{
+  "decision": "ACCEPT_BOUNDED_PREUSE",
+  "reviewer": "independent_review",
+  "harness_sha256": "1bab1d0edc762038d4e60507691415890969c9b171299fd6441dde47e82b0489",
+  "steps_sha256": "27c5f7935271f0e6fbc50211da6d88466ba990aa2a0c13b3c90836e84efcaff7",
+  "scope": "16 fixed native routes. Initial route bytes retained; expected own card plus no wrong visible sibling and deeper clearing checked; original browser cleanup/font/input checks retained.",
+  "limits": "No execution by reviewer; separate functional observer, never latency median input. Same-depth variant switching is not covered by these SDXL steps."
+}

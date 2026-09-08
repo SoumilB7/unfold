@@ -1,0 +1,10 @@
+{
+  "decision": "ACCEPT_BOUNDED_PREUSE",
+  "script_sha256": "ca0a13d375252bddc51bf25f5b8708b1770e6efb39e6ce4cd34371752e0f22b6",
+  "review": "Read-only source inspection, no browser execution. Prior own-panel, input immutability, exception, offline-font and owned cleanup findings closed.",
+  "limits": [
+    "Headless second animation frame is a paint opportunity, not hardware presentation.",
+    "HTTP(S) blocked; fallback fonts are measured, not online font performance.",
+    "Own-card visibility asserted; captured text and screenshots retain content evidence."
+  ]
+}

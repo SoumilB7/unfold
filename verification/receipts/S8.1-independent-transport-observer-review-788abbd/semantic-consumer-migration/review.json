@@ -1,0 +1,16 @@
+{
+  "decision": "ACCEPT_STATIC_CONSUMER_MIGRATION",
+  "pins": {
+    "scripts/report_s8_demonstration.py": "79de515bcc93b5b3a3641bc8ab75fc480ccbd6fc44ac590846a34ee0b44bc120",
+    "scripts/dit_coverage.py": "0fb3cef16da3e0a1e3595aed99e7e0ec5c064202ebd40b7ae238a0dc84d03d76",
+    "tests/test_diffusion.py": "7144b0eb83e296e271e9790f09fef2641467a34ded6a33f2ea01cef3564287cd",
+    "tests/test_smoke.py": "e1ad257050bed357c2558f82df11b3a82a221f2d2ab4a80a5f51adaab7654fd8",
+    "tests/test_submodel_parity.py": "c61214436b02ff2e2e242719f08ad926967fa2bbbddcd3ac82a364fdc7439d12",
+    "tests/test_code_evidence.py": "e87e2d838a0960ac74fb927c1aadb714a25bcecd9b5a60c32248087fe1cff7bd",
+    "tests/test_card_payload.py": "ac345d6b23e27fa51ea36377ac6b132f8baa2a5fafc4c669aa63e83f5fd1df0f"
+  },
+  "verified": "Four modified historical test file ASTs equal HEAD after unwrapping only codec imports/calls and added html=decode(html) helper statement. All assertions/fixtures otherwise exact.",
+  "reporter_scope": "Raw HTML hashes preserved; only semantic card/SVG/text inspection expands exact payload.",
+  "pending": "Actual focused verification",
+  "execution_by_reviewer": false
+}

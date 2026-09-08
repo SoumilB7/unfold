@@ -1,0 +1,414 @@
+"""Schema + validation for render blocks — the dict tree the diagram draws.
+
+Blocks have to be dicts (they cross the parser→renderer boundary and serialize
+to JSON), but they were entirely stringly-typed: a typo'd key, an `view` that
+isn't registered, or a view drawing a node-id with no backing card all failed
+**silently** — the worst outcome for a tool whose value is being trusted.
+
+This module gives blocks a contract:
+
+* :class:`Block` — a ``TypedDict`` documenting every legal key, so editors and
+  type-checkers flag typos and unknown keys at author time.
+* :func:`validate_block_tree` — runtime checks that catch the silent failures a
+  type-checker can't see at runtime: a missing/duplicate ``id``, an unknown key,
+  a ``view`` that isn't in the renderer's registry, or malformed ``children``.
+* :func:`validate_click_coupling` — over rendered HTML, every clickable node
+  (``data-id``) must resolve to a card (``data-card-id``).  This is the
+  view↔block-id drift guard: if a view draws a node-id no block declares, the
+  card is missing and the click does nothing.
+
+Run both over a config corpus in CI (see ``tests/test_block_schema.py``) and the
+whole "silently renders wrong" class becomes a failing test, not a surprise.
+"""
+from __future__ import annotations
+
+import re
+from collections import defaultdict
+from html.parser import HTMLParser
+from typing import Any, Iterator, Optional, TypedDict
+
+from .everchanging import load_diffusion_typing, load_transformer_typing
+
+
+class Block(TypedDict, total=False):
+    """One node in the render tree.  ``id`` is the only required key.
+
+    ``id`` links the drawn SVG node (``data-id``) to its inspect card
+    (``data-card-id``); everything else is presentation, drill-down, or layout.
+    """
+
+    id: str                       # REQUIRED — node ↔ card link
+    role: str                     # semantic slot: attention/ffn/norm/residual/…
+    kind: str                     # glyph hint: attention/residual_add/embedding/…
+    diffusion_stage: str          # approved diffusion slot/stage, when applicable
+    diffusion_part_kind: str      # approved compound diffusion region, when applicable
+    label: "str | list[str]"      # on-block text (one line, or stacked lines)
+    title: str                    # card heading
+    description: str              # card body — explanation prose, no numbers
+    facts: "list[str]"            # numeric/spec chips ("32 heads", "4,096 → 12,288")
+    view: str                     # drill-down archetype; MUST be a registered view
+    children: "list[Block]"       # sub-blocks (recursed by the inspect panel)
+    detail: dict                  # extra structured payload (e.g. MTP module counts)
+    # --- drill-oracle provenance (render events bind conformance by these) ---
+    source_component: str         # qualified owning component (e.g. "text_encoder.text_config")
+    source_owner: str             # the exact class the block's facts were read from
+    source_file: str              # that class's modeling file
+    source_instance_path: str     # exact reconciled runtime occurrence; "" is the root
+    source_fact_keys: list[str]    # qualified facts consumed by this block
+    components: list[dict]        # typed sub-facts inside a compound stage
+    resolved: bool                # honest-unknown switch (U2/B2): False renders the
+                                  # block PALE on any family — the fact/structure is
+                                  # not evidence-backed (tower_cell's "Code-defined
+                                  # block" primitive, generalized). Absent ⇒ solid.
+    # --- block-worthiness paradigm (Gate C tiers; see docs/BLOCK_STANDARD.md) ---
+    static: bool                  # Tier-2 CONNECTOR: render as a glyph on the join
+                                  # (residual ⊕, gate ×, split, concat), NON-clickable,
+                                  # no card.  The renderer uses `clickable = not static`
+                                  # and the card builder skips static blocks.  A True
+                                  # here is the single switch that demotes a candidate
+                                  # from a box to wiring — the inverse of a Tier-1 block.
+    # --- layout hints (renderer geometry; non-default topologies) ---
+    branch_side: str              # "left" | "right" — this block is a parallel branch
+                                  # drawn off the central column (not in the chain),
+                                  # converging into the `feeds` merge (e.g. dense MLP ∥
+                                  # MoE).  Distinct from `lane`, which is a side rail.
+    lane: str                     # side lane placement (parallel/PLE/cross-attn)
+    tap_from: str                 # block id this one taps its input from
+    feeds: str                    # block id this one feeds into
+    also_feeds: "list[str]"       # additional block ids this side source fans into
+                                  # (e.g. AdaLN conditioning → each gate × it drives)
+    side_align: str               # alignment of a side block against its tap
+    residual_from: str            # for residual_add: the block the skip starts at
+    offset_y: float
+    w: float
+    h: float
+    font: float
+
+
+#: Every key a render block may legally carry — derived from the actual tree,
+#: not guessed.  Anything outside this set is treated as a typo by the validator.
+KNOWN_BLOCK_KEYS: frozenset[str] = frozenset(Block.__annotations__)
+
+#: Semantic roles in use.  Informational — not hard-validated, since modality
+#: pathways can introduce new ones; kept here as the canonical list.
+KNOWN_ROLES: frozenset[str] = frozenset({
+    "input", "embedding", "norm", "attention", "ffn", "residual",
+    "output", "mtp", "ple", "vision", "audio", "video",
+})
+
+#: APPROVED diffusion block stages — the static type for diffusion diagrams.
+#: A diffusion block tags itself with ``diffusion_stage``; only stages in this
+#: set render as solid, first-class blocks.  A block whose stage is missing or
+#: NOT in this set renders pale/light (same label) to flag that its place in the
+#: diagram is *not decided yet* — a guardrail so a new adapter fact can't quietly
+#: become a real block.  The set is *data*, edited in
+#: ``everchanging/diffusor/typing.yaml`` — bless a new slot there, not here.
+#:
+#: ``DIFFUSION_BLOCK_IDS`` are ids legitimately solid inside a DiT block without a
+#: ``diffusion_stage`` — they come from the reused transformer ``decoder_layer``
+#: assembly (norm / attention / residual-add / FFN), not the diffusion adapter.
+_diffusion_typing = load_diffusion_typing()
+DIFFUSION_STAGES: frozenset[str] = frozenset(_diffusion_typing["stages"])
+DIFFUSION_BLOCK_IDS: frozenset[str] = frozenset(_diffusion_typing["block_ids"])
+DIFFUSION_PART_KINDS: frozenset[str] = frozenset(_diffusion_typing["part_kinds"])
+
+#: APPROVED transformer block stages — the known decoder-only-transformer block
+#: taxonomy (data in ``everchanging/transformer/typing.yaml``).  Documented now;
+#: the transformer renderer doesn't draw pale-when-unapproved yet (only diffusion
+#: does), but this is the single place to bless transformer stages when it does.
+TRANSFORMER_STAGES: frozenset[str] = frozenset(load_transformer_typing()["stages"])
+
+
+# ---------------------------------------------------------------------------
+# Tree walking
+# ---------------------------------------------------------------------------
+
+def iter_block_tree(ir: Any) -> Iterator[tuple[str, dict]]:
+    """Yield ``(scope, block)`` for every render block in an IR.
+
+    Covers per-layer blocks and model-level blocks, recursing into ``children``.
+    ``scope`` is a dotted path for readable error messages.  Accepts a ModelIR
+    or anything exposing ``.layers`` / ``.extras``.
+    """
+    layers = getattr(ir, "layers", None) or []
+    for li, layer in enumerate(layers):
+        yield from _walk(getattr(layer, "blocks", None) or [], f"layer[{li}]")
+    extras = getattr(ir, "extras", None) or {}
+    model_blocks = (extras.get("render") or {}).get("model_blocks") or []
+    yield from _walk(model_blocks, "model")
+
+
+def _walk(blocks: Any, scope: str) -> Iterator[tuple[str, dict]]:
+    if not isinstance(blocks, list):
+        return
+    for b in blocks:
+        if not isinstance(b, dict):
+            continue
+        yield scope, b
+        children = b.get("children")
+        if isinstance(children, list):
+            yield from _walk(children, f"{scope}/{b.get('id', '?')}")
+
+
+# ---------------------------------------------------------------------------
+# Structural validation
+# ---------------------------------------------------------------------------
+
+def validate_block_tree(ir: Any, *, known_views: Optional[set[str]] = None) -> list[str]:
+    """Return a list of structural problems (empty == valid).
+
+    Catches: missing/duplicate ``id``, unknown keys (typo guard), a ``view`` not
+    in the registry, and malformed ``children``.
+    """
+    if known_views is None:
+        known_views = _registry_views()
+
+    problems: list[str] = []
+    # Duplicate-id check is scoped to siblings (the renderer's card lookup is
+    # per-panel), so track ids per parent scope.
+    seen_by_scope: dict[str, set[str]] = {}
+
+    for scope, block in iter_block_tree(ir):
+        bid = block.get("id")
+        if not isinstance(bid, str) or not bid:
+            problems.append(f"{scope}: block has no string 'id' ({_short(block)})")
+            continue
+
+        seen = seen_by_scope.setdefault(scope, set())
+        if bid in seen:
+            problems.append(f"{scope}: duplicate id {bid!r}")
+        seen.add(bid)
+
+        unknown = set(block) - KNOWN_BLOCK_KEYS
+        if unknown:
+            problems.append(f"{scope}/{bid}: unknown key(s) {sorted(unknown)} — typo?")
+
+        view = block.get("view")
+        if view is not None and view not in known_views:
+            problems.append(
+                f"{scope}/{bid}: view {view!r} is not registered "
+                f"(known: {sorted(known_views)})"
+            )
+
+        children = block.get("children")
+        if children is not None and not isinstance(children, list):
+            problems.append(f"{scope}/{bid}: 'children' must be a list, got {type(children).__name__}")
+
+    return problems
+
+
+# ---------------------------------------------------------------------------
+# Render-coupling validation (view ↔ block-id drift)
+# ---------------------------------------------------------------------------
+
+_DATA_ID = re.compile(r'data-id="([^"]+)"')
+_CARD_ID = re.compile(r'data-card-id="([^"]+)"')
+
+#: Card ids that legitimately exist without a clickable node (fallbacks).
+_NODELESS_CARDS = frozenset({"default"})
+
+
+def validate_click_coupling(html: str) -> list[str]:
+    """Every clickable node must resolve in its *next* inspect panel.
+
+    A ``data-id`` with no matching ``data-card-id`` means clicking that node
+    opens nothing — exactly the silent failure a view drawing an undeclared
+    node-id produces.  Generated documents are checked by interaction depth:
+    architecture nodes must resolve in panel 2, nodes rendered inside panel N
+    must resolve in panel N+1.  This prevents an unrelated same-id card at a
+    different depth from masking a broken click.  Small snippets with no panel
+    structure retain the original document-global behavior for compatibility.
+    """
+    from .renderers.html.card_payload import expand_card_payloads
+
+    html = expand_card_payloads(html)
+    scoped = _ClickScopeParser()
+    scoped.feed(html)
+    scoped.close()
+    if scoped.panel_depths:
+        problems: list[str] = []
+        for source_depth, node_ids in sorted(scoped.nodes_by_source_depth.items()):
+            target_depth = source_depth + 1
+            card_ids = scoped.cards_by_depth.get(target_depth, set()) | _NODELESS_CARDS
+            for nid in sorted(node_ids - card_ids):
+                problems.append(
+                    f"panel depth {source_depth}: clickable node {nid!r} has no card "
+                    f"in target panel depth {target_depth} (click would do nothing)"
+                )
+        return problems
+
+    node_ids = set(_DATA_ID.findall(html))
+    card_ids = set(_CARD_ID.findall(html)) | _NODELESS_CARDS
+    orphans = sorted(node_ids - card_ids)
+    return [f"clickable node {nid!r} has no card (click would do nothing)" for nid in orphans]
+
+
+class _ClickScopeParser(HTMLParser):
+    """Collect node/card ids under the same depth model used by interactions.js."""
+
+    _VOID = frozenset({
+        "area", "base", "br", "col", "embed", "hr", "img", "input", "link",
+        "meta", "param", "source", "track", "wbr",
+    })
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self._stack: list[tuple[str, bool, int | None]] = []
+        self.nodes_by_source_depth: dict[int, set[str]] = defaultdict(set)
+        self.cards_by_depth: dict[int, set[str]] = defaultdict(set)
+        self.panel_depths: set[int] = set()
+
+    def handle_starttag(self, tag: str, attrs) -> None:
+        self._open(tag, attrs)
+
+    def handle_startendtag(self, tag: str, attrs) -> None:
+        self._open(tag, attrs)
+        if tag.lower() not in self._VOID:
+            self._stack.pop()
+
+    def handle_endtag(self, tag: str) -> None:
+        tag = tag.lower()
+        while self._stack:
+            opened, _arch, _panel = self._stack.pop()
+            if opened == tag:
+                break
+
+    def _open(self, tag: str, attrs) -> None:
+        tag = tag.lower()
+        attr = dict(attrs)
+        classes = set((attr.get("class") or "").split())
+        parent_arch = self._stack[-1][1] if self._stack else False
+        parent_panel = self._stack[-1][2] if self._stack else None
+        in_arch = parent_arch or "uf-section-arch" in classes
+        panel_depth = parent_panel
+        if "uf-inspect-panel" in classes:
+            try:
+                panel_depth = int(attr.get("data-depth"))
+            except (TypeError, ValueError):
+                panel_depth = None
+            if panel_depth is not None:
+                self.panel_depths.add(panel_depth)
+
+        card_id = attr.get("data-card-id")
+        if card_id and panel_depth is not None:
+            self.cards_by_depth[panel_depth].add(card_id)
+
+        node_id = attr.get("data-id")
+        if node_id:
+            if panel_depth is not None:
+                self.nodes_by_source_depth[panel_depth].add(node_id)
+            elif in_arch:
+                self.nodes_by_source_depth[1].add(node_id)
+
+        if tag not in self._VOID:
+            self._stack.append((tag, in_arch, panel_depth))
+
+
+_DEF_ID = re.compile(r'<(?:marker|linearGradient|radialGradient|filter|clipPath) id="([^"]+)"')
+_URL_REF = re.compile(r"url\(#([^)]+)\)")
+
+
+def validate_unique_ref_ids(html: str) -> list[str]:
+    """Every ``<defs>`` id referenced by ``url(#id)`` (markers/gradients/filters)
+    must be UNIQUE across the whole document.
+
+    A diagram bakes one ``<marker>`` arrowhead per view; ``url(#id)`` resolution is
+    document-global, so a duplicate id makes the browser bind to the FIRST match —
+    which, for a drill panel, sits in a ``display:none`` subtree, so the arrowheads
+    silently vanish from the live render even though each svg looks correct in
+    isolation (a rendered PNG, or rsvg). This is the document-level check the
+    isolated-svg image pass cannot see."""
+    from .renderers.html.card_payload import expand_card_payloads
+
+    html = expand_card_payloads(html)
+    import collections
+    referenced = set(_URL_REF.findall(html))
+    counts = collections.Counter(self_id for self_id in _DEF_ID.findall(html))
+    return [
+        f"duplicate def id {i!r} (×{c}) referenced by url(#) — its arrowheads/fills "
+        f"bind to the first (possibly hidden) match and vanish in the browser"
+        for i, c in sorted(counts.items()) if c > 1 and i in referenced
+    ]
+
+
+_STROKED_ELEMENT = re.compile(
+    r"<(?P<tag>line|path|polyline|rect|polygon|circle|ellipse)\b(?P<attrs>[^>]*)>",
+    re.I | re.S,
+)
+_DASH_ATTR = re.compile(r"\bstroke-dasharray\s*=\s*(['\"])[^'\"]+\1", re.I)
+_MARKER_ATTR = re.compile(r"\bmarker-end\s*=\s*(['\"])url\(#([^)]+)\)\1", re.I)
+
+
+def validate_no_dotted_arrows(html: str) -> list[str]:
+    """No generated arrow/flow line may be dotted.
+
+    Dotted strokes are easy to miss in code review and read as optional/uncertain
+    wiring in the pixels.  This intentionally targets arrow-bearing line/path
+    elements (``marker-end``) so non-flow decorations cannot mask a real dataflow
+    violation.
+    """
+    from .renderers.html.card_payload import expand_card_payloads
+
+    html = expand_card_payloads(html)
+    problems: list[str] = []
+    for match in _STROKED_ELEMENT.finditer(html):
+        attrs = match.group("attrs")
+        marker = _MARKER_ATTR.search(attrs)
+        if _DASH_ATTR.search(attrs) and marker:
+            problems.append(
+                f"dotted {match.group('tag').lower()} arrow/flow line references marker "
+                f"{marker.group(2)!r} — generated dataflow arrows must be solid"
+            )
+    return problems
+
+
+def validate_no_dotted_boundaries(html: str) -> list[str]:
+    """No non-arrow structural boundary may use a dotted stroke.
+
+    Kept separate from :func:`validate_no_dotted_arrows` so failures say whether
+    flow semantics or region/highlight styling regressed.  Attribute order and
+    quote style are deliberately irrelevant.
+    """
+    from .renderers.html.card_payload import expand_card_payloads
+
+    html = expand_card_payloads(html)
+    problems: list[str] = []
+    for match in _STROKED_ELEMENT.finditer(html):
+        attrs = match.group("attrs")
+        if _DASH_ATTR.search(attrs) and not _MARKER_ATTR.search(attrs):
+            problems.append(
+                f"dotted {match.group('tag').lower()} structural boundary — generated "
+                "regions/highlights must use solid strokes"
+            )
+    return problems
+
+
+# ---------------------------------------------------------------------------
+# internals
+# ---------------------------------------------------------------------------
+
+def _registry_views() -> set[str]:
+    # Lazy import keeps this module dependency-free of the renderer at import time.
+    from .renderers.html.block_views.registry import VIEW_REGISTRY
+    return {k for k in VIEW_REGISTRY if k is not None}
+
+
+def _short(block: dict, n: int = 80) -> str:
+    text = repr(block)
+    return text if len(text) <= n else text[: n - 1] + "…"
+
+
+__all__ = [
+    "Block",
+    "KNOWN_BLOCK_KEYS",
+    "KNOWN_ROLES",
+    "DIFFUSION_STAGES",
+    "DIFFUSION_BLOCK_IDS",
+    "DIFFUSION_PART_KINDS",
+    "TRANSFORMER_STAGES",
+    "iter_block_tree",
+    "validate_block_tree",
+    "validate_click_coupling",
+    "validate_no_dotted_arrows",
+    "validate_no_dotted_boundaries",
+]

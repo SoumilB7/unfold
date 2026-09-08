@@ -1,0 +1,134 @@
+{
+  "not_claimed": "No new run, unpickling, causal reconstruction, latency median, or budget acceptance.",
+  "results": [
+    {
+      "actual_result": "child-phase-788abbd/result.json",
+      "observed_result_fields": {
+        "error": "AssertionError()",
+        "input_tool_pins_equal": true,
+        "inventory_structurally_equal": false,
+        "limits": "Lightweight phase-wrapper overhead included; cumulative phase times overlap and partial snapshots retain only completed calls. Exact existing request, monitor, network wrapper/attestation, bounded drains, timeout and sampled process-tree RSS cap remain unchanged. Phase snapshot clock starts after physics imports; supervised wall and reaped CPU cover the broader worker. CPU is reaped child usage; not an unprofiled latency result or true peak measurement.",
+        "selected_external_pins_equal": true,
+        "source_pins_equal": true,
+        "status": "failed"
+      }
+    },
+    {
+      "actual_result": "child-profile-788abbd/result.json",
+      "observed_result_fields": {
+        "error": "AssertionError()",
+        "input_tool_pins_equal": true,
+        "inventory_structurally_equal": false,
+        "limits": "Child cProfile overhead included; cumulative phase times overlap. Exact existing request, monitor, network wrapper/attestation, bounded drains, timeout and sampled process-tree RSS cap remain unchanged. CPU is reaped child usage; not an unprofiled latency result or true peak measurement.",
+        "selected_external_pins_equal": true,
+        "source_pins_equal": true,
+        "status": "failed"
+      }
+    },
+    {
+      "actual_result": "metadata-child-788abbd/result.json",
+      "observed_result_fields": {
+        "error": null,
+        "input_tool_pins_equal": true,
+        "inventory_structurally_equal": true,
+        "limits": "Lightweight phase-wrapper overhead included; cumulative phase times overlap and partial snapshots retain only completed calls. Exact existing request, monitor, network wrapper/attestation, bounded drains, timeout and sampled process-tree RSS cap remain unchanged. Phase snapshot clock starts after physics imports; supervised wall and reaped CPU cover the broader worker. CPU is reaped child usage; not an unprofiled latency result or true peak measurement.",
+        "selected_external_pins_equal": true,
+        "source_pins_equal": true,
+        "status": "ok"
+      }
+    },
+    {
+      "actual_result": "metadata-focused-788abbd/result.json",
+      "observed_result_fields": {
+        "error": null,
+        "returncode": 1,
+        "selected_external_pins_equal": true,
+        "source_pins_equal": true,
+        "tool_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "metadata-focused-v2-788abbd/result.json",
+      "observed_result_fields": {
+        "error": null,
+        "returncode": 0,
+        "selected_external_pins_equal": true,
+        "source_pins_equal": true,
+        "tool_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "profile-baseline-788abbd/result.json",
+      "observed_result_fields": {
+        "error": null,
+        "limits": "cProfile/observer overhead included; observed child lifetime bounds launch-to-first-existing-poll/wait completion, not intrinsic child wall or removable sleep overhead; CPU delta is reaped children in the inventory call; static input pickle is owned diagnostic data only.",
+        "selected_external_pins_equal": true,
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "static-focused-788abbd/result.json",
+      "observed_result_fields": {
+        "error": null,
+        "returncode": 1,
+        "selected_external_pins_equal": true,
+        "source_pins_equal": true,
+        "tool_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "static-focused-v2-788abbd/result.json",
+      "observed_result_fields": {
+        "error": null,
+        "returncode": 0,
+        "selected_external_pins_equal": true,
+        "source_pins_equal": true,
+        "tool_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "static-focused-v3-788abbd/result.json",
+      "observed_result_fields": {
+        "error": null,
+        "returncode": 0,
+        "selected_external_pins_equal": true,
+        "source_pins_equal": true,
+        "tool_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "static-hash-count-v1/result.json",
+      "observed_result_fields": {
+        "error": null,
+        "input_pins_equal": true,
+        "limits": "Exact owned historical inventory replay for static computation diagnosis only; no model construction, no persistent result cache, no cold/warm latency budget result. Only three original hash functions wrapped with counters and strong object retention; observer overhead included, no timing budget claim; historical inventory substitution still excludes model construction and is not a cold/warm result-cache budget measurement.",
+        "selected_external_pins_equal": true,
+        "source_pins_equal": true,
+        "tool_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "static-replay-v2-788abbd/result.json",
+      "observed_result_fields": {
+        "error": null,
+        "input_pins_equal": true,
+        "limits": "Exact owned historical inventory replay for static computation diagnosis only; no model construction, no persistent result cache, no cold/warm latency budget result. Profiling overhead remains included.",
+        "selected_external_pins_equal": true,
+        "source_pins_equal": true,
+        "tool_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "static-replay-v3-788abbd/result.json",
+      "observed_result_fields": {
+        "error": null,
+        "input_pins_equal": true,
+        "limits": "Exact owned historical inventory replay for static computation diagnosis only; no model construction, no persistent result cache, no cold/warm latency budget result. No profiler enabled for this replay; historical inventory substitution still excludes model construction and is not a cold/warm result-cache budget measurement.",
+        "selected_external_pins_equal": true,
+        "source_pins_equal": true,
+        "tool_pins_equal": true
+      }
+    }
+  ],
+  "scope": "Literal fields from actual result JSON; all versions and failed attempts retained."
+}

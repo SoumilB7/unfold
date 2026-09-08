@@ -1,0 +1,124 @@
+from pathlib import Path
+from html.parser import HTMLParser
+from collections import Counter,defaultdict
+import json,hashlib,gzip,re
+p=Path('/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/final-7168440/sdxl-ordinary.html');s=p.read_text(); lines=[0]
+for m in re.finditer('\n',s):lines.append(m.end())
+class Scan(HTMLParser):
+ def __init__(self):super().__init__(convert_charrefs=False);self.stack=[];self.spans=[];self.tags=Counter();self.classes=Counter()
+ def absolute_pos(self):l,c=self.getpos();return lines[l-1]+c
+ def handle_starttag(self,tag,attrs):
+  a=dict(attrs);self.tags[tag]+=1;self.classes.update(a.get('class','').split());e={'tag':tag,'attrs':a,'start':self.absolute_pos(),'open_end':self.absolute_pos()+len(self.get_starttag_text()),'parent':self.stack[-1] if self.stack else None}
+  if tag not in {'meta','link','input','br','hr','img','path','line','rect','circle','ellipse','polygon','polyline','stop','use'}:self.stack.append(e)
+ def handle_startendtag(self,tag,attrs):self.tags[tag]+=1;self.classes.update(dict(attrs).get('class','').split())
+ def handle_endtag(self,tag):
+  for i in range(len(self.stack)-1,-1,-1):
+   if self.stack[i]['tag']==tag:
+    e=self.stack[i];del self.stack[i:];e['end']=s.find('>',self.absolute_pos())+1;self.spans.append(e);return
+scan=Scan();scan.feed(s)
+def raw(e):return s[e['start']:e['end']]
+def weight(t):return len(t.encode())
+def stats(es):
+ texts=[raw(e) for e in es];counts=Counter(texts);return {'count':len(texts),'bytes':sum(map(weight,texts)),'unique_exact':len(counts),'unique_exact_bytes':sum(map(weight,counts))}
+role=lambda c:[e for e in scan.spans if c in e['attrs'].get('class','').split()]
+svgs=[e for e in scan.spans if e['tag']=='svg'];cards=role('uf-card-detail');panels=role('uf-inspect-panel');roles={c:stats(role(c)) for c in ['uf-card-detail','uf-card-title','uf-card-desc','uf-facts','uf-fact','uf-card-svg','uf-inspect-panel']}
+parts={};table=[];cardbyid=defaultdict(list)
+for e in cards:
+ body=s[e['open_end']:e['end']-6];idx=parts.setdefault(body,len(parts));table.append([e['attrs'],idx]);cardbyid[e['attrs'].get('data-card-id')].append(body)
+encoded=json.dumps({'parts':list(parts),'cards':table},ensure_ascii=False,separators=(',',':'))
+# Exact rendered payload atoms, with all original strings preserved.
+atoms={};atomrecords=[]
+byparent=defaultdict(list)
+for a in scan.spans:byparent[id(a["parent"])].append(a)
+for e in cards:
+ child=byparent[id(e)]
+ # direct title, desc, fact-container, svg-container only; preserve exact tags too
+ rec=[e['attrs'],[atoms.setdefault(raw(a),len(atoms)) for a in sorted(child,key=lambda a:a['start'])]];atomrecords.append(rec)
+atomjson=json.dumps({'atoms':list(atoms),'cards':atomrecords},ensure_ascii=False,separators=(',',':'))
+result={'page':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'bytes':p.stat().st_size,'gzip_bytes':len(gzip.compress(p.read_bytes(),mtime=0)),'roles_nested_not_additive':roles,'svg':stats(svgs),'scripts':stats([e for e in scan.spans if e['tag']=='script']),'styles':stats([e for e in scan.spans if e['tag']=='style']),'tag_counts':scan.tags,'card_ids':{'distinct':len(cardbyid),'repeated_ids':sum(len(x)>1 for x in cardbyid.values()),'same_id_multiple_different_bodies':sum(len(set(x))>1 for x in cardbyid.values())},'whole_body_pool_json_bytes':weight(encoded),'whole_body_pool_gzip_bytes':len(gzip.compress(encoded.encode(),mtime=0)),'exact_child_atom_pool_json_bytes':weight(atomjson),'exact_child_atom_pool_gzip_bytes':len(gzip.compress(atomjson.encode(),mtime=0)),'exact_child_atom_count':len(atoms),'panel_depths':[[e['attrs'].get('data-depth'),weight(raw(e)),len([x for x in cards if x['start']>e['start'] and x['end']<e['end']])] for e in panels]}
+Path('/private/tmp/s81-pageweight-analysis.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))
+# Reversible diagnostic only: identity-valued SVG attributes become ordered slots.
+svgpool={};svgrecs=[];svg_orig_bytext={};reconstructed=0
+for e in svgs:
+ text=raw(e);values=[]
+ for m in re.finditer(r'\b(?:id|data-id)="([^"]+)"',text):
+  if m.group(1) not in values:values.append(m.group(1))
+ tokens={v:'@@UNFOLD_SLOT_'+str(i)+'@@' for i,v in enumerate(values)}
+ assert '@@UNFOLD_SLOT_' not in text
+ normalized=re.sub('|'.join(re.escape(v) for v in sorted(values,key=len,reverse=True)),lambda m:tokens[m.group(0)],text) if values else text
+ restored=re.sub(r'@@UNFOLD_SLOT_(\d+)@@',lambda m:values[int(m.group(1))],normalized);assert restored==text
+ rec=[svgpool.setdefault(normalized,len(svgpool)),values];svgrecs.append(rec);svg_orig_bytext[text]=rec;reconstructed+=1
+normaljson=json.dumps({'templates':list(svgpool),'bindings':svgrecs},ensure_ascii=False,separators=(',',':'))
+# Factor per-card direct children exactly; SVG members reference reversible template/bindings.
+strings={};records=[]
+for e in cards:
+ fields=[]
+ for a in sorted(byparent[id(e)],key=lambda a:a['start']):
+  t=raw(a)
+  if 'uf-card-svg' in a['attrs'].get('class','').split():
+   pieces=[];cursor=0
+   for match in re.finditer(r'<svg\b.*?</svg>',t,re.S):
+    pieces.append(['str',strings.setdefault(t[cursor:match.start()],len(strings))]);pieces.append(['svg',svg_orig_bytext[match.group(0)]]);cursor=match.end()
+   pieces.append(['str',strings.setdefault(t[cursor:],len(strings))]);fields.append(['parts',pieces])
+  else:fields.append(['str',strings.setdefault(t,len(strings))])
+ records.append([e['attrs'],fields])
+compound={'svg_templates':list(svgpool),'strings':list(strings),'cards':records};compoundjson=json.dumps(compound,ensure_ascii=False,separators=(',',':'))
+# Lossless dictionary of all strings in the compound object, including identity bindings.
+dictionary={}
+def intern(v):
+ if isinstance(v,str):return ['s',dictionary.setdefault(v,len(dictionary))]
+ if isinstance(v,list):return [intern(x) for x in v]
+ if isinstance(v,dict):return {k:intern(x) for k,x in v.items()}
+ return v
+irecord=intern(compound);ijson=json.dumps({'s':list(dictionary),'payload':irecord},ensure_ascii=False,separators=(',',':'))
+additional={'identity_svg_templates':len(svgpool),'identity_svg_template_bytes':sum(map(weight,svgpool)),'identity_svg_template_and_bindings_json_bytes':weight(normaljson),'svg_exact_roundtrip_count':reconstructed,'compound_payload_bytes':weight(compoundjson),'compound_payload_gzip_bytes':len(gzip.compress(compoundjson.encode(),mtime=0)),'all_string_interned_bytes':weight(ijson),'all_string_interned_gzip_bytes':len(gzip.compress(ijson.encode(),mtime=0)),'identity_or_other_strings_count':len(dictionary)}
+Path('/private/tmp/s81-pageweight-template-analysis.json').write_text(json.dumps(additional,indent=2)+'\n');print(json.dumps(additional,indent=2))
+cardpool={};cardrecords=[];identitystrings={}
+for e in cards:
+ text=raw(e);values=[]
+ for m in re.finditer(r'\b(?:id|data-id|data-card-id)="([^"]+)"',text):
+  if m.group(1) not in values:values.append(m.group(1))
+ tokens={v:'@@UNFOLD_SLOT_'+str(i)+'@@' for i,v in enumerate(values)}
+ assert '@@UNFOLD_SLOT_' not in text
+ normalized=re.sub('|'.join(re.escape(v) for v in sorted(values,key=len,reverse=True)),lambda m:tokens[m.group(0)],text) if values else text
+ restored=re.sub(r'@@UNFOLD_SLOT_(\d+)@@',lambda m:values[int(m.group(1))],normalized);assert restored==text
+ cardrecords.append([cardpool.setdefault(normalized,len(cardpool)),[identitystrings.setdefault(v,len(identitystrings)) for v in values]])
+cp=json.dumps({'templates':list(cardpool),'identities':list(identitystrings),'cards':cardrecords},ensure_ascii=False,separators=(',',':'))
+# Lossless prefix coding of identity strings against the prior lexicographic string.
+sortedstrings=sorted(identitystrings);prefixrows=[];previous=''
+for v in sortedstrings:
+ n=0
+ while n<min(len(v),len(previous)) and v[n]==previous[n]:n+=1
+ prefixrows.append([n,v[n:]]);assert previous[:n]+v[n:]==v;previous=v
+idsmap={v:i for i,v in enumerate(sortedstrings)};oldids=list(identitystrings);prefcards=[[a,[idsmap[oldids[i]] for i in b]] for a,b in cardrecords]
+pp=json.dumps({'templates':list(cardpool),'identities_prefix':prefixrows,'cards':prefcards},ensure_ascii=False,separators=(',',':'))
+measurement={'exact_card_roundtrip_count':len(cards),'card_templates':len(cardpool),'unique_identity_strings':len(identitystrings),'template_bytes':sum(map(weight,cardpool)),'exact_card_template_identity_records_json_bytes':weight(cp),'exact_prefix_identity_records_json_bytes':weight(pp),'gzip_bytes':len(gzip.compress(pp.encode(),mtime=0))}
+Path('/private/tmp/s81-pageweight-card-template-analysis.json').write_text(json.dumps(measurement,indent=2)+'\n');print(json.dumps(measurement,indent=2))
+# Second-level exact interning of SVG fragments inside the already reversible card templates.
+innersvgs={};splitcardtemplates=[]
+for t in cardpool:
+ pieces=[];cursor=0
+ for m in re.finditer(r'<svg\b.*?</svg>',t,re.S):
+  pieces.append(t[cursor:m.start()]);pieces.append(innersvgs.setdefault(m.group(0),len(innersvgs)));cursor=m.end()
+ pieces.append(t[cursor:]);assert ''.join(list(innersvgs)[x] if isinstance(x,int) else x for x in pieces)==t;splitcardtemplates.append(pieces)
+twopayload={'svg_templates':list(innersvgs),'card_templates':splitcardtemplates,'identities_prefix':prefixrows,'cards':prefcards}
+twojson=json.dumps(twopayload,ensure_ascii=False,separators=(',',':'))
+final={'twolevel_svg_templates':len(innersvgs),'twolevel_card_templates':len(splitcardtemplates),'payload_bytes':weight(twojson),'remaining_original_page_bytes':len(p.read_bytes())-sum(weight(raw(e)) for e in cards) if isinstance(p,Path) else 44460,'gzip_bytes':len(gzip.compress(twojson.encode(),mtime=0)),'exact_roundtrip_verified':True}
+Path('/private/tmp/s81-pageweight-twolevel-analysis.json').write_text(json.dumps(final,indent=2)+'\n');print(json.dumps(final,indent=2))
+orderedcards=sorted(cards,key=lambda e:e['start']);record_by_start={e['start']:i for i,e in enumerate(cards)};layout=[];cursor=0
+for e in orderedcards:
+ assert e['start']>=cursor
+ layout.extend([s[cursor:e['start']],record_by_start[e['start']]]);cursor=e['end']
+layout.append(s[cursor:]);twopayload['canonical_parts']=layout
+serialized=json.dumps(twopayload,ensure_ascii=False,separators=(',',':')).replace('<','\\u003c');decoded=json.loads(serialized)
+restoredids=[];previous=''
+for count,suffix in decoded['identities_prefix']:
+ assert type(count) is int and 0<=count<=len(previous)
+ value=previous[:count]+suffix;restoredids.append(value);previous=value
+restoredtemplates=[''.join(decoded['svg_templates'][v] if type(v) is int else v for v in parts) for parts in decoded['card_templates']]
+restoredcards=[]
+for template,bindings in decoded['cards']:
+ value=re.sub(r'@@UNFOLD_SLOT_(\d+)@@',lambda m:restoredids[bindings[int(m.group(1))]],restoredtemplates[template]);restoredcards.append(value)
+assert all(actual==raw(e) for actual,e in zip(restoredcards,cards))
+whole=''.join(restoredcards[v] if type(v) is int else v for v in decoded['canonical_parts']);assert whole.encode()==p.read_bytes()
+verified={'status':'SERIALIZED_FULL_CANONICAL_INVERSE_PASS','cards':len(restoredcards),'canonical_bytes':len(whole.encode()),'canonical_sha256':hashlib.sha256(whole.encode()).hexdigest(),'json_script_safe_payload_bytes':len(serialized.encode()),'original_shell_and_original_interactions_retained':True,'ordered_card_placements_exact':True,'all_per_card_bytes_exact':True,'less_than_escaped':('<' not in serialized),'scope':'Read-only serialization feasibility; not a production page or browser performance measurement.'};Path('/private/tmp/s81-pageweight-whole-inverse-analysis.json').write_text(json.dumps(verified,indent=2)+'\n');print(json.dumps(verified,indent=2))

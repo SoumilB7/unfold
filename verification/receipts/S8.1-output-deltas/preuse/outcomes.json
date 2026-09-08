@@ -1,0 +1,34 @@
+{
+  "v1": {
+    "all_inverses_exact": true,
+    "all_svg_occurrences_equal": true,
+    "case_semantic_parity": false,
+    "original_findings": [
+      "llama-7b/sable: hash mismatch"
+    ],
+    "original_pytest_status": "FAIL",
+    "original_test_count": 3,
+    "outer_pins_equal": true,
+    "packet_complete": false,
+    "raw_baseline_status": "FAIL",
+    "render_count": 4,
+    "surface_deltas": [
+      "sable"
+    ],
+    "wrapper_status": "FAIL"
+  },
+  "v2": {
+    "all_inverses_exact": true,
+    "all_svg_occurrences_equal": true,
+    "case_semantic_parity": true,
+    "original_findings": [],
+    "original_pytest_status": "PASS",
+    "original_test_count": 3,
+    "outer_pins_equal": true,
+    "packet_complete": false,
+    "raw_baseline_status": "PASS",
+    "render_count": 4,
+    "surface_deltas": [],
+    "wrapper_status": "PASS_SUBSET_PLUMBING_ONLY"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "input": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8/final-fb1f871/sdxl-ordinary.html",
+  "input_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06",
+  "input_bytes": 23748293,
+  "viewport": {
+    "width": 1440,
+    "height": 1000,
+    "deviceScaleFactor": 1
+  },
+  "harness_sha256": "ca0a13d375252bddc51bf25f5b8708b1770e6efb39e6ce4cd34371752e0f22b6",
+  "method": "Fresh task-local headless Chromium profile; file navigation; DOM click via CDP mouse events; click capture to second animation frame. No model run or user session.",
+  "timing_limit": "Headless fixed-engine timings; two animation frames include a paint opportunity, not a hardware presentation timestamp. Main HTML is local; all HTTP(S) page requests are explicitly blocked, including Google Fonts, so both versions use the same offline fallback-font policy. Online font/network performance is not measured.",
+  "clicks": [],
+  "command": [
+    "/Users/soumil/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell",
+    "--headless",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-background-networking",
+    "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding",
+    "--remote-debugging-port=0",
+    "--user-data-dir=/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s81-browser-kjyg2aqo",
+    "about:blank"
+  ],
+  "status": "failed",
+  "error": "RuntimeError: Dedicated browser did not expose its debugging endpoint",
+  "input_after_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06"
+}

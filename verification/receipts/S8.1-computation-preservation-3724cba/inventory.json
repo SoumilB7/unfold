@@ -1,0 +1,27 @@
+{
+  "directories": [
+    "computation-preservation-3724cba",
+    "computation-preservation-3724cba/cache",
+    "computation-preservation-preparation"
+  ],
+  "raw_bytes": 31237,
+  "scopes": [
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-computation-preservation-3724cba.log",
+      "bytes": 28071,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "computation-preservation-3724cba",
+      "source": "/private/tmp/unfold-s81-computation-preservation-3724cba"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 3166,
+      "explicitly_empty": false,
+      "files": 1,
+      "name": "computation-preservation-preparation",
+      "source": "/private/tmp/unfold-s81-computation-preservation-preparation"
+    }
+  ],
+  "stream_count": 4
+}

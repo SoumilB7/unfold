@@ -1,0 +1,22 @@
+{
+  "archive_seconds": 3.8421352077275515,
+  "artifact_map": {
+    "bytes": 126978,
+    "sha256": "77026faed6b75b5b9061945d0e2f25a1f047f5257cb9718677e8750737a51c2d"
+  },
+  "compression_level": 3,
+  "directory_count": 50,
+  "executed_archiver": {
+    "bytes": 7991,
+    "sha256": "926318dc497d7109318114d4430d360acf57f6415b9438a5e586284c9a4d5625"
+  },
+  "full_file_and_directory_restoration": true,
+  "injective_paths": true,
+  "raw_bytes": 178734388,
+  "restored_stream_count": 248,
+  "scope": "Artifact packaging only. Actual profile/static/metadata failed and positive outcomes are preserved, not reclassified.",
+  "source_membership_and_bytes_unchanged": true,
+  "status": "PASS_ARCHIVE_INTEGRITY",
+  "stored_bytes": 12398120,
+  "stream_count": 248
+}

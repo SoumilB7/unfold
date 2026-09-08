@@ -1,0 +1,26 @@
+{
+  "archive_seconds": 18.03998529119417,
+  "artifact_map": {
+    "bytes": 1128736,
+    "sha256": "cd0761324c30ee472d9766e8d6ee8ef870475618fb4d90824ae1727b37b5f5cc"
+  },
+  "compression_level": 3,
+  "directory_count": 191,
+  "executed_archiver": {
+    "bytes": 8113,
+    "sha256": "8c4afc31376ad5a292f9015be9ddbb5e05f6aa5aeff3c741e9b21e546ee98342"
+  },
+  "full_file_and_directory_restoration": true,
+  "injective_paths": true,
+  "raw_bytes": 1587420810,
+  "released_scope_plan": {
+    "bytes": 11448,
+    "sha256": "41a6733626854281f3cc25378476db37658ccc84bcbb1e01f38a1bde691edeb2"
+  },
+  "restored_stream_count": 1802,
+  "scope": "Artifact packaging only. Actual public/cache/control/final-gate/browser failed and positive outcomes are preserved, not reclassified. No result is a new measurement or blanket approval.",
+  "source_membership_and_bytes_unchanged": true,
+  "status": "PASS_ARCHIVE_INTEGRITY",
+  "stored_bytes": 177514151,
+  "stream_count": 1802
+}

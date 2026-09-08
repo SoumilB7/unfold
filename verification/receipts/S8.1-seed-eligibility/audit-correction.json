@@ -1,0 +1,7 @@
+{
+  "initial_audit_status": "ERROR_IN_AUDIT_HASHING",
+  "exception": "ValueError: Out of range float values are not JSON compliant: -inf",
+  "phase": "canonical hashing of retained S6 request config, before any final eligibility report",
+  "correction": "Historical config linkage uses original allow_nan JSON convention; current strict capability2 canonical identity separately returns unavailable and records exact non-finite field paths. No seed bytes rewritten.",
+  "final_audit_status": "COMPLETE"
+}

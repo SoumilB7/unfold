@@ -1,0 +1,18 @@
+# S8.1 preservation output observer
+
+`capture_preservation.py` observes the existing preservation pytest lane. Its wrappers call each original function once, preserve the original returned object or exception, and do not replace assertions. No additional verifier, model construction, Sable run, or render is initiated. Load the plugin from this directory with `PYTEST_PLUGINS=capture_preservation` while preserving any existing plugin list and `PYTHONPATH`; set `UNFOLD_S81_OUTPUT_CAPTURE` to a fresh external output root. It activates only for an explicit `test_preservation.py` lane, excluding collection-only runs, and isolates xdist worker output directories.
+
+The observer captures each actual canonical-surface/view/gallery return and every actual HTML/pack input-output. It binds strict full-page inverse reconstruction to the observed eager fragment and unchanged outer shell, preserves raw HTML metadata hashes and ID deltas, and compares both exact SVG byte hashes and the existing visual hashes. The original expected manifest, raw hasher, findings, and pytest outcomes remain unchanged. The artifact-only `--report` mode requires all 29 named witnesses and all 52 original test outcomes; a valid observation packet is not new baseline authority.
+
+## Actual pre-use trials
+
+Both original trial directories are preserved losslessly under `preuse/`. The map has 107 streams, 14 directories, 4,524,409 original bytes and 724,997 compressed bytes. Every stream was restored to a separate file and checked by SHA-256 and byte count; exact directory/file membership and original bytes remained unchanged. Storage appends `.gzip` to each complete logical filename. Map SHA-256: `639b9793cd7e5de943946b45ae4602a2daf2e1f5028f8a1cbb874a09dea42dda`.
+
+- **v1 remains RED:** the original Llama witness failed its Sable surface hash, while the two original cheap controls passed. The actual structural-debt check reported the old `document.render_fragment` consumer address as dead and the moved `_render_canonical_fragment` read as unregistered. Four observed pages retained exact inverse/SVG and old eager HTML parity; other model surfaces matched.
+- **v2 passed the bounded trial:** 35 existing structural controls passed, followed by all three unchanged original preservation assertions. Llama had zero surface deltas, including recovered Sable parity; all four page/pack inverses and exact SVG occurrence comparisons passed. Capture errors were empty and all recorded before/finally pins matched. The reporter deliberately returned incomplete status for one of 29 witnesses and three of 52 original tests; the wrapper accepted only this explicitly bounded result.
+
+The approved registry edit changes only the function address for `renderer.raw_extras.4592b54801fb2c20`, retaining its other fields and debt obligations. It belongs with the renderer checkpoint; the computation-only checkpoint retains the old renderer and old registry together.
+
+The actual v1→v2 trees also include three independently integrated UNet reader changes: `unet_call_binding.py`, `unet_lookup_closure.py`, and `unet_selected_spatial.py`. `preuse/source-delta.json` records all four source differences. This is not described as a measured whole-tree one-line isolation experiment. The original preservation test, expected manifest, corpus/gallery bytes, and historical baseline remained identical.
+
+These correctness trials ran under host contention. Their elapsed times remain in the raw logs and are not latency-budget evidence. No baseline was generated, changed, or blessed; no full corpus result is claimed. `preuse/outcomes.json` keeps the failed and corrected outcomes distinct, and the exact executed observer/validation scripts are inside each archived trial.

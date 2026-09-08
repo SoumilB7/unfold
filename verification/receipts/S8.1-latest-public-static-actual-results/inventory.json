@@ -1,0 +1,648 @@
+{
+  "directories": [
+    "attention-interface-controls-v1",
+    "attention-interface-preparation",
+    "attention-interface-root-review",
+    "bytecode-preparation-v1",
+    "bytecode-unit-v1",
+    "cache-operation-inventory-v7",
+    "cache-preparation-v10",
+    "cache-preparation-v11",
+    "cache-preparation-v7",
+    "cache-preparation-v8",
+    "cache-preparation-v9",
+    "cache-traversal-controls-v1",
+    "cache-traversal-preparation",
+    "cache-traversal-replay-v1",
+    "cache-traversal-root-review",
+    "capture-phase-preparation",
+    "capture-phase-preparation-v2",
+    "capture-phase-preparation-v3",
+    "capture-phase-v1",
+    "capture-phase-v1/cache",
+    "capture-phase-v2",
+    "capture-phase-v2/cache",
+    "capture-phase-v3",
+    "capture-phase-v3/cache",
+    "cell-lineage-controls-v1",
+    "cell-lineage-controls-v2",
+    "cell-lineage-preparation",
+    "cell-lineage-preparation-v2",
+    "cell-lineage-root-review",
+    "conformance-controls-v1",
+    "conformance-controls-v2",
+    "conformance-preparation",
+    "conformance-preparation-v2",
+    "conformance-root-review",
+    "digest-primitive-preparation",
+    "digest-primitive-preparation/__pycache__",
+    "digest-primitive-v1",
+    "expression-preparation",
+    "expression-preparation/source",
+    "expression-preparation/source/model_unfolder",
+    "expression-preparation/source/model_unfolder/evidence",
+    "expression-preparation/source/tests",
+    "expression-unit-v1",
+    "guard-import-preparation",
+    "guard-import-preparation/source",
+    "guard-import-preparation/source/model_unfolder",
+    "guard-import-preparation/source/model_unfolder/evidence",
+    "guard-import-preparation/source/tests",
+    "guard-import-unit-v1",
+    "public-cold-v10",
+    "public-cold-v11",
+    "public-cold-v7",
+    "public-cold-v8",
+    "public-cold-v9",
+    "public-entries-v10",
+    "public-entries-v10/entries",
+    "public-entries-v10/requests",
+    "public-entries-v11",
+    "public-entries-v11/entries",
+    "public-entries-v11/requests",
+    "public-entries-v7",
+    "public-entries-v7/entries",
+    "public-entries-v7/requests",
+    "public-entries-v8",
+    "public-entries-v8/entries",
+    "public-entries-v8/requests",
+    "public-entries-v9",
+    "public-entries-v9/entries",
+    "public-entries-v9/requests",
+    "public-warm-profile-v1",
+    "public-warm-profile-v1/cache-before",
+    "public-warm-profile-v1/cache-before/entries",
+    "public-warm-profile-v1/cache-before/requests",
+    "public-warm-profile-v2",
+    "public-warm-profile-v2/cache-before",
+    "public-warm-profile-v2/cache-before/entries",
+    "public-warm-profile-v2/cache-before/requests",
+    "public-warm-v10",
+    "public-warm-v10/cache-before",
+    "public-warm-v10/cache-before/entries",
+    "public-warm-v10/cache-before/requests",
+    "public-warm-v11",
+    "public-warm-v11/cache-before",
+    "public-warm-v11/cache-before/entries",
+    "public-warm-v11/cache-before/requests",
+    "public-warm-v7",
+    "public-warm-v7/cache-before",
+    "public-warm-v7/cache-before/entries",
+    "public-warm-v7/cache-before/requests",
+    "public-warm-v8",
+    "public-warm-v8/cache-before",
+    "public-warm-v8/cache-before/entries",
+    "public-warm-v8/cache-before/requests",
+    "public-warm-v9",
+    "public-warm-v9/cache-before",
+    "public-warm-v9/cache-before/entries",
+    "public-warm-v9/cache-before/requests",
+    "reader-work-root-review",
+    "root-classification-preparation",
+    "root-classification-preparation/source",
+    "root-classification-preparation/source/physics",
+    "root-classification-preparation/source/tests",
+    "root-classification-unit-v1",
+    "scandir-preparation",
+    "scandir-preparation/source",
+    "scandir-preparation/source/physics",
+    "scandir-preparation/source/tests",
+    "scandir-replay-v1",
+    "scandir-unit-v1",
+    "static-profile-independent-review",
+    "static-profile-independent-review/capture-phase-v2-actual",
+    "static-profile-independent-review/capture-phase-v2-source",
+    "static-profile-independent-review/capture-phase-v3-actual",
+    "static-profile-independent-review/capture-phase-v3-source",
+    "static-profile-independent-review/config-import-path",
+    "static-profile-independent-review/digest-primitive-actual",
+    "static-profile-independent-review/digest-primitive-source",
+    "static-profile-independent-review/expression-source",
+    "static-profile-independent-review/expression-source/model_unfolder",
+    "static-profile-independent-review/expression-source/model_unfolder/evidence",
+    "static-profile-independent-review/expression-source/tests",
+    "static-profile-independent-review/expression-v9-phase",
+    "static-profile-independent-review/guard-import-actual",
+    "static-profile-independent-review/guard-import-source",
+    "static-profile-independent-review/guard-import-source/model_unfolder",
+    "static-profile-independent-review/guard-import-source/model_unfolder/evidence",
+    "static-profile-independent-review/guard-import-source/tests",
+    "static-profile-independent-review/public-v10",
+    "static-profile-independent-review/public-v11",
+    "static-profile-independent-review/root-classification-actual",
+    "static-profile-independent-review/root-classification-source",
+    "static-profile-independent-review/scandir-actual",
+    "static-profile-independent-review/scandir-source",
+    "static-profile-independent-review/warm-profile-v2",
+    "warm-profile-preparation",
+    "warm-profile-preparation-v2"
+  ],
+  "raw_bytes": 908689586,
+  "scopes": [
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-public-cold-v7.log",
+      "bytes": 56912220,
+      "explicitly_empty": false,
+      "files": 10,
+      "name": "public-cold-v7",
+      "source": "/private/tmp/unfold-s81-public-cold-v7"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-public-warm-v7.log",
+      "bytes": 59940599,
+      "explicitly_empty": false,
+      "files": 11,
+      "name": "public-warm-v7",
+      "source": "/private/tmp/unfold-s81-public-warm-v7"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 11528596,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "public-entries-v7",
+      "source": "/private/tmp/unfold-s81-public-entries-v7"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 79760,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "cache-preparation-v7",
+      "source": "/private/tmp/unfold-s81-cache-preparation-v7"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-public-cold-v8.log",
+      "bytes": 56912700,
+      "explicitly_empty": false,
+      "files": 10,
+      "name": "public-cold-v8",
+      "source": "/private/tmp/unfold-s81-public-cold-v8"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-public-warm-v8.log",
+      "bytes": 59941096,
+      "explicitly_empty": false,
+      "files": 11,
+      "name": "public-warm-v8",
+      "source": "/private/tmp/unfold-s81-public-warm-v8"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 11528607,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "public-entries-v8",
+      "source": "/private/tmp/unfold-s81-public-entries-v8"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 79980,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "cache-preparation-v8",
+      "source": "/private/tmp/unfold-s81-cache-preparation-v8"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-public-cold-v9.log",
+      "bytes": 56913274,
+      "explicitly_empty": false,
+      "files": 10,
+      "name": "public-cold-v9",
+      "source": "/private/tmp/unfold-s81-public-cold-v9"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-public-warm-v9.log",
+      "bytes": 59941707,
+      "explicitly_empty": false,
+      "files": 11,
+      "name": "public-warm-v9",
+      "source": "/private/tmp/unfold-s81-public-warm-v9"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 11528749,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "public-entries-v9",
+      "source": "/private/tmp/unfold-s81-public-entries-v9"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 80201,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "cache-preparation-v9",
+      "source": "/private/tmp/unfold-s81-cache-preparation-v9"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-public-cold-v10.log",
+      "bytes": 56912986,
+      "explicitly_empty": false,
+      "files": 10,
+      "name": "public-cold-v10",
+      "source": "/private/tmp/unfold-s81-public-cold-v10"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-public-warm-v10.log",
+      "bytes": 59941350,
+      "explicitly_empty": false,
+      "files": 11,
+      "name": "public-warm-v10",
+      "source": "/private/tmp/unfold-s81-public-warm-v10"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 11528252,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "public-entries-v10",
+      "source": "/private/tmp/unfold-s81-public-entries-v10"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 80300,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "cache-preparation-v10",
+      "source": "/private/tmp/unfold-s81-cache-preparation-v10"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-public-cold-v11.log",
+      "bytes": 56914067,
+      "explicitly_empty": false,
+      "files": 10,
+      "name": "public-cold-v11",
+      "source": "/private/tmp/unfold-s81-public-cold-v11"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-public-warm-v11.log",
+      "bytes": 59942583,
+      "explicitly_empty": false,
+      "files": 11,
+      "name": "public-warm-v11",
+      "source": "/private/tmp/unfold-s81-public-warm-v11"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 11529104,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "public-entries-v11",
+      "source": "/private/tmp/unfold-s81-public-entries-v11"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 80423,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "cache-preparation-v11",
+      "source": "/private/tmp/unfold-s81-cache-preparation-v11"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-public-warm-profile-v1.log",
+      "bytes": 61539997,
+      "explicitly_empty": false,
+      "files": 14,
+      "name": "public-warm-profile-v1",
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v1"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-public-warm-profile-v2.log",
+      "bytes": 61544316,
+      "explicitly_empty": false,
+      "files": 14,
+      "name": "public-warm-profile-v2",
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v2"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 80893,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "warm-profile-preparation",
+      "source": "/private/tmp/unfold-s81-warm-profile-preparation"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 81555,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "warm-profile-preparation-v2",
+      "source": "/private/tmp/unfold-s81-warm-profile-preparation-v2"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-capture-phase-v1.log",
+      "bytes": 13715376,
+      "explicitly_empty": false,
+      "files": 5,
+      "name": "capture-phase-v1",
+      "source": "/private/tmp/unfold-s81-capture-phase-v1"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 79489,
+      "explicitly_empty": false,
+      "files": 3,
+      "name": "capture-phase-preparation",
+      "source": "/private/tmp/unfold-s81-capture-phase-preparation"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-capture-phase-v2.log",
+      "bytes": 13718504,
+      "explicitly_empty": false,
+      "files": 5,
+      "name": "capture-phase-v2",
+      "source": "/private/tmp/unfold-s81-capture-phase-v2"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 80640,
+      "explicitly_empty": false,
+      "files": 3,
+      "name": "capture-phase-preparation-v2",
+      "source": "/private/tmp/unfold-s81-capture-phase-preparation-v2"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-capture-phase-v3.log",
+      "bytes": 13718964,
+      "explicitly_empty": false,
+      "files": 5,
+      "name": "capture-phase-v3",
+      "source": "/private/tmp/unfold-s81-capture-phase-v3"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 80920,
+      "explicitly_empty": false,
+      "files": 3,
+      "name": "capture-phase-preparation-v3",
+      "source": "/private/tmp/unfold-s81-capture-phase-preparation-v3"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 72581,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "bytecode-preparation-v1",
+      "source": "/private/tmp/unfold-s81-bytecode-preparation-v1"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-bytecode-unit-v1.log",
+      "bytes": 169473,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "bytecode-unit-v1",
+      "source": "/private/tmp/unfold-s81-bytecode-unit-v1"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 281084,
+      "explicitly_empty": false,
+      "files": 7,
+      "name": "guard-import-preparation",
+      "source": "/private/tmp/unfold-s81-guard-import-preparation"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 169872,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "guard-import-unit-v1",
+      "source": "/private/tmp/unfold-s81-guard-import-unit-v1"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 227746,
+      "explicitly_empty": false,
+      "files": 5,
+      "name": "expression-preparation",
+      "source": "/private/tmp/unfold-s81-expression-preparation"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 170254,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "expression-unit-v1",
+      "source": "/private/tmp/unfold-s81-expression-unit-v1"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 255897,
+      "explicitly_empty": false,
+      "files": 1,
+      "name": "cache-operation-inventory-v7",
+      "source": "/private/tmp/unfold-s81-cache-operation-inventory-v7"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 157630,
+      "explicitly_empty": false,
+      "files": 4,
+      "name": "cache-traversal-preparation",
+      "source": "/private/tmp/unfold-s81-cache-traversal-preparation"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 299865,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "cache-traversal-controls-v1",
+      "source": "/private/tmp/unfold-s81-cache-traversal-controls-v1"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 33367463,
+      "explicitly_empty": false,
+      "files": 8,
+      "name": "cache-traversal-replay-v1",
+      "source": "/private/tmp/unfold-s81-cache-traversal-replay-v1"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 72965,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "conformance-preparation",
+      "source": "/private/tmp/unfold-s81-conformance-preparation"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 72968,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "conformance-preparation-v2",
+      "source": "/private/tmp/unfold-s81-conformance-preparation-v2"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 148872,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "conformance-controls-v1",
+      "source": "/private/tmp/unfold-s81-conformance-controls-v1"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 146061,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "conformance-controls-v2",
+      "source": "/private/tmp/unfold-s81-conformance-controls-v2"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 79097,
+      "explicitly_empty": false,
+      "files": 3,
+      "name": "cell-lineage-preparation",
+      "source": "/private/tmp/unfold-s81-cell-lineage-preparation"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 73103,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "cell-lineage-preparation-v2",
+      "source": "/private/tmp/unfold-s81-cell-lineage-preparation-v2"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 171398,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "cell-lineage-controls-v1",
+      "source": "/private/tmp/unfold-s81-cell-lineage-controls-v1"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 146310,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "cell-lineage-controls-v2",
+      "source": "/private/tmp/unfold-s81-cell-lineage-controls-v2"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 106419,
+      "explicitly_empty": false,
+      "files": 5,
+      "name": "scandir-preparation",
+      "source": "/private/tmp/unfold-s81-scandir-preparation"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 170435,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "scandir-unit-v1",
+      "source": "/private/tmp/unfold-s81-scandir-unit-v1"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-scandir-replay-v1.log",
+      "bytes": 33367444,
+      "explicitly_empty": false,
+      "files": 8,
+      "name": "scandir-replay-v1",
+      "source": "/private/tmp/unfold-s81-scandir-replay-v1"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 109853,
+      "explicitly_empty": false,
+      "files": 5,
+      "name": "root-classification-preparation",
+      "source": "/private/tmp/unfold-s81-root-classification-preparation"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 170876,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "root-classification-unit-v1",
+      "source": "/private/tmp/unfold-s81-root-classification-unit-v1"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 145232,
+      "explicitly_empty": false,
+      "files": 6,
+      "name": "attention-interface-preparation",
+      "source": "/private/tmp/unfold-s81-attention-interface-preparation"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 146860,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "attention-interface-controls-v1",
+      "source": "/private/tmp/unfold-s81-attention-interface-controls-v1"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 1282,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "cache-traversal-root-review",
+      "source": "/private/tmp/unfold-s81-cache-traversal-root-review"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 1346,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "conformance-root-review",
+      "source": "/private/tmp/unfold-s81-conformance-root-review"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 1236,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "cell-lineage-root-review",
+      "source": "/private/tmp/unfold-s81-cell-lineage-root-review"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 1803,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "attention-interface-root-review",
+      "source": "/private/tmp/unfold-s81-attention-interface-root-review"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 1237,
+      "explicitly_empty": false,
+      "files": 1,
+      "name": "reader-work-root-review",
+      "source": "/private/tmp/unfold-s81-reader-work-root-review"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 417413,
+      "explicitly_empty": false,
+      "files": 26,
+      "name": "static-profile-independent-review",
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 27263,
+      "explicitly_empty": false,
+      "files": 5,
+      "name": "digest-primitive-preparation",
+      "source": "/private/tmp/unfold-s81-digest-primitive-preparation"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-digest-primitive-v1.log",
+      "bytes": 30981040,
+      "explicitly_empty": false,
+      "files": 10,
+      "name": "digest-primitive-v1",
+      "source": "/private/tmp/unfold-s81-digest-primitive-v1"
+    }
+  ],
+  "stream_count": 331
+}

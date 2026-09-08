@@ -1,0 +1,53 @@
+{
+  "corpus_and_galleries_equal": true,
+  "expected_manifest_equal": true,
+  "historical_baseline_equal": true,
+  "original_test_equal": true,
+  "scope": "Four measured production differences; not a whole-tree one-line isolation experiment.",
+  "v1_to_v2_production_and_support": [
+    {
+      "after": {
+        "resolved": "/private/tmp/unfold-s81-static-candidate-788abbd/model_unfolder/evidence/structural_debt.py",
+        "sha256": "cbdd46e3063df27378ed16a0b870ddc528d350cdd1720b04a0c7a16ad71d4b31"
+      },
+      "before": {
+        "resolved": "/private/tmp/unfold-s81-static-candidate-788abbd/model_unfolder/evidence/structural_debt.py",
+        "sha256": "cfd0a69ede4da851491a65c13cf058d9a20265aba38e73acae050869e0f81851"
+      },
+      "path": "model_unfolder/evidence/structural_debt.py"
+    },
+    {
+      "after": {
+        "resolved": "/private/tmp/unfold-s81-static-candidate-788abbd/model_unfolder/evidence/unet_call_binding.py",
+        "sha256": "c46b3203008c17fdac2e2835a9325ed2938997dffd97ef4aca78f6859a97b243"
+      },
+      "before": {
+        "resolved": "/private/tmp/unfold-s81-static-candidate-788abbd/model_unfolder/evidence/unet_call_binding.py",
+        "sha256": "552292e3c14b1f26730e44d780b57ff7e41158b2c7f31be35184363ae6b48d78"
+      },
+      "path": "model_unfolder/evidence/unet_call_binding.py"
+    },
+    {
+      "after": {
+        "resolved": "/private/tmp/unfold-s81-static-candidate-788abbd/model_unfolder/evidence/unet_lookup_closure.py",
+        "sha256": "465a09a10d0ed469a471a2d05705b8209210d0bae650c9a57b9b66897320acbd"
+      },
+      "before": {
+        "resolved": "/private/tmp/unfold-s81-static-candidate-788abbd/model_unfolder/evidence/unet_lookup_closure.py",
+        "sha256": "a43f6f5403c3f3701608a65d88c173006e00f20ea46ca1e78eebe977e308d39d"
+      },
+      "path": "model_unfolder/evidence/unet_lookup_closure.py"
+    },
+    {
+      "after": {
+        "resolved": "/private/tmp/unfold-s81-static-candidate-788abbd/model_unfolder/evidence/unet_selected_spatial.py",
+        "sha256": "66448a545002365bc3a4bdca212ce70be902c8b07de54138eb5f503452d069bb"
+      },
+      "before": {
+        "resolved": "/private/tmp/unfold-s81-static-candidate-788abbd/model_unfolder/evidence/unet_selected_spatial.py",
+        "sha256": "bfa42dae34002c755a7720698ab1b94f9322257f92fabb791c7e33aeee85d457"
+      },
+      "path": "model_unfolder/evidence/unet_selected_spatial.py"
+    }
+  ]
+}

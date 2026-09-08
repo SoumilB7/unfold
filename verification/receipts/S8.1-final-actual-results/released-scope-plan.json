@@ -1,0 +1,408 @@
+{
+  "status": "FINAL_RELEASED_FOR_ARCHIVE",
+  "scopes": [
+    {
+      "name": "parallel-validation-preparation",
+      "source": "/private/tmp/unfold-s81-parallel-validation-preparation",
+      "state": "released",
+      "kind": "directory",
+      "files": 5,
+      "bytes": 110035,
+      "explicitly_empty": false
+    },
+    {
+      "name": "parallel-validation-preparation-v2",
+      "source": "/private/tmp/unfold-s81-parallel-validation-preparation-v2",
+      "state": "released",
+      "kind": "directory",
+      "files": 3,
+      "bytes": 80771,
+      "explicitly_empty": false
+    },
+    {
+      "name": "parallel-validation-v1",
+      "source": "/private/tmp/unfold-s81-parallel-validation-v1",
+      "state": "released",
+      "kind": "directory",
+      "files": 7,
+      "bytes": 11897394,
+      "explicitly_empty": false
+    },
+    {
+      "name": "parallel-validation-v2",
+      "source": "/private/tmp/unfold-s81-parallel-validation-v2",
+      "state": "released",
+      "kind": "directory",
+      "files": 9,
+      "bytes": 26499138,
+      "explicitly_empty": false
+    },
+    {
+      "name": "validation-parallel-independent-review",
+      "source": "/private/tmp/unfold-s81-validation-parallel-independent-review",
+      "state": "released",
+      "kind": "directory",
+      "files": 2,
+      "bytes": 6821,
+      "explicitly_empty": false
+    },
+    {
+      "name": "parameter-grouping-preparation",
+      "source": "/private/tmp/unfold-s81-parameter-grouping-preparation",
+      "state": "released",
+      "kind": "directory",
+      "files": 4,
+      "bytes": 107616,
+      "explicitly_empty": false
+    },
+    {
+      "name": "parameter-grouping-controls-v1",
+      "source": "/private/tmp/unfold-s81-parameter-grouping-controls-v1",
+      "state": "released",
+      "kind": "directory",
+      "files": 2,
+      "bytes": 147275,
+      "explicitly_empty": false
+    },
+    {
+      "name": "parameter-grouping-root-review",
+      "source": "/private/tmp/unfold-s81-parameter-grouping-root-review",
+      "state": "released",
+      "kind": "directory",
+      "files": 2,
+      "bytes": 1800,
+      "explicitly_empty": false
+    },
+    {
+      "name": "cache-preparation-v12",
+      "source": "/private/tmp/unfold-s81-cache-preparation-v12",
+      "state": "released",
+      "kind": "directory",
+      "files": 2,
+      "bytes": 81206,
+      "explicitly_empty": false
+    },
+    {
+      "name": "public-cold-v12",
+      "source": "/private/tmp/unfold-s81-public-cold-v12",
+      "state": "released",
+      "kind": "directory",
+      "files": 10,
+      "bytes": 56914960,
+      "explicitly_empty": false
+    },
+    {
+      "name": "public-warm-v12",
+      "source": "/private/tmp/unfold-s81-public-warm-v12",
+      "state": "released",
+      "kind": "directory",
+      "files": 11,
+      "bytes": 59943466,
+      "explicitly_empty": false
+    },
+    {
+      "name": "public-entries-v12",
+      "source": "/private/tmp/unfold-s81-public-entries-v12",
+      "state": "released",
+      "kind": "directory",
+      "files": 2,
+      "bytes": 11529033,
+      "explicitly_empty": false
+    },
+    {
+      "name": "public-v12-independent-review",
+      "source": "/private/tmp/unfold-s81-public-v12-independent-review",
+      "state": "released",
+      "kind": "directory",
+      "files": 2,
+      "bytes": 5154,
+      "explicitly_empty": false
+    },
+    {
+      "name": "sd14-public-preparation",
+      "source": "/private/tmp/unfold-s81-sd14-public-preparation",
+      "state": "released",
+      "kind": "directory",
+      "files": 8,
+      "bytes": 113219,
+      "explicitly_empty": false
+    },
+    {
+      "name": "sd14-public-v1",
+      "source": "/private/tmp/unfold-s81-sd14-public-v1",
+      "state": "released",
+      "kind": "directory",
+      "files": 37,
+      "bytes": 122709701,
+      "explicitly_empty": false
+    },
+    {
+      "name": "sd14-public-root-review",
+      "source": "/private/tmp/unfold-s81-sd14-public-root-review",
+      "state": "released",
+      "kind": "directory",
+      "files": 2,
+      "bytes": 1643,
+      "explicitly_empty": false
+    },
+    {
+      "name": "final-mixed-preparation",
+      "source": "/private/tmp/unfold-s81-final-mixed-preparation",
+      "state": "released",
+      "kind": "directory",
+      "files": 8,
+      "bytes": 19763,
+      "explicitly_empty": false
+    },
+    {
+      "name": "final-wrapper-independent-review",
+      "source": "/private/tmp/unfold-s81-final-wrapper-independent-review",
+      "state": "released",
+      "kind": "directory",
+      "files": 2,
+      "bytes": 3718,
+      "explicitly_empty": false
+    },
+    {
+      "name": "final-mixed-ededf752",
+      "source": "/private/tmp/unfold-s81-final-mixed-ededf752",
+      "state": "released",
+      "kind": "directory",
+      "files": 1272,
+      "bytes": 718540921,
+      "explicitly_empty": false
+    },
+    {
+      "name": "cache-scope-independent-review",
+      "source": "/private/tmp/unfold-s81-cache-scope-independent-review",
+      "state": "released",
+      "kind": "directory",
+      "files": 1,
+      "bytes": 6073,
+      "explicitly_empty": false
+    },
+    {
+      "name": "s7-source-delta",
+      "source": "/private/tmp/unfold-s81-s7-source-delta",
+      "state": "released",
+      "kind": "directory",
+      "files": 1,
+      "bytes": 6741,
+      "explicitly_empty": false
+    },
+    {
+      "name": "s7-source-independent-review",
+      "source": "/private/tmp/unfold-s81-s7-source-independent-review",
+      "state": "released",
+      "kind": "directory",
+      "files": 1,
+      "bytes": 7320,
+      "explicitly_empty": false
+    },
+    {
+      "name": "final-page-root-review",
+      "source": "/private/tmp/unfold-s81-final-page-root-review",
+      "state": "released",
+      "kind": "directory",
+      "files": 1,
+      "bytes": 857,
+      "explicitly_empty": false
+    },
+    {
+      "name": "final-decision-page-preparation",
+      "source": "/private/tmp/unfold-s81-final-decision-page-preparation",
+      "state": "released",
+      "kind": "directory",
+      "files": 15,
+      "bytes": 107060,
+      "explicitly_empty": false
+    },
+    {
+      "name": "sd14-browser-preparation",
+      "source": "/private/tmp/unfold-s81-sd14-browser-preparation",
+      "state": "released",
+      "kind": "directory",
+      "files": 7,
+      "bytes": 43148,
+      "explicitly_empty": false
+    },
+    {
+      "name": "sd14-browser-root-review",
+      "source": "/private/tmp/unfold-s81-sd14-browser-root-review",
+      "state": "released",
+      "kind": "directory",
+      "files": 4,
+      "bytes": 4532,
+      "explicitly_empty": false
+    },
+    {
+      "name": "sdxl-browser-preparation",
+      "source": "/private/tmp/unfold-s81-sdxl-browser-preparation",
+      "state": "released",
+      "kind": "directory",
+      "files": 7,
+      "bytes": 43460,
+      "explicitly_empty": false
+    },
+    {
+      "name": "sdxl-browser-root-review",
+      "source": "/private/tmp/unfold-s81-sdxl-browser-root-review",
+      "state": "released",
+      "kind": "directory",
+      "files": 3,
+      "bytes": 4206,
+      "explicitly_empty": false
+    },
+    {
+      "name": "final-sd14-browser",
+      "source": "/private/tmp/unfold-s81-final-sd14-browser",
+      "state": "released",
+      "kind": "directory",
+      "files": 51,
+      "bytes": 4557011,
+      "explicitly_empty": false
+    },
+    {
+      "name": "final-sdxl-browser",
+      "source": "/private/tmp/unfold-s81-final-sdxl-browser",
+      "state": "released",
+      "kind": "directory",
+      "files": 57,
+      "bytes": 5170270,
+      "explicitly_empty": false
+    },
+    {
+      "name": "example-delta-preparation",
+      "source": "/private/tmp/unfold-s81-example-delta-preparation",
+      "state": "released",
+      "kind": "directory",
+      "files": 3,
+      "bytes": 13912,
+      "explicitly_empty": false
+    },
+    {
+      "name": "example-delta-root-review",
+      "source": "/private/tmp/unfold-s81-example-delta-root-review",
+      "state": "released",
+      "kind": "directory",
+      "files": 2,
+      "bytes": 1068,
+      "explicitly_empty": false
+    },
+    {
+      "name": "example-delta-actual-v1",
+      "source": "/private/tmp/unfold-s81-example-delta-actual-v1",
+      "state": "released",
+      "kind": "directory",
+      "files": 3,
+      "bytes": 26491058,
+      "explicitly_empty": false
+    },
+    {
+      "name": "final-campaign-independent-review",
+      "source": "/private/tmp/unfold-s81-final-campaign-independent-review",
+      "state": "released",
+      "kind": "directory",
+      "files": 13,
+      "bytes": 606172,
+      "explicitly_empty": false
+    },
+    {
+      "name": "canonical-9426e9390b",
+      "source": "/private/tmp/model-unfolder-verification/9426e9390b",
+      "state": "released",
+      "kind": "directory",
+      "files": 205,
+      "bytes": 540698773,
+      "explicitly_empty": false
+    },
+    {
+      "name": "batch-5573724e68",
+      "source": "/private/tmp/model-unfolder-file-bracket/5573724e68",
+      "state": "released",
+      "kind": "directory",
+      "files": 30,
+      "bytes": 941633,
+      "explicitly_empty": false
+    },
+    {
+      "name": "parallel-validation-v1.log",
+      "source": "/private/tmp/unfold-s81-parallel-validation-v1.log",
+      "state": "released",
+      "kind": "file",
+      "files": 1,
+      "bytes": 225,
+      "explicitly_empty": false
+    },
+    {
+      "name": "parallel-validation-v2.log",
+      "source": "/private/tmp/unfold-s81-parallel-validation-v2.log",
+      "state": "released",
+      "kind": "file",
+      "files": 1,
+      "bytes": 0,
+      "explicitly_empty": false
+    },
+    {
+      "name": "public-cold-v12.log",
+      "source": "/private/tmp/unfold-s81-public-cold-v12.log",
+      "state": "released",
+      "kind": "file",
+      "files": 1,
+      "bytes": 0,
+      "explicitly_empty": false
+    },
+    {
+      "name": "public-warm-v12.log",
+      "source": "/private/tmp/unfold-s81-public-warm-v12.log",
+      "state": "released",
+      "kind": "file",
+      "files": 1,
+      "bytes": 0,
+      "explicitly_empty": false
+    },
+    {
+      "name": "final-mixed-ededf752.log",
+      "source": "/private/tmp/unfold-s81-final-mixed-ededf752.log",
+      "state": "released",
+      "kind": "file",
+      "files": 1,
+      "bytes": 0,
+      "explicitly_empty": false
+    },
+    {
+      "name": "sd14-public-cold-v1.log",
+      "source": "/private/tmp/unfold-s81-sd14-public-cold-v1.log",
+      "state": "released",
+      "kind": "file",
+      "files": 1,
+      "bytes": 228,
+      "explicitly_empty": false
+    },
+    {
+      "name": "sd14-public-warm-v1.log",
+      "source": "/private/tmp/unfold-s81-sd14-public-warm-v1.log",
+      "state": "released",
+      "kind": "file",
+      "files": 1,
+      "bytes": 229,
+      "explicitly_empty": false
+    },
+    {
+      "name": "sd14-browser-route-read.json",
+      "source": "/private/tmp/unfold-s81-sd14-browser-route-read.json",
+      "state": "released",
+      "kind": "file",
+      "files": 1,
+      "bytes": 3200,
+      "explicitly_empty": false
+    }
+  ],
+  "release": "Root released browser/example/publication scopes; independent released complete final-campaign audit including failed attempt; executor explicitly released sole I/O lane and approved exact listed namespaces.",
+  "final_metadata": {
+    "stream_count": 1802,
+    "directory_count": 191,
+    "raw_bytes": 1587420810
+  },
+  "metadata_census_sha256": "a8255cff50437a8330d3cd015bc385cad5abd2ba815518d7ed5b2b666f40fc86"
+}

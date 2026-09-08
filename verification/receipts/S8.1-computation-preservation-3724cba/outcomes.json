@@ -1,0 +1,14 @@
+{
+  "not_claimed": "No new run, unpickling, causal reconstruction, latency median, or budget acceptance.",
+  "results": [
+    {
+      "actual_result": "computation-preservation-3724cba/result.json",
+      "observed_result_fields": {
+        "error": null,
+        "passed": true,
+        "scope": "Original complete 52-case computation-only preservation checkpoint; original renderer, debt registry, expected manifest and comparator retained. Two internal workers limit resource contention; assertions and child limits unchanged. Enabled initially empty task-local cache; all witness calls remain required."
+      }
+    }
+  ],
+  "scope": "Literal fields from actual result JSON; all versions and failed attempts retained."
+}

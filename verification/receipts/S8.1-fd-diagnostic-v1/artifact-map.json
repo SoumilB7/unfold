@@ -1,0 +1,333 @@
+{
+  "compression": {
+    "format": "gzip",
+    "level": 3,
+    "mtime": 0
+  },
+  "directories": [
+    "cache-preparation-v6",
+    "fd-diagnostic-preparation",
+    "fd-diagnostic-v1",
+    "fd-diagnostic-v1/cache",
+    "fd-independent-review",
+    "fd-independent-review/actual-v1",
+    "public-cold-v6",
+    "public-entries-v6"
+  ],
+  "entries": {
+    "cache-preparation-v6/public_pair.py": {
+      "raw": {
+        "bytes": 7888,
+        "sha256": "13ec4a493e7e679ad65312aeefdada513407b4a90b11167661fe6d9fc67acded"
+      },
+      "source": "/private/tmp/unfold-s81-cache-preparation-v6/public_pair.py",
+      "storage": {
+        "bytes": 2758,
+        "sha256": "553513d3422721211507b6014480debfa80a32dde84c5f7f3cb17e37e6c26957"
+      },
+      "stored": "streams/cache-preparation-v6/public_pair.py.gzip"
+    },
+    "cache-preparation-v6/retarget.json": {
+      "raw": {
+        "bytes": 856,
+        "sha256": "536da2602fb2057f978bf83b848ba4ebd7ab8e1e54f4c486a9fcaf3ce3027e16"
+      },
+      "source": "/private/tmp/unfold-s81-cache-preparation-v6/retarget.json",
+      "storage": {
+        "bytes": 460,
+        "sha256": "a87eb3dd973b4674674cb60142cd320750e2ce2bd803b3ac65d730d64a8bf214"
+      },
+      "stored": "streams/cache-preparation-v6/retarget.json.gzip"
+    },
+    "cache-preparation-v6/source-manifest.json": {
+      "raw": {
+        "bytes": 70726,
+        "sha256": "6e8d028f190b122346b2871873209183cbd1e73a8fddbbb877595cffc6e3628f"
+      },
+      "source": "/private/tmp/unfold-s81-cache-preparation-v6/source-manifest.json",
+      "storage": {
+        "bytes": 32295,
+        "sha256": "e0405025cf60aa0dabac6c10da819d521170ac746d497825c532b96122016fd4"
+      },
+      "stored": "streams/cache-preparation-v6/source-manifest.json.gzip"
+    },
+    "fd-diagnostic-preparation/fd_worker.py": {
+      "raw": {
+        "bytes": 2170,
+        "sha256": "0997a7c6611b3b6a5936357ba2a76ae91ba2e46e27068c3d93a9c042819f6d7e"
+      },
+      "source": "/private/tmp/unfold-s81-fd-diagnostic-preparation/fd_worker.py",
+      "storage": {
+        "bytes": 1105,
+        "sha256": "0e60e27e2f03a4b0e9de9cc118e66f07acbc2842f98466575ef28087ac732ae9"
+      },
+      "stored": "streams/fd-diagnostic-preparation/fd_worker.py.gzip"
+    },
+    "fd-diagnostic-preparation/run.py": {
+      "raw": {
+        "bytes": 5218,
+        "sha256": "2e282f42a49da941799a2687ee13571089a2ada8bbaa3164a563b2e0b133f298"
+      },
+      "source": "/private/tmp/unfold-s81-fd-diagnostic-preparation/run.py",
+      "storage": {
+        "bytes": 2116,
+        "sha256": "679fa63af30e84dcf77f2292748283c7b9d75f2ee9a85c084f5dcbd2a5f69657"
+      },
+      "stored": "streams/fd-diagnostic-preparation/run.py.gzip"
+    },
+    "fd-diagnostic-preparation/source-manifest.json": {
+      "raw": {
+        "bytes": 70726,
+        "sha256": "6e8d028f190b122346b2871873209183cbd1e73a8fddbbb877595cffc6e3628f"
+      },
+      "source": "/private/tmp/unfold-s81-fd-diagnostic-preparation/source-manifest.json",
+      "storage": {
+        "bytes": 32295,
+        "sha256": "e0405025cf60aa0dabac6c10da819d521170ac746d497825c532b96122016fd4"
+      },
+      "stored": "streams/fd-diagnostic-preparation/source-manifest.json.gzip"
+    },
+    "fd-diagnostic-v1.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-fd-diagnostic-v1.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/fd-diagnostic-v1.log.gzip"
+    },
+    "fd-diagnostic-v1/capture-dependencies-0.json": {
+      "raw": {
+        "bytes": 8499405,
+        "sha256": "428d363316a47cd0d47eb46b58f288a86a19809b9d1b1a143e5779c86e89559a"
+      },
+      "source": "/private/tmp/unfold-s81-fd-diagnostic-v1/capture-dependencies-0.json",
+      "storage": {
+        "bytes": 1782290,
+        "sha256": "3b1cbdc58886621759fcd9ae67ef6eaaaae9f74fd26875862122d0d75c999cb5"
+      },
+      "stored": "streams/fd-diagnostic-v1/capture-dependencies-0.json.gzip"
+    },
+    "fd-diagnostic-v1/integer-open-events.json": {
+      "raw": {
+        "bytes": 17724,
+        "sha256": "80eed6d97b8b7dba38a24d610fcc0753b88b94081655c899cc0bf740bf9b35a7"
+      },
+      "source": "/private/tmp/unfold-s81-fd-diagnostic-v1/integer-open-events.json",
+      "storage": {
+        "bytes": 1578,
+        "sha256": "0dff173f0cf78037493b749b39b57da4930ebe605cce0765a5a63e0930ee904e"
+      },
+      "stored": "streams/fd-diagnostic-v1/integer-open-events.json.gzip"
+    },
+    "fd-diagnostic-v1/inventory-result.json": {
+      "raw": {
+        "bytes": 5030944,
+        "sha256": "af954ed06647c949b7f3fd8905600672fe6b63f95270d8862f5bd6fe31e3597b"
+      },
+      "source": "/private/tmp/unfold-s81-fd-diagnostic-v1/inventory-result.json",
+      "storage": {
+        "bytes": 260983,
+        "sha256": "ebda7c06d70e64b9e4cb04e719e17163d90dd407fb6ec7e441145f6cda20db80"
+      },
+      "stored": "streams/fd-diagnostic-v1/inventory-result.json.gzip"
+    },
+    "fd-diagnostic-v1/request.json": {
+      "raw": {
+        "bytes": 8665,
+        "sha256": "c9fc1243361169b5fa6b4384e1d9cd5cc2787f1325c803f70c88dc95de78fcf6"
+      },
+      "source": "/private/tmp/unfold-s81-fd-diagnostic-v1/request.json",
+      "storage": {
+        "bytes": 2116,
+        "sha256": "666f04b9264ebae867a6a213bf1c3e4636389c27b7e952851c88c3b853a3e736"
+      },
+      "stored": "streams/fd-diagnostic-v1/request.json.gzip"
+    },
+    "fd-diagnostic-v1/result.json": {
+      "raw": {
+        "bytes": 173313,
+        "sha256": "0fb98a503643592c0ae70d92104eb3a934e38cac9b9302ea1c5602d95657f456"
+      },
+      "source": "/private/tmp/unfold-s81-fd-diagnostic-v1/result.json",
+      "storage": {
+        "bytes": 69566,
+        "sha256": "fd1b888b32c763ea26c64c8586b98fd8445e509b5ce2bdbf55e4ffb31b4ff43d"
+      },
+      "stored": "streams/fd-diagnostic-v1/result.json.gzip"
+    },
+    "fd-independent-review/actual-v1/review.json": {
+      "raw": {
+        "bytes": 2121,
+        "sha256": "519218949cc19750b8c18fb6181b514f1c7b00c6e340664a9c2d9f8443de42b4"
+      },
+      "source": "/private/tmp/unfold-s81-fd-independent-review/actual-v1/review.json",
+      "storage": {
+        "bytes": 1074,
+        "sha256": "659564dd5fbfb2073f6e7600cfb4a0b332aa8cb467b4de327f683b1840e7ecf3"
+      },
+      "stored": "streams/fd-independent-review/actual-v1/review.json.gzip"
+    },
+    "fd-independent-review/fd_worker.py": {
+      "raw": {
+        "bytes": 2170,
+        "sha256": "0997a7c6611b3b6a5936357ba2a76ae91ba2e46e27068c3d93a9c042819f6d7e"
+      },
+      "source": "/private/tmp/unfold-s81-fd-independent-review/fd_worker.py",
+      "storage": {
+        "bytes": 1105,
+        "sha256": "0e60e27e2f03a4b0e9de9cc118e66f07acbc2842f98466575ef28087ac732ae9"
+      },
+      "stored": "streams/fd-independent-review/fd_worker.py.gzip"
+    },
+    "fd-independent-review/review.json": {
+      "raw": {
+        "bytes": 1356,
+        "sha256": "1e5315150521dd603d5ddd9be21048f633164f948787acd5354b85091685c74b"
+      },
+      "source": "/private/tmp/unfold-s81-fd-independent-review/review.json",
+      "storage": {
+        "bytes": 841,
+        "sha256": "a1d689156cd04c728e72ef5cdbdaf96b84eeab1f8c03faaf55a78fde3abf54f7"
+      },
+      "stored": "streams/fd-independent-review/review.json.gzip"
+    },
+    "fd-independent-review/run.py": {
+      "raw": {
+        "bytes": 5218,
+        "sha256": "2e282f42a49da941799a2687ee13571089a2ada8bbaa3164a563b2e0b133f298"
+      },
+      "source": "/private/tmp/unfold-s81-fd-independent-review/run.py",
+      "storage": {
+        "bytes": 2116,
+        "sha256": "679fa63af30e84dcf77f2292748283c7b9d75f2ee9a85c084f5dcbd2a5f69657"
+      },
+      "stored": "streams/fd-independent-review/run.py.gzip"
+    },
+    "fd-independent-review/source-manifest.json": {
+      "raw": {
+        "bytes": 70726,
+        "sha256": "6e8d028f190b122346b2871873209183cbd1e73a8fddbbb877595cffc6e3628f"
+      },
+      "source": "/private/tmp/unfold-s81-fd-independent-review/source-manifest.json",
+      "storage": {
+        "bytes": 32295,
+        "sha256": "e0405025cf60aa0dabac6c10da819d521170ac746d497825c532b96122016fd4"
+      },
+      "stored": "streams/fd-independent-review/source-manifest.json.gzip"
+    },
+    "public-cold-v6.log": {
+      "raw": {
+        "bytes": 368,
+        "sha256": "55f277ec17f8eab723eb62c3b66e7a3b5efc14d21cc554c637e6a9caaf5c11f6"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v6.log",
+      "storage": {
+        "bytes": 210,
+        "sha256": "651b43254176105175af3916cc513012b31b07edb6f55cf2deb33fefcdf538fb"
+      },
+      "stored": "streams/public-cold-v6.log.gzip"
+    },
+    "public-cold-v6/cache-pins.json": {
+      "raw": {
+        "bytes": 34,
+        "sha256": "ddf0c7ee9943388854e6e163d341f7c07609c84182710fddf11d73daecd53eeb"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v6/cache-pins.json",
+      "storage": {
+        "bytes": 48,
+        "sha256": "80cd889477b4aa9c812290baf496ccdf2c12af72d384a3b54838382af009aad4"
+      },
+      "stored": "streams/public-cold-v6/cache-pins.json.gzip"
+    },
+    "public-cold-v6/diagnostics.json": {
+      "raw": {
+        "bytes": 1163,
+        "sha256": "9ba6fca37e2e54c7a9cae7264995e24cd7e1e8d4620f81fed80ca3aa03be0474"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v6/diagnostics.json",
+      "storage": {
+        "bytes": 551,
+        "sha256": "e4b6814cb77ac142523f7d68ee750b229d1e48fd11f42ee8e78406b27be62d76"
+      },
+      "stored": "streams/public-cold-v6/diagnostics.json.gzip"
+    },
+    "public-cold-v6/external-pins.json": {
+      "raw": {
+        "bytes": 23812,
+        "sha256": "7a3bd39b57bb67e4bc282ae831f7222678d9ccbe59d0d51ab629a7972d3bf77e"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v6/external-pins.json",
+      "storage": {
+        "bytes": 3676,
+        "sha256": "1c44bfdf0b73774f38d2a55d3615bc5a9aff90c14085a7d2508483d2de44d20b"
+      },
+      "stored": "streams/public-cold-v6/external-pins.json.gzip"
+    },
+    "public-cold-v6/input-pins.json": {
+      "raw": {
+        "bytes": 2010,
+        "sha256": "b710f2f5a9478442d9beb65ec0f1346b188b483a7e817d1066125e51a6f28cac"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v6/input-pins.json",
+      "storage": {
+        "bytes": 502,
+        "sha256": "e7562234025cb03fde79dc4b97d0435406dbfa0fddf1b85a26a5ca918d61cc7c"
+      },
+      "stored": "streams/public-cold-v6/input-pins.json.gzip"
+    },
+    "public-cold-v6/ir.json": {
+      "raw": {
+        "bytes": 38146206,
+        "sha256": "f650fc5ae65ba530f1de64b0b2fa8fbed979e2b5c6dfd632e8c2d26439d35b47"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v6/ir.json",
+      "storage": {
+        "bytes": 2050499,
+        "sha256": "16047c3453fa1413004b5e1a2f2ac3e31a8676b3d98f5e591a7582cbc6537296"
+      },
+      "stored": "streams/public-cold-v6/ir.json.gzip"
+    },
+    "public-cold-v6/public-inventory-0.json": {
+      "raw": {
+        "bytes": 5030944,
+        "sha256": "af954ed06647c949b7f3fd8905600672fe6b63f95270d8862f5bd6fe31e3597b"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v6/public-inventory-0.json",
+      "storage": {
+        "bytes": 260983,
+        "sha256": "ebda7c06d70e64b9e4cb04e719e17163d90dd407fb6ec7e441145f6cda20db80"
+      },
+      "stored": "streams/public-cold-v6/public-inventory-0.json.gzip"
+    },
+    "public-cold-v6/result.json": {
+      "raw": {
+        "bytes": 32240,
+        "sha256": "e8dc5fa76987f43cf55ca262f35d4dea0c3260c9168414542377e5ed1f516d0f"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v6/result.json",
+      "storage": {
+        "bytes": 8419,
+        "sha256": "a870f10864848cc1d94bc04ed41af9eab85049893f284d399e2eb27797228437"
+      },
+      "stored": "streams/public-cold-v6/result.json.gzip"
+    },
+    "public-cold-v6/source-pins.json": {
+      "raw": {
+        "bytes": 143984,
+        "sha256": "98d89ff898742a70d754002689faa5c8c385985c91b331ebdebe65fbddd430d9"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v6/source-pins.json",
+      "storage": {
+        "bytes": 63924,
+        "sha256": "41ce761c35b43a1358c19963717ef3c878c40f692f0e280b2266281d9def4e83"
+      },
+      "stored": "streams/public-cold-v6/source-pins.json.gzip"
+    }
+  },
+  "schema_version": 1,
+  "storage_rule": "Append .gzip to the complete original logical filename."
+}

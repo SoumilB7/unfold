@@ -1,0 +1,216 @@
+"""Read-only persisted seed inventory; never imports workers or publishes cache entries."""
+from collections import Counter
+import ast
+import gzip
+import hashlib
+import json
+import math
+from pathlib import Path
+
+ROOT = Path('/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg')
+OUT = ROOT / 'verification/receipts/S8.1-seed-eligibility'
+SCOPES = ('verification/s6/pilots', 'verification/s7/models', 'verification/s7/observations')
+CONTRACTS = ('physics/result_cache.py', 'physics/cache_dependencies.py',
+             'physics/instance_inventory.py', 'physics/execution_observation.py',
+             'scripts/generate_s7_shadow.py')
+
+
+def digest(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def canonical(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=True,
+                      allow_nan=False).encode()
+
+
+def identity_hash(value):
+    try:
+        return digest(canonical(value))
+    except ValueError:
+        return None
+
+
+def historical_hash(value):
+    # Original S6/S7 JSON hashing permits non-finite values; current cache does not.
+    return digest(json.dumps(value, sort_keys=True, separators=(",", ":"),
+                             ensure_ascii=True).encode())
+
+
+def nonfinite_paths(value, path=()):
+    if isinstance(value, float) and not math.isfinite(value):
+        return [list(path)]
+    if isinstance(value, dict):
+        return [p for k, v in value.items() for p in nonfinite_paths(v, (*path, k))]
+    if isinstance(value, list):
+        return [p for i, v in enumerate(value) for p in nonfinite_paths(v, (*path, i))]
+    return []
+
+
+def inputs():
+    return sorted(path for scope in SCOPES for path in (ROOT / scope).rglob('*')
+                  if path.is_file())
+
+
+def describe_provenance(value):
+    value = value or {}
+    return {'present': bool(value), 'config_sha256': value.get('config_sha256'),
+            'requested_factory': value.get('requested_factory'),
+            'constructor_used': value.get('constructor_used'),
+            'source_file_count': len(value.get('source_files', [])),
+            'packages': value.get('packages', []),
+            'environment_keys': sorted(value.get('environment', {})),
+            'environment_content_sha256': digest(canonical(value.get('environment', {}))),
+            'environment_is_full_cache_identity': False}
+
+
+COMMON = ['missing_capability2_completed_dependency_capture',
+          'missing_actual_child_import_search_order_and_membership_capture',
+          'missing_imported_source_package_resource_and_generated_dependency_seals',
+          'missing_capture_time_full_hashed_effective_environment_identity',
+          'missing_capture_time_worker_interpreter_isolation_content_identity']
+
+
+def observation(row):
+    payload = row.get('observation') or {}
+    recipe = row.get('recipe')
+    reasons = list(COMMON)
+    if row.get('status') != 'ok' or not payload:
+        reasons.append('not_a_successful_positive_observation_result')
+    if recipe is None:
+        reasons.append('missing_exact_execution_recipe')
+    return {'status': row.get('status'), 'outcome': payload.get('outcome'),
+            'module_calls': len(payload.get('module_calls', [])),
+            'functional_ops': len(payload.get('functional_ops', [])),
+            'recipe_present': recipe is not None,
+            'recipe_id': (recipe or {}).get('recipe_id'),
+            'recipe_sha256': digest(canonical(recipe)) if recipe is not None else None,
+            'payload_recipe_equal': payload.get('recipe') == recipe if payload else None,
+            'failure_kind': (row.get('failure') or {}).get('kind'),
+            'provenance': describe_provenance(row.get('provenance')),
+            'eligible': False, 'reasons': reasons}
+
+
+def main():
+    files = inputs()
+    before = {str(path.relative_to(ROOT)): digest(path.read_bytes()) for path in files}
+    source_before = {rel: digest((ROOT / rel).read_bytes()) for rel in CONTRACTS}
+    tree = ast.parse((ROOT / 'physics/instance_inventory.py').read_text())
+    request_class = next(node for node in tree.body if isinstance(node, ast.ClassDef)
+                         and node.name == 'BuildRequest')
+    request_fields = [node.target.id for node in request_class.body
+                      if isinstance(node, ast.AnnAssign)]
+    records, objects = {}, {}
+    for path in files:
+        assert not path.is_symlink()
+        raw = path.read_bytes()
+        decoded = gzip.decompress(raw) if path.suffix == '.gz' else raw
+        rel = str(path.relative_to(ROOT))
+        value = json.loads(decoded)
+        objects[rel] = value
+        records[rel] = {'stored_bytes': len(raw), 'stored_sha256': digest(raw),
+                        'decoded_bytes': len(decoded), 'decoded_sha256': digest(decoded),
+                        'top_level_keys': sorted(value),
+                        'cache_identity_envelope_present': 'identity' in value,
+                        'cache_dependency_envelope_present': 'dependencies' in value}
+        assert 'identity' not in value and 'dependencies' not in value
+
+    rows = []
+    pilot_root = ROOT / SCOPES[0]
+    for folder in sorted(path for path in pilot_root.iterdir() if path.is_dir()):
+        rel = str(folder.relative_to(ROOT))
+        request = objects.get(rel + '/request.json')
+        inv = objects.get(rel + '/inventory.json')
+        assert request is not None and inv is not None
+        inventory = inv.get('inventory') or {}
+        provenance = inventory.get('provenance') or inv.get('provenance')
+        config_hash = historical_hash(request['config'])
+        attempts = []
+        for path in sorted(folder.glob('observation-*.json')):
+            entry = observation(objects[str(path.relative_to(ROOT))])
+            entry['artifact'] = str(path.relative_to(ROOT))
+            entry['request_companion_present'] = True
+            entry['config_hash_matches_request'] = entry['provenance']['config_sha256'] == config_hash
+            attempts.append(entry)
+        rows.append({'cohort': 'S6_pilot', 'target': folder.name,
+                     'eligible': False, 'request_artifact': rel + '/request.json',
+                     'request_capability2_canonical_sha256': identity_hash(request),
+                     'request_nonfinite_value_paths': nonfinite_paths(request),
+                     'request_additional_reasons': ['nonfinite_request_refused_by_capability2_canonical_JSON'] if nonfinite_paths(request) else [],
+                     'request_fields_present': sorted(request),
+                     'request_fields_omitted': sorted(set(request_fields) - set(request)),
+                     'request_omission_note': 'Current optional false/empty wire fields may be omitted lawfully; omissions alone are not the rejection basis.',
+                     'inventory': {'artifact': rel + '/inventory.json', 'status': inv.get('status'),
+                                   'full_inventory_result_present': bool(inventory),
+                                   'module_count': len(inventory.get('modules', [])),
+                                   'provenance': describe_provenance(provenance),
+                                   'config_hash_matches_request': (provenance or {}).get('config_sha256') == config_hash,
+                                   'eligible': False, 'reasons': list(COMMON)},
+                     'observations': attempts})
+
+    target_path = ROOT / 'verification/s7/targets.json'
+    targets_raw = target_path.read_bytes()
+    target_map = {row['slug']: row for row in json.loads(targets_raw)['models']}
+    for path in sorted((ROOT / SCOPES[1]).glob('*.json.gz')):
+        slug = path.name.removesuffix('.json.gz')
+        model_rel = str(path.relative_to(ROOT))
+        observation_rel = f'verification/s7/observations/{slug}.json.gz'
+        model = objects[model_rel]
+        bundle = objects[observation_rel]
+        assert model['target'] == target_map[slug]
+        input_path = ROOT / model['target']['input']
+        input_raw = input_path.read_bytes()
+        input_value = json.loads(input_raw)
+        config = input_value.get('config', input_value)
+        provenance = describe_provenance(model.get('inventory_provenance'))
+        attempts = [observation(row) for row in bundle['attempts']]
+        for attempt in attempts:
+            attempt['reasons'].append('exact_historical_BuildRequest_not_embedded_in_S7_bundle')
+        pilot_request = f'verification/s6/pilots/{slug}/request.json'
+        rows.append({'cohort': 'S7_shadow', 'target': slug, 'eligible': False,
+                     'model_artifact': model_rel, 'observation_artifact': observation_rel,
+                     'input_artifact': model['target']['input'],
+                     'input_stored_sha256': digest(input_raw),
+                     'input_config_historical_sha256': historical_hash(config),
+                     'input_config_capability2_canonical_sha256': identity_hash(config),
+                     'input_config_nonfinite_value_paths': nonfinite_paths(config),
+                     'config_hash_matches_inventory_provenance': provenance['config_sha256'] == historical_hash(config),
+                     'inventory_provenance': provenance,
+                     'model_payload_is_reconciliation_summary_not_InventoryResult': True,
+                     'exact_request_embedded': 'request' in model or 'request' in bundle,
+                     'possible_S6_request_companion': pilot_request if pilot_request in objects else None,
+                     'companion_limit': 'Generation can select S6 request by config hash, but no capture-time capability2 envelope is recovered by that join.',
+                     'observations_final_status': bundle.get('final_status'),
+                     'observation_attempts': attempts,
+                     'reasons': [*COMMON, 'S7_model_summary_does_not_retain_full_InventoryResult',
+                                 'exact_historical_BuildRequest_not_embedded_in_S7_bundle']})
+
+    assert len(rows) == 47
+    assert before == {str(path.relative_to(ROOT)): digest(path.read_bytes()) for path in inputs()}
+    assert source_before == {rel: digest((ROOT / rel).read_bytes()) for rel in CONTRACTS}
+    assert target_path.read_bytes() == targets_raw
+    OUT.mkdir(exist_ok=True)
+    result = {'decision': 'ALL_SCOPED_HISTORICAL_ARTIFACTS_INELIGIBLE_AS_CAPABILITY2_SEEDS',
+              'target_groups': len(rows), 'unique_targets': len({row['target'] for row in rows}),
+              'cohorts': dict(Counter(row['cohort'] for row in rows)),
+              'eligible_target_groups': 0, 'artifact_count': len(records),
+              'stored_bytes': sum(row['stored_bytes'] for row in records.values()),
+              'decoded_bytes': sum(row['decoded_bytes'] for row in records.values()),
+              'all_inputs_and_contract_source_unchanged': True,
+              'contract_source_sha256': source_before,
+              'targets_sha256': digest(targets_raw),
+              'limits': ['No cache importer, cache writes, worker execution, new model parse, or network lookup.',
+                         'S6/S7 records retain useful historical positive evidence and explicit recipes; seed ineligibility does not erase their existing evidence status.',
+                         'Seven-axis provenance environments and source fingerprints do not supply full hashed effective environment or capture-time dependency/search closure.',
+                         'Present S7 input bytes/config hashes are checked as addresses, not used to invent historical request flags or dependency manifests.',
+                         'A fresh actual supported capture may create a capability2 entry; missing historical envelope cannot be reconstructed by filling current values.',
+                         'No final cold/warm/public-budget claim.']}
+    (OUT / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
+    (OUT / 'per-target.json').write_text(json.dumps(rows, indent=2) + '\n')
+    (OUT / 'artifact-hashes.json').write_text(json.dumps(records, indent=2) + '\n')
+    (OUT / 'audit.py.txt').write_bytes(Path(__file__).read_bytes())
+    print(json.dumps(result, indent=2))
+
+
+if __name__ == '__main__':
+    main()

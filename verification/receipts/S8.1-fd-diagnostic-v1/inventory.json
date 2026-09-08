@@ -1,0 +1,64 @@
+{
+  "directories": [
+    "cache-preparation-v6",
+    "fd-diagnostic-preparation",
+    "fd-diagnostic-v1",
+    "fd-diagnostic-v1/cache",
+    "fd-independent-review",
+    "fd-independent-review/actual-v1",
+    "public-cold-v6",
+    "public-entries-v6"
+  ],
+  "raw_bytes": 57349987,
+  "scopes": [
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-fd-diagnostic-v1.log",
+      "bytes": 13730051,
+      "explicitly_empty": false,
+      "files": 5,
+      "name": "fd-diagnostic-v1",
+      "source": "/private/tmp/unfold-s81-fd-diagnostic-v1"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 78114,
+      "explicitly_empty": false,
+      "files": 3,
+      "name": "fd-diagnostic-preparation",
+      "source": "/private/tmp/unfold-s81-fd-diagnostic-preparation"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 81591,
+      "explicitly_empty": false,
+      "files": 5,
+      "name": "fd-independent-review",
+      "source": "/private/tmp/unfold-s81-fd-independent-review"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-public-cold-v6.log",
+      "bytes": 43380393,
+      "explicitly_empty": false,
+      "files": 8,
+      "name": "public-cold-v6",
+      "source": "/private/tmp/unfold-s81-public-cold-v6"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 79470,
+      "explicitly_empty": false,
+      "files": 3,
+      "name": "cache-preparation-v6",
+      "source": "/private/tmp/unfold-s81-cache-preparation-v6"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 0,
+      "explicitly_empty": true,
+      "files": 0,
+      "name": "public-entries-v6",
+      "source": "/private/tmp/unfold-s81-public-entries-v6"
+    }
+  ],
+  "stream_count": 26
+}

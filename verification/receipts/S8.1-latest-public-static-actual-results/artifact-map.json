@@ -1,0 +1,4121 @@
+{
+  "compression": {
+    "format": "gzip",
+    "level": 3,
+    "mtime": 0
+  },
+  "directories": [
+    "attention-interface-controls-v1",
+    "attention-interface-preparation",
+    "attention-interface-root-review",
+    "bytecode-preparation-v1",
+    "bytecode-unit-v1",
+    "cache-operation-inventory-v7",
+    "cache-preparation-v10",
+    "cache-preparation-v11",
+    "cache-preparation-v7",
+    "cache-preparation-v8",
+    "cache-preparation-v9",
+    "cache-traversal-controls-v1",
+    "cache-traversal-preparation",
+    "cache-traversal-replay-v1",
+    "cache-traversal-root-review",
+    "capture-phase-preparation",
+    "capture-phase-preparation-v2",
+    "capture-phase-preparation-v3",
+    "capture-phase-v1",
+    "capture-phase-v1/cache",
+    "capture-phase-v2",
+    "capture-phase-v2/cache",
+    "capture-phase-v3",
+    "capture-phase-v3/cache",
+    "cell-lineage-controls-v1",
+    "cell-lineage-controls-v2",
+    "cell-lineage-preparation",
+    "cell-lineage-preparation-v2",
+    "cell-lineage-root-review",
+    "conformance-controls-v1",
+    "conformance-controls-v2",
+    "conformance-preparation",
+    "conformance-preparation-v2",
+    "conformance-root-review",
+    "digest-primitive-preparation",
+    "digest-primitive-preparation/__pycache__",
+    "digest-primitive-v1",
+    "expression-preparation",
+    "expression-preparation/source",
+    "expression-preparation/source/model_unfolder",
+    "expression-preparation/source/model_unfolder/evidence",
+    "expression-preparation/source/tests",
+    "expression-unit-v1",
+    "guard-import-preparation",
+    "guard-import-preparation/source",
+    "guard-import-preparation/source/model_unfolder",
+    "guard-import-preparation/source/model_unfolder/evidence",
+    "guard-import-preparation/source/tests",
+    "guard-import-unit-v1",
+    "public-cold-v10",
+    "public-cold-v11",
+    "public-cold-v7",
+    "public-cold-v8",
+    "public-cold-v9",
+    "public-entries-v10",
+    "public-entries-v10/entries",
+    "public-entries-v10/requests",
+    "public-entries-v11",
+    "public-entries-v11/entries",
+    "public-entries-v11/requests",
+    "public-entries-v7",
+    "public-entries-v7/entries",
+    "public-entries-v7/requests",
+    "public-entries-v8",
+    "public-entries-v8/entries",
+    "public-entries-v8/requests",
+    "public-entries-v9",
+    "public-entries-v9/entries",
+    "public-entries-v9/requests",
+    "public-warm-profile-v1",
+    "public-warm-profile-v1/cache-before",
+    "public-warm-profile-v1/cache-before/entries",
+    "public-warm-profile-v1/cache-before/requests",
+    "public-warm-profile-v2",
+    "public-warm-profile-v2/cache-before",
+    "public-warm-profile-v2/cache-before/entries",
+    "public-warm-profile-v2/cache-before/requests",
+    "public-warm-v10",
+    "public-warm-v10/cache-before",
+    "public-warm-v10/cache-before/entries",
+    "public-warm-v10/cache-before/requests",
+    "public-warm-v11",
+    "public-warm-v11/cache-before",
+    "public-warm-v11/cache-before/entries",
+    "public-warm-v11/cache-before/requests",
+    "public-warm-v7",
+    "public-warm-v7/cache-before",
+    "public-warm-v7/cache-before/entries",
+    "public-warm-v7/cache-before/requests",
+    "public-warm-v8",
+    "public-warm-v8/cache-before",
+    "public-warm-v8/cache-before/entries",
+    "public-warm-v8/cache-before/requests",
+    "public-warm-v9",
+    "public-warm-v9/cache-before",
+    "public-warm-v9/cache-before/entries",
+    "public-warm-v9/cache-before/requests",
+    "reader-work-root-review",
+    "root-classification-preparation",
+    "root-classification-preparation/source",
+    "root-classification-preparation/source/physics",
+    "root-classification-preparation/source/tests",
+    "root-classification-unit-v1",
+    "scandir-preparation",
+    "scandir-preparation/source",
+    "scandir-preparation/source/physics",
+    "scandir-preparation/source/tests",
+    "scandir-replay-v1",
+    "scandir-unit-v1",
+    "static-profile-independent-review",
+    "static-profile-independent-review/capture-phase-v2-actual",
+    "static-profile-independent-review/capture-phase-v2-source",
+    "static-profile-independent-review/capture-phase-v3-actual",
+    "static-profile-independent-review/capture-phase-v3-source",
+    "static-profile-independent-review/config-import-path",
+    "static-profile-independent-review/digest-primitive-actual",
+    "static-profile-independent-review/digest-primitive-source",
+    "static-profile-independent-review/expression-source",
+    "static-profile-independent-review/expression-source/model_unfolder",
+    "static-profile-independent-review/expression-source/model_unfolder/evidence",
+    "static-profile-independent-review/expression-source/tests",
+    "static-profile-independent-review/expression-v9-phase",
+    "static-profile-independent-review/guard-import-actual",
+    "static-profile-independent-review/guard-import-source",
+    "static-profile-independent-review/guard-import-source/model_unfolder",
+    "static-profile-independent-review/guard-import-source/model_unfolder/evidence",
+    "static-profile-independent-review/guard-import-source/tests",
+    "static-profile-independent-review/public-v10",
+    "static-profile-independent-review/public-v11",
+    "static-profile-independent-review/root-classification-actual",
+    "static-profile-independent-review/root-classification-source",
+    "static-profile-independent-review/scandir-actual",
+    "static-profile-independent-review/scandir-source",
+    "static-profile-independent-review/warm-profile-v2",
+    "warm-profile-preparation",
+    "warm-profile-preparation-v2"
+  ],
+  "entries": {
+    "attention-interface-controls-v1/pytest.log": {
+      "raw": {
+        "bytes": 99,
+        "sha256": "81285bc4192ac62413325189b33a62ed317a4417f234ed56a76b60c68f696cb4"
+      },
+      "source": "/private/tmp/unfold-s81-attention-interface-controls-v1/pytest.log",
+      "storage": {
+        "bytes": 52,
+        "sha256": "ac8347f1219cdf76a2d367573ab66c942be63282b85e7131c728f2d97602247d"
+      },
+      "stored": "streams/attention-interface-controls-v1/pytest.log.gzip"
+    },
+    "attention-interface-controls-v1/result.json": {
+      "raw": {
+        "bytes": 146761,
+        "sha256": "5138a5e6ff9fa69bb1ab4df3af0b5cbdfcb0fa08c509960429dd4f03c5486673"
+      },
+      "source": "/private/tmp/unfold-s81-attention-interface-controls-v1/result.json",
+      "storage": {
+        "bytes": 65036,
+        "sha256": "dfca0b543af0dcd16376007f80f71625bec929ad698b58ea0b8e2aa784057bcb"
+      },
+      "stored": "streams/attention-interface-controls-v1/result.json.gzip"
+    },
+    "attention-interface-preparation/attention_invocation_role.py": {
+      "raw": {
+        "bytes": 23208,
+        "sha256": "61b4da2da830c3643bd264244503dace3d9f3d4721cdb610532fc7e9ad1bf79a"
+      },
+      "source": "/private/tmp/unfold-s81-attention-interface-preparation/attention_invocation_role.py",
+      "storage": {
+        "bytes": 5834,
+        "sha256": "e551289d0abfd30db4254028cb4a2460761d424c9c04226333f136acf88f018b"
+      },
+      "stored": "streams/attention-interface-preparation/attention_invocation_role.py.gzip"
+    },
+    "attention-interface-preparation/original-functions.py": {
+      "raw": {
+        "bytes": 10759,
+        "sha256": "dbed98a49ef1a5dfd33946c904a5698003f65d7adb823dd533c306906dda22d7"
+      },
+      "source": "/private/tmp/unfold-s81-attention-interface-preparation/original-functions.py",
+      "storage": {
+        "bytes": 2979,
+        "sha256": "5f7efb6ad3f6f0823307ea96a730f99a190d7c17d2fadd054f1fa64d934b8872"
+      },
+      "stored": "streams/attention-interface-preparation/original-functions.py.gzip"
+    },
+    "attention-interface-preparation/overlay.json": {
+      "raw": {
+        "bytes": 659,
+        "sha256": "9ad0d9bac8441f0870684f3d86a8ddcd6a5ae0c18bb883c0f7f043100ff206de"
+      },
+      "source": "/private/tmp/unfold-s81-attention-interface-preparation/overlay.json",
+      "storage": {
+        "bytes": 392,
+        "sha256": "35ff60889187ef129df30859374830cb6b197de6b7af7bb3af537cb93db83c92"
+      },
+      "stored": "streams/attention-interface-preparation/overlay.json.gzip"
+    },
+    "attention-interface-preparation/run_controls.py": {
+      "raw": {
+        "bytes": 1807,
+        "sha256": "cda833b45f64a1a66b7c49348b38430a233a6779c328c73879679c88764df1f8"
+      },
+      "source": "/private/tmp/unfold-s81-attention-interface-preparation/run_controls.py",
+      "storage": {
+        "bytes": 827,
+        "sha256": "71a932ac79dfff3df29ada7bd554b374dec409802086c0c01529f5be80fb73d1"
+      },
+      "stored": "streams/attention-interface-preparation/run_controls.py.gzip"
+    },
+    "attention-interface-preparation/source-manifest.json": {
+      "raw": {
+        "bytes": 71601,
+        "sha256": "1639363b75ee45075d4a21a97d4180e3dfafc6c836319070743ba0ca95ece1e3"
+      },
+      "source": "/private/tmp/unfold-s81-attention-interface-preparation/source-manifest.json",
+      "storage": {
+        "bytes": 32685,
+        "sha256": "c378366b0a4367fa6b9a59a4b15bf93deaabe1d32f7f5d0fabaddfc7ae7efde9"
+      },
+      "stored": "streams/attention-interface-preparation/source-manifest.json.gzip"
+    },
+    "attention-interface-preparation/unet_attention_source.py": {
+      "raw": {
+        "bytes": 37198,
+        "sha256": "234d438b530ece02ddd2dc3378676b35f2b202b8e8e7d684142d7762b1e04117"
+      },
+      "source": "/private/tmp/unfold-s81-attention-interface-preparation/unet_attention_source.py",
+      "storage": {
+        "bytes": 9085,
+        "sha256": "784ddfe78b83e1671042b7faf4d65f80d3d698cc9220dd00bcc8771c5b539099"
+      },
+      "stored": "streams/attention-interface-preparation/unet_attention_source.py.gzip"
+    },
+    "attention-interface-root-review/actual.json": {
+      "raw": {
+        "bytes": 652,
+        "sha256": "75ce0c09fecdb12fd6dad164044ab1a720ab8e5035f6daa9703730b7c355bbc1"
+      },
+      "source": "/private/tmp/unfold-s81-attention-interface-root-review/actual.json",
+      "storage": {
+        "bytes": 430,
+        "sha256": "e12594c601c76d1e5b60dfc07e533e0de9367b22c3ce3e9e86fb4dbefb263308"
+      },
+      "stored": "streams/attention-interface-root-review/actual.json.gzip"
+    },
+    "attention-interface-root-review/source.json": {
+      "raw": {
+        "bytes": 1151,
+        "sha256": "b4953fc025ec1a1960fcbe45c2b2fea0265e164904dab152b512162416af2318"
+      },
+      "source": "/private/tmp/unfold-s81-attention-interface-root-review/source.json",
+      "storage": {
+        "bytes": 643,
+        "sha256": "3ac63421ebbd15a3940bdb2e7c3abc000fe80e8a2d3010b06edc2a125f66ed9b"
+      },
+      "stored": "streams/attention-interface-root-review/source.json.gzip"
+    },
+    "bytecode-preparation-v1/run.py": {
+      "raw": {
+        "bytes": 1747,
+        "sha256": "83ce5b354e95c4955c071613fb9dc153bc1bfd81af7f1cb4d30f1eff868a6141"
+      },
+      "source": "/private/tmp/unfold-s81-bytecode-preparation-v1/run.py",
+      "storage": {
+        "bytes": 782,
+        "sha256": "822da40042194eedbbadb99785a5b6868420045059cc60c251488c96056d7364"
+      },
+      "stored": "streams/bytecode-preparation-v1/run.py.gzip"
+    },
+    "bytecode-preparation-v1/source-manifest.json": {
+      "raw": {
+        "bytes": 70834,
+        "sha256": "78d77f47bc645bac62f80e3ffa30ccc2e14921085adc8b2c920fe679a36b6a52"
+      },
+      "source": "/private/tmp/unfold-s81-bytecode-preparation-v1/source-manifest.json",
+      "storage": {
+        "bytes": 32346,
+        "sha256": "267e637146555c1a3d2806dac3d57804a2ceae759cf87d2f42bfd7aa04899448"
+      },
+      "stored": "streams/bytecode-preparation-v1/source-manifest.json.gzip"
+    },
+    "bytecode-unit-v1.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-bytecode-unit-v1.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/bytecode-unit-v1.log.gzip"
+    },
+    "bytecode-unit-v1/pytest.log": {
+      "raw": {
+        "bytes": 180,
+        "sha256": "966ff33e5e999398d9c39514ef78dcdf59b12e9d4b742e1b04a1b1e4b6e61160"
+      },
+      "source": "/private/tmp/unfold-s81-bytecode-unit-v1/pytest.log",
+      "storage": {
+        "bytes": 62,
+        "sha256": "85b378b8720b3fd53cc09f7cc2097ff0d921425e661b7e65d4448b1665e95583"
+      },
+      "stored": "streams/bytecode-unit-v1/pytest.log.gzip"
+    },
+    "bytecode-unit-v1/result.json": {
+      "raw": {
+        "bytes": 169293,
+        "sha256": "02aab165b5e9f65dc684673a4b0a7db38d78c94cd5465e02fa32665cfee5aed3"
+      },
+      "source": "/private/tmp/unfold-s81-bytecode-unit-v1/result.json",
+      "storage": {
+        "bytes": 68015,
+        "sha256": "4af40ecf35f031998428874afc3d111163d735e05ff2812b6b2fb36084fd7926"
+      },
+      "stored": "streams/bytecode-unit-v1/result.json.gzip"
+    },
+    "cache-operation-inventory-v7/manifest-operation-inventory.json": {
+      "raw": {
+        "bytes": 255897,
+        "sha256": "18a1d1209805d656e3eabdaab6365ecd5aa102fba4c2bad5861925653ac8f15a"
+      },
+      "source": "/private/tmp/unfold-s81-cache-operation-inventory-v7/manifest-operation-inventory.json",
+      "storage": {
+        "bytes": 14483,
+        "sha256": "d4b5509a6bbfd6bcbd1bdc6e1e5e565fba01fc15befd79d35340e16494af3659"
+      },
+      "stored": "streams/cache-operation-inventory-v7/manifest-operation-inventory.json.gzip"
+    },
+    "cache-preparation-v10/public_pair.py": {
+      "raw": {
+        "bytes": 8927,
+        "sha256": "1b3f158a4dfcec770275452149454bd6010aa218b41608f8b4c88b7e6bfad306"
+      },
+      "source": "/private/tmp/unfold-s81-cache-preparation-v10/public_pair.py",
+      "storage": {
+        "bytes": 3053,
+        "sha256": "d3e3a7a9245e4f66a7fae18aea2b16b495ac22fbe2a54085fb94b1b9a583f289"
+      },
+      "stored": "streams/cache-preparation-v10/public_pair.py.gzip"
+    },
+    "cache-preparation-v10/source-manifest.json": {
+      "raw": {
+        "bytes": 71373,
+        "sha256": "e5caa6d1609d6755d91b3f2f826a0112acd4c6a386cec139b65143f9c75e89b2"
+      },
+      "source": "/private/tmp/unfold-s81-cache-preparation-v10/source-manifest.json",
+      "storage": {
+        "bytes": 32590,
+        "sha256": "4e648fabe7feab42a386a2526a9b946c1eb8f35a51c178b86ec4b63fbbc79bc3"
+      },
+      "stored": "streams/cache-preparation-v10/source-manifest.json.gzip"
+    },
+    "cache-preparation-v11/public_pair.py": {
+      "raw": {
+        "bytes": 8939,
+        "sha256": "abf4344c3946ab4177259ad45774ca7f095894729c9c15b90cf2f40c7cc10657"
+      },
+      "source": "/private/tmp/unfold-s81-cache-preparation-v11/public_pair.py",
+      "storage": {
+        "bytes": 3062,
+        "sha256": "3f8ba4a203c8bbaae875dd29f8d3031a94aab16f2cdc4754651c6aef793d6c4a"
+      },
+      "stored": "streams/cache-preparation-v11/public_pair.py.gzip"
+    },
+    "cache-preparation-v11/source-manifest.json": {
+      "raw": {
+        "bytes": 71484,
+        "sha256": "ea31b0857d004d520bfe45cae8920abc71e4f684fe9301b5ab0982c771384517"
+      },
+      "source": "/private/tmp/unfold-s81-cache-preparation-v11/source-manifest.json",
+      "storage": {
+        "bytes": 32639,
+        "sha256": "feca58dbfde51d364bfa24017f564f816dc9d779fd8ce041182c37ed7d88be29"
+      },
+      "stored": "streams/cache-preparation-v11/source-manifest.json.gzip"
+    },
+    "cache-preparation-v7/public_pair.py": {
+      "raw": {
+        "bytes": 8926,
+        "sha256": "4c85fc754a63dd3936ee8f6af09ef1378ecb9afce5453a5d8a681713c1cb127a"
+      },
+      "source": "/private/tmp/unfold-s81-cache-preparation-v7/public_pair.py",
+      "storage": {
+        "bytes": 3053,
+        "sha256": "2fd1290e6da0488d4f9d47f671e5212e16f47d6c23207c1a2740bfc632e2e1d4"
+      },
+      "stored": "streams/cache-preparation-v7/public_pair.py.gzip"
+    },
+    "cache-preparation-v7/source-manifest.json": {
+      "raw": {
+        "bytes": 70834,
+        "sha256": "78d77f47bc645bac62f80e3ffa30ccc2e14921085adc8b2c920fe679a36b6a52"
+      },
+      "source": "/private/tmp/unfold-s81-cache-preparation-v7/source-manifest.json",
+      "storage": {
+        "bytes": 32346,
+        "sha256": "267e637146555c1a3d2806dac3d57804a2ceae759cf87d2f42bfd7aa04899448"
+      },
+      "stored": "streams/cache-preparation-v7/source-manifest.json.gzip"
+    },
+    "cache-preparation-v8/public_pair.py": {
+      "raw": {
+        "bytes": 8930,
+        "sha256": "daff48e2582c1e23b1ad5b661c3986aeed7459cc1698a3c6dc1e17e87d8eb4eb"
+      },
+      "source": "/private/tmp/unfold-s81-cache-preparation-v8/public_pair.py",
+      "storage": {
+        "bytes": 3055,
+        "sha256": "12c263063c2e7fbca17babe3c5bf50a76702c426204dd8c4ae124795910316a1"
+      },
+      "stored": "streams/cache-preparation-v8/public_pair.py.gzip"
+    },
+    "cache-preparation-v8/source-manifest.json": {
+      "raw": {
+        "bytes": 71050,
+        "sha256": "fee2250f4718994b5fb7c85d61b71cd83866c6bb6a79056f506f5c2ccb2059ac"
+      },
+      "source": "/private/tmp/unfold-s81-cache-preparation-v8/source-manifest.json",
+      "storage": {
+        "bytes": 32440,
+        "sha256": "611a1e052a63a28dec6d8ba07900e8a5535833153255e2722b9c4e1d3e16a04a"
+      },
+      "stored": "streams/cache-preparation-v8/source-manifest.json.gzip"
+    },
+    "cache-preparation-v9/public_pair.py": {
+      "raw": {
+        "bytes": 8932,
+        "sha256": "f788475c56087156a7dc5b2e56ffc7b8579a1223b269b499230059703fd8e678"
+      },
+      "source": "/private/tmp/unfold-s81-cache-preparation-v9/public_pair.py",
+      "storage": {
+        "bytes": 3057,
+        "sha256": "30badbe894bf00bd22c8031a7a5dbd6c83dbb0799370a3df13549ba137086e07"
+      },
+      "stored": "streams/cache-preparation-v9/public_pair.py.gzip"
+    },
+    "cache-preparation-v9/source-manifest.json": {
+      "raw": {
+        "bytes": 71269,
+        "sha256": "ddc960f3669d6054156fd45e402e87d7fdbcc08db9e1a6effb1aed78ae1c2dd9"
+      },
+      "source": "/private/tmp/unfold-s81-cache-preparation-v9/source-manifest.json",
+      "storage": {
+        "bytes": 32530,
+        "sha256": "a67027925ec186780931584cd560a1c911735af9de9755f8895371ca4babaafd"
+      },
+      "stored": "streams/cache-preparation-v9/source-manifest.json.gzip"
+    },
+    "cache-traversal-controls-v1/pytest.log": {
+      "raw": {
+        "bytes": 99,
+        "sha256": "f94767795b6460b1db1a03782420cb1057877e02e8ef54588a736828212a24d6"
+      },
+      "source": "/private/tmp/unfold-s81-cache-traversal-controls-v1/pytest.log",
+      "storage": {
+        "bytes": 52,
+        "sha256": "b7cd9964ef852f3cabb9f1470d8226d27526440eab4e0b9eb6730331d8a659ed"
+      },
+      "stored": "streams/cache-traversal-controls-v1/pytest.log.gzip"
+    },
+    "cache-traversal-controls-v1/result.json": {
+      "raw": {
+        "bytes": 299766,
+        "sha256": "a7f8f141efe9248966be9b1258e68f9513427b2f2a1188e7d92363e5a8d0c28c"
+      },
+      "source": "/private/tmp/unfold-s81-cache-traversal-controls-v1/result.json",
+      "storage": {
+        "bytes": 103092,
+        "sha256": "306fb80813935b95f7c80518958644dc0e746d5e876ada6b38611ba8b2246fbe"
+      },
+      "stored": "streams/cache-traversal-controls-v1/result.json.gzip"
+    },
+    "cache-traversal-preparation/original-functions.py": {
+      "raw": {
+        "bytes": 2468,
+        "sha256": "71500d9588c448ae9ea324202721ca7d4f7fc5dcc7b674e658c274f6e7a97180"
+      },
+      "source": "/private/tmp/unfold-s81-cache-traversal-preparation/original-functions.py",
+      "storage": {
+        "bytes": 903,
+        "sha256": "1a21345628913d40ac03df6c4585bd7dcd13e609c6c6f809ceb7781f29ff01be"
+      },
+      "stored": "streams/cache-traversal-preparation/original-functions.py.gzip"
+    },
+    "cache-traversal-preparation/replay_manifest.py": {
+      "raw": {
+        "bytes": 6186,
+        "sha256": "0221a3370c26d50542e4dd169a929fffe6eddb71b0751adceff170ace0c5bede"
+      },
+      "source": "/private/tmp/unfold-s81-cache-traversal-preparation/replay_manifest.py",
+      "storage": {
+        "bytes": 2112,
+        "sha256": "a1df60e34e961ab5f8ebf54c0759c8bf6db34b53a630e5068361c490f55633b2"
+      },
+      "stored": "streams/cache-traversal-preparation/replay_manifest.py.gzip"
+    },
+    "cache-traversal-preparation/run_controls.py": {
+      "raw": {
+        "bytes": 1427,
+        "sha256": "1a66e159cd39b934c237c9650d500372d096dbf27f53aeddae9aade1ced5f7f2"
+      },
+      "source": "/private/tmp/unfold-s81-cache-traversal-preparation/run_controls.py",
+      "storage": {
+        "bytes": 711,
+        "sha256": "259e2f985c206274b86629e167ce5a5e0ad78e4c65223019aa040a415f13d75d"
+      },
+      "stored": "streams/cache-traversal-preparation/run_controls.py.gzip"
+    },
+    "cache-traversal-preparation/source-manifest.json": {
+      "raw": {
+        "bytes": 147549,
+        "sha256": "236530ad5ef17e387fb8de8ed2dfd6ad2fcef9ae422ddce6b0a851d180d85f9b"
+      },
+      "source": "/private/tmp/unfold-s81-cache-traversal-preparation/source-manifest.json",
+      "storage": {
+        "bytes": 51756,
+        "sha256": "c71075141ebd1de6c2269410a67ec82961427ee78c401687dc8fcd96c2a87cf1"
+      },
+      "stored": "streams/cache-traversal-preparation/source-manifest.json.gzip"
+    },
+    "cache-traversal-replay-v1/before.json": {
+      "raw": {
+        "bytes": 777,
+        "sha256": "13c6edec40ddf2a11041854d26d937cc5836f961034b4b4dd9e60db4ddefa952"
+      },
+      "source": "/private/tmp/unfold-s81-cache-traversal-replay-v1/before.json",
+      "storage": {
+        "bytes": 422,
+        "sha256": "e6427ec6c40aa9e99cea9dc02370eba22b2a0768bbe28a38e9bb01010e00aacf"
+      },
+      "stored": "streams/cache-traversal-replay-v1/before.json.gzip"
+    },
+    "cache-traversal-replay-v1/current-digest-calls.json": {
+      "raw": {
+        "bytes": 6611319,
+        "sha256": "19e8ddb21ac4bb0c3774be9d7b62d6935f1df47c712aa2c52187fca4c8b8f2ae"
+      },
+      "source": "/private/tmp/unfold-s81-cache-traversal-replay-v1/current-digest-calls.json",
+      "storage": {
+        "bytes": 379689,
+        "sha256": "762818080a557802ffdd3c3a7a897d3640648e45547b902cae0f1a8b626ebb25"
+      },
+      "stored": "streams/cache-traversal-replay-v1/current-digest-calls.json.gzip"
+    },
+    "cache-traversal-replay-v1/current-result.json": {
+      "raw": {
+        "bytes": 355,
+        "sha256": "2cc03565d12518bf0a70ff6d80452657d76bcef0667d507b40a7cc42f7c366c7"
+      },
+      "source": "/private/tmp/unfold-s81-cache-traversal-replay-v1/current-result.json",
+      "storage": {
+        "bytes": 212,
+        "sha256": "1c417a3a12e0792fe24fc2a49759601fe30a2fcaeda4579adfa109659f75b22d"
+      },
+      "stored": "streams/cache-traversal-replay-v1/current-result.json.gzip"
+    },
+    "cache-traversal-replay-v1/current-traversal.json": {
+      "raw": {
+        "bytes": 10069754,
+        "sha256": "f51b9f36611c4b6ac0a6afca730615c4be8db8a9286ac172c8e2537e3f97d31b"
+      },
+      "source": "/private/tmp/unfold-s81-cache-traversal-replay-v1/current-traversal.json",
+      "storage": {
+        "bytes": 1763675,
+        "sha256": "95b0249caeb263c277b5129df003d6fcbed9d0b52c498dc750950fea81ec7d00"
+      },
+      "stored": "streams/cache-traversal-replay-v1/current-traversal.json.gzip"
+    },
+    "cache-traversal-replay-v1/original-digest-calls.json": {
+      "raw": {
+        "bytes": 6611319,
+        "sha256": "19e8ddb21ac4bb0c3774be9d7b62d6935f1df47c712aa2c52187fca4c8b8f2ae"
+      },
+      "source": "/private/tmp/unfold-s81-cache-traversal-replay-v1/original-digest-calls.json",
+      "storage": {
+        "bytes": 379689,
+        "sha256": "762818080a557802ffdd3c3a7a897d3640648e45547b902cae0f1a8b626ebb25"
+      },
+      "stored": "streams/cache-traversal-replay-v1/original-digest-calls.json.gzip"
+    },
+    "cache-traversal-replay-v1/original-result.json": {
+      "raw": {
+        "bytes": 357,
+        "sha256": "a114628a184b0d1174653977c9f9d5a79b6dd5fe2c615a281f3e83231573aef7"
+      },
+      "source": "/private/tmp/unfold-s81-cache-traversal-replay-v1/original-result.json",
+      "storage": {
+        "bytes": 212,
+        "sha256": "0eb3afe7f2749cecc31da6aa46d1f70d3342be17a640bf8b55658bdb9a21ceef"
+      },
+      "stored": "streams/cache-traversal-replay-v1/original-result.json.gzip"
+    },
+    "cache-traversal-replay-v1/original-traversal.json": {
+      "raw": {
+        "bytes": 10069754,
+        "sha256": "f51b9f36611c4b6ac0a6afca730615c4be8db8a9286ac172c8e2537e3f97d31b"
+      },
+      "source": "/private/tmp/unfold-s81-cache-traversal-replay-v1/original-traversal.json",
+      "storage": {
+        "bytes": 1763675,
+        "sha256": "95b0249caeb263c277b5129df003d6fcbed9d0b52c498dc750950fea81ec7d00"
+      },
+      "stored": "streams/cache-traversal-replay-v1/original-traversal.json.gzip"
+    },
+    "cache-traversal-replay-v1/result.json": {
+      "raw": {
+        "bytes": 3828,
+        "sha256": "15280a27fb412da11d2458125b6bde5c12803115daff84eac62933c14b7855fd"
+      },
+      "source": "/private/tmp/unfold-s81-cache-traversal-replay-v1/result.json",
+      "storage": {
+        "bytes": 1148,
+        "sha256": "54d5ab15ecafc733b7117fcc2dbad87e881657dca71205d887098e9b466d63c9"
+      },
+      "stored": "streams/cache-traversal-replay-v1/result.json.gzip"
+    },
+    "cache-traversal-root-review/actual.json": {
+      "raw": {
+        "bytes": 638,
+        "sha256": "f8b98922cb5cb7e92acd2b01a2d1359e859504e342d530395c13e7a5e02ce9ce"
+      },
+      "source": "/private/tmp/unfold-s81-cache-traversal-root-review/actual.json",
+      "storage": {
+        "bytes": 420,
+        "sha256": "48d3221542e8ae533b1d194a7d4d9b7cda3362ded7ba883e840a5c24e95099d4"
+      },
+      "stored": "streams/cache-traversal-root-review/actual.json.gzip"
+    },
+    "cache-traversal-root-review/source.json": {
+      "raw": {
+        "bytes": 644,
+        "sha256": "b5e244693f69d426629db82552bb899f410a09fa4a51193797957bd1effea06a"
+      },
+      "source": "/private/tmp/unfold-s81-cache-traversal-root-review/source.json",
+      "storage": {
+        "bytes": 451,
+        "sha256": "63430f349658357d91cdc55eb2a9c64b8e581a0c8338d2a9dba064743f3e7d65"
+      },
+      "stored": "streams/cache-traversal-root-review/source.json.gzip"
+    },
+    "capture-phase-preparation-v2/phase_worker.py": {
+      "raw": {
+        "bytes": 4059,
+        "sha256": "e63e69364d5af663020176e26842b655aed3e7751cc20786807280038497c40d"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-preparation-v2/phase_worker.py",
+      "storage": {
+        "bytes": 1649,
+        "sha256": "4ba2c59b0ab0dc5883e61ff48cfaf18923c5479bd51ea265f19bbb1e32b374ad"
+      },
+      "stored": "streams/capture-phase-preparation-v2/phase_worker.py.gzip"
+    },
+    "capture-phase-preparation-v2/run.py": {
+      "raw": {
+        "bytes": 5312,
+        "sha256": "8b304ebb3f5acf5eea274a475120a3a792feee51f2cc5aa6930d7b10cea98e81"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-preparation-v2/run.py",
+      "storage": {
+        "bytes": 2158,
+        "sha256": "d013bb4d1dcd232233d9552982ffcc6651858053464ab4264b640d74cf7a269e"
+      },
+      "stored": "streams/capture-phase-preparation-v2/run.py.gzip"
+    },
+    "capture-phase-preparation-v2/source-manifest.json": {
+      "raw": {
+        "bytes": 71269,
+        "sha256": "ddc960f3669d6054156fd45e402e87d7fdbcc08db9e1a6effb1aed78ae1c2dd9"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-preparation-v2/source-manifest.json",
+      "storage": {
+        "bytes": 32530,
+        "sha256": "a67027925ec186780931584cd560a1c911735af9de9755f8895371ca4babaafd"
+      },
+      "stored": "streams/capture-phase-preparation-v2/source-manifest.json.gzip"
+    },
+    "capture-phase-preparation-v3/phase_worker.py": {
+      "raw": {
+        "bytes": 4238,
+        "sha256": "1c9a2a98ed822ad610a75e6b6022bd9134294c41d5c727b6018502106629eb33"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-preparation-v3/phase_worker.py",
+      "storage": {
+        "bytes": 1699,
+        "sha256": "1b8cd8df71c647c8484a15d48fc5c0313f3332ced18f95471f0afcb3e2e3e962"
+      },
+      "stored": "streams/capture-phase-preparation-v3/phase_worker.py.gzip"
+    },
+    "capture-phase-preparation-v3/run.py": {
+      "raw": {
+        "bytes": 5309,
+        "sha256": "0c1df5f3efdd84a206b479de758f9c1a6a04ad8d170f91c832b50b56964ecdd5"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-preparation-v3/run.py",
+      "storage": {
+        "bytes": 2156,
+        "sha256": "26d9b831c6d462d8ff2ab9d6e755eb15143a6f5510304fb23d93c8fe83304b24"
+      },
+      "stored": "streams/capture-phase-preparation-v3/run.py.gzip"
+    },
+    "capture-phase-preparation-v3/source-manifest.json": {
+      "raw": {
+        "bytes": 71373,
+        "sha256": "e5caa6d1609d6755d91b3f2f826a0112acd4c6a386cec139b65143f9c75e89b2"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-preparation-v3/source-manifest.json",
+      "storage": {
+        "bytes": 32590,
+        "sha256": "4e648fabe7feab42a386a2526a9b946c1eb8f35a51c178b86ec4b63fbbc79bc3"
+      },
+      "stored": "streams/capture-phase-preparation-v3/source-manifest.json.gzip"
+    },
+    "capture-phase-preparation/phase_worker.py": {
+      "raw": {
+        "bytes": 2951,
+        "sha256": "7993c52cf18e98531aae7c0ea0bd3b7d879b1aa90575a6a088214cd0798ee48d"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-preparation/phase_worker.py",
+      "storage": {
+        "bytes": 1263,
+        "sha256": "e65e3f905e13d605279baf50acd64d35f1b96e0a067266e0626f1207adbe856a"
+      },
+      "stored": "streams/capture-phase-preparation/phase_worker.py.gzip"
+    },
+    "capture-phase-preparation/run.py": {
+      "raw": {
+        "bytes": 5269,
+        "sha256": "162c4548336ba2e6cbb9567f97dd371770ecab974727c8decffb85cdc15f95ad"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-preparation/run.py",
+      "storage": {
+        "bytes": 2137,
+        "sha256": "82ccef1253221ba13c5c19230ce085c8a4417132a48e1db8c41603bf4315fbbc"
+      },
+      "stored": "streams/capture-phase-preparation/run.py.gzip"
+    },
+    "capture-phase-preparation/source-manifest.json": {
+      "raw": {
+        "bytes": 71269,
+        "sha256": "ddc960f3669d6054156fd45e402e87d7fdbcc08db9e1a6effb1aed78ae1c2dd9"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-preparation/source-manifest.json",
+      "storage": {
+        "bytes": 32530,
+        "sha256": "a67027925ec186780931584cd560a1c911735af9de9755f8895371ca4babaafd"
+      },
+      "stored": "streams/capture-phase-preparation/source-manifest.json.gzip"
+    },
+    "capture-phase-v1.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v1.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/capture-phase-v1.log.gzip"
+    },
+    "capture-phase-v1/capture-dependencies-0.json": {
+      "raw": {
+        "bytes": 8499805,
+        "sha256": "aebb4ab11ba1ccf151b8fdaf088028c3ee04c570097c40e7c00cba497c796824"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v1/capture-dependencies-0.json",
+      "storage": {
+        "bytes": 1782242,
+        "sha256": "931272df1aa4177bacafb95428e3817b79992ba395cb6f3a623fe8df23cb4c18"
+      },
+      "stored": "streams/capture-phase-v1/capture-dependencies-0.json.gzip"
+    },
+    "capture-phase-v1/capture-phases.json": {
+      "raw": {
+        "bytes": 1487,
+        "sha256": "ccf36d5ac48b82fb3af05b7fdc14b6b4ab03d6fb4ff8eda42251ade878ee4967"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v1/capture-phases.json",
+      "storage": {
+        "bytes": 687,
+        "sha256": "47331115ffa86ad3239874c8930bcd748f57bd7daf82a93207c70887d54140a4"
+      },
+      "stored": "streams/capture-phase-v1/capture-phases.json.gzip"
+    },
+    "capture-phase-v1/inventory-result.json": {
+      "raw": {
+        "bytes": 5030957,
+        "sha256": "3422ef5c25d1e49745a4bcc01007bd84d8727041fdf81d58236b51251b78c27d"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v1/inventory-result.json",
+      "storage": {
+        "bytes": 260993,
+        "sha256": "ea2323f8603401fd7e448720e9474bef39ed2be26a991ef0a6f98ff59bc76f83"
+      },
+      "stored": "streams/capture-phase-v1/inventory-result.json.gzip"
+    },
+    "capture-phase-v1/request.json": {
+      "raw": {
+        "bytes": 8665,
+        "sha256": "c9fc1243361169b5fa6b4384e1d9cd5cc2787f1325c803f70c88dc95de78fcf6"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v1/request.json",
+      "storage": {
+        "bytes": 2116,
+        "sha256": "666f04b9264ebae867a6a213bf1c3e4636389c27b7e952851c88c3b853a3e736"
+      },
+      "stored": "streams/capture-phase-v1/request.json.gzip"
+    },
+    "capture-phase-v1/result.json": {
+      "raw": {
+        "bytes": 174462,
+        "sha256": "51551bb76185bee18cc26940b8a21f867737e2bc26319b92161a4af81a233d13"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v1/result.json",
+      "storage": {
+        "bytes": 70075,
+        "sha256": "6aa93d217a16f28c7980d850c0fe7010ddf493c2663685431980c2263668683e"
+      },
+      "stored": "streams/capture-phase-v1/result.json.gzip"
+    },
+    "capture-phase-v2.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v2.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/capture-phase-v2.log.gzip"
+    },
+    "capture-phase-v2/capture-dependencies-0.json": {
+      "raw": {
+        "bytes": 8499817,
+        "sha256": "9eb6fd91f3f6ec0ec9986899aef8d88c6813b74e9e3bbd02d2a801f458af5bc7"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v2/capture-dependencies-0.json",
+      "storage": {
+        "bytes": 1782290,
+        "sha256": "cfb0a1ad7de0d6aacc2399b0e1714f8bb3a3ac6b53cf933269c61fe197dfeb42"
+      },
+      "stored": "streams/capture-phase-v2/capture-dependencies-0.json.gzip"
+    },
+    "capture-phase-v2/capture-phases.json": {
+      "raw": {
+        "bytes": 4522,
+        "sha256": "4e50b2969506f826564496f10c4c49fdf2a53dfc27a7c224aaf53fcdf789fbbc"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v2/capture-phases.json",
+      "storage": {
+        "bytes": 1378,
+        "sha256": "17f0ad0dbd037bcf82c68ce434d58f3c2fa3e4c05629744bd9738fce986a1a46"
+      },
+      "stored": "streams/capture-phase-v2/capture-phases.json.gzip"
+    },
+    "capture-phase-v2/inventory-result.json": {
+      "raw": {
+        "bytes": 5030957,
+        "sha256": "3422ef5c25d1e49745a4bcc01007bd84d8727041fdf81d58236b51251b78c27d"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v2/inventory-result.json",
+      "storage": {
+        "bytes": 260993,
+        "sha256": "ea2323f8603401fd7e448720e9474bef39ed2be26a991ef0a6f98ff59bc76f83"
+      },
+      "stored": "streams/capture-phase-v2/inventory-result.json.gzip"
+    },
+    "capture-phase-v2/request.json": {
+      "raw": {
+        "bytes": 8665,
+        "sha256": "c9fc1243361169b5fa6b4384e1d9cd5cc2787f1325c803f70c88dc95de78fcf6"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v2/request.json",
+      "storage": {
+        "bytes": 2116,
+        "sha256": "666f04b9264ebae867a6a213bf1c3e4636389c27b7e952851c88c3b853a3e736"
+      },
+      "stored": "streams/capture-phase-v2/request.json.gzip"
+    },
+    "capture-phase-v2/result.json": {
+      "raw": {
+        "bytes": 174543,
+        "sha256": "9a3563f503032510615abe4a068614c5f9fed8f083e9ec003c5465fc4e6f0039"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v2/result.json",
+      "storage": {
+        "bytes": 70122,
+        "sha256": "32865cbd7034f553648df010b10b0d10b9562e5c6bf72be30e00ea71687b3366"
+      },
+      "stored": "streams/capture-phase-v2/result.json.gzip"
+    },
+    "capture-phase-v3.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v3.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/capture-phase-v3.log.gzip"
+    },
+    "capture-phase-v3/capture-dependencies-0.json": {
+      "raw": {
+        "bytes": 8499439,
+        "sha256": "990dc9643750c4f310face373801e8756ff6672b49346f36dfb730f0e7846ded"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v3/capture-dependencies-0.json",
+      "storage": {
+        "bytes": 1782273,
+        "sha256": "a03ae1f2124e511a445860ba798a94c450093afea45964079ffe0de65167ade2"
+      },
+      "stored": "streams/capture-phase-v3/capture-dependencies-0.json.gzip"
+    },
+    "capture-phase-v3/capture-phases.json": {
+      "raw": {
+        "bytes": 5154,
+        "sha256": "6d681dae8e6063ffd8e4cf5c7ee72c11c8a3ab3adef74c0f46ee834aa7f59031"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v3/capture-phases.json",
+      "storage": {
+        "bytes": 1590,
+        "sha256": "7de766964b9e9f26d0d46f79ef0deb77bc46ebc1443ae835562262e51fcd3288"
+      },
+      "stored": "streams/capture-phase-v3/capture-phases.json.gzip"
+    },
+    "capture-phase-v3/inventory-result.json": {
+      "raw": {
+        "bytes": 5030950,
+        "sha256": "233a1029f6d36d58cc47e5777594a2f1d7d6d92c01919e14751412cad2595870"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v3/inventory-result.json",
+      "storage": {
+        "bytes": 260987,
+        "sha256": "70590d86e66ca4e708e01c3908f67ce78cc3decaa29f65e03face3970243d7a1"
+      },
+      "stored": "streams/capture-phase-v3/inventory-result.json.gzip"
+    },
+    "capture-phase-v3/request.json": {
+      "raw": {
+        "bytes": 8665,
+        "sha256": "c9fc1243361169b5fa6b4384e1d9cd5cc2787f1325c803f70c88dc95de78fcf6"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v3/request.json",
+      "storage": {
+        "bytes": 2116,
+        "sha256": "666f04b9264ebae867a6a213bf1c3e4636389c27b7e952851c88c3b853a3e736"
+      },
+      "stored": "streams/capture-phase-v3/request.json.gzip"
+    },
+    "capture-phase-v3/result.json": {
+      "raw": {
+        "bytes": 174756,
+        "sha256": "cb16726b89318388ece4904bed76d587c0eb6a8291634e98c0a6cee0a8ca6e72"
+      },
+      "source": "/private/tmp/unfold-s81-capture-phase-v3/result.json",
+      "storage": {
+        "bytes": 70213,
+        "sha256": "065ccba9718693918e982fc6408f9a88b65fb2f2ea62a14416c86cdbb6fb48dc"
+      },
+      "stored": "streams/capture-phase-v3/result.json.gzip"
+    },
+    "cell-lineage-controls-v1/pytest.log": {
+      "raw": {
+        "bytes": 25199,
+        "sha256": "207e35676304d9be26b23a3915e367fcf4d595b23bcca8e5539d6b532c1fa85c"
+      },
+      "source": "/private/tmp/unfold-s81-cell-lineage-controls-v1/pytest.log",
+      "storage": {
+        "bytes": 2215,
+        "sha256": "0fcb76e86a4e5b2069fed617dfe9ad5f8fc2b28335189c2c209f5df160f8e224"
+      },
+      "stored": "streams/cell-lineage-controls-v1/pytest.log.gzip"
+    },
+    "cell-lineage-controls-v1/result.json": {
+      "raw": {
+        "bytes": 146199,
+        "sha256": "e6d811390084e08eac1ead0d38d4042ea1fe1446c6630962278561bc382b24c0"
+      },
+      "source": "/private/tmp/unfold-s81-cell-lineage-controls-v1/result.json",
+      "storage": {
+        "bytes": 64840,
+        "sha256": "90ab375549f3639ebcb1966f4abf854d147731280fdc6e76abb78c8ba0075335"
+      },
+      "stored": "streams/cell-lineage-controls-v1/result.json.gzip"
+    },
+    "cell-lineage-controls-v2/pytest.log": {
+      "raw": {
+        "bytes": 99,
+        "sha256": "a890e568c11468864b3e9fa07f9a38828516c9eb4ea11be051ffd911cf9b7b42"
+      },
+      "source": "/private/tmp/unfold-s81-cell-lineage-controls-v2/pytest.log",
+      "storage": {
+        "bytes": 52,
+        "sha256": "6a97d1e7d71bd967c986ca8f70dbfcce5f079c42243a58bc00f19db10eefda4e"
+      },
+      "stored": "streams/cell-lineage-controls-v2/pytest.log.gzip"
+    },
+    "cell-lineage-controls-v2/result.json": {
+      "raw": {
+        "bytes": 146211,
+        "sha256": "de53f30c70862cec7f14057f3e48c14fa9a1fa4048e6f2e2311bf4f8884fb96a"
+      },
+      "source": "/private/tmp/unfold-s81-cell-lineage-controls-v2/result.json",
+      "storage": {
+        "bytes": 64839,
+        "sha256": "bec24b3105802beef153665a6864f06c5f2bc2efd1f46e70b3857093b4c0fe7f"
+      },
+      "stored": "streams/cell-lineage-controls-v2/result.json.gzip"
+    },
+    "cell-lineage-preparation-v2/run_controls.py": {
+      "raw": {
+        "bytes": 1730,
+        "sha256": "d1f79f5b5154e211cf260d99ba8e3b122f028fc2508dd94abd7e26ea84898f4d"
+      },
+      "source": "/private/tmp/unfold-s81-cell-lineage-preparation-v2/run_controls.py",
+      "storage": {
+        "bytes": 806,
+        "sha256": "0d272556a5a4efa559d3e4c139a3d5f2a2365c19105723788245f10a103714d8"
+      },
+      "stored": "streams/cell-lineage-preparation-v2/run_controls.py.gzip"
+    },
+    "cell-lineage-preparation-v2/source-manifest.json": {
+      "raw": {
+        "bytes": 71373,
+        "sha256": "f553e8cecb75a893683ce0aba36f7f33a05cff9b5eb512e7ec48781cf67315f9"
+      },
+      "source": "/private/tmp/unfold-s81-cell-lineage-preparation-v2/source-manifest.json",
+      "storage": {
+        "bytes": 32582,
+        "sha256": "0c658239eb7843e8f37258776c0f930230771f4d7acd33847930e9bf1aea3274"
+      },
+      "stored": "streams/cell-lineage-preparation-v2/source-manifest.json.gzip"
+    },
+    "cell-lineage-preparation/original-functions.py": {
+      "raw": {
+        "bytes": 5997,
+        "sha256": "d8b3b9409cfb8bdb372563e7a5ce2e7d637689ed1702511edea512eec769d4f2"
+      },
+      "source": "/private/tmp/unfold-s81-cell-lineage-preparation/original-functions.py",
+      "storage": {
+        "bytes": 2012,
+        "sha256": "83035de8991dc0fdaa6b7bfeaefd84ddbcaedc66f0d7aa84e9c82102c4653ffd"
+      },
+      "stored": "streams/cell-lineage-preparation/original-functions.py.gzip"
+    },
+    "cell-lineage-preparation/run_controls.py": {
+      "raw": {
+        "bytes": 1727,
+        "sha256": "3a1baefc25ebf47207cdeea3b7254e9693d7b6866cf7d32f0c8f93fd1f4dc258"
+      },
+      "source": "/private/tmp/unfold-s81-cell-lineage-preparation/run_controls.py",
+      "storage": {
+        "bytes": 805,
+        "sha256": "503d7d27c7648e35b385848c3426fe45ca0d3e81d25ca85ddaca6fbeb29d00b2"
+      },
+      "stored": "streams/cell-lineage-preparation/run_controls.py.gzip"
+    },
+    "cell-lineage-preparation/source-manifest.json": {
+      "raw": {
+        "bytes": 71373,
+        "sha256": "a50baf76ede9b8466057d85e4bbaaf5cb1582d5dca7e5c5e23d2ba565f5ad9b3"
+      },
+      "source": "/private/tmp/unfold-s81-cell-lineage-preparation/source-manifest.json",
+      "storage": {
+        "bytes": 32579,
+        "sha256": "c1c8614a6162533aa49b90149ba09c45d2e8f6bab1dea9cf936d2f24460e9ac1"
+      },
+      "stored": "streams/cell-lineage-preparation/source-manifest.json.gzip"
+    },
+    "cell-lineage-root-review/actual.json": {
+      "raw": {
+        "bytes": 542,
+        "sha256": "96cb46a54b7b592436d344203fce0b1bab97d65c4fd38654a05fa623f17020f5"
+      },
+      "source": "/private/tmp/unfold-s81-cell-lineage-root-review/actual.json",
+      "storage": {
+        "bytes": 374,
+        "sha256": "f132894408837e9642474e31defcec74073d7219d3cf92f45e45babce6d85844"
+      },
+      "stored": "streams/cell-lineage-root-review/actual.json.gzip"
+    },
+    "cell-lineage-root-review/source.json": {
+      "raw": {
+        "bytes": 694,
+        "sha256": "1ddedab326994793b033962bf32a63c5b507d45672d270e6cbccd79e6c0055e6"
+      },
+      "source": "/private/tmp/unfold-s81-cell-lineage-root-review/source.json",
+      "storage": {
+        "bytes": 477,
+        "sha256": "5290a2bd55887bd40a4d1edb3241537b55610ffea8e28a57aa4caf017628e61a"
+      },
+      "stored": "streams/cell-lineage-root-review/source.json.gzip"
+    },
+    "conformance-controls-v1/pytest.log": {
+      "raw": {
+        "bytes": 2922,
+        "sha256": "a1936f78605709faf50b77917c3581c30948bed2e3f98d323837350e4e435ee1"
+      },
+      "source": "/private/tmp/unfold-s81-conformance-controls-v1/pytest.log",
+      "storage": {
+        "bytes": 1141,
+        "sha256": "fe4bf5ab99cebc98584c3354a912183eea254458062c0b2e995e39fe1f1d97b7"
+      },
+      "stored": "streams/conformance-controls-v1/pytest.log.gzip"
+    },
+    "conformance-controls-v1/result.json": {
+      "raw": {
+        "bytes": 145950,
+        "sha256": "f0ed2129b2ccd5803269f784ad941715341f87dff87cc75f7d5c7d27e354f370"
+      },
+      "source": "/private/tmp/unfold-s81-conformance-controls-v1/result.json",
+      "storage": {
+        "bytes": 64731,
+        "sha256": "3d6e49f5501e278bdf1ea82c2329691e053306ea0f31514d23ded0d8a101d80a"
+      },
+      "stored": "streams/conformance-controls-v1/result.json.gzip"
+    },
+    "conformance-controls-v2/pytest.log": {
+      "raw": {
+        "bytes": 99,
+        "sha256": "185fee9ff5fe0f86ce14ba73a8a6f0801271e441c85f8c36f5c8d80abd930bab"
+      },
+      "source": "/private/tmp/unfold-s81-conformance-controls-v2/pytest.log",
+      "storage": {
+        "bytes": 52,
+        "sha256": "0f0ab2c35ccf64dd4a2365e0b0a881166e41557e1b120af30e3dbe9ba86c5ca4"
+      },
+      "stored": "streams/conformance-controls-v2/pytest.log.gzip"
+    },
+    "conformance-controls-v2/result.json": {
+      "raw": {
+        "bytes": 145962,
+        "sha256": "158f69fe9e33283930ce5c9b9619cd4d07f108d4e2ea017565ca0e5fb86693d3"
+      },
+      "source": "/private/tmp/unfold-s81-conformance-controls-v2/result.json",
+      "storage": {
+        "bytes": 64730,
+        "sha256": "10d54fcd43fbb4988e22b0427ccf942973ec235d8efaf7adc45feba82e154aad"
+      },
+      "stored": "streams/conformance-controls-v2/result.json.gzip"
+    },
+    "conformance-preparation-v2/run_controls.py": {
+      "raw": {
+        "bytes": 1699,
+        "sha256": "bcce9934847fa9edfd0670c8d0d98409ac575a80667f8b50ff8036c6270a4dfd"
+      },
+      "source": "/private/tmp/unfold-s81-conformance-preparation-v2/run_controls.py",
+      "storage": {
+        "bytes": 792,
+        "sha256": "aef14bca76ab67b004035c762202bd579e9f93e47e6a79bbd8c6f430e28fe4d2"
+      },
+      "stored": "streams/conformance-preparation-v2/run_controls.py.gzip"
+    },
+    "conformance-preparation-v2/source-manifest.json": {
+      "raw": {
+        "bytes": 71269,
+        "sha256": "ddc960f3669d6054156fd45e402e87d7fdbcc08db9e1a6effb1aed78ae1c2dd9"
+      },
+      "source": "/private/tmp/unfold-s81-conformance-preparation-v2/source-manifest.json",
+      "storage": {
+        "bytes": 32530,
+        "sha256": "a67027925ec186780931584cd560a1c911735af9de9755f8895371ca4babaafd"
+      },
+      "stored": "streams/conformance-preparation-v2/source-manifest.json.gzip"
+    },
+    "conformance-preparation/run_controls.py": {
+      "raw": {
+        "bytes": 1696,
+        "sha256": "10e66dabb13c0b78f8e895e08c8f0610ed335e22ae98d1a40967e088ba59d9a5"
+      },
+      "source": "/private/tmp/unfold-s81-conformance-preparation/run_controls.py",
+      "storage": {
+        "bytes": 791,
+        "sha256": "84532029fa1ac61dca906447f94c10379b50b4ccfc71b93531aeea0f54d2b9eb"
+      },
+      "stored": "streams/conformance-preparation/run_controls.py.gzip"
+    },
+    "conformance-preparation/source-manifest.json": {
+      "raw": {
+        "bytes": 71269,
+        "sha256": "b93f5c21e41c050ac20c2349b4e5a317979d017590c3b6444637eda13efa92c5"
+      },
+      "source": "/private/tmp/unfold-s81-conformance-preparation/source-manifest.json",
+      "storage": {
+        "bytes": 32532,
+        "sha256": "39522a0a34e243aa17016b86c86f9ad5174058b10e553c24800c8b3e4d0ac577"
+      },
+      "stored": "streams/conformance-preparation/source-manifest.json.gzip"
+    },
+    "conformance-root-review/actual.json": {
+      "raw": {
+        "bytes": 447,
+        "sha256": "30dc2b03b482f4213188b53657fa80b4476363cf464d6df42d932840da72f591"
+      },
+      "source": "/private/tmp/unfold-s81-conformance-root-review/actual.json",
+      "storage": {
+        "bytes": 319,
+        "sha256": "f85aa9102f4bbe56d6581ce94544f946b9fc6d08e6532af3475a507be1009dd7"
+      },
+      "stored": "streams/conformance-root-review/actual.json.gzip"
+    },
+    "conformance-root-review/source.json": {
+      "raw": {
+        "bytes": 899,
+        "sha256": "48b7757e92a50fc6fb38831b38e06d5d5e04c4c198addd8ba697ad3aa0200006"
+      },
+      "source": "/private/tmp/unfold-s81-conformance-root-review/source.json",
+      "storage": {
+        "bytes": 560,
+        "sha256": "713da6867ae6886af00db3d64b24abb2436d3136364e7f18ceaac1ea82ef0ddc"
+      },
+      "stored": "streams/conformance-root-review/source.json.gzip"
+    },
+    "digest-primitive-preparation/__pycache__/candidate.cpython-312.pyc": {
+      "raw": {
+        "bytes": 1666,
+        "sha256": "66aee2a41a59c7575517fdd96425f3a8ced3d1cd4a9e358739f1a0b5b8e6a345"
+      },
+      "source": "/private/tmp/unfold-s81-digest-primitive-preparation/__pycache__/candidate.cpython-312.pyc",
+      "storage": {
+        "bytes": 883,
+        "sha256": "60388d7510231116f92df76c77b44c229e758dde056ea8d9f2f73ccc258390d7"
+      },
+      "stored": "streams/digest-primitive-preparation/__pycache__/candidate.cpython-312.pyc.gzip"
+    },
+    "digest-primitive-preparation/__pycache__/test_candidate.cpython-312-pytest-9.0.2.pyc": {
+      "raw": {
+        "bytes": 17533,
+        "sha256": "5d5ca04a6ca49c2cef72ab1966810ee56191b9a7a9523737617c1eba3839c697"
+      },
+      "source": "/private/tmp/unfold-s81-digest-primitive-preparation/__pycache__/test_candidate.cpython-312-pytest-9.0.2.pyc",
+      "storage": {
+        "bytes": 5982,
+        "sha256": "7ef203e903713f1e91bc5ea17195484bf5e7b6a78e42c8c51f23bda34fc1f517"
+      },
+      "stored": "streams/digest-primitive-preparation/__pycache__/test_candidate.cpython-312-pytest-9.0.2.pyc.gzip"
+    },
+    "digest-primitive-preparation/candidate.py": {
+      "raw": {
+        "bytes": 600,
+        "sha256": "6b33e48dd98daaa05d9d2e6894967fdb1357d368de2c88447eabf7ef97b711a5"
+      },
+      "source": "/private/tmp/unfold-s81-digest-primitive-preparation/candidate.py",
+      "storage": {
+        "bytes": 299,
+        "sha256": "f839f9ed9044ecd926ec85782ce120bf0842e286facd58c8070840ccc09f6f38"
+      },
+      "stored": "streams/digest-primitive-preparation/candidate.py.gzip"
+    },
+    "digest-primitive-preparation/run.py": {
+      "raw": {
+        "bytes": 4804,
+        "sha256": "538895580cd61f322e9b5a0f20034c2c7f657d76f54f099ca4d62353654a5d56"
+      },
+      "source": "/private/tmp/unfold-s81-digest-primitive-preparation/run.py",
+      "storage": {
+        "bytes": 1864,
+        "sha256": "e8148984d3beb409865a6adfea360ba51dc3943c31ee5bdc21658123b170a66e"
+      },
+      "stored": "streams/digest-primitive-preparation/run.py.gzip"
+    },
+    "digest-primitive-preparation/test_candidate.py": {
+      "raw": {
+        "bytes": 2660,
+        "sha256": "787ff5406d0163a9bc799351363e4a440520f7ac04ec8b29c3dc0167abde3adb"
+      },
+      "source": "/private/tmp/unfold-s81-digest-primitive-preparation/test_candidate.py",
+      "storage": {
+        "bytes": 1058,
+        "sha256": "c5d598520b2d99e396a55c02416ea33a13601219193c365a9e34ed584d89cfba"
+      },
+      "stored": "streams/digest-primitive-preparation/test_candidate.py.gzip"
+    },
+    "digest-primitive-v1.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-digest-primitive-v1.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/digest-primitive-v1.log.gzip"
+    },
+    "digest-primitive-v1/before.json": {
+      "raw": {
+        "bytes": 719,
+        "sha256": "1ef2ed9066e33c4068958553b8ae7547e9f7b936fc55718b19a6744dc93abe69"
+      },
+      "source": "/private/tmp/unfold-s81-digest-primitive-v1/before.json",
+      "storage": {
+        "bytes": 395,
+        "sha256": "c3470a72b4da8e85d3308d3ef851839b3f66e2777152274e5d397ef6f8b4fa53"
+      },
+      "stored": "streams/digest-primitive-v1/before.json.gzip"
+    },
+    "digest-primitive-v1/candidate-content.json": {
+      "raw": {
+        "bytes": 4373358,
+        "sha256": "1088cb14e4b8f0d734b6de000206497e41976e0c80dda1eedb86b805758e5fa0"
+      },
+      "source": "/private/tmp/unfold-s81-digest-primitive-v1/candidate-content.json",
+      "storage": {
+        "bytes": 1116682,
+        "sha256": "c901a6997c0e30567ca0dad387b34c38148835ff946e7933e8bfa3b7065b3508"
+      },
+      "stored": "streams/digest-primitive-v1/candidate-content.json.gzip"
+    },
+    "digest-primitive-v1/expected-content.json": {
+      "raw": {
+        "bytes": 4373358,
+        "sha256": "1088cb14e4b8f0d734b6de000206497e41976e0c80dda1eedb86b805758e5fa0"
+      },
+      "source": "/private/tmp/unfold-s81-digest-primitive-v1/expected-content.json",
+      "storage": {
+        "bytes": 1116682,
+        "sha256": "c901a6997c0e30567ca0dad387b34c38148835ff946e7933e8bfa3b7065b3508"
+      },
+      "stored": "streams/digest-primitive-v1/expected-content.json.gzip"
+    },
+    "digest-primitive-v1/file-metadata.json": {
+      "raw": {
+        "bytes": 13482450,
+        "sha256": "1023f690542ca0bc8e1459fbdd53b90232996d65ac1af16a489b594b11533165"
+      },
+      "source": "/private/tmp/unfold-s81-digest-primitive-v1/file-metadata.json",
+      "storage": {
+        "bytes": 770972,
+        "sha256": "c23bed034822ad441215310cc8d1d635e0996c3e9ef265163fc066bd02e9b3eb"
+      },
+      "stored": "streams/digest-primitive-v1/file-metadata.json.gzip"
+    },
+    "digest-primitive-v1/original_after-content.json": {
+      "raw": {
+        "bytes": 4373358,
+        "sha256": "1088cb14e4b8f0d734b6de000206497e41976e0c80dda1eedb86b805758e5fa0"
+      },
+      "source": "/private/tmp/unfold-s81-digest-primitive-v1/original_after-content.json",
+      "storage": {
+        "bytes": 1116682,
+        "sha256": "c901a6997c0e30567ca0dad387b34c38148835ff946e7933e8bfa3b7065b3508"
+      },
+      "stored": "streams/digest-primitive-v1/original_after-content.json.gzip"
+    },
+    "digest-primitive-v1/original_before-content.json": {
+      "raw": {
+        "bytes": 4373358,
+        "sha256": "1088cb14e4b8f0d734b6de000206497e41976e0c80dda1eedb86b805758e5fa0"
+      },
+      "source": "/private/tmp/unfold-s81-digest-primitive-v1/original_before-content.json",
+      "storage": {
+        "bytes": 1116682,
+        "sha256": "c901a6997c0e30567ca0dad387b34c38148835ff946e7933e8bfa3b7065b3508"
+      },
+      "stored": "streams/digest-primitive-v1/original_before-content.json.gzip"
+    },
+    "digest-primitive-v1/pins.json": {
+      "raw": {
+        "bytes": 1490,
+        "sha256": "23d8db6914980c2d38abe907c9834eec6bf1d91bccc4b927622a28a14b694a2c"
+      },
+      "source": "/private/tmp/unfold-s81-digest-primitive-v1/pins.json",
+      "storage": {
+        "bytes": 422,
+        "sha256": "a4e5e0c7c63cb26d61350734e9793a09142c1d4d40c86a21152c9d089de6138d"
+      },
+      "stored": "streams/digest-primitive-v1/pins.json.gzip"
+    },
+    "digest-primitive-v1/progress.json": {
+      "raw": {
+        "bytes": 1334,
+        "sha256": "0fcd177a14a50f501c0160a3039ecba36a306e3f2eeb18460ec4a9687d21af1b"
+      },
+      "source": "/private/tmp/unfold-s81-digest-primitive-v1/progress.json",
+      "storage": {
+        "bytes": 675,
+        "sha256": "fb2beab06d3130379dee8a5db0ff2d5899a2d59fad658549ad0f256274a63f87"
+      },
+      "stored": "streams/digest-primitive-v1/progress.json.gzip"
+    },
+    "digest-primitive-v1/pytest.log": {
+      "raw": {
+        "bytes": 99,
+        "sha256": "5a61e4ee64f45a5805babffca8a5919e844227a781cea12f4f08477742675d17"
+      },
+      "source": "/private/tmp/unfold-s81-digest-primitive-v1/pytest.log",
+      "storage": {
+        "bytes": 52,
+        "sha256": "726da02cc6bb4d4ab31f36632198039619f8d7c587fe3a9963ad56faa53778c5"
+      },
+      "stored": "streams/digest-primitive-v1/pytest.log.gzip"
+    },
+    "digest-primitive-v1/result.json": {
+      "raw": {
+        "bytes": 1516,
+        "sha256": "243d36e5bf7170e4e307abc0db2723c50b1b8eee8916b6e719218562cdd0f880"
+      },
+      "source": "/private/tmp/unfold-s81-digest-primitive-v1/result.json",
+      "storage": {
+        "bytes": 730,
+        "sha256": "8411eaff5d1e8fbf1682b10f26ae2b91252f440828813ab0152a25698e5671e3"
+      },
+      "stored": "streams/digest-primitive-v1/result.json.gzip"
+    },
+    "expression-preparation/run.py": {
+      "raw": {
+        "bytes": 1769,
+        "sha256": "e52d24a3dec799a6b4593d0138624e27cc9e8dc5e0e397523c027543a60d4367"
+      },
+      "source": "/private/tmp/unfold-s81-expression-preparation/run.py",
+      "storage": {
+        "bytes": 793,
+        "sha256": "a746a30859d5fcbf8d0c66684d1f87d2b60aa05f5100f2331e711b08be8855a5"
+      },
+      "stored": "streams/expression-preparation/run.py.gzip"
+    },
+    "expression-preparation/source-manifest.json": {
+      "raw": {
+        "bytes": 71157,
+        "sha256": "6b8e01d5025f9228977d78168c7a6cbc6d8c2f5f7ce94fe91a71e8652e9b5dfd"
+      },
+      "source": "/private/tmp/unfold-s81-expression-preparation/source-manifest.json",
+      "storage": {
+        "bytes": 32489,
+        "sha256": "09dcae7b97660b8e3a272e74d9509add5813b8ec083072bb8568113d271b57fb"
+      },
+      "stored": "streams/expression-preparation/source-manifest.json.gzip"
+    },
+    "expression-preparation/source-pins.json": {
+      "raw": {
+        "bytes": 224,
+        "sha256": "c20d29a490b77f54f459bbb14e4196dba08a3f41267809d02fb2a7d0100e2593"
+      },
+      "source": "/private/tmp/unfold-s81-expression-preparation/source-pins.json",
+      "storage": {
+        "bytes": 193,
+        "sha256": "adfdd05e3b7609d69de27dab0f4ce282fd1ae67ee113364f870be07bc79e68ed"
+      },
+      "stored": "streams/expression-preparation/source-pins.json.gzip"
+    },
+    "expression-preparation/source/model_unfolder/evidence/program_index.py": {
+      "raw": {
+        "bytes": 150033,
+        "sha256": "65770b7b8b202c195d699ce8efca36ed1a2f80e8bcd7cfcd9eff1d89fdb0c7a0"
+      },
+      "source": "/private/tmp/unfold-s81-expression-preparation/source/model_unfolder/evidence/program_index.py",
+      "storage": {
+        "bytes": 38304,
+        "sha256": "2dd880e4986c916aee9dd28d2cee84147802d7169a32622579777f43ef287c71"
+      },
+      "stored": "streams/expression-preparation/source/model_unfolder/evidence/program_index.py.gzip"
+    },
+    "expression-preparation/source/tests/test_s81_expression_work.py": {
+      "raw": {
+        "bytes": 4563,
+        "sha256": "6292902aa2f964504456df14f0456b5ee37a4d939549cb80dda56de2a07ad33f"
+      },
+      "source": "/private/tmp/unfold-s81-expression-preparation/source/tests/test_s81_expression_work.py",
+      "storage": {
+        "bytes": 1715,
+        "sha256": "1df243d8bd0187ab0862cf396e33046cd7c90e0e49102557879c2bd06a244965"
+      },
+      "stored": "streams/expression-preparation/source/tests/test_s81_expression_work.py.gzip"
+    },
+    "expression-unit-v1/pytest.log": {
+      "raw": {
+        "bytes": 284,
+        "sha256": "49d74ff958b98271ee91bc39c94b588af1c80da4c177c730c7a17da7c4bdc838"
+      },
+      "source": "/private/tmp/unfold-s81-expression-unit-v1/pytest.log",
+      "storage": {
+        "bytes": 111,
+        "sha256": "855a7f4e89d859d75e05332ffe55f3895cc38509e50525f5196f0a1b018f8dfe"
+      },
+      "stored": "streams/expression-unit-v1/pytest.log.gzip"
+    },
+    "expression-unit-v1/result.json": {
+      "raw": {
+        "bytes": 169970,
+        "sha256": "5a9327c098fa9b5c3f8fabfdd51d97be6de532ed8bea32363ca48d0971c440fb"
+      },
+      "source": "/private/tmp/unfold-s81-expression-unit-v1/result.json",
+      "storage": {
+        "bytes": 68338,
+        "sha256": "79e67da16a719f3476bbf397104bcc2c3fc44421b99da986b8889631e564a6b4"
+      },
+      "stored": "streams/expression-unit-v1/result.json.gzip"
+    },
+    "guard-import-preparation/run.py": {
+      "raw": {
+        "bytes": 1786,
+        "sha256": "1bd2f99725e58e0e1064ef44d6e219555db3b3fb7e429d11f0691e3957d3c43d"
+      },
+      "source": "/private/tmp/unfold-s81-guard-import-preparation/run.py",
+      "storage": {
+        "bytes": 807,
+        "sha256": "d9b633c7879b1b068fb2d4b3e8a854f8056e1f0c015003bf4b41f4471603710d"
+      },
+      "stored": "streams/guard-import-preparation/run.py.gzip"
+    },
+    "guard-import-preparation/source-manifest.json": {
+      "raw": {
+        "bytes": 71050,
+        "sha256": "fee2250f4718994b5fb7c85d61b71cd83866c6bb6a79056f506f5c2ccb2059ac"
+      },
+      "source": "/private/tmp/unfold-s81-guard-import-preparation/source-manifest.json",
+      "storage": {
+        "bytes": 32440,
+        "sha256": "611a1e052a63a28dec6d8ba07900e8a5535833153255e2722b9c4e1d3e16a04a"
+      },
+      "stored": "streams/guard-import-preparation/source-manifest.json.gzip"
+    },
+    "guard-import-preparation/source-pins.json": {
+      "raw": {
+        "bytes": 456,
+        "sha256": "36dd5cce7829184f00fea430a286162b4d0d49f2c185a9e7cb2238eb993835fb"
+      },
+      "source": "/private/tmp/unfold-s81-guard-import-preparation/source-pins.json",
+      "storage": {
+        "bytes": 295,
+        "sha256": "78ce0b8fcfe4f424074de5e6aa440dd4ae845f4818f84c61030149df4cc35339"
+      },
+      "stored": "streams/guard-import-preparation/source-pins.json.gzip"
+    },
+    "guard-import-preparation/source/model_unfolder/evidence/expression_eval.py": {
+      "raw": {
+        "bytes": 31961,
+        "sha256": "c30963242bfe5a4fbd313ff345c41873c9f9c3f7fa319ab2cf0c072196a8e49d"
+      },
+      "source": "/private/tmp/unfold-s81-guard-import-preparation/source/model_unfolder/evidence/expression_eval.py",
+      "storage": {
+        "bytes": 8687,
+        "sha256": "a96b5a366f822310e7ad7adc315e8adc6b082f86b1d9393846f696543b5d98b8"
+      },
+      "stored": "streams/guard-import-preparation/source/model_unfolder/evidence/expression_eval.py.gzip"
+    },
+    "guard-import-preparation/source/model_unfolder/evidence/import_source.py": {
+      "raw": {
+        "bytes": 22054,
+        "sha256": "d2128a82390ef569e763e6219f605f9398451cedafa7095b715f8c85c127a59b"
+      },
+      "source": "/private/tmp/unfold-s81-guard-import-preparation/source/model_unfolder/evidence/import_source.py",
+      "storage": {
+        "bytes": 5855,
+        "sha256": "a63b61134d0a15e0cbffa0cd319db570af378139f40554e6989ae1c691429266"
+      },
+      "stored": "streams/guard-import-preparation/source/model_unfolder/evidence/import_source.py.gzip"
+    },
+    "guard-import-preparation/source/model_unfolder/evidence/program_index.py": {
+      "raw": {
+        "bytes": 149225,
+        "sha256": "57583fec271d60d594e1a4e4738c7dd548dbae57e04ccd8a18a481a56fe363c0"
+      },
+      "source": "/private/tmp/unfold-s81-guard-import-preparation/source/model_unfolder/evidence/program_index.py",
+      "storage": {
+        "bytes": 38083,
+        "sha256": "e6421ebb23817b2c395dc3dac30bf0eb82e5dc50b6ea12f7330de40268a05623"
+      },
+      "stored": "streams/guard-import-preparation/source/model_unfolder/evidence/program_index.py.gzip"
+    },
+    "guard-import-preparation/source/tests/test_s81_guard_import_work.py": {
+      "raw": {
+        "bytes": 4552,
+        "sha256": "36d320df824c281c85ba7a62cf4222365fb692e3d5d2cf05be9c03ab770077d5"
+      },
+      "source": "/private/tmp/unfold-s81-guard-import-preparation/source/tests/test_s81_guard_import_work.py",
+      "storage": {
+        "bytes": 1437,
+        "sha256": "d7cc501b854aba10f0d540856a081156c1eeb08eecfd0abed41465bf9abd5cb1"
+      },
+      "stored": "streams/guard-import-preparation/source/tests/test_s81_guard_import_work.py.gzip"
+    },
+    "guard-import-unit-v1/pytest.log": {
+      "raw": {
+        "bytes": 99,
+        "sha256": "ba3c7eee734abab0cb384eb96fcb5a6b11d0940e27b221c6d7c589989f031d1d"
+      },
+      "source": "/private/tmp/unfold-s81-guard-import-unit-v1/pytest.log",
+      "storage": {
+        "bytes": 52,
+        "sha256": "d07ff844eb56dcd657f47f0183351b2158b659d04356d284baaf85729a8d8132"
+      },
+      "stored": "streams/guard-import-unit-v1/pytest.log.gzip"
+    },
+    "guard-import-unit-v1/result.json": {
+      "raw": {
+        "bytes": 169773,
+        "sha256": "ee64b4c8059bf41b32d7763974b4cf46efa1df45cf459705b7365a438fb35de9"
+      },
+      "source": "/private/tmp/unfold-s81-guard-import-unit-v1/result.json",
+      "storage": {
+        "bytes": 68246,
+        "sha256": "49ec92d974a594038c08076c0cb0a40993856f91a0fe97d85cc1f835a4af8813"
+      },
+      "stored": "streams/guard-import-unit-v1/result.json.gzip"
+    },
+    "public-cold-v10.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v10.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/public-cold-v10.log.gzip"
+    },
+    "public-cold-v10/cache-pins.json": {
+      "raw": {
+        "bytes": 343,
+        "sha256": "c495f5eaef377fe344bb058bdbb07c47244cf770b2cccd7ab65e040b0e46ed08"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v10/cache-pins.json",
+      "storage": {
+        "bytes": 219,
+        "sha256": "66bbcc3c8dd33198b0accd3d81d8cf83b3fb1f1e8fa69e6ad70c7bdf810bf313"
+      },
+      "stored": "streams/public-cold-v10/cache-pins.json.gzip"
+    },
+    "public-cold-v10/capture-dependencies-0.json": {
+      "raw": {
+        "bytes": 8499243,
+        "sha256": "2ad84602db8f1c928df21e83874a0e76aafb4b51a7ac2a94a02f5dedba2b7f08"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v10/capture-dependencies-0.json",
+      "storage": {
+        "bytes": 1782261,
+        "sha256": "672af81ea55a31cfa1221564d0a47cb2cdd3d0c2c5b3c82fb657b31079aa37c6"
+      },
+      "stored": "streams/public-cold-v10/capture-dependencies-0.json.gzip"
+    },
+    "public-cold-v10/diagnostics.json": {
+      "raw": {
+        "bytes": 1275,
+        "sha256": "a2719279ef564f6b2f31f15ba1c3a7554217fcb75d4aab4910ab1e904325dc85"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v10/diagnostics.json",
+      "storage": {
+        "bytes": 621,
+        "sha256": "5808b6b78eb0945bdcda060b343cc4388bebe4353bd55a99f1998ba9e90f6706"
+      },
+      "stored": "streams/public-cold-v10/diagnostics.json.gzip"
+    },
+    "public-cold-v10/external-pins.json": {
+      "raw": {
+        "bytes": 23812,
+        "sha256": "7a3bd39b57bb67e4bc282ae831f7222678d9ccbe59d0d51ab629a7972d3bf77e"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v10/external-pins.json",
+      "storage": {
+        "bytes": 3676,
+        "sha256": "1c44bfdf0b73774f38d2a55d3615bc5a9aff90c14085a7d2508483d2de44d20b"
+      },
+      "stored": "streams/public-cold-v10/external-pins.json.gzip"
+    },
+    "public-cold-v10/input-pins.json": {
+      "raw": {
+        "bytes": 2014,
+        "sha256": "1d193ef8e5430b81649c5d77581e54930cd9e3647c631494986de8a72b3be076"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v10/input-pins.json",
+      "storage": {
+        "bytes": 502,
+        "sha256": "884bc0b2a4c09f24ccd16a34664597ec54dc4d3014c1aab4a595c69e793fd6eb"
+      },
+      "stored": "streams/public-cold-v10/input-pins.json.gzip"
+    },
+    "public-cold-v10/inventory-result.json": {
+      "raw": {
+        "bytes": 5030950,
+        "sha256": "233a1029f6d36d58cc47e5777594a2f1d7d6d92c01919e14751412cad2595870"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v10/inventory-result.json",
+      "storage": {
+        "bytes": 260987,
+        "sha256": "70590d86e66ca4e708e01c3908f67ce78cc3decaa29f65e03face3970243d7a1"
+      },
+      "stored": "streams/public-cold-v10/inventory-result.json.gzip"
+    },
+    "public-cold-v10/ir.json": {
+      "raw": {
+        "bytes": 38146206,
+        "sha256": "f650fc5ae65ba530f1de64b0b2fa8fbed979e2b5c6dfd632e8c2d26439d35b47"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v10/ir.json",
+      "storage": {
+        "bytes": 2050499,
+        "sha256": "16047c3453fa1413004b5e1a2f2ac3e31a8676b3d98f5e591a7582cbc6537296"
+      },
+      "stored": "streams/public-cold-v10/ir.json.gzip"
+    },
+    "public-cold-v10/public-inventory-0.json": {
+      "raw": {
+        "bytes": 5030950,
+        "sha256": "233a1029f6d36d58cc47e5777594a2f1d7d6d92c01919e14751412cad2595870"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v10/public-inventory-0.json",
+      "storage": {
+        "bytes": 260987,
+        "sha256": "70590d86e66ca4e708e01c3908f67ce78cc3decaa29f65e03face3970243d7a1"
+      },
+      "stored": "streams/public-cold-v10/public-inventory-0.json.gzip"
+    },
+    "public-cold-v10/result.json": {
+      "raw": {
+        "bytes": 32891,
+        "sha256": "2eb0d5fedb0cd370b990ffb6cfaf6b4dcf81e03840c8015291b18e0e06968c29"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v10/result.json",
+      "storage": {
+        "bytes": 8661,
+        "sha256": "ab27c2fab8ef1304e675aa65bed5445d22b8bc561d34656afebb3ffc97cd6c38"
+      },
+      "stored": "streams/public-cold-v10/result.json.gzip"
+    },
+    "public-cold-v10/source-pins.json": {
+      "raw": {
+        "bytes": 145302,
+        "sha256": "dac024b373cd9a51b9cdf40e2849f4651507521c491a97a7956b2b7e3194fa21"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v10/source-pins.json",
+      "storage": {
+        "bytes": 64515,
+        "sha256": "59afc86a6211f2874e5d8328e0494ce7042e78a1800fb65b701eb07bce439e33"
+      },
+      "stored": "streams/public-cold-v10/source-pins.json.gzip"
+    },
+    "public-cold-v11.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v11.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/public-cold-v11.log.gzip"
+    },
+    "public-cold-v11/cache-pins.json": {
+      "raw": {
+        "bytes": 343,
+        "sha256": "4958d7febacdab4f00a566f538c265b49c1e21deaa0f88f49afceceac8ba00d0"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v11/cache-pins.json",
+      "storage": {
+        "bytes": 219,
+        "sha256": "1e0be8c775bc68b8f27f455da1e8f613f9536c1f52da9f4d81b34fedc2536653"
+      },
+      "stored": "streams/public-cold-v11/cache-pins.json.gzip"
+    },
+    "public-cold-v11/capture-dependencies-0.json": {
+      "raw": {
+        "bytes": 8499939,
+        "sha256": "34ae10f95435086cc8929fffe89b332ee572856a033e7be733fc1dcaebe48845"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v11/capture-dependencies-0.json",
+      "storage": {
+        "bytes": 1782291,
+        "sha256": "26cfe9a43aaca684f0b2a6fbd53bf61122f4f947b84d20791527588d02b93caa"
+      },
+      "stored": "streams/public-cold-v11/capture-dependencies-0.json.gzip"
+    },
+    "public-cold-v11/diagnostics.json": {
+      "raw": {
+        "bytes": 1273,
+        "sha256": "3bc8dd326744020638853e3f37518394aa6eb5d914c05bf3e5f02d59bdfcb360"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v11/diagnostics.json",
+      "storage": {
+        "bytes": 616,
+        "sha256": "2408aba64a68dad191e01cee06e6765ac4c733703b3d0d507c32dad6e7913db9"
+      },
+      "stored": "streams/public-cold-v11/diagnostics.json.gzip"
+    },
+    "public-cold-v11/external-pins.json": {
+      "raw": {
+        "bytes": 23812,
+        "sha256": "7a3bd39b57bb67e4bc282ae831f7222678d9ccbe59d0d51ab629a7972d3bf77e"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v11/external-pins.json",
+      "storage": {
+        "bytes": 3676,
+        "sha256": "1c44bfdf0b73774f38d2a55d3615bc5a9aff90c14085a7d2508483d2de44d20b"
+      },
+      "stored": "streams/public-cold-v11/external-pins.json.gzip"
+    },
+    "public-cold-v11/input-pins.json": {
+      "raw": {
+        "bytes": 2014,
+        "sha256": "b8048c272051106200f5447bcb3bfaa4ad8cce6ed6907ac22192494c4f61101e"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v11/input-pins.json",
+      "storage": {
+        "bytes": 501,
+        "sha256": "ba2c6f0ea0f739d6f1706359897f8e18ef573189d03cb2cb3915bb29ac901ec1"
+      },
+      "stored": "streams/public-cold-v11/input-pins.json.gzip"
+    },
+    "public-cold-v11/inventory-result.json": {
+      "raw": {
+        "bytes": 5030962,
+        "sha256": "c7974ab462eb1c44adaf76c7160b3b025dd274c56febe1ad209b4b283982d2b4"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v11/inventory-result.json",
+      "storage": {
+        "bytes": 260997,
+        "sha256": "25e1765f440c67789bd55a5094f6983f2321de1e954d1e3416028c0281665c7b"
+      },
+      "stored": "streams/public-cold-v11/inventory-result.json.gzip"
+    },
+    "public-cold-v11/ir.json": {
+      "raw": {
+        "bytes": 38146206,
+        "sha256": "f650fc5ae65ba530f1de64b0b2fa8fbed979e2b5c6dfd632e8c2d26439d35b47"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v11/ir.json",
+      "storage": {
+        "bytes": 2050499,
+        "sha256": "16047c3453fa1413004b5e1a2f2ac3e31a8676b3d98f5e591a7582cbc6537296"
+      },
+      "stored": "streams/public-cold-v11/ir.json.gzip"
+    },
+    "public-cold-v11/public-inventory-0.json": {
+      "raw": {
+        "bytes": 5030962,
+        "sha256": "c7974ab462eb1c44adaf76c7160b3b025dd274c56febe1ad209b4b283982d2b4"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v11/public-inventory-0.json",
+      "storage": {
+        "bytes": 260997,
+        "sha256": "25e1765f440c67789bd55a5094f6983f2321de1e954d1e3416028c0281665c7b"
+      },
+      "stored": "streams/public-cold-v11/public-inventory-0.json.gzip"
+    },
+    "public-cold-v11/result.json": {
+      "raw": {
+        "bytes": 33028,
+        "sha256": "a011a0a4ab787233634cbaa5865ef70066101a531702e91432e015bdf2641521"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v11/result.json",
+      "storage": {
+        "bytes": 8678,
+        "sha256": "62bd662010f73dff1a512bfff267375511e09310dc02466dc9086e140e4a3d74"
+      },
+      "stored": "streams/public-cold-v11/result.json.gzip"
+    },
+    "public-cold-v11/source-pins.json": {
+      "raw": {
+        "bytes": 145528,
+        "sha256": "9193d3b81aa728375d0666a419cc96ab53e450c209b287992c3c61ec3b24279d"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v11/source-pins.json",
+      "storage": {
+        "bytes": 64626,
+        "sha256": "1c96178653f9bddf899640dfc455cd89928e847204d27cfacf6755a5f148abd2"
+      },
+      "stored": "streams/public-cold-v11/source-pins.json.gzip"
+    },
+    "public-cold-v7.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v7.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/public-cold-v7.log.gzip"
+    },
+    "public-cold-v7/cache-pins.json": {
+      "raw": {
+        "bytes": 343,
+        "sha256": "067bbefebe5c04f9293b8f0b99d2da46a7f77dbf73ae39cdc21561d5cab7c7d7"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v7/cache-pins.json",
+      "storage": {
+        "bytes": 217,
+        "sha256": "2094f3122ac633059cce6375576a0064f50ba3196320024148cbbad0f09517fa"
+      },
+      "stored": "streams/public-cold-v7/cache-pins.json.gzip"
+    },
+    "public-cold-v7/capture-dependencies-0.json": {
+      "raw": {
+        "bytes": 8499574,
+        "sha256": "cdc020721e6d6c4afdf27ee93ff5b11a5f07e58e9a2e451f7a5d6f6749da71ed"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v7/capture-dependencies-0.json",
+      "storage": {
+        "bytes": 1782347,
+        "sha256": "16137806e910f496b363c5cf85bba8b5ed19466de3df3093ca1b102a9101ffd8"
+      },
+      "stored": "streams/public-cold-v7/capture-dependencies-0.json.gzip"
+    },
+    "public-cold-v7/diagnostics.json": {
+      "raw": {
+        "bytes": 1274,
+        "sha256": "96973dd4887aaff37faabae6213fcbe0967ff3730f0aea7d703d504a1a8b84b9"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v7/diagnostics.json",
+      "storage": {
+        "bytes": 618,
+        "sha256": "f62e8af76750a3762f3911f0866603471157eab56b41c733502b9bb7ecc5adb6"
+      },
+      "stored": "streams/public-cold-v7/diagnostics.json.gzip"
+    },
+    "public-cold-v7/external-pins.json": {
+      "raw": {
+        "bytes": 23812,
+        "sha256": "7a3bd39b57bb67e4bc282ae831f7222678d9ccbe59d0d51ab629a7972d3bf77e"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v7/external-pins.json",
+      "storage": {
+        "bytes": 3676,
+        "sha256": "1c44bfdf0b73774f38d2a55d3615bc5a9aff90c14085a7d2508483d2de44d20b"
+      },
+      "stored": "streams/public-cold-v7/external-pins.json.gzip"
+    },
+    "public-cold-v7/input-pins.json": {
+      "raw": {
+        "bytes": 2010,
+        "sha256": "a9969dc91885fffba7551310a2083e2aebab3df4fc2027b30fd2d8170498c049"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v7/input-pins.json",
+      "storage": {
+        "bytes": 497,
+        "sha256": "65452a23dfc76aa078e972d54698863ae6188e97bae77ae537fc5357d4b67a43"
+      },
+      "stored": "streams/public-cold-v7/input-pins.json.gzip"
+    },
+    "public-cold-v7/inventory-result.json": {
+      "raw": {
+        "bytes": 5030951,
+        "sha256": "f2322f6236b6982e8ac68e0f1eec9142ba9836123f94586a2261da83d471b239"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v7/inventory-result.json",
+      "storage": {
+        "bytes": 260989,
+        "sha256": "584e1f95622620fa7c982f9f13b08833314b915faf55d5df0ec96f54277f8728"
+      },
+      "stored": "streams/public-cold-v7/inventory-result.json.gzip"
+    },
+    "public-cold-v7/ir.json": {
+      "raw": {
+        "bytes": 38146206,
+        "sha256": "f650fc5ae65ba530f1de64b0b2fa8fbed979e2b5c6dfd632e8c2d26439d35b47"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v7/ir.json",
+      "storage": {
+        "bytes": 2050499,
+        "sha256": "16047c3453fa1413004b5e1a2f2ac3e31a8676b3d98f5e591a7582cbc6537296"
+      },
+      "stored": "streams/public-cold-v7/ir.json.gzip"
+    },
+    "public-cold-v7/public-inventory-0.json": {
+      "raw": {
+        "bytes": 5030951,
+        "sha256": "f2322f6236b6982e8ac68e0f1eec9142ba9836123f94586a2261da83d471b239"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v7/public-inventory-0.json",
+      "storage": {
+        "bytes": 260989,
+        "sha256": "584e1f95622620fa7c982f9f13b08833314b915faf55d5df0ec96f54277f8728"
+      },
+      "stored": "streams/public-cold-v7/public-inventory-0.json.gzip"
+    },
+    "public-cold-v7/result.json": {
+      "raw": {
+        "bytes": 32895,
+        "sha256": "bed96f9fab91455c137fe1309314ea09b09b92e497c3689f02593255e7dda25a"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v7/result.json",
+      "storage": {
+        "bytes": 8645,
+        "sha256": "e5dac2540b71e1a8ae2c5fa06a67da1aa5b8ba703843c19453d7e1c125ee5712"
+      },
+      "stored": "streams/public-cold-v7/result.json.gzip"
+    },
+    "public-cold-v7/source-pins.json": {
+      "raw": {
+        "bytes": 144204,
+        "sha256": "32b79efa7bd10b590c06d2f5fc763c651996a7c27e3bc4f12ed52e8c16d6beed"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v7/source-pins.json",
+      "storage": {
+        "bytes": 64022,
+        "sha256": "2ab17e63db6fabf657f7dfa379fa2a7a5cd52cb3480c2b695239146bcfa663ea"
+      },
+      "stored": "streams/public-cold-v7/source-pins.json.gzip"
+    },
+    "public-cold-v8.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v8.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/public-cold-v8.log.gzip"
+    },
+    "public-cold-v8/cache-pins.json": {
+      "raw": {
+        "bytes": 343,
+        "sha256": "88d85f3a391910100f8834639801497926f680f761c0c9ab42b6b6c44fe0c4d8"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v8/cache-pins.json",
+      "storage": {
+        "bytes": 219,
+        "sha256": "daa5297ae679e85219710a4ebd5d4ccade35bab5a741b0afc3b0a16a17f74efc"
+      },
+      "stored": "streams/public-cold-v8/cache-pins.json.gzip"
+    },
+    "public-cold-v8/capture-dependencies-0.json": {
+      "raw": {
+        "bytes": 8499533,
+        "sha256": "9a4a74c7c50d7f970550bd35e4b8161ddff84f3ff706073234b03e0419d930fb"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v8/capture-dependencies-0.json",
+      "storage": {
+        "bytes": 1782276,
+        "sha256": "a8d9593516564386574adac8ade7dfe506f454ec5b4e5fb549e6a53393191e0d"
+      },
+      "stored": "streams/public-cold-v8/capture-dependencies-0.json.gzip"
+    },
+    "public-cold-v8/diagnostics.json": {
+      "raw": {
+        "bytes": 1275,
+        "sha256": "e506614428f27b6ea054dd1a35494b874fbd52258c0dbfb683486fff9c69db21"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v8/diagnostics.json",
+      "storage": {
+        "bytes": 619,
+        "sha256": "99f5e27b41b19d5fe21d6c4bd41ba6a18ebe1710542bd1383e7d58cf27a12834"
+      },
+      "stored": "streams/public-cold-v8/diagnostics.json.gzip"
+    },
+    "public-cold-v8/external-pins.json": {
+      "raw": {
+        "bytes": 23812,
+        "sha256": "7a3bd39b57bb67e4bc282ae831f7222678d9ccbe59d0d51ab629a7972d3bf77e"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v8/external-pins.json",
+      "storage": {
+        "bytes": 3676,
+        "sha256": "1c44bfdf0b73774f38d2a55d3615bc5a9aff90c14085a7d2508483d2de44d20b"
+      },
+      "stored": "streams/public-cold-v8/external-pins.json.gzip"
+    },
+    "public-cold-v8/input-pins.json": {
+      "raw": {
+        "bytes": 2010,
+        "sha256": "e9d0bcdd4aeb22a7fe072941430b7b7d2da923b4599573c59b7230e225446fd8"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v8/input-pins.json",
+      "storage": {
+        "bytes": 498,
+        "sha256": "00800239bdac1f6d7a2d498d50aa7d26704b7f0bdb590e6914375867d8e6b7d0"
+      },
+      "stored": "streams/public-cold-v8/input-pins.json.gzip"
+    },
+    "public-cold-v8/inventory-result.json": {
+      "raw": {
+        "bytes": 5030955,
+        "sha256": "13a444852c827ee896f4b9b7ec165ec2fac06e1de1c631ff48e9eb57c635c40d"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v8/inventory-result.json",
+      "storage": {
+        "bytes": 260994,
+        "sha256": "a9fecbc673032dc5fae1e54eaf8b02a40d8511b3b2543c8531166511eec2b78b"
+      },
+      "stored": "streams/public-cold-v8/inventory-result.json.gzip"
+    },
+    "public-cold-v8/ir.json": {
+      "raw": {
+        "bytes": 38146206,
+        "sha256": "f650fc5ae65ba530f1de64b0b2fa8fbed979e2b5c6dfd632e8c2d26439d35b47"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v8/ir.json",
+      "storage": {
+        "bytes": 2050499,
+        "sha256": "16047c3453fa1413004b5e1a2f2ac3e31a8676b3d98f5e591a7582cbc6537296"
+      },
+      "stored": "streams/public-cold-v8/ir.json.gzip"
+    },
+    "public-cold-v8/public-inventory-0.json": {
+      "raw": {
+        "bytes": 5030955,
+        "sha256": "13a444852c827ee896f4b9b7ec165ec2fac06e1de1c631ff48e9eb57c635c40d"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v8/public-inventory-0.json",
+      "storage": {
+        "bytes": 260994,
+        "sha256": "a9fecbc673032dc5fae1e54eaf8b02a40d8511b3b2543c8531166511eec2b78b"
+      },
+      "stored": "streams/public-cold-v8/public-inventory-0.json.gzip"
+    },
+    "public-cold-v8/result.json": {
+      "raw": {
+        "bytes": 32967,
+        "sha256": "249cf99687604379c7b07b974ec968b8da8f3fdca51480f3a32e7538ffb4cba0"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v8/result.json",
+      "storage": {
+        "bytes": 8696,
+        "sha256": "f0adebb0b6f4e3fc16ad6804dfab206d4351ab8a5ac5acfe16a56ba6a6bfd0cb"
+      },
+      "stored": "streams/public-cold-v8/result.json.gzip"
+    },
+    "public-cold-v8/source-pins.json": {
+      "raw": {
+        "bytes": 144644,
+        "sha256": "1d88461f5e156746f8ca450945306038b59313b43e0c06cc919df96f27afc0c0"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v8/source-pins.json",
+      "storage": {
+        "bytes": 64233,
+        "sha256": "cad7b0e0669d70cce949307601405ae9182b28b4624f7733c8d1e507f39705db"
+      },
+      "stored": "streams/public-cold-v8/source-pins.json.gzip"
+    },
+    "public-cold-v9.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v9.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/public-cold-v9.log.gzip"
+    },
+    "public-cold-v9/cache-pins.json": {
+      "raw": {
+        "bytes": 343,
+        "sha256": "df8cec72f8e9759391b49ac0bbaad4193b99b2f85a309e0718df54f4b9f25b21"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v9/cache-pins.json",
+      "storage": {
+        "bytes": 217,
+        "sha256": "7fa1a5724878b3358adbe9c6e7323c078dc048f31faa8b74172cad5d40c325d1"
+      },
+      "stored": "streams/public-cold-v9/cache-pins.json.gzip"
+    },
+    "public-cold-v9/capture-dependencies-0.json": {
+      "raw": {
+        "bytes": 8499649,
+        "sha256": "158bb68d403678051a94196eedcc5e21a20cebb7ca6b7f4c9aeaf19e1aff3cf7"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v9/capture-dependencies-0.json",
+      "storage": {
+        "bytes": 1782283,
+        "sha256": "5142b07c5ad2f7bf58e711b01cedf5baaedbc87ec586add000448d388b758a3c"
+      },
+      "stored": "streams/public-cold-v9/capture-dependencies-0.json.gzip"
+    },
+    "public-cold-v9/diagnostics.json": {
+      "raw": {
+        "bytes": 1275,
+        "sha256": "386c77d478eb7b994785a70d6fe509b192607dbde4398f6ff9b2a2a68cc80f9a"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v9/diagnostics.json",
+      "storage": {
+        "bytes": 619,
+        "sha256": "e1808c06def7bb072a63de50108bd47ea56ab9d4aeff04071738415388795728"
+      },
+      "stored": "streams/public-cold-v9/diagnostics.json.gzip"
+    },
+    "public-cold-v9/external-pins.json": {
+      "raw": {
+        "bytes": 23812,
+        "sha256": "7a3bd39b57bb67e4bc282ae831f7222678d9ccbe59d0d51ab629a7972d3bf77e"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v9/external-pins.json",
+      "storage": {
+        "bytes": 3676,
+        "sha256": "1c44bfdf0b73774f38d2a55d3615bc5a9aff90c14085a7d2508483d2de44d20b"
+      },
+      "stored": "streams/public-cold-v9/external-pins.json.gzip"
+    },
+    "public-cold-v9/input-pins.json": {
+      "raw": {
+        "bytes": 2010,
+        "sha256": "df722d6d0f996af9027e4f5453125c48566b91df32dc4398440410448d5cceec"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v9/input-pins.json",
+      "storage": {
+        "bytes": 497,
+        "sha256": "3c3b3392819f823ed1a36470ca6f9a4581d2e40ff3b47efe17abd1a9df37c925"
+      },
+      "stored": "streams/public-cold-v9/input-pins.json.gzip"
+    },
+    "public-cold-v9/inventory-result.json": {
+      "raw": {
+        "bytes": 5030957,
+        "sha256": "3422ef5c25d1e49745a4bcc01007bd84d8727041fdf81d58236b51251b78c27d"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v9/inventory-result.json",
+      "storage": {
+        "bytes": 260993,
+        "sha256": "ea2323f8603401fd7e448720e9474bef39ed2be26a991ef0a6f98ff59bc76f83"
+      },
+      "stored": "streams/public-cold-v9/inventory-result.json.gzip"
+    },
+    "public-cold-v9/ir.json": {
+      "raw": {
+        "bytes": 38146206,
+        "sha256": "f650fc5ae65ba530f1de64b0b2fa8fbed979e2b5c6dfd632e8c2d26439d35b47"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v9/ir.json",
+      "storage": {
+        "bytes": 2050499,
+        "sha256": "16047c3453fa1413004b5e1a2f2ac3e31a8676b3d98f5e591a7582cbc6537296"
+      },
+      "stored": "streams/public-cold-v9/ir.json.gzip"
+    },
+    "public-cold-v9/public-inventory-0.json": {
+      "raw": {
+        "bytes": 5030957,
+        "sha256": "3422ef5c25d1e49745a4bcc01007bd84d8727041fdf81d58236b51251b78c27d"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v9/public-inventory-0.json",
+      "storage": {
+        "bytes": 260993,
+        "sha256": "ea2323f8603401fd7e448720e9474bef39ed2be26a991ef0a6f98ff59bc76f83"
+      },
+      "stored": "streams/public-cold-v9/public-inventory-0.json.gzip"
+    },
+    "public-cold-v9/result.json": {
+      "raw": {
+        "bytes": 32975,
+        "sha256": "9f05663c198dfaf84b248613e08be71d222a12cbc5498b37d77740a9aab18f6e"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v9/result.json",
+      "storage": {
+        "bytes": 8676,
+        "sha256": "dd892ec040661e22575ee0eab55daaf792ce3e1878aad30a83236ad4a9fd801b"
+      },
+      "stored": "streams/public-cold-v9/result.json.gzip"
+    },
+    "public-cold-v9/source-pins.json": {
+      "raw": {
+        "bytes": 145090,
+        "sha256": "99004103856aa291b8863f5ceef3320ad3bec022c981da9e66ca8add0e955dae"
+      },
+      "source": "/private/tmp/unfold-s81-public-cold-v9/source-pins.json",
+      "storage": {
+        "bytes": 64422,
+        "sha256": "078a8fc1d63ed29464306059d0c8b7eedc470b38d88129ce7adf42f154d5bafa"
+      },
+      "stored": "streams/public-cold-v9/source-pins.json.gzip"
+    },
+    "public-entries-v10/entries/4355fc5cb0afc49341b00fbe6f1a1f7101324a2ca82d5f4c297861b3c6574d0e.json": {
+      "raw": {
+        "bytes": 11528169,
+        "sha256": "4355fc5cb0afc49341b00fbe6f1a1f7101324a2ca82d5f4c297861b3c6574d0e"
+      },
+      "source": "/private/tmp/unfold-s81-public-entries-v10/entries/4355fc5cb0afc49341b00fbe6f1a1f7101324a2ca82d5f4c297861b3c6574d0e.json",
+      "storage": {
+        "bytes": 1946982,
+        "sha256": "d75ca977fff7073d2997c09e854ed1dbf24ad2842b03fcc72cc9b50a64ce07af"
+      },
+      "stored": "streams/public-entries-v10/entries/4355fc5cb0afc49341b00fbe6f1a1f7101324a2ca82d5f4c297861b3c6574d0e.json.gzip"
+    },
+    "public-entries-v10/requests/5e4db091ca4521c5fdc6cdce7df7dc1d81287810cf9630f6b220c338470ff8ba.json": {
+      "raw": {
+        "bytes": 83,
+        "sha256": "f1dcbad69870c94680d05f5f831302605375abd1173198a2f3dff06029765902"
+      },
+      "source": "/private/tmp/unfold-s81-public-entries-v10/requests/5e4db091ca4521c5fdc6cdce7df7dc1d81287810cf9630f6b220c338470ff8ba.json",
+      "storage": {
+        "bytes": 93,
+        "sha256": "3b0009148c7e53158877fdb5e856a217aa8753a6e7bcc6954411120d3381de0d"
+      },
+      "stored": "streams/public-entries-v10/requests/5e4db091ca4521c5fdc6cdce7df7dc1d81287810cf9630f6b220c338470ff8ba.json.gzip"
+    },
+    "public-entries-v11/entries/42a38c6a95d45905416be6c59b0c6deff3fed9f26a4b7a393af63c0180c1cb57.json": {
+      "raw": {
+        "bytes": 11529021,
+        "sha256": "42a38c6a95d45905416be6c59b0c6deff3fed9f26a4b7a393af63c0180c1cb57"
+      },
+      "source": "/private/tmp/unfold-s81-public-entries-v11/entries/42a38c6a95d45905416be6c59b0c6deff3fed9f26a4b7a393af63c0180c1cb57.json",
+      "storage": {
+        "bytes": 1947035,
+        "sha256": "a3f52a8c47f7b1bd771ce6549f4d25a9f444d25ffdab05f82114c5c862f50a6d"
+      },
+      "stored": "streams/public-entries-v11/entries/42a38c6a95d45905416be6c59b0c6deff3fed9f26a4b7a393af63c0180c1cb57.json.gzip"
+    },
+    "public-entries-v11/requests/d4b235bbbc84fc491881def501aa69c73ed597bbd8b1bf2d91130a2a069012e9.json": {
+      "raw": {
+        "bytes": 83,
+        "sha256": "1934602035029b936e2cfb44e47847b20439d4b9cdc1cb61b4e21692c8bcc3e6"
+      },
+      "source": "/private/tmp/unfold-s81-public-entries-v11/requests/d4b235bbbc84fc491881def501aa69c73ed597bbd8b1bf2d91130a2a069012e9.json",
+      "storage": {
+        "bytes": 93,
+        "sha256": "7d3d72e607533019f65a22dc4bb1fbe735321a995f5b7eb302072ad2d7f69ec2"
+      },
+      "stored": "streams/public-entries-v11/requests/d4b235bbbc84fc491881def501aa69c73ed597bbd8b1bf2d91130a2a069012e9.json.gzip"
+    },
+    "public-entries-v7/entries/a08a573823fbcbf1bd2afe5ea19ddfa5f768cf39cde1adb72474f9c064b7201c.json": {
+      "raw": {
+        "bytes": 11528513,
+        "sha256": "a08a573823fbcbf1bd2afe5ea19ddfa5f768cf39cde1adb72474f9c064b7201c"
+      },
+      "source": "/private/tmp/unfold-s81-public-entries-v7/entries/a08a573823fbcbf1bd2afe5ea19ddfa5f768cf39cde1adb72474f9c064b7201c.json",
+      "storage": {
+        "bytes": 1947017,
+        "sha256": "bc44b5555afb6d9d96efa33d72598e995dc82ae35e7143b4eeac7c76b4596eb0"
+      },
+      "stored": "streams/public-entries-v7/entries/a08a573823fbcbf1bd2afe5ea19ddfa5f768cf39cde1adb72474f9c064b7201c.json.gzip"
+    },
+    "public-entries-v7/requests/f85bb24771d8e3613e21d8bd6b7b68e84d9b0e01629b99d3981af77d05ddbc62.json": {
+      "raw": {
+        "bytes": 83,
+        "sha256": "b8be8e84967276bff816aec87f0456836ae699fe7b8f4155e300f1909ab9ae2a"
+      },
+      "source": "/private/tmp/unfold-s81-public-entries-v7/requests/f85bb24771d8e3613e21d8bd6b7b68e84d9b0e01629b99d3981af77d05ddbc62.json",
+      "storage": {
+        "bytes": 93,
+        "sha256": "1cff9bba733dc559c47be7c4eabdfb8052a8e62a4d51b85f04428917d03166e3"
+      },
+      "stored": "streams/public-entries-v7/requests/f85bb24771d8e3613e21d8bd6b7b68e84d9b0e01629b99d3981af77d05ddbc62.json.gzip"
+    },
+    "public-entries-v8/entries/1f82cfa1f6b50a3ce62297badb27cb7303060c664a790ec545860b37ff0d1bac.json": {
+      "raw": {
+        "bytes": 11528524,
+        "sha256": "1f82cfa1f6b50a3ce62297badb27cb7303060c664a790ec545860b37ff0d1bac"
+      },
+      "source": "/private/tmp/unfold-s81-public-entries-v8/entries/1f82cfa1f6b50a3ce62297badb27cb7303060c664a790ec545860b37ff0d1bac.json",
+      "storage": {
+        "bytes": 1947009,
+        "sha256": "b96300625520ce8849bb3f381cb834416e75c5721fde9c03b4c4b22df678483d"
+      },
+      "stored": "streams/public-entries-v8/entries/1f82cfa1f6b50a3ce62297badb27cb7303060c664a790ec545860b37ff0d1bac.json.gzip"
+    },
+    "public-entries-v8/requests/6eea3a58938173f0854c41463219809c1564bc4c4f2089c1480b4dbf819008f4.json": {
+      "raw": {
+        "bytes": 83,
+        "sha256": "c0ce87361fc9d895bff508c0f726f3c6d432f5f7d96cce6c1058fe97d54dd5d1"
+      },
+      "source": "/private/tmp/unfold-s81-public-entries-v8/requests/6eea3a58938173f0854c41463219809c1564bc4c4f2089c1480b4dbf819008f4.json",
+      "storage": {
+        "bytes": 92,
+        "sha256": "665cace4eae1964d3f7a545574eb39014d74d27a3c84d46968897b20c4f6df9f"
+      },
+      "stored": "streams/public-entries-v8/requests/6eea3a58938173f0854c41463219809c1564bc4c4f2089c1480b4dbf819008f4.json.gzip"
+    },
+    "public-entries-v9/entries/ae6f6767b4d54cf6cdd372ba356cdad870b259eb40b59b6e325d6181a87f2b6f.json": {
+      "raw": {
+        "bytes": 11528666,
+        "sha256": "ae6f6767b4d54cf6cdd372ba356cdad870b259eb40b59b6e325d6181a87f2b6f"
+      },
+      "source": "/private/tmp/unfold-s81-public-entries-v9/entries/ae6f6767b4d54cf6cdd372ba356cdad870b259eb40b59b6e325d6181a87f2b6f.json",
+      "storage": {
+        "bytes": 1947025,
+        "sha256": "7343fc5ef1d9031ce60372caca2c00a5dec589ba1d83263308162cc9cecd23e9"
+      },
+      "stored": "streams/public-entries-v9/entries/ae6f6767b4d54cf6cdd372ba356cdad870b259eb40b59b6e325d6181a87f2b6f.json.gzip"
+    },
+    "public-entries-v9/requests/d66d55907caacca04ae28357b8363c0b1a2ca92eaa7850b7412eafcaec665445.json": {
+      "raw": {
+        "bytes": 83,
+        "sha256": "a0b777c7125c1ef8860f65583bc81e892837809511cb0ddacf4388e9a50bac5e"
+      },
+      "source": "/private/tmp/unfold-s81-public-entries-v9/requests/d66d55907caacca04ae28357b8363c0b1a2ca92eaa7850b7412eafcaec665445.json",
+      "storage": {
+        "bytes": 94,
+        "sha256": "acd2cb07d2a0f0d12853d5a036c51c7f54c511d7462fa931a41b4cc1be04f634"
+      },
+      "stored": "streams/public-entries-v9/requests/d66d55907caacca04ae28357b8363c0b1a2ca92eaa7850b7412eafcaec665445.json.gzip"
+    },
+    "public-warm-profile-v1.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v1.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/public-warm-profile-v1.log.gzip"
+    },
+    "public-warm-profile-v1/cache-before/entries/a08a573823fbcbf1bd2afe5ea19ddfa5f768cf39cde1adb72474f9c064b7201c.json": {
+      "raw": {
+        "bytes": 11528513,
+        "sha256": "a08a573823fbcbf1bd2afe5ea19ddfa5f768cf39cde1adb72474f9c064b7201c"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v1/cache-before/entries/a08a573823fbcbf1bd2afe5ea19ddfa5f768cf39cde1adb72474f9c064b7201c.json",
+      "storage": {
+        "bytes": 1947017,
+        "sha256": "bc44b5555afb6d9d96efa33d72598e995dc82ae35e7143b4eeac7c76b4596eb0"
+      },
+      "stored": "streams/public-warm-profile-v1/cache-before/entries/a08a573823fbcbf1bd2afe5ea19ddfa5f768cf39cde1adb72474f9c064b7201c.json.gzip"
+    },
+    "public-warm-profile-v1/cache-before/requests/f85bb24771d8e3613e21d8bd6b7b68e84d9b0e01629b99d3981af77d05ddbc62.json": {
+      "raw": {
+        "bytes": 83,
+        "sha256": "b8be8e84967276bff816aec87f0456836ae699fe7b8f4155e300f1909ab9ae2a"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v1/cache-before/requests/f85bb24771d8e3613e21d8bd6b7b68e84d9b0e01629b99d3981af77d05ddbc62.json",
+      "storage": {
+        "bytes": 93,
+        "sha256": "1cff9bba733dc559c47be7c4eabdfb8052a8e62a4d51b85f04428917d03166e3"
+      },
+      "stored": "streams/public-warm-profile-v1/cache-before/requests/f85bb24771d8e3613e21d8bd6b7b68e84d9b0e01629b99d3981af77d05ddbc62.json.gzip"
+    },
+    "public-warm-profile-v1/cache-pins.json": {
+      "raw": {
+        "bytes": 652,
+        "sha256": "b5fdbc722523cc56b22e87b0922a16a635d912767e9e836107e6df54c69394df"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v1/cache-pins.json",
+      "storage": {
+        "bytes": 220,
+        "sha256": "42e7b80d23af7fc1961ba3632a7a9786d20fb9225497ba212b8bf4685e7ffa03"
+      },
+      "stored": "streams/public-warm-profile-v1/cache-pins.json.gzip"
+    },
+    "public-warm-profile-v1/diagnostics.json": {
+      "raw": {
+        "bytes": 313,
+        "sha256": "ebe9c6b4a2ed126a52957fda63fdcbfb8c37e8d7b5318cd1f70c51e349912263"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v1/diagnostics.json",
+      "storage": {
+        "bytes": 238,
+        "sha256": "87f1a8611e4f65daf28956f003b423a601623cf326e101f8b14d8715f2700919"
+      },
+      "stored": "streams/public-warm-profile-v1/diagnostics.json.gzip"
+    },
+    "public-warm-profile-v1/external-pins.json": {
+      "raw": {
+        "bytes": 23812,
+        "sha256": "7a3bd39b57bb67e4bc282ae831f7222678d9ccbe59d0d51ab629a7972d3bf77e"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v1/external-pins.json",
+      "storage": {
+        "bytes": 3676,
+        "sha256": "1c44bfdf0b73774f38d2a55d3615bc5a9aff90c14085a7d2508483d2de44d20b"
+      },
+      "stored": "streams/public-warm-profile-v1/external-pins.json.gzip"
+    },
+    "public-warm-profile-v1/input-pins.json": {
+      "raw": {
+        "bytes": 2010,
+        "sha256": "dae8e8d6f8da6d86a8aed2019b21b974345037127a1c47f26ba391f309402a81"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v1/input-pins.json",
+      "storage": {
+        "bytes": 491,
+        "sha256": "fee417484085f218d2c85887d83ec8377436bc86c923310708635ef4433368bf"
+      },
+      "stored": "streams/public-warm-profile-v1/input-pins.json.gzip"
+    },
+    "public-warm-profile-v1/inventory-result.json": {
+      "raw": {
+        "bytes": 5030951,
+        "sha256": "f2322f6236b6982e8ac68e0f1eec9142ba9836123f94586a2261da83d471b239"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v1/inventory-result.json",
+      "storage": {
+        "bytes": 260989,
+        "sha256": "584e1f95622620fa7c982f9f13b08833314b915faf55d5df0ec96f54277f8728"
+      },
+      "stored": "streams/public-warm-profile-v1/inventory-result.json.gzip"
+    },
+    "public-warm-profile-v1/ir.json": {
+      "raw": {
+        "bytes": 38146206,
+        "sha256": "f650fc5ae65ba530f1de64b0b2fa8fbed979e2b5c6dfd632e8c2d26439d35b47"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v1/ir.json",
+      "storage": {
+        "bytes": 2050499,
+        "sha256": "16047c3453fa1413004b5e1a2f2ac3e31a8676b3d98f5e591a7582cbc6537296"
+      },
+      "stored": "streams/public-warm-profile-v1/ir.json.gzip"
+    },
+    "public-warm-profile-v1/profile-cumulative.txt": {
+      "raw": {
+        "bytes": 8715,
+        "sha256": "22968d5fed26920ec576734423a163cd47fe8e35a76c20a5fe2289849dc50752"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v1/profile-cumulative.txt",
+      "storage": {
+        "bytes": 2890,
+        "sha256": "9c8e312f561b4960ddf6ec536fdd47db7d9168898ad92095c1a5f7e1f9b25e3e"
+      },
+      "stored": "streams/public-warm-profile-v1/profile-cumulative.txt.gzip"
+    },
+    "public-warm-profile-v1/profile-self.txt": {
+      "raw": {
+        "bytes": 8264,
+        "sha256": "a7bec34ea25adc98e118175dda9f096335aab270653a0f85799d863b0c4d47ee"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v1/profile-self.txt",
+      "storage": {
+        "bytes": 2953,
+        "sha256": "eee09f1877e0b2cb0a22945078376d0243f42434e7c67189f156ed72da07bf42"
+      },
+      "stored": "streams/public-warm-profile-v1/profile-self.txt.gzip"
+    },
+    "public-warm-profile-v1/public-inventory-0.json": {
+      "raw": {
+        "bytes": 5030951,
+        "sha256": "f2322f6236b6982e8ac68e0f1eec9142ba9836123f94586a2261da83d471b239"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v1/public-inventory-0.json",
+      "storage": {
+        "bytes": 260989,
+        "sha256": "584e1f95622620fa7c982f9f13b08833314b915faf55d5df0ec96f54277f8728"
+      },
+      "stored": "streams/public-warm-profile-v1/public-inventory-0.json.gzip"
+    },
+    "public-warm-profile-v1/public.pstats": {
+      "raw": {
+        "bytes": 1582360,
+        "sha256": "e481527de590aab9249dfb60766b5691b1983910c8eb2c869ff71d8ca71a9846"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v1/public.pstats",
+      "storage": {
+        "bytes": 594330,
+        "sha256": "ef1e1135cee2ba627b06f991793d90c9af6631f9bcc0f29d8f477a3921b64730"
+      },
+      "stored": "streams/public-warm-profile-v1/public.pstats.gzip"
+    },
+    "public-warm-profile-v1/result.json": {
+      "raw": {
+        "bytes": 32963,
+        "sha256": "c79128c45f3e5662624f5158f87cac985c9520530a08fde3f1ea73389d646f91"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v1/result.json",
+      "storage": {
+        "bytes": 8662,
+        "sha256": "b45f220c0885aa0a180191c891e54bba5081929a2c6f783687f0935d592bbe30"
+      },
+      "stored": "streams/public-warm-profile-v1/result.json.gzip"
+    },
+    "public-warm-profile-v1/source-pins.json": {
+      "raw": {
+        "bytes": 144204,
+        "sha256": "32b79efa7bd10b590c06d2f5fc763c651996a7c27e3bc4f12ed52e8c16d6beed"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v1/source-pins.json",
+      "storage": {
+        "bytes": 64022,
+        "sha256": "2ab17e63db6fabf657f7dfa379fa2a7a5cd52cb3480c2b695239146bcfa663ea"
+      },
+      "stored": "streams/public-warm-profile-v1/source-pins.json.gzip"
+    },
+    "public-warm-profile-v2.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v2.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/public-warm-profile-v2.log.gzip"
+    },
+    "public-warm-profile-v2/cache-before/entries/42a38c6a95d45905416be6c59b0c6deff3fed9f26a4b7a393af63c0180c1cb57.json": {
+      "raw": {
+        "bytes": 11529021,
+        "sha256": "42a38c6a95d45905416be6c59b0c6deff3fed9f26a4b7a393af63c0180c1cb57"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v2/cache-before/entries/42a38c6a95d45905416be6c59b0c6deff3fed9f26a4b7a393af63c0180c1cb57.json",
+      "storage": {
+        "bytes": 1947035,
+        "sha256": "a3f52a8c47f7b1bd771ce6549f4d25a9f444d25ffdab05f82114c5c862f50a6d"
+      },
+      "stored": "streams/public-warm-profile-v2/cache-before/entries/42a38c6a95d45905416be6c59b0c6deff3fed9f26a4b7a393af63c0180c1cb57.json.gzip"
+    },
+    "public-warm-profile-v2/cache-before/requests/d4b235bbbc84fc491881def501aa69c73ed597bbd8b1bf2d91130a2a069012e9.json": {
+      "raw": {
+        "bytes": 83,
+        "sha256": "1934602035029b936e2cfb44e47847b20439d4b9cdc1cb61b4e21692c8bcc3e6"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v2/cache-before/requests/d4b235bbbc84fc491881def501aa69c73ed597bbd8b1bf2d91130a2a069012e9.json",
+      "storage": {
+        "bytes": 93,
+        "sha256": "7d3d72e607533019f65a22dc4bb1fbe735321a995f5b7eb302072ad2d7f69ec2"
+      },
+      "stored": "streams/public-warm-profile-v2/cache-before/requests/d4b235bbbc84fc491881def501aa69c73ed597bbd8b1bf2d91130a2a069012e9.json.gzip"
+    },
+    "public-warm-profile-v2/cache-pins.json": {
+      "raw": {
+        "bytes": 652,
+        "sha256": "013d51e4d0879468a5c9c0ac177186b73f0f37e3eb98a11fc59093e94e75e359"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v2/cache-pins.json",
+      "storage": {
+        "bytes": 223,
+        "sha256": "c77b653d650096359dfa08a302c1013695fdbfe5dac4925303289f828f0aa7b9"
+      },
+      "stored": "streams/public-warm-profile-v2/cache-pins.json.gzip"
+    },
+    "public-warm-profile-v2/diagnostics.json": {
+      "raw": {
+        "bytes": 313,
+        "sha256": "939119c45232fb00b1eed40f89247acbb04aead20f65df6ccb49d6c1f9c6994a"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v2/diagnostics.json",
+      "storage": {
+        "bytes": 238,
+        "sha256": "fe8c1ee9969be0f30ee36511f708ef24dfc2dce10bee981a215f2b0414480aad"
+      },
+      "stored": "streams/public-warm-profile-v2/diagnostics.json.gzip"
+    },
+    "public-warm-profile-v2/external-pins.json": {
+      "raw": {
+        "bytes": 23812,
+        "sha256": "7a3bd39b57bb67e4bc282ae831f7222678d9ccbe59d0d51ab629a7972d3bf77e"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v2/external-pins.json",
+      "storage": {
+        "bytes": 3676,
+        "sha256": "1c44bfdf0b73774f38d2a55d3615bc5a9aff90c14085a7d2508483d2de44d20b"
+      },
+      "stored": "streams/public-warm-profile-v2/external-pins.json.gzip"
+    },
+    "public-warm-profile-v2/input-pins.json": {
+      "raw": {
+        "bytes": 2022,
+        "sha256": "cc63357eac56d8498133119853737e7606b44a85e8ab2e2d74f82257f58e7364"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v2/input-pins.json",
+      "storage": {
+        "bytes": 495,
+        "sha256": "a324645f6091fc596657fb342121901a17eb12bb8ec901166453e72d070a90c1"
+      },
+      "stored": "streams/public-warm-profile-v2/input-pins.json.gzip"
+    },
+    "public-warm-profile-v2/inventory-result.json": {
+      "raw": {
+        "bytes": 5030962,
+        "sha256": "c7974ab462eb1c44adaf76c7160b3b025dd274c56febe1ad209b4b283982d2b4"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v2/inventory-result.json",
+      "storage": {
+        "bytes": 260997,
+        "sha256": "25e1765f440c67789bd55a5094f6983f2321de1e954d1e3416028c0281665c7b"
+      },
+      "stored": "streams/public-warm-profile-v2/inventory-result.json.gzip"
+    },
+    "public-warm-profile-v2/ir.json": {
+      "raw": {
+        "bytes": 38146206,
+        "sha256": "f650fc5ae65ba530f1de64b0b2fa8fbed979e2b5c6dfd632e8c2d26439d35b47"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v2/ir.json",
+      "storage": {
+        "bytes": 2050499,
+        "sha256": "16047c3453fa1413004b5e1a2f2ac3e31a8676b3d98f5e591a7582cbc6537296"
+      },
+      "stored": "streams/public-warm-profile-v2/ir.json.gzip"
+    },
+    "public-warm-profile-v2/profile-cumulative.txt": {
+      "raw": {
+        "bytes": 8545,
+        "sha256": "d7ba007a21fde4d7a8c4eda8e10a2cf495c0fa5227c8f1bbfc14054c3f7676b5"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v2/profile-cumulative.txt",
+      "storage": {
+        "bytes": 2808,
+        "sha256": "4a71f206796c5f959221c22283433d290f6c66907105ec9ee20dd925b6f53a40"
+      },
+      "stored": "streams/public-warm-profile-v2/profile-cumulative.txt.gzip"
+    },
+    "public-warm-profile-v2/profile-self.txt": {
+      "raw": {
+        "bytes": 8261,
+        "sha256": "7e40027b03f5390c836f6158b3e1ae5a227c678c1ac1cbc5077fb43eed656c02"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v2/profile-self.txt",
+      "storage": {
+        "bytes": 2907,
+        "sha256": "71f0b736a9b102542e088cbbd3c6f11d52dd9c0474c6f00dca2a15ddebbf6d96"
+      },
+      "stored": "streams/public-warm-profile-v2/profile-self.txt.gzip"
+    },
+    "public-warm-profile-v2/public-inventory-0.json": {
+      "raw": {
+        "bytes": 5030962,
+        "sha256": "c7974ab462eb1c44adaf76c7160b3b025dd274c56febe1ad209b4b283982d2b4"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v2/public-inventory-0.json",
+      "storage": {
+        "bytes": 260997,
+        "sha256": "25e1765f440c67789bd55a5094f6983f2321de1e954d1e3416028c0281665c7b"
+      },
+      "stored": "streams/public-warm-profile-v2/public-inventory-0.json.gzip"
+    },
+    "public-warm-profile-v2/public.pstats": {
+      "raw": {
+        "bytes": 1584852,
+        "sha256": "d68a3710164d3649f758384fb67627e961299ea04805eb7c75a312cc90514677"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v2/public.pstats",
+      "storage": {
+        "bytes": 590571,
+        "sha256": "620e385cb0dd683f3263f7276664d66bd0019cf8fe18add93d6646a3cac2940a"
+      },
+      "stored": "streams/public-warm-profile-v2/public.pstats.gzip"
+    },
+    "public-warm-profile-v2/result.json": {
+      "raw": {
+        "bytes": 33097,
+        "sha256": "7cf510d7a7c4769c9cb83b25314f4e56f69b0411a880d14dde23dfd5b2c137db"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v2/result.json",
+      "storage": {
+        "bytes": 8685,
+        "sha256": "3fbc2e4188a514cead99cea05b498c13c4795fd448d94d44a407ffad45507409"
+      },
+      "stored": "streams/public-warm-profile-v2/result.json.gzip"
+    },
+    "public-warm-profile-v2/source-pins.json": {
+      "raw": {
+        "bytes": 145528,
+        "sha256": "9193d3b81aa728375d0666a419cc96ab53e450c209b287992c3c61ec3b24279d"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-profile-v2/source-pins.json",
+      "storage": {
+        "bytes": 64626,
+        "sha256": "1c96178653f9bddf899640dfc455cd89928e847204d27cfacf6755a5f148abd2"
+      },
+      "stored": "streams/public-warm-profile-v2/source-pins.json.gzip"
+    },
+    "public-warm-v10.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v10.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/public-warm-v10.log.gzip"
+    },
+    "public-warm-v10/cache-before/entries/4355fc5cb0afc49341b00fbe6f1a1f7101324a2ca82d5f4c297861b3c6574d0e.json": {
+      "raw": {
+        "bytes": 11528169,
+        "sha256": "4355fc5cb0afc49341b00fbe6f1a1f7101324a2ca82d5f4c297861b3c6574d0e"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v10/cache-before/entries/4355fc5cb0afc49341b00fbe6f1a1f7101324a2ca82d5f4c297861b3c6574d0e.json",
+      "storage": {
+        "bytes": 1946982,
+        "sha256": "d75ca977fff7073d2997c09e854ed1dbf24ad2842b03fcc72cc9b50a64ce07af"
+      },
+      "stored": "streams/public-warm-v10/cache-before/entries/4355fc5cb0afc49341b00fbe6f1a1f7101324a2ca82d5f4c297861b3c6574d0e.json.gzip"
+    },
+    "public-warm-v10/cache-before/requests/5e4db091ca4521c5fdc6cdce7df7dc1d81287810cf9630f6b220c338470ff8ba.json": {
+      "raw": {
+        "bytes": 83,
+        "sha256": "f1dcbad69870c94680d05f5f831302605375abd1173198a2f3dff06029765902"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v10/cache-before/requests/5e4db091ca4521c5fdc6cdce7df7dc1d81287810cf9630f6b220c338470ff8ba.json",
+      "storage": {
+        "bytes": 93,
+        "sha256": "3b0009148c7e53158877fdb5e856a217aa8753a6e7bcc6954411120d3381de0d"
+      },
+      "stored": "streams/public-warm-v10/cache-before/requests/5e4db091ca4521c5fdc6cdce7df7dc1d81287810cf9630f6b220c338470ff8ba.json.gzip"
+    },
+    "public-warm-v10/cache-pins.json": {
+      "raw": {
+        "bytes": 652,
+        "sha256": "3ed825506587e864258979f7f0cb271831af6ec628cfc5fc9c3f9420582c166b"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v10/cache-pins.json",
+      "storage": {
+        "bytes": 223,
+        "sha256": "dc8f0783d676802ee777d853020035b0164edbc28b3afd5173071346eff358c1"
+      },
+      "stored": "streams/public-warm-v10/cache-pins.json.gzip"
+    },
+    "public-warm-v10/diagnostics.json": {
+      "raw": {
+        "bytes": 313,
+        "sha256": "81e15509b7b2f168c93b2eeee822146676f832a15bf8780acae4b61dee6822ac"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v10/diagnostics.json",
+      "storage": {
+        "bytes": 238,
+        "sha256": "aa88f510a34e34180eb984750073e3ee9ff906bf45e271a6ae3990fa15a92d46"
+      },
+      "stored": "streams/public-warm-v10/diagnostics.json.gzip"
+    },
+    "public-warm-v10/external-pins.json": {
+      "raw": {
+        "bytes": 23812,
+        "sha256": "7a3bd39b57bb67e4bc282ae831f7222678d9ccbe59d0d51ab629a7972d3bf77e"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v10/external-pins.json",
+      "storage": {
+        "bytes": 3676,
+        "sha256": "1c44bfdf0b73774f38d2a55d3615bc5a9aff90c14085a7d2508483d2de44d20b"
+      },
+      "stored": "streams/public-warm-v10/external-pins.json.gzip"
+    },
+    "public-warm-v10/input-pins.json": {
+      "raw": {
+        "bytes": 2014,
+        "sha256": "1d193ef8e5430b81649c5d77581e54930cd9e3647c631494986de8a72b3be076"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v10/input-pins.json",
+      "storage": {
+        "bytes": 502,
+        "sha256": "884bc0b2a4c09f24ccd16a34664597ec54dc4d3014c1aab4a595c69e793fd6eb"
+      },
+      "stored": "streams/public-warm-v10/input-pins.json.gzip"
+    },
+    "public-warm-v10/inventory-result.json": {
+      "raw": {
+        "bytes": 5030950,
+        "sha256": "233a1029f6d36d58cc47e5777594a2f1d7d6d92c01919e14751412cad2595870"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v10/inventory-result.json",
+      "storage": {
+        "bytes": 260987,
+        "sha256": "70590d86e66ca4e708e01c3908f67ce78cc3decaa29f65e03face3970243d7a1"
+      },
+      "stored": "streams/public-warm-v10/inventory-result.json.gzip"
+    },
+    "public-warm-v10/ir.json": {
+      "raw": {
+        "bytes": 38146206,
+        "sha256": "f650fc5ae65ba530f1de64b0b2fa8fbed979e2b5c6dfd632e8c2d26439d35b47"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v10/ir.json",
+      "storage": {
+        "bytes": 2050499,
+        "sha256": "16047c3453fa1413004b5e1a2f2ac3e31a8676b3d98f5e591a7582cbc6537296"
+      },
+      "stored": "streams/public-warm-v10/ir.json.gzip"
+    },
+    "public-warm-v10/public-inventory-0.json": {
+      "raw": {
+        "bytes": 5030950,
+        "sha256": "233a1029f6d36d58cc47e5777594a2f1d7d6d92c01919e14751412cad2595870"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v10/public-inventory-0.json",
+      "storage": {
+        "bytes": 260987,
+        "sha256": "70590d86e66ca4e708e01c3908f67ce78cc3decaa29f65e03face3970243d7a1"
+      },
+      "stored": "streams/public-warm-v10/public-inventory-0.json.gzip"
+    },
+    "public-warm-v10/result.json": {
+      "raw": {
+        "bytes": 32899,
+        "sha256": "5fef9de7d01cd2b18b2b61cbff10f8135378fca88a6f71e1bdf442d6060ae09f"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v10/result.json",
+      "storage": {
+        "bytes": 8682,
+        "sha256": "cd9e2d1260b34274a291a2fd446871ebb2c8d14e789ed564d204303cd246caa9"
+      },
+      "stored": "streams/public-warm-v10/result.json.gzip"
+    },
+    "public-warm-v10/source-pins.json": {
+      "raw": {
+        "bytes": 145302,
+        "sha256": "dac024b373cd9a51b9cdf40e2849f4651507521c491a97a7956b2b7e3194fa21"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v10/source-pins.json",
+      "storage": {
+        "bytes": 64515,
+        "sha256": "59afc86a6211f2874e5d8328e0494ce7042e78a1800fb65b701eb07bce439e33"
+      },
+      "stored": "streams/public-warm-v10/source-pins.json.gzip"
+    },
+    "public-warm-v11.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v11.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/public-warm-v11.log.gzip"
+    },
+    "public-warm-v11/cache-before/entries/42a38c6a95d45905416be6c59b0c6deff3fed9f26a4b7a393af63c0180c1cb57.json": {
+      "raw": {
+        "bytes": 11529021,
+        "sha256": "42a38c6a95d45905416be6c59b0c6deff3fed9f26a4b7a393af63c0180c1cb57"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v11/cache-before/entries/42a38c6a95d45905416be6c59b0c6deff3fed9f26a4b7a393af63c0180c1cb57.json",
+      "storage": {
+        "bytes": 1947035,
+        "sha256": "a3f52a8c47f7b1bd771ce6549f4d25a9f444d25ffdab05f82114c5c862f50a6d"
+      },
+      "stored": "streams/public-warm-v11/cache-before/entries/42a38c6a95d45905416be6c59b0c6deff3fed9f26a4b7a393af63c0180c1cb57.json.gzip"
+    },
+    "public-warm-v11/cache-before/requests/d4b235bbbc84fc491881def501aa69c73ed597bbd8b1bf2d91130a2a069012e9.json": {
+      "raw": {
+        "bytes": 83,
+        "sha256": "1934602035029b936e2cfb44e47847b20439d4b9cdc1cb61b4e21692c8bcc3e6"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v11/cache-before/requests/d4b235bbbc84fc491881def501aa69c73ed597bbd8b1bf2d91130a2a069012e9.json",
+      "storage": {
+        "bytes": 93,
+        "sha256": "7d3d72e607533019f65a22dc4bb1fbe735321a995f5b7eb302072ad2d7f69ec2"
+      },
+      "stored": "streams/public-warm-v11/cache-before/requests/d4b235bbbc84fc491881def501aa69c73ed597bbd8b1bf2d91130a2a069012e9.json.gzip"
+    },
+    "public-warm-v11/cache-pins.json": {
+      "raw": {
+        "bytes": 652,
+        "sha256": "013d51e4d0879468a5c9c0ac177186b73f0f37e3eb98a11fc59093e94e75e359"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v11/cache-pins.json",
+      "storage": {
+        "bytes": 223,
+        "sha256": "c77b653d650096359dfa08a302c1013695fdbfe5dac4925303289f828f0aa7b9"
+      },
+      "stored": "streams/public-warm-v11/cache-pins.json.gzip"
+    },
+    "public-warm-v11/diagnostics.json": {
+      "raw": {
+        "bytes": 313,
+        "sha256": "939119c45232fb00b1eed40f89247acbb04aead20f65df6ccb49d6c1f9c6994a"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v11/diagnostics.json",
+      "storage": {
+        "bytes": 238,
+        "sha256": "fe8c1ee9969be0f30ee36511f708ef24dfc2dce10bee981a215f2b0414480aad"
+      },
+      "stored": "streams/public-warm-v11/diagnostics.json.gzip"
+    },
+    "public-warm-v11/external-pins.json": {
+      "raw": {
+        "bytes": 23812,
+        "sha256": "7a3bd39b57bb67e4bc282ae831f7222678d9ccbe59d0d51ab629a7972d3bf77e"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v11/external-pins.json",
+      "storage": {
+        "bytes": 3676,
+        "sha256": "1c44bfdf0b73774f38d2a55d3615bc5a9aff90c14085a7d2508483d2de44d20b"
+      },
+      "stored": "streams/public-warm-v11/external-pins.json.gzip"
+    },
+    "public-warm-v11/input-pins.json": {
+      "raw": {
+        "bytes": 2014,
+        "sha256": "b8048c272051106200f5447bcb3bfaa4ad8cce6ed6907ac22192494c4f61101e"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v11/input-pins.json",
+      "storage": {
+        "bytes": 501,
+        "sha256": "ba2c6f0ea0f739d6f1706359897f8e18ef573189d03cb2cb3915bb29ac901ec1"
+      },
+      "stored": "streams/public-warm-v11/input-pins.json.gzip"
+    },
+    "public-warm-v11/inventory-result.json": {
+      "raw": {
+        "bytes": 5030962,
+        "sha256": "c7974ab462eb1c44adaf76c7160b3b025dd274c56febe1ad209b4b283982d2b4"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v11/inventory-result.json",
+      "storage": {
+        "bytes": 260997,
+        "sha256": "25e1765f440c67789bd55a5094f6983f2321de1e954d1e3416028c0281665c7b"
+      },
+      "stored": "streams/public-warm-v11/inventory-result.json.gzip"
+    },
+    "public-warm-v11/ir.json": {
+      "raw": {
+        "bytes": 38146206,
+        "sha256": "f650fc5ae65ba530f1de64b0b2fa8fbed979e2b5c6dfd632e8c2d26439d35b47"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v11/ir.json",
+      "storage": {
+        "bytes": 2050499,
+        "sha256": "16047c3453fa1413004b5e1a2f2ac3e31a8676b3d98f5e591a7582cbc6537296"
+      },
+      "stored": "streams/public-warm-v11/ir.json.gzip"
+    },
+    "public-warm-v11/public-inventory-0.json": {
+      "raw": {
+        "bytes": 5030962,
+        "sha256": "c7974ab462eb1c44adaf76c7160b3b025dd274c56febe1ad209b4b283982d2b4"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v11/public-inventory-0.json",
+      "storage": {
+        "bytes": 260997,
+        "sha256": "25e1765f440c67789bd55a5094f6983f2321de1e954d1e3416028c0281665c7b"
+      },
+      "stored": "streams/public-warm-v11/public-inventory-0.json.gzip"
+    },
+    "public-warm-v11/result.json": {
+      "raw": {
+        "bytes": 33030,
+        "sha256": "3bb4fcc2be5c1c09bb8a4e198f6983782afedbc7b886161a71525629ec1a7d84"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v11/result.json",
+      "storage": {
+        "bytes": 8688,
+        "sha256": "fc45244f5930cf929ad81c1e3c41678ba61576634f5a0a46a46657759bfb7868"
+      },
+      "stored": "streams/public-warm-v11/result.json.gzip"
+    },
+    "public-warm-v11/source-pins.json": {
+      "raw": {
+        "bytes": 145528,
+        "sha256": "9193d3b81aa728375d0666a419cc96ab53e450c209b287992c3c61ec3b24279d"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v11/source-pins.json",
+      "storage": {
+        "bytes": 64626,
+        "sha256": "1c96178653f9bddf899640dfc455cd89928e847204d27cfacf6755a5f148abd2"
+      },
+      "stored": "streams/public-warm-v11/source-pins.json.gzip"
+    },
+    "public-warm-v7.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v7.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/public-warm-v7.log.gzip"
+    },
+    "public-warm-v7/cache-before/entries/a08a573823fbcbf1bd2afe5ea19ddfa5f768cf39cde1adb72474f9c064b7201c.json": {
+      "raw": {
+        "bytes": 11528513,
+        "sha256": "a08a573823fbcbf1bd2afe5ea19ddfa5f768cf39cde1adb72474f9c064b7201c"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v7/cache-before/entries/a08a573823fbcbf1bd2afe5ea19ddfa5f768cf39cde1adb72474f9c064b7201c.json",
+      "storage": {
+        "bytes": 1947017,
+        "sha256": "bc44b5555afb6d9d96efa33d72598e995dc82ae35e7143b4eeac7c76b4596eb0"
+      },
+      "stored": "streams/public-warm-v7/cache-before/entries/a08a573823fbcbf1bd2afe5ea19ddfa5f768cf39cde1adb72474f9c064b7201c.json.gzip"
+    },
+    "public-warm-v7/cache-before/requests/f85bb24771d8e3613e21d8bd6b7b68e84d9b0e01629b99d3981af77d05ddbc62.json": {
+      "raw": {
+        "bytes": 83,
+        "sha256": "b8be8e84967276bff816aec87f0456836ae699fe7b8f4155e300f1909ab9ae2a"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v7/cache-before/requests/f85bb24771d8e3613e21d8bd6b7b68e84d9b0e01629b99d3981af77d05ddbc62.json",
+      "storage": {
+        "bytes": 93,
+        "sha256": "1cff9bba733dc559c47be7c4eabdfb8052a8e62a4d51b85f04428917d03166e3"
+      },
+      "stored": "streams/public-warm-v7/cache-before/requests/f85bb24771d8e3613e21d8bd6b7b68e84d9b0e01629b99d3981af77d05ddbc62.json.gzip"
+    },
+    "public-warm-v7/cache-pins.json": {
+      "raw": {
+        "bytes": 652,
+        "sha256": "b5fdbc722523cc56b22e87b0922a16a635d912767e9e836107e6df54c69394df"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v7/cache-pins.json",
+      "storage": {
+        "bytes": 220,
+        "sha256": "42e7b80d23af7fc1961ba3632a7a9786d20fb9225497ba212b8bf4685e7ffa03"
+      },
+      "stored": "streams/public-warm-v7/cache-pins.json.gzip"
+    },
+    "public-warm-v7/diagnostics.json": {
+      "raw": {
+        "bytes": 313,
+        "sha256": "ebe9c6b4a2ed126a52957fda63fdcbfb8c37e8d7b5318cd1f70c51e349912263"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v7/diagnostics.json",
+      "storage": {
+        "bytes": 238,
+        "sha256": "87f1a8611e4f65daf28956f003b423a601623cf326e101f8b14d8715f2700919"
+      },
+      "stored": "streams/public-warm-v7/diagnostics.json.gzip"
+    },
+    "public-warm-v7/external-pins.json": {
+      "raw": {
+        "bytes": 23812,
+        "sha256": "7a3bd39b57bb67e4bc282ae831f7222678d9ccbe59d0d51ab629a7972d3bf77e"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v7/external-pins.json",
+      "storage": {
+        "bytes": 3676,
+        "sha256": "1c44bfdf0b73774f38d2a55d3615bc5a9aff90c14085a7d2508483d2de44d20b"
+      },
+      "stored": "streams/public-warm-v7/external-pins.json.gzip"
+    },
+    "public-warm-v7/input-pins.json": {
+      "raw": {
+        "bytes": 2010,
+        "sha256": "a9969dc91885fffba7551310a2083e2aebab3df4fc2027b30fd2d8170498c049"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v7/input-pins.json",
+      "storage": {
+        "bytes": 497,
+        "sha256": "65452a23dfc76aa078e972d54698863ae6188e97bae77ae537fc5357d4b67a43"
+      },
+      "stored": "streams/public-warm-v7/input-pins.json.gzip"
+    },
+    "public-warm-v7/inventory-result.json": {
+      "raw": {
+        "bytes": 5030951,
+        "sha256": "f2322f6236b6982e8ac68e0f1eec9142ba9836123f94586a2261da83d471b239"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v7/inventory-result.json",
+      "storage": {
+        "bytes": 260989,
+        "sha256": "584e1f95622620fa7c982f9f13b08833314b915faf55d5df0ec96f54277f8728"
+      },
+      "stored": "streams/public-warm-v7/inventory-result.json.gzip"
+    },
+    "public-warm-v7/ir.json": {
+      "raw": {
+        "bytes": 38146206,
+        "sha256": "f650fc5ae65ba530f1de64b0b2fa8fbed979e2b5c6dfd632e8c2d26439d35b47"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v7/ir.json",
+      "storage": {
+        "bytes": 2050499,
+        "sha256": "16047c3453fa1413004b5e1a2f2ac3e31a8676b3d98f5e591a7582cbc6537296"
+      },
+      "stored": "streams/public-warm-v7/ir.json.gzip"
+    },
+    "public-warm-v7/public-inventory-0.json": {
+      "raw": {
+        "bytes": 5030951,
+        "sha256": "f2322f6236b6982e8ac68e0f1eec9142ba9836123f94586a2261da83d471b239"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v7/public-inventory-0.json",
+      "storage": {
+        "bytes": 260989,
+        "sha256": "584e1f95622620fa7c982f9f13b08833314b915faf55d5df0ec96f54277f8728"
+      },
+      "stored": "streams/public-warm-v7/public-inventory-0.json.gzip"
+    },
+    "public-warm-v7/result.json": {
+      "raw": {
+        "bytes": 32904,
+        "sha256": "1e4e9a39c245b963d66431edba50872f3fc6aef4d39544a92cb8186986db35e6"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v7/result.json",
+      "storage": {
+        "bytes": 8643,
+        "sha256": "09b321442a90475ca818d85d715d0b4e84fef942d6e75a45db9b9df8568607b0"
+      },
+      "stored": "streams/public-warm-v7/result.json.gzip"
+    },
+    "public-warm-v7/source-pins.json": {
+      "raw": {
+        "bytes": 144204,
+        "sha256": "32b79efa7bd10b590c06d2f5fc763c651996a7c27e3bc4f12ed52e8c16d6beed"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v7/source-pins.json",
+      "storage": {
+        "bytes": 64022,
+        "sha256": "2ab17e63db6fabf657f7dfa379fa2a7a5cd52cb3480c2b695239146bcfa663ea"
+      },
+      "stored": "streams/public-warm-v7/source-pins.json.gzip"
+    },
+    "public-warm-v8.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v8.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/public-warm-v8.log.gzip"
+    },
+    "public-warm-v8/cache-before/entries/1f82cfa1f6b50a3ce62297badb27cb7303060c664a790ec545860b37ff0d1bac.json": {
+      "raw": {
+        "bytes": 11528524,
+        "sha256": "1f82cfa1f6b50a3ce62297badb27cb7303060c664a790ec545860b37ff0d1bac"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v8/cache-before/entries/1f82cfa1f6b50a3ce62297badb27cb7303060c664a790ec545860b37ff0d1bac.json",
+      "storage": {
+        "bytes": 1947009,
+        "sha256": "b96300625520ce8849bb3f381cb834416e75c5721fde9c03b4c4b22df678483d"
+      },
+      "stored": "streams/public-warm-v8/cache-before/entries/1f82cfa1f6b50a3ce62297badb27cb7303060c664a790ec545860b37ff0d1bac.json.gzip"
+    },
+    "public-warm-v8/cache-before/requests/6eea3a58938173f0854c41463219809c1564bc4c4f2089c1480b4dbf819008f4.json": {
+      "raw": {
+        "bytes": 83,
+        "sha256": "c0ce87361fc9d895bff508c0f726f3c6d432f5f7d96cce6c1058fe97d54dd5d1"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v8/cache-before/requests/6eea3a58938173f0854c41463219809c1564bc4c4f2089c1480b4dbf819008f4.json",
+      "storage": {
+        "bytes": 92,
+        "sha256": "665cace4eae1964d3f7a545574eb39014d74d27a3c84d46968897b20c4f6df9f"
+      },
+      "stored": "streams/public-warm-v8/cache-before/requests/6eea3a58938173f0854c41463219809c1564bc4c4f2089c1480b4dbf819008f4.json.gzip"
+    },
+    "public-warm-v8/cache-pins.json": {
+      "raw": {
+        "bytes": 652,
+        "sha256": "675539063f286541fbd713e3cb20e156e97c70d2ecbeca5b16aaf31e790db49c"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v8/cache-pins.json",
+      "storage": {
+        "bytes": 223,
+        "sha256": "08dd3a5c9fe299de6350246baceed36ec20abf1c197f2d0e72e405887bd0b5da"
+      },
+      "stored": "streams/public-warm-v8/cache-pins.json.gzip"
+    },
+    "public-warm-v8/diagnostics.json": {
+      "raw": {
+        "bytes": 313,
+        "sha256": "8d698e0044db13199af97b11bbdf380afe1fc3d7576daf6eb63a05a29062d8b4"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v8/diagnostics.json",
+      "storage": {
+        "bytes": 238,
+        "sha256": "74720b64d0a78df12482d0830eb67701ece31ec9bdc884103d11c257f9b1d688"
+      },
+      "stored": "streams/public-warm-v8/diagnostics.json.gzip"
+    },
+    "public-warm-v8/external-pins.json": {
+      "raw": {
+        "bytes": 23812,
+        "sha256": "7a3bd39b57bb67e4bc282ae831f7222678d9ccbe59d0d51ab629a7972d3bf77e"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v8/external-pins.json",
+      "storage": {
+        "bytes": 3676,
+        "sha256": "1c44bfdf0b73774f38d2a55d3615bc5a9aff90c14085a7d2508483d2de44d20b"
+      },
+      "stored": "streams/public-warm-v8/external-pins.json.gzip"
+    },
+    "public-warm-v8/input-pins.json": {
+      "raw": {
+        "bytes": 2010,
+        "sha256": "e9d0bcdd4aeb22a7fe072941430b7b7d2da923b4599573c59b7230e225446fd8"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v8/input-pins.json",
+      "storage": {
+        "bytes": 498,
+        "sha256": "00800239bdac1f6d7a2d498d50aa7d26704b7f0bdb590e6914375867d8e6b7d0"
+      },
+      "stored": "streams/public-warm-v8/input-pins.json.gzip"
+    },
+    "public-warm-v8/inventory-result.json": {
+      "raw": {
+        "bytes": 5030955,
+        "sha256": "13a444852c827ee896f4b9b7ec165ec2fac06e1de1c631ff48e9eb57c635c40d"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v8/inventory-result.json",
+      "storage": {
+        "bytes": 260994,
+        "sha256": "a9fecbc673032dc5fae1e54eaf8b02a40d8511b3b2543c8531166511eec2b78b"
+      },
+      "stored": "streams/public-warm-v8/inventory-result.json.gzip"
+    },
+    "public-warm-v8/ir.json": {
+      "raw": {
+        "bytes": 38146206,
+        "sha256": "f650fc5ae65ba530f1de64b0b2fa8fbed979e2b5c6dfd632e8c2d26439d35b47"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v8/ir.json",
+      "storage": {
+        "bytes": 2050499,
+        "sha256": "16047c3453fa1413004b5e1a2f2ac3e31a8676b3d98f5e591a7582cbc6537296"
+      },
+      "stored": "streams/public-warm-v8/ir.json.gzip"
+    },
+    "public-warm-v8/public-inventory-0.json": {
+      "raw": {
+        "bytes": 5030955,
+        "sha256": "13a444852c827ee896f4b9b7ec165ec2fac06e1de1c631ff48e9eb57c635c40d"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v8/public-inventory-0.json",
+      "storage": {
+        "bytes": 260994,
+        "sha256": "a9fecbc673032dc5fae1e54eaf8b02a40d8511b3b2543c8531166511eec2b78b"
+      },
+      "stored": "streams/public-warm-v8/public-inventory-0.json.gzip"
+    },
+    "public-warm-v8/result.json": {
+      "raw": {
+        "bytes": 32942,
+        "sha256": "0245b82e449cb889d02f505e31becdcbefb9dbbbc051d811d1a0fe5e75100d73"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v8/result.json",
+      "storage": {
+        "bytes": 8673,
+        "sha256": "a0cd58789e151e325ac3cdac4c4762f438f793569a27bfa88bba8800df52e53e"
+      },
+      "stored": "streams/public-warm-v8/result.json.gzip"
+    },
+    "public-warm-v8/source-pins.json": {
+      "raw": {
+        "bytes": 144644,
+        "sha256": "1d88461f5e156746f8ca450945306038b59313b43e0c06cc919df96f27afc0c0"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v8/source-pins.json",
+      "storage": {
+        "bytes": 64233,
+        "sha256": "cad7b0e0669d70cce949307601405ae9182b28b4624f7733c8d1e507f39705db"
+      },
+      "stored": "streams/public-warm-v8/source-pins.json.gzip"
+    },
+    "public-warm-v9.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v9.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/public-warm-v9.log.gzip"
+    },
+    "public-warm-v9/cache-before/entries/ae6f6767b4d54cf6cdd372ba356cdad870b259eb40b59b6e325d6181a87f2b6f.json": {
+      "raw": {
+        "bytes": 11528666,
+        "sha256": "ae6f6767b4d54cf6cdd372ba356cdad870b259eb40b59b6e325d6181a87f2b6f"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v9/cache-before/entries/ae6f6767b4d54cf6cdd372ba356cdad870b259eb40b59b6e325d6181a87f2b6f.json",
+      "storage": {
+        "bytes": 1947025,
+        "sha256": "7343fc5ef1d9031ce60372caca2c00a5dec589ba1d83263308162cc9cecd23e9"
+      },
+      "stored": "streams/public-warm-v9/cache-before/entries/ae6f6767b4d54cf6cdd372ba356cdad870b259eb40b59b6e325d6181a87f2b6f.json.gzip"
+    },
+    "public-warm-v9/cache-before/requests/d66d55907caacca04ae28357b8363c0b1a2ca92eaa7850b7412eafcaec665445.json": {
+      "raw": {
+        "bytes": 83,
+        "sha256": "a0b777c7125c1ef8860f65583bc81e892837809511cb0ddacf4388e9a50bac5e"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v9/cache-before/requests/d66d55907caacca04ae28357b8363c0b1a2ca92eaa7850b7412eafcaec665445.json",
+      "storage": {
+        "bytes": 94,
+        "sha256": "acd2cb07d2a0f0d12853d5a036c51c7f54c511d7462fa931a41b4cc1be04f634"
+      },
+      "stored": "streams/public-warm-v9/cache-before/requests/d66d55907caacca04ae28357b8363c0b1a2ca92eaa7850b7412eafcaec665445.json.gzip"
+    },
+    "public-warm-v9/cache-pins.json": {
+      "raw": {
+        "bytes": 652,
+        "sha256": "551fec17132cafa522f7afae56fc57ae68379fde24a11d7a22b52161109fe323"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v9/cache-pins.json",
+      "storage": {
+        "bytes": 220,
+        "sha256": "8cb36bbc5a25ac82174eaf037d5793002b8aab0263e0555ebbcb7b73d2ef8448"
+      },
+      "stored": "streams/public-warm-v9/cache-pins.json.gzip"
+    },
+    "public-warm-v9/diagnostics.json": {
+      "raw": {
+        "bytes": 313,
+        "sha256": "4c4b70aaa23645c59b3b3b25639746e8e729cafa528e21c5af86233fabfe3561"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v9/diagnostics.json",
+      "storage": {
+        "bytes": 237,
+        "sha256": "b9424aed6519b28fd124e0a2f6cc8dcdc7637bf41e1daf665f496b7a16f8615b"
+      },
+      "stored": "streams/public-warm-v9/diagnostics.json.gzip"
+    },
+    "public-warm-v9/external-pins.json": {
+      "raw": {
+        "bytes": 23812,
+        "sha256": "7a3bd39b57bb67e4bc282ae831f7222678d9ccbe59d0d51ab629a7972d3bf77e"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v9/external-pins.json",
+      "storage": {
+        "bytes": 3676,
+        "sha256": "1c44bfdf0b73774f38d2a55d3615bc5a9aff90c14085a7d2508483d2de44d20b"
+      },
+      "stored": "streams/public-warm-v9/external-pins.json.gzip"
+    },
+    "public-warm-v9/input-pins.json": {
+      "raw": {
+        "bytes": 2010,
+        "sha256": "df722d6d0f996af9027e4f5453125c48566b91df32dc4398440410448d5cceec"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v9/input-pins.json",
+      "storage": {
+        "bytes": 497,
+        "sha256": "3c3b3392819f823ed1a36470ca6f9a4581d2e40ff3b47efe17abd1a9df37c925"
+      },
+      "stored": "streams/public-warm-v9/input-pins.json.gzip"
+    },
+    "public-warm-v9/inventory-result.json": {
+      "raw": {
+        "bytes": 5030957,
+        "sha256": "3422ef5c25d1e49745a4bcc01007bd84d8727041fdf81d58236b51251b78c27d"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v9/inventory-result.json",
+      "storage": {
+        "bytes": 260993,
+        "sha256": "ea2323f8603401fd7e448720e9474bef39ed2be26a991ef0a6f98ff59bc76f83"
+      },
+      "stored": "streams/public-warm-v9/inventory-result.json.gzip"
+    },
+    "public-warm-v9/ir.json": {
+      "raw": {
+        "bytes": 38146206,
+        "sha256": "f650fc5ae65ba530f1de64b0b2fa8fbed979e2b5c6dfd632e8c2d26439d35b47"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v9/ir.json",
+      "storage": {
+        "bytes": 2050499,
+        "sha256": "16047c3453fa1413004b5e1a2f2ac3e31a8676b3d98f5e591a7582cbc6537296"
+      },
+      "stored": "streams/public-warm-v9/ir.json.gzip"
+    },
+    "public-warm-v9/public-inventory-0.json": {
+      "raw": {
+        "bytes": 5030957,
+        "sha256": "3422ef5c25d1e49745a4bcc01007bd84d8727041fdf81d58236b51251b78c27d"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v9/public-inventory-0.json",
+      "storage": {
+        "bytes": 260993,
+        "sha256": "ea2323f8603401fd7e448720e9474bef39ed2be26a991ef0a6f98ff59bc76f83"
+      },
+      "stored": "streams/public-warm-v9/public-inventory-0.json.gzip"
+    },
+    "public-warm-v9/result.json": {
+      "raw": {
+        "bytes": 32961,
+        "sha256": "71c30e8db7ce7468dabab3a8182410627d84f197dcbbcb62ce1afa34632c61ef"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v9/result.json",
+      "storage": {
+        "bytes": 8671,
+        "sha256": "00cc9a108e8739528ea54a039f0a73625376f25b8f6eabdafafb2bd338041e58"
+      },
+      "stored": "streams/public-warm-v9/result.json.gzip"
+    },
+    "public-warm-v9/source-pins.json": {
+      "raw": {
+        "bytes": 145090,
+        "sha256": "99004103856aa291b8863f5ceef3320ad3bec022c981da9e66ca8add0e955dae"
+      },
+      "source": "/private/tmp/unfold-s81-public-warm-v9/source-pins.json",
+      "storage": {
+        "bytes": 64422,
+        "sha256": "078a8fc1d63ed29464306059d0c8b7eedc470b38d88129ce7adf42f154d5bafa"
+      },
+      "stored": "streams/public-warm-v9/source-pins.json.gzip"
+    },
+    "reader-work-root-review/review.json": {
+      "raw": {
+        "bytes": 1237,
+        "sha256": "6f84ea59e90c10a61c77d4461928bd97e1ffbd4de389647cd060f06dbdce1853"
+      },
+      "source": "/private/tmp/unfold-s81-reader-work-root-review/review.json",
+      "storage": {
+        "bytes": 760,
+        "sha256": "8662882f4c9364ab600ebfab1d1bac96f689b15ea71d2054e1ceb3526383e6db"
+      },
+      "stored": "streams/reader-work-root-review/review.json.gzip"
+    },
+    "root-classification-preparation/run.py": {
+      "raw": {
+        "bytes": 1812,
+        "sha256": "5713ab76e748bbb0bcb8137de91f363a3cb380291f97a489e9219f13f303c05f"
+      },
+      "source": "/private/tmp/unfold-s81-root-classification-preparation/run.py",
+      "storage": {
+        "bytes": 803,
+        "sha256": "d0449cf64c65ff645a352fcef5bc48d0b4238c1f1e434094647497859ae665cc"
+      },
+      "stored": "streams/root-classification-preparation/run.py.gzip"
+    },
+    "root-classification-preparation/source-manifest.json": {
+      "raw": {
+        "bytes": 71484,
+        "sha256": "ea31b0857d004d520bfe45cae8920abc71e4f684fe9301b5ab0982c771384517"
+      },
+      "source": "/private/tmp/unfold-s81-root-classification-preparation/source-manifest.json",
+      "storage": {
+        "bytes": 32639,
+        "sha256": "feca58dbfde51d364bfa24017f564f816dc9d779fd8ce041182c37ed7d88be29"
+      },
+      "stored": "streams/root-classification-preparation/source-manifest.json.gzip"
+    },
+    "root-classification-preparation/source-pins.json": {
+      "raw": {
+        "bytes": 217,
+        "sha256": "f1128014f0a0ba0c3390ff5e707343285fd86529ddfb69f56d907b99fce61fa2"
+      },
+      "source": "/private/tmp/unfold-s81-root-classification-preparation/source-pins.json",
+      "storage": {
+        "bytes": 186,
+        "sha256": "9cd92264700c316c029a70b63b8c8dc5718379b27372b7405735c1406fb64e9b"
+      },
+      "stored": "streams/root-classification-preparation/source-pins.json.gzip"
+    },
+    "root-classification-preparation/source/physics/cache_dependencies.py": {
+      "raw": {
+        "bytes": 29488,
+        "sha256": "6341b77b70c3761ce37796acb9b15797ac74508689d8696a855c8df8687fedd3"
+      },
+      "source": "/private/tmp/unfold-s81-root-classification-preparation/source/physics/cache_dependencies.py",
+      "storage": {
+        "bytes": 8255,
+        "sha256": "a985fb03b588c55de1443c3162f3265ebdf17a690db33b1895e95a0f8d143022"
+      },
+      "stored": "streams/root-classification-preparation/source/physics/cache_dependencies.py.gzip"
+    },
+    "root-classification-preparation/source/tests/test_s81_root_classification.py": {
+      "raw": {
+        "bytes": 6852,
+        "sha256": "c50f93d09a25984ddb36e3948c058ccbe97eb114a5a18eafc2342d66e382a3ea"
+      },
+      "source": "/private/tmp/unfold-s81-root-classification-preparation/source/tests/test_s81_root_classification.py",
+      "storage": {
+        "bytes": 2212,
+        "sha256": "1134379538a14637103a8d560485e335fbf67dc77dfe42e7d4d0f1451f89dc8b"
+      },
+      "stored": "streams/root-classification-preparation/source/tests/test_s81_root_classification.py.gzip"
+    },
+    "root-classification-unit-v1/pytest.log": {
+      "raw": {
+        "bytes": 179,
+        "sha256": "abf65ee442d5a4d81aaf9113d48481a3bf15ba936481ce159170fb3c7aad3c6d"
+      },
+      "source": "/private/tmp/unfold-s81-root-classification-unit-v1/pytest.log",
+      "storage": {
+        "bytes": 62,
+        "sha256": "c30956e188a561ded0a9378f6a07e6a9a9d5b99ec0be19018776aeefc4c90ca6"
+      },
+      "stored": "streams/root-classification-unit-v1/pytest.log.gzip"
+    },
+    "root-classification-unit-v1/result.json": {
+      "raw": {
+        "bytes": 170697,
+        "sha256": "4b248c2e2e2780d77f5f4c9551a40b4f18f72c2597288a26a9e9e7133791836b"
+      },
+      "source": "/private/tmp/unfold-s81-root-classification-unit-v1/result.json",
+      "storage": {
+        "bytes": 68631,
+        "sha256": "942b7d1d1e6e7e558fd4fe6ac7e408073530dd023111676a4e2780c7f7847969"
+      },
+      "stored": "streams/root-classification-unit-v1/result.json.gzip"
+    },
+    "scandir-preparation/run.py": {
+      "raw": {
+        "bytes": 1711,
+        "sha256": "ec9c75ef7daf436509651bed05188299b95274c04a38cacbb700b79d2c6e1d41"
+      },
+      "source": "/private/tmp/unfold-s81-scandir-preparation/run.py",
+      "storage": {
+        "bytes": 777,
+        "sha256": "62f5231410a6cc5735ac4d20e398403414389fd93583a59a3e72b01617e4490b"
+      },
+      "stored": "streams/scandir-preparation/run.py.gzip"
+    },
+    "scandir-preparation/source-manifest.json": {
+      "raw": {
+        "bytes": 71373,
+        "sha256": "e5caa6d1609d6755d91b3f2f826a0112acd4c6a386cec139b65143f9c75e89b2"
+      },
+      "source": "/private/tmp/unfold-s81-scandir-preparation/source-manifest.json",
+      "storage": {
+        "bytes": 32590,
+        "sha256": "4e648fabe7feab42a386a2526a9b946c1eb8f35a51c178b86ec4b63fbbc79bc3"
+      },
+      "stored": "streams/scandir-preparation/source-manifest.json.gzip"
+    },
+    "scandir-preparation/source-pins.json": {
+      "raw": {
+        "bytes": 207,
+        "sha256": "75e032059787255af1e884210b7882eaf74e2c843941ca48a01b3ad0cd2a4dde"
+      },
+      "source": "/private/tmp/unfold-s81-scandir-preparation/source-pins.json",
+      "storage": {
+        "bytes": 176,
+        "sha256": "5d773c7e9a265500b216c6b07a49d05dc55feeb991542d5475901bf8ed132c8f"
+      },
+      "stored": "streams/scandir-preparation/source-pins.json.gzip"
+    },
+    "scandir-preparation/source/physics/result_cache.py": {
+      "raw": {
+        "bytes": 19264,
+        "sha256": "2319ce3508b6db1b5a1cc1010e703d1f955a93846fa492e907b744340b1902d2"
+      },
+      "source": "/private/tmp/unfold-s81-scandir-preparation/source/physics/result_cache.py",
+      "storage": {
+        "bytes": 6309,
+        "sha256": "cb409ee5b9f066cd76f792832b83c2abd9783e7ae16cc809748ee80488803662"
+      },
+      "stored": "streams/scandir-preparation/source/physics/result_cache.py.gzip"
+    },
+    "scandir-preparation/source/tests/test_s81_cache_traversal.py": {
+      "raw": {
+        "bytes": 13864,
+        "sha256": "4e86f3736a4146ae917ea51c631c6a99e516ba3590f472bcd19121c24bf55b8c"
+      },
+      "source": "/private/tmp/unfold-s81-scandir-preparation/source/tests/test_s81_cache_traversal.py",
+      "storage": {
+        "bytes": 4201,
+        "sha256": "1e965a363b2b1a919116fdaf67871839cbbb283a9235d1e4e6ae90eb8fbfb0a3"
+      },
+      "stored": "streams/scandir-preparation/source/tests/test_s81_cache_traversal.py.gzip"
+    },
+    "scandir-replay-v1.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-scandir-replay-v1.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/scandir-replay-v1.log.gzip"
+    },
+    "scandir-replay-v1/before.json": {
+      "raw": {
+        "bytes": 771,
+        "sha256": "ee55e5b27d89cc11d16aef33aa4401726a202d52a0c77b77bdc101e72a677b60"
+      },
+      "source": "/private/tmp/unfold-s81-scandir-replay-v1/before.json",
+      "storage": {
+        "bytes": 424,
+        "sha256": "b3a73d7dfdfff12df5b2f2e5ea2b0c58f0ad3587416b42fcf9424a106bd8d183"
+      },
+      "stored": "streams/scandir-replay-v1/before.json.gzip"
+    },
+    "scandir-replay-v1/current-digest-calls.json": {
+      "raw": {
+        "bytes": 6611319,
+        "sha256": "19e8ddb21ac4bb0c3774be9d7b62d6935f1df47c712aa2c52187fca4c8b8f2ae"
+      },
+      "source": "/private/tmp/unfold-s81-scandir-replay-v1/current-digest-calls.json",
+      "storage": {
+        "bytes": 379689,
+        "sha256": "762818080a557802ffdd3c3a7a897d3640648e45547b902cae0f1a8b626ebb25"
+      },
+      "stored": "streams/scandir-replay-v1/current-digest-calls.json.gzip"
+    },
+    "scandir-replay-v1/current-result.json": {
+      "raw": {
+        "bytes": 356,
+        "sha256": "4fa955b10f04fb41e3ed8bdf5a9cf03fa592ca9a7fb2103b9de4ddb0c0c8e0cf"
+      },
+      "source": "/private/tmp/unfold-s81-scandir-replay-v1/current-result.json",
+      "storage": {
+        "bytes": 211,
+        "sha256": "484f6835b9768af92b0f807ab515443b35d275e4b52febd0b977431dc5f6559c"
+      },
+      "stored": "streams/scandir-replay-v1/current-result.json.gzip"
+    },
+    "scandir-replay-v1/current-traversal.json": {
+      "raw": {
+        "bytes": 10069754,
+        "sha256": "f51b9f36611c4b6ac0a6afca730615c4be8db8a9286ac172c8e2537e3f97d31b"
+      },
+      "source": "/private/tmp/unfold-s81-scandir-replay-v1/current-traversal.json",
+      "storage": {
+        "bytes": 1763675,
+        "sha256": "95b0249caeb263c277b5129df003d6fcbed9d0b52c498dc750950fea81ec7d00"
+      },
+      "stored": "streams/scandir-replay-v1/current-traversal.json.gzip"
+    },
+    "scandir-replay-v1/original-digest-calls.json": {
+      "raw": {
+        "bytes": 6611319,
+        "sha256": "19e8ddb21ac4bb0c3774be9d7b62d6935f1df47c712aa2c52187fca4c8b8f2ae"
+      },
+      "source": "/private/tmp/unfold-s81-scandir-replay-v1/original-digest-calls.json",
+      "storage": {
+        "bytes": 379689,
+        "sha256": "762818080a557802ffdd3c3a7a897d3640648e45547b902cae0f1a8b626ebb25"
+      },
+      "stored": "streams/scandir-replay-v1/original-digest-calls.json.gzip"
+    },
+    "scandir-replay-v1/original-result.json": {
+      "raw": {
+        "bytes": 357,
+        "sha256": "063c8b7fd7ddfce7b402ab87193020520010a7656e01391e27dec64d03ea12ae"
+      },
+      "source": "/private/tmp/unfold-s81-scandir-replay-v1/original-result.json",
+      "storage": {
+        "bytes": 212,
+        "sha256": "5a2ad97d88865c9d5469520da9653b693435976085e67d1f22b4aa600010bf67"
+      },
+      "stored": "streams/scandir-replay-v1/original-result.json.gzip"
+    },
+    "scandir-replay-v1/original-traversal.json": {
+      "raw": {
+        "bytes": 10069754,
+        "sha256": "f51b9f36611c4b6ac0a6afca730615c4be8db8a9286ac172c8e2537e3f97d31b"
+      },
+      "source": "/private/tmp/unfold-s81-scandir-replay-v1/original-traversal.json",
+      "storage": {
+        "bytes": 1763675,
+        "sha256": "95b0249caeb263c277b5129df003d6fcbed9d0b52c498dc750950fea81ec7d00"
+      },
+      "stored": "streams/scandir-replay-v1/original-traversal.json.gzip"
+    },
+    "scandir-replay-v1/result.json": {
+      "raw": {
+        "bytes": 3814,
+        "sha256": "ffed4d0ca53657abd7c90b32174c982f370cac583e065244f81ae77a9f1348a5"
+      },
+      "source": "/private/tmp/unfold-s81-scandir-replay-v1/result.json",
+      "storage": {
+        "bytes": 1151,
+        "sha256": "15d1fe6a13fdac7e73493cd8577aff176a1580df21f28c4cf15125134b510218"
+      },
+      "stored": "streams/scandir-replay-v1/result.json.gzip"
+    },
+    "scandir-unit-v1/pytest.log": {
+      "raw": {
+        "bytes": 99,
+        "sha256": "6bfe1b27b5cd6c46d4331cb1f7919f942b2fe41ef29c4d8f1d1df5bf56346d27"
+      },
+      "source": "/private/tmp/unfold-s81-scandir-unit-v1/pytest.log",
+      "storage": {
+        "bytes": 51,
+        "sha256": "4a679e6aac9b4d9146e4a1610a76faf89480dbc943e8bf55c66499c5f200f600"
+      },
+      "stored": "streams/scandir-unit-v1/pytest.log.gzip"
+    },
+    "scandir-unit-v1/result.json": {
+      "raw": {
+        "bytes": 170336,
+        "sha256": "8c96bf84a3a18c4cdaa9b98282b53c10b3d811bcecab8705fc0257ed0025bee7"
+      },
+      "source": "/private/tmp/unfold-s81-scandir-unit-v1/result.json",
+      "storage": {
+        "bytes": 68501,
+        "sha256": "b825a25e881cd73d3de3096e051183e038095105352edd48c882de78ccec5de4"
+      },
+      "stored": "streams/scandir-unit-v1/result.json.gzip"
+    },
+    "static-profile-independent-review/capture-phase-v2-actual/review.json": {
+      "raw": {
+        "bytes": 5335,
+        "sha256": "26c8d5e3a69f71f3a3a9d88ae21a5566ebeac0b2d3194f2900dc2f331ffcc2f8"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/capture-phase-v2-actual/review.json",
+      "storage": {
+        "bytes": 1731,
+        "sha256": "51f4fd54b811e03bfdb49492c5c275def492abe0a7a5e83ef8477c5e3a448e52"
+      },
+      "stored": "streams/static-profile-independent-review/capture-phase-v2-actual/review.json.gzip"
+    },
+    "static-profile-independent-review/capture-phase-v2-source/review.json": {
+      "raw": {
+        "bytes": 1376,
+        "sha256": "2222fef6d0b92c1281112bf1bc56d31da23b6a7848f41d224031e4502f6b47e2"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/capture-phase-v2-source/review.json",
+      "storage": {
+        "bytes": 839,
+        "sha256": "f1808ccfd3505f6742140726f7674b9f05e6d6ed4889b88e4ef849bb4117f0a9"
+      },
+      "stored": "streams/static-profile-independent-review/capture-phase-v2-source/review.json.gzip"
+    },
+    "static-profile-independent-review/capture-phase-v3-actual/review.json": {
+      "raw": {
+        "bytes": 3029,
+        "sha256": "cb5512d521a22e0311f7b3a952d185b970017fbe940440fadebff4289d7089ec"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/capture-phase-v3-actual/review.json",
+      "storage": {
+        "bytes": 1243,
+        "sha256": "3b23f2ad1d12aeed4d35e9ae6fd292b82d9bcd3c69c3373e6e89082bf669c90c"
+      },
+      "stored": "streams/static-profile-independent-review/capture-phase-v3-actual/review.json.gzip"
+    },
+    "static-profile-independent-review/capture-phase-v3-source/review.json": {
+      "raw": {
+        "bytes": 1386,
+        "sha256": "a718a3ea83d77d4e880ad00679302607be8c807709c80a7d2137e736ffcbc0ca"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/capture-phase-v3-source/review.json",
+      "storage": {
+        "bytes": 840,
+        "sha256": "aad1f475f57818313690022e0ab442356cab0c02d9a9db6fce34d5cc74d87a56"
+      },
+      "stored": "streams/static-profile-independent-review/capture-phase-v3-source/review.json.gzip"
+    },
+    "static-profile-independent-review/config-import-path/review.json": {
+      "raw": {
+        "bytes": 5969,
+        "sha256": "96f56f2abb0c79fe7b10bb4c18b90f72e2ecc77f7bb00a5a4b7263f5f67bf98e"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/config-import-path/review.json",
+      "storage": {
+        "bytes": 2206,
+        "sha256": "b244e85f7eb6bb7b2ce3c5eecc3896912331aa8520a437f9b405f6ff4cfde6e3"
+      },
+      "stored": "streams/static-profile-independent-review/config-import-path/review.json.gzip"
+    },
+    "static-profile-independent-review/digest-primitive-actual/review.json": {
+      "raw": {
+        "bytes": 2911,
+        "sha256": "45e1d011ae3b9d882399d368283f2647722960a32b82e57a3b3e2f9fd429de11"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/digest-primitive-actual/review.json",
+      "storage": {
+        "bytes": 1207,
+        "sha256": "55af88dbf859bd94a2af703f7a0a847a1157ad64ddfbb1aaf811aaecb756050d"
+      },
+      "stored": "streams/static-profile-independent-review/digest-primitive-actual/review.json.gzip"
+    },
+    "static-profile-independent-review/digest-primitive-source/review.json": {
+      "raw": {
+        "bytes": 1739,
+        "sha256": "1d208e7f4cca09f4ea9b5933f8b451d64c5f6f44498c118ad35c636c02b62f4c"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/digest-primitive-source/review.json",
+      "storage": {
+        "bytes": 1041,
+        "sha256": "4377a39714d20b9483ad4a92112efed3e658fd935d384f2bf61f8931789e646d"
+      },
+      "stored": "streams/static-profile-independent-review/digest-primitive-source/review.json.gzip"
+    },
+    "static-profile-independent-review/expression-source/model_unfolder/evidence/program_index.py": {
+      "raw": {
+        "bytes": 150033,
+        "sha256": "65770b7b8b202c195d699ce8efca36ed1a2f80e8bcd7cfcd9eff1d89fdb0c7a0"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/expression-source/model_unfolder/evidence/program_index.py",
+      "storage": {
+        "bytes": 38304,
+        "sha256": "2dd880e4986c916aee9dd28d2cee84147802d7169a32622579777f43ef287c71"
+      },
+      "stored": "streams/static-profile-independent-review/expression-source/model_unfolder/evidence/program_index.py.gzip"
+    },
+    "static-profile-independent-review/expression-source/review.json": {
+      "raw": {
+        "bytes": 1589,
+        "sha256": "b51c7df8b0a8ddb14144fe3549cf7a7e1212f8300d06b06ed6b0e14701ee12e4"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/expression-source/review.json",
+      "storage": {
+        "bytes": 935,
+        "sha256": "de5a2d79800f3bc7fc51c800959840ae5a519377a849d5d276eee9c84dfc1d91"
+      },
+      "stored": "streams/static-profile-independent-review/expression-source/review.json.gzip"
+    },
+    "static-profile-independent-review/expression-source/tests/test_s81_expression_work.py": {
+      "raw": {
+        "bytes": 4563,
+        "sha256": "6292902aa2f964504456df14f0456b5ee37a4d939549cb80dda56de2a07ad33f"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/expression-source/tests/test_s81_expression_work.py",
+      "storage": {
+        "bytes": 1715,
+        "sha256": "1df243d8bd0187ab0862cf396e33046cd7c90e0e49102557879c2bd06a244965"
+      },
+      "stored": "streams/static-profile-independent-review/expression-source/tests/test_s81_expression_work.py.gzip"
+    },
+    "static-profile-independent-review/expression-v9-phase/review.json": {
+      "raw": {
+        "bytes": 6775,
+        "sha256": "71b01c2cfab0cb8662ffd2c65107489294a83d583c02d41f8ece2a34bec3bd6b"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/expression-v9-phase/review.json",
+      "storage": {
+        "bytes": 2670,
+        "sha256": "585067e1eb6cd8d4d4d7834141d43d8291c8ac8e8689c65f45411551e6111eca"
+      },
+      "stored": "streams/static-profile-independent-review/expression-v9-phase/review.json.gzip"
+    },
+    "static-profile-independent-review/guard-import-actual/review.json": {
+      "raw": {
+        "bytes": 2306,
+        "sha256": "00a62038c3d6ada2e12f76ee024b416cf9fa2a2b749de2c5e30b78ca77ca3c2e"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/guard-import-actual/review.json",
+      "storage": {
+        "bytes": 1240,
+        "sha256": "34067d90cb9f8318947ba61d0f8f08042259daf69e59edc97175de35ae9825c9"
+      },
+      "stored": "streams/static-profile-independent-review/guard-import-actual/review.json.gzip"
+    },
+    "static-profile-independent-review/guard-import-source/model_unfolder/evidence/expression_eval.py": {
+      "raw": {
+        "bytes": 31961,
+        "sha256": "c30963242bfe5a4fbd313ff345c41873c9f9c3f7fa319ab2cf0c072196a8e49d"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/guard-import-source/model_unfolder/evidence/expression_eval.py",
+      "storage": {
+        "bytes": 8687,
+        "sha256": "a96b5a366f822310e7ad7adc315e8adc6b082f86b1d9393846f696543b5d98b8"
+      },
+      "stored": "streams/static-profile-independent-review/guard-import-source/model_unfolder/evidence/expression_eval.py.gzip"
+    },
+    "static-profile-independent-review/guard-import-source/model_unfolder/evidence/import_source.py": {
+      "raw": {
+        "bytes": 22054,
+        "sha256": "d2128a82390ef569e763e6219f605f9398451cedafa7095b715f8c85c127a59b"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/guard-import-source/model_unfolder/evidence/import_source.py",
+      "storage": {
+        "bytes": 5855,
+        "sha256": "a63b61134d0a15e0cbffa0cd319db570af378139f40554e6989ae1c691429266"
+      },
+      "stored": "streams/static-profile-independent-review/guard-import-source/model_unfolder/evidence/import_source.py.gzip"
+    },
+    "static-profile-independent-review/guard-import-source/model_unfolder/evidence/program_index.py": {
+      "raw": {
+        "bytes": 149225,
+        "sha256": "57583fec271d60d594e1a4e4738c7dd548dbae57e04ccd8a18a481a56fe363c0"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/guard-import-source/model_unfolder/evidence/program_index.py",
+      "storage": {
+        "bytes": 38083,
+        "sha256": "e6421ebb23817b2c395dc3dac30bf0eb82e5dc50b6ea12f7330de40268a05623"
+      },
+      "stored": "streams/static-profile-independent-review/guard-import-source/model_unfolder/evidence/program_index.py.gzip"
+    },
+    "static-profile-independent-review/guard-import-source/review.json": {
+      "raw": {
+        "bytes": 1764,
+        "sha256": "3c334bff997721f9d85bced4bd044b80059b9ed73cc8b6173ab734ae6dc054fb"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/guard-import-source/review.json",
+      "storage": {
+        "bytes": 1028,
+        "sha256": "4f8869d3724b2512a99589c3c21ce2dab41bb34a75a8d0cbc3dbdd51d5ded26b"
+      },
+      "stored": "streams/static-profile-independent-review/guard-import-source/review.json.gzip"
+    },
+    "static-profile-independent-review/guard-import-source/source.diff": {
+      "raw": {
+        "bytes": 3079,
+        "sha256": "77b28a22fa4aff2a005d964df47c0f1850e51cb21462aa29754afd697a98abfc"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/guard-import-source/source.diff",
+      "storage": {
+        "bytes": 974,
+        "sha256": "d1a4a7134b50484492027b8093732f00c29901b2b69a8d199f43402d8da6203e"
+      },
+      "stored": "streams/static-profile-independent-review/guard-import-source/source.diff.gzip"
+    },
+    "static-profile-independent-review/guard-import-source/tests/test_s81_guard_import_work.py": {
+      "raw": {
+        "bytes": 4552,
+        "sha256": "36d320df824c281c85ba7a62cf4222365fb692e3d5d2cf05be9c03ab770077d5"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/guard-import-source/tests/test_s81_guard_import_work.py",
+      "storage": {
+        "bytes": 1437,
+        "sha256": "d7cc501b854aba10f0d540856a081156c1eeb08eecfd0abed41465bf9abd5cb1"
+      },
+      "stored": "streams/static-profile-independent-review/guard-import-source/tests/test_s81_guard_import_work.py.gzip"
+    },
+    "static-profile-independent-review/public-v10/review.json": {
+      "raw": {
+        "bytes": 3241,
+        "sha256": "745a1356dd123c03b034bbaec414cd5d3f2efb06e4f5dc1814ec05c6db14a286"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/public-v10/review.json",
+      "storage": {
+        "bytes": 1313,
+        "sha256": "df3b570c315339d448da4b276d9f3b0b3fc02c5ab1bdcd0383a9cebda1563665"
+      },
+      "stored": "streams/static-profile-independent-review/public-v10/review.json.gzip"
+    },
+    "static-profile-independent-review/public-v11/review.json": {
+      "raw": {
+        "bytes": 3439,
+        "sha256": "8dac858a61299d7f191a55dad8a2a956a41c60352085695c9b31d16eff2f4806"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/public-v11/review.json",
+      "storage": {
+        "bytes": 1429,
+        "sha256": "70aeb196abf645c34eb323780c758f05cc9c7805e866843caf6d2f8389d8cabb"
+      },
+      "stored": "streams/static-profile-independent-review/public-v11/review.json.gzip"
+    },
+    "static-profile-independent-review/review.json": {
+      "raw": {
+        "bytes": 1880,
+        "sha256": "30b48bb6171cb2b4498b1682d51594d5d323d46e81e6cdb4074903b95fa6895a"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/review.json",
+      "storage": {
+        "bytes": 967,
+        "sha256": "20b91940cdcc8f25aff192fa89e2d7f246153803c584b619fb1380df4f049206"
+      },
+      "stored": "streams/static-profile-independent-review/review.json.gzip"
+    },
+    "static-profile-independent-review/root-classification-actual/review.json": {
+      "raw": {
+        "bytes": 1504,
+        "sha256": "420a959b7b8570f2ae540a23f47c5c350c6dde1792e6ffe3e6e2146389a15c20"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/root-classification-actual/review.json",
+      "storage": {
+        "bytes": 835,
+        "sha256": "fb2b2c5c74fc6d38e36851f56d111c4770992e297c62d6386dd517ca551d1429"
+      },
+      "stored": "streams/static-profile-independent-review/root-classification-actual/review.json.gzip"
+    },
+    "static-profile-independent-review/root-classification-source/review.json": {
+      "raw": {
+        "bytes": 1498,
+        "sha256": "bc0e5ba3566e9c3aa319ce9c75c3de971b706a99109d447a628bd6fb5a90067c"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/root-classification-source/review.json",
+      "storage": {
+        "bytes": 865,
+        "sha256": "5ae48d2a30b8759c53c85530aa2d02d3e31facf130dad76ad5486df8d77413c7"
+      },
+      "stored": "streams/static-profile-independent-review/root-classification-source/review.json.gzip"
+    },
+    "static-profile-independent-review/scandir-actual/review.json": {
+      "raw": {
+        "bytes": 1739,
+        "sha256": "874b1c82ffc4bf1f91238312304c8f4d460118ed5fcf18085e82ead13437b465"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/scandir-actual/review.json",
+      "storage": {
+        "bytes": 659,
+        "sha256": "b287ceb70feee943eaad22385f67c863e7d68435edbcdc1a6e7e62a4080e221d"
+      },
+      "stored": "streams/static-profile-independent-review/scandir-actual/review.json.gzip"
+    },
+    "static-profile-independent-review/scandir-source/review.json": {
+      "raw": {
+        "bytes": 1402,
+        "sha256": "f0505f0d73c9fe6deb753dacfecc21e678a78c2625cd8f667d4861f71a8b79f9"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/scandir-source/review.json",
+      "storage": {
+        "bytes": 850,
+        "sha256": "2179f1442469458875bacf8bfe04951242f9029bc4b0381a1ab7b9524b9f3c92"
+      },
+      "stored": "streams/static-profile-independent-review/scandir-source/review.json.gzip"
+    },
+    "static-profile-independent-review/warm-profile-v2/review.json": {
+      "raw": {
+        "bytes": 3064,
+        "sha256": "d3d868575b297ed1bc629c91608b8c3b183309ac3435f9a676cf8e79f03928eb"
+      },
+      "source": "/private/tmp/unfold-s81-static-profile-independent-review/warm-profile-v2/review.json",
+      "storage": {
+        "bytes": 1444,
+        "sha256": "d7aad42a4db8e041a40dfa7fbf0db3ef20a7b8be3f26e912fef3206237b4c8e0"
+      },
+      "stored": "streams/static-profile-independent-review/warm-profile-v2/review.json.gzip"
+    },
+    "warm-profile-preparation-v2/run.py": {
+      "raw": {
+        "bytes": 10071,
+        "sha256": "8d4720cba13cd04c8d12f4500b9d3ef6161ab812fc7f66b6b442fe6e6d7da2d3"
+      },
+      "source": "/private/tmp/unfold-s81-warm-profile-preparation-v2/run.py",
+      "storage": {
+        "bytes": 3392,
+        "sha256": "fc0e9bf1bfc1ff7fcc926328eefc1fe76c196b9b93d669e0621b857778a2ba46"
+      },
+      "stored": "streams/warm-profile-preparation-v2/run.py.gzip"
+    },
+    "warm-profile-preparation-v2/source-manifest.json": {
+      "raw": {
+        "bytes": 71484,
+        "sha256": "ea31b0857d004d520bfe45cae8920abc71e4f684fe9301b5ab0982c771384517"
+      },
+      "source": "/private/tmp/unfold-s81-warm-profile-preparation-v2/source-manifest.json",
+      "storage": {
+        "bytes": 32639,
+        "sha256": "feca58dbfde51d364bfa24017f564f816dc9d779fd8ce041182c37ed7d88be29"
+      },
+      "stored": "streams/warm-profile-preparation-v2/source-manifest.json.gzip"
+    },
+    "warm-profile-preparation/run.py": {
+      "raw": {
+        "bytes": 10059,
+        "sha256": "cb05af7ccd18f373c3f492925313b15773dd3fc4de66a3fce22e21aa98e7bd05"
+      },
+      "source": "/private/tmp/unfold-s81-warm-profile-preparation/run.py",
+      "storage": {
+        "bytes": 3382,
+        "sha256": "f644e378a91e54d966ca7397408c88bf6953217eeb158a6ec6cfb28e17856819"
+      },
+      "stored": "streams/warm-profile-preparation/run.py.gzip"
+    },
+    "warm-profile-preparation/source-manifest.json": {
+      "raw": {
+        "bytes": 70834,
+        "sha256": "78d77f47bc645bac62f80e3ffa30ccc2e14921085adc8b2c920fe679a36b6a52"
+      },
+      "source": "/private/tmp/unfold-s81-warm-profile-preparation/source-manifest.json",
+      "storage": {
+        "bytes": 32346,
+        "sha256": "267e637146555c1a3d2806dac3d57804a2ceae759cf87d2f42bfd7aa04899448"
+      },
+      "stored": "streams/warm-profile-preparation/source-manifest.json.gzip"
+    }
+  },
+  "schema_version": 1,
+  "storage_rule": "Append .gzip to the complete original logical filename."
+}

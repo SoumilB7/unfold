@@ -1,0 +1,135 @@
+"""One public HTML render from retained IR; no model construction or source scan."""
+from __future__ import annotations
+
+import argparse
+from dataclasses import asdict
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import sys
+import time
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--checkout', type=Path, required=True)
+    parser.add_argument('--input', type=Path, required=True)
+    parser.add_argument('--reference', type=Path, required=True)
+    parser.add_argument('--output', type=Path, required=True)
+    args = parser.parse_args()
+    script_path = Path(__file__).resolve()
+    args.output.mkdir(parents=True, exist_ok=False)
+    args.checkout = args.checkout.resolve()
+    args.input, args.reference, args.output = args.input.resolve(), args.reference.resolve(), args.output.resolve()
+    os.chdir(args.checkout)
+    sys.path.insert(0, str(args.checkout))
+    def source_pins():
+        return {str(p.relative_to(args.checkout)): sha(p.read_bytes())
+                for source_root in ('model_unfolder', 'physics')
+                for p in sorted((args.checkout / source_root).rglob('*'))
+                if p.is_file() and p.suffix in ('.py', '.yaml', '.yml')}
+    before = source_pins()
+    input_bytes, reference_bytes = args.input.read_bytes(), args.reference.read_bytes()
+    pins = {'input': sha(input_bytes), 'reference': sha(reference_bytes),
+            'script': sha(script_path.read_bytes())}
+    (args.output / 'source-before.json').write_text(json.dumps(before, indent=2) + '\n')
+    (args.output / 'input-pins.json').write_text(json.dumps(pins, indent=2) + '\n')
+    result = {'status': 'FAILED', 'new_model_or_source_scan': False}
+    original_pack = None
+    try:
+        from model_unfolder.diagram import Diagram
+        from model_unfolder.ir import ModelIR
+        from model_unfolder.evidence.ship_findings import ShipFinding, apply_ship_findings
+        from model_unfolder.renderers.html import card_payload
+        for name, module in tuple(sys.modules.items()):
+            if name == 'model_unfolder' or name.startswith('model_unfolder.'):
+                assert Path(module.__file__).resolve().is_relative_to(args.checkout), name
+        original_pack = card_payload.pack_card_payloads
+        record = json.loads(input_bytes)
+        assert not record['layers'] and not record['cross_layer_edges']
+        ir = ModelIR(**json.loads(input_bytes))
+        # Restore only producer-authored warning metadata, keeping exact original
+        # warning strings/positions. The independent fresh JSON comparison avoids
+        # sharing mutable extras between the assertion's two sides.
+        scratch = ModelIR(**{**json.loads(input_bytes), 'warnings': []})
+        findings = tuple(ShipFinding(**row) for row in record['extras'].get('ship_findings', []))
+        apply_ship_findings(scratch, findings)
+        authored = {str(row): row for row in scratch.warnings}
+        assert len(authored) == len(scratch.warnings)
+        assert set(authored).issubset(record['warnings'])
+        ir.warnings = [authored.get(row, row) for row in record['warnings']]
+        assert ir.to_dict() == json.loads(input_bytes)
+        diagram = Diagram(ir)
+        reference = reference_bytes.decode()
+        diagram._mount_id = re.search(r'<div id="([^"]+)" class="uf-root"', reference).group(1)
+        (args.output / 'parameters.json').write_text(json.dumps(diagram.param_count(), indent=2) + '\n')
+        captured = {}
+
+        def timed_pack(fragment, mount_id):
+            from model_unfolder.renderers.html.render_context import current_render_context
+            captured['canonical_fragment'] = fragment
+            captured['events_before_pack'] = tuple(current_render_context().events)
+            started = time.perf_counter()
+            output = original_pack(fragment, mount_id)
+            captured['packing_seconds'] = time.perf_counter() - started
+            return output
+
+        card_payload.pack_card_payloads = timed_pack
+        started = time.perf_counter()
+        page = diagram.to_html()
+        total = time.perf_counter() - started
+        (args.output / 'page.html').write_text(page)
+        started = time.perf_counter()
+        canonical = card_payload.expand_card_payloads(page)
+        inverse_seconds = time.perf_counter() - started
+        assert captured['canonical_fragment'] in canonical
+        (args.output / 'canonical.html').write_text(canonical)
+        result.update(status='HTML_RENDERED_EVENT_ARCHIVE_PENDING',
+                      html_generation_seconds=total, packing_seconds=captured['packing_seconds'],
+                      canonical_generation_seconds=total-captured['packing_seconds'],
+                      inverse_seconds=inverse_seconds, html_bytes=len(page.encode()),
+                      html_sha256=sha(page.encode()), canonical_bytes=len(canonical.encode()),
+                      canonical_sha256=sha(canonical.encode()),
+                      canonical_equals_reference=canonical == reference,
+                      ir_after_render_equals_input=ir.to_dict() == json.loads(input_bytes),
+                      render_events_unchanged_by_pack=tuple(diagram.render_events()) == captured['events_before_pack'])
+        assert result['render_events_unchanged_by_pack']
+        (args.output / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
+        def event_value(value):
+            if isinstance(value, frozenset):
+                return {'$frozenset': sorted(value)}
+            raise TypeError(f'Unsupported event value: {type(value).__name__}')
+        (args.output / 'render-events.json').write_text(json.dumps(
+            [asdict(e) for e in diagram.render_events()], indent=2, default=event_value) + '\n')
+        result['status'] = 'PUBLIC_RENDER_AND_EXACT_FRAGMENT_INVERSE_PASS'
+    except BaseException as error:
+        result['status'] = 'FAILED'
+        result['error'] = repr(error)
+        raise
+    finally:
+        if original_pack is not None:
+            card_payload.pack_card_payloads = original_pack
+        after = source_pins()
+        (args.output / 'source-after-finally.json').write_text(json.dumps(after, indent=2) + '\n')
+        result['production_sources_unchanged'] = before == after
+        result['inputs_unchanged'] = pins == {'input': sha(args.input.read_bytes()),
+            'reference': sha(args.reference.read_bytes()), 'script': sha(script_path.read_bytes())}
+        result['import_origins_correct'] = all(Path(module.__file__).resolve().is_relative_to(args.checkout)
+            for name, module in tuple(sys.modules.items())
+            if name == 'model_unfolder' or name.startswith('model_unfolder.'))
+        integrity = result['production_sources_unchanged'] and result['inputs_unchanged'] and result['import_origins_correct']
+        if not integrity:
+            result['status'] = 'FAILED_SOURCE_OR_INPUT_INTEGRITY'
+        (args.output / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
+        print(json.dumps(result, indent=2))
+        assert integrity, 'source/input/import integrity failed; receipt retained'
+
+
+if __name__ == '__main__':
+    main()

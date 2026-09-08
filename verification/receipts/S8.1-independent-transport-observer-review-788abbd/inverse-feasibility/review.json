@@ -1,0 +1,7 @@
+{
+  "decision": "ACCEPT_FEASIBILITY_INVERSE",
+  "script_sha256": "0e8637eb3250084780d93598d156e9c773106e89db8f0fcd9e3707bec4ef3112",
+  "result_sha256": "d963230dd80dd6102b9663c8bb1abdb257e29c869e52ddda70985e5339e6d7d6",
+  "scope": "Read-only inspection of exact serialized JSON decode to cards and original ordered page bytes. No production lazy transport or browser performance acceptance.",
+  "verified_assertion": "whole.encode() == original page bytes"
+}

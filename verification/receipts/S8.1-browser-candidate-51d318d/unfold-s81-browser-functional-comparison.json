@@ -1,0 +1,203 @@
+{
+  "architecture_equal": true,
+  "steps": [
+    {
+      "step": 0,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": false,
+      "screenshot_sha256": [
+        "cc8d8d7507ce75b128072a5df80ec0a77b50ceb1a911f59bbd88c4cc46653e7a",
+        "cec9c6a2c96e4b45de41731b55f9bd57368ca5d9a55a3ad13686d9b11a73dcc4"
+      ],
+      "before_dom_elements": 192833,
+      "after_dom_elements": 404
+    },
+    {
+      "step": 1,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": false,
+      "screenshot_sha256": [
+        "cd2da881ae626c10675dceedc043f13999dfb634db1d5ab0e713837c847728ea",
+        "3762e96cc82d7e679e29c591e7a58382ff1ec37d4a3a1a25ce0a6e6b340ed29c"
+      ],
+      "before_dom_elements": 192833,
+      "after_dom_elements": 437
+    },
+    {
+      "step": 2,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": false,
+      "screenshot_sha256": [
+        "78fbdc7a5ea09465ff162bfadf60f7d462587cb755257ad075aa34988f4ff822",
+        "0daf9cdcae425c0025df3046a59e189ac14494bd85f3148961cfe1c04e43f829"
+      ],
+      "before_dom_elements": 192833,
+      "after_dom_elements": 466
+    },
+    {
+      "step": 3,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": false,
+      "screenshot_sha256": [
+        "81038bf14d71fdba818a697663776127e51cd9ff9527ec36d141f2b523f736e8",
+        "25523daad984bd6c83a4f6aa49d0ab63c77d710634140cda3d72dff0eb6b7baf"
+      ],
+      "before_dom_elements": 192833,
+      "after_dom_elements": 500
+    },
+    {
+      "step": 4,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": false,
+      "screenshot_sha256": [
+        "eea8160d87b20148bf9c8d20026e366320bc4fdd43707a920787cfe4cd9902f4",
+        "076abf9a3ec6d434eb60668030225ee5dee5080fae37302e5f2c8b22d5a1beaa"
+      ],
+      "before_dom_elements": 192833,
+      "after_dom_elements": 529
+    },
+    {
+      "step": 5,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": false,
+      "screenshot_sha256": [
+        "6a2af4996c29807c358d43854503caed52e234ccb236ddaa564924520cf915db",
+        "63504a2508202a4f09be2e874360b67e73840aa99bb80df44baa896dbe2bbd10"
+      ],
+      "before_dom_elements": 192833,
+      "after_dom_elements": 569
+    },
+    {
+      "step": 6,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": false,
+      "screenshot_sha256": [
+        "b41a72539e84071735d88a74e6d323bd3c1d29940f9ca4180ad4c527494fe8eb",
+        "abb3aaca09b778b4bcd8b138450f82e3755df05cbfed48db41346b5b2e98ae4f"
+      ],
+      "before_dom_elements": 192833,
+      "after_dom_elements": 625
+    },
+    {
+      "step": 7,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": false,
+      "screenshot_sha256": [
+        "929a808f42c08176862a8794e6e7c49486f6f7f1d1e3e05b844e1718a03eba73",
+        "b2f7ff44879f6f88172f96e851bbaecbb568810de6a3165e8cb9fbf979303609"
+      ],
+      "before_dom_elements": 192833,
+      "after_dom_elements": 640
+    },
+    {
+      "step": 8,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": false,
+      "screenshot_sha256": [
+        "41f7454b79c330ad16d555a8113ff3e431d802855023f5d07b1e3c815a65f2d1",
+        "318e67ccf476bbcf6e1052ddad31eda2a1d7ec2bf3dc7bd7c2df6d10d2ded2e4"
+      ],
+      "before_dom_elements": 192833,
+      "after_dom_elements": 464
+    },
+    {
+      "step": 9,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": false,
+      "screenshot_sha256": [
+        "c15ea0377b0bb31a0bf34b5155c31adbff81290fea460510fe133a363a231ce3",
+        "55aa547db88042eb6bb479ef34060f770b5bf305bd3f98a3c0c617cb4fc262ac"
+      ],
+      "before_dom_elements": 192833,
+      "after_dom_elements": 467
+    },
+    {
+      "step": 10,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": false,
+      "screenshot_sha256": [
+        "53c520d5781093dd374a3b079ff27f6b246727997a14c8d51757044980620784",
+        "4f4ac33bfb937d8fbccd144e51ddd9e607ba630d4b315003a9a3d8c89bb384d5"
+      ],
+      "before_dom_elements": 192833,
+      "after_dom_elements": 436
+    },
+    {
+      "step": 11,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": false,
+      "screenshot_sha256": [
+        "f8eacd48bdffb28c44721dbfd956f18748a2476c7a9dd483ae9d6201b0253e8b",
+        "da8cf2e90b040f7617a2a63c85c1f5030d69eedc8a1285f1497936dc12c65798"
+      ],
+      "before_dom_elements": 192833,
+      "after_dom_elements": 445
+    },
+    {
+      "step": 12,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": false,
+      "screenshot_sha256": [
+        "37886a831a0925995503a697830f9e670e701e064aabf153ba680942cf31a5d4",
+        "28cca6264b398df69bc39d47097fb4ca2d9f2bb457418cdf12da60e4b20201fb"
+      ],
+      "before_dom_elements": 192833,
+      "after_dom_elements": 409
+    },
+    {
+      "step": 13,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": false,
+      "screenshot_sha256": [
+        "fa73ff714735d4220fb30d0b3088c7ae51dda3774349a2923e44fbb80dee2fda",
+        "dd9d0fec0f8a9f1a226abf97015d4d4c58ffd46bba537d229c8fd9d4e2adbb99"
+      ],
+      "before_dom_elements": 192833,
+      "after_dom_elements": 242
+    },
+    {
+      "step": 14,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": false,
+      "screenshot_sha256": [
+        "58cae765c2cfc11074fdb427d206f454b96102b22bc41dd9912d91716727d498",
+        "59bdbaad94acc5790e2b97d353d3c98a7f98209bbfa1c8654625a5cf55a78c5c"
+      ],
+      "before_dom_elements": 192833,
+      "after_dom_elements": 404
+    },
+    {
+      "step": 15,
+      "route_equal": true,
+      "visible_card_text_identity_markup_equal": true,
+      "screenshots_equal": false,
+      "screenshot_sha256": [
+        "4bc393e6c5d07d1b74eab23b684086fa71403992b5f359828e94119ebc570418",
+        "ebae25a78800e65c0a7d7cb2e782e9341e26962c8da164fae9ce33bb91026efd"
+      ],
+      "before_dom_elements": 192833,
+      "after_dom_elements": 437
+    }
+  ],
+  "status": "pass",
+  "scope": "Actual visible cards at each native-click step, exact browser-serialized markup/text/identity/placement. Screenshot differences require visual review. DOM counts intentionally differ; no claim of all latent card behavior from these routes.",
+  "inputs": [
+    "/private/tmp/unfold-s81-browser-functional-before",
+    "/private/tmp/unfold-s81-browser-functional-after"
+  ]
+}

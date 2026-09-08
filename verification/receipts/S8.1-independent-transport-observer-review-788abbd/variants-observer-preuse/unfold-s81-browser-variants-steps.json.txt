@@ -1,0 +1,65 @@
+[
+  {
+    "depth": 0,
+    "id": "shared",
+    "quantities": {
+      "0": 11
+    }
+  },
+  {
+    "depth": 1,
+    "id": "deep_shared",
+    "quantities": {
+      "0": 11,
+      "1": 110
+    }
+  },
+  {
+    "radio": "variant-b",
+    "expected_card": "shared",
+    "quantities": {
+      "0": 29,
+      "1": 290
+    }
+  },
+  {
+    "depth": 0,
+    "id": "other",
+    "clear_deeper": true,
+    "quantities": {
+      "0": 30
+    }
+  },
+  {
+    "depth": 1,
+    "id": "deep_other",
+    "quantities": {
+      "0": 30,
+      "1": 291
+    }
+  },
+  {
+    "radio": "variant-a",
+    "expected_card": "other",
+    "quantities": {
+      "0": 12,
+      "1": 111
+    }
+  },
+  {
+    "depth": 0,
+    "id": "other",
+    "expected_card": "default",
+    "clear_deeper": true,
+    "quantities": {
+      "0": 0
+    }
+  },
+  {
+    "depth": 0,
+    "id": "shared",
+    "quantities": {
+      "0": 11
+    }
+  }
+]

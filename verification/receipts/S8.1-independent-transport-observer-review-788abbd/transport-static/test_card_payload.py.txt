@@ -1,0 +1,166 @@
+"""The compact transport must preserve occurrences, not merely template shapes."""
+from copy import deepcopy
+import hashlib
+import html
+import json
+
+import pytest
+
+from model_unfolder.renderers.html import card_payload as codec
+from model_unfolder.renderers.html.interactions import _click_script, _lazy_click_script
+
+
+def _fixture():
+    panels = []
+    for depth in (2, 3):
+        cards = []
+        for i in range(24):
+            identity = "default" if i == 0 else f"😀-panel-{depth}-card-{i}&own"
+            identity = html.escape(identity, quote=True)
+            cards.append(
+                f'<div class="uf-card-detail uf-card-{identity}" data-card-id="{identity}">'
+                '<div class="uf-card-desc">' + "Identical shared explanation. " * 100 + '</div>'
+                f'<span class="uf-fact">own quantity {i % 2}</span>'
+                '<div class="uf-card-svg"><svg width="100" height="40">'
+                f'<defs><clipPath id="{identity}-clip"><rect width="100" height="40"/></clipPath></defs>'
+                f'<g data-id="{identity}" clip-path="url(#{identity}-clip)"><text>own shape {i % 2}</text></g>'
+                '</svg></div></div>')
+        panels.append(f'<div class="uf-inspect-panel" data-depth="{depth}">'
+                      '<section data-variant="a">' + ''.join(cards[:12]) + '</section>'
+                      '<section data-variant="b">' + ''.join(cards[12:]) + '</section></div>')
+    return '<div id="fixture" class="uf-root">' + ''.join(panels) + _click_script('fixture') + '</div>'
+
+
+@pytest.fixture(scope="module")
+def packed():
+    original = _fixture()
+    old_minimum = codec._MIN_PACK_BYTES
+    try:
+        codec._MIN_PACK_BYTES = 0
+        result = codec.pack_card_payloads(original, "fixture")
+    finally:
+        codec._MIN_PACK_BYTES = old_minimum
+    assert 'data-uf-card-payload=' in result
+    return original, result, json.loads(codec._PAYLOAD_RE.search(result).group(2))
+
+
+def _replace_payload(packed, payload):
+    return codec._PAYLOAD_RE.sub(
+        lambda m: '<script type="application/json" data-uf-card-payload="' + m.group(1) + '">'
+        + json.dumps(payload, ensure_ascii=False).replace('<', '\\u003c') + '</script>', packed)
+
+
+def test_serialized_whole_inverse_preserves_own_facts_svg_and_old_interactions(packed):
+    original, compact, payload = packed
+    assert codec.expand_card_payloads(compact) == original
+    assert len(compact.encode()) < len(original.encode())
+    assert len(payload['cards']) == 48
+    assert payload['containers'] == [[2, list(range(12))], [2, list(range(12, 24))],
+                                     [3, list(range(24, 36))], [3, list(range(36, 48))]]
+    assert compact.count('data-uf-card-container=') == 4
+    assert len(payload['templates']) < len(payload['cards'])
+    assert len(payload['svgs']) == 2
+    cards, _ = codec._decode(json.loads(json.dumps(payload)))
+    assert 'own quantity 0' in cards[0] and 'own quantity 1' in cards[1]
+    assert 'own shape 0' in cards[0] and 'own shape 1' in cards[1]
+    assert '😀-panel-2-card-1&amp;own' in cards[1]
+    assert '😀-panel-3-card-1&amp;own' in cards[25]
+    assert _click_script('fixture') not in compact
+    assert _click_script('fixture') in codec.expand_card_payloads(compact)
+
+
+@pytest.mark.parametrize('bad', [-1, True, 10**9, 1.5, None])
+@pytest.mark.parametrize('field', ['svg', 'template', 'identity', 'own', 'placement', 'canonical'])
+def test_invalid_reference_is_rejected(packed, field, bad):
+    _, compact, raw = packed
+    payload = deepcopy(raw)
+    if field == 'svg':
+        payload['templates'][0][1] = bad
+    elif field == 'template':
+        payload['cards'][0][0] = bad
+    elif field == 'identity':
+        payload['cards'][0][1][0] = bad
+    elif field == 'own':
+        payload['cards'][0][2] = bad
+    elif field == 'placement':
+        payload['containers'][0][1][0] = bad
+    else:
+        payload['canonical'][1] = bad
+    with pytest.raises(ValueError):
+        codec.expand_card_payloads(_replace_payload(compact, payload))
+
+
+@pytest.mark.parametrize('poison', ['depth', 'same_depth_parent', 'other_panel', 'duplicate', 'slot', 'prefix', 'version'])
+def test_valid_references_do_not_authorize_wrong_placements(packed, poison):
+    _, compact, raw = packed
+    payload = deepcopy(raw)
+    if poison == 'depth':
+        payload['containers'][0][0] = 3
+    elif poison == 'same_depth_parent':
+        payload['containers'][0][1][0], payload['containers'][1][1][0] = 12, 0
+    elif poison == 'other_panel':
+        payload['containers'][0][1][0], payload['containers'][2][1][0] = 24, 0
+    elif poison == 'duplicate':
+        payload['containers'][0][1][0] = 1
+    elif poison == 'slot':
+        payload['templates'][0][0] += '@@UNFOLD_CARD_SLOT_-1@@'
+    elif poison == 'prefix':
+        payload['identities'][0][0] = 1
+    else:
+        payload['version'] = True
+    with pytest.raises(ValueError):
+        codec.expand_card_payloads(_replace_payload(compact, payload))
+
+
+def test_script_closing_unicode_and_quoted_tags_are_literal(monkeypatch):
+    monkeypatch.setattr(codec, '_MIN_PACK_BYTES', 0)
+    original = _fixture().replace('Identical shared explanation.',
+        'literal &lt;/script&gt; 😀 &amp; own evidence.')
+    original = original.replace('<section data-variant="a">',
+        '<section data-variant="a" title="a > b"><!-- <div class="uf-card-detail"> -->')
+    original = original.replace('<span class="uf-fact">', '<svg/><span class="uf-fact">', 1)
+    original = original.replace(_click_script('fixture'),
+        '<script type="application/json">{"literal":"<div class=\"uf-card-detail\">"}</script>'
+        + _click_script('fixture'))
+    compact = codec.pack_card_payloads(original, 'fixture')
+    assert codec.expand_card_payloads(compact) == original
+    serialized = codec._PAYLOAD_RE.search(compact).group(2)
+    assert '<' not in serialized
+    assert '</script>' not in _lazy_click_script('</script>', 'a' * 64).split('(function()', 1)[1].rsplit('</script>', 1)[0]
+
+
+def test_changed_canonical_content_requires_its_actual_digest(packed):
+    _, compact, raw = packed
+    payload = deepcopy(raw)
+    payload['templates'][0][0] += '<span>invented quantity</span>'
+    with pytest.raises(ValueError):
+        codec.expand_card_payloads(_replace_payload(compact, payload))
+
+
+def test_small_pages_and_literal_codec_tokens_stay_eager(monkeypatch):
+    assert codec.pack_card_payloads('<div>small</div>', 'small') == '<div>small</div>'
+    monkeypatch.setattr(codec, '_MIN_PACK_BYTES', 0)
+    original = _fixture().replace('own quantity', '@@UNFOLD_CARD_SLOT_ own quantity')
+    assert codec.pack_card_payloads(original, 'fixture') == original
+    original = _fixture().replace('</svg></div></div>', '</svg></div></div><aside>Keep this position.</aside>', 1)
+    assert codec.pack_card_payloads(original, 'fixture') == original
+
+
+def test_envelope_digest_binds_exact_expanded_bytes(packed):
+    original, compact, _ = packed
+    digest = hashlib.sha256(original.encode()).hexdigest()
+    assert codec._PAYLOAD_RE.search(compact).group(1) == digest
+    with pytest.raises(ValueError):
+        codec.expand_card_payloads(compact.replace('<!--uf-packed-end:', '<!--missing:'))
+    with pytest.raises(ValueError, match="Compact shell"):
+        codec.expand_card_payloads(compact.replace('data-uf-card-container="0"', 'data-uf-card-container="1"'))
+
+
+@pytest.mark.parametrize('replacement', ['', '<script>changed()</script>', '<script>extra()</script>{original}'])
+def test_compact_interaction_script_is_part_of_the_audit_boundary(packed, replacement):
+    _, compact, _ = packed
+    digest = codec._PAYLOAD_RE.search(compact).group(1)
+    script = _lazy_click_script('fixture', digest)
+    changed = compact.replace(script, replacement.replace('{original}', script))
+    with pytest.raises(ValueError, match="Compact interaction script"):
+        codec.expand_card_payloads(changed)
