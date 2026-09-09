@@ -1,0 +1,16 @@
+{
+  "status": "PASS_ROOT_ARCHIVE_BYTE_AUDIT",
+  "artifact_map_sha256": "77a3d20ab5bc716525bfc8ec856e3dfe4693be0ade3ddc7e83c160760b874923",
+  "streams": 1826,
+  "unique_stored_streams": 1038,
+  "raw_bytes": 1054352479,
+  "elapsed_seconds": 3.6938851666636765,
+  "checks": [
+    "stored hashes/sizes",
+    "decompressed raw hashes/sizes",
+    "every original byte equality",
+    "source and logical membership",
+    "exact stored membership"
+  ],
+  "acceptance": "S8.1 RETURNED; artifact approval PENDING; no Linux/push verdict"
+}
