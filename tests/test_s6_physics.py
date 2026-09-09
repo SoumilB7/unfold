@@ -334,6 +334,10 @@ def test_production_can_request_isolated_inventory_but_cannot_construct_in_paren
     # the worker's construction or observation internals into an adapter.
     public_boundary = {"BuildRequest", "Failure", "InventoryResult", "inventory_in_subprocess",
                        "FrameworkPrimitiveWitness", "AttributeLookupRequest", "PythonFunctionWitness"}
+    # Owner-approved S8.1 replay only carries parent metadata/cache lifecycle.
+    # It does not authorize worker construction or the cache implementation API.
+    parent_cache_hooks = {"register_source_context", "cache_source_bundle",
+                          "cache_prepared_document", "parse_cache_active", "run_cached_parse"}
     for path in production:
         for node in ast.walk(ast.parse(path.read_text())):
             if isinstance(node, ast.Import):
@@ -342,7 +346,8 @@ def test_production_can_request_isolated_inventory_but_cannot_construct_in_paren
             if isinstance(node, ast.ImportFrom) and (node.module or "").startswith("physics"):
                 boundary = (public_boundary if node.module == "physics.instance_inventory" else
                             {"ExecutionRecipe", "ObservationResult", "TensorArgument", "observe_in_subprocess"}
-                            if node.module == "physics.execution_observation" else set())
+                            if node.module == "physics.execution_observation" else
+                            parent_cache_hooks if node.module == "physics.result_cache" else set())
                 assert boundary and {alias.name for alias in node.names} <= boundary, path
 
 
@@ -362,6 +367,14 @@ def test_lookup_boundary_reexports_only_the_same_frozen_request_result_types():
     "from physics.attribute_bindings import witness_attribute_bindings",
     "from physics.instance_inventory import inventory_model",
     "from physics.instance_inventory import witness_attribute_bindings",
+    "from physics.result_cache import ResultCache",
+    "from physics.result_cache import _Transaction",
+    "from physics.result_cache import validate_dependencies",
+    "from physics.result_cache import _closure",
+    "from physics.result_cache import file_digest",
+    "from physics.result_cache import source_cache_scope",
+    "from physics.result_cache import *",
+    "import physics.result_cache",
 ])
 def test_parent_import_boundary_still_rejects_implementation_helpers(
         monkeypatch, tmp_path, statement):
@@ -371,6 +384,18 @@ def test_parent_import_boundary_still_rejects_implementation_helpers(
     monkeypatch.setitem(globals(), "ROOT", tmp_path)
     with pytest.raises(AssertionError):
         test_production_can_request_isolated_inventory_but_cannot_construct_in_parent()
+
+
+@pytest.mark.parametrize("name", [
+    "register_source_context", "cache_source_bundle", "cache_prepared_document",
+    "parse_cache_active", "run_cached_parse",
+])
+def test_parent_cache_boundary_admits_only_the_named_replay_hooks(monkeypatch, tmp_path, name):
+    source = tmp_path / "model_unfolder" / "evidence" / "replay.py"
+    source.parent.mkdir(parents=True)
+    source.write_text(f"from physics.result_cache import {name}\n")
+    monkeypatch.setitem(globals(), "ROOT", tmp_path)
+    test_production_can_request_isolated_inventory_but_cannot_construct_in_parent()
 
 
 def test_physics_has_no_model_identity_branch():
