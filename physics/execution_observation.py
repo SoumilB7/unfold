@@ -396,8 +396,6 @@ def _worker(request_path: Path, recipe_path: Path, result_path: Path) -> int:
     worker_clock = begin_worker_timing()
     _write_network_attestation()
     _install_network_guard()
-    from physics.cache_dependencies import begin_capture, finish_capture
-    cache_capture = begin_capture((request_path, recipe_path, result_path))
     try:
         request = BuildRequest.from_dict(json.loads(request_path.read_text()))
         recipe = ExecutionRecipe.from_dict(json.loads(recipe_path.read_text()))
@@ -453,7 +451,6 @@ def _worker(request_path: Path, recipe_path: Path, result_path: Path) -> int:
             pass
         return 2
     finally:
-        finish_capture(cache_capture)
         finish_worker_timing(worker_clock)
 
 
@@ -479,7 +476,6 @@ def observe_in_subprocess(request: BuildRequest,
                     "TOKENIZERS_PARALLELISM": "false"})
         timing_path = root / "worker-timing.json"
         env[TIMING_ENV] = str(timing_path)
-        cache.prepare_child(root, env)
         attestation = _prepare_network_attestation(root, env)
         command = [sys.executable, "-m", "physics.execution_observation", "--worker",
                    str(request_path), str(recipe_path), str(result_path)]

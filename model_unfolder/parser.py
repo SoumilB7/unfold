@@ -50,6 +50,14 @@ def config_to_ir(
         ``"path"``, ``"hub"``, ``"auto"``, or a local file/directory path. Hub
         inspection downloads source files only and should be requested explicitly.
     """
+    from physics.result_cache import parse_cache_active, run_cached_parse
+    if (parse_context is None and not parse_cache_active()
+            and type(cfg_or_id) is dict and code_source == "local" and token is None):
+        return run_cached_parse(
+            cfg_or_id, {"code_source": code_source, "inspect_code": inspect_code,
+                        "has_token": False},
+            lambda: config_to_ir(cfg_or_id, token=token, inspect_code=inspect_code,
+                                 code_source=code_source))
     _prepared = _coerce_prepared(cfg_or_id, token=token)
     cfg = _prepared.document
     if parse_context is None:

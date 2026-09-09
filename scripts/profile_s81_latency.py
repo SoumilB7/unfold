@@ -8,6 +8,7 @@ result cache, not cold OS filesystem pages. See verification/latency.md.
 from __future__ import annotations
 
 import argparse
+import builtins
 from contextlib import contextmanager
 import importlib
 import json
@@ -145,12 +146,12 @@ def child(args):
         raw_input = (repo / TARGETS[args.target]).read_bytes()
         record['input'] = write_raw(output, f'{relative}/input.json', raw_input)
         config = config_document(raw_input)
-        # Match S2's explicit import floor. Do not import readers/cache modules
-        # separately to warm them before the actual public library call.
+        # Owner resubmission uses a stronger boundary: only the public package
+        # is imported early; all lazy library/default preparation remains timed.
         sys.path.insert(0, str(repo))
         imported = {}
         import_start = time.perf_counter()
-        for name in ('torch', 'transformers', 'diffusers', 'model_unfolder'):
+        for name in ('model_unfolder',):
             started = time.perf_counter()
             module = importlib.import_module(name)
             imported[name] = {'seconds': time.perf_counter() - started,
@@ -162,10 +163,32 @@ def child(args):
         runtime_paths = [Path(sys.executable).resolve()]
         runtime_paths += [Path(row['file']).resolve() for row in imported.values() if row['file']]
         record['runtime_before'] = write_json(output, f'{relative}/runtime-before.json', file_pins(runtime_paths))
-        record['runtime_pin_scope'] = 'interpreter and explicit library entry modules; full worker dependency seals retained in cache entries'
+        record['runtime_pin_scope'] = 'interpreter and public package entry module; owner-scoped source closure and declared versions in cache entries'
         # The diagnostics import is INSIDE this conservative budget. Any lazy
         # imports plus cache identity/capture/validation stay inside, too.
+        blocked_imports = []
+        heavy = {'torch', 'transformers', 'diffusers'}
+        original_import = builtins.__import__
+        original_import_module = importlib.import_module
+        def block_import(name, globals=None, locals=None, fromlist=(), level=0):
+            resolved = importlib.util.resolve_name('.' * level + name, (globals or {}).get('__package__', '')) if level else name
+            if resolved.split('.', 1)[0] in heavy:
+                blocked_imports.append(resolved)
+                raise ImportError('heavy import attempted during historical cache replay: ' + name)
+            return original_import(name, globals, locals, fromlist, level)
+        def block_import_module(name, package=None):
+            resolved = importlib.util.resolve_name(name, package) if name.startswith('.') else name
+            if resolved.split('.', 1)[0] in heavy:
+                blocked_imports.append(resolved)
+                raise ImportError('heavy import attempted during historical cache replay: ' + name)
+            return original_import_module(name, package)
+        record['timer_boundary'] = 'public package import excluded; lazy heavy imports and all identity/DTO work included'
+        if args.mode == 'warm':
+            require(not any(name.split('.', 1)[0] in heavy for name in sys.modules), 'warm process preloaded heavy library')
+            builtins.__import__ = block_import
+            importlib.import_module = block_import_module
         started = time.perf_counter()
+        cpu_started = time.process_time()
         try:
             from physics.result_cache import cache_diagnostics
             from model_unfolder.evidence import runtime_inventory
@@ -182,11 +205,18 @@ def child(args):
                     record['request_observations'] = list(requests)
         finally:
             record['timings']['budget_seconds'] = time.perf_counter() - started
+            record['timings']['parent_cpu_seconds'] = time.process_time() - cpu_started
+            builtins.__import__ = original_import
+            importlib.import_module = original_import_module
+            record['blocked_heavy_import_attempts'] = blocked_imports
+            record['heavy_modules_after_unfold'] = sorted(name for name in sys.modules if name.split('.', 1)[0] in heavy)
+        record['ir'] = write_json(output, f'{relative}/ir.json', diagram.ir.to_dict())
+        if args.mode == 'warm':
+            require(not blocked_imports and not record['heavy_modules_after_unfold'], 'warm public hit attempted/imported heavy library')
         check_local_imports(repo)
         record['import_origins_checked'] = True
         # Preserve the pre-render IR; known renderer materialization is outside
         # the library budget. Public HTML generation gets its own timer.
-        record['ir'] = write_json(output, f'{relative}/ir.json', diagram.ir.to_dict())
         from model_unfolder.params import estimate_params
         record['params'] = write_json(output, f'{relative}/params.json', estimate_params(diagram.ir))
         started = time.perf_counter()
@@ -245,7 +275,7 @@ def campaign(args):
     output.mkdir(parents=True)
     record = {'schema_version': 1, 'status': 'FAIL', 'repo': str(repo), 'launches': [],
               'cold_scope': 'empty enabled result cache; OS files may be warm from initial hashing',
-              'timer_boundary': 'S2 explicit library imports outside; lazy imports, request observer and all cache work inside; HTML separate',
+              'timer_boundary': 'public package import outside; all lazy heavy imports, request observer and identity/DTO work inside; warm imports blocked; HTML separate',
               'python': sys.version, 'platform': platform.platform(), 'environment_overrides': FIXED_ENV,
               'host_before': host_telemetry()}
     before = None

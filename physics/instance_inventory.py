@@ -451,9 +451,7 @@ def _construct(request: BuildRequest) -> tuple[Any, str]:
 
 
 def _construct_from_import(request: BuildRequest) -> tuple[Any, str]:
-    from physics.cache_dependencies import runtime_bootstrap
-    with runtime_bootstrap():
-        import torch
+    import torch
 
     factory = _resolve(request.factory_module, request.factory_qualname)
     config = _config_object(request)
@@ -692,8 +690,6 @@ def _worker(request_path: Path, result_path: Path) -> int:
     worker_clock = begin_worker_timing()
     _write_network_attestation()
     _install_network_guard()
-    from physics.cache_dependencies import begin_capture, finish_capture
-    cache_capture = begin_capture((request_path, result_path))
     try:
         request = BuildRequest.from_dict(json.loads(request_path.read_text()))
     except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError) as exc:
@@ -704,10 +700,8 @@ def _worker(request_path: Path, result_path: Path) -> int:
         try:
             from physics.framework_primitives import capture_framework_types
             from physics.attribute_bindings import capture_attribute_lookup_types
-            from physics.cache_dependencies import runtime_bootstrap
-            with runtime_bootstrap():
-                captured = capture_framework_types() if request.capture_framework_primitives else None
-                lookups = capture_attribute_lookup_types() if request.attribute_lookups else None
+            captured = capture_framework_types() if request.capture_framework_primitives else None
+            lookups = capture_attribute_lookup_types() if request.attribute_lookups else None
             model, used = _construct(request)
             result = InventoryResult("ok", inventory=inventory_model(
                 model, request, used, framework_types=captured, attribute_lookup_types=lookups))
@@ -732,7 +726,6 @@ def _worker(request_path: Path, result_path: Path) -> int:
             pass
         return 2
     finally:
-        finish_capture(cache_capture)
         finish_worker_timing(worker_clock)
 
 
@@ -776,7 +769,7 @@ def _network_isolated_command(command: list[str], env: dict[str, str]) -> list[s
                     "TOKENIZERS_PARALLELISM", "UNFOLD_NETWORK_SANDBOX",
                     _ATTEST_PATH, _ATTEST_NONCE, _ATTEST_PARENT,
                     _ATTEST_UID, _ATTEST_GID, _ATTEST_ACK,
-                    "UNFOLD_EVIDENCE_DEPENDENCIES_PATH", "UNFOLD_WORKER_TIMING_PATH",
+                    "UNFOLD_WORKER_TIMING_PATH",
                 ) if key in env
             }
             return [
@@ -1022,7 +1015,6 @@ def inventory_in_subprocess(request: BuildRequest) -> InventoryResult:
                     "TOKENIZERS_PARALLELISM": "false"})
         timing_path = root / "worker-timing.json"
         env[TIMING_ENV] = str(timing_path)
-        cache.prepare_child(root, env)
         attestation = _prepare_network_attestation(root, env)
         cmd = [sys.executable, "-m", "physics.instance_inventory", "--worker",
                str(request_path), str(result_path)]

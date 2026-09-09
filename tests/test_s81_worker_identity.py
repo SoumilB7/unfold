@@ -8,7 +8,7 @@ from physics import instance_inventory as inventory
 from physics import worker_timing as timing
 
 
-def test_linux_selector_forwards_only_the_two_new_private_protocol_paths(monkeypatch):
+def test_linux_selector_forwards_private_worker_timing_only(monkeypatch):
     monkeypatch.setattr(inventory.sys, 'platform', 'linux')
     monkeypatch.setattr(inventory.shutil, 'which', lambda name: '/usr/bin/' + name)
     monkeypatch.setattr(inventory.os, 'getuid', lambda: 1000)
@@ -17,7 +17,7 @@ def test_linux_selector_forwards_only_the_two_new_private_protocol_paths(monkeyp
            'UNFOLD_EVIDENCE_DEPENDENCIES_PATH': '/private/capture.json',
            timing.TIMING_ENV: '/private/timing.json', 'HOST_SECRET': 'do-not-forward'}
     command = inventory._network_isolated_command(['python', '-m', 'worker'], env)
-    assert 'UNFOLD_EVIDENCE_DEPENDENCIES_PATH=/private/capture.json' in command
+    assert not any('UNFOLD_EVIDENCE_DEPENDENCIES_PATH' in value for value in command)
     assert 'UNFOLD_WORKER_TIMING_PATH=/private/timing.json' in command
     assert not any('HOST_SECRET' in value or 'do-not-forward' in value for value in command)
     assert command[-3:] == ['python', '-m', 'worker']

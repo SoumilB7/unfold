@@ -243,7 +243,11 @@ def _overlay(checkpoint: Any, hydrated: Any, prefix: tuple = ()) -> dict:
     return out
 
 
+from physics.result_cache import cache_prepared_document
+
+
 @identity_address
+@cache_prepared_document
 def prepare_document(raw: Any, *, loader_keys: frozenset = frozenset(),
                      merge: bool = True,
                      already_prepared: "PreparedDocument | None" = None,

@@ -219,6 +219,10 @@ class ParseContext:
     # lazy until a modality reader asks for it.
     _component_inventory: Any = None
 
+    def __post_init__(self):
+        from physics.result_cache import register_source_context
+        register_source_context(self)
+
     def program_index(self):
         """Return this parse's retained immutable source-closure snapshot.
 

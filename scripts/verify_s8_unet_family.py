@@ -48,7 +48,9 @@ def main():
     resolution = with_optional_concat_probe(
         _signature_recipe(bindings.index, root, inventory, config), bindings)
     request = request_from_resolved_source(document, context.source_bundle, root, index=bindings.index)
-    attempts = _run_signature_recipe(request, resolution)
+    from physics.result_cache import source_cache_scope
+    with source_cache_scope(bindings.index, context.source_bundle):
+        attempts = _run_signature_recipe(request, resolution)
     write(args.output / "execution-attempt.json.gz", attempts.to_dict())
     if attempts.final.status == "ok" and attempts.final.observation.provenance != inventory.provenance:
         raise ValueError("fresh observation and constructed inventory provenance differ")

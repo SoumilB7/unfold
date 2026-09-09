@@ -8,9 +8,11 @@ import re
 from pathlib import Path
 from typing import Any
 
+from physics.result_cache import cache_source_bundle
 from .models import SourceBundle, SourceImportRoot
 
 
+@cache_source_bundle
 def resolve_source_files(target: Any, *, source: str = "local", token: Any = None) -> SourceBundle:
     """Resolve Python modeling files without executing model code.
 
@@ -432,11 +434,21 @@ def _installed_diffusers_model_class_file(arch: str) -> str | None:
     """
     if not isinstance(arch, str) or not arch:
         return None
+    # Locating a top-level installed package does not execute its initializer.
+    # The original class-definition scan below remains the address authority.
+    import importlib.util
+    import sys
     try:
-        import diffusers
+        loaded = sys.modules.get("diffusers")
+        package_file = getattr(loaded, "__file__", None) if loaded is not None else None
+        if loaded is None:
+            spec = importlib.util.find_spec("diffusers")
+            package_file = spec.origin if spec is not None else None
     except (ImportError, ValueError):
         return None
-    models_root = Path(diffusers.__file__).resolve().parent / "models"
+    if not package_file:
+        return None
+    models_root = Path(package_file).resolve().parent / "models"
     if not models_root.exists():
         return None
     pat = re.compile(rf"^class {re.escape(arch)}\b", re.M)

@@ -34,19 +34,19 @@ def _receipt(root):
         prefix = f'{target}/{pair}/{mode}'
         request = {'config': {'case': target}, 'factory_module': 'test',
                    'factory_qualname': 'Tiny', 'build_flags': {}}
-        identity = {'kind': 'inventory', 'request': request}
+        identity = {'kind': 'inventory', 'request': request, 'capability_version': 3}
         entry = {'identity': identity, 'created_ns': pair,
-                 'dependencies': {'eligible': True, 'complete': True, 'unsupported': [],
-                                  'code_roots': ['fixture'], 'module_origins': ['fixture']},
+                 'dependencies': {'capability_version': 3, 'closure': {'contexts': ['fixture'], 'files': {'fixture.py': 'hash'}},
+                                  'packages': {'fixture': '1'}, 'own_sources': {'physics/worker.py': 'hash'}},
                  'result': {'status': 'ok', 'inventory': {'schema_version': 1, 'modules': ['tiny'],
                             'provenance': {'config_sha256': sha(canonical_bytes(request['config'])),
                                            'requested_factory': 'test.Tiny', 'build_flags': {}}}}}
         entry_raw = canonical_bytes(entry)
-        entry_sha, key = sha(entry_raw), sha(canonical_bytes(identity))
+        entry_sha, key = sha(entry_raw), sha(canonical_bytes({'identity': identity, 'own_sources': entry['dependencies']['own_sources']}))
         state = {'entries/' + entry_sha + '.json': entry_sha}
         sample = {'status': 'PASS', 'target': target, 'pair': pair, 'mode': mode,
                   'config_relative': TARGETS[target], 'cache_path': f'cache/{target}/{pair}',
-                  'import_origins_checked': True,
+                  'import_origins_checked': True, 'blocked_heavy_import_attempts': [], 'heavy_modules_after_unfold': [],
                   'timings': {'imports_seconds': 1.0, 'unfold_seconds': 4.0,
                               'budget_seconds': 5.0, 'html_seconds': 2.0},
                   'diagnostics': [{'kind': 'inventory', 'status': 'stored' if mode == 'cold' else 'hit',
@@ -117,6 +117,8 @@ def test_complete_artifact_check_is_pure_and_checks_twelve_samples(tmp_path):
     (lambda s: s['diagnostics'][0].update(request_key='0' * 64), 'request identity'),
     (lambda s: s.update(diagnostics=[]), 'diagnostics'),
     (lambda s: s.update(import_origins_checked=False), 'origins'),
+    (lambda s: s.update(blocked_heavy_import_attempts=['torch']), 'heavy libraries'),
+    (lambda s: s.update(heavy_modules_after_unfold=['diffusers']), 'heavy libraries'),
     (lambda s: s['timings'].update(unfold_seconds=6.0), 'inside budget'),
     (lambda s: s.update(pair=2), 'address'),
     (lambda s: s.update(cache_path='cache/other/0'), 'owned pair'),
@@ -254,7 +256,7 @@ def test_self_consistent_foreign_entry_does_not_match_actual_request(tmp_path):
         new_sha = sha(raw)
         sample['entries'] = {new_sha: write_raw(tmp_path, path, raw)}
         sample['diagnostics'][0].update(entry_sha256=new_sha,
-            request_key=sha(canonical_bytes(entry['identity'])))
+            request_key=sha(canonical_bytes({'identity': entry['identity'], 'own_sources': entry['dependencies']['own_sources']})))
     _change_sample(tmp_path, campaign, 1, foreign)
     with pytest.raises(ValueError, match='foreign to actual requested call'):
         check_receipt(tmp_path)

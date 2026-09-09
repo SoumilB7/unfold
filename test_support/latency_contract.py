@@ -92,12 +92,14 @@ def linked_entries(root, sample):
         entry = json.loads(read_artifact(root, sample['entries'][entry_sha]))
         require(sample['entries'][entry_sha]['sha256'] == entry_sha, 'entry content address')
         identity = entry['identity']
-        require(sha(canonical_bytes(identity)) == request_key, 'cache request identity linkage')
+        require(sha(canonical_bytes({'identity': identity, 'own_sources': entry['dependencies']['own_sources']})) == request_key, 'cache request identity linkage')
         require(identity['kind'] == 'inventory', 'inventory entry required')
         dependencies = entry['dependencies']
-        require(dependencies['eligible'] is True and dependencies['complete'] is True
-                and not dependencies['unsupported'] and dependencies['code_roots']
-                and dependencies['module_origins'], 'complete captured dependencies required')
+        require(identity['capability_version'] == 3 and dependencies['capability_version'] == 3
+                and set(dependencies) == {'capability_version', 'closure', 'packages', 'own_sources'}
+                and dependencies['closure']['contexts'] and dependencies['closure']['files']
+                and dependencies['packages'] and dependencies['own_sources'],
+                'owner-scoped completed source closure and declared versions required')
         result = entry['result']
         require(result.get('status') == 'ok', 'successful historical worker result required')
         inventory = result['inventory']
@@ -159,6 +161,9 @@ def check_receipt(root):
         runtime_after = json.loads(read_artifact(root, sample['runtime_after']))
         require(runtime_before and runtime_before == runtime_after, 'initial runtime files changed')
         require(sample['import_origins_checked'] is True, 'measured checkout import origins')
+        if sample['mode'] == 'warm':
+            require(sample['blocked_heavy_import_attempts'] == [] and sample['heavy_modules_after_unfold'] == [],
+                    'fresh warm public call must not attempt/import heavy libraries')
         timing = sample['timings']
         for value in timing.values():
             seconds(value)
