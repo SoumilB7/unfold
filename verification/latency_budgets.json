@@ -57,7 +57,9 @@
     "schema_version": 1,
     "samples_per_mode": 3,
     "aggregation": "median",
-    "library_imports_in_budget": false,
+    "library_imports_in_budget": true,
+    "public_package_import_in_budget": false,
+    "timer_boundary": "Only public model_unfolder import excluded; all heavy/lazy imports, exact identity validation and DTO work included; HTML excluded.",
     "html_in_budget": false,
     "targets": {
       "stable-diffusion-xl-base-1-0": "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json",

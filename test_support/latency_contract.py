@@ -41,8 +41,9 @@ def validate_budget(document):
             'exactly three samples per mode')
     require(section['targets'] == TARGETS, 'exact UNet targets and inputs required')
     require(section['aggregation'] == 'median', 'median aggregation required')
-    require(section['library_imports_in_budget'] is False and section['html_in_budget'] is False,
-            'S2 import/HTML timer boundary required')
+    require(section['library_imports_in_budget'] is True and section['public_package_import_in_budget'] is False
+            and section['html_in_budget'] is False,
+            'owner public-package-only import exclusion required')
     require(seconds(section['cold_empty_cache']['budget_seconds']) == 30.0,
             'owner cold budget is 30 seconds')
     require(seconds(section['warm_populated_cache']['budget_seconds']) == 9.0,
