@@ -1,0 +1,382 @@
+{
+  "entries": {
+    "S11-module-map": {
+      "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S11-module-map.md",
+      "raw_bytes": 1410,
+      "raw_sha256": "c4cc67cf6130cf7b410281a6a76657550d2e3b2ed60995583b9c02dec1353122",
+      "stored": "content/c4cc67cf6130cf7b410281a6a76657550d2e3b2ed60995583b9c02dec1353122.gzip",
+      "stored_sha256": "2d24a33a4e3e84923f5f3938c7e254568edbcbc74674071633543d1d3a8c31ba"
+    },
+    "budget-checks/focused-budget.log": {
+      "original": "/private/tmp/unfold-s81-approved-budget-checks/focused-budget.log",
+      "raw_bytes": 99,
+      "raw_sha256": "2d6177288d1e652f4dfe00725682c72d31e0e330c96084a367b8f171d757cbf7",
+      "stored": "content/2d6177288d1e652f4dfe00725682c72d31e0e330c96084a367b8f171d757cbf7.gzip",
+      "stored_sha256": "0a1e4a96ad3cd3465b9c7ad694d8859e880a934fbd0ee63cdced3b5adb8993d7"
+    },
+    "budget-checks/result.json": {
+      "original": "/private/tmp/unfold-s81-approved-budget-checks/result.json",
+      "raw_bytes": 4310,
+      "raw_sha256": "208f3f86b15d3a561b87a033632d78fba0db5a637056ab788d14e0b0611848cd",
+      "stored": "content/208f3f86b15d3a561b87a033632d78fba0db5a637056ab788d14e0b0611848cd.gzip",
+      "stored_sha256": "054b5872a115aab111c2cd193df519154d94bd372a03bdc1efd4d180292458ef"
+    },
+    "budget-checks/static.log": {
+      "original": "/private/tmp/unfold-s81-approved-budget-checks/static.log",
+      "raw_bytes": 45,
+      "raw_sha256": "3b86e7a1878af1d0f9e639aab3d437ee48847ddaf7dede21652c2450c780768f",
+      "stored": "content/3b86e7a1878af1d0f9e639aab3d437ee48847ddaf7dede21652c2450c780768f.gzip",
+      "stored_sha256": "15644f0c14fb2309b464c404b4ba5af39eb350820f0fbd45b34d417ad6c6ba83"
+    },
+    "budget-run.log": {
+      "original": "/private/tmp/unfold-s81-approved-budget-checks.log",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored": "content/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gzip",
+      "stored_sha256": "abfbb86f9f5ddfbd9fc1a72c43ab384702ce8bae86b60f3324748485e235e61e"
+    },
+    "decision-page": {
+      "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8.1/approved-closure.html",
+      "raw_bytes": 2928,
+      "raw_sha256": "3f7aced82df7eaf37beba884f7e2f9eaebdb99e543c2e178142bf967db9adc5c",
+      "stored": "content/3f7aced82df7eaf37beba884f7e2f9eaebdb99e543c2e178142bf967db9adc5c.gzip",
+      "stored_sha256": "53f4031534e0b45e8e6a00f134e969edf67d62fadcf60853ab18fb3b7c1d5064"
+    },
+    "independent-review/approval-authority.json": {
+      "original": "/private/tmp/unfold-s81-approved-closure-independent-review/approval-authority.json",
+      "raw_bytes": 1483,
+      "raw_sha256": "af1cef8901e317808c9958a913891d4f3ed857dc8f57c700a531079b9bc2d9bc",
+      "stored": "content/af1cef8901e317808c9958a913891d4f3ed857dc8f57c700a531079b9bc2d9bc.gzip",
+      "stored_sha256": "5a0db60f91948c0b583802ce2d71492af8fcaa616c87b381749be3403a2b11ae"
+    },
+    "independent-review/budget-contract-review.json": {
+      "original": "/private/tmp/unfold-s81-approved-closure-independent-review/budget-contract-review.json",
+      "raw_bytes": 1574,
+      "raw_sha256": "eac5da4ec74c93bb62df8e8fa47988a1ac0b0ee63e434f88b62d20366aad0a9a",
+      "stored": "content/eac5da4ec74c93bb62df8e8fa47988a1ac0b0ee63e434f88b62d20366aad0a9a.gzip",
+      "stored_sha256": "d88997c6234e0e34800afe0db958a3bccdb249a248c79620b52b13a09223c5ba"
+    },
+    "independent-review/budget-runner-review.json": {
+      "original": "/private/tmp/unfold-s81-approved-closure-independent-review/budget-runner-review.json",
+      "raw_bytes": 860,
+      "raw_sha256": "336076db87ffec2e6389b83a32fe10f2645559e77e7cbed05daa3a00e01cecca",
+      "stored": "content/336076db87ffec2e6389b83a32fe10f2645559e77e7cbed05daa3a00e01cecca.gzip",
+      "stored_sha256": "85546e2bab5dbc5619c06391ca12f3c56776961a580fc5ab607552f5c9233280"
+    },
+    "independent-review/installation-verdict.json": {
+      "original": "/private/tmp/unfold-s81-approved-closure-independent-review/installation-verdict.json",
+      "raw_bytes": 3451,
+      "raw_sha256": "bc05dc1435b2274b44624f1eaa9c6b962561611e3952b8ba6384a7e8cbbb9156",
+      "stored": "content/bc05dc1435b2274b44624f1eaa9c6b962561611e3952b8ba6384a7e8cbbb9156.gzip",
+      "stored_sha256": "9706ddedf8ba1637109d68f43faddce28e2ae63a9718135302e186451b4ee650"
+    },
+    "independent-review/local-closure-verdict.json": {
+      "original": "/private/tmp/unfold-s81-approved-closure-independent-review/local-closure-verdict.json",
+      "raw_bytes": 2608,
+      "raw_sha256": "3dc89901fdd18ba190adcbe2acdca120ee409c9fef624032a0221bd76bdc88e4",
+      "stored": "content/3dc89901fdd18ba190adcbe2acdca120ee409c9fef624032a0221bd76bdc88e4.gzip",
+      "stored_sha256": "413f78d659e378ac3a7492d60723067fa4ee2b0078be9915ffed0738a7523614"
+    },
+    "independent-review/output-closure-actual-review.json": {
+      "original": "/private/tmp/unfold-s81-approved-closure-independent-review/output-closure-actual-review.json",
+      "raw_bytes": 1762,
+      "raw_sha256": "57361471949c1ef5def948b003f8160fdd93450acfb7fad3f788219cd5c9d58f",
+      "stored": "content/57361471949c1ef5def948b003f8160fdd93450acfb7fad3f788219cd5c9d58f.gzip",
+      "stored_sha256": "ab3a7dbc58e89516edd88fcbbfc08f5c90a107b7a49704b5bcad70a2379843f8"
+    },
+    "independent-review/runner-baseline-review.json": {
+      "original": "/private/tmp/unfold-s81-approved-closure-independent-review/runner-baseline-review.json",
+      "raw_bytes": 1167,
+      "raw_sha256": "d9c74e008bf2e667faa1677a3f1cbc62c5a9ffec5de4ca2470131aeb6904fd38",
+      "stored": "content/d9c74e008bf2e667faa1677a3f1cbc62c5a9ffec5de4ca2470131aeb6904fd38.gzip",
+      "stored_sha256": "f76d6856f25a756fba8f5954785718afca7f8a675f5bf812f802b7886107fec3"
+    },
+    "independent-review/verified-install-facts.json": {
+      "original": "/private/tmp/unfold-s81-approved-closure-independent-review/verified-install-facts.json",
+      "raw_bytes": 1917,
+      "raw_sha256": "8992cb0ed1db35a77b638c3b0c61e84a709c50a7ea2ac5d3f9a527063cec1aed",
+      "stored": "content/8992cb0ed1db35a77b638c3b0c61e84a709c50a7ea2ac5d3f9a527063cec1aed.gzip",
+      "stored_sha256": "94184c67036b6a810b379c51904adfa81f301c6d116ceb819d1cf45ffed2416c"
+    },
+    "installation/before/examples/manifest.json": {
+      "original": "/private/tmp/unfold-s81-approved-four-file-install/before/examples/manifest.json",
+      "raw_bytes": 2423,
+      "raw_sha256": "01a3f58b50e1a8a69677307f85fe17220d8f9224839e669b37f544fecea5e827",
+      "stored": "content/01a3f58b50e1a8a69677307f85fe17220d8f9224839e669b37f544fecea5e827.gzip",
+      "stored_sha256": "1116401ff8554e70b52337d81cb122b435ec75a97cdeb13899b3e9d11e73002f"
+    },
+    "installation/before/examples/stable-diffusion-xl-base-1-0.html": {
+      "original": "/private/tmp/unfold-s81-approved-four-file-install/before/examples/stable-diffusion-xl-base-1-0.html",
+      "raw_bytes": 24310552,
+      "raw_sha256": "047ded43206adce009b820bda58aa16b8cba67c629f4e4160fd04a58f96dfc22",
+      "stored": "content/047ded43206adce009b820bda58aa16b8cba67c629f4e4160fd04a58f96dfc22.gzip",
+      "stored_sha256": "6d70299cb771318e63e46bd99e8b924aa3df243c9952aa78b591fbb333a6482f"
+    },
+    "installation/before/tests/preservation_expected_manifest.json": {
+      "original": "/private/tmp/unfold-s81-approved-four-file-install/before/tests/preservation_expected_manifest.json",
+      "raw_bytes": 68954,
+      "raw_sha256": "00bf924b13aeff81ac6bcfd0f842fda2a9922ce5da2a299d582e3d8709c3e2bc",
+      "stored": "content/00bf924b13aeff81ac6bcfd0f842fda2a9922ce5da2a299d582e3d8709c3e2bc.gzip",
+      "stored_sha256": "396c9a30e7fb57b31b580cbb9ef6a9606e8ca5511912925b274719c00adbc804"
+    },
+    "installation/before/verification/s7/matrix.json": {
+      "original": "/private/tmp/unfold-s81-approved-four-file-install/before/verification/s7/matrix.json",
+      "raw_bytes": 200657,
+      "raw_sha256": "4b5696bcef94f08da5c95fce8b8d0f0091b50eb285e219a8673c89d72b36accd",
+      "stored": "content/4b5696bcef94f08da5c95fce8b8d0f0091b50eb285e219a8673c89d72b36accd.gzip",
+      "stored_sha256": "41774f37b16ab13a75b41cb612ee2ad7b64ce1a6521d01f1fb480c227e091da1"
+    },
+    "installation/install_staged.executed.py": {
+      "original": "/private/tmp/unfold-s81-approved-four-file-install/install_staged.executed.py",
+      "raw_bytes": 12344,
+      "raw_sha256": "132cf85ec1945e28afb343cc745b8f03bf3211bba13163a78a5cd5016f30aa6f",
+      "stored": "content/132cf85ec1945e28afb343cc745b8f03bf3211bba13163a78a5cd5016f30aa6f.gzip",
+      "stored_sha256": "47f9c438ee52ae183f55cd265cd204e94df371fe3f0d6d336d9f4410640f19b7"
+    },
+    "installation/manifest.executed.json": {
+      "original": "/private/tmp/unfold-s81-approved-four-file-install/manifest.executed.json",
+      "raw_bytes": 10633,
+      "raw_sha256": "356954dcb5118b7b8f0fe7aafd18499c02c6e7ccd3674968f9fb398fabd6d2d1",
+      "stored": "content/356954dcb5118b7b8f0fe7aafd18499c02c6e7ccd3674968f9fb398fabd6d2d1.gzip",
+      "stored_sha256": "42908b9dadae01b771ba266c36d8500e300669047860915a9088cc132850458b"
+    },
+    "installation/result.json": {
+      "original": "/private/tmp/unfold-s81-approved-four-file-install/result.json",
+      "raw_bytes": 105861,
+      "raw_sha256": "8e603fee5eae174becfb84d183d8e17041c71236c84c408b442668b12387253b",
+      "stored": "content/8e603fee5eae174becfb84d183d8e17041c71236c84c408b442668b12387253b.gzip",
+      "stored_sha256": "8d550990c6baf29a9840cdb107822041bb4b201af39d062f29d4cf7de076d557"
+    },
+    "installer-preparation/README.md": {
+      "original": "/private/tmp/unfold-s81-approved-closure-preparation/README.md",
+      "raw_bytes": 2525,
+      "raw_sha256": "12decc1737b98fbef883e8eb55171d9ef3cca110cf657987e8f7adf066e0aecd",
+      "stored": "content/12decc1737b98fbef883e8eb55171d9ef3cca110cf657987e8f7adf066e0aecd.gzip",
+      "stored_sha256": "6e9ecefc7d0da30891e0683d81845a26b949d9f5a0ed2f048d17ff6fbaa621ce"
+    },
+    "installer-preparation/install_staged.py": {
+      "original": "/private/tmp/unfold-s81-approved-closure-preparation/install_staged.py",
+      "raw_bytes": 12344,
+      "raw_sha256": "132cf85ec1945e28afb343cc745b8f03bf3211bba13163a78a5cd5016f30aa6f",
+      "stored": "content/132cf85ec1945e28afb343cc745b8f03bf3211bba13163a78a5cd5016f30aa6f.gzip",
+      "stored_sha256": "47f9c438ee52ae183f55cd265cd204e94df371fe3f0d6d336d9f4410640f19b7"
+    },
+    "installer-preparation/manifest.json": {
+      "original": "/private/tmp/unfold-s81-approved-closure-preparation/manifest.json",
+      "raw_bytes": 10633,
+      "raw_sha256": "356954dcb5118b7b8f0fe7aafd18499c02c6e7ccd3674968f9fb398fabd6d2d1",
+      "stored": "content/356954dcb5118b7b8f0fe7aafd18499c02c6e7ccd3674968f9fb398fabd6d2d1.gzip",
+      "stored_sha256": "42908b9dadae01b771ba266c36d8500e300669047860915a9088cc132850458b"
+    },
+    "output-checks/preservation.log": {
+      "original": "/private/tmp/unfold-s81-approved-output-checks/preservation.log",
+      "raw_bytes": 154,
+      "raw_sha256": "68c1ed2bad2e6443ff6efcf8f2637051774714a6819802de699cc9e8ff5c09fe",
+      "stored": "content/68c1ed2bad2e6443ff6efcf8f2637051774714a6819802de699cc9e8ff5c09fe.gzip",
+      "stored_sha256": "317ebd58c1b927c2538952deee1eaf9f3c48d2ccafeb47cae444dfffcef3f27f"
+    },
+    "output-checks/progress.json": {
+      "original": "/private/tmp/unfold-s81-approved-output-checks/progress.json",
+      "raw_bytes": 15980,
+      "raw_sha256": "2b8f092eb3daac41e23f8c34a8d7cdeb949cbe0412cb9ba302e0ec8b6c865c7f",
+      "stored": "content/2b8f092eb3daac41e23f8c34a8d7cdeb949cbe0412cb9ba302e0ec8b6c865c7f.gzip",
+      "stored_sha256": "c682141fb478c2266ec854260896060b7dc6d6a3fe09317564b82b1c5eef9190"
+    },
+    "output-checks/result.json": {
+      "original": "/private/tmp/unfold-s81-approved-output-checks/result.json",
+      "raw_bytes": 28941,
+      "raw_sha256": "2b352679ee63f76ae568cbb822faabe18e314b12e4fe7c477a2891e54d7e7938",
+      "stored": "content/2b352679ee63f76ae568cbb822faabe18e314b12e4fe7c477a2891e54d7e7938.gzip",
+      "stored_sha256": "30d73f8a131def64c3a23a35d55db601e62f5c6b72d459868ea30b311278c588"
+    },
+    "output-checks/s5-example.log": {
+      "original": "/private/tmp/unfold-s81-approved-output-checks/s5-example.log",
+      "raw_bytes": 99,
+      "raw_sha256": "040d0b760981eafd9905e1ffef1ef5824f2551d994378c3ee1ebb714184ab8c3",
+      "stored": "content/040d0b760981eafd9905e1ffef1ef5824f2551d994378c3ee1ebb714184ab8c3.gzip",
+      "stored_sha256": "ce4c6fbcbd7783111ee2b00b9e9663ce77fac86f1c08997aaa65bae68e63dda5"
+    },
+    "output-checks/s7-stamp.log": {
+      "original": "/private/tmp/unfold-s81-approved-output-checks/s7-stamp.log",
+      "raw_bytes": 98,
+      "raw_sha256": "e52fd768797af77bddd8b6ad23c4cc6bde5437dd57999d055d10db39cea85615",
+      "stored": "content/e52fd768797af77bddd8b6ad23c4cc6bde5437dd57999d055d10db39cea85615.gzip",
+      "stored_sha256": "8b199c88db23d37a9f865489f82e66b9b3930e6b44fb35bf83e7c6e05497480b"
+    },
+    "output-run.log": {
+      "original": "/private/tmp/unfold-s81-approved-output-checks.log",
+      "raw_bytes": 474,
+      "raw_sha256": "781df1d8bed0b787bf1904184be73d1967620968734fb551243ac7aab6c750e6",
+      "stored": "content/781df1d8bed0b787bf1904184be73d1967620968734fb551243ac7aab6c750e6.gzip",
+      "stored_sha256": "a3a2062d86b4d333acbd53889c39a41c7adb86f6e6364e98f62b8e9c8c79fdb1"
+    },
+    "owner-ruling": {
+      "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S8.1-owner-ruling.md",
+      "raw_bytes": 10450,
+      "raw_sha256": "3aceddef0b7ade44d9761f89116a73a5dbb23b5d08bdfe59643aeef4a74b7411",
+      "stored": "content/3aceddef0b7ade44d9761f89116a73a5dbb23b5d08bdfe59643aeef4a74b7411.gzip",
+      "stored_sha256": "64b738149f52863ef7a95b061314892cf0ad960626f78637481dd97fed6dd1cf"
+    },
+    "page-tool/README.md": {
+      "original": "/private/tmp/unfold-s81-approved-closure-page/README.md",
+      "raw_bytes": 2371,
+      "raw_sha256": "a45547c6d76afaa80a6c3abd7b4a0dc47ef385706c4a01ec5a09c138c685aefd",
+      "stored": "content/a45547c6d76afaa80a6c3abd7b4a0dc47ef385706c4a01ec5a09c138c685aefd.gzip",
+      "stored_sha256": "548aeb4a4b6e9d0143c5c8f7d35a9aa37e248ac4aec894245e871deebc6cb6c4"
+    },
+    "page-tool/build_page.py": {
+      "original": "/private/tmp/unfold-s81-approved-closure-page/build_page.py",
+      "raw_bytes": 8890,
+      "raw_sha256": "73c519a88954b6dbf00aeef065b4b42714133d63732ac310b4de7cd4eee8e632",
+      "stored": "content/73c519a88954b6dbf00aeef065b4b42714133d63732ac310b4de7cd4eee8e632.gzip",
+      "stored_sha256": "4c10bb30ec30fde915f63020ecdbaa59258d1eacb5fb10d8e0715a43ea092f8a"
+    },
+    "review": {
+      "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S8.1-review.md",
+      "raw_bytes": 44881,
+      "raw_sha256": "5c182e347a028755b63ca2eee3fe4744bedb90afd9cd7d99156dfc4c12827772",
+      "stored": "content/5c182e347a028755b63ca2eee3fe4744bedb90afd9cd7d99156dfc4c12827772.gzip",
+      "stored_sha256": "4b6ac1b1f35d6af2f49a0cf806080b3f7846ee137855e0d25fb3fab4667c51b0"
+    },
+    "root-preparation/baseline-install-result.json": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/baseline-install-result.json",
+      "raw_bytes": 1028,
+      "raw_sha256": "dac14129a8fa888d8828bf52a524cca59af42413c98c8dd6d9b261a8a188f90a",
+      "stored": "content/dac14129a8fa888d8828bf52a524cca59af42413c98c8dd6d9b261a8a188f90a.gzip",
+      "stored_sha256": "c7e5d3132aba380e270bf1d72b1824a4043758deb990aebe85e6747dbfa5b6a6"
+    },
+    "root-preparation/baseline/latency_budgets.json": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/baseline/latency_budgets.json",
+      "raw_bytes": 17265,
+      "raw_sha256": "043c17de865a749119781eef50949c5f6ebf9751308e79f68d7ad9cc76902060",
+      "stored": "content/043c17de865a749119781eef50949c5f6ebf9751308e79f68d7ad9cc76902060.gzip",
+      "stored_sha256": "a498ba64d2b414ad7db6517ba64adcb56f4d6a89ff80436d045f6ec1a65c0e13"
+    },
+    "root-preparation/baseline/result.json": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/baseline/result.json",
+      "raw_bytes": 1347,
+      "raw_sha256": "739ca1f1164713603cf7f7850450fc08baa7b06dfef9de90e32f4c44308fadfe",
+      "stored": "content/739ca1f1164713603cf7f7850450fc08baa7b06dfef9de90e32f4c44308fadfe.gzip",
+      "stored_sha256": "5b7ba518d6a4ff5ca6826658a2c5a2183411b230ce84bf3b2e7cb292a04f0b06"
+    },
+    "root-preparation/budget-commit.txt": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/budget-commit.txt",
+      "raw_bytes": 273,
+      "raw_sha256": "7cfef9a72a56900d4f3e5811128370659a2bb49c95d0d9aec8bb9b9a82708d0d",
+      "stored": "content/7cfef9a72a56900d4f3e5811128370659a2bb49c95d0d9aec8bb9b9a82708d0d.gzip",
+      "stored_sha256": "621fa9a31bd5a2c8d1bcee04b52ee34dfbc4a578db3d396b7ec9f8b9d230545c"
+    },
+    "root-preparation/contract/manifest.json": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/contract/manifest.json",
+      "raw_bytes": 635,
+      "raw_sha256": "3032796399af8ac31e2d40b970dc69f2c723708b0cfc29833460adece1780bd7",
+      "stored": "content/3032796399af8ac31e2d40b970dc69f2c723708b0cfc29833460adece1780bd7.gzip",
+      "stored_sha256": "ef6ed35c0824cf3b6ef807937910583055a16011f4895ff70e0cf61dddee9441"
+    },
+    "root-preparation/contract/test_support/latency_contract.py": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/contract/test_support/latency_contract.py",
+      "raw_bytes": 12878,
+      "raw_sha256": "d1f84e104719f971b994992908bee51bd9ac36287bcb8edab4441ccdc252c5dc",
+      "stored": "content/d1f84e104719f971b994992908bee51bd9ac36287bcb8edab4441ccdc252c5dc.gzip",
+      "stored_sha256": "261bd0fffc80ca7a40e6b04a83033cac95b24bd6f57b25269f007dafaacecd70"
+    },
+    "root-preparation/contract/tests/test_s81_latency.py": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/contract/tests/test_s81_latency.py",
+      "raw_bytes": 19524,
+      "raw_sha256": "5d2cfdf9ba4eefcab3b0d39220bc16b45de02dc1bde771362da6f8385829c138",
+      "stored": "content/5d2cfdf9ba4eefcab3b0d39220bc16b45de02dc1bde771362da6f8385829c138.gzip",
+      "stored_sha256": "08c0abd0e57361cdf0fb24bcbbed6943b30adb1247f2e475cb6e1ca22906d8f5"
+    },
+    "root-preparation/contract/verification/latency.md": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/contract/verification/latency.md",
+      "raw_bytes": 6040,
+      "raw_sha256": "fa67db5f0ef95d740b05059d8248f067f38172d185fbe2fee399ddd755c386be",
+      "stored": "content/fa67db5f0ef95d740b05059d8248f067f38172d185fbe2fee399ddd755c386be.gzip",
+      "stored_sha256": "f1f957b2ab3d16ecf28f67e48181858d42e14f7a39f96ecd9a25bca94306850a"
+    },
+    "root-preparation/install-commit.txt": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/install-commit.txt",
+      "raw_bytes": 253,
+      "raw_sha256": "a798b264d9d7b44b73c937b99fb360a864e23e7583eaae3cce7402671cab4906",
+      "stored": "content/a798b264d9d7b44b73c937b99fb360a864e23e7583eaae3cce7402671cab4906.gzip",
+      "stored_sha256": "39a7e0cb7f087202997ee88677b7c3b6154fa291e91f9fec02228723e91b55a0"
+    },
+    "root-preparation/pack_receipt.py": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/pack_receipt.py",
+      "raw_bytes": 3385,
+      "raw_sha256": "cea5c5d0b7545a4e058577d574e2c686b3e000744c0affba422c559b77f529e3",
+      "stored": "content/cea5c5d0b7545a4e058577d574e2c686b3e000744c0affba422c559b77f529e3.gzip",
+      "stored_sha256": "f815323bb078700703511c098561c7298b4d12733523ffe8ccd8e710c37e8078"
+    },
+    "root-preparation/page-inputs-pending.json": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/page-inputs-pending.json",
+      "raw_bytes": 1886,
+      "raw_sha256": "dd641dd3f7244ea108ff8e6c5d447d6ce214c17e1175cc419b0f5594119c4e62",
+      "stored": "content/dd641dd3f7244ea108ff8e6c5d447d6ce214c17e1175cc419b0f5594119c4e62.gzip",
+      "stored_sha256": "59dfd773b61c2d08f9df18d46089c4152b9905181f16fb276b469bfc9f3141b9"
+    },
+    "root-preparation/page-pending.html": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/page-pending.html",
+      "raw_bytes": 2928,
+      "raw_sha256": "3f7aced82df7eaf37beba884f7e2f9eaebdb99e543c2e178142bf967db9adc5c",
+      "stored": "content/3f7aced82df7eaf37beba884f7e2f9eaebdb99e543c2e178142bf967db9adc5c.gzip",
+      "stored_sha256": "53f4031534e0b45e8e6a00f134e969edf67d62fadcf60853ab18fb3b7c1d5064"
+    },
+    "root-preparation/page-pending.inputs.json": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/page-pending.inputs.json",
+      "raw_bytes": 1844,
+      "raw_sha256": "a33490970e4f0407ef24f341a39d9e13af1b14641279ed2749b5dd87595e2af9",
+      "stored": "content/a33490970e4f0407ef24f341a39d9e13af1b14641279ed2749b5dd87595e2af9.gzip",
+      "stored_sha256": "910d09c6fd9d0cb60dff803d80817415d51481d597c80f47cd96aa9faab207c4"
+    },
+    "root-preparation/prepare_baseline.py": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/prepare_baseline.py",
+      "raw_bytes": 3569,
+      "raw_sha256": "8284303cbfba0b82e695a34af9b1208e22b75695318e65d370fd9278eee1b651",
+      "stored": "content/8284303cbfba0b82e695a34af9b1208e22b75695318e65d370fd9278eee1b651.gzip",
+      "stored_sha256": "795c5394a6dfceb46b89a150aac3ffe690085f00ab90b2052e702a85fc6b1139"
+    },
+    "root-preparation/prepare_contract.py": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/prepare_contract.py",
+      "raw_bytes": 5804,
+      "raw_sha256": "787906f86f05f5230d1dd2c96844d0e1844db846ffc6aea75228254c3187035f",
+      "stored": "content/787906f86f05f5230d1dd2c96844d0e1844db846ffc6aea75228254c3187035f.gzip",
+      "stored_sha256": "0e784c6e0886842cfb1dad2c51f299c34d271e048ea99d918c97801c7f8e1d8c"
+    },
+    "root-preparation/update_sheet.py": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/update_sheet.py",
+      "raw_bytes": 7555,
+      "raw_sha256": "e2eca054f3f4eb147e5870b6b68c056b320f970e9b06f3d71c6d11a411b60185",
+      "stored": "content/e2eca054f3f4eb147e5870b6b68c056b320f970e9b06f3d71c6d11a411b60185.gzip",
+      "stored_sha256": "6968494b4dbc9d8b142d489cb2ab644e5b2442a9a990f6d896401364746de2d7"
+    },
+    "root-preparation/verify_budget.py": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/verify_budget.py",
+      "raw_bytes": 2034,
+      "raw_sha256": "b150d8911bb27b74472e7951b431ac0362a558608dfb2e04ba6f9bc98f744a9b",
+      "stored": "content/b150d8911bb27b74472e7951b431ac0362a558608dfb2e04ba6f9bc98f744a9b.gzip",
+      "stored_sha256": "c0921f7ee93a2fb390ac0510a8a9b6a71608bb8ec5c8ee80071a74749c256820"
+    },
+    "root-preparation/verify_closure.py": {
+      "original": "/private/tmp/unfold-s81-approved-closure-root/verify_closure.py",
+      "raw_bytes": 3140,
+      "raw_sha256": "e67d675e04cc75f1370a4460f99869f2f67f41adee2ea4cb71713558a3a843e2",
+      "stored": "content/e67d675e04cc75f1370a4460f99869f2f67f41adee2ea4cb71713558a3a843e2.gzip",
+      "stored_sha256": "c599e734372bf99b5f3bba97ce8a82a25ff5551593612987309b47c41e07f9b8"
+    },
+    "sheet": {
+      "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S8.1.md",
+      "raw_bytes": 42763,
+      "raw_sha256": "6f1eb8af6b98cc347acd4b098d0e9777a9635f31c07b967ec28b431d1915621a",
+      "stored": "content/6f1eb8af6b98cc347acd4b098d0e9777a9635f31c07b967ec28b431d1915621a.gzip",
+      "stored_sha256": "accfe4600a7639b8f2443e7ef483320bf0d3c1acf4a968d9bb85569778a908e4"
+    }
+  },
+  "excluded": [
+    "model correctness result cache",
+    "isolated worktrees",
+    "all historical receipt archives"
+  ],
+  "historical_full_samples": "../S8.1-owner-resubmission-actual-results/artifact-map.json",
+  "schema_version": 1
+}

@@ -1,0 +1,56 @@
+{
+  "commit": "41a8039236c552429ffd6610675625eae559985b",
+  "error": null,
+  "lanes": {
+    "focused-budget": {
+      "after": "a97e96bd5d9af0a130c60e25e3024894bc95dc4689c354fb17766fd3344894bf",
+      "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "before": "a97e96bd5d9af0a130c60e25e3024894bc95dc4689c354fb17766fd3344894bf",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_s81_latency.py",
+        "tests/test_s2_latency.py"
+      ],
+      "duration": 2.961247166618705,
+      "log_path": "/private/tmp/unfold-s81-approved-budget-checks/focused-budget.log",
+      "name": "focused-budget",
+      "passed": true,
+      "returncode": 0,
+      "worktree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s81-close-41a80392-budget"
+    },
+    "static": {
+      "after": "a97e96bd5d9af0a130c60e25e3024894bc95dc4689c354fb17766fd3344894bf",
+      "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "before": "a97e96bd5d9af0a130c60e25e3024894bc95dc4689c354fb17766fd3344894bf",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+        "-c",
+        "\nimport ast, pathlib, subprocess, sys\ncommit, *forbidden = sys.argv[1:]\nchanged = subprocess.run(\n    [\"git\", \"diff-tree\", \"--no-commit-id\", \"--name-only\", \"-r\", commit + \"^\", commit],\n    text=True, capture_output=True, check=True).stdout.splitlines()\npython_files = [p for p in changed if p.endswith(\".py\") and pathlib.Path(p).exists()]\nif python_files:\n    subprocess.run([sys.executable, \"-m\", \"pyflakes\", *python_files], check=True)\nsubprocess.run([\"git\", \"diff\", commit + \"^\", commit, \"--check\"], check=True)\nroots = [pathlib.Path(\"model_unfolder\"), pathlib.Path(\"test_support\")]\nfor needle in forbidden:\n    hits = []\n    for root in roots:\n        for path in root.rglob(\"*.py\"):\n            tree = ast.parse(path.read_text(encoding=\"utf-8\"), filename=str(path))\n            identifiers = set()\n            for node in ast.walk(tree):\n                if isinstance(node, ast.Name):\n                    identifiers.add(node.id)\n                elif isinstance(node, ast.Attribute):\n                    identifiers.add(node.attr)\n                elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):\n                    identifiers.add(node.name)\n                elif isinstance(node, ast.alias):\n                    identifiers.add(node.asname or node.name.rsplit(\".\", 1)[-1])\n            if needle in identifiers:\n                hits.append(str(path))\n    if hits:\n        raise SystemExit(\"forbidden symbol %r remains in: %s\" % (needle, \", \".join(hits)))\nprint(\"static checks clean; changed python files:\", len(python_files))\n",
+        "41a8039236c552429ffd6610675625eae559985b"
+      ],
+      "duration": 0.22263895813375711,
+      "log_path": "/private/tmp/unfold-s81-approved-budget-checks/static.log",
+      "name": "static",
+      "passed": true,
+      "returncode": 0,
+      "worktree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s81-close-41a80392-budget"
+    }
+  },
+  "status": "PASS_MEASURED_BUDGET_CONTROLS",
+  "tools_after": {
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/scripts/verify_commit.py": "5b12dca3116efd454d878c7ad6bbe62859d90e0ad558df881406bb36bd318c5a",
+    "/private/tmp/unfold-s81-approved-closure-root/verify_budget.py": "b150d8911bb27b74472e7951b431ac0362a558608dfb2e04ba6f9bc98f744a9b"
+  },
+  "tools_before": {
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/scripts/verify_commit.py": "5b12dca3116efd454d878c7ad6bbe62859d90e0ad558df881406bb36bd318c5a",
+    "/private/tmp/unfold-s81-approved-closure-root/verify_budget.py": "b150d8911bb27b74472e7951b431ac0362a558608dfb2e04ba6f9bc98f744a9b"
+  },
+  "tools_unchanged": true
+}
