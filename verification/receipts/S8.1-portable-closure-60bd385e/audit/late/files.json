@@ -1,0 +1,122 @@
+[
+  {
+    "path": "verification/receipts/S8.1-portable-closure-60bd385e/README.md",
+    "sha256": "5b053a52853d6a67c69848aebfd469917e756e640b0f4d6fcfb1de009e6e8745",
+    "bytes": 3064,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-closure-60bd385e/checks/coverage.log",
+    "sha256": "d650b4e1cfa4283dba2223d49ef625fbbfdbaaf5ef83c92ab1efc4033fd05175",
+    "bytes": 3320,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-closure-60bd385e/checks/progress.json",
+    "sha256": "7baf1d13999fd149af65dff815c304b30c3aaca7fa4d6d845873f89756a47ce8",
+    "bytes": 1118,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-closure-60bd385e/checks/result.json",
+    "sha256": "5c68d197bfb9ddb8c9645b6015dd30ae9bda4edd96a87371df5cdeaa05879dac",
+    "bytes": 2720,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-closure-60bd385e/checks/s7-stamp.log",
+    "sha256": "5ba3e5b596e011193ba801b71c52b954aa338d6169a4c5581f6a962b23c9f64b",
+    "bytes": 98,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-closure-60bd385e/committed_checks.py",
+    "sha256": "1c26d7b17cc96b323839f39bb13256dc2700db9514c49539cdd5dd9ae4201773",
+    "bytes": 2854,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-closure-60bd385e/driver-review/committed_checks.py",
+    "sha256": "1c26d7b17cc96b323839f39bb13256dc2700db9514c49539cdd5dd9ae4201773",
+    "bytes": 2854,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-closure-60bd385e/driver-review/record_install.py",
+    "sha256": "f83a4dc6b0c9c4b1c080627b64af35f0adba8a4b8871a789db563aeb803548c1",
+    "bytes": 4261,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-closure-60bd385e/driver-review/recorder-source-review.json",
+    "sha256": "840758fad965a87a1f814f67d97e2b15441daf76ca563b97209d041f1bf6399b",
+    "bytes": 1070,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-closure-60bd385e/driver-review/review.json",
+    "sha256": "d3eb708697cfb456d283de4e4a9a56311ca8e6ff5cead726eeeec3b9b180c2e5",
+    "bytes": 1456,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-closure-60bd385e/manifest.json",
+    "sha256": "2cb44b47122666179ac69a01bb46ecd6edc42cdf0f33d44990160cc2a98fea5b",
+    "bytes": 9634,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-closure-60bd385e/record_closure.py",
+    "sha256": "f289b7d416694f8c3fd69dea4afd656df218326c37d17bf656b1c193f9ae31f1",
+    "bytes": 6630,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-install-113d159f/README.md",
+    "sha256": "206fe09f1039c5e826f0bf47b166a4346d54813c3981df6b412ce66136b651b5",
+    "bytes": 1631,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-install-113d159f/committed_checks.py",
+    "sha256": "1c26d7b17cc96b323839f39bb13256dc2700db9514c49539cdd5dd9ae4201773",
+    "bytes": 2854,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-install-113d159f/install.executed.py",
+    "sha256": "267a5bd6766c627f19c7622b6f0184ce9524e5e0df11057cdb5f9c9fdd1fcf72",
+    "bytes": 12237,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-install-113d159f/manifest.executed.json",
+    "sha256": "8d92d1af2e9611c689f84f17f7505d8cf7a6df88e328a73641db0ab4729e59c2",
+    "bytes": 20252,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-install-113d159f/manifest.json",
+    "sha256": "0af0d3201d1258e2eeb0b4d6310bd7be9547ceb9de0b09b0ac0962f1ed55fa9e",
+    "bytes": 1064,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-install-113d159f/owner-ruling-at-install.md",
+    "sha256": "35ac85593e2475355083c12d144bbadf703fbdbbd83d48849156eb1e1d4aaa32",
+    "bytes": 13489,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-install-113d159f/record_install.py",
+    "sha256": "f83a4dc6b0c9c4b1c080627b64af35f0adba8a4b8871a789db563aeb803548c1",
+    "bytes": 4261,
+    "symlink": false
+  },
+  {
+    "path": "verification/receipts/S8.1-portable-install-113d159f/result.json",
+    "sha256": "0f63e29fa08ac65b9eaa5a1597c0167f8cc139aa6b21f92a449d9ffec751dfad",
+    "bytes": 21824,
+    "symlink": false
+  }
+]

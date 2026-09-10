@@ -1,0 +1,93 @@
+{
+  "status": "COMPLETE",
+  "start_head": "113d159fb97471c33c252e47c785e810c492fbd8",
+  "end_head": "113d159fb97471c33c252e47c785e810c492fbd8",
+  "tracked_file_count": 15001,
+  "read_file_count": 15001,
+  "stored_bytes": 1005212034,
+  "containers": {
+    "gzip": 11161
+  },
+  "unique_decoded_leaf_contents": 7873,
+  "decoded_leaf_count": 15001,
+  "categories": {
+    "active_examples": {
+      "decoded_leaf_count": 10,
+      "decoded_bytes": 3071882,
+      "host_path_files": 0,
+      "host_path_token_occurrences": 0,
+      "host_json_leaves": 0,
+      "known_local_digest_files": 0,
+      "index_field_count": 0,
+      "local_fingerprint_source_mention_files": 0
+    },
+    "active_s7": {
+      "decoded_leaf_count": 123,
+      "decoded_bytes": 147672824,
+      "host_path_files": 6,
+      "host_path_token_occurrences": 38,
+      "host_json_leaves": 6,
+      "known_local_digest_files": 0,
+      "index_field_count": 6217,
+      "local_fingerprint_source_mention_files": 0
+    },
+    "legacy_s6": {
+      "decoded_leaf_count": 29,
+      "decoded_bytes": 16856415,
+      "host_path_files": 1,
+      "host_path_token_occurrences": 6,
+      "host_json_leaves": 1,
+      "known_local_digest_files": 0,
+      "index_field_count": 0,
+      "local_fingerprint_source_mention_files": 0
+    },
+    "retained_receipts": {
+      "decoded_leaf_count": 14080,
+      "decoded_bytes": 15084293515,
+      "host_path_files": 3293,
+      "host_path_token_occurrences": 3674335,
+      "host_json_leaves": 2143840,
+      "known_local_digest_files": 67,
+      "index_field_count": 42316,
+      "local_fingerprint_source_mention_files": 77
+    },
+    "test_fixture": {
+      "decoded_leaf_count": 528,
+      "decoded_bytes": 31050103,
+      "host_path_files": 96,
+      "host_path_token_occurrences": 102,
+      "host_json_leaves": 1,
+      "known_local_digest_files": 0,
+      "index_field_count": 0,
+      "local_fingerprint_source_mention_files": 0
+    },
+    "test_source": {
+      "decoded_leaf_count": 229,
+      "decoded_bytes": 3264772,
+      "host_path_files": 14,
+      "host_path_token_occurrences": 44,
+      "host_json_leaves": 0,
+      "known_local_digest_files": 0,
+      "index_field_count": 0,
+      "local_fingerprint_source_mention_files": 2
+    },
+    "verification_metadata": {
+      "decoded_leaf_count": 2,
+      "decoded_bytes": 23305,
+      "host_path_files": 1,
+      "host_path_token_occurrences": 2,
+      "host_json_leaves": 0,
+      "known_local_digest_files": 0,
+      "index_field_count": 0,
+      "local_fingerprint_source_mention_files": 0
+    }
+  },
+  "errors": [],
+  "seconds": 591.3879427909851,
+  "limitations": [
+    "Host-path detection is a declared token search, not a proof that arbitrary opaque hashes are portable.",
+    "Source mentions and known historical digests are separate from active typed proof seals.",
+    "Opaque binary streams inspected as bytes; no pickle/pstats execution or deserialization.",
+    "Any concurrent install must be reconciled by recorded file hashes and final active scan."
+  ]
+}

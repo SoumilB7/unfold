@@ -1,0 +1,29 @@
+{
+  "role": "Audit-only self-descriptive supplement; this manifest is not a model authority or input to the audit counts.",
+  "files": [
+    {
+      "path": "audit/late/excluded.json",
+      "sha256": "bf43bc76034a2a92b50dc67b0f580b74752ef8f4a14acd8c59ba44bbf3b35f36"
+    },
+    {
+      "path": "audit/late/files.json",
+      "sha256": "c24d7d17e16935efedc2afc37c48eca610db63ff147bc84cb9c221fde0679a1d"
+    },
+    {
+      "path": "audit/late/findings.jsonl",
+      "sha256": "97330d0cd0824d73f59c1c0685edc6e27ff9b04fe29e16181074838e75935a57"
+    },
+    {
+      "path": "audit/late/paths.json",
+      "sha256": "2eb28fd57e9802f2999b08dca23c0281d6457207ab47f8a2f18cb1fa2da87337"
+    },
+    {
+      "path": "audit/late/result.json",
+      "sha256": "a463c5eda2933c552491980b8068c7f3e95561a687371f632f597dec6f59f58d"
+    },
+    {
+      "path": "audit/late/independent-final-verdict.json",
+      "sha256": "b039359a05afc08da79d81f872d841a748d529bcb4468fcf70ec69353913cfb6"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "closed_findings": [
+    "Executed manifest bytes are bound to installation result manifest hash.",
+    "Executed installer bytes are bound to approved plan installer hash.",
+    "Copied owner ruling bytes are bound to approved plan ruling hash.",
+    "Each copied source file is compared byte-for-byte with its source after copy; final receipt members are hash checked.",
+    "Check-driver tool pins precede dynamic import; import/worktree/staging run inside try/finally with tree initialized to None.",
+    "Missing final tool files produce None and FAIL; setup failures retain terminal error/result and partial lane evidence."
+  ],
+  "decision": "ACCEPT_BOUNDED_SOURCE_PREUSE",
+  "execution": "No recorder, check, model, browser or test was run by this reviewer.",
+  "files": {
+    "/private/tmp/record_s81_portable_install.py": "f83a4dc6b0c9c4b1c080627b64af35f0adba8a4b8871a789db563aeb803548c1",
+    "/private/tmp/unfold-s81-approved-portable-checks.py": "1c26d7b17cc96b323839f39bb13256dc2700db9514c49539cdd5dd9ae4201773"
+  },
+  "limits": "Source acceptance only; root owns actual execution and exact-head Linux disposition.",
+  "reviewer": "visual_artifacts",
+  "scope": [
+    "Receipt recording only; no duplicate prior proposal payloads.",
+    "Existing serial committed S7 stamp and coverage lanes through unchanged verification helper.",
+    "Candidate79/static/S5/52 evidence remains distinguished from new committed and Linux checks."
+  ]
+}

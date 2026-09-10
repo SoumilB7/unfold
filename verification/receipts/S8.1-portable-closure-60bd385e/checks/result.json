@@ -1,0 +1,42 @@
+{
+  "status": "PASS_COMMITTED_PORTABLE_CLOSURE",
+  "commit": "60bd385e9104fb831fcea93a3c787c4b1c94ff2b",
+  "worktree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s81-portable-60bd385e-closure",
+  "lanes": {
+    "s7-stamp": {
+      "name": "s7-stamp",
+      "returncode": 0,
+      "duration": 10.442271625157446,
+      "before": "5779a6685782df9af7d8f2b27568b784f0d0197a48299f7020e8b212ea419157",
+      "after": "5779a6685782df9af7d8f2b27568b784f0d0197a48299f7020e8b212ea419157",
+      "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "log_path": "/private/tmp/unfold-s81-approved-portable-committed-checks/s7-stamp.log",
+      "passed": true
+    },
+    "coverage": {
+      "name": "coverage",
+      "returncode": 0,
+      "duration": 818.2154702078551,
+      "before": "5779a6685782df9af7d8f2b27568b784f0d0197a48299f7020e8b212ea419157",
+      "after": "5779a6685782df9af7d8f2b27568b784f0d0197a48299f7020e8b212ea419157",
+      "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "log_path": "/private/tmp/unfold-s81-approved-portable-committed-checks/coverage.log",
+      "passed": true
+    }
+  },
+  "tools_before": {
+    "/private/tmp/unfold-s81-approved-portable-checks.py": "1c26d7b17cc96b323839f39bb13256dc2700db9514c49539cdd5dd9ae4201773",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/scripts/verify_commit.py": "5b12dca3116efd454d878c7ad6bbe62859d90e0ad558df881406bb36bd318c5a",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/scripts/generate_s7_shadow.py": "e415c5d0a4efac1ae655d4a992a08087daa015e6d2438dc8e4771fddbbead70c",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/scripts/coverage.py": "93f8abdf31f12162dbbe39996d9f88eb6b418adb0376fd8813d6e88cf04310ee"
+  },
+  "tools_after": {
+    "/private/tmp/unfold-s81-approved-portable-checks.py": "1c26d7b17cc96b323839f39bb13256dc2700db9514c49539cdd5dd9ae4201773",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/scripts/verify_commit.py": "5b12dca3116efd454d878c7ad6bbe62859d90e0ad558df881406bb36bd318c5a",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/scripts/generate_s7_shadow.py": "e415c5d0a4efac1ae655d4a992a08087daa015e6d2438dc8e4771fddbbead70c",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/scripts/coverage.py": "93f8abdf31f12162dbbe39996d9f88eb6b418adb0376fd8813d6e88cf04310ee"
+  },
+  "error": null
+}

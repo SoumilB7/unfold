@@ -1,0 +1,46 @@
+{
+  "decision": "ACCEPT_LOCAL_PORTABLE_CLOSURE_AND_RECEIPT_PENDING_LINUX",
+  "reviewer": "independent_review",
+  "source_commit": "60bd385e9104fb831fcea93a3c787c4b1c94ff2b",
+  "receipt_manifest_sha256": "2cb44b47122666179ac69a01bb46ecd6edc42cdf0f33d44990160cc2a98fea5b",
+  "mapped_streams": 26,
+  "mapped_stored_bytes": 1875974,
+  "mapped_decoded_bytes": 18016906,
+  "lossless_current_origin_equality": true,
+  "checks_result_sha256": "5c68d197bfb9ddb8c9645b6015dd30ae9bda4edd96a87371df5cdeaa05879dac",
+  "actual_checks": {
+    "s7": {
+      "passed": 1,
+      "pytest_seconds": 8.48,
+      "wrapper_seconds": 10.442271625157446
+    },
+    "coverage": {
+      "inputs": 44,
+      "corpus": 29,
+      "unseen": 15,
+      "silent_failures": 0,
+      "wrapper_seconds": 818.2154702078551
+    }
+  },
+  "late_supplement": {
+    "files": 20,
+    "installed_receipt_files": 8,
+    "other_closing_files": 12,
+    "stored_bytes": 116691,
+    "tokens": 53,
+    "matched_files": 13,
+    "known_old_digests": 0,
+    "errors": 0,
+    "exact_audit_selfcopy_exclusions": 16,
+    "separately_hashed_self_reports": 5,
+    "result_sha256": "a463c5eda2933c552491980b8068c7f3e95561a687371f632f597dec6f59f58d",
+    "manifest_sha256": "2b9b20331cb33a8819485b340173589686a10e8a38762b151e6c1d6704f74afd"
+  },
+  "limits": [
+    "Actual installed source is committed; receipt-only commit/push and successful complete Linux run remain.",
+    "Main15GB audit was not repeated; only new receipt26streams were losslessly verified against origins.",
+    "Raw historical paths remain nonzero; zero only means identified current S7 semantic identity defects.",
+    "This verdict itself is a separately pinned audit self-report; no recursive recount required.",
+    "No model/test/checker execution by reviewer."
+  ]
+}

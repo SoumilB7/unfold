@@ -1,0 +1,33 @@
+{
+  "status": "COMPLETE",
+  "base_scanner_sha256": "34d3c32e06ae2c3cd49cfc6344e3ee18bfe7a81489b42c87444a4c0ad3353eec",
+  "supplement_scanner_sha256": "d602124b1ff0630af00fd68e8c1bfd5d437fe5b4ff672f9e1c0d642574047302",
+  "input_paths_sha256": "2eb28fd57e9802f2999b08dca23c0281d6457207ab47f8a2f18cb1fa2da87337",
+  "files": 20,
+  "stored_bytes": 116691,
+  "decoded_leaves": 20,
+  "containers": {},
+  "host_path_files": 13,
+  "host_path_tokens": 53,
+  "known_local_digest_files": 0,
+  "errors": [],
+  "excluded_self_descriptive_audit_reports": [
+    "verification/receipts/S8.1-portable-closure-60bd385e/audit/active-postinstall.json",
+    "verification/receipts/S8.1-portable-closure-60bd385e/audit/active-s7-preinstall.json.gzip",
+    "verification/receipts/S8.1-portable-closure-60bd385e/audit/changed-source-paths.json",
+    "verification/receipts/S8.1-portable-closure-60bd385e/audit/files.json.gzip",
+    "verification/receipts/S8.1-portable-closure-60bd385e/audit/final-verdict.json",
+    "verification/receipts/S8.1-portable-closure-60bd385e/audit/finalize.py",
+    "verification/receipts/S8.1-portable-closure-60bd385e/audit/findings.jsonl.gzip",
+    "verification/receipts/S8.1-portable-closure-60bd385e/audit/installed-source-supplement/files.json",
+    "verification/receipts/S8.1-portable-closure-60bd385e/audit/installed-source-supplement/findings.jsonl",
+    "verification/receipts/S8.1-portable-closure-60bd385e/audit/installed-source-supplement/result.json",
+    "verification/receipts/S8.1-portable-closure-60bd385e/audit/named-demonstration-diagnostic-index-records.json",
+    "verification/receipts/S8.1-portable-closure-60bd385e/audit/result.json",
+    "verification/receipts/S8.1-portable-closure-60bd385e/audit/s2-diagnostic-index-records.json",
+    "verification/receipts/S8.1-portable-closure-60bd385e/audit/scan.log",
+    "verification/receipts/S8.1-portable-closure-60bd385e/audit/scan.py",
+    "verification/receipts/S8.1-portable-closure-60bd385e/audit/scan_additional.py"
+  ],
+  "scope": "Explicit changed/new captured files only; old archive contents not rescanned. Self-descriptive audit copies excluded explicitly; they are reports of prior findings, not active portable authority. Counts are separate snapshot supplement, not blindly added to baseline counts for duplicate changed paths."
+}

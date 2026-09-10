@@ -1,0 +1,18 @@
+[
+  "verification/receipts/S8.1-portable-closure-60bd385e/audit/active-postinstall.json",
+  "verification/receipts/S8.1-portable-closure-60bd385e/audit/active-s7-preinstall.json.gzip",
+  "verification/receipts/S8.1-portable-closure-60bd385e/audit/changed-source-paths.json",
+  "verification/receipts/S8.1-portable-closure-60bd385e/audit/files.json.gzip",
+  "verification/receipts/S8.1-portable-closure-60bd385e/audit/final-verdict.json",
+  "verification/receipts/S8.1-portable-closure-60bd385e/audit/finalize.py",
+  "verification/receipts/S8.1-portable-closure-60bd385e/audit/findings.jsonl.gzip",
+  "verification/receipts/S8.1-portable-closure-60bd385e/audit/installed-source-supplement/files.json",
+  "verification/receipts/S8.1-portable-closure-60bd385e/audit/installed-source-supplement/findings.jsonl",
+  "verification/receipts/S8.1-portable-closure-60bd385e/audit/installed-source-supplement/result.json",
+  "verification/receipts/S8.1-portable-closure-60bd385e/audit/named-demonstration-diagnostic-index-records.json",
+  "verification/receipts/S8.1-portable-closure-60bd385e/audit/result.json",
+  "verification/receipts/S8.1-portable-closure-60bd385e/audit/s2-diagnostic-index-records.json",
+  "verification/receipts/S8.1-portable-closure-60bd385e/audit/scan.log",
+  "verification/receipts/S8.1-portable-closure-60bd385e/audit/scan.py",
+  "verification/receipts/S8.1-portable-closure-60bd385e/audit/scan_additional.py"
+]
