@@ -1,0 +1,52 @@
+{
+  "decision": "ACCEPT_DOC_REFRESH_DESIGN_PENDING_ACTUAL_REPRO",
+  "scope": "Unchanged census generator may refresh only its generated discovery/debt Markdown after root verifies actual delta. No production or debt qualification change.",
+  "read_sha256": {
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/scripts/census.py": "ba17448da1adb78935eb148b7c2a27d288f5529d0e9698e1fb3d8b4ad1eda0c1",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/docs/COR5_NET1_MIGRATION_DEBT.md": "ef82d19f51d895f80a07514f36081acd7ebea64852cb3febef7dc565f50640e8",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/scripts/generate_s7_shadow.py": "e415c5d0a4efac1ae655d4a992a08087daa015e6d2438dc8e4771fddbbead70c",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.github/workflows/quality.yml": "a29e6ec0751fbe394a3d7fbe519d2856b919a35dd9373c3640abc16fdc8ee5ee",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S8.md": "34790aa5cc4a76ee770b683c6e36b3db1ecaea435ba20f13ab5a0944812ab4e3",
+    "/private/tmp/unfold-s81-approved-linux/push-failed.log": "14cdceb24cafc867cb29ac3a5146535645c26d2f9f9cbed86a877d1632c0711b",
+    "/private/tmp/unfold-s81-approved-linux/push-result.json": "3ee69bf383d8d972e16922ca3114beb48a411ce415020cf3014cc4f4db886ff5"
+  },
+  "actual_linux": {
+    "run_id": 34452333662,
+    "commit": "7f5e560e8ad29d7e51b7033393e35d1eeaa5a060",
+    "namespace_proof": "PASS",
+    "census": "FAIL stale generated document",
+    "remaining_steps": "SKIPPED"
+  },
+  "delta": {
+    "witness": "stable-diffusion-xl-base-1-0",
+    "audit_incomplete_added": "root.denoiser",
+    "standing_unclassified_added": [
+      "act_fn",
+      "norm_eps"
+    ],
+    "global_pending_before": 13,
+    "global_pending_after": 45,
+    "denoiser_pending_before": 11,
+    "denoiser_pending_after": 43
+  },
+  "basis": [
+    "census.collect reads current exact config_access occurrences; does not assert consumption or facts.",
+    "render joins only existing exact StructuralDebt keys; unmatched fields stay UNCLASSIFIED. More visible debt is not completion or an excuse.",
+    "S8.md56/116 already carries SDXL accounting incomplete and S9 consumption-ledger work. Committed generated census last updated in S4 at8f9862ed."
+  ],
+  "permitted_correction": [
+    "Use unchanged generator actual output only, compare Linux and local exact rendered delta.",
+    "Retain known limitations, all added pending/unclassified/audit_incomplete rows.",
+    "Do not edit STRUCTURAL_DEBT, consumed receipts, qualifiers, generator filters or CI predicate."
+  ],
+  "S7_live_caution": [
+    "--check verifies committed source/artifact metadata; --ci-shadow executes39 and independently compares each semantic payload plus modelsummary and allthree logicalhash maps.",
+    "Approved sources-only stamp cannot by itself make changed semantic payloads match. No evidence of current live failure because step was skipped.",
+    "Await actual diagnostics; no speculative artifact regeneration or normalization is authorized."
+  ],
+  "limits": [
+    "No models/tests/census generation by reviewer; source/doc/log analysis only.",
+    "Root owns actual local census run and any follow-up metadata mutation.",
+    "S9 remains locked; Linux not green."
+  ]
+}

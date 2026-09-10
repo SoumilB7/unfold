@@ -1,0 +1,41 @@
+--- committed
++++ regenerated
+@@ -48,9 +48,9 @@
+ 
+ ## Owners with NO consumption at all (audit_incomplete)
+ 
+-- none
++- `root.denoiser` — 1 witnesses (e.g. ['stable-diffusion-xl-base-1-0']); **UNCLASSIFIED** (U2.2 assigns per occurrence/mechanism — an owner spans several units)
+ 
+-## Standing accessed-but-unconsumed occurrences: 0
++## Standing accessed-but-unconsumed occurrences: 2
+ 
+ Format: `exact.dotted.path (witness count)`, with `(as spelling)` when the
+ supplying alias differs. The row key is the FULL occurrence, so two paths
+@@ -61,7 +61,13 @@
+ mechanism whether a model is parsed standalone or embedded in a pipeline.
+ Prefix a row with its document to address the value in the witness file.
+ 
+-## PENDING occurrences (dispositioned, exact debt rows): 13
++### `root.denoiser` — 2 rows — **UNCLASSIFIED** (U2.2 assigns per occurrence/mechanism — an owner spans several units)
++
++Paths relative to: the top-level document
++
++`act_fn` (1w), `norm_eps` (1w)
++
++## PENDING occurrences (dispositioned, exact debt rows): 45
+ 
+ Each row here is EXCUSED by one exact config_read StructuralDebt row
+ (evidence/structural_debt.py): owner + exact path + U3-U14 unit +
+@@ -73,9 +79,9 @@
+ 
+ `embedding_multiplier` (1w, U14), `logits_scaling` (1w, U14)
+ 
+-### `root.denoiser` — 11 pending rows
++### `root.denoiser` — 43 pending rows
+ 
+-`addition_embed_type` (1w, U11), `addition_time_embed_dim` (1w, U11), `block_out_channels` (1w, U11), `down_block_types` (1w, U11), `encoder_hid_dim` (1w, U11), `encoder_hid_dim_type` (1w, U11), `layers_per_block` (1w, U11), `mid_block_type` (1w, U11), `projection_class_embeddings_input_dim` (1w, U11), `transformer_layers_per_block` (1w, U11), `up_block_types` (1w, U11)
++`addition_embed_type` (1w, U11), `addition_embed_type_num_heads` (1w, U11), `addition_time_embed_dim` (1w, U11), `attention_head_dim` (1w, U15), `block_out_channels` (1w, U11), `center_input_sample` (1w, U11), `class_embed_type` (1w, U11), `class_embeddings_concat` (1w, U11), `conv_in_kernel` (1w, U11), `conv_out_kernel` (1w, U11), `cross_attention_dim` (1w, U15), `cross_attention_norm` (1w, U11), `down_block_types` (1w, U11), `downsample_padding` (1w, U11), `dual_cross_attention` (1w, U11), `encoder_hid_dim` (1w, U11), `encoder_hid_dim_type` (1w, U11), `flip_sin_to_cos` (1w, U15), `freq_shift` (1w, U15), `in_channels` (1w, U15), `layers_per_block` (1w, U11), `mid_block_only_cross_attention` (1w, U11), `mid_block_scale_factor` (1w, U11), `mid_block_type` (1w, U11), `norm_num_groups` (1w, U11), `num_attention_heads` (1w, U15), `num_class_embeds` (1w, U11), `only_cross_attention` (1w, U15), `out_channels` (1w, U15), `projection_class_embeddings_input_dim` (1w, U11), `resnet_out_scale_factor` (1w, U11), `resnet_skip_time_act` (1w, U11), `resnet_time_scale_shift` (1w, U11), `sample_size` (1w, U15), `time_cond_proj_dim` (1w, U11), `time_embedding_act_fn` (1w, U11), `time_embedding_dim` (1w, U11), `time_embedding_type` (1w, U11), `timestep_post_act` (1w, U11), `transformer_layers_per_block` (1w, U11), `up_block_types` (1w, U11), `upcast_attention` (1w, U15), `use_linear_projection` (1w, U15)
+ 
+ ## Reads whose LOCATION is unknown: 0
+ 

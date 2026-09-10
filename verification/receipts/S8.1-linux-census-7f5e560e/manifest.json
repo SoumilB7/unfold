@@ -1,0 +1,72 @@
+{
+  "check/census-check.log": {
+    "bytes": 348,
+    "sha256": "1f6d4fd949089af0cd25fee801a84428eacc9ccbcda5cb7428909ab794b4449b",
+    "source": "/private/tmp/unfold-s81-linux-census-check/census-check.log"
+  },
+  "check/result.json": {
+    "bytes": 871,
+    "sha256": "aae3152e48e61eed8f27bbbc4c3240b6d01c69303d0a3c8782061b05286c40f1",
+    "source": "/private/tmp/unfold-s81-linux-census-check/result.json"
+  },
+  "diagnostic/COR5_NET1_MIGRATION_DEBT.md": {
+    "bytes": 7471,
+    "sha256": "744e016f59246446b7c3802f000215a6ec7571e173a3ac723b86594f371781d5",
+    "source": "/private/tmp/unfold-s81-linux-census-diagnostic/COR5_NET1_MIGRATION_DEBT.md"
+  },
+  "diagnostic/census-producer.log": {
+    "bytes": 443,
+    "sha256": "cdeb6c42a1398b87d46f85165d5cf837bcdeba33d02077ee74eb22beba54c50a",
+    "source": "/private/tmp/unfold-s81-linux-census-diagnostic/census-producer.log"
+  },
+  "diagnostic/delta-review.json": {
+    "bytes": 392,
+    "sha256": "23925b14c03f827aaa8250baa2e1084757f3ddc83009e37989ac408455bbf885",
+    "source": "/private/tmp/unfold-s81-linux-census-diagnostic/delta-review.json"
+  },
+  "diagnostic/exact-linux.diff": {
+    "bytes": 3175,
+    "sha256": "6a0fe2e131afb01b74496b50483c2f51a6184775b04a29859e3d65bd3dcbbdf2",
+    "source": "/private/tmp/unfold-s81-linux-census-diagnostic/exact-linux.diff"
+  },
+  "diagnostic/result.json": {
+    "bytes": 1137,
+    "sha256": "e7e9fc320b3543fee5825d0503c9e3b482bead633f78daf691eef00a093dfd39",
+    "source": "/private/tmp/unfold-s81-linux-census-diagnostic/result.json"
+  },
+  "independent/actual-candidate-review.json": {
+    "bytes": 1454,
+    "sha256": "3b6aaa91f16166c61af457af1f712c71b37311cafca9055beb0174eba5d63228",
+    "source": "/private/tmp/unfold-s81-linux-census-independent-review/actual-candidate-review.json"
+  },
+  "independent/source-disposition.json": {
+    "bytes": 3315,
+    "sha256": "44e8607f3fa55f18299e8d48648872314e2816867669b1df6402e4731df93d9f",
+    "source": "/private/tmp/unfold-s81-linux-census-independent-review/source-disposition.json"
+  },
+  "linux/check_census.py": {
+    "bytes": 1429,
+    "sha256": "1ca36c22a80e1f06dacbf0f9aa30163a3e1c9e68d6ac07e250d4b897e47572ab",
+    "source": "/private/tmp/unfold-s81-approved-linux/check_census.py"
+  },
+  "linux/diagnose_census.py": {
+    "bytes": 1955,
+    "sha256": "0617abb80f9dbccfe34d220a2eb66af89b8d517550486e63d1d7a3e3e025db6b",
+    "source": "/private/tmp/unfold-s81-approved-linux/diagnose_census.py"
+  },
+  "linux/push-failed.log": {
+    "bytes": 8904,
+    "sha256": "14cdceb24cafc867cb29ac3a5146535645c26d2f9f9cbed86a877d1632c0711b",
+    "source": "/private/tmp/unfold-s81-approved-linux/push-failed.log"
+  },
+  "linux/push-result.json": {
+    "bytes": 2775,
+    "sha256": "3ee69bf383d8d972e16922ca3114beb48a411ce415020cf3014cc4f4db886ff5",
+    "source": "/private/tmp/unfold-s81-approved-linux/push-result.json"
+  },
+  "linux/record_census_receipt.py": {
+    "bytes": 2703,
+    "sha256": "b9bedb94465e51a8a8ebe1277b61550ef9d8c71a6131fd2b61b73f931c9281da",
+    "source": "/private/tmp/unfold-s81-approved-linux/record_census_receipt.py"
+  }
+}

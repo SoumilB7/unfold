@@ -1,0 +1,24 @@
+{
+  "decision": "ACCEPT_EXACT_GENERATED_DOC_ONLY_INSTALL",
+  "reviewer": "independent_review",
+  "base_commit": "7f5e560e8ad29d7e51b7033393e35d1eeaa5a060",
+  "approved_path": "docs/COR5_NET1_MIGRATION_DEBT.md",
+  "original_sha256": "ef82d19f51d895f80a07514f36081acd7ebea64852cb3febef7dc565f50640e8",
+  "candidate_sha256": "744e016f59246446b7c3802f000215a6ec7571e173a3ac723b86594f371781d5",
+  "producer_sha256": "ba17448da1adb78935eb148b7c2a27d288f5529d0e9698e1fb3d8b4ad1eda0c1",
+  "actual_result_sha256": "e7e9fc320b3543fee5825d0503c9e3b482bead633f78daf691eef00a093dfd39",
+  "exact_diff_sha256": "6a0fe2e131afb01b74496b50483c2f51a6184775b04a29859e3d65bd3dcbbdf2",
+  "checks": {
+    "actual_unchanged_producer_exit_zero": true,
+    "recorded_source_and_blessed_fingerprints_equal": true,
+    "current_original_and_producer_match_committed_bytes": true,
+    "candidate_matches_actual_result": true,
+    "entire_candidate_diff_equals_linux_failure_diff": true
+  },
+  "scope": "Generated discovery-debt Markdown only. Existing pending classifications remain; act_fn/norm_eps remain UNCLASSIFIED and audit_incomplete remains explicit. No source, consumption, classification, gate, or S7 payload change authorized.",
+  "limits": [
+    "Original Linux failure retained; Linux acceptance awaits actual rerun.",
+    "This refresh does not resolve S9 config-consumption debt or unlock S9.",
+    "No presumed S7 live failure; later Linux steps were skipped."
+  ]
+}
