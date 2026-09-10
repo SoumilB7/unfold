@@ -1,0 +1,42 @@
+[
+  {
+    "path": "model_unfolder/evidence/claim_evidence.py",
+    "added": 4,
+    "deleted": 2
+  },
+  {
+    "path": "model_unfolder/evidence/instance_population_claim.py",
+    "added": 2,
+    "deleted": 1
+  },
+  {
+    "path": "model_unfolder/evidence/program_index.py",
+    "added": 27,
+    "deleted": 1
+  },
+  {
+    "path": "model_unfolder/evidence/unet_cell_connections.py",
+    "added": 2,
+    "deleted": 1
+  },
+  {
+    "path": "model_unfolder/evidence/unet_claims.py",
+    "added": 7,
+    "deleted": 6
+  },
+  {
+    "path": "model_unfolder/evidence/unet_primary_ports.py",
+    "added": 2,
+    "deleted": 1
+  },
+  {
+    "path": "tests/test_portable_claim_summary.py",
+    "added": 176,
+    "deleted": 0
+  },
+  {
+    "path": "tests/test_s7_reconciliation.py",
+    "added": 2,
+    "deleted": 2
+  }
+]

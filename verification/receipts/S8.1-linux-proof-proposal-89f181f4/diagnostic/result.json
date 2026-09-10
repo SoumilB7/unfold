@@ -1,0 +1,16 @@
+{
+  "commit": "89f181f4306e21122d1ac4cc98573454a5937427",
+  "worktree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s81-linux-89f181f4-proof-address",
+  "status": "PASS",
+  "lane": {
+    "name": "proof-address-diagnostic",
+    "returncode": 0,
+    "duration": 37.889813833869994,
+    "before": "aea9dab133b5e47133b34326108ef66183f5854398899f8607ff73af6e87db0b",
+    "after": "aea9dab133b5e47133b34326108ef66183f5854398899f8607ff73af6e87db0b",
+    "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "log_path": "/private/tmp/unfold-s81-proof-address-diagnostic/proof-address-diagnostic.log",
+    "passed": true
+  }
+}

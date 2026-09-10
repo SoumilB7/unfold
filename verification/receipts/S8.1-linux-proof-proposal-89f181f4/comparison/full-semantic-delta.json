@@ -1,0 +1,1002 @@
+[
+  {
+    "path": "$.table.occurrences[0].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "09fc7b6a95f66c670862b0660094bce1078a3b341e2c963b5da40d3e19673f9d",
+    "after": "da6dcc0fb04a1b1751240838c08858850b61ec18c40b3413f7a12b004e490680"
+  },
+  {
+    "path": "$.table.occurrences[0].projection.fact_claim_proofs[3].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[0].projection.fact_claim_proofs[4].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[0].projection.fact_claim_proofs[5].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[2].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[3].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[4].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[5].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[6].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[8].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "09fc7b6a95f66c670862b0660094bce1078a3b341e2c963b5da40d3e19673f9d",
+    "after": "da6dcc0fb04a1b1751240838c08858850b61ec18c40b3413f7a12b004e490680"
+  },
+  {
+    "path": "$.table.occurrences[8].projection.fact_claim_proofs[3].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[10].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[11].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[18].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "09fc7b6a95f66c670862b0660094bce1078a3b341e2c963b5da40d3e19673f9d",
+    "after": "da6dcc0fb04a1b1751240838c08858850b61ec18c40b3413f7a12b004e490680"
+  },
+  {
+    "path": "$.table.occurrences[18].projection.fact_claim_proofs[3].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[19].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "09fc7b6a95f66c670862b0660094bce1078a3b341e2c963b5da40d3e19673f9d",
+    "after": "da6dcc0fb04a1b1751240838c08858850b61ec18c40b3413f7a12b004e490680"
+  },
+  {
+    "path": "$.table.occurrences[19].projection.fact_claim_proofs[3].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[20].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "09fc7b6a95f66c670862b0660094bce1078a3b341e2c963b5da40d3e19673f9d",
+    "after": "da6dcc0fb04a1b1751240838c08858850b61ec18c40b3413f7a12b004e490680"
+  },
+  {
+    "path": "$.table.occurrences[20].projection.fact_claim_proofs[3].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[28].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "09fc7b6a95f66c670862b0660094bce1078a3b341e2c963b5da40d3e19673f9d",
+    "after": "da6dcc0fb04a1b1751240838c08858850b61ec18c40b3413f7a12b004e490680"
+  },
+  {
+    "path": "$.table.occurrences[28].projection.fact_claim_proofs[3].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[28].projection.fact_claim_proofs[4].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[29].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "09fc7b6a95f66c670862b0660094bce1078a3b341e2c963b5da40d3e19673f9d",
+    "after": "da6dcc0fb04a1b1751240838c08858850b61ec18c40b3413f7a12b004e490680"
+  },
+  {
+    "path": "$.table.occurrences[29].projection.fact_claim_proofs[3].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[29].projection.fact_claim_proofs[4].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[30].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "09fc7b6a95f66c670862b0660094bce1078a3b341e2c963b5da40d3e19673f9d",
+    "after": "da6dcc0fb04a1b1751240838c08858850b61ec18c40b3413f7a12b004e490680"
+  },
+  {
+    "path": "$.table.occurrences[30].projection.fact_claim_proofs[3].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[30].projection.fact_claim_proofs[4].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[40].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[40].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[41].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[41].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[43].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[46].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[48].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[50].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[51].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[51].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[52].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[52].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[55].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[56].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[56].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[57].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[57].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[60].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[60].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[61].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[61].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[83].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[83].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[84].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[84].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[85].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[85].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[86].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[90].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[90].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[91].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[91].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[92].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[92].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[93].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[94].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[94].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[95].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[95].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[96].projection.fact_claim_proofs[0].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[96].projection.fact_claim_proofs[1].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[297].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[304].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[311].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[318].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[325].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[332].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[339].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[346].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[353].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[360].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[402].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[403].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[409].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[410].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[416].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[417].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[423].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[424].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[430].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[431].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[437].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[438].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[444].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[445].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[451].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[452].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[458].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[459].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[465].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[466].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[472].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[473].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[479].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[480].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[486].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[487].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[493].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[494].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[500].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[501].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[507].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[508].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[514].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[515].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[521].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[522].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[528].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[529].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[535].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[536].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[542].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[543].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[549].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[550].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[556].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[557].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[563].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[564].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[880].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[881].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[887].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[888].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[894].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[895].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[901].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[902].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[908].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[909].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[915].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[916].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[922].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[923].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[929].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[930].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[936].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[937].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[943].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[944].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[950].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[951].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[957].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[958].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[964].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[965].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[971].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[972].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[978].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[979].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[985].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[986].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[992].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[993].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[999].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1000].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1006].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1007].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1013].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1014].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1020].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1021].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1027].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1028].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1034].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1035].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1041].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1042].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1048].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1049].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1055].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1056].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1062].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1063].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1069].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1070].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1076].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1077].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1083].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1084].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1090].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1091].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1097].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1098].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1104].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1105].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1111].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1112].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1118].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1119].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1125].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  },
+  {
+    "path": "$.table.occurrences[1126].projection.fact_claim_proofs[2].index_fingerprints[0]",
+    "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+    "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382"
+  }
+]

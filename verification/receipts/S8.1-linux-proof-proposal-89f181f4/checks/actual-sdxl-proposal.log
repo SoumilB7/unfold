@@ -1,0 +1,22 @@
+{
+  "status": "PASS_SCRATCH_PROPOSAL_REQUIRES_OWNER_APPROVAL",
+  "actual_semantic_comparison": "exactly 200 proof index seals; zero other differences",
+  "fresh_observation_and_relation_semantics": "unchanged against committed artifacts",
+  "changed_summary_seals": 200,
+  "renewed": [
+    {
+      "path": "matrix.json",
+      "before_sha256": "30321ece208593a05a478c9d837c94fab5f5f71ef2a21a4869fe66013596045e",
+      "after_sha256": "47f372e4629711fd51676d3005a522cdd10d6ad2f31a0dd4d12c1360490014d1"
+    },
+    {
+      "path": "models/stable-diffusion-xl-base-1-0.json.gz",
+      "before_sha256": "886a13ba0f4740d73094cf68395e9e90b3add24da3d0e3dc2901303ff8adfd26",
+      "after_sha256": "0ed9ed525605741fd6b848f58f84ee0f1b867169587cb932fdd5aa72b307dbcd"
+    }
+  ],
+  "unchanged_payloads": 116,
+  "matrix_summary_rows_unchanged": true,
+  "normalizer_unchanged": true,
+  "approval": "NOT_REQUESTED_OR_GRANTED_FOR_THIS_NEW_PAYLOAD_DELTA"
+}

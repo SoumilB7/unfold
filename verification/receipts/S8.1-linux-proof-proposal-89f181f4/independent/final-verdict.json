@@ -1,0 +1,39 @@
+{
+  "decision": "ACCEPT_TESTED_PROPOSAL_FOR_OWNER_APPROVAL_ONLY",
+  "reviewer": "independent_review",
+  "base_commit": "89f181f4306e21122d1ac4cc98573454a5937427",
+  "manifest_sha256": "15026ed939b549b9af9d32c722d8380fb1cc2b8e7f6a47bf79ac849275ffe334",
+  "prior_actual_proposal_verdict_sha256": "8023d2d92a0aa813733bcc31b871838c370903f0779ca1bd14876e50967fddf3",
+  "preservation_result_sha256": "e0cfbba0975eab9ebc605bf7e0a42c1cebc411d772110b3402b493e6eff43803",
+  "logs_sha256": {
+    "static.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "s5-example.log": "e927453c079b9760e92a345138e3129498e9d437055178a7edf9cb6ced89ffe0",
+    "preservation.log": "cbd6c61289497fe79248fb2d23c40c24cd493151a0d8c0135517ba6f97109bce"
+  },
+  "actual_checks": {
+    "focused_controls": 79,
+    "static": "PASS",
+    "s5": {
+      "passed": 1,
+      "pytest_seconds": 47.17,
+      "wrapper_seconds": 52.29628441715613
+    },
+    "preservation": {
+      "passed": 52,
+      "pytest_seconds": 409.23,
+      "wrapper_seconds": 410.5195629997179
+    }
+  },
+  "source_and_blessed_fingerprints_equal": true,
+  "eight_candidate_pins_equal": true,
+  "current_production_still_matches_original_pins": true,
+  "recorder_source_sha256": "db54ae8a54bca2a3bfffd7d6c16242aafed09956cec5bc522c7bbda5a9bf4692",
+  "recorder_disposition": "ACCEPT_SOURCE; exact candidate/actual/proposal digest links verified",
+  "approval_scope": "Eight reviewed source/test files plus two separately pinned S7 artifact files. Artifact renewal is exactly200 portable proof seals in SDXL model, six matrix source stamps and its raw/logical hashes. No other116payloads or39matrix summaries change.",
+  "limits": [
+    "Not owner installation approval; originals remain unchanged.",
+    "Checks ran on isolated candidate overlay, not new committed source or Linux.",
+    "Original failed Linux run retained; S8.1 not DONE and S9 remains locked.",
+    "No latency remeasurement or new baseline claim."
+  ]
+}

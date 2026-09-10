@@ -1,0 +1,15 @@
+{
+  "facts": 9,
+  "indices": {
+    "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e": {
+      "portable": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382",
+      "linux_raw": "f3a8764adaa00599fb7c6e56538805d3860902f9d4a3c387b2721d2b51336553",
+      "sources": 20
+    },
+    "09fc7b6a95f66c670862b0660094bce1078a3b341e2c963b5da40d3e19673f9d": {
+      "portable": "da6dcc0fb04a1b1751240838c08858850b61ec18c40b3413f7a12b004e490680",
+      "linux_raw": "e27e0a82b761ed6805a5be30fe0b0a6e57f119cdcfb409916e797e0b98a18824",
+      "sources": 8
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "decision": "ACCEPT_ACTUAL_TWO_FILE_PROPOSAL_FOR_OWNER_REVIEW",
+  "reviewer": "independent_review",
+  "base_commit": "89f181f4306e21122d1ac4cc98573454a5937427",
+  "candidate_manifest_sha256": "15026ed939b549b9af9d32c722d8380fb1cc2b8e7f6a47bf79ac849275ffe334",
+  "actual_result_sha256": "e3d10e5091d55e2ffa3e7a662eb35c81cb4460688dd464573ef0101a16658ef1",
+  "proposal_result_sha256": "33cdd215b49a41ebd4b1a60b280e2514e6764065b3fab4a5082e9cf688b988f7",
+  "approved_for_review_paths": [
+    {
+      "path": "matrix.json",
+      "before_sha256": "30321ece208593a05a478c9d837c94fab5f5f71ef2a21a4869fe66013596045e",
+      "after_sha256": "47f372e4629711fd51676d3005a522cdd10d6ad2f31a0dd4d12c1360490014d1"
+    },
+    {
+      "path": "models/stable-diffusion-xl-base-1-0.json.gz",
+      "before_sha256": "886a13ba0f4740d73094cf68395e9e90b3add24da3d0e3dc2901303ff8adfd26",
+      "after_sha256": "0ed9ed525605741fd6b848f58f84ee0f1b867169587cb932fdd5aa72b307dbcd"
+    }
+  ],
+  "model_leaf_changes": 200,
+  "fingerprint_mapping_counts": [
+    {
+      "before": "09fc7b6a95f66c670862b0660094bce1078a3b341e2c963b5da40d3e19673f9d",
+      "after": "da6dcc0fb04a1b1751240838c08858850b61ec18c40b3413f7a12b004e490680",
+      "count": 8
+    },
+    {
+      "before": "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e",
+      "after": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382",
+      "count": 192
+    }
+  ],
+  "matrix_delta_count": 8,
+  "checks": [
+    "79 focused controls passed; lane source/artifact fingerprints unchanged.",
+    "Entire decoded original-to-candidate model has exactly200 fingerprint leaves matching persisted delta.",
+    "Complete fresh actual model semantically equals candidate under unchanged schema-addressed comparator.",
+    "Fresh observation and relation complete semantics equal committed artifacts.",
+    "All116 other payload bytes unchanged; matrix changes limited to source stamps and this model raw/logical hashes;39 summary rows unchanged."
+  ],
+  "preservation_runner_sha256": "c1ba9a5ee9de3d12fee951e447c3b9b817eb42a4145077bc6e90e3ff1e1a0647",
+  "preservation_runner_disposition": "ACCEPT_SOURCE_ONLY; actual results pending",
+  "limits": [
+    "New owner approval required for exact two-file S7 artifact renewal; installation not authorized.",
+    "Local host evidence does not establish final Linux PASS; original failures retained.",
+    "Source correction is eight reviewed candidate files including six production files; proposal is separate two artifact files."
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "status": "PASS_CANDIDATE_PENDING_OWNER_APPROVAL",
+  "base_commit": "89f181f4306e21122d1ac4cc98573454a5937427",
+  "candidate_overlay": true,
+  "worktree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s81-linux-89f181f4-portable-proof",
+  "manifest_sha256": "15026ed939b549b9af9d32c722d8380fb1cc2b8e7f6a47bf79ac849275ffe334",
+  "comparison_tool_sha256": "9765d394d8efb2d281ffd7866833cd82a901a75b50cec9f6c913919e8d27bf4c",
+  "candidate_pins_unchanged": true,
+  "lanes": {
+    "portable-proof-controls": {
+      "name": "portable-proof-controls",
+      "returncode": 0,
+      "duration": 33.34439374972135,
+      "before": "7a41703b5bdfd756b892d9f3e1dc624813483cd2e8f89c8f919ab671e7eaeb77",
+      "after": "7a41703b5bdfd756b892d9f3e1dc624813483cd2e8f89c8f919ab671e7eaeb77",
+      "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "log_path": "/private/tmp/unfold-s81-portable-proof-verification/portable-proof-controls.log",
+      "passed": true
+    },
+    "actual-sdxl-proposal": {
+      "name": "actual-sdxl-proposal",
+      "returncode": 0,
+      "duration": 75.05591825023293,
+      "before": "7a41703b5bdfd756b892d9f3e1dc624813483cd2e8f89c8f919ab671e7eaeb77",
+      "after": "7a41703b5bdfd756b892d9f3e1dc624813483cd2e8f89c8f919ab671e7eaeb77",
+      "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "log_path": "/private/tmp/unfold-s81-portable-proof-verification/actual-sdxl-proposal.log",
+      "passed": true
+    }
+  },
+  "error": null,
+  "no_repository_outputs_installed": true
+}

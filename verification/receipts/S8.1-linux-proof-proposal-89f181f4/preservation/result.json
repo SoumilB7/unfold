@@ -1,0 +1,64 @@
+{
+  "status": "PASS_CANDIDATE_OUTPUT_PRESERVATION",
+  "base_commit": "89f181f4306e21122d1ac4cc98573454a5937427",
+  "candidate_overlay": true,
+  "manifest_sha256": "15026ed939b549b9af9d32c722d8380fb1cc2b8e7f6a47bf79ac849275ffe334",
+  "worktree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s81-linux-89f181f4-portable-proof",
+  "candidate_pins_before": {
+    "model_unfolder/evidence/claim_evidence.py": "aa47c42df0bf15ef794719f89abff199a5d78cf5413dc78ec6219231f5f2a969",
+    "model_unfolder/evidence/instance_population_claim.py": "0a579faab86c3464e40e1fd31888d54179481df0c15da2660acaee079a04f9d7",
+    "model_unfolder/evidence/program_index.py": "3b3bdda9cc95f84a78324de723c421e2ed3f735ca037dd4fe564ffac74293da5",
+    "model_unfolder/evidence/unet_cell_connections.py": "90f604be3d534e3a320ae98dfbe455a78f8d6c2275ead9a4dbef0e17bb0ef074",
+    "model_unfolder/evidence/unet_claims.py": "dbfd704a11ac41b1722c621acdb606ab217b0be435b7a2eee67005e0de1c5169",
+    "model_unfolder/evidence/unet_primary_ports.py": "275ca8446917f3ba934146610d8a68d8ab62ff1d30a15ba3e92d64330c3466cc",
+    "tests/test_portable_claim_summary.py": "654cf999d9530c40a04a1c79cb9f6a20528af4954a106eea53d3e162346e4c79",
+    "tests/test_s7_reconciliation.py": "4b237e4979d658d0c6d8e06757330cc1622e96006337ac260d6b423ee8a091b8"
+  },
+  "candidate_pins_after": {
+    "model_unfolder/evidence/claim_evidence.py": "aa47c42df0bf15ef794719f89abff199a5d78cf5413dc78ec6219231f5f2a969",
+    "model_unfolder/evidence/instance_population_claim.py": "0a579faab86c3464e40e1fd31888d54179481df0c15da2660acaee079a04f9d7",
+    "model_unfolder/evidence/program_index.py": "3b3bdda9cc95f84a78324de723c421e2ed3f735ca037dd4fe564ffac74293da5",
+    "model_unfolder/evidence/unet_cell_connections.py": "90f604be3d534e3a320ae98dfbe455a78f8d6c2275ead9a4dbef0e17bb0ef074",
+    "model_unfolder/evidence/unet_claims.py": "dbfd704a11ac41b1722c621acdb606ab217b0be435b7a2eee67005e0de1c5169",
+    "model_unfolder/evidence/unet_primary_ports.py": "275ca8446917f3ba934146610d8a68d8ab62ff1d30a15ba3e92d64330c3466cc",
+    "tests/test_portable_claim_summary.py": "654cf999d9530c40a04a1c79cb9f6a20528af4954a106eea53d3e162346e4c79",
+    "tests/test_s7_reconciliation.py": "4b237e4979d658d0c6d8e06757330cc1622e96006337ac260d6b423ee8a091b8"
+  },
+  "lanes": {
+    "static": {
+      "name": "static",
+      "returncode": 0,
+      "duration": 1.100927666760981,
+      "before": "7a41703b5bdfd756b892d9f3e1dc624813483cd2e8f89c8f919ab671e7eaeb77",
+      "after": "7a41703b5bdfd756b892d9f3e1dc624813483cd2e8f89c8f919ab671e7eaeb77",
+      "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "log_path": "/private/tmp/unfold-s81-portable-proof-preservation/static.log",
+      "passed": true
+    },
+    "s5-example": {
+      "name": "s5-example",
+      "returncode": 0,
+      "duration": 52.29628441715613,
+      "before": "7a41703b5bdfd756b892d9f3e1dc624813483cd2e8f89c8f919ab671e7eaeb77",
+      "after": "7a41703b5bdfd756b892d9f3e1dc624813483cd2e8f89c8f919ab671e7eaeb77",
+      "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "log_path": "/private/tmp/unfold-s81-portable-proof-preservation/s5-example.log",
+      "passed": true
+    },
+    "preservation": {
+      "name": "preservation",
+      "returncode": 0,
+      "duration": 410.5195629997179,
+      "before": "7a41703b5bdfd756b892d9f3e1dc624813483cd2e8f89c8f919ab671e7eaeb77",
+      "after": "7a41703b5bdfd756b892d9f3e1dc624813483cd2e8f89c8f919ab671e7eaeb77",
+      "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "log_path": "/private/tmp/unfold-s81-portable-proof-preservation/preservation.log",
+      "passed": true
+    }
+  },
+  "error": null,
+  "production_artifacts_untouched": true
+}
