@@ -87,13 +87,13 @@ def _change_sample(root, campaign, index, change):
     write_json(root, 'campaign.json', campaign)
 
 
-def test_unet_budget_is_separate_and_does_not_invent_samples():
+def test_unet_budget_records_measured_samples_without_changing_original_s2():
     document = _budgets()
     section = validate_budget(document)
     assert document['end_to_end_cold']['budget_seconds'] == 9.0
     assert len(document['end_to_end_cold']['samples_seconds']) == 7
-    assert section['measurement_status'] == 'pending_actual_gate'
-    assert 'samples_seconds' not in section
+    assert section['measurement_status'] == 'measured'
+    assert len(section['baseline_samples']) == 12
     assert expected_samples() == [(target, pair, mode) for target in TARGETS
                                   for pair in range(3) for mode in ('cold', 'warm')]
 
@@ -168,7 +168,7 @@ def test_warm_median_threshold_cannot_be_relaxed_by_pass_flags(tmp_path):
     campaign = _receipt(tmp_path)
     for index in (1, 3):
         _change_sample(tmp_path, campaign, index,
-                       lambda sample: sample['timings'].update(budget_seconds=9.01))
+                       lambda sample: sample['timings'].update(budget_seconds=13.01))
     with pytest.raises(ValueError, match='median .* exceeds'):
         check_receipt(tmp_path)
 
@@ -341,3 +341,43 @@ def test_host_telemetry_is_context_with_explicit_unavailability(monkeypatch):
     monkeypatch.setattr(runner.os, 'getloadavg', unavailable)
     assert host_telemetry() == {'cpu_count': 10, 'load_average': None,
                                'load_average_unavailable': 'OSError: unavailable'}
+
+
+def test_measured_baseline_rows_match_the_committed_sample_bytes():
+    import gzip
+    section = _budgets()['unet_instance']
+    receipt = section['baseline_receipt']
+    map_path = Path(receipt['artifact_map'])
+    assert sha(map_path.read_bytes()) == receipt['artifact_map_sha256']
+    entries = json.loads(map_path.read_bytes())['entries']
+    assert [(row['target'], row['pair'], row['mode']) for row in section['baseline_samples']] == expected_samples()
+    grouped = {mode: {target: [] for target in TARGETS} for mode in ('cold', 'warm')}
+    for row in section['baseline_samples']:
+        descriptor = row['receipt']
+        entry = entries[descriptor['logical_path']]
+        packed = (map_path.parent / entry['stored']).read_bytes()
+        assert sha(packed) == entry['stored_sha256']
+        raw = gzip.decompress(packed)
+        assert sha(raw) == entry['raw_sha256'] == descriptor['sha256']
+        assert len(raw) == entry['raw_bytes'] == descriptor['bytes']
+        sample = json.loads(raw)
+        for key in ('target', 'pair', 'mode', 'timings', 'host_before', 'host_after'):
+            assert row[key] == sample[key]
+        grouped[row['mode']][row['target']].append(row['timings']['budget_seconds'])
+    assert grouped['cold'] == section['cold_empty_cache']['samples_seconds']
+    assert grouped['warm'] == section['warm_populated_cache']['samples_seconds']
+
+
+@pytest.mark.parametrize('mutation', ['median', 'missing_sample', 'budget'])
+def test_measured_baseline_does_not_accept_unexplained_revisions(mutation):
+    document = _budgets()
+    cold = document['unet_instance']['cold_empty_cache']
+    target = next(iter(TARGETS))
+    if mutation == 'median':
+        cold['medians_seconds'][target] += 0.1
+    elif mutation == 'missing_sample':
+        cold['samples_seconds'][target].pop()
+    else:
+        cold['budget_seconds'] += 1
+    with pytest.raises(ValueError):
+        validate_budget(document)

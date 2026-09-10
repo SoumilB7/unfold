@@ -44,10 +44,20 @@ def validate_budget(document):
     require(section['library_imports_in_budget'] is True and section['public_package_import_in_budget'] is False
             and section['html_in_budget'] is False,
             'owner public-package-only import exclusion required')
-    require(seconds(section['cold_empty_cache']['budget_seconds']) == 30.0,
-            'owner cold budget is 30 seconds')
-    require(seconds(section['warm_populated_cache']['budget_seconds']) == 9.0,
-            'owner warm budget is 9 seconds')
+    require(section['measurement_status'] == 'measured', 'measured UNet baseline required')
+    require(section['budget_multiplier'] == 1.3, 'S2 multiplier is 1.3')
+    for mode, owner_budget in (('cold_empty_cache', 43.0), ('warm_populated_cache', 13.0)):
+        baseline = section[mode]
+        require(set(baseline['samples_seconds']) == set(TARGETS)
+                and set(baseline['medians_seconds']) == set(TARGETS), 'baseline target census')
+        medians = {}
+        for target, samples in baseline['samples_seconds'].items():
+            require(len(samples) == 3, 'three measured baseline samples required')
+            medians[target] = statistics.median(seconds(value) for value in samples)
+        require(medians == baseline['medians_seconds'], 'baseline medians must match samples')
+        budget = seconds(baseline['budget_seconds'])
+        require(budget == owner_budget, 'approved measured owner budget')
+        require(budget == math.ceil(1.3 * max(medians.values())), 'S2 measured budget calculation')
     return section
 
 

@@ -13,13 +13,41 @@
     "budget_seconds": 5.5,
     "budget_basis": "1.31 times the slowest target median (Qwen3-Omni, 4.198 seconds), rounded upward",
     "samples_seconds": {
-      "llama-7b": [0.273, 0.239, 0.268],
-      "deepseek-v3": [0.267, 0.357, 0.293],
-      "qwen2-vl-7b-instruct": [0.923, 0.945, 1.229],
-      "pixart-sigma-xl-2-1024-ms": [0.268, 0.288, 0.277],
-      "stable-diffusion-3-5-large": [0.573, 0.584, 0.576],
-      "qwen3-omni-30b": [4.198, 3.983, 4.725],
-      "musicgen-small": [1.289, 0.961, 1.667]
+      "llama-7b": [
+        0.273,
+        0.239,
+        0.268
+      ],
+      "deepseek-v3": [
+        0.267,
+        0.357,
+        0.293
+      ],
+      "qwen2-vl-7b-instruct": [
+        0.923,
+        0.945,
+        1.229
+      ],
+      "pixart-sigma-xl-2-1024-ms": [
+        0.268,
+        0.288,
+        0.277
+      ],
+      "stable-diffusion-3-5-large": [
+        0.573,
+        0.584,
+        0.576
+      ],
+      "qwen3-omni-30b": [
+        4.198,
+        3.983,
+        4.725
+      ],
+      "musicgen-small": [
+        1.289,
+        0.961,
+        1.667
+      ]
     },
     "medians_seconds": {
       "llama-7b": 0.268,
@@ -35,13 +63,41 @@
     "budget_seconds": 9.0,
     "budget_basis": "1.30 times the slowest target median (Qwen3-Omni, 6.919 seconds), rounded upward",
     "samples_seconds": {
-      "llama-7b": [2.411, 2.471, 2.433],
-      "deepseek-v3": [2.942, 2.837, 2.717],
-      "qwen2-vl-7b-instruct": [3.878, 3.866, 3.830],
-      "pixart-sigma-xl-2-1024-ms": [2.968, 3.119, 3.125],
-      "stable-diffusion-3-5-large": [3.943, 4.181, 3.768],
-      "qwen3-omni-30b": [6.919, 7.292, 6.873],
-      "musicgen-small": [4.127, 4.568, 4.214]
+      "llama-7b": [
+        2.411,
+        2.471,
+        2.433
+      ],
+      "deepseek-v3": [
+        2.942,
+        2.837,
+        2.717
+      ],
+      "qwen2-vl-7b-instruct": [
+        3.878,
+        3.866,
+        3.83
+      ],
+      "pixart-sigma-xl-2-1024-ms": [
+        2.968,
+        3.119,
+        3.125
+      ],
+      "stable-diffusion-3-5-large": [
+        3.943,
+        4.181,
+        3.768
+      ],
+      "qwen3-omni-30b": [
+        6.919,
+        7.292,
+        6.873
+      ],
+      "musicgen-small": [
+        4.127,
+        4.568,
+        4.214
+      ]
     },
     "medians_seconds": {
       "llama-7b": 2.433,
@@ -65,9 +121,483 @@
       "stable-diffusion-xl-base-1-0": "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json",
       "sd-v1-4": "tests/unseen_model_configs/sd-v1-4.json"
     },
-    "cold_empty_cache": {"budget_seconds": 30.0},
-    "warm_populated_cache": {"budget_seconds": 9.0},
-    "budget_basis": "Explicit S8.1 owner thresholds; cold means empty enabled result cache, not cold OS pages",
-    "measurement_status": "pending_actual_gate"
+    "cold_empty_cache": {
+      "budget_seconds": 43.0,
+      "samples_seconds": {
+        "stable-diffusion-xl-base-1-0": [
+          32.681176166050136,
+          32.24899445800111,
+          37.415210667066276
+        ],
+        "sd-v1-4": [
+          30.219834292307496,
+          36.45807833317667,
+          31.40346366725862
+        ]
+      },
+      "medians_seconds": {
+        "stable-diffusion-xl-base-1-0": 32.681176166050136,
+        "sd-v1-4": 31.40346366725862
+      }
+    },
+    "warm_populated_cache": {
+      "budget_seconds": 13.0,
+      "samples_seconds": {
+        "stable-diffusion-xl-base-1-0": [
+          21.048966709058732,
+          9.044011458288878,
+          9.88753820816055
+        ],
+        "sd-v1-4": [
+          8.8164959163405,
+          8.942279499955475,
+          8.618206750135869
+        ]
+      },
+      "medians_seconds": {
+        "stable-diffusion-xl-base-1-0": 9.88753820816055,
+        "sd-v1-4": 8.8164959163405
+      }
+    },
+    "budget_basis": "S2 method: 1.3 times the slowest measured median per mode, rounded up to whole seconds; approved owner verdict on c7ec5526.",
+    "measurement_status": "measured",
+    "measured_at": "2026-09-09",
+    "baseline_commit": "87cde8d8c0e983b315384db8d79c8c6bcee468f4",
+    "budget_multiplier": 1.3,
+    "baseline_host": {
+      "platform": "macOS-26.5.1-arm64-arm-64bit",
+      "python": "3.12.10 (v3.12.10:0cc81280367, Apr  8 2025, 08:46:59) [Clang 13.0.0 (clang-1300.0.29.30)]",
+      "before": {
+        "cpu_count": 10,
+        "load_average": [
+          5.30712890625,
+          6.4296875,
+          5.6650390625
+        ]
+      },
+      "after": {
+        "cpu_count": 10,
+        "load_average": [
+          5.837890625,
+          6.7255859375,
+          6.13330078125
+        ]
+      }
+    },
+    "baseline_samples": [
+      {
+        "target": "stable-diffusion-xl-base-1-0",
+        "pair": 0,
+        "mode": "cold",
+        "timings": {
+          "budget_seconds": 32.681176166050136,
+          "html_seconds": 2.98867250001058,
+          "imports_seconds": 0.835334416013211,
+          "parent_cpu_seconds": 15.865829,
+          "unfold_seconds": 32.67745608417317
+        },
+        "host_before": {
+          "cpu_count": 10,
+          "load_average": [
+            5.30712890625,
+            6.4296875,
+            5.6650390625
+          ]
+        },
+        "host_after": {
+          "cpu_count": 10,
+          "load_average": [
+            7.03076171875,
+            6.70458984375,
+            5.79345703125
+          ]
+        },
+        "receipt": {
+          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/0/cold/result.json",
+          "sha256": "7088699014815b035835d7f5c2c8ede890783b67928ad712fdf5d713912a8f01",
+          "bytes": 51775
+        }
+      },
+      {
+        "target": "stable-diffusion-xl-base-1-0",
+        "pair": 0,
+        "mode": "warm",
+        "timings": {
+          "budget_seconds": 21.048966709058732,
+          "html_seconds": 3.2726151668466628,
+          "imports_seconds": 0.8314359588548541,
+          "parent_cpu_seconds": 12.720797,
+          "unfold_seconds": 21.043829208239913
+        },
+        "host_before": {
+          "cpu_count": 10,
+          "load_average": [
+            7.03076171875,
+            6.70458984375,
+            5.79345703125
+          ]
+        },
+        "host_after": {
+          "cpu_count": 10,
+          "load_average": [
+            10.265625,
+            7.552734375,
+            6.13330078125
+          ]
+        },
+        "receipt": {
+          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/0/warm/result.json",
+          "sha256": "971ddeb6de66eea3e769200c5d4e4be4e65b0a9ade7e16f89fbdc76b69638d84",
+          "bytes": 4269
+        }
+      },
+      {
+        "target": "stable-diffusion-xl-base-1-0",
+        "pair": 1,
+        "mode": "cold",
+        "timings": {
+          "budget_seconds": 32.24899445800111,
+          "html_seconds": 2.947908249683678,
+          "imports_seconds": 0.9491394590586424,
+          "parent_cpu_seconds": 16.039080000000002,
+          "unfold_seconds": 32.24492824962363
+        },
+        "host_before": {
+          "cpu_count": 10,
+          "load_average": [
+            10.265625,
+            7.552734375,
+            6.13330078125
+          ]
+        },
+        "host_after": {
+          "cpu_count": 10,
+          "load_average": [
+            8.1953125,
+            7.345703125,
+            6.1142578125
+          ]
+        },
+        "receipt": {
+          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/1/cold/result.json",
+          "sha256": "6122d36d40146092b73ccfe9ca9c2668d9b9aebd58aaa28b86828bac399939ee",
+          "bytes": 51778
+        }
+      },
+      {
+        "target": "stable-diffusion-xl-base-1-0",
+        "pair": 1,
+        "mode": "warm",
+        "timings": {
+          "budget_seconds": 9.044011458288878,
+          "html_seconds": 2.941310833208263,
+          "imports_seconds": 0.8605146673507988,
+          "parent_cpu_seconds": 8.780883,
+          "unfold_seconds": 9.03763037500903
+        },
+        "host_before": {
+          "cpu_count": 10,
+          "load_average": [
+            8.1953125,
+            7.345703125,
+            6.1142578125
+          ]
+        },
+        "host_after": {
+          "cpu_count": 10,
+          "load_average": [
+            6.75439453125,
+            7.06689453125,
+            6.03564453125
+          ]
+        },
+        "receipt": {
+          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/1/warm/result.json",
+          "sha256": "5c5c9978b0379ce5ebcd89432adea5fb49553ff918dfa7a89b84d25d4b827db4",
+          "bytes": 4269
+        }
+      },
+      {
+        "target": "stable-diffusion-xl-base-1-0",
+        "pair": 2,
+        "mode": "cold",
+        "timings": {
+          "budget_seconds": 37.415210667066276,
+          "html_seconds": 2.9745495840907097,
+          "imports_seconds": 0.8332185409963131,
+          "parent_cpu_seconds": 17.083581,
+          "unfold_seconds": 37.411253875121474
+        },
+        "host_before": {
+          "cpu_count": 10,
+          "load_average": [
+            6.75439453125,
+            7.06689453125,
+            6.03564453125
+          ]
+        },
+        "host_after": {
+          "cpu_count": 10,
+          "load_average": [
+            6.9326171875,
+            7.05810546875,
+            6.0830078125
+          ]
+        },
+        "receipt": {
+          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/2/cold/result.json",
+          "sha256": "d70133ae49d2561ff3790102c029d59d0f9bbebad4c4474ce438835ca40607e8",
+          "bytes": 51783
+        }
+      },
+      {
+        "target": "stable-diffusion-xl-base-1-0",
+        "pair": 2,
+        "mode": "warm",
+        "timings": {
+          "budget_seconds": 9.88753820816055,
+          "html_seconds": 2.9700118750333786,
+          "imports_seconds": 0.8839146248064935,
+          "parent_cpu_seconds": 9.446810000000001,
+          "unfold_seconds": 9.88256729207933
+        },
+        "host_before": {
+          "cpu_count": 10,
+          "load_average": [
+            6.9326171875,
+            7.05810546875,
+            6.0830078125
+          ]
+        },
+        "host_after": {
+          "cpu_count": 10,
+          "load_average": [
+            8.69873046875,
+            7.44580078125,
+            6.23828125
+          ]
+        },
+        "receipt": {
+          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/2/warm/result.json",
+          "sha256": "1511800129e515552cda462c4f32fbf83454bd1ee30a0a6bbd8684eee83fb464",
+          "bytes": 4278
+        }
+      },
+      {
+        "target": "sd-v1-4",
+        "pair": 0,
+        "mode": "cold",
+        "timings": {
+          "budget_seconds": 30.219834292307496,
+          "html_seconds": 2.8585359579883516,
+          "imports_seconds": 0.857680750079453,
+          "parent_cpu_seconds": 16.430798,
+          "unfold_seconds": 30.216070957947522
+        },
+        "host_before": {
+          "cpu_count": 10,
+          "load_average": [
+            8.69873046875,
+            7.44580078125,
+            6.23828125
+          ]
+        },
+        "host_after": {
+          "cpu_count": 10,
+          "load_average": [
+            6.5556640625,
+            7.04638671875,
+            6.14111328125
+          ]
+        },
+        "receipt": {
+          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/0/cold/result.json",
+          "sha256": "fbefdd344c0a50e680a3c237d2bc2a00f226186d7e349f2f8a4ca130a6a0e172",
+          "bytes": 51440
+        }
+      },
+      {
+        "target": "sd-v1-4",
+        "pair": 0,
+        "mode": "warm",
+        "timings": {
+          "budget_seconds": 8.8164959163405,
+          "html_seconds": 2.844835666939616,
+          "imports_seconds": 0.8663699580356479,
+          "parent_cpu_seconds": 8.702519,
+          "unfold_seconds": 8.812727333046496
+        },
+        "host_before": {
+          "cpu_count": 10,
+          "load_average": [
+            6.5556640625,
+            7.04638671875,
+            6.14111328125
+          ]
+        },
+        "host_after": {
+          "cpu_count": 10,
+          "load_average": [
+            5.90283203125,
+            6.87939453125,
+            6.09716796875
+          ]
+        },
+        "receipt": {
+          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/0/warm/result.json",
+          "sha256": "30ca008efbd42481a5afb9db36a057e1466fa16cc80d951abdc01b9c2c9efcc8",
+          "bytes": 3936
+        }
+      },
+      {
+        "target": "sd-v1-4",
+        "pair": 1,
+        "mode": "cold",
+        "timings": {
+          "budget_seconds": 36.45807833317667,
+          "html_seconds": 2.9667975422926247,
+          "imports_seconds": 0.8623255421407521,
+          "parent_cpu_seconds": 18.430412,
+          "unfold_seconds": 36.45313541730866
+        },
+        "host_before": {
+          "cpu_count": 10,
+          "load_average": [
+            5.90283203125,
+            6.87939453125,
+            6.09716796875
+          ]
+        },
+        "host_after": {
+          "cpu_count": 10,
+          "load_average": [
+            6.7548828125,
+            6.92138671875,
+            6.14453125
+          ]
+        },
+        "receipt": {
+          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/1/cold/result.json",
+          "sha256": "86cf10aa39503f2469af5fceeecd15f8814766ca74fddb07d96ac3cef25a82fd",
+          "bytes": 51443
+        }
+      },
+      {
+        "target": "sd-v1-4",
+        "pair": 1,
+        "mode": "warm",
+        "timings": {
+          "budget_seconds": 8.942279499955475,
+          "html_seconds": 2.750000167172402,
+          "imports_seconds": 0.9140762090682983,
+          "parent_cpu_seconds": 8.728145,
+          "unfold_seconds": 8.938463583122939
+        },
+        "host_before": {
+          "cpu_count": 10,
+          "load_average": [
+            6.7548828125,
+            6.92138671875,
+            6.14453125
+          ]
+        },
+        "host_after": {
+          "cpu_count": 10,
+          "load_average": [
+            7.04296875,
+            6.97412109375,
+            6.1767578125
+          ]
+        },
+        "receipt": {
+          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/1/warm/result.json",
+          "sha256": "7db9dc427e1adc4b46074a308fb8676f5802bee0429cf2a4eacdaf7d91098b39",
+          "bytes": 3932
+        }
+      },
+      {
+        "target": "sd-v1-4",
+        "pair": 2,
+        "mode": "cold",
+        "timings": {
+          "budget_seconds": 31.40346366725862,
+          "html_seconds": 2.774404250085354,
+          "imports_seconds": 1.3095779581926763,
+          "parent_cpu_seconds": 16.913391,
+          "unfold_seconds": 31.396250959020108
+        },
+        "host_before": {
+          "cpu_count": 10,
+          "load_average": [
+            7.04296875,
+            6.97412109375,
+            6.1767578125
+          ]
+        },
+        "host_after": {
+          "cpu_count": 10,
+          "load_average": [
+            6.8359375,
+            6.95263671875,
+            6.20166015625
+          ]
+        },
+        "receipt": {
+          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/2/cold/result.json",
+          "sha256": "f9736bbb14b87656447fd1bdccc3376811bc8155f0859263f852289af01b4579",
+          "bytes": 51437
+        }
+      },
+      {
+        "target": "sd-v1-4",
+        "pair": 2,
+        "mode": "warm",
+        "timings": {
+          "budget_seconds": 8.618206750135869,
+          "html_seconds": 2.709869584068656,
+          "imports_seconds": 0.8631775001995265,
+          "parent_cpu_seconds": 8.490139,
+          "unfold_seconds": 8.612819166854024
+        },
+        "host_before": {
+          "cpu_count": 10,
+          "load_average": [
+            6.5283203125,
+            6.88671875,
+            6.1826171875
+          ]
+        },
+        "host_after": {
+          "cpu_count": 10,
+          "load_average": [
+            5.837890625,
+            6.7255859375,
+            6.13330078125
+          ]
+        },
+        "receipt": {
+          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/2/warm/result.json",
+          "sha256": "4595375c6d84475010dbefc8399e4064a832e225de947c5d9c1df143c8a1fb9e",
+          "bytes": 3933
+        }
+      }
+    ],
+    "baseline_receipt": {
+      "artifact_map": "verification/receipts/S8.1-owner-resubmission-actual-results/artifact-map.json",
+      "artifact_map_sha256": "77a3d20ab5bc716525bfc8ec856e3dfe4693be0ade3ddc7e83c160760b874923",
+      "campaign": {
+        "logical_path": "final-canonical/latency-unet/campaign.json",
+        "sha256": "1ee71a3ebdc98996fda61c44290daa96e3fab67dd1ef0d4edfe14af21dd804ff",
+        "bytes": 17525
+      }
+    },
+    "performance_target": {
+      "owner": "executor",
+      "step": "S10",
+      "item": "static UNet reader cost, target 30 / 9",
+      "cold_seconds": 30.0,
+      "warm_seconds": 9.0
+    },
+    "ratchet": "Remeasure at S10 deletion; ratchet the gate down when costs fall. A rise above these measured medians requires a named cause; no automatic baseline renewal."
   }
 }
