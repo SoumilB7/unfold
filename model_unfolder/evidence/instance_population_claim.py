@@ -2,6 +2,7 @@
 from dataclasses import dataclass, field
 
 from .claim_evidence import ClaimProofSummary
+from .program_index import portable_source_index_fingerprint
 from .receipts import value_status_hash
 from .runtime_source import RuntimeSourceBindings
 
@@ -102,7 +103,7 @@ class ConstructorDefaultsClaimProof:
         return ClaimProofSummary(self.fact_id, self.claim_kind, self.proof_kind,
                                  self.reader_symbols, refs,
                                  document_fingerprints=(self.bindings.table.config_sha256,),
-                                 index_fingerprints=(self.bindings.index.fingerprint,))
+                                 index_fingerprints=(portable_source_index_fingerprint(self.bindings.index),))
 
 
 def read_constructor_defaults(bindings, document):

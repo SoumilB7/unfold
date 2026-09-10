@@ -7,6 +7,7 @@ does not turn lexical order or a constructor census into execution order.
 from dataclasses import dataclass, field
 
 from .claim_evidence import ClaimProofSummary
+from .program_index import portable_source_index_fingerprint
 from .diffusion_stream import local_lineage_at_callable
 from .facts import EvidenceFact
 from .program_index import SymbolId
@@ -349,7 +350,7 @@ class UNetCellConnectionClaimProof:
         return ClaimProofSummary(self.fact_id, self.claim_kind, self.proof_kind,
                                  self.reader_symbols, refs,
                                  document_fingerprints=(self.bindings.table.config_sha256,),
-                                 index_fingerprints=(self.bindings.index.fingerprint,))
+                                 index_fingerprints=(portable_source_index_fingerprint(self.bindings.index),))
 
 
 def read_unet_cell_connections(mechanisms, bindings, execution=None):

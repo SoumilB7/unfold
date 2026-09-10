@@ -1,0 +1,36 @@
+{
+  "status": "APPROVED_INSTALL_COMPLETE_LINUX_PENDING",
+  "base_commit": "113d159fb97471c33c252e47c785e810c492fbd8",
+  "files": [
+    {
+      "path": "result.json",
+      "sha256": "0f63e29fa08ac65b9eaa5a1597c0167f8cc139aa6b21f92a449d9ffec751dfad",
+      "bytes": 21824
+    },
+    {
+      "path": "manifest.executed.json",
+      "sha256": "8d92d1af2e9611c689f84f17f7505d8cf7a6df88e328a73641db0ab4729e59c2",
+      "bytes": 20252
+    },
+    {
+      "path": "install.executed.py",
+      "sha256": "267a5bd6766c627f19c7622b6f0184ce9524e5e0df11057cdb5f9c9fdd1fcf72",
+      "bytes": 12237
+    },
+    {
+      "path": "owner-ruling-at-install.md",
+      "sha256": "35ac85593e2475355083c12d144bbadf703fbdbbd83d48849156eb1e1d4aaa32",
+      "bytes": 13489
+    },
+    {
+      "path": "record_install.py",
+      "sha256": "f83a4dc6b0c9c4b1c080627b64af35f0adba8a4b8871a789db563aeb803548c1",
+      "bytes": 4261
+    },
+    {
+      "path": "committed_checks.py",
+      "sha256": "1c26d7b17cc96b323839f39bb13256dc2700db9514c49539cdd5dd9ae4201773",
+      "bytes": 2854
+    }
+  ]
+}

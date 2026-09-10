@@ -18,7 +18,9 @@ from .config_access import (
     prepared_document_token,
     verify_prepared_document_token,
 )
-from .program_index import ConstructionSite, ProgramIndex, SymbolId
+from .program_index import (
+    ConstructionSite, ProgramIndex, SymbolId, portable_source_index_fingerprint,
+)
 from .receipts import value_status_hash
 
 
@@ -205,7 +207,7 @@ class ConstructorExistenceClaimProof:
                 for site in self.sites)),
             (),
             (),
-            (self.index.fingerprint,),
+            (portable_source_index_fingerprint(self.index),),
         )
 
 

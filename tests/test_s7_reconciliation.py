@@ -22,7 +22,7 @@ from model_unfolder.evidence.component_owner import OwnerOccurrenceId
 from model_unfolder.evidence.facts import EvidenceFact, SourceSpan as FactSpan
 from model_unfolder.evidence.program_index import (
     ClassRecord, ConstructionSite, ConstructionSiteId, ExprNode, ProgramIndex,
-    SourceFileNode, SourceId, SourceSpan, SymbolId,
+    SourceFileNode, SourceId, SourceSpan, SymbolId, portable_source_index_fingerprint,
 )
 from model_unfolder.evidence.reconciliation import (
     AUTHORITY_MATRIX,
@@ -877,7 +877,7 @@ def test_constructor_existence_proof_has_a_lawful_positive_control():
         claim_kind="existence", claim_readers=("fixture.bias",),
         claim_evidence=proof)
     assert ProjectionFactCitation(fact).summary.index_fingerprints == \
-        (index.fingerprint,)
+        (portable_source_index_fingerprint(index),)
     [reference] = ProjectionFactCitation(fact).summary.evidence_refs
     assert "|root|" in reference
     assert "|Block|Block.__init__|field|bias|" in reference

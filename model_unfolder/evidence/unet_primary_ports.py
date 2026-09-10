@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from functools import cached_property
 
 from .claim_evidence import ClaimProofSummary
+from .program_index import portable_source_index_fingerprint
 from .facts import EvidenceFact
 from .local_port_routes import read_local_port_route, _slot
 from .program_index import ExprNode, SourceSpan, SymbolId
@@ -182,7 +183,7 @@ class UNetPrimaryPortProof:
         return ClaimProofSummary(self.fact_id, self.claim_kind, self.proof_kind, self.reader_symbols,
             tuple(sorted({_ref(span) for span in self.investigation[1]})),
             document_fingerprints=(self.bindings.table.config_sha256,),
-            index_fingerprints=(self.bindings.index.fingerprint,))
+            index_fingerprints=(portable_source_index_fingerprint(self.bindings.index),))
 
 
 def read_unet_primary_ports(graph, bindings):

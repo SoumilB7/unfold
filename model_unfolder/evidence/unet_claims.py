@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from functools import cached_property
 
 from .claim_evidence import ClaimProofSummary
+from .program_index import portable_source_index_fingerprint
 from .facts import EvidenceFact, SourceSpan as FactSpan
 from .runtime_source import RuntimeSourceBindings
 from .unet_stage_execution import UNetStageExecutionGraph
@@ -76,7 +77,7 @@ class UNetStageRelationClaimProof:
         return ClaimProofSummary(
             self.fact_id, self.claim_kind, self.proof_kind, self.reader_symbols, refs,
             document_fingerprints=(self.bindings.table.config_sha256,),
-            index_fingerprints=(self.graph.index.fingerprint,))
+            index_fingerprints=(portable_source_index_fingerprint(self.graph.index),))
 
 
 def read_unet_stage_relations(graph, bindings):
@@ -177,7 +178,7 @@ class UNetFFNClaimProof:
         return ClaimProofSummary(
             self.fact_id, self.claim_kind, self.proof_kind, self.reader_symbols, refs,
             document_fingerprints=(self.bindings.table.config_sha256,),
-            index_fingerprints=(self.bindings.index.fingerprint,))
+            index_fingerprints=(portable_source_index_fingerprint(self.bindings.index),))
 
 
 def read_unet_ffn_claims(attempts, bindings):
@@ -285,7 +286,7 @@ class UNetJoinClaimProof:
         return ClaimProofSummary(self.fact_id, self.claim_kind, self.proof_kind,
                                  self.reader_symbols, refs,
                                  document_fingerprints=(self.bindings.table.config_sha256,),
-                                 index_fingerprints=(self.bindings.index.fingerprint,))
+                                 index_fingerprints=(portable_source_index_fingerprint(self.bindings.index),))
 
 
 def read_unet_join_claims(connections, bindings):
@@ -359,7 +360,7 @@ class UNetContextConnectionClaimProof:
             self.fact_id, self.claim_kind, self.proof_kind, self.reader_symbols,
             tuple(sorted({_span_ref(span) for row in self.sources.sources for span in row.spans})),
             document_fingerprints=(self.bindings.table.config_sha256,),
-            index_fingerprints=(self.bindings.index.fingerprint,))
+            index_fingerprints=(portable_source_index_fingerprint(self.bindings.index),))
 
 
 def read_unet_context_connections(sources, bindings):
@@ -465,7 +466,7 @@ class UNetCellArithmeticClaimProof:
         return ClaimProofSummary(self.fact_id, self.claim_kind, self.proof_kind, self.reader_symbols,
                                  tuple(sorted(_span_ref(span) for span in spans)),
                                  document_fingerprints=(self.bindings.table.config_sha256,),
-                                 index_fingerprints=(self.bindings.index.fingerprint,))
+                                 index_fingerprints=(portable_source_index_fingerprint(self.bindings.index),))
 
 
 def read_unet_cell_arithmetic(mechanisms, bindings, execution=None):
@@ -528,7 +529,7 @@ class UNetSpatialClaimProof:
                                  tuple(sorted({_span_ref(span) for row in self.spatial.spatial_operations
                                                for span in row.operand_spans})),
                                  document_fingerprints=(self.bindings.table.config_sha256,),
-                                 index_fingerprints=(self.bindings.index.fingerprint,))
+                                 index_fingerprints=(portable_source_index_fingerprint(self.bindings.index),))
 
 
 def read_unet_spatial_claims(spatial, bindings):

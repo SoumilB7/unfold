@@ -2722,6 +2722,11 @@ class ProgramIndex:
             getattr(self, item.name) for item in fields(ProgramIndex)
             if (item.compare if item.hash is None else item.hash)))
 
+    @cached_property
+    def _portable_source_fingerprint(self) -> str:
+        """Derived persisted source seal; never replaces local address identity."""
+        return _compute_portable_source_index_fingerprint(self)
+
     def __hash__(self) -> int:
         return self._structural_hash
 
@@ -2729,7 +2734,8 @@ class ProgramIndex:
         # Pickle/deepcopy must not transport salted hashes or call-local query
         # results. Recompute all derived state from the receiving index fields.
         return {key: value for key, value in self.__dict__.items()
-                if key not in {"_structural_hash", "_address_index", "_call_memo"}}
+                if key not in {"_structural_hash", "_address_index", "_call_memo",
+                               "_portable_source_fingerprint"}}
 
     @cached_property
     def _call_memo(self) -> dict:
@@ -2985,6 +2991,26 @@ def portable_source_index_fingerprint(index: ProgramIndex) -> str:
     """
     if not isinstance(index, ProgramIndex):
         raise TypeError("portable source-index fingerprint requires ProgramIndex")
+    # The public dataclass also permits noncanonical mutable input shapes.
+    # Preserve their prior computation/errors without caching them. Only the
+    # exact frozen census used by the assembler receives per-index memoization.
+    if (type(index) is ProgramIndex and type(index.source_nodes) is tuple
+            and type(index.parse_failures) is tuple
+            and all(type(node) is SourceFileNode for node in index.source_nodes)
+            and all(type(row) is ParseFailure for row in index.parse_failures)):
+        sources = tuple(node.source_id for node in index.source_nodes) + tuple(
+            row.source for row in index.parse_failures)
+        if all(type(source) is SourceId
+               and all(type(value) is str for value in (
+                   source.canonical_path, source.content_fingerprint, source.external_provenance))
+               and (source.component_key is None or type(source.component_key) is str)
+               and type(source.external) is bool for source in sources):
+            return index._portable_source_fingerprint
+    return _compute_portable_source_index_fingerprint(index)
+
+
+def _compute_portable_source_index_fingerprint(index: ProgramIndex) -> str:
+    """Original source-census calculation; uncached failures remain failures."""
     sources = [node.source_id for node in index.source_nodes]
     sources.extend(failure.source for failure in index.parse_failures)
     if not sources:
