@@ -1,0 +1,13 @@
+{
+  "name": "s7-matrix-renewal-candidate",
+  "returncode": 0,
+  "duration": 1355.826634332996,
+  "before": "4c1ca4691fb95f5ab9ee68350ad6c65a8e9900a1b7a4f1f116c1c6284fc14778",
+  "after": "4c1ca4691fb95f5ab9ee68350ad6c65a8e9900a1b7a4f1f116c1c6284fc14778",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-s7-renewal-b45bab26/matrix-lane/s7-matrix-renewal-candidate.log",
+  "passed": true,
+  "head": "b45bab26539eca773c2f03519ebfd72ca7719d93",
+  "active_matrix_renewed": false
+}
